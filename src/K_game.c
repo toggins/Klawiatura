@@ -20,7 +20,7 @@ void start_state(int num_players, int local) {
     }
 }
 
-static uint32_t fletcher32(uint8_t* data, uint32_t len) {
+static uint32_t check_state(uint8_t* data, uint32_t len) {
     uint32_t checksum = 0;
     while (len > 0)
         checksum += data[--len];
@@ -29,7 +29,7 @@ static uint32_t fletcher32(uint8_t* data, uint32_t len) {
 
 void save_state(GekkoGameEvent* event) {
     *(event->data.save.state_len) = sizeof(state);
-    *(event->data.save.checksum) = fletcher32((uint8_t*)(&state), sizeof(state));
+    *(event->data.save.checksum) = check_state((uint8_t*)(&state), sizeof(state));
     SDL_memcpy(event->data.save.state, &state, sizeof(state));
 }
 
@@ -101,6 +101,8 @@ void draw_state(SDL_Renderer* renderer) {
             cy = FtFloat(object->pos[1]) - 240;
         }
     }
+    cx *= 0.5f;
+    cy *= 0.5f;
 
     ObjectID oid = state.live_objects;
     while (object_is_alive(oid)) {
@@ -232,6 +234,16 @@ void destroy_object(ObjectID index) {
         }
     }
     object->type = OBJ_INVALID;
+
+    int32_t block = object->block;
+    if (block > 0L && block < (int32_t)BLOCKMAP_SIZE) {
+        if (state.blockmap[block] == index)
+            state.blockmap[block] = object->previous_block;
+        if (object_is_alive(object->previous_block))
+            state.objects[object->previous_block].next_block = object->next_block;
+        if (object_is_alive(object->next_block))
+            state.objects[object->next_block].previous_block = object->previous_block;
+    }
 
     if (state.live_objects == index)
         state.live_objects = object->previous;
