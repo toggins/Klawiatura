@@ -20,6 +20,7 @@ typedef int16_t ObjectID;
 enum GameObjectType {
     OBJ_INVALID,
     OBJ_PLAYER,
+    OBJ_BULLET,
 };
 
 enum ObjectFlags {
@@ -36,6 +37,18 @@ enum PlayerValues {
     VAL_PLAYER_INDEX,
     VAL_PLAYER_X_SPEED,
     VAL_PLAYER_Y_SPEED,
+};
+
+enum PlayerFlags {
+    FLG_PLAYER_NONE = 0,
+    FLG_PLAYER_COLLISION = 1 << 0,
+    FLG_PLAYER_DEFAULT = FLG_PLAYER_NONE,
+};
+
+enum BulletValues {
+    VAL_BULLET_PLAYER,
+    VAL_BULLET_X_SPEED,
+    VAL_BULLET_Y_SPEED,
 };
 
 struct GameInput {
@@ -88,7 +101,8 @@ void load_state(GekkoGameEvent*);
 void tick_state(struct GameInput[MAX_PLAYERS]);
 void draw_state(SDL_Renderer*);
 
+bool object_is_alive(ObjectID);
 ObjectID create_object(enum GameObjectType, const fvec2);
 void move_object(ObjectID, const fvec2);
+void iterate_block(ObjectID, bool (*iterator)(ObjectID, ObjectID));
 void destroy_object(ObjectID);
-bool object_is_alive(ObjectID);

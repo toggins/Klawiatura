@@ -66,6 +66,7 @@ int main(int argc, char** argv) {
     SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
     if (renderer == NULL)
         FATAL("SDL_CreateRenderer fail: %s", SDL_GetError());
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
     GekkoSession* session = NULL;
     if (!gekko_create(&session))
@@ -115,79 +116,80 @@ int main(int argc, char** argv) {
 
         gekko_network_poll(session);
 
-        while (ticks >= 1) {
-            struct GameInput input = {0};
-            const bool* keyboard = SDL_GetKeyboardState(NULL);
-            input.action.up = keyboard[SDL_SCANCODE_UP];
-            input.action.left = keyboard[SDL_SCANCODE_LEFT];
-            input.action.down = keyboard[SDL_SCANCODE_DOWN];
-            input.action.right = keyboard[SDL_SCANCODE_RIGHT];
-            input.action.jump = keyboard[SDL_SCANCODE_Z];
-            input.action.run = input.action.fire = keyboard[SDL_SCANCODE_X];
-            gekko_add_local_input(session, local_player, &input);
+        if (ticks >= 1) {
+            while (ticks >= 1) {
+                struct GameInput input = {0};
+                const bool* keyboard = SDL_GetKeyboardState(NULL);
+                input.action.up = keyboard[SDL_SCANCODE_UP];
+                input.action.left = keyboard[SDL_SCANCODE_LEFT];
+                input.action.down = keyboard[SDL_SCANCODE_DOWN];
+                input.action.right = keyboard[SDL_SCANCODE_RIGHT];
+                input.action.jump = keyboard[SDL_SCANCODE_Z];
+                input.action.run = input.action.fire = keyboard[SDL_SCANCODE_X];
+                gekko_add_local_input(session, local_player, &input);
 
-            int count = 0;
-            GekkoSessionEvent** events = gekko_session_events(session, &count);
-            for (int i = 0; i < count; i++) {
-                GekkoSessionEvent* event = events[i];
-                switch (event->type) {
-                    default:
-                        break;
+                int count = 0;
+                GekkoSessionEvent** events = gekko_session_events(session, &count);
+                for (int i = 0; i < count; i++) {
+                    GekkoSessionEvent* event = events[i];
+                    switch (event->type) {
+                        default:
+                            break;
 
-                    case DesyncDetected: {
-                        struct Desynced desync = event->data.desynced;
-                        FATAL(
-                            "DESYNC!!! f:%d, rh:%d, lc:%u, rc:%u", desync.frame, desync.remote_handle,
-                            desync.local_checksum, desync.remote_checksum
-                        );
-                        break;
-                    }
+                        case DesyncDetected: {
+                            struct Desynced desync = event->data.desynced;
+                            FATAL(
+                                "DESYNC!!! f:%d, rh:%d, lc:%u, rc:%u", desync.frame, desync.remote_handle,
+                                desync.local_checksum, desync.remote_checksum
+                            );
+                            break;
+                        }
 
-                    case PlayerConnected: {
-                        struct Connected connect = event->data.connected;
-                        INFO("Player %i connected", connect.handle);
-                        break;
-                    }
+                        case PlayerConnected: {
+                            struct Connected connect = event->data.connected;
+                            INFO("Player %i connected", connect.handle);
+                            break;
+                        }
 
-                    case PlayerDisconnected: {
-                        struct Disconnected disconnect = event->data.disconnected;
-                        FATAL("Player %i disconnected", disconnect.handle);
-                        break;
-                    }
-                }
-            }
-
-            count = 0;
-            GekkoGameEvent** updates = gekko_update_session(session, &count);
-            for (int i = 0; i < count; i++) {
-                GekkoGameEvent* event = updates[i];
-                switch (event->type) {
-                    default:
-                        break;
-                    case SaveEvent:
-                        save_state(event);
-                        break;
-                    case LoadEvent:
-                        load_state(event);
-                        break;
-                    case AdvanceEvent: {
-                        for (size_t j = 0; j < num_players; j++)
-                            inputs[j].value = event->data.adv.inputs[j];
-                        tick = event->data.adv.frame;
-                        tick_state(inputs);
-                        break;
+                        case PlayerDisconnected: {
+                            struct Disconnected disconnect = event->data.disconnected;
+                            FATAL("Player %i disconnected", disconnect.handle);
+                            break;
+                        }
                     }
                 }
+
+                count = 0;
+                GekkoGameEvent** updates = gekko_update_session(session, &count);
+                for (int i = 0; i < count; i++) {
+                    GekkoGameEvent* event = updates[i];
+                    switch (event->type) {
+                        default:
+                            break;
+                        case SaveEvent:
+                            save_state(event);
+                            break;
+                        case LoadEvent:
+                            load_state(event);
+                            break;
+                        case AdvanceEvent: {
+                            for (size_t j = 0; j < num_players; j++)
+                                inputs[j].value = event->data.adv.inputs[j];
+                            tick = event->data.adv.frame;
+                            tick_state(inputs);
+                            break;
+                        }
+                    }
+                }
+
+                ticks -= 1;
             }
 
-            ticks -= 1;
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderClear(renderer);
+            draw_state(renderer);
+            SDL_RenderPresent(renderer);
         }
-
-        // draw the state every iteration
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
-        SDL_RenderClear(renderer);
-        draw_state(renderer);
-        SDL_RenderPresent(renderer);
     }
 
     gekko_destroy(session);

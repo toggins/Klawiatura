@@ -37,6 +37,11 @@ void load_state(GekkoGameEvent* event) {
     SDL_memcpy(&state, event->data.load.state, sizeof(state));
 }
 
+static bool player_collide(ObjectID self, ObjectID other) {
+    state.objects[self].flags |= FLG_PLAYER_COLLISION;
+    return false;
+}
+
 void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
     for (size_t i = 0; i < MAX_PLAYERS; i++) {
         struct GamePlayer* player = &(state.players[i]);
@@ -55,8 +60,13 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
             case OBJ_PLAYER: {
                 object->values[VAL_PLAYER_X_SPEED] = Fmul(object->values[VAL_PLAYER_X_SPEED], 0x0000E666);
                 object->values[VAL_PLAYER_Y_SPEED] = Fadd(object->values[VAL_PLAYER_Y_SPEED], 0x0000A666);
-                if ((object->pos[1] <= FxZero && object->values[VAL_PLAYER_Y_SPEED] < FxZero) ||
-                    object->pos[1] >= FfInt(480L))
+                if ((object->pos[0] <= -object->bbox[0][0] && object->values[VAL_PLAYER_X_SPEED] < FxZero) ||
+                    (object->pos[0] >= Fsub(FfInt(640L), object->bbox[1][0]) &&
+                     object->values[VAL_PLAYER_X_SPEED] > FxZero))
+                    object->values[VAL_PLAYER_X_SPEED] = FxZero;
+                if ((object->pos[1] <= -object->bbox[0][1] && object->values[VAL_PLAYER_Y_SPEED] < FxZero) ||
+                    (object->pos[1] >= Fsub(FfInt(480L), object->bbox[1][1]) &&
+                     object->values[VAL_PLAYER_Y_SPEED] > FxZero))
                     object->values[VAL_PLAYER_Y_SPEED] = FxZero;
 
                 fix16_t pid = object->values[VAL_PLAYER_INDEX];
@@ -70,16 +80,46 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                         object->values[VAL_PLAYER_Y_SPEED],
                         FfInt((int8_t)player->input.action.down - (int8_t)player->input.action.up)
                     );
+
                     if (player->input.action.jump && !(player->last_input.action.jump))
                         object->values[VAL_PLAYER_Y_SPEED] = FfInt(-16L);
-                    if (player->input.action.fire && !(player->last_input.action.fire))
-                        object->object_flags |= OBF_DESTROY;
+
+                    if (player->input.action.fire && !(player->last_input.action.fire) &&
+                        (Fabs(object->values[VAL_PLAYER_X_SPEED]) >= FxOne ||
+                         Fabs(object->values[VAL_PLAYER_Y_SPEED]) >= FxOne)) {
+                        ObjectID bullet_id = create_object(OBJ_BULLET, object->pos);
+                        if (object_is_alive(bullet_id)) {
+                            struct GameObject* bullet = &(state.objects[bullet_id]);
+                            bullet->values[VAL_BULLET_PLAYER] = object->values[VAL_PLAYER_INDEX];
+                            bullet->values[VAL_BULLET_X_SPEED] = Fmul(object->values[VAL_PLAYER_X_SPEED], FfInt(2L));
+                            bullet->values[VAL_BULLET_Y_SPEED] = Fmul(object->values[VAL_PLAYER_Y_SPEED], FfInt(2L));
+                        }
+                    }
                 }
 
                 move_object(
-                    oid, (fvec2){Fclamp(Fadd(object->pos[0], object->values[VAL_PLAYER_X_SPEED]), FxZero, FfInt(640L)),
-                                 Fclamp(Fadd(object->pos[1], object->values[VAL_PLAYER_Y_SPEED]), FxZero, FfInt(480L))}
+                    oid, (fvec2){Fclamp(
+                                     Fadd(object->pos[0], object->values[VAL_PLAYER_X_SPEED]), -object->bbox[0][0],
+                                     Fsub(FfInt(640L), object->bbox[1][0])
+                                 ),
+                                 Fclamp(
+                                     Fadd(object->pos[1], object->values[VAL_PLAYER_Y_SPEED]), -object->bbox[0][1],
+                                     Fsub(FfInt(480L), object->bbox[1][1])
+                                 )}
                 );
+                object->flags &= ~FLG_PLAYER_COLLISION;
+                iterate_block(oid, player_collide);
+                break;
+            }
+
+            case OBJ_BULLET: {
+                move_object(
+                    oid, (fvec2){Fadd(object->pos[0], object->values[VAL_BULLET_X_SPEED]),
+                                 Fadd(object->pos[1], object->values[VAL_BULLET_Y_SPEED])}
+                );
+                if (object->pos[0] < FxZero || object->pos[1] < FxZero || object->pos[0] > FfInt(640L) ||
+                    object->pos[1] > FfInt(480L))
+                    object->object_flags |= OBF_DESTROY;
                 break;
             }
         }
@@ -92,18 +132,6 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
 }
 
 void draw_state(SDL_Renderer* renderer) {
-    float cx = 0, cy = 0;
-    if (local_player >= 0 && local_player < MAX_PLAYERS) {
-        struct GamePlayer* player = &(state.players[local_player]);
-        if (object_is_alive(player->object)) {
-            struct GameObject* object = &(state.objects[player->object]);
-            cx = FtFloat(object->pos[0]) - 320;
-            cy = FtFloat(object->pos[1]) - 240;
-        }
-    }
-    cx *= 0.5f;
-    cy *= 0.5f;
-
     ObjectID oid = state.live_objects;
     while (object_is_alive(oid)) {
         struct GameObject* object = &(state.objects[oid]);
@@ -113,7 +141,32 @@ void draw_state(SDL_Renderer* renderer) {
                     break;
 
                 case OBJ_PLAYER: {
+                    const uint8_t alpha = (object->flags & FLG_PLAYER_COLLISION) ? 128 : 255;
                     switch (object->values[VAL_PLAYER_INDEX]) {
+                        default:
+                            break;
+                        case 0:
+                            SDL_SetRenderDrawColor(renderer, 255, 0, 0, alpha);
+                            break;
+                        case 1:
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 0, alpha);
+                            break;
+                        case 2:
+                            SDL_SetRenderDrawColor(renderer, 0, 255, 0, alpha);
+                            break;
+                        case 3:
+                            SDL_SetRenderDrawColor(renderer, 0, 0, 255, alpha);
+                            break;
+                    }
+                    SDL_RenderFillRect(
+                        renderer, &(SDL_FRect){FtFloat(object->pos[0]) - 16, FtFloat(object->pos[1]) - 16, 32, 32}
+                    );
+
+                    break;
+                }
+
+                case OBJ_BULLET: {
+                    switch (object->values[VAL_BULLET_PLAYER]) {
                         default:
                             break;
                         case 0:
@@ -130,8 +183,7 @@ void draw_state(SDL_Renderer* renderer) {
                             break;
                     }
                     SDL_RenderFillRect(
-                        renderer,
-                        &(SDL_FRect){FtFloat(object->pos[0]) - 16 - cx, FtFloat(object->pos[1]) - 16 - cy, 32, 32}
+                        renderer, &(SDL_FRect){FtFloat(object->pos[0]) - 5, FtFloat(object->pos[1]) - 5, 10, 10}
                     );
 
                     break;
@@ -140,6 +192,10 @@ void draw_state(SDL_Renderer* renderer) {
 
         oid = object->previous;
     }
+}
+
+bool object_is_alive(ObjectID index) {
+    return index >= 0L && index < MAX_OBJECTS && state.objects[index].type != OBJ_INVALID;
 }
 
 ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
@@ -168,9 +224,28 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     break;
 
                 case OBJ_PLAYER: {
-                    object->values[VAL_PLAYER_INDEX] = -FxOne;
+                    object->bbox[0][0] = FfInt(-16L);
+                    object->bbox[0][1] = FfInt(-16L);
+                    object->bbox[1][0] = FfInt(16L);
+                    object->bbox[1][1] = FfInt(16L);
+
+                    object->values[VAL_PLAYER_INDEX] = -1L;
                     object->values[VAL_PLAYER_X_SPEED] = FxZero;
                     object->values[VAL_PLAYER_Y_SPEED] = FxZero;
+
+                    object->flags = FLG_PLAYER_DEFAULT;
+                    break;
+                }
+
+                case OBJ_BULLET: {
+                    object->bbox[0][0] = FfInt(-5L);
+                    object->bbox[0][1] = FfInt(-5L);
+                    object->bbox[1][0] = FfInt(5L);
+                    object->bbox[1][1] = FfInt(5L);
+
+                    object->values[VAL_BULLET_PLAYER] = -1L;
+                    object->values[VAL_BULLET_X_SPEED] = FxZero;
+                    object->values[VAL_BULLET_Y_SPEED] = FxZero;
                     break;
                 }
             }
@@ -193,7 +268,7 @@ void move_object(ObjectID index, const fvec2 pos) {
     fvec2_copy(pos, object->pos);
 
     int32_t block = object->block;
-    if (block > 0L && block < (int32_t)BLOCKMAP_SIZE) {
+    if (block >= 0L && block < (int32_t)BLOCKMAP_SIZE) {
         if (state.blockmap[block] == index)
             state.blockmap[block] = object->previous_block;
         if (object_is_alive(object->previous_block))
@@ -216,6 +291,43 @@ void move_object(ObjectID index, const fvec2 pos) {
     state.blockmap[block] = index;
 }
 
+void iterate_block(ObjectID index, bool (*iterator)(ObjectID, ObjectID)) {
+    if (!object_is_alive(index))
+        return;
+
+    struct GameObject* object = &(state.objects[index]);
+    fix16_t x1 = Fadd(object->pos[0], object->bbox[0][0]);
+    fix16_t y1 = Fadd(object->pos[1], object->bbox[0][1]);
+    fix16_t x2 = Fadd(object->pos[0], object->bbox[1][0]);
+    fix16_t y2 = Fadd(object->pos[1], object->bbox[1][1]);
+
+    int bx1 = FtInt(Fdiv(x1, BLOCK_SIZE));
+    int by1 = FtInt(Fdiv(y1, BLOCK_SIZE));
+    int bx2 = FtInt(Fdiv(x2, BLOCK_SIZE));
+    int by2 = FtInt(Fdiv(y2, BLOCK_SIZE));
+    bx1 = SDL_clamp(bx1, 0L, MAX_BLOCKS - 1L);
+    by1 = SDL_clamp(by1, 0L, MAX_BLOCKS - 1L);
+    bx2 = SDL_clamp(bx2, 0L, MAX_BLOCKS - 1L);
+    by2 = SDL_clamp(by2, 0L, MAX_BLOCKS - 1L);
+    for (int by = by1; by <= by2; by++)
+        for (int bx = bx1; bx <= bx2; bx++) {
+            ObjectID oid = state.blockmap[bx + (by * MAX_BLOCKS)];
+            while (object_is_alive(oid)) {
+                struct GameObject* other = &(state.objects[oid]);
+                ObjectID next = other->previous_block;
+                if (index != oid) {
+                    fix16_t ox1 = Fadd(other->pos[0], other->bbox[0][0]);
+                    fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
+                    fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
+                    fix16_t oy2 = Fadd(other->pos[1], other->bbox[1][1]);
+                    if (x1 <= ox2 && x2 >= ox1 && y1 <= oy2 && y2 >= oy1 && !iterator(index, oid))
+                        return;
+                }
+                oid = next;
+            }
+        }
+}
+
 void destroy_object(ObjectID index) {
     if (!object_is_alive(index))
         return;
@@ -236,7 +348,7 @@ void destroy_object(ObjectID index) {
     object->type = OBJ_INVALID;
 
     int32_t block = object->block;
-    if (block > 0L && block < (int32_t)BLOCKMAP_SIZE) {
+    if (block >= 0L && block < (int32_t)BLOCKMAP_SIZE) {
         if (state.blockmap[block] == index)
             state.blockmap[block] = object->previous_block;
         if (object_is_alive(object->previous_block))
@@ -253,8 +365,4 @@ void destroy_object(ObjectID index) {
         state.objects[object->next].previous = object->previous;
 
     state.next_object = SDL_min(state.next_object, index);
-}
-
-bool object_is_alive(ObjectID index) {
-    return index >= 0L && index < MAX_OBJECTS && state.objects[index].type != OBJ_INVALID;
 }
