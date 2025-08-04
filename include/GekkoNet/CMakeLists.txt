@@ -1,0 +1,11 @@
+project(GekkoNet)
+add_library(GekkoNet SHARED IMPORTED GLOBAL)
+
+if (WIN32)
+    set_property(TARGET GekkoNet PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/windows/lib/Release/GekkoNet.dll")
+    set_property(TARGET GekkoNet PROPERTY IMPORTED_IMPLIB "${CMAKE_CURRENT_SOURCE_DIR}/windows/lib/Release/GekkoNet.lib")
+    set_property(TARGET GekkoNet PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/windows/include")
+elseif (LINUX)
+    set_property(TARGET GekkoNet PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/linux/lib/libGekkoNet.so")
+    set_property(TARGET GekkoNet PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/linux/include")
+endif()

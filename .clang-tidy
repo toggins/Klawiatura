@@ -1,0 +1,1 @@
+Checks: "clang-diagnostic-*,clang-analyzer-*,bugprone-*,-bugprone-easily-swappable-parameters,-bugprone-reserved-identifier,modernize-*,performance-*,-performance-no-int-to-ptr,portability-*,"

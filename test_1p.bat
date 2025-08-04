@@ -1,0 +1,1 @@
+start cmd /c "build\Klawiatura" 1 6969 ^& pause
