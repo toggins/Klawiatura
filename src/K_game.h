@@ -15,6 +15,11 @@
 #define BLOCKMAP_SIZE (MAX_BLOCKS * MAX_BLOCKS)
 #define BLOCK_SIZE ((fix16_t)0x00800000)
 
+#define SCREEN_WIDTH 640L
+#define SCREEN_HEIGHT 480L
+#define F_SCREEN_WIDTH FfInt(SCREEN_WIDTH)
+#define F_SCREEN_HEIGHT FfInt(SCREEN_HEIGHT)
+
 typedef int16_t ObjectID;
 
 enum GameObjectType {

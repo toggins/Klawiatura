@@ -61,11 +61,11 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                 object->values[VAL_PLAYER_X_SPEED] = Fmul(object->values[VAL_PLAYER_X_SPEED], 0x0000E666);
                 object->values[VAL_PLAYER_Y_SPEED] = Fadd(object->values[VAL_PLAYER_Y_SPEED], 0x0000A666);
                 if ((object->pos[0] <= -object->bbox[0][0] && object->values[VAL_PLAYER_X_SPEED] < FxZero) ||
-                    (object->pos[0] >= Fsub(FfInt(640L), object->bbox[1][0]) &&
+                    (object->pos[0] >= Fsub(F_SCREEN_WIDTH, object->bbox[1][0]) &&
                      object->values[VAL_PLAYER_X_SPEED] > FxZero))
                     object->values[VAL_PLAYER_X_SPEED] = FxZero;
                 if ((object->pos[1] <= -object->bbox[0][1] && object->values[VAL_PLAYER_Y_SPEED] < FxZero) ||
-                    (object->pos[1] >= Fsub(FfInt(480L), object->bbox[1][1]) &&
+                    (object->pos[1] >= Fsub(F_SCREEN_HEIGHT, object->bbox[1][1]) &&
                      object->values[VAL_PLAYER_Y_SPEED] > FxZero))
                     object->values[VAL_PLAYER_Y_SPEED] = FxZero;
 
@@ -85,8 +85,8 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                         object->values[VAL_PLAYER_Y_SPEED] = FfInt(-16L);
 
                     if (player->input.action.fire && !(player->last_input.action.fire) &&
-                        (Fabs(object->values[VAL_PLAYER_X_SPEED]) >= FxOne ||
-                         Fabs(object->values[VAL_PLAYER_Y_SPEED]) >= FxOne)) {
+                        (Fabs(object->values[VAL_PLAYER_X_SPEED]) >= FxHalf ||
+                         Fabs(object->values[VAL_PLAYER_Y_SPEED]) >= FxHalf)) {
                         ObjectID bullet_id = create_object(OBJ_BULLET, object->pos);
                         if (object_is_alive(bullet_id)) {
                             struct GameObject* bullet = &(state.objects[bullet_id]);
@@ -100,11 +100,11 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                 move_object(
                     oid, (fvec2){Fclamp(
                                      Fadd(object->pos[0], object->values[VAL_PLAYER_X_SPEED]), -object->bbox[0][0],
-                                     Fsub(FfInt(640L), object->bbox[1][0])
+                                     Fsub(F_SCREEN_WIDTH, object->bbox[1][0])
                                  ),
                                  Fclamp(
                                      Fadd(object->pos[1], object->values[VAL_PLAYER_Y_SPEED]), -object->bbox[0][1],
-                                     Fsub(FfInt(480L), object->bbox[1][1])
+                                     Fsub(F_SCREEN_HEIGHT, object->bbox[1][1])
                                  )}
                 );
                 object->flags &= ~FLG_PLAYER_COLLISION;
@@ -117,8 +117,8 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                     oid, (fvec2){Fadd(object->pos[0], object->values[VAL_BULLET_X_SPEED]),
                                  Fadd(object->pos[1], object->values[VAL_BULLET_Y_SPEED])}
                 );
-                if (object->pos[0] < FxZero || object->pos[1] < FxZero || object->pos[0] > FfInt(640L) ||
-                    object->pos[1] > FfInt(480L))
+                if (object->pos[0] < FxZero || object->pos[1] < FxZero || object->pos[0] > F_SCREEN_WIDTH ||
+                    object->pos[1] > F_SCREEN_HEIGHT)
                     object->object_flags |= OBF_DESTROY;
                 break;
             }
@@ -159,7 +159,10 @@ void draw_state(SDL_Renderer* renderer) {
                             break;
                     }
                     SDL_RenderFillRect(
-                        renderer, &(SDL_FRect){FtFloat(object->pos[0]) - 16, FtFloat(object->pos[1]) - 16, 32, 32}
+                        renderer, &(SDL_FRect){FtFloat(Fadd(object->pos[0], object->bbox[0][0])),
+                                               FtFloat(Fadd(object->pos[1], object->bbox[0][1])),
+                                               FtFloat(Fsub(object->bbox[1][0], object->bbox[0][0])),
+                                               FtFloat(Fsub(object->bbox[1][1], object->bbox[0][1]))}
                     );
 
                     break;
@@ -183,7 +186,10 @@ void draw_state(SDL_Renderer* renderer) {
                             break;
                     }
                     SDL_RenderFillRect(
-                        renderer, &(SDL_FRect){FtFloat(object->pos[0]) - 5, FtFloat(object->pos[1]) - 5, 10, 10}
+                        renderer, &(SDL_FRect){FtFloat(Fadd(object->pos[0], object->bbox[0][0])),
+                                               FtFloat(Fadd(object->pos[1], object->bbox[0][1])),
+                                               FtFloat(Fsub(object->bbox[1][0], object->bbox[0][0])),
+                                               FtFloat(Fsub(object->bbox[1][1], object->bbox[0][1]))}
                     );
 
                     break;
@@ -209,10 +215,10 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
 
             object->type = type;
             object->object_flags = OBF_DEFAULT;
-            if (object_is_alive(state.live_objects))
-                state.objects[state.live_objects].next = index;
             object->previous = state.live_objects;
             object->next = -1L;
+            if (object_is_alive(state.live_objects))
+                state.objects[state.live_objects].next = index;
             state.live_objects = index;
 
             object->block = -1L;
@@ -224,10 +230,10 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     break;
 
                 case OBJ_PLAYER: {
-                    object->bbox[0][0] = FfInt(-16L);
-                    object->bbox[0][1] = FfInt(-16L);
-                    object->bbox[1][0] = FfInt(16L);
-                    object->bbox[1][1] = FfInt(16L);
+                    object->bbox[0][0] = FfInt(-64L);
+                    object->bbox[0][1] = FfInt(-64L);
+                    object->bbox[1][0] = FfInt(64L);
+                    object->bbox[1][1] = FfInt(64L);
 
                     object->values[VAL_PLAYER_INDEX] = -1L;
                     object->values[VAL_PLAYER_X_SPEED] = FxZero;
@@ -267,27 +273,28 @@ void move_object(ObjectID index, const fvec2 pos) {
         return;
     fvec2_copy(pos, object->pos);
 
-    int32_t block = object->block;
-    if (block >= 0L && block < (int32_t)BLOCKMAP_SIZE) {
-        if (state.blockmap[block] == index)
-            state.blockmap[block] = object->previous_block;
+    int32_t bx = object->pos[0] / BLOCK_SIZE;
+    int32_t by = object->pos[1] / BLOCK_SIZE;
+    bx = SDL_clamp(bx, 0L, MAX_BLOCKS - 1L);
+    by = SDL_clamp(by, 0L, MAX_BLOCKS - 1L);
+    int32_t block = (by * MAX_BLOCKS) + bx;
+    if (block == object->block)
+        return;
+
+    if (object->block >= 0L && object->block < (int32_t)BLOCKMAP_SIZE) {
         if (object_is_alive(object->previous_block))
             state.objects[object->previous_block].next_block = object->next_block;
         if (object_is_alive(object->next_block))
             state.objects[object->next_block].previous_block = object->previous_block;
+        if (state.blockmap[object->block] == index)
+            state.blockmap[object->block] = object->previous_block;
     }
 
-    int32_t bx = FtInt(Fdiv(object->pos[0], BLOCK_SIZE));
-    int32_t by = FtInt(Fdiv(object->pos[1], BLOCK_SIZE));
-    bx = SDL_clamp(bx, 0L, MAX_BLOCKS - 1L);
-    by = SDL_clamp(by, 0L, MAX_BLOCKS - 1L);
-    block = bx + (by * MAX_BLOCKS);
-
-    if (object_is_alive(state.blockmap[block]))
-        state.objects[state.blockmap[block]].next_block = index;
     object->block = block;
     object->previous_block = state.blockmap[block];
     object->next_block = -1L;
+    if (object_is_alive(state.blockmap[block]))
+        state.objects[state.blockmap[block]].next_block = index;
     state.blockmap[block] = index;
 }
 
@@ -301,10 +308,10 @@ void iterate_block(ObjectID index, bool (*iterator)(ObjectID, ObjectID)) {
     fix16_t x2 = Fadd(object->pos[0], object->bbox[1][0]);
     fix16_t y2 = Fadd(object->pos[1], object->bbox[1][1]);
 
-    int bx1 = FtInt(Fdiv(x1, BLOCK_SIZE));
-    int by1 = FtInt(Fdiv(y1, BLOCK_SIZE));
-    int bx2 = FtInt(Fdiv(x2, BLOCK_SIZE));
-    int by2 = FtInt(Fdiv(y2, BLOCK_SIZE));
+    int bx1 = Fsub(x1, BLOCK_SIZE) / BLOCK_SIZE;
+    int by1 = Fsub(y1, BLOCK_SIZE) / BLOCK_SIZE;
+    int bx2 = Fadd(x2, BLOCK_SIZE) / BLOCK_SIZE;
+    int by2 = Fadd(y2, BLOCK_SIZE) / BLOCK_SIZE;
     bx1 = SDL_clamp(bx1, 0L, MAX_BLOCKS - 1L);
     by1 = SDL_clamp(by1, 0L, MAX_BLOCKS - 1L);
     bx2 = SDL_clamp(bx2, 0L, MAX_BLOCKS - 1L);
@@ -349,12 +356,12 @@ void destroy_object(ObjectID index) {
 
     int32_t block = object->block;
     if (block >= 0L && block < (int32_t)BLOCKMAP_SIZE) {
-        if (state.blockmap[block] == index)
-            state.blockmap[block] = object->previous_block;
         if (object_is_alive(object->previous_block))
             state.objects[object->previous_block].next_block = object->next_block;
         if (object_is_alive(object->next_block))
             state.objects[object->next_block].previous_block = object->previous_block;
+        if (state.blockmap[block] == index)
+            state.blockmap[block] = object->previous_block;
     }
 
     if (state.live_objects == index)
