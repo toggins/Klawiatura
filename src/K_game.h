@@ -5,6 +5,9 @@
 
 #include "K_math.h"
 #include "K_net.h" // IWYU pragma: keep
+#include "K_video.h"
+
+#define TICKRATE 50L
 
 #define MAX_PLAYERS 4L
 
@@ -17,6 +20,8 @@
 
 #define SCREEN_WIDTH 640L
 #define SCREEN_HEIGHT 480L
+#define HALF_SCREEN_WIDTH (SCREEN_WIDTH >> 1)
+#define HALF_SCREEN_HEIGHT (SCREEN_HEIGHT >> 1)
 #define F_SCREEN_WIDTH FfInt(SCREEN_WIDTH)
 #define F_SCREEN_HEIGHT FfInt(SCREEN_HEIGHT)
 
@@ -24,6 +29,11 @@ typedef int16_t ObjectID;
 
 enum GameObjectType {
     OBJ_INVALID,
+
+    // Props
+    OBJ_CLOUD,
+    OBJ_BUSH,
+
     OBJ_PLAYER,
     OBJ_BULLET,
 };
@@ -54,6 +64,7 @@ enum BulletValues {
     VAL_BULLET_PLAYER,
     VAL_BULLET_X_SPEED,
     VAL_BULLET_Y_SPEED,
+    VAL_BULLET_FRAME,
 };
 
 struct GameInput {
@@ -78,6 +89,7 @@ struct GameState {
         ObjectID object;
     } players[MAX_PLAYERS];
 
+    uint64_t time;
     uint32_t seed;
 
     struct GameObject {
@@ -90,6 +102,7 @@ struct GameState {
 
         fvec2 pos;
         fvec2 bbox[2];
+        int16_t depth;
 
         fix16_t values[MAX_VALUES];
         uint32_t flags;
@@ -104,10 +117,11 @@ void start_state(int, int);
 void save_state(GekkoGameEvent*);
 void load_state(GekkoGameEvent*);
 void tick_state(struct GameInput[MAX_PLAYERS]);
-void draw_state(SDL_Renderer*);
+void draw_state();
 
 bool object_is_alive(ObjectID);
 ObjectID create_object(enum GameObjectType, const fvec2);
 void move_object(ObjectID, const fvec2);
 void iterate_block(ObjectID, bool (*iterator)(ObjectID, ObjectID));
 void destroy_object(ObjectID);
+void draw_object(struct GameObject*, enum TextureIndices);

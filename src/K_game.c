@@ -18,6 +18,9 @@ void start_state(int num_players, int local) {
             state.objects[object].values[VAL_PLAYER_INDEX] = player->object = object;
         player->object = object;
     }
+
+    create_object(OBJ_BUSH, (fvec2){FfInt(32L), FfInt(448L)});
+    create_object(OBJ_CLOUD, (fvec2){FfInt(128L), FfInt(32L)});
 }
 
 static uint32_t check_state(uint8_t* data, uint32_t len) {
@@ -38,8 +41,21 @@ void load_state(GekkoGameEvent* event) {
 }
 
 static bool player_collide(ObjectID self, ObjectID other) {
-    state.objects[self].flags |= FLG_PLAYER_COLLISION;
-    return false;
+    if (state.objects[other].type == OBJ_PLAYER) {
+        state.objects[self].flags |= FLG_PLAYER_COLLISION;
+        return false;
+    }
+    return true;
+}
+
+static bool bullet_collide(ObjectID self, ObjectID other) {
+    struct GameObject* hit = &(state.objects[other]);
+    if (hit->type != OBJ_BULLET &&
+        (hit->type != OBJ_PLAYER || hit->values[VAL_PLAYER_INDEX] != state.objects[self].values[VAL_BULLET_PLAYER])) {
+        state.objects[self].values[VAL_BULLET_FRAME] += 24L;
+        return false;
+    }
+    return true;
 }
 
 void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
@@ -97,6 +113,11 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                     }
                 }
 
+                if (object->values[VAL_PLAYER_X_SPEED] > FxZero)
+                    object->object_flags &= ~OBF_X_FLIP;
+                else if (object->values[VAL_PLAYER_X_SPEED] < FxZero)
+                    object->object_flags |= OBF_X_FLIP;
+
                 move_object(
                     oid, (fvec2){Fclamp(
                                      Fadd(object->pos[0], object->values[VAL_PLAYER_X_SPEED]), -object->bbox[0][0],
@@ -113,13 +134,22 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
             }
 
             case OBJ_BULLET: {
+                if (object->values[VAL_BULLET_FRAME] > 0L) {
+                    object->values[VAL_BULLET_FRAME] += 24L;
+                    if (object->values[VAL_BULLET_FRAME] >= 300L)
+                        object->object_flags |= OBF_DESTROY;
+                    break;
+                }
+
                 move_object(
                     oid, (fvec2){Fadd(object->pos[0], object->values[VAL_BULLET_X_SPEED]),
                                  Fadd(object->pos[1], object->values[VAL_BULLET_Y_SPEED])}
                 );
                 if (object->pos[0] < FxZero || object->pos[1] < FxZero || object->pos[0] > F_SCREEN_WIDTH ||
                     object->pos[1] > F_SCREEN_HEIGHT)
-                    object->object_flags |= OBF_DESTROY;
+                    object->values[VAL_BULLET_FRAME] += 24L;
+                else
+                    iterate_block(oid, bullet_collide);
                 break;
             }
         }
@@ -129,9 +159,11 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
             destroy_object(oid);
         oid = next;
     }
+
+    ++(state.time);
 }
 
-void draw_state(SDL_Renderer* renderer) {
+void draw_state() {
     ObjectID oid = state.live_objects;
     while (object_is_alive(oid)) {
         struct GameObject* object = &(state.objects[oid]);
@@ -140,58 +172,53 @@ void draw_state(SDL_Renderer* renderer) {
                 default:
                     break;
 
-                case OBJ_PLAYER: {
-                    const uint8_t alpha = (object->flags & FLG_PLAYER_COLLISION) ? 128 : 255;
-                    switch (object->values[VAL_PLAYER_INDEX]) {
+                case OBJ_CLOUD: {
+                    enum TextureIndices tex;
+                    switch ((state.time / 13) % 3) {
                         default:
-                            break;
-                        case 0:
-                            SDL_SetRenderDrawColor(renderer, 255, 0, 0, alpha);
+                            tex = TEX_CLOUD1;
                             break;
                         case 1:
-                            SDL_SetRenderDrawColor(renderer, 255, 255, 0, alpha);
+                            tex = TEX_CLOUD2;
                             break;
                         case 2:
-                            SDL_SetRenderDrawColor(renderer, 0, 255, 0, alpha);
-                            break;
-                        case 3:
-                            SDL_SetRenderDrawColor(renderer, 0, 0, 255, alpha);
+                            tex = TEX_CLOUD3;
                             break;
                     }
-                    SDL_RenderFillRect(
-                        renderer, &(SDL_FRect){FtFloat(Fadd(object->pos[0], object->bbox[0][0])),
-                                               FtFloat(Fadd(object->pos[1], object->bbox[0][1])),
-                                               FtFloat(Fsub(object->bbox[1][0], object->bbox[0][0])),
-                                               FtFloat(Fsub(object->bbox[1][1], object->bbox[0][1]))}
-                    );
+                    draw_object(object, tex);
+                    break;
+                }
 
+                case OBJ_BUSH: {
+                    enum TextureIndices tex;
+                    switch ((state.time / 7) % 3) {
+                        default:
+                            tex = TEX_BUSH1;
+                            break;
+                        case 1:
+                            tex = TEX_BUSH2;
+                            break;
+                        case 2:
+                            tex = TEX_BUSH3;
+                            break;
+                    }
+                    draw_object(object, tex);
+                    break;
+                }
+
+                case OBJ_PLAYER: {
+                    draw_object(object, TEX_PLAYER);
                     break;
                 }
 
                 case OBJ_BULLET: {
-                    switch (object->values[VAL_BULLET_PLAYER]) {
-                        default:
-                            break;
-                        case 0:
-                            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-                            break;
-                        case 1:
-                            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-                            break;
-                        case 2:
-                            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-                            break;
-                        case 3:
-                            SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-                            break;
-                    }
-                    SDL_RenderFillRect(
-                        renderer, &(SDL_FRect){FtFloat(Fadd(object->pos[0], object->bbox[0][0])),
-                                               FtFloat(Fadd(object->pos[1], object->bbox[0][1])),
-                                               FtFloat(Fsub(object->bbox[1][0], object->bbox[0][0])),
-                                               FtFloat(Fsub(object->bbox[1][1], object->bbox[0][1]))}
+                    const fix16_t frame = object->values[VAL_BULLET_FRAME];
+                    draw_object(
+                        object, frame <= 0 ? TEX_BULLET
+                                           : ((frame > 0 && frame < 100)
+                                                  ? TEX_BULLET_HIT1
+                                                  : ((frame >= 100 && frame < 200) ? TEX_BULLET_HIT2 : TEX_BULLET_HIT3))
                     );
-
                     break;
                 }
             }
@@ -221,6 +248,9 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 state.objects[state.live_objects].next = index;
             state.live_objects = index;
 
+            object->depth = 0L;
+            object->flags = 0L;
+
             object->block = -1L;
             object->previous_block = object->next_block = -1L;
             move_object(index, pos);
@@ -229,11 +259,30 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 default:
                     break;
 
+                case OBJ_CLOUD: {
+                    load_texture(TEX_CLOUD1);
+                    load_texture(TEX_CLOUD2);
+                    load_texture(TEX_CLOUD3);
+                    object->depth = 25L;
+                    break;
+                }
+
+                case OBJ_BUSH: {
+                    load_texture(TEX_BUSH1);
+                    load_texture(TEX_BUSH2);
+                    load_texture(TEX_BUSH3);
+                    object->depth = 25L;
+                    break;
+                }
+
                 case OBJ_PLAYER: {
-                    object->bbox[0][0] = FfInt(-64L);
-                    object->bbox[0][1] = FfInt(-64L);
-                    object->bbox[1][0] = FfInt(64L);
-                    object->bbox[1][1] = FfInt(64L);
+                    load_texture(TEX_PLAYER);
+
+                    object->bbox[0][0] = FfInt(-16L);
+                    object->bbox[0][1] = FfInt(-16L);
+                    object->bbox[1][0] = FfInt(16L);
+                    object->bbox[1][1] = FfInt(16L);
+                    object->depth = -1L;
 
                     object->values[VAL_PLAYER_INDEX] = -1L;
                     object->values[VAL_PLAYER_X_SPEED] = FxZero;
@@ -244,6 +293,11 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_BULLET: {
+                    load_texture(TEX_BULLET);
+                    load_texture(TEX_BULLET_HIT1);
+                    load_texture(TEX_BULLET_HIT2);
+                    load_texture(TEX_BULLET_HIT3);
+
                     object->bbox[0][0] = FfInt(-5L);
                     object->bbox[0][1] = FfInt(-5L);
                     object->bbox[1][0] = FfInt(5L);
@@ -252,6 +306,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->values[VAL_BULLET_PLAYER] = -1L;
                     object->values[VAL_BULLET_X_SPEED] = FxZero;
                     object->values[VAL_BULLET_Y_SPEED] = FxZero;
+                    object->values[VAL_BULLET_FRAME] = 0L;
                     break;
                 }
             }
@@ -372,4 +427,11 @@ void destroy_object(ObjectID index) {
         state.objects[object->next].previous = object->previous;
 
     state.next_object = SDL_min(state.next_object, index);
+}
+
+void draw_object(struct GameObject* object, enum TextureIndices tid) {
+    draw_sprite(
+        tid, (float[3]){FtFloat(object->pos[0]), FtFloat(object->pos[1]), object->depth},
+        (bool[2]){object->object_flags & OBF_X_FLIP, object->object_flags & OBF_Y_FLIP}
+    );
 }

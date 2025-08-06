@@ -4,10 +4,4 @@
 
 /include/fmod/windows
 /include/fmod/linux
-/include/steam/*
-/steamworks_sdk*.zip
 /include/gamecontrollerdb.txt
-
-/modsrc/1extra
-/modsrc/augerbolt
-/modsrc/disabled.json

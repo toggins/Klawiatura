@@ -21,6 +21,7 @@ set(FETCHCONTENT_QUIET FALSE)
 set(SDL_SHARED OFF)
 set(SDL_STATIC ON)
 set(SDL_TEST_LIBRARY OFF)
+set(SDL_RENDER OFF)
 set(SDL_GPU OFF)
 set(SDL_AUDIO OFF)
 set(SDL_CAMERA OFF)
@@ -46,6 +47,30 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3_image)
 
+# OpenGL
+find_package(OpenGL REQUIRED)
+
+# GLAD (2.0.8, OpenGL 3.3 Core)
+FetchContent_Declare(
+    glad
+    GIT_REPOSITORY https://github.com/Dav1dde/glad.git
+    GIT_TAG        v2.0.8
+    SOURCE_SUBDIR  cmake
+)
+FetchContent_MakeAvailable(glad)
+glad_add_library(glad_gl_core_33 STATIC API gl:core=3.3)
+
+# cglm
+set(CGLM_SHARED OFF)
+set(CGLM_STATIC ON)
+
+FetchContent_Declare(
+    cglm
+    GIT_REPOSITORY https://github.com/recp/cglm.git
+    GIT_TAG v0.9.6
+)
+FetchContent_MakeAvailable(cglm)
+
 # GekkoNet
 add_subdirectory(${CMAKE_SOURCE_DIR}/include/GekkoNet)
 
@@ -58,7 +83,7 @@ FetchContent_Declare(
     GIT_TAG master)
 FetchContent_MakeAvailable(S_fixed)
 
-set(LIBS SDL3::SDL3-static SDL3_image::SDL3_image-static GekkoNet S_fixed)
+set(LIBS SDL3::SDL3-static SDL3_image::SDL3_image-static ${OPENGL_gl_LIBRARY} glad_gl_core_33 cglm GekkoNet S_fixed)
 
 # Build
 set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
