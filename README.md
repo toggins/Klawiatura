@@ -1,9 +1,8 @@
-# lockstep
+# Klawiatura
 
-Rollback prototype in C using SDL3 and GekkoNet.
+Mario Forever with rollback netcode.
 
-## Currently implemented
+## Launch options
 
--   16.16 fixed point math in a separate library.
--   Support for up to 4 players. You have to forward your own port as well as figure out the remote IP:ports.
-    -   Command line usage: `lockstep <num_players> <"port" for local slot, "ip:port" for remote slot> ...`
+- `-bypass_shader`: Bypass shader support checking for debugging with RenderDoc.
+- `-players <amount> <ip:port> ...`: Amount of players to assign to the session as well as the address for each slot. Local player is `port`, remote players are `ip:port`.
