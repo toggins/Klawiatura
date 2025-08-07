@@ -50,7 +50,7 @@ static struct Texture textures[] = {
 };
 
 static vec2 camera = {HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT};
-static mat4 mvp = GLM_MAT4_IDENTITY;
+static mat4 mvp = GLM_MAT4_IDENTITY_INIT;
 static struct VertexBatch batch = {0};
 
 void video_init(bool bypass_shader) {
