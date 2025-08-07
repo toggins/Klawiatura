@@ -86,7 +86,12 @@ struct GameState {
     struct GamePlayer {
         bool active;
         struct GameInput input, last_input;
+
         ObjectID object;
+        fvec2 bounds[2];
+
+        uint8_t lives, coins;
+        uint32_t score;
     } players[MAX_PLAYERS];
 
     uint64_t time;

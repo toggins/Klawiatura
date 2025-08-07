@@ -34,6 +34,16 @@ static struct Uniforms uniforms = {-1};
 static struct Texture textures[] = {
     TEXTURE(TEX_NULL, NULL),
 
+    TEXTURE(TEX_GRASS1, "tiles/grass1"),
+    TEXTURE(TEX_GRASS2, "tiles/grass2"),
+    TEXTURE(TEX_GRASS3, "tiles/grass3"),
+    TEXTURE(TEX_GRASS4, "tiles/grass4"),
+    TEXTURE(TEX_GRASS5, "tiles/grass5"),
+    TEXTURE(TEX_GRASS6, "tiles/grass6"),
+    TEXTURE(TEX_GRASS7, "tiles/grass7"),
+    TEXTURE(TEX_GRASS8, "tiles/grass8"),
+    TEXTURE(TEX_GRASS9, "tiles/grass9"),
+
     TEXTURE(TEX_CLOUD1, "props/cloud1"),
     TEXTURE(TEX_CLOUD2, "props/cloud2"),
     TEXTURE(TEX_CLOUD3, "props/cloud3"),
@@ -52,6 +62,9 @@ static struct Texture textures[] = {
 static vec2 camera = {HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT};
 static mat4 mvp = GLM_MAT4_IDENTITY_INIT;
 static struct VertexBatch batch = {0};
+
+static struct TileBatch* tiles[TEX_SIZE] = {NULL};
+static struct TileBatch* valid_tiles = NULL;
 
 void video_init(bool bypass_shader) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -219,41 +232,63 @@ void video_init(bool bypass_shader) {
     uniforms.texture = glGetUniformLocation(shader, "u_texture");
     uniforms.alpha_test = glGetUniformLocation(shader, "u_alpha_test");
 
+    glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glUseProgram(shader);
     glActiveTexture(GL_TEXTURE0);
-    glEnable(GL_DEPTH_TEST);
+    glUniform1i(uniforms.texture, 0);
 }
 
 void video_update() {
     draw_time = SDL_GetTicks();
 
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     glm_ortho(
         camera[0] - HALF_SCREEN_WIDTH, camera[0] + HALF_SCREEN_WIDTH, camera[1] + HALF_SCREEN_HEIGHT,
         camera[1] - HALF_SCREEN_HEIGHT, -16000, 16000, mvp
     );
+    glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)mvp);
 
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    struct TileBatch* tilemap = valid_tiles;
+    if (tilemap != NULL) {
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
+        glUniform1f(uniforms.alpha_test, 0.5f);
+        while (tilemap != NULL) {
+            glBindVertexArray(tilemap->vao);
+            glBindBuffer(GL_ARRAY_BUFFER, tilemap->vbo);
+            glBufferSubData(
+                GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(struct Vertex) * tilemap->vertex_count), tilemap->vertices
+            );
+            glBindTexture(GL_TEXTURE_2D, tilemap->texture);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glDrawArrays(GL_TRIANGLES, 0, (GLsizei)tilemap->vertex_count);
+            tilemap = tilemap->next;
+        }
+    }
     draw_state();
-    batch_vertex(16, 128, 0, 255, 0, 0, 255, 0, 0);
-    batch_vertex(128, 16, 0, 0, 255, 0, 255, 0, 0);
-    batch_vertex(16, 16, 0, 0, 0, 255, 255, 0, 0);
     submit_batch();
     SDL_GL_SwapWindow(window);
 }
 
 void video_teardown() {
-    glDeleteProgram(shader);
-    for (size_t i = 0; i < TEX_SIZE; i++)
-        glDeleteTextures(1, &(textures[i].texture));
     glDeleteVertexArrays(1, &(batch.vao));
     glDeleteBuffers(1, &(batch.vbo));
+    clear_tiles();
+    for (size_t i = 0; i < TEX_SIZE; i++)
+        glDeleteTextures(1, &(textures[i].texture));
+    glDeleteProgram(shader);
     SDL_free(batch.vertices);
 
     SDL_GL_DestroyContext(gpu);
     SDL_DestroyWindow(window);
+}
+
+void move_camera(float x, float y) {
+    camera[0] = x;
+    camera[1] = y;
 }
 
 void load_texture(enum TextureIndices index) {
@@ -337,8 +372,6 @@ void submit_batch() {
     if (batch.vertex_count <= 0)
         return;
 
-    glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)mvp);
-
     glBindVertexArray(batch.vao);
     glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
     glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(struct Vertex) * batch.vertex_count), batch.vertices);
@@ -348,7 +381,6 @@ void submit_batch() {
     const GLint filter = batch.filter ? GL_LINEAR : GL_NEAREST;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-    glUniform1i(uniforms.texture, 0);
     glUniform1f(uniforms.alpha_test, batch.alpha_test);
 
     // Apply blend mode
@@ -356,6 +388,125 @@ void submit_batch() {
 
     glDrawArrays(GL_TRIANGLES, 0, (GLsizei)batch.vertex_count);
     batch.vertex_count = 0;
+}
+
+void clear_tiles() {
+    for (size_t i = 0; i < TEX_SIZE; i++) {
+        struct TileBatch* tilemap = tiles[i];
+        if (tilemap != NULL) {
+            glDeleteVertexArrays(1, &(tilemap->vao));
+            glDeleteBuffers(1, &(tilemap->vbo));
+            SDL_free(tilemap->vertices);
+            SDL_free(tilemap);
+            tiles[i] = NULL;
+        }
+    }
+}
+
+static struct TileBatch* load_tile(enum TextureIndices index) {
+    load_texture(index);
+    struct Texture* texture = &(textures[index]);
+
+    struct TileBatch* tilemap = tiles[index];
+    if (tilemap == NULL) {
+        tilemap = tiles[index] = SDL_malloc(sizeof(struct TileBatch));
+        if (tilemap == NULL)
+            FATAL("Out of memory for tile batch %u", index);
+
+        tilemap->next = valid_tiles;
+        tilemap->texture = texture->texture;
+        glGenVertexArrays(1, &(tilemap->vao));
+        glBindVertexArray(tilemap->vao);
+        glEnableVertexArrayAttrib(tilemap->vao, VATT_POSITION);
+        glVertexArrayAttribFormat(tilemap->vao, VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3);
+        glEnableVertexArrayAttrib(tilemap->vao, VATT_COLOR);
+        glVertexArrayAttribFormat(tilemap->vao, VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GLubyte) * 4);
+        glEnableVertexArrayAttrib(tilemap->vao, VATT_UV);
+        glVertexArrayAttribFormat(tilemap->vao, VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2);
+
+        tilemap->vertex_count = 0;
+        tilemap->vertex_capacity = 6;
+        tilemap->vertices = SDL_malloc(tilemap->vertex_capacity * sizeof(struct Vertex));
+        if (tilemap->vertices == NULL)
+            FATAL("Out of memory for tile batch %u vertices", index);
+
+        glGenBuffers(1, &(tilemap->vbo));
+        glBindBuffer(GL_ARRAY_BUFFER, tilemap->vbo);
+        glBufferData(
+            GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(struct Vertex) * tilemap->vertex_capacity), NULL, GL_STATIC_DRAW
+        );
+
+        glEnableVertexAttribArray(VATT_POSITION);
+        glVertexAttribPointer(
+            VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, position)
+        );
+
+        glEnableVertexAttribArray(VATT_COLOR);
+        glVertexAttribPointer(
+            VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, color)
+        );
+
+        glEnableVertexAttribArray(VATT_UV);
+        glVertexAttribPointer(
+            VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, uv)
+        );
+
+        valid_tiles = tilemap;
+    }
+
+    return tilemap;
+}
+
+static void tile_vertex(
+    struct TileBatch* tilemap, GLfloat x, GLfloat y, GLfloat z, GLubyte r, GLubyte g, GLubyte b, GLubyte a, GLfloat u,
+    GLfloat v
+) {
+    if (tilemap->vertex_count >= tilemap->vertex_capacity) {
+        const size_t new_size = tilemap->vertex_capacity * 2;
+        if (new_size < tilemap->vertex_capacity)
+            FATAL("Capacity overflow in tile batch %p", tilemap);
+        tilemap->vertices = SDL_realloc(tilemap->vertices, new_size * sizeof(struct Vertex));
+        if (tilemap->vertices == NULL)
+            FATAL("Out of memory for tile batch %p vertices", tilemap);
+
+        tilemap->vertex_capacity = new_size;
+
+        glBindBuffer(GL_ARRAY_BUFFER, tilemap->vbo);
+        glBufferData(
+            GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(struct Vertex) * tilemap->vertex_capacity), NULL, GL_STATIC_DRAW
+        );
+    }
+
+    tilemap->vertices[tilemap->vertex_count++] = (struct Vertex){x, y, z, r, g, b, a, u, v};
+}
+
+void add_gradient(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, GLfloat z, GLubyte colors[4][4]) {
+    struct TileBatch* tilemap = load_tile(TEX_NULL);
+    tile_vertex(tilemap, x1, y2, z, colors[2][0], colors[2][1], colors[2][2], colors[2][3], 0, 1);
+    tile_vertex(tilemap, x1, y1, z, colors[0][0], colors[0][1], colors[0][2], colors[0][3], 0, 0);
+    tile_vertex(tilemap, x2, y1, z, colors[1][0], colors[1][1], colors[1][2], colors[1][3], 1, 0);
+    tile_vertex(tilemap, x2, y1, z, colors[1][0], colors[1][1], colors[1][2], colors[1][3], 1, 0);
+    tile_vertex(tilemap, x2, y2, z, colors[3][0], colors[3][1], colors[3][2], colors[3][3], 1, 1);
+    tile_vertex(tilemap, x1, y2, z, colors[2][0], colors[2][1], colors[2][2], colors[2][3], 0, 1);
+}
+
+void add_backdrop(
+    enum TextureIndices index, GLfloat x, GLfloat y, GLfloat z, GLubyte r, GLubyte g, GLubyte b, GLubyte a
+) {
+    struct TileBatch* tilemap = load_tile(index);
+    struct Texture* texture = &(textures[index]);
+
+    const GLfloat x1 = x - texture->offset[0];
+    const GLfloat y1 = y - texture->offset[1];
+    const GLfloat x2 = x1 + (GLfloat)texture->size[0];
+    const GLfloat y2 = y1 + (GLfloat)texture->size[1];
+
+    tile_vertex(tilemap, x1, y2, z, r, g, b, a, 0, 1);
+    tile_vertex(tilemap, x1, y1, z, r, g, b, a, 0, 0);
+    tile_vertex(tilemap, x2, y1, z, r, g, b, a, 1, 0);
+    tile_vertex(tilemap, x2, y1, z, r, g, b, a, 1, 0);
+    tile_vertex(tilemap, x2, y2, z, r, g, b, a, 1, 1);
+    tile_vertex(tilemap, x1, y2, z, r, g, b, a, 0, 1);
 }
 
 void batch_vertex(GLfloat x, GLfloat y, GLfloat z, GLubyte r, GLubyte g, GLubyte b, GLubyte a, GLfloat u, GLfloat v) {
