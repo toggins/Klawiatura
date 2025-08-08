@@ -4,6 +4,172 @@
 static struct GameState state = {0};
 static int local_player = -1;
 
+/* ====
+
+   GAME
+
+   ==== */
+
+static bool touching_solid(const fvec2 rect[2]) {
+    int bx1 = Fsub(rect[0][0], BLOCK_SIZE) / BLOCK_SIZE;
+    int by1 = Fsub(rect[0][1], BLOCK_SIZE) / BLOCK_SIZE;
+    int bx2 = Fadd(rect[1][0], BLOCK_SIZE) / BLOCK_SIZE;
+    int by2 = Fadd(rect[1][1], BLOCK_SIZE) / BLOCK_SIZE;
+    bx1 = SDL_clamp(bx1, 0L, MAX_BLOCKS - 1L);
+    by1 = SDL_clamp(by1, 0L, MAX_BLOCKS - 1L);
+    bx2 = SDL_clamp(bx2, 0L, MAX_BLOCKS - 1L);
+    by2 = SDL_clamp(by2, 0L, MAX_BLOCKS - 1L);
+    for (int by = by1; by <= by2; by++)
+        for (int bx = bx1; bx <= bx2; bx++) {
+            ObjectID oid = state.blockmap[bx + (by * MAX_BLOCKS)];
+            while (object_is_alive(oid)) {
+                struct GameObject* other = &(state.objects[oid]);
+                if (other->type == OBJ_SOLID) {
+                    fix16_t ox1 = Fadd(other->pos[0], other->bbox[0][0]);
+                    fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
+                    fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
+                    fix16_t oy2 = Fadd(other->pos[1], other->bbox[1][1]);
+                    if (rect[0][0] < ox2 && rect[1][0] > ox1 && rect[0][1] < oy2 && rect[1][1] > oy1)
+                        return true;
+                }
+                oid = other->previous_block;
+            }
+        }
+
+    return false;
+}
+
+static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
+    if (!object_is_alive(did))
+        return;
+    struct GameObject* displacee = &(state.objects[did]);
+
+    displacee->values[VAL_X_TOUCH] = 0L;
+    displacee->values[VAL_Y_TOUCH] = 0L;
+
+    fix16_t x = displacee->pos[0];
+    fix16_t y = displacee->pos[1];
+
+    // Horizontal collision
+    x = Fadd(x, displacee->values[VAL_X_SPEED]);
+    const struct BlockList* list = list_block_at((fvec2[2]){
+        {Fadd(x, displacee->bbox[0][0]), Fadd(y, displacee->bbox[0][1])},
+        {Fadd(x, displacee->bbox[1][0]), Fadd(y, displacee->bbox[1][1])},
+    });
+    bool climbed = false;
+
+    if (list->num_objects > 0) {
+        bool stop = false;
+        if (displacee->values[VAL_X_SPEED] < FxZero) {
+            for (size_t i = 0; i < list->num_objects; i++) {
+                struct GameObject* object = &(state.objects[list->objects[i]]);
+                if (object->type != OBJ_SOLID)
+                    continue;
+
+                if (displacee->values[VAL_Y_SPEED] >= FxZero &&
+                    Fsub(Fadd(displacee->pos[1], displacee->bbox[1][1]), climb) <
+                        Fadd(object->pos[1], object->bbox[0][1])) {
+                    fix16_t step = Fsub(Fadd(object->pos[1], object->bbox[0][1]), displacee->bbox[1][1]);
+                    if (!touching_solid((fvec2[2]){
+                            {Fsub(Fadd(x, displacee->bbox[0][0]), FxOne),
+                             Fsub(Fadd(step, displacee->bbox[0][1]), FxOne)},
+                            {Fsub(Fadd(x, displacee->bbox[1][0]), FxOne),
+                             Fsub(Fadd(step, displacee->bbox[1][1]), FxOne)},
+                        })) {
+                        y = step;
+                        displacee->values[VAL_Y_SPEED] = FxZero;
+                        displacee->values[VAL_Y_TOUCH] = 1L;
+                        climbed = true;
+                    }
+                    continue;
+                }
+
+                x = Fmax(x, Fsub(Fadd(object->pos[0], object->bbox[1][0]), displacee->bbox[0][0]));
+                stop = true;
+                climbed = false;
+            }
+            displacee->values[VAL_X_TOUCH] = -(stop && !climbed);
+        } else if (displacee->values[VAL_X_SPEED] > FxZero) {
+            for (size_t i = 0; i < list->num_objects; i++) {
+                struct GameObject* object = &(state.objects[list->objects[i]]);
+                if (object->type != OBJ_SOLID)
+                    continue;
+
+                if (displacee->values[VAL_Y_SPEED] >= FxZero &&
+                    Fsub(Fadd(displacee->pos[1], displacee->bbox[1][1]), climb) <
+                        Fadd(object->pos[1], object->bbox[0][1])) {
+                    fix16_t step = Fsub(Fadd(object->pos[1], object->bbox[0][1]), displacee->bbox[1][1]);
+                    if (!touching_solid((fvec2[2]){
+                            {Fadd(Fadd(x, displacee->bbox[0][0]), FxOne),
+                             Fsub(Fadd(step, displacee->bbox[0][1]), FxOne)},
+                            {Fadd(Fadd(x, displacee->bbox[1][0]), FxOne),
+                             Fsub(Fadd(step, displacee->bbox[1][1]), FxOne)},
+                        })) {
+                        y = step;
+                        displacee->values[VAL_Y_SPEED] = FxZero;
+                        displacee->values[VAL_Y_TOUCH] = 1L;
+                        climbed = true;
+                    }
+                    continue;
+                }
+
+                x = Fmin(x, Fsub(Fadd(object->pos[0], object->bbox[0][0]), displacee->bbox[1][0]));
+                stop = true;
+                climbed = false;
+            }
+            displacee->values[VAL_X_TOUCH] = stop && !climbed;
+        }
+
+        if (stop)
+            displacee->values[VAL_X_SPEED] = FxZero;
+    }
+
+    // Vertical collision
+    y = Fadd(y, displacee->values[VAL_Y_SPEED]);
+    list = list_block_at((fvec2[2]){
+        {Fadd(x, displacee->bbox[0][0]), Fadd(y, displacee->bbox[0][1])},
+        {Fadd(x, displacee->bbox[1][0]), Fadd(y, displacee->bbox[1][1])},
+    });
+
+    if (list->num_objects > 0) {
+        bool stop = false;
+        if (displacee->values[VAL_Y_SPEED] < FxZero) {
+            for (size_t i = 0; i < list->num_objects; i++) {
+                struct GameObject* object = &(state.objects[list->objects[i]]);
+                if (object->type != OBJ_SOLID)
+                    continue;
+
+                y = Fmax(y, Fsub(Fadd(object->pos[1], object->bbox[1][1]), displacee->bbox[0][1]));
+                stop = true;
+            }
+            displacee->values[VAL_Y_TOUCH] = -stop;
+        } else if (displacee->values[VAL_Y_SPEED] > FxZero) {
+            for (size_t i = 0; i < list->num_objects; i++) {
+                struct GameObject* object = &(state.objects[list->objects[i]]);
+                if (object->type != OBJ_SOLID && (object->type != OBJ_SOLID_TOP ||
+                                                  Fsub(Fadd(y, displacee->bbox[1][1]), displacee->values[VAL_Y_SPEED]) >
+                                                      Fadd(Fadd(object->pos[1], object->bbox[0][1]), climb)))
+                    continue;
+
+                y = Fmin(y, Fsub(Fadd(object->pos[1], object->bbox[0][1]), displacee->bbox[1][1]));
+                stop = true;
+            }
+            displacee->values[VAL_Y_TOUCH] = stop;
+        }
+
+        if (stop)
+            displacee->values[VAL_Y_SPEED] = FxZero;
+    }
+
+    move_object(did, (fvec2){x, y});
+}
+
+/* ======
+
+   ENGINE
+
+   ====== */
+
 void start_state(int num_players, int local) {
     local_player = local;
 
@@ -14,19 +180,23 @@ void start_state(int num_players, int local) {
     for (uint32_t i = 0L; i < BLOCKMAP_SIZE; i++)
         state.blockmap[i] = -1L;
 
+    state.size[0] = Fdouble(F_SCREEN_WIDTH);
+    state.size[1] = F_SCREEN_HEIGHT;
+
     for (size_t i = 0; i < num_players; i++) {
         struct GamePlayer* player = &(state.players[i]);
         player->active = true;
 
-        ObjectID object = create_object(OBJ_PLAYER, (fvec2){FfInt(320L), FfInt(240L)});
+        player->bounds[0][0] = player->bounds[0][1] = FxZero;
+        player->bounds[1][0] = state.size[0];
+        player->bounds[1][1] = state.size[1];
+
+        player->lives = 4L;
+
+        ObjectID object = create_object(OBJ_PLAYER, (fvec2){FfInt(64L), FfInt(240L)});
         if (object_is_alive(object))
             state.objects[object].values[VAL_PLAYER_INDEX] = player->object = object;
         player->object = object;
-        player->bounds[0][0] = player->bounds[0][1] = FxZero;
-        player->bounds[1][0] = Fdouble(F_SCREEN_WIDTH);
-        player->bounds[1][1] = F_SCREEN_HEIGHT;
-
-        player->lives = 4;
     }
 
     add_gradient(
@@ -48,8 +218,33 @@ void start_state(int num_players, int local) {
     add_backdrop(TEX_GRASS5, 160, 448, 20, 255, 255, 255, 255);
     add_backdrop(TEX_GRASS6, 192, 448, 20, 255, 255, 255, 255);
 
+    add_backdrop(TEX_BRIDGE2, 32, 240, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BRIDGE2, 64, 240, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BRIDGE2, 96, 240, 20, 255, 255, 255, 255);
+
     create_object(OBJ_BUSH, (fvec2){FfInt(-16L), FfInt(400L)});
     create_object(OBJ_CLOUD, (fvec2){FfInt(128L), FfInt(32L)});
+
+    create_object(OBJ_COIN, (fvec2){FfInt(32L), FfInt(32L)});
+    create_object(OBJ_COIN, (fvec2){FfInt(64L), FfInt(32L)});
+    create_object(OBJ_COIN, (fvec2){FfInt(32L), FfInt(64L)});
+    create_object(OBJ_COIN, (fvec2){FfInt(64L), FfInt(64L)});
+    create_object(OBJ_COIN, (fvec2){FfInt(32L), FfInt(96L)});
+    create_object(OBJ_COIN, (fvec2){FfInt(64L), FfInt(96L)});
+
+    ObjectID oid = create_object(OBJ_SOLID, (fvec2){FxZero, FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(224L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
+    oid = create_object(OBJ_SOLID_TOP, (fvec2){FfInt(32L), FfInt(240L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(96L);
+        state.objects[oid].bbox[1][1] = FfInt(16L);
+    }
+
+    load_track(MUS_OVERWORLD1);
+    play_track(MUS_OVERWORLD1, true);
 }
 
 static uint32_t check_state(uint8_t* data, uint32_t len) {
@@ -70,9 +265,20 @@ void load_state(GekkoGameEvent* event) {
 }
 
 static bool player_collide(ObjectID self, ObjectID other) {
-    if (state.objects[other].type == OBJ_PLAYER) {
-        state.objects[self].flags |= FLG_PLAYER_COLLISION;
-        return false;
+    switch (state.objects[other].type) {
+        default:
+            break;
+
+        case OBJ_PLAYER:
+            state.objects[self].flags |= FLG_PLAYER_COLLISION;
+            break;
+
+        case OBJ_COIN: {
+            ++(state.players[state.objects[self].values[VAL_PLAYER_INDEX]].coins);
+            state.objects[other].object_flags |= OBF_DESTROY;
+            play_sound(SND_COIN);
+            break;
+        }
     }
     return true;
 }
@@ -111,58 +317,46 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                 }
                 struct GamePlayer* player = &(state.players[pid]);
 
-                object->values[VAL_PLAYER_X_SPEED] = Fadd(
-                    Fmul(object->values[VAL_PLAYER_X_SPEED], 0x0000E666),
+                object->values[VAL_X_SPEED] = Fadd(
+                    Fmul(object->values[VAL_X_SPEED], 0x0000E666),
                     FfInt((int8_t)player->input.action.right - (int8_t)player->input.action.left)
                 );
-                object->values[VAL_PLAYER_Y_SPEED] = Fadd(
-                    Fadd(object->values[VAL_PLAYER_Y_SPEED], 0x0000A666),
+                object->values[VAL_Y_SPEED] = Fadd(
+                    Fadd(object->values[VAL_Y_SPEED], 0x0000A666),
                     FfInt((int8_t)player->input.action.down - (int8_t)player->input.action.up)
                 );
 
                 if (player->input.action.jump && !(player->last_input.action.jump)) {
-                    object->values[VAL_PLAYER_Y_SPEED] = FfInt(-16L);
+                    object->values[VAL_Y_SPEED] = FfInt(-16L);
                     play_sound(SND_JUMP);
                 }
 
-                if (object->values[VAL_PLAYER_X_SPEED] > FxZero)
+                if (object->values[VAL_X_SPEED] > FxZero)
                     object->object_flags &= ~OBF_X_FLIP;
-                else if (object->values[VAL_PLAYER_X_SPEED] < FxZero)
+                else if (object->values[VAL_X_SPEED] < FxZero)
                     object->object_flags |= OBF_X_FLIP;
 
                 if ((object->pos[0] <= Fsub(player->bounds[0][0], object->bbox[0][0]) &&
-                     object->values[VAL_PLAYER_X_SPEED] < FxZero) ||
+                     object->values[VAL_X_SPEED] < FxZero) ||
                     (object->pos[0] >= Fsub(player->bounds[1][0], object->bbox[1][0]) &&
-                     object->values[VAL_PLAYER_X_SPEED] > FxZero))
-                    object->values[VAL_PLAYER_X_SPEED] = FxZero;
+                     object->values[VAL_X_SPEED] > FxZero))
+                    object->values[VAL_X_SPEED] = FxZero;
                 if ((object->pos[1] <= Fsub(player->bounds[0][1], object->bbox[0][1]) &&
-                     object->values[VAL_PLAYER_Y_SPEED] < FxZero) ||
+                     object->values[VAL_Y_SPEED] < FxZero) ||
                     (object->pos[1] >= Fsub(player->bounds[1][1], object->bbox[1][1]) &&
-                     object->values[VAL_PLAYER_Y_SPEED] > FxZero))
-                    object->values[VAL_PLAYER_Y_SPEED] = FxZero;
+                     object->values[VAL_Y_SPEED] > FxZero))
+                    object->values[VAL_Y_SPEED] = FxZero;
 
-                move_object(
-                    oid, (fvec2){Fclamp(
-                                     Fadd(object->pos[0], object->values[VAL_PLAYER_X_SPEED]),
-                                     Fsub(player->bounds[0][0], object->bbox[0][0]),
-                                     Fsub(player->bounds[1][0], object->bbox[1][0])
-                                 ),
-                                 Fclamp(
-                                     Fadd(object->pos[1], object->values[VAL_PLAYER_Y_SPEED]),
-                                     Fsub(player->bounds[0][1], object->bbox[0][1]),
-                                     Fsub(player->bounds[1][1], object->bbox[1][1])
-                                 )}
-                );
+                displace_object(oid, FfInt(10L), true);
 
                 if (player->input.action.fire && !(player->last_input.action.fire) &&
-                    (Fabs(object->values[VAL_PLAYER_X_SPEED]) >= FxHalf ||
-                     Fabs(object->values[VAL_PLAYER_Y_SPEED]) >= FxHalf)) {
+                    (Fabs(object->values[VAL_X_SPEED]) >= FxHalf || Fabs(object->values[VAL_Y_SPEED]) >= FxHalf)) {
                     ObjectID bullet_id = create_object(OBJ_BULLET, object->pos);
                     if (object_is_alive(bullet_id)) {
                         struct GameObject* bullet = &(state.objects[bullet_id]);
                         bullet->values[VAL_BULLET_PLAYER] = object->values[VAL_PLAYER_INDEX];
-                        bullet->values[VAL_BULLET_X_SPEED] = Fmul(object->values[VAL_PLAYER_X_SPEED], FfInt(2L));
-                        bullet->values[VAL_BULLET_Y_SPEED] = Fmul(object->values[VAL_PLAYER_Y_SPEED], FfInt(2L));
+                        bullet->values[VAL_X_SPEED] = Fmul(object->values[VAL_X_SPEED], FfInt(2L));
+                        bullet->values[VAL_Y_SPEED] = Fmul(object->values[VAL_Y_SPEED], FfInt(2L));
                         play_sound(SND_FIRE);
                     }
                 }
@@ -189,8 +383,8 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                 struct GamePlayer* player = &(state.players[pid]);
 
                 move_object(
-                    oid, (fvec2){Fadd(object->pos[0], object->values[VAL_BULLET_X_SPEED]),
-                                 Fadd(object->pos[1], object->values[VAL_BULLET_Y_SPEED])}
+                    oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
+                                 Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
                 );
                 if (object->pos[0] < player->bounds[0][0] || object->pos[1] < player->bounds[0][1] ||
                     object->pos[0] > player->bounds[1][0] || object->pos[1] > player->bounds[1][1]) {
@@ -235,7 +429,7 @@ void draw_state() {
 
                 case OBJ_CLOUD: {
                     enum TextureIndices tex;
-                    switch ((state.time / 13) % 3) {
+                    switch ((int)((float)state.time / 12.5f) % 3) {
                         default:
                             tex = TEX_CLOUD1;
                             break;
@@ -252,7 +446,7 @@ void draw_state() {
 
                 case OBJ_BUSH: {
                     enum TextureIndices tex;
-                    switch ((state.time / 7) % 3) {
+                    switch ((int)((float)state.time / 7.142857142857143f) % 3) {
                         default:
                             tex = TEX_BUSH1;
                             break;
@@ -280,6 +474,23 @@ void draw_state() {
                                                   ? TEX_BULLET_HIT1
                                                   : ((frame >= 100 && frame < 200) ? TEX_BULLET_HIT2 : TEX_BULLET_HIT3))
                     );
+                    break;
+                }
+
+                case OBJ_COIN: {
+                    enum TextureIndices tex;
+                    switch ((state.time / 5) % 3) {
+                        default:
+                            tex = TEX_COIN1;
+                            break;
+                        case 1:
+                            tex = TEX_COIN2;
+                            break;
+                        case 2:
+                            tex = TEX_COIN3;
+                            break;
+                    }
+                    draw_object(object, tex);
                     break;
                 }
             }
@@ -341,15 +552,15 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     load_sound(SND_JUMP);
                     load_sound(SND_FIRE);
 
-                    object->bbox[0][0] = FfInt(-16L);
-                    object->bbox[0][1] = FfInt(-16L);
-                    object->bbox[1][0] = FfInt(16L);
-                    object->bbox[1][1] = FfInt(16L);
+                    object->bbox[0][0] = FfInt(-9L);
+                    object->bbox[0][1] = FfInt(-25L);
+                    object->bbox[1][0] = FfInt(10L);
+                    object->bbox[1][1] = FxOne;
                     object->depth = -1L;
 
                     object->values[VAL_PLAYER_INDEX] = -1L;
-                    object->values[VAL_PLAYER_X_SPEED] = FxZero;
-                    object->values[VAL_PLAYER_Y_SPEED] = FxZero;
+                    object->values[VAL_X_SPEED] = FxZero;
+                    object->values[VAL_Y_SPEED] = FxZero;
 
                     object->flags = FLG_PLAYER_DEFAULT;
                     break;
@@ -368,9 +579,22 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[1][1] = FfInt(5L);
 
                     object->values[VAL_BULLET_PLAYER] = -1L;
-                    object->values[VAL_BULLET_X_SPEED] = FxZero;
-                    object->values[VAL_BULLET_Y_SPEED] = FxZero;
+                    object->values[VAL_X_SPEED] = FxZero;
+                    object->values[VAL_Y_SPEED] = FxZero;
                     object->values[VAL_BULLET_FRAME] = 0L;
+                    break;
+                }
+
+                case OBJ_COIN: {
+                    load_texture(TEX_COIN1);
+                    load_texture(TEX_COIN2);
+                    load_texture(TEX_COIN3);
+                    load_sound(SND_COIN);
+
+                    object->bbox[0][0] = FfInt(6L);
+                    object->bbox[0][1] = FfInt(2L);
+                    object->bbox[1][0] = FfInt(25L);
+                    object->bbox[1][1] = FfInt(30L);
                     break;
                 }
             }
@@ -417,6 +641,36 @@ void move_object(ObjectID index, const fvec2 pos) {
     state.blockmap[block] = index;
 }
 
+const struct BlockList* list_block_at(const fvec2 rect[2]) {
+    static struct BlockList list = {0};
+    list.num_objects = 0;
+
+    int bx1 = Fsub(rect[0][0], BLOCK_SIZE) / BLOCK_SIZE;
+    int by1 = Fsub(rect[0][1], BLOCK_SIZE) / BLOCK_SIZE;
+    int bx2 = Fadd(rect[1][0], BLOCK_SIZE) / BLOCK_SIZE;
+    int by2 = Fadd(rect[1][1], BLOCK_SIZE) / BLOCK_SIZE;
+    bx1 = SDL_clamp(bx1, 0L, MAX_BLOCKS - 1L);
+    by1 = SDL_clamp(by1, 0L, MAX_BLOCKS - 1L);
+    bx2 = SDL_clamp(bx2, 0L, MAX_BLOCKS - 1L);
+    by2 = SDL_clamp(by2, 0L, MAX_BLOCKS - 1L);
+    for (int by = by1; by <= by2; by++)
+        for (int bx = bx1; bx <= bx2; bx++) {
+            ObjectID oid = state.blockmap[bx + (by * MAX_BLOCKS)];
+            while (object_is_alive(oid)) {
+                struct GameObject* other = &(state.objects[oid]);
+                fix16_t ox1 = Fadd(other->pos[0], other->bbox[0][0]);
+                fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
+                fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
+                fix16_t oy2 = Fadd(other->pos[1], other->bbox[1][1]);
+                if (rect[0][0] < ox2 && rect[1][0] > ox1 && rect[0][1] < oy2 && rect[1][1] > oy1)
+                    list.objects[list.num_objects++] = oid;
+                oid = other->previous_block;
+            }
+        }
+
+    return &list;
+}
+
 void iterate_block(ObjectID index, bool (*iterator)(ObjectID, ObjectID)) {
     if (!object_is_alive(index))
         return;
@@ -446,7 +700,7 @@ void iterate_block(ObjectID index, bool (*iterator)(ObjectID, ObjectID)) {
                     fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
                     fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
                     fix16_t oy2 = Fadd(other->pos[1], other->bbox[1][1]);
-                    if (x1 <= ox2 && x2 >= ox1 && y1 <= oy2 && y2 >= oy1 && !iterator(index, oid))
+                    if (x1 < ox2 && x2 > ox1 && y1 < oy2 && y2 > oy1 && !iterator(index, oid))
                         return;
                 }
                 oid = next;
@@ -498,4 +752,10 @@ void draw_object(struct GameObject* object, enum TextureIndices tid) {
         tid, (float[3]){FtFloat(object->pos[0]), FtFloat(object->pos[1]), object->depth},
         (bool[2]){object->object_flags & OBF_X_FLIP, object->object_flags & OBF_Y_FLIP}
     );
+}
+
+int32_t random() {
+    // https://rosettacode.org/wiki/Linear_congruential_generator
+    state.seed = (state.seed * 214013 + 2531011) & ((1U << 31) - 1);
+    return (int32_t)state.seed >> 16;
 }

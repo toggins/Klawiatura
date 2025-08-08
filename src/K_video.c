@@ -54,6 +54,10 @@ static struct Texture textures[] = {
     TEXTURE(TEX_GRASS8, "tiles/grass8"),
     TEXTURE(TEX_GRASS9, "tiles/grass9"),
 
+    TEXTURE(TEX_BRIDGE1, "tiles/bridge1"),
+    TEXTURE(TEX_BRIDGE2, "tiles/bridge2"),
+    TEXTURE(TEX_BRIDGE3, "tiles/bridge3"),
+
     TEXTURE(TEX_CLOUD1, "props/cloud1"),
     TEXTURE(TEX_CLOUD2, "props/cloud2"),
     TEXTURE(TEX_CLOUD3, "props/cloud3"),
@@ -61,12 +65,16 @@ static struct Texture textures[] = {
     TEXOFFS(TEX_BUSH2, "props/bush2", 0, -4),
     TEXOFFS(TEX_BUSH3, "props/bush3", 0, -4),
 
-    TEXOFFS(TEX_PLAYER, "player", 16, 16),
+    TEXOFFS(TEX_PLAYER, "player", 10, 28),
 
     TEXOFFS(TEX_BULLET, "bullet", 7, 7),
     TEXOFFS(TEX_BULLET_HIT1, "bullet_hit1", 8, 7),
     TEXOFFS(TEX_BULLET_HIT2, "bullet_hit2", 12, 13),
     TEXOFFS(TEX_BULLET_HIT3, "bullet_hit3", 16, 15),
+
+    TEXOFFS(TEX_COIN1, "items/coin1", -6, -2),
+    TEXOFFS(TEX_COIN2, "items/coin2", -6, -2),
+    TEXOFFS(TEX_COIN3, "items/coin3", -6, -2),
 };
 
 static vec2 camera = {HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT};

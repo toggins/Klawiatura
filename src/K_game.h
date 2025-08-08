@@ -30,12 +30,16 @@ typedef int16_t ObjectID;
 enum GameObjectType {
     OBJ_INVALID,
 
-    // Props
+    OBJ_SOLID,
+    OBJ_SOLID_TOP,
+
     OBJ_CLOUD,
     OBJ_BUSH,
 
     OBJ_PLAYER,
     OBJ_BULLET,
+
+    OBJ_COIN,
 };
 
 enum ObjectFlags {
@@ -48,10 +52,16 @@ enum ObjectFlags {
     OBF_DEFAULT = OBF_VISIBLE,
 };
 
+enum GenericValues {
+    VAL_X_SPEED,
+    VAL_Y_SPEED,
+    VAL_X_TOUCH,
+    VAL_Y_TOUCH,
+    VAL_SIZE,
+};
+
 enum PlayerValues {
-    VAL_PLAYER_INDEX,
-    VAL_PLAYER_X_SPEED,
-    VAL_PLAYER_Y_SPEED,
+    VAL_PLAYER_INDEX = VAL_SIZE,
 };
 
 enum PlayerFlags {
@@ -61,9 +71,7 @@ enum PlayerFlags {
 };
 
 enum BulletValues {
-    VAL_BULLET_PLAYER,
-    VAL_BULLET_X_SPEED,
-    VAL_BULLET_Y_SPEED,
+    VAL_BULLET_PLAYER = VAL_SIZE,
     VAL_BULLET_FRAME,
 };
 
@@ -94,6 +102,8 @@ struct GameState {
         uint32_t score;
     } players[MAX_PLAYERS];
 
+    fvec2 size;
+    int32_t clock;
     uint64_t time;
     uint32_t seed;
 
@@ -127,6 +137,14 @@ void draw_state();
 bool object_is_alive(ObjectID);
 ObjectID create_object(enum GameObjectType, const fvec2);
 void move_object(ObjectID, const fvec2);
+
+const struct BlockList {
+    ObjectID objects[MAX_OBJECTS];
+    size_t num_objects;
+}* list_block_at(const fvec2[2]);
+
 void iterate_block(ObjectID, bool (*iterator)(ObjectID, ObjectID));
 void destroy_object(ObjectID);
 void draw_object(struct GameObject*, enum TextureIndices);
+
+int32_t random();

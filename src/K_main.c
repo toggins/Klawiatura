@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
     GekkoConfig config = {0};
     config.num_players = num_players;
     config.max_spectators = 0;
-    config.input_prediction_window = 3;
+    config.input_prediction_window = 8;
     config.state_size = sizeof(struct GameState);
     config.input_size = sizeof(struct GameInput);
     config.desync_detection = true;
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
             gekko_add_actor(session, RemotePlayer, &((GekkoNetAddress){(void*)ip[i], SDL_strlen(ip[i])}));
     }
     if (num_players > 1)
-        gekko_set_local_delay(session, local_player, 3);
+        gekko_set_local_delay(session, local_player, 2);
 
     struct GameInput inputs[MAX_PLAYERS] = {0};
     start_state(num_players, local_player);
@@ -173,7 +173,6 @@ int main(int argc, char** argv) {
                             inputs[j].value = event->data.adv.inputs[j];
                         tick = event->data.adv.frame;
                         tick_state(inputs);
-                        audio_update();
                         break;
                     }
                 }
@@ -183,6 +182,7 @@ int main(int argc, char** argv) {
         }
 
         video_update();
+        audio_update();
     }
 
     gekko_destroy(session);

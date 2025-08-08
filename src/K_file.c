@@ -1,7 +1,6 @@
 #include <SDL3/SDL_filesystem.h>
 
 #include "K_file.h"
-#include "K_log.h"
 
 const char* find_file(const char* filename) {
     static char file[256];

@@ -287,6 +287,10 @@ enum TextureIndices {
     TEX_BULLET_HIT2,
     TEX_BULLET_HIT3,
 
+    TEX_COIN1,
+    TEX_COIN2,
+    TEX_COIN3,
+
     TEX_SIZE,
 };
 

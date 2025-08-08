@@ -60,13 +60,75 @@ enum SoundIndices {
     SND_SIZE,
 };
 
+enum TrackIndices {
+    MUS_NULL,
+
+    MUS_OVERWORLD1,
+    MUS_OVERWORLD2,
+    MUS_OVERWORLD3,
+    MUS_OVERWORLD4,
+    MUS_OVERWORLD5,
+    MUS_OVERWORLD6,
+
+    MUS_ATHLETIC1,
+    MUS_ATHLETIC2,
+    MUS_ATHLETIC3,
+    MUS_ATHLETIC4,
+    MUS_ATHLETIC5,
+    MUS_ATHLETIC6,
+    MUS_ATHLETIC7,
+
+    MUS_STARLAND,
+    MUS_SNOW,
+    MUS_DESERT,
+
+    MUS_UNDERWATER1,
+    MUS_UNDERWATER2,
+
+    MUS_CAVE1,
+    MUS_CAVE2,
+    MUS_CAVE3,
+
+    MUS_CASTLE1,
+    MUS_CASTLE2,
+    MUS_CASTLE3,
+    MUS_CASTLE4,
+
+    MUS_TANKS1,
+    MUS_TANKS2,
+    MUS_TANKS3,
+
+    MUS_BOWSER1,
+    MUS_BOWSER2,
+    MUS_BOWSER3,
+
+    MUS_LOSE,
+    MUS_GAME_OVER,
+    MUS_WIN,
+
+    MUS_SIZE,
+};
+
 struct Sound {
     const char* name;
     FMOD_SOUND* sound;
     uint32_t length;
 };
 
+struct Track {
+    const char* name;
+    FMOD_SOUND* stream;
+    uint32_t length;
+    uint32_t loop[2];
+};
+
 struct SoundState {
+    struct TrackObject {
+        enum TrackIndices index;
+        uint32_t offset;
+        bool loop;
+    } track;
+
     struct SoundObject {
         enum SoundIndices index;
         uint32_t offset;
@@ -82,4 +144,7 @@ void save_audio_state();
 void load_audio_state();
 
 void load_sound(enum SoundIndices);
+void load_track(enum TrackIndices);
+
 void play_sound(enum SoundIndices);
+void play_track(enum TrackIndices, bool);
