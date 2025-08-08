@@ -6,6 +6,7 @@
 #define CGLM_FORCE_LEFT_HANDED
 #include "cglm/cglm.h" // IWYU pragma: keep
 
+#include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
 #include "K_video.h"
@@ -22,17 +23,26 @@ static uint64_t draw_time = 0;
 static GLuint shader = 0;
 static struct Uniforms uniforms = {-1};
 
+#define NULLTEX(i)                                                                                                     \
+    [(i)] = {                                                                                                          \
+        .name = NULL,                                                                                                  \
+        .texture = 0,                                                                                                  \
+        .size = {0, 0},                                                                                                \
+        .offset = {0, 0},                                                                                              \
+    }
+
 #define TEXOFFS(i, nm, xoffs, yoffs)                                                                                   \
     [(i)] = {                                                                                                          \
-        .name = (nm),                                                                                                  \
+        .name = "textures/" nm,                                                                                        \
         .texture = 0,                                                                                                  \
         .size = {0, 0},                                                                                                \
         .offset = {(xoffs), (yoffs)},                                                                                  \
     }
+
 #define TEXTURE(i, nm) TEXOFFS(i, nm, 0, 0)
 
 static struct Texture textures[] = {
-    TEXTURE(TEX_NULL, NULL),
+    NULLTEX(TEX_NULL),
 
     TEXTURE(TEX_GRASS1, "tiles/grass1"),
     TEXTURE(TEX_GRASS2, "tiles/grass2"),
@@ -309,10 +319,10 @@ void load_texture(enum TextureIndices index) {
         return;
     }
 
-    static char path[1024];
-    SDL_snprintf(path, sizeof(path), "%sdata/textures/%s.png", SDL_GetBasePath(), texture->name);
-
-    SDL_Surface* surface = IMG_Load(path);
+    const char* file = find_file(texture->name);
+    if (file == NULL)
+        FATAL("Texture \"%s\" not found", texture->name);
+    SDL_Surface* surface = IMG_Load(file);
     if (surface == NULL)
         FATAL("Texture \"%s\" fail: %s", texture->name, SDL_GetError());
 

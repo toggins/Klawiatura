@@ -66,6 +66,9 @@ FetchContent_Declare(
     GIT_TAG v0.9.6)
 FetchContent_MakeAvailable(cglm)
 
+# FMOD Core API (2.03.08)
+add_subdirectory(${CMAKE_SOURCE_DIR}/include/fmod)
+
 # GekkoNet
 add_subdirectory(${CMAKE_SOURCE_DIR}/include/GekkoNet)
 
@@ -84,6 +87,7 @@ set(LIBS
     ${OPENGL_gl_LIBRARY}
     glad_gl_core_33
     cglm
+    fmod
     GekkoNet
     S_fixed)
 

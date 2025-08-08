@@ -1,0 +1,1 @@
+SPC music volume is increased by +10 dB.

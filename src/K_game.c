@@ -1,4 +1,5 @@
 #include "K_game.h"
+#include "K_audio.h"
 
 static struct GameState state = {0};
 static int local_player = -1;
@@ -81,6 +82,7 @@ static bool bullet_collide(ObjectID self, ObjectID other) {
     if (hit->type != OBJ_BULLET &&
         (hit->type != OBJ_PLAYER || hit->values[VAL_PLAYER_INDEX] != state.objects[self].values[VAL_BULLET_PLAYER])) {
         state.objects[self].values[VAL_BULLET_FRAME] += 24L;
+        play_sound(SND_BUMP);
         return false;
     }
     return true;
@@ -118,8 +120,10 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                     FfInt((int8_t)player->input.action.down - (int8_t)player->input.action.up)
                 );
 
-                if (player->input.action.jump && !(player->last_input.action.jump))
+                if (player->input.action.jump && !(player->last_input.action.jump)) {
                     object->values[VAL_PLAYER_Y_SPEED] = FfInt(-16L);
+                    play_sound(SND_JUMP);
+                }
 
                 if (object->values[VAL_PLAYER_X_SPEED] > FxZero)
                     object->object_flags &= ~OBF_X_FLIP;
@@ -159,6 +163,7 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                         bullet->values[VAL_BULLET_PLAYER] = object->values[VAL_PLAYER_INDEX];
                         bullet->values[VAL_BULLET_X_SPEED] = Fmul(object->values[VAL_PLAYER_X_SPEED], FfInt(2L));
                         bullet->values[VAL_BULLET_Y_SPEED] = Fmul(object->values[VAL_PLAYER_Y_SPEED], FfInt(2L));
+                        play_sound(SND_FIRE);
                     }
                 }
 
@@ -188,10 +193,12 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                                  Fadd(object->pos[1], object->values[VAL_BULLET_Y_SPEED])}
                 );
                 if (object->pos[0] < player->bounds[0][0] || object->pos[1] < player->bounds[0][1] ||
-                    object->pos[0] > player->bounds[1][0] || object->pos[1] > player->bounds[1][1])
+                    object->pos[0] > player->bounds[1][0] || object->pos[1] > player->bounds[1][1]) {
                     object->values[VAL_BULLET_FRAME] += 24L;
-                else
+                    play_sound(SND_BUMP);
+                } else {
                     iterate_block(oid, bullet_collide);
+                }
                 break;
             }
         }
@@ -331,6 +338,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
 
                 case OBJ_PLAYER: {
                     load_texture(TEX_PLAYER);
+                    load_sound(SND_JUMP);
+                    load_sound(SND_FIRE);
 
                     object->bbox[0][0] = FfInt(-16L);
                     object->bbox[0][1] = FfInt(-16L);
@@ -351,6 +360,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     load_texture(TEX_BULLET_HIT1);
                     load_texture(TEX_BULLET_HIT2);
                     load_texture(TEX_BULLET_HIT3);
+                    load_sound(SND_BUMP);
 
                     object->bbox[0][0] = FfInt(-5L);
                     object->bbox[0][1] = FfInt(-5L);

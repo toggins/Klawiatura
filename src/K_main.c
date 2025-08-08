@@ -9,6 +9,7 @@
 #define FIX_IMPLEMENTATION
 #include <S_fixed.h>
 
+#include "K_audio.h"
 #include "K_game.h"
 #include "K_log.h"
 #include "K_video.h"
@@ -55,6 +56,7 @@ int main(int argc, char** argv) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
         FATAL("SDL_Init fail: %s", SDL_GetError());
     video_init(bypass_shader);
+    audio_init();
 
     GekkoSession* session = NULL;
     if (!gekko_create(&session))
@@ -153,17 +155,25 @@ int main(int argc, char** argv) {
                 switch (event->type) {
                     default:
                         break;
-                    case SaveEvent:
+
+                    case SaveEvent: {
                         save_state(event);
+                        save_audio_state();
                         break;
-                    case LoadEvent:
+                    }
+
+                    case LoadEvent: {
                         load_state(event);
+                        load_audio_state();
                         break;
+                    }
+
                     case AdvanceEvent: {
                         for (size_t j = 0; j < num_players; j++)
                             inputs[j].value = event->data.adv.inputs[j];
                         tick = event->data.adv.frame;
                         tick_state(inputs);
+                        audio_update();
                         break;
                     }
                 }
@@ -177,6 +187,7 @@ int main(int argc, char** argv) {
 
     gekko_destroy(session);
     video_teardown();
+    audio_teardown();
     SDL_Quit();
 
 #ifdef _MSC_VER
