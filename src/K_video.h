@@ -7,6 +7,22 @@
 #include <SDL3/SDL_opengl.h>
 // clang-format on
 
+#define WHITE (GLubyte[4]){255, 255, 255, 255}
+#define GRAY (GLubyte[4]){128, 128, 128, 255}
+#define BLACK (GLubyte[4]){0, 0, 0, 255}
+
+#define RGB(r, g, b) (GLubyte[4]){r, g, b, 255}
+
+#define RGBA(r, g, b, a)                                                                                               \
+    (GLubyte[4]) {                                                                                                     \
+        r, g, b, a                                                                                                     \
+    }
+
+#define ALPHA(a)                                                                                                       \
+    (GLubyte[4]) {                                                                                                     \
+        255, 255, 255, a                                                                                               \
+    }
+
 enum VertexAttributes {
     VATT_POSITION,
     VATT_COLOR,
@@ -280,16 +296,129 @@ enum TextureIndices {
     TEX_BG_CASTLE5,
     TEX_BG_CASTLE6,
 
-    TEX_PLAYER,
+    TEX_MARIO_DEAD,
 
-    TEX_BULLET,
-    TEX_BULLET_HIT1,
-    TEX_BULLET_HIT2,
-    TEX_BULLET_HIT3,
+    TEX_MARIO_SMALL,
+    TEX_MARIO_SMALL_WALK1,
+    TEX_MARIO_SMALL_WALK2,
+    TEX_MARIO_SMALL_JUMP,
+    TEX_MARIO_SMALL_SWIM1,
+    TEX_MARIO_SMALL_SWIM2,
+    TEX_MARIO_SMALL_SWIM3,
+    TEX_MARIO_SMALL_SWIM4,
+
+    TEX_MARIO_BIG_GROW,
+    TEX_MARIO_BIG,
+    TEX_MARIO_BIG_WALK1,
+    TEX_MARIO_BIG_WALK2,
+    TEX_MARIO_BIG_JUMP,
+    TEX_MARIO_BIG_DUCK,
+    TEX_MARIO_BIG_SWIM1,
+    TEX_MARIO_BIG_SWIM2,
+    TEX_MARIO_BIG_SWIM3,
+    TEX_MARIO_BIG_SWIM4,
+
+    TEX_MARIO_FIRE_GROW1,
+    TEX_MARIO_FIRE_GROW2,
+    TEX_MARIO_FIRE,
+    TEX_MARIO_FIRE_WALK1,
+    TEX_MARIO_FIRE_WALK2,
+    TEX_MARIO_FIRE_JUMP,
+    TEX_MARIO_FIRE_DUCK,
+    TEX_MARIO_FIRE_FIRE,
+    TEX_MARIO_FIRE_SWIM1,
+    TEX_MARIO_FIRE_SWIM2,
+    TEX_MARIO_FIRE_SWIM3,
+    TEX_MARIO_FIRE_SWIM4,
+
+    TEX_MARIO_BEETROOT,
+    TEX_MARIO_BEETROOT_WALK1,
+    TEX_MARIO_BEETROOT_WALK2,
+    TEX_MARIO_BEETROOT_JUMP,
+    TEX_MARIO_BEETROOT_DUCK,
+    TEX_MARIO_BEETROOT_FIRE,
+    TEX_MARIO_BEETROOT_SWIM1,
+    TEX_MARIO_BEETROOT_SWIM2,
+    TEX_MARIO_BEETROOT_SWIM3,
+    TEX_MARIO_BEETROOT_SWIM4,
+
+    TEX_MARIO_LUI,
+    TEX_MARIO_LUI_WALK1,
+    TEX_MARIO_LUI_WALK2,
+    TEX_MARIO_LUI_JUMP,
+    TEX_MARIO_LUI_DUCK,
+    TEX_MARIO_LUI_SWIM1,
+    TEX_MARIO_LUI_SWIM2,
+    TEX_MARIO_LUI_SWIM3,
+    TEX_MARIO_LUI_SWIM4,
+
+    TEX_MARIO_HAMMER,
+    TEX_MARIO_HAMMER_WALK1,
+    TEX_MARIO_HAMMER_WALK2,
+    TEX_MARIO_HAMMER_JUMP,
+    TEX_MARIO_HAMMER_DUCK,
+    TEX_MARIO_HAMMER_FIRE,
+    TEX_MARIO_HAMMER_SWIM1,
+    TEX_MARIO_HAMMER_SWIM2,
+    TEX_MARIO_HAMMER_SWIM3,
+    TEX_MARIO_HAMMER_SWIM4,
 
     TEX_COIN1,
     TEX_COIN2,
     TEX_COIN3,
+    TEX_COIN_POP1,
+    TEX_COIN_POP2,
+    TEX_COIN_POP3,
+    TEX_COIN_POP4,
+    TEX_COIN_SPARK1,
+    TEX_COIN_SPARK2,
+    TEX_COIN_SPARK3,
+    TEX_COIN_SPARK4,
+
+    TEX_MUSHROOM,
+    TEX_MUSHROOM_1UP,
+    TEX_MUSHROOM_POISON1,
+    TEX_MUSHROOM_POISON2,
+
+    TEX_FIRE_FLOWER1,
+    TEX_FIRE_FLOWER2,
+    TEX_FIRE_FLOWER3,
+    TEX_FIRE_FLOWER4,
+
+    TEX_BEETROOT1,
+    TEX_BEETROOT2,
+    TEX_BEETROOT3,
+
+    TEX_LUI1,
+    TEX_LUI2,
+    TEX_LUI3,
+    TEX_LUI4,
+    TEX_LUI5,
+    TEX_LUI_BOUNCE1,
+    TEX_LUI_BOUNCE2,
+    TEX_LUI_BOUNCE3,
+
+    TEX_HAMMER_SUIT,
+
+    TEX_STARMAN1,
+    TEX_STARMAN2,
+    TEX_STARMAN3,
+    TEX_STARMAN4,
+
+    TEX_FIREBALL,
+    TEX_EXPLODE1,
+    TEX_EXPLODE2,
+    TEX_EXPLODE3,
+
+    TEX_100,
+    TEX_200,
+    TEX_500,
+    TEX_1000,
+    TEX_2000,
+    TEX_5000,
+    TEX_10000,
+    TEX_1000000,
+    TEX_1UP,
 
     TEX_SIZE,
 };
@@ -347,4 +476,4 @@ void batch_vertex(GLfloat, GLfloat, GLfloat, GLubyte, GLubyte, GLubyte, GLubyte,
 void clear_tiles();
 void add_gradient(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLubyte[4][4]);
 void add_backdrop(enum TextureIndices, GLfloat, GLfloat, GLfloat, GLubyte, GLubyte, GLubyte, GLubyte);
-void draw_sprite(enum TextureIndices, const float[3], const bool[2]);
+void draw_sprite(enum TextureIndices, const float[3], const bool[2], const GLubyte[4]);

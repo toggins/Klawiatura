@@ -77,13 +77,15 @@ enum TrackIndices {
     MUS_ATHLETIC5,
     MUS_ATHLETIC6,
     MUS_ATHLETIC7,
+    MUS_ATHLETIC8,
 
     MUS_STARLAND,
     MUS_SNOW,
     MUS_DESERT,
+    MUS_VOLCANO,
 
-    MUS_UNDERWATER1,
-    MUS_UNDERWATER2,
+    MUS_WATER1,
+    MUS_WATER2,
 
     MUS_CAVE1,
     MUS_CAVE2,
@@ -98,13 +100,21 @@ enum TrackIndices {
     MUS_TANKS2,
     MUS_TANKS3,
 
+    MUS_AIRSHIP,
+
     MUS_BOWSER1,
     MUS_BOWSER2,
     MUS_BOWSER3,
 
-    MUS_LOSE,
+    MUS_LOSE1,
+    MUS_LOSE2,
+    MUS_LOSE3,
     MUS_GAME_OVER,
-    MUS_WIN,
+    MUS_WIN1,
+    MUS_WIN2,
+    MUS_WIN3,
+    MUS_WARP,
+    MUS_STARMAN,
 
     MUS_SIZE,
 };
@@ -132,6 +142,9 @@ struct SoundState {
     struct SoundObject {
         enum SoundIndices index;
         uint32_t offset;
+
+        bool pan;
+        float pos[2];
     } sounds[MAX_SOUNDS];
     uint8_t next_sound;
 };
@@ -146,5 +159,7 @@ void load_audio_state();
 void load_sound(enum SoundIndices);
 void load_track(enum TrackIndices);
 
+void move_ears(float, float);
 void play_sound(enum SoundIndices);
+void play_sound_at(enum SoundIndices, float, float);
 void play_track(enum TrackIndices, bool);

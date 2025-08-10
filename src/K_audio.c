@@ -17,7 +17,8 @@ static FMOD_CHANNELGROUP* music_group = NULL;
 
 static struct Sound sounds[SND_SIZE] = {
     [SND_NULL] = {0},        SOUND(SND_JUMP, "jump"), SOUND(SND_FIRE, "fire"),
-    SOUND(SND_BUMP, "bump"), SOUND(SND_COIN, "coin"),
+    SOUND(SND_BUMP, "bump"), SOUND(SND_COIN, "coin"), SOUND(SND_WARP, "warp"),
+    SOUND(SND_GROW, "grow"), SOUND(SND_KICK, "kick"), SOUND(SND_1UP, "1up"),
 };
 
 #define TLOOP(i, nm, start, end)                                                                                       \
@@ -131,6 +132,13 @@ void load_audio_state() {
             continue;
 
         FMOD_System_PlaySound(speaker, snd->sound, state_group, true, &(channels[i]));
+        if (sound->pan) {
+            FMOD_Channel_SetMode(channels[i], FMOD_3D);
+            FMOD_Channel_Set3DMinMaxDistance(channels[i], 320, 640);
+            FMOD_Channel_Set3DAttributes(
+                channels[i], &((FMOD_VECTOR){sound->pos[0], sound->pos[1], 0}), &((FMOD_VECTOR){0})
+            );
+        }
         FMOD_Channel_SetPosition(channels[i], sound->offset, FMOD_TIMEUNIT_PCM);
         FMOD_Channel_SetPaused(channels[i], false);
     }
@@ -164,6 +172,13 @@ void load_track(enum TrackIndices index) {
     );
 }
 
+void move_ears(float x, float y) {
+    FMOD_System_Set3DListenerAttributes(
+        speaker, 0, &((FMOD_VECTOR){x, y, -320}), &((FMOD_VECTOR){0}), &((FMOD_VECTOR){0, 0, -1}),
+        &((FMOD_VECTOR){0, -1, 0})
+    );
+}
+
 void play_sound(enum SoundIndices index) {
     const struct Sound* snd = &(sounds[index]);
     if (snd->sound == NULL)
@@ -172,7 +187,32 @@ void play_sound(enum SoundIndices index) {
     struct SoundObject* sound = &(state.sounds[state.next_sound]);
     sound->index = index;
     sound->offset = 0;
+    sound->pan = false;
+
     FMOD_System_PlaySound(speaker, snd->sound, state_group, false, &(channels[state.next_sound]));
+
+    state.next_sound = (state.next_sound + 1) % MAX_SOUNDS;
+}
+
+void play_sound_at(enum SoundIndices index, float x, float y) {
+    const struct Sound* snd = &(sounds[index]);
+    if (snd->sound == NULL)
+        FATAL("Invalid sound index %u", index);
+
+    struct SoundObject* sound = &(state.sounds[state.next_sound]);
+    sound->index = index;
+    sound->offset = 0;
+
+    sound->pan = true;
+    sound->pos[0] = x;
+    sound->pos[1] = y;
+
+    FMOD_System_PlaySound(speaker, snd->sound, state_group, true, &(channels[state.next_sound]));
+    FMOD_Channel_SetMode(channels[state.next_sound], FMOD_3D);
+    FMOD_Channel_Set3DMinMaxDistance(channels[state.next_sound], 320, 640);
+    FMOD_Channel_Set3DAttributes(channels[state.next_sound], &((FMOD_VECTOR){x, y, 0}), &((FMOD_VECTOR){0}));
+    FMOD_Channel_SetPaused(channels[state.next_sound], false);
+
     state.next_sound = (state.next_sound + 1) % MAX_SOUNDS;
 }
 

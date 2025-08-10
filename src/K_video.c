@@ -6,6 +6,7 @@
 #define CGLM_FORCE_LEFT_HANDED
 #include "cglm/cglm.h" // IWYU pragma: keep
 
+#include "K_audio.h"
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
@@ -65,16 +66,111 @@ static struct Texture textures[] = {
     TEXOFFS(TEX_BUSH2, "props/bush2", 0, -4),
     TEXOFFS(TEX_BUSH3, "props/bush3", 0, -4),
 
-    TEXOFFS(TEX_PLAYER, "player", 10, 28),
+    TEXOFFS(TEX_MARIO_DEAD, "mario/dead", 15, 30),
 
-    TEXOFFS(TEX_BULLET, "bullet", 7, 7),
-    TEXOFFS(TEX_BULLET_HIT1, "bullet_hit1", 8, 7),
-    TEXOFFS(TEX_BULLET_HIT2, "bullet_hit2", 12, 13),
-    TEXOFFS(TEX_BULLET_HIT3, "bullet_hit3", 16, 15),
+    TEXOFFS(TEX_MARIO_SMALL, "mario/small/idle", 10, 28),
+    TEXOFFS(TEX_MARIO_SMALL_WALK1, "mario/small/walk1", 15, 30),
+    TEXOFFS(TEX_MARIO_SMALL_WALK2, "mario/small/walk2", 11, 28),
+    TEXOFFS(TEX_MARIO_SMALL_JUMP, "mario/small/jump", 15, 30),
+    TEXOFFS(TEX_MARIO_SMALL_SWIM1, "mario/small/swim1", 15, 30),
+    TEXOFFS(TEX_MARIO_SMALL_SWIM2, "mario/small/swim2", 15, 29),
+    TEXOFFS(TEX_MARIO_SMALL_SWIM3, "mario/small/swim3", 15, 31),
+    TEXOFFS(TEX_MARIO_SMALL_SWIM4, "mario/small/swim4", 15, 30),
+
+    TEXOFFS(TEX_MARIO_BIG_GROW, "mario/big/grow", 12, 42),
+    TEXOFFS(TEX_MARIO_BIG, "mario/big/idle", 15, 58),
+    TEXOFFS(TEX_MARIO_BIG_WALK1, "mario/big/walk1", 16, 55),
+    TEXOFFS(TEX_MARIO_BIG_WALK2, "mario/big/walk2", 16, 56),
+    TEXOFFS(TEX_MARIO_BIG_JUMP, "mario/big/jump", 16, 58),
+    TEXOFFS(TEX_MARIO_BIG_DUCK, "mario/big/duck", 15, 42),
+    TEXOFFS(TEX_MARIO_BIG_SWIM1, "mario/big/swim1", 22, 53),
+    TEXOFFS(TEX_MARIO_BIG_SWIM2, "mario/big/swim2", 19, 53),
+    TEXOFFS(TEX_MARIO_BIG_SWIM3, "mario/big/swim3", 21, 58),
+    TEXOFFS(TEX_MARIO_BIG_SWIM4, "mario/big/swim4", 22, 53),
+
+    TEXOFFS(TEX_MARIO_FIRE_GROW1, "mario/fire/grow1", 16, 56),
+    TEXOFFS(TEX_MARIO_FIRE_GROW2, "mario/fire/grow2", 16, 58),
+    TEXOFFS(TEX_MARIO_FIRE, "mario/fire/idle", 15, 58),
+    TEXOFFS(TEX_MARIO_FIRE_WALK1, "mario/fire/walk1", 16, 56),
+    TEXOFFS(TEX_MARIO_FIRE_WALK2, "mario/fire/walk2", 16, 58),
+    TEXOFFS(TEX_MARIO_FIRE_JUMP, "mario/fire/jump", 16, 58),
+    TEXOFFS(TEX_MARIO_FIRE_DUCK, "mario/fire/duck", 15, 42),
+    TEXOFFS(TEX_MARIO_FIRE_FIRE, "mario/fire/fire", 14, 58),
+    TEXOFFS(TEX_MARIO_FIRE_SWIM1, "mario/fire/swim1", 22, 53),
+    TEXOFFS(TEX_MARIO_FIRE_SWIM2, "mario/fire/swim2", 19, 53),
+    TEXOFFS(TEX_MARIO_FIRE_SWIM3, "mario/fire/swim3", 21, 58),
+    TEXOFFS(TEX_MARIO_FIRE_SWIM4, "mario/fire/swim4", 22, 53),
+
+    TEXOFFS(TEX_MARIO_BEETROOT, "mario/beetroot/idle", 15, 61),
+    TEXOFFS(TEX_MARIO_BEETROOT_WALK1, "mario/beetroot/walk1", 16, 59),
+    TEXOFFS(TEX_MARIO_BEETROOT_WALK2, "mario/beetroot/walk2", 16, 61),
+    TEXOFFS(TEX_MARIO_BEETROOT_JUMP, "mario/beetroot/jump", 16, 59),
+    TEXOFFS(TEX_MARIO_BEETROOT_DUCK, "mario/beetroot/duck", 15, 45),
+    TEXOFFS(TEX_MARIO_BEETROOT_FIRE, "mario/beetroot/fire", 14, 61),
+    TEXOFFS(TEX_MARIO_BEETROOT_SWIM1, "mario/beetroot/swim1", 22, 56),
+    TEXOFFS(TEX_MARIO_BEETROOT_SWIM2, "mario/beetroot/swim2", 19, 56),
+    TEXOFFS(TEX_MARIO_BEETROOT_SWIM3, "mario/beetroot/swim3", 21, 54),
+    TEXOFFS(TEX_MARIO_BEETROOT_SWIM4, "mario/beetroot/swim4", 22, 56),
+
+    TEXOFFS(TEX_MARIO_LUI, "mario/lui/idle", 15, 58),
+    TEXOFFS(TEX_MARIO_LUI_WALK1, "mario/lui/walk1", 16, 56),
+    TEXOFFS(TEX_MARIO_LUI_WALK2, "mario/lui/walk2", 16, 58),
+    TEXOFFS(TEX_MARIO_LUI_JUMP, "mario/lui/jump", 16, 58),
+    TEXOFFS(TEX_MARIO_LUI_DUCK, "mario/lui/duck", 15, 42),
+    TEXOFFS(TEX_MARIO_LUI_SWIM1, "mario/lui/swim1", 22, 53),
+    TEXOFFS(TEX_MARIO_LUI_SWIM2, "mario/lui/swim2", 19, 53),
+    TEXOFFS(TEX_MARIO_LUI_SWIM3, "mario/lui/swim3", 21, 58),
+    TEXOFFS(TEX_MARIO_LUI_SWIM4, "mario/lui/swim4", 22, 53),
+
+    TEXOFFS(TEX_MARIO_HAMMER, "mario/hammer/idle", 15, 60),
+    TEXOFFS(TEX_MARIO_HAMMER_WALK1, "mario/hammer/walk1", 16, 58),
+    TEXOFFS(TEX_MARIO_HAMMER_WALK2, "mario/hammer/walk2", 16, 60),
+    TEXOFFS(TEX_MARIO_HAMMER_JUMP, "mario/hammer/jump", 16, 58),
+    TEXOFFS(TEX_MARIO_HAMMER_DUCK, "mario/hammer/duck", 15, 44),
+    TEXOFFS(TEX_MARIO_HAMMER_FIRE, "mario/hammer/fire", 14, 60),
+    TEXOFFS(TEX_MARIO_HAMMER_SWIM1, "mario/hammer/swim1", 22, 55),
+    TEXOFFS(TEX_MARIO_HAMMER_SWIM2, "mario/hammer/swim2", 19, 55),
+    TEXOFFS(TEX_MARIO_HAMMER_SWIM3, "mario/hammer/swim3", 21, 55),
+    TEXOFFS(TEX_MARIO_HAMMER_SWIM4, "mario/hammer/swim4", 22, 55),
 
     TEXOFFS(TEX_COIN1, "items/coin1", -6, -2),
     TEXOFFS(TEX_COIN2, "items/coin2", -6, -2),
     TEXOFFS(TEX_COIN3, "items/coin3", -6, -2),
+
+    TEXOFFS(TEX_MUSHROOM, "items/mushroom", 15, 31),
+    TEXOFFS(TEX_MUSHROOM_1UP, "items/mushroom_1up", 15, 31),
+    TEXOFFS(TEX_MUSHROOM_POISON1, "items/mushroom_poison1", 15, 31),
+    TEXOFFS(TEX_MUSHROOM_POISON2, "items/mushroom_poison2", 15, 31),
+
+    TEXOFFS(TEX_FIRE_FLOWER1, "items/fire_flower1", 16, 31),
+    TEXOFFS(TEX_FIRE_FLOWER2, "items/fire_flower2", 16, 31),
+    TEXOFFS(TEX_FIRE_FLOWER3, "items/fire_flower3", 16, 31),
+    TEXOFFS(TEX_FIRE_FLOWER4, "items/fire_flower4", 16, 31),
+
+    TEXOFFS(TEX_BEETROOT1, "items/beetroot1", 13, 32),
+    TEXOFFS(TEX_BEETROOT2, "items/beetroot2", 13, 31),
+    TEXOFFS(TEX_BEETROOT3, "items/beetroot3", 13, 30),
+
+    TEXOFFS(TEX_LUI1, "items/lui1", 15, 30),
+    TEXOFFS(TEX_LUI2, "items/lui2", 15, 30),
+    TEXOFFS(TEX_LUI3, "items/lui3", 15, 30),
+    TEXOFFS(TEX_LUI4, "items/lui4", 15, 30),
+    TEXOFFS(TEX_LUI5, "items/lui5", 15, 30),
+    TEXOFFS(TEX_LUI_BOUNCE1, "items/lui_bounce1", 15, 28),
+    TEXOFFS(TEX_LUI_BOUNCE2, "items/lui_bounce2", 15, 26),
+    TEXOFFS(TEX_LUI_BOUNCE3, "items/lui_bounce3", 15, 25),
+
+    TEXOFFS(TEX_HAMMER_SUIT, "items/hammer_suit", 13, 31),
+
+    TEXOFFS(TEX_100, "hud/100", 12, 16),
+    TEXOFFS(TEX_200, "hud/200", 13, 16),
+    TEXOFFS(TEX_500, "hud/500", 13, 16),
+    TEXOFFS(TEX_1000, "hud/1000", 16, 16),
+    TEXOFFS(TEX_2000, "hud/2000", 17, 16),
+    TEXOFFS(TEX_5000, "hud/5000", 17, 16),
+    TEXOFFS(TEX_10000, "hud/10000", 20, 16),
+    TEXOFFS(TEX_1000000, "hud/1000000", 51, 16),
+    TEXOFFS(TEX_1UP, "hud/1up", 16, 16),
 };
 
 static vec2 camera = {HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT};
@@ -211,7 +307,7 @@ void video_init(bool bypass_shader) {
                                            "   if (u_alpha_test > 0.0) {\n"
                                            "       if (sample.a < u_alpha_test)\n"
                                            "           discard;\n"
-                                           "       sample.a = 1.;\n"
+                                           "       sample.a = 1.0;\n"
                                            "   }\n"
                                            "\n"
                                            "   o_color = v_color * sample;\n"
@@ -250,6 +346,7 @@ void video_init(bool bypass_shader) {
     uniforms.texture = glGetUniformLocation(shader, "u_texture");
     uniforms.alpha_test = glGetUniformLocation(shader, "u_alpha_test");
 
+    glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glUseProgram(shader);
@@ -307,6 +404,7 @@ void video_teardown() {
 void move_camera(float x, float y) {
     camera[0] = x;
     camera[1] = y;
+    move_ears(x, y);
 }
 
 void load_texture(enum TextureIndices index) {
@@ -557,7 +655,7 @@ void batch_vertex(GLfloat x, GLfloat y, GLfloat z, GLubyte r, GLubyte g, GLubyte
                                                            v};
 }
 
-void draw_sprite(enum TextureIndices index, const GLfloat pos[3], const bool flip[2]) {
+void draw_sprite(enum TextureIndices index, const GLfloat pos[3], const bool flip[2], const GLubyte color[4]) {
     struct Texture* texture = &(textures[index]);
     GLuint tex = texture->texture;
     if (tex == 0)
@@ -577,10 +675,10 @@ void draw_sprite(enum TextureIndices index, const GLfloat pos[3], const bool fli
     const GLfloat u2 = (GLfloat)(!flip[0]);
     const GLfloat v2 = (GLfloat)(!flip[1]);
 
-    batch_vertex(x1, y2, z, 255, 255, 255, 255, u1, v2);
-    batch_vertex(x1, y1, z, 255, 255, 255, 255, u1, v1);
-    batch_vertex(x2, y1, z, 255, 255, 255, 255, u2, v1);
-    batch_vertex(x2, y1, z, 255, 255, 255, 255, u2, v1);
-    batch_vertex(x2, y2, z, 255, 255, 255, 255, u2, v2);
-    batch_vertex(x1, y2, z, 255, 255, 255, 255, u1, v2);
+    batch_vertex(x1, y2, z, color[0], color[1], color[2], color[3], u1, v2);
+    batch_vertex(x1, y1, z, color[0], color[1], color[2], color[3], u1, v1);
+    batch_vertex(x2, y1, z, color[0], color[1], color[2], color[3], u2, v1);
+    batch_vertex(x2, y1, z, color[0], color[1], color[2], color[3], u2, v1);
+    batch_vertex(x2, y2, z, color[0], color[1], color[2], color[3], u2, v2);
+    batch_vertex(x1, y2, z, color[0], color[1], color[2], color[3], u1, v2);
 }
