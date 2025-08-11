@@ -41,6 +41,8 @@ static struct Track tracks[MUS_SIZE] = {
     TRACK(MUS_OVERWORLD4, "overworld4"),
     TRACK(MUS_OVERWORLD5, "overworld5"),
     TRACK(MUS_OVERWORLD6, "overworld6"),
+
+    TRACK(MUS_SNOW, "snow"),
 };
 
 static struct SoundState state = {0};

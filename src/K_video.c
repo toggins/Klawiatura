@@ -55,6 +55,21 @@ static struct Texture textures[] = {
     TEXTURE(TEX_GRASS8, "tiles/grass8"),
     TEXTURE(TEX_GRASS9, "tiles/grass9"),
 
+    TEXTURE(TEX_SNOW1, "tiles/snow1"),
+    TEXTURE(TEX_SNOW2, "tiles/snow2"),
+    TEXTURE(TEX_SNOW3, "tiles/snow3"),
+    TEXTURE(TEX_SNOW4, "tiles/snow4"),
+    TEXTURE(TEX_SNOW5, "tiles/snow5"),
+    TEXTURE(TEX_SNOW6, "tiles/snow6"),
+    TEXTURE(TEX_SNOW7, "tiles/snow7"),
+    TEXTURE(TEX_SNOW8, "tiles/snow8"),
+    TEXTURE(TEX_SNOW9, "tiles/snow9"),
+
+    TEXTURE(TEX_BLOCK1, "tiles/block1"),
+    TEXTURE(TEX_BLOCK2, "tiles/block2"),
+    TEXTURE(TEX_BLOCK3, "tiles/block3"),
+    TEXTURE(TEX_BLOCK4, "tiles/block4"),
+
     TEXTURE(TEX_BRIDGE1, "tiles/bridge1"),
     TEXTURE(TEX_BRIDGE2, "tiles/bridge2"),
     TEXTURE(TEX_BRIDGE3, "tiles/bridge3"),
@@ -65,6 +80,9 @@ static struct Texture textures[] = {
     TEXOFFS(TEX_BUSH1, "props/bush1", 0, -2),
     TEXOFFS(TEX_BUSH2, "props/bush2", 0, -4),
     TEXOFFS(TEX_BUSH3, "props/bush3", 0, -4),
+    TEXOFFS(TEX_BUSH_SNOW1, "props/bush_snow1", 0, 0),
+    TEXOFFS(TEX_BUSH_SNOW2, "props/bush_snow2", 0, 0),
+    TEXOFFS(TEX_BUSH_SNOW3, "props/bush_snow3", 0, 0),
 
     TEXOFFS(TEX_MARIO_DEAD, "mario/dead", 15, 30),
 

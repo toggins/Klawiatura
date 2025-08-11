@@ -38,6 +38,7 @@ enum GameObjectType {
 
     OBJ_CLOUD,
     OBJ_BUSH,
+    OBJ_BUSH_SNOW,
 
     OBJ_PLAYER,
     OBJ_PLAYER_EFFECT,
@@ -212,10 +213,12 @@ bool object_is_alive(ObjectID);
 ObjectID create_object(enum GameObjectType, const fvec2);
 void move_object(ObjectID, const fvec2);
 
-const struct BlockList {
+struct BlockList {
     ObjectID objects[MAX_OBJECTS];
     size_t num_objects;
-}* list_block_at(const fvec2[2]);
+};
+
+void list_block_at(struct BlockList*, const fvec2[2]);
 
 void destroy_object(ObjectID);
 void draw_object(struct GameObject*, enum TextureIndices, GLfloat, const GLubyte[4]);

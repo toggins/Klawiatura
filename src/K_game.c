@@ -68,17 +68,20 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
 
     // Horizontal collision
     x = Fadd(x, displacee->values[VAL_X_SPEED]);
-    const struct BlockList* list = list_block_at((fvec2[2]){
-        {Fadd(x, displacee->bbox[0][0]), Fadd(y, displacee->bbox[0][1])},
-        {Fadd(x, displacee->bbox[1][0]), Fadd(y, displacee->bbox[1][1])},
-    });
+    struct BlockList list = {0};
+    list_block_at(
+        &list, (fvec2[2]){
+                   {Fadd(x, displacee->bbox[0][0]), Fadd(y, displacee->bbox[0][1])},
+                   {Fadd(x, displacee->bbox[1][0]), Fadd(y, displacee->bbox[1][1])},
+               }
+    );
     bool climbed = false;
 
-    if (list->num_objects > 0) {
+    if (list.num_objects > 0L) {
         bool stop = false;
         if (displacee->values[VAL_X_SPEED] < FxZero) {
-            for (size_t i = 0; i < list->num_objects; i++) {
-                const struct GameObject* object = &(state.objects[list->objects[i]]);
+            for (size_t i = 0; i < list.num_objects; i++) {
+                const struct GameObject* object = &(state.objects[list.objects[i]]);
                 if (object->type != OBJ_SOLID)
                     continue;
 
@@ -106,8 +109,8 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
             }
             displacee->values[VAL_X_TOUCH] = -(stop && !climbed);
         } else if (displacee->values[VAL_X_SPEED] > FxZero) {
-            for (size_t i = 0; i < list->num_objects; i++) {
-                const struct GameObject* object = &(state.objects[list->objects[i]]);
+            for (size_t i = 0; i < list.num_objects; i++) {
+                const struct GameObject* object = &(state.objects[list.objects[i]]);
                 if (object->type != OBJ_SOLID)
                     continue;
 
@@ -142,16 +145,18 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
 
     // Vertical collision
     y = Fadd(y, displacee->values[VAL_Y_SPEED]);
-    list = list_block_at((fvec2[2]){
-        {Fadd(x, displacee->bbox[0][0]), Fadd(y, displacee->bbox[0][1])},
-        {Fadd(x, displacee->bbox[1][0]), Fadd(y, displacee->bbox[1][1])},
-    });
+    list_block_at(
+        &list, (fvec2[2]){
+                   {Fadd(x, displacee->bbox[0][0]), Fadd(y, displacee->bbox[0][1])},
+                   {Fadd(x, displacee->bbox[1][0]), Fadd(y, displacee->bbox[1][1])},
+               }
+    );
 
-    if (list->num_objects > 0) {
+    if (list.num_objects > 0L) {
         bool stop = false;
         if (displacee->values[VAL_Y_SPEED] < FxZero) {
-            for (size_t i = 0; i < list->num_objects; i++) {
-                const struct GameObject* object = &(state.objects[list->objects[i]]);
+            for (size_t i = 0; i < list.num_objects; i++) {
+                const struct GameObject* object = &(state.objects[list.objects[i]]);
                 if (object->type != OBJ_SOLID)
                     continue;
 
@@ -160,8 +165,8 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
             }
             displacee->values[VAL_Y_TOUCH] = -stop;
         } else if (displacee->values[VAL_Y_SPEED] > FxZero) {
-            for (size_t i = 0; i < list->num_objects; i++) {
-                const struct GameObject* object = &(state.objects[list->objects[i]]);
+            for (size_t i = 0; i < list.num_objects; i++) {
+                const struct GameObject* object = &(state.objects[list.objects[i]]);
                 if (object->type != OBJ_SOLID && (object->type != OBJ_SOLID_TOP ||
                                                   Fsub(Fadd(y, displacee->bbox[1][1]), displacee->values[VAL_Y_SPEED]) >
                                                       Fadd(Fadd(object->pos[1], object->bbox[0][1]), climb)))
@@ -723,55 +728,87 @@ void start_state(int num_players, int local) {
 
     add_gradient(
         0, 0, 11008, 551, 200,
-        (GLubyte[4][4]){{0, 111, 223, 255}, {0, 111, 223, 255}, {242, 253, 252, 255}, {242, 253, 252, 255}}
+        (GLubyte[4][4]){{192, 192, 192, 255}, {192, 192, 192, 255}, {255, 255, 255, 255}, {255, 255, 255, 255}}
     );
-    add_backdrop(TEX_GRASS1, 0, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 32, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 64, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 96, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 128, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 160, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 192, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 224, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 256, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 288, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 320, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 352, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 384, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 416, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 448, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 480, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 512, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 544, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS2, 576, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS3, 608, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS4, 0, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 32, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 64, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 96, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 128, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 160, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 192, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 224, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 256, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 288, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 320, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 352, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 384, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 416, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 448, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 480, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 512, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 544, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS5, 576, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GRASS6, 608, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW1, 0, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 32, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 64, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 96, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 128, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 160, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 192, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 224, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 256, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 288, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 320, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 352, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 384, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 416, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 448, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 480, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 512, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 544, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 576, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW3, 608, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW4, 0, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 32, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 64, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 96, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 128, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 160, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 192, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 224, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 256, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 288, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 320, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 352, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 384, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 416, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 448, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 480, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 512, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 544, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 576, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW6, 608, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 640, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 672, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 704, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 736, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 768, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 800, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 832, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 864, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 896, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 928, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 960, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 992, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 1024, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 1056, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 1088, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 1120, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 1152, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 1184, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 1216, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 1248, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 608, 352, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 608, 384, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_BLOCK3, 576, 384, 20, 255, 255, 255, 255);
 
     add_backdrop(TEX_BRIDGE2, 32, 240, 20, 255, 255, 255, 255);
     add_backdrop(TEX_BRIDGE2, 64, 240, 20, 255, 255, 255, 255);
     add_backdrop(TEX_BRIDGE2, 96, 240, 20, 255, 255, 255, 255);
 
-    create_object(OBJ_BUSH, (fvec2){FfInt(384L), FfInt(384L)});
     create_object(OBJ_CLOUD, (fvec2){FfInt(128L), FfInt(32L)});
+    create_object(OBJ_CLOUD, (fvec2){FfInt(213L), FfInt(56L)});
+    create_object(OBJ_CLOUD, (fvec2){FfInt(431L), FfInt(93L)});
+    create_object(OBJ_CLOUD, (fvec2){FfInt(512L), FfInt(47L)});
+    create_object(OBJ_CLOUD, (fvec2){FfInt(679L), FfInt(78L)});
+    create_object(OBJ_CLOUD, (fvec2){FfInt(744L), FfInt(60L)});
+    create_object(OBJ_CLOUD, (fvec2){FfInt(820L), FfInt(39L)});
+    create_object(OBJ_CLOUD, (fvec2){FfInt(984L), FfInt(49L)});
+    create_object(OBJ_CLOUD, (fvec2){FfInt(1184L), FfInt(87L)});
+    create_object(OBJ_CLOUD, (fvec2){FfInt(789L), FfInt(96L)});
+    create_object(OBJ_BUSH_SNOW, (fvec2){FfInt(384L), FfInt(384L)});
 
     create_object(OBJ_COIN, (fvec2){FfInt(32L), FfInt(32L)});
     create_object(OBJ_COIN, (fvec2){FfInt(64L), FfInt(32L)});
@@ -835,9 +872,64 @@ void start_state(int num_players, int local) {
         state.objects[oid].bbox[1][0] = FfInt(96L);
         state.objects[oid].bbox[1][1] = FfInt(16L);
     }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(640L), FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][1] = FfInt(32L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(768L), FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][1] = FfInt(32L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(896L), FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][1] = FfInt(32L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1024L), FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][1] = FfInt(32L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1152L), FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][1] = FfInt(32L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1280L), FfInt(-64L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(32L);
+        state.objects[oid].bbox[1][1] = FfInt(192L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1280L), FfInt(128L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(32L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1280L), FfInt(256L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(32L);
+        state.objects[oid].bbox[1][1] = FfInt(256L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1280L), FfInt(384L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(32L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(608L), FfInt(352L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(32L);
+        state.objects[oid].bbox[1][1] = FfInt(64L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(576L), FfInt(384L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(32L);
+        state.objects[oid].bbox[1][1] = FfInt(32L);
+    }
 
-    load_track(MUS_OVERWORLD1);
-    play_track(MUS_OVERWORLD1, true);
+    load_track(MUS_SNOW);
+    play_track(MUS_SNOW, true);
 }
 
 static uint32_t check_state(uint8_t* data, uint32_t len) {
@@ -1239,6 +1331,24 @@ void draw_state() {
                     break;
                 }
 
+                case OBJ_BUSH_SNOW: {
+                    enum TextureIndices tex;
+                    switch ((int)((float)state.time / 7.142857142857143f) % 4) {
+                        default:
+                            tex = TEX_BUSH_SNOW1;
+                            break;
+                        case 1:
+                        case 3:
+                            tex = TEX_BUSH_SNOW2;
+                            break;
+                        case 2:
+                            tex = TEX_BUSH_SNOW3;
+                            break;
+                    }
+                    draw_object(object, tex, 0, WHITE);
+                    break;
+                }
+
                 case OBJ_PLAYER: {
                     draw_object(
                         object,
@@ -1446,6 +1556,13 @@ void load_object(enum GameObjectType type) {
             break;
         }
 
+        case OBJ_BUSH_SNOW: {
+            load_texture(TEX_BUSH_SNOW1);
+            load_texture(TEX_BUSH_SNOW2);
+            load_texture(TEX_BUSH_SNOW3);
+            break;
+        }
+
         case OBJ_PLAYER: {
             load_texture(TEX_MARIO_SMALL);
             load_texture(TEX_MARIO_SMALL_WALK1);
@@ -1613,6 +1730,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
         if (!object_is_alive((ObjectID)index)) {
             load_object(type);
             struct GameObject* object = &state.objects[index];
+            SDL_memset(object, 0, sizeof(struct GameObject));
 
             object->type = type;
             object->object_flags = OBF_DEFAULT;
@@ -1621,9 +1739,6 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
             if (object_is_alive(state.live_objects))
                 state.objects[state.live_objects].next = index;
             state.live_objects = index;
-
-            object->depth = 0L;
-            object->flags = 0L;
 
             object->block = -1L;
             object->previous_block = object->next_block = -1L;
@@ -1634,7 +1749,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     break;
 
                 case OBJ_CLOUD:
-                case OBJ_BUSH: {
+                case OBJ_BUSH:
+                case OBJ_BUSH_SNOW: {
                     object->depth = 25L;
                     break;
                 }
@@ -1647,11 +1763,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[1][0] = FfInt(10L);
                     object->bbox[1][1] = FxOne;
 
-                    object->values[VAL_X_SPEED] = object->values[VAL_Y_SPEED] = FxZero;
-                    object->values[VAL_X_TOUCH] = object->values[VAL_Y_TOUCH] = 0L;
                     object->values[VAL_PLAYER_INDEX] = -1L;
-                    object->values[VAL_PLAYER_FRAME] = FxZero;
-                    object->values[VAL_PLAYER_POWER] = object->values[VAL_PLAYER_FIRE] = 0L;
                     for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
                         object->values[i] = -1L;
 
@@ -1681,9 +1793,6 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[0][1] = FfInt(-31L);
                     object->bbox[1][0] = FfInt(15L);
                     object->bbox[1][1] = FxOne;
-
-                    object->values[VAL_X_SPEED] = object->values[VAL_Y_SPEED] = FxZero;
-                    object->values[VAL_X_TOUCH] = object->values[VAL_Y_TOUCH] = 0L;
 
                     object->flags = FLG_POWERUP_DEFAULT;
                     break;
@@ -1715,10 +1824,6 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[1][0] = FfInt(15L);
                     object->bbox[1][1] = FxOne;
 
-                    object->values[VAL_X_SPEED] = object->values[VAL_Y_SPEED] = FxZero;
-                    object->values[VAL_X_TOUCH] = object->values[VAL_Y_TOUCH] = 0L;
-                    object->values[VAL_LUI_BOUNCE] = 0L;
-
                     object->flags = FLG_POWERUP_DEFAULT;
                     break;
                 }
@@ -1737,8 +1842,6 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->depth = -100L;
 
                     object->values[VAL_POINTS_PLAYER] = -1L;
-                    object->values[VAL_POINTS] = 0L;
-                    object->values[VAL_POINTS_TIME] = 0L;
                     break;
                 }
 
@@ -1746,8 +1849,6 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[0][0] = object->bbox[0][1] = FfInt(-7L);
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(8L);
 
-                    object->values[VAL_X_SPEED] = object->values[VAL_Y_SPEED] = FxZero;
-                    object->values[VAL_X_TOUCH] = object->values[VAL_Y_TOUCH] = 0L;
                     object->values[VAL_MISSILE_OWNER] = -1;
                     break;
                 }
@@ -1795,9 +1896,8 @@ void move_object(ObjectID index, const fvec2 pos) {
     state.blockmap[block] = index;
 }
 
-const struct BlockList* list_block_at(const fvec2 rect[2]) {
-    static struct BlockList list = {0};
-    list.num_objects = 0;
+void list_block_at(struct BlockList* list, const fvec2 rect[2]) {
+    list->num_objects = 0;
 
     int bx1 = Fsub(rect[0][0], BLOCK_SIZE) / BLOCK_SIZE;
     int by1 = Fsub(rect[0][1], BLOCK_SIZE) / BLOCK_SIZE;
@@ -1817,12 +1917,10 @@ const struct BlockList* list_block_at(const fvec2 rect[2]) {
                 const fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
                 const fix16_t oy2 = Fadd(other->pos[1], other->bbox[1][1]);
                 if (rect[0][0] < ox2 && rect[1][0] > ox1 && rect[0][1] < oy2 && rect[1][1] > oy1)
-                    list.objects[list.num_objects++] = oid;
+                    list->objects[(list->num_objects)++] = oid;
                 oid = other->previous_block;
             }
         }
-
-    return &list;
 }
 
 void destroy_object(ObjectID index) {
