@@ -163,7 +163,7 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
                 y = Fmax(y, Fsub(Fadd(object->pos[1], object->bbox[1][1]), displacee->bbox[0][1]));
                 stop = true;
             }
-            displacee->values[VAL_Y_TOUCH] = -stop;
+            displacee->values[VAL_Y_TOUCH] = -(fix16_t)stop;
         } else if (displacee->values[VAL_Y_SPEED] > FxZero) {
             for (size_t i = 0; i < list.num_objects; i++) {
                 const struct GameObject* object = &(state.objects[list.objects[i]]);
