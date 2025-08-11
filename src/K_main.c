@@ -99,13 +99,16 @@ int main(int argc, char** argv) {
             }
         }
 
+        const float ahead = gekko_frames_ahead(session);
+        const float frame_time = 1.0f / ((float)TICKRATE - SDL_clamp(ahead, 0.0f, 2.0f));
+
         const uint64_t current_time = SDL_GetTicks();
-        ticks += (float)(current_time - last_time) * (((float)TICKRATE - gekko_frames_ahead(session)) / 1000.0f);
+        ticks += (float)(current_time - last_time) / 1000.0f;
         last_time = current_time;
 
         gekko_network_poll(session);
 
-        while (ticks >= 1) {
+        while (ticks >= frame_time) {
             enum GameInput input = GI_NONE;
             const bool* keyboard = SDL_GetKeyboardState(NULL);
             if (keyboard[SDL_SCANCODE_UP])
@@ -184,7 +187,7 @@ int main(int argc, char** argv) {
                 }
             }
 
-            ticks -= 1;
+            ticks -= frame_time;
         }
 
         video_update();
