@@ -95,7 +95,7 @@ static struct Texture textures[] = {
     TEXOFFS(TEX_MARIO_FIRE_WALK2, "mario/fire/walk2", 16, 58),
     TEXOFFS(TEX_MARIO_FIRE_JUMP, "mario/fire/jump", 16, 58),
     TEXOFFS(TEX_MARIO_FIRE_DUCK, "mario/fire/duck", 15, 42),
-    TEXOFFS(TEX_MARIO_FIRE_FIRE, "mario/fire/fire", 14, 58),
+    TEXOFFS(TEX_MARIO_FIRE_FIRE, "mario/fire/fire", 16, 58),
     TEXOFFS(TEX_MARIO_FIRE_SWIM1, "mario/fire/swim1", 22, 53),
     TEXOFFS(TEX_MARIO_FIRE_SWIM2, "mario/fire/swim2", 19, 53),
     TEXOFFS(TEX_MARIO_FIRE_SWIM3, "mario/fire/swim3", 21, 58),
@@ -106,7 +106,7 @@ static struct Texture textures[] = {
     TEXOFFS(TEX_MARIO_BEETROOT_WALK2, "mario/beetroot/walk2", 16, 61),
     TEXOFFS(TEX_MARIO_BEETROOT_JUMP, "mario/beetroot/jump", 16, 59),
     TEXOFFS(TEX_MARIO_BEETROOT_DUCK, "mario/beetroot/duck", 15, 45),
-    TEXOFFS(TEX_MARIO_BEETROOT_FIRE, "mario/beetroot/fire", 14, 61),
+    TEXOFFS(TEX_MARIO_BEETROOT_FIRE, "mario/beetroot/fire", 16, 61),
     TEXOFFS(TEX_MARIO_BEETROOT_SWIM1, "mario/beetroot/swim1", 22, 56),
     TEXOFFS(TEX_MARIO_BEETROOT_SWIM2, "mario/beetroot/swim2", 19, 56),
     TEXOFFS(TEX_MARIO_BEETROOT_SWIM3, "mario/beetroot/swim3", 21, 54),
@@ -122,12 +122,12 @@ static struct Texture textures[] = {
     TEXOFFS(TEX_MARIO_LUI_SWIM3, "mario/lui/swim3", 21, 58),
     TEXOFFS(TEX_MARIO_LUI_SWIM4, "mario/lui/swim4", 22, 53),
 
-    TEXOFFS(TEX_MARIO_HAMMER, "mario/hammer/idle", 15, 60),
+    TEXOFFS(TEX_MARIO_HAMMER, "mario/hammer/idle", 17, 60),
     TEXOFFS(TEX_MARIO_HAMMER_WALK1, "mario/hammer/walk1", 16, 58),
-    TEXOFFS(TEX_MARIO_HAMMER_WALK2, "mario/hammer/walk2", 16, 60),
+    TEXOFFS(TEX_MARIO_HAMMER_WALK2, "mario/hammer/walk2", 17, 60),
     TEXOFFS(TEX_MARIO_HAMMER_JUMP, "mario/hammer/jump", 16, 58),
     TEXOFFS(TEX_MARIO_HAMMER_DUCK, "mario/hammer/duck", 15, 44),
-    TEXOFFS(TEX_MARIO_HAMMER_FIRE, "mario/hammer/fire", 14, 60),
+    TEXOFFS(TEX_MARIO_HAMMER_FIRE, "mario/hammer/fire", 16, 60),
     TEXOFFS(TEX_MARIO_HAMMER_SWIM1, "mario/hammer/swim1", 22, 55),
     TEXOFFS(TEX_MARIO_HAMMER_SWIM2, "mario/hammer/swim2", 19, 55),
     TEXOFFS(TEX_MARIO_HAMMER_SWIM3, "mario/hammer/swim3", 21, 55),
@@ -161,6 +161,16 @@ static struct Texture textures[] = {
     TEXOFFS(TEX_LUI_BOUNCE3, "items/lui_bounce3", 15, 25),
 
     TEXOFFS(TEX_HAMMER_SUIT, "items/hammer_suit", 13, 31),
+
+    TEXOFFS(TEX_EXPLODE1, "effects/explode1", 8, 7),
+    TEXOFFS(TEX_EXPLODE2, "effects/explode2", 12, 13),
+    TEXOFFS(TEX_EXPLODE3, "effects/explode3", 16, 15),
+
+    TEXOFFS(TEX_MISSILE_FIREBALL, "missiles/fireball", 7, 7),
+    TEXOFFS(TEX_MISSILE_BEETROOT, "missiles/beetroot", 11, 31),
+    TEXOFFS(TEX_MISSILE_HAMMER, "missiles/hammer", 13, 18),
+    TEXOFFS(TEX_MISSILE_SILVER_HAMMER, "missiles/silver_hammer", 13, 18),
+    TEXOFFS(TEX_MISSILE_SPIKE_BALL, "missiles/spike_ball", 20, 20),
 
     TEXOFFS(TEX_100, "hud/100", 12, 16),
     TEXOFFS(TEX_200, "hud/200", 13, 16),
@@ -655,7 +665,9 @@ void batch_vertex(GLfloat x, GLfloat y, GLfloat z, GLubyte r, GLubyte g, GLubyte
                                                            v};
 }
 
-void draw_sprite(enum TextureIndices index, const GLfloat pos[3], const bool flip[2], const GLubyte color[4]) {
+void draw_sprite(
+    enum TextureIndices index, const GLfloat pos[3], const bool flip[2], GLfloat angle, const GLubyte color[4]
+) {
     struct Texture* texture = &(textures[index]);
     GLuint tex = texture->texture;
     if (tex == 0)
@@ -664,21 +676,37 @@ void draw_sprite(enum TextureIndices index, const GLfloat pos[3], const bool fli
         submit_batch();
     batch.texture = tex;
 
-    const GLfloat x1 = pos[0] - (flip[0] ? ((GLfloat)(texture->size[0]) - (texture->offset[0])) : (texture->offset[0]));
-    const GLfloat y1 = pos[1] - (flip[1] ? ((GLfloat)(texture->size[1]) - (texture->offset[1])) : (texture->offset[1]));
+    const GLfloat x1 = -(flip[0] ? ((GLfloat)(texture->size[0]) - (texture->offset[0])) : (texture->offset[0]));
+    const GLfloat y1 = -(flip[1] ? ((GLfloat)(texture->size[1]) - (texture->offset[1])) : (texture->offset[1]));
     const GLfloat x2 = x1 + (GLfloat)texture->size[0];
     const GLfloat y2 = y1 + (GLfloat)texture->size[1];
     const GLfloat z = pos[2];
+
+    vec2 p1 = {x1, y1};
+    vec2 p2 = {x2, y1};
+    vec2 p3 = {x1, y2};
+    vec2 p4 = {x2, y2};
+    if (angle != 0) {
+        const float rad = glm_rad(angle);
+        glm_vec2_rotate(p1, rad, p1);
+        glm_vec2_rotate(p2, rad, p2);
+        glm_vec2_rotate(p3, rad, p3);
+        glm_vec2_rotate(p4, rad, p4);
+    }
+    glm_vec2_add((float*)pos, p1, p1);
+    glm_vec2_add((float*)pos, p2, p2);
+    glm_vec2_add((float*)pos, p3, p3);
+    glm_vec2_add((float*)pos, p4, p4);
 
     const GLfloat u1 = flip[0];
     const GLfloat v1 = flip[1];
     const GLfloat u2 = (GLfloat)(!flip[0]);
     const GLfloat v2 = (GLfloat)(!flip[1]);
 
-    batch_vertex(x1, y2, z, color[0], color[1], color[2], color[3], u1, v2);
-    batch_vertex(x1, y1, z, color[0], color[1], color[2], color[3], u1, v1);
-    batch_vertex(x2, y1, z, color[0], color[1], color[2], color[3], u2, v1);
-    batch_vertex(x2, y1, z, color[0], color[1], color[2], color[3], u2, v1);
-    batch_vertex(x2, y2, z, color[0], color[1], color[2], color[3], u2, v2);
-    batch_vertex(x1, y2, z, color[0], color[1], color[2], color[3], u1, v2);
+    batch_vertex(p3[0], p3[1], z, color[0], color[1], color[2], color[3], u1, v2);
+    batch_vertex(p1[0], p1[1], z, color[0], color[1], color[2], color[3], u1, v1);
+    batch_vertex(p2[0], p2[1], z, color[0], color[1], color[2], color[3], u2, v1);
+    batch_vertex(p2[0], p2[1], z, color[0], color[1], color[2], color[3], u2, v1);
+    batch_vertex(p4[0], p4[1], z, color[0], color[1], color[2], color[3], u2, v2);
+    batch_vertex(p3[0], p3[1], z, color[0], color[1], color[2], color[3], u1, v2);
 }

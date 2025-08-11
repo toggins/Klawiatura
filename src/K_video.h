@@ -405,10 +405,15 @@ enum TextureIndices {
     TEX_STARMAN3,
     TEX_STARMAN4,
 
-    TEX_FIREBALL,
     TEX_EXPLODE1,
     TEX_EXPLODE2,
     TEX_EXPLODE3,
+
+    TEX_MISSILE_FIREBALL,
+    TEX_MISSILE_BEETROOT,
+    TEX_MISSILE_HAMMER,
+    TEX_MISSILE_SILVER_HAMMER,
+    TEX_MISSILE_SPIKE_BALL,
 
     TEX_100,
     TEX_200,
@@ -476,4 +481,4 @@ void batch_vertex(GLfloat, GLfloat, GLfloat, GLubyte, GLubyte, GLubyte, GLubyte,
 void clear_tiles();
 void add_gradient(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLubyte[4][4]);
 void add_backdrop(enum TextureIndices, GLfloat, GLfloat, GLfloat, GLubyte, GLubyte, GLubyte, GLubyte);
-void draw_sprite(enum TextureIndices, const float[3], const bool[2], const GLubyte[4]);
+void draw_sprite(enum TextureIndices, const float[3], const bool[2], GLfloat, const GLubyte[4]);

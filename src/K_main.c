@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
     config.max_spectators = 0;
     config.input_prediction_window = 8;
     config.state_size = sizeof(struct GameState);
-    config.input_size = sizeof(struct GameInput);
+    config.input_size = sizeof(enum GameInput);
     config.desync_detection = true;
     gekko_start(session, &config);
     gekko_net_adapter_set(session, gekko_default_adapter(local_port));
@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
     if (num_players > 1)
         gekko_set_local_delay(session, local_player, 2);
 
-    struct GameInput inputs[MAX_PLAYERS] = {0};
+    enum GameInput inputs[MAX_PLAYERS] = {GI_NONE};
     start_state(num_players, local_player);
 
     uint64_t last_time = 0;
@@ -100,21 +100,26 @@ int main(int argc, char** argv) {
         }
 
         const uint64_t current_time = SDL_GetTicks();
-        ticks += (float)(current_time - last_time) *
-                 ((float)((gekko_frames_ahead(session) >= 0.75f) ? (TICKRATE - 1L) : TICKRATE) / 1000.0f);
+        ticks += (float)(current_time - last_time) * (((float)TICKRATE - gekko_frames_ahead(session)) / 1000.0f);
         last_time = current_time;
 
         gekko_network_poll(session);
 
         while (ticks >= 1) {
-            struct GameInput input = {0};
+            enum GameInput input = GI_NONE;
             const bool* keyboard = SDL_GetKeyboardState(NULL);
-            input.action.up = keyboard[SDL_SCANCODE_UP];
-            input.action.left = keyboard[SDL_SCANCODE_LEFT];
-            input.action.down = keyboard[SDL_SCANCODE_DOWN];
-            input.action.right = keyboard[SDL_SCANCODE_RIGHT];
-            input.action.jump = keyboard[SDL_SCANCODE_Z];
-            input.action.run = input.action.fire = keyboard[SDL_SCANCODE_X];
+            if (keyboard[SDL_SCANCODE_UP])
+                input |= GI_UP;
+            if (keyboard[SDL_SCANCODE_LEFT])
+                input |= GI_LEFT;
+            if (keyboard[SDL_SCANCODE_DOWN])
+                input |= GI_DOWN;
+            if (keyboard[SDL_SCANCODE_RIGHT])
+                input |= GI_RIGHT;
+            if (keyboard[SDL_SCANCODE_Z])
+                input |= GI_JUMP;
+            if (keyboard[SDL_SCANCODE_X])
+                input |= (GI_RUN | GI_FIRE);
             gekko_add_local_input(session, local_player, &input);
 
             int count = 0;
@@ -126,6 +131,7 @@ int main(int argc, char** argv) {
                         break;
 
                     case DesyncDetected: {
+                        dump_state();
                         struct Desynced desync = event->data.desynced;
                         FATAL(
                             "DESYNC!!! f:%d, rh:%d, lc:%u, rc:%u", desync.frame, desync.remote_handle,
@@ -170,7 +176,7 @@ int main(int argc, char** argv) {
 
                     case AdvanceEvent: {
                         for (size_t j = 0; j < num_players; j++)
-                            inputs[j].value = event->data.adv.inputs[j];
+                            inputs[j] = ((enum GameInput*)(event->data.adv.inputs))[j];
                         tick = event->data.adv.frame;
                         tick_state(inputs);
                         break;

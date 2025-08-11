@@ -25,6 +25,8 @@
 #define HALF_SCREEN_HEIGHT (SCREEN_HEIGHT >> 1)
 #define F_SCREEN_WIDTH FfInt(SCREEN_WIDTH)
 #define F_SCREEN_HEIGHT FfInt(SCREEN_HEIGHT)
+#define F_HALF_SCREEN_WIDTH Fhalf(F_SCREEN_WIDTH)
+#define F_HALF_SCREEN_HEIGHT Fhalf(F_SCREEN_HEIGHT)
 
 typedef int16_t ObjectID;
 
@@ -54,6 +56,11 @@ enum GameObjectType {
 
     OBJ_POINTS,
 
+    OBJ_EXPLODE,
+    OBJ_MISSILE_FIREBALL,
+    OBJ_MISSILE_BEETROOT,
+    OBJ_MISSILE_HAMMER,
+
     OBJ_SIZE,
 };
 
@@ -82,6 +89,7 @@ enum ObjectValues {
     VAL_LUI_BOUNCE = VAL_START,
 
     VAL_MISSILE_OWNER = VAL_START,
+    VAL_MISSILE_ANGLE,
 
     VAL_POINTS = VAL_START,
     VAL_POINTS_PLAYER,
@@ -120,25 +128,21 @@ enum PlayerFrames {
     PF_GROW4,
 };
 
-struct GameInput {
-    union {
-        struct {
-            bool up : 1;
-            bool left : 1;
-            bool down : 1;
-            bool right : 1;
-            bool jump : 1;
-            bool run : 1;
-            bool fire : 1;
-        } action;
-        uint8_t value;
-    };
+enum GameInput {
+    GI_NONE = 0,
+    GI_UP = 1 << 0,
+    GI_LEFT = 1 << 1,
+    GI_DOWN = 1 << 2,
+    GI_RIGHT = 1 << 3,
+    GI_JUMP = 1 << 4,
+    GI_RUN = 1 << 5,
+    GI_FIRE = 1 << 6,
 };
 
 struct GameState {
     struct GamePlayer {
         bool active;
-        struct GameInput input, last_input;
+        enum GameInput input, last_input;
 
         ObjectID object;
         fvec2 bounds[2];
@@ -198,7 +202,8 @@ struct GameState {
 void start_state(int, int);
 void save_state(GekkoGameEvent*);
 void load_state(GekkoGameEvent*);
-void tick_state(struct GameInput[MAX_PLAYERS]);
+void dump_state();
+void tick_state(enum GameInput[MAX_PLAYERS]);
 void draw_state();
 
 void load_object(enum GameObjectType);
@@ -213,7 +218,7 @@ const struct BlockList {
 }* list_block_at(const fvec2[2]);
 
 void destroy_object(ObjectID);
-void draw_object(struct GameObject*, enum TextureIndices, const GLubyte[4]);
+void draw_object(struct GameObject*, enum TextureIndices, GLfloat, const GLubyte[4]);
 void play_sound_at_object(struct GameObject*, enum SoundIndices);
 
 int32_t random();

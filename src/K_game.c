@@ -1,5 +1,6 @@
 #include "K_game.h"
 #include "K_audio.h"
+#include "K_log.h"
 
 static struct GameState state = {0};
 static int local_player = -1L;
@@ -38,12 +39,12 @@ static bool touching_solid(const fvec2 rect[2]) {
         for (int bx = bx1; bx <= bx2; bx++) {
             ObjectID oid = state.blockmap[bx + (by * MAX_BLOCKS)];
             while (object_is_alive(oid)) {
-                struct GameObject* other = &(state.objects[oid]);
+                const struct GameObject* other = &(state.objects[oid]);
                 if (other->type == OBJ_SOLID) {
-                    fix16_t ox1 = Fadd(other->pos[0], other->bbox[0][0]);
-                    fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
-                    fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
-                    fix16_t oy2 = Fadd(other->pos[1], other->bbox[1][1]);
+                    const fix16_t ox1 = Fadd(other->pos[0], other->bbox[0][0]);
+                    const fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
+                    const fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
+                    const fix16_t oy2 = Fadd(other->pos[1], other->bbox[1][1]);
                     if (rect[0][0] < ox2 && rect[1][0] > ox1 && rect[0][1] < oy2 && rect[1][1] > oy1)
                         return true;
                 }
@@ -77,14 +78,14 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
         bool stop = false;
         if (displacee->values[VAL_X_SPEED] < FxZero) {
             for (size_t i = 0; i < list->num_objects; i++) {
-                struct GameObject* object = &(state.objects[list->objects[i]]);
+                const struct GameObject* object = &(state.objects[list->objects[i]]);
                 if (object->type != OBJ_SOLID)
                     continue;
 
                 if (displacee->values[VAL_Y_SPEED] >= FxZero &&
                     Fsub(Fadd(displacee->pos[1], displacee->bbox[1][1]), climb) <
                         Fadd(object->pos[1], object->bbox[0][1])) {
-                    fix16_t step = Fsub(Fadd(object->pos[1], object->bbox[0][1]), displacee->bbox[1][1]);
+                    const fix16_t step = Fsub(Fadd(object->pos[1], object->bbox[0][1]), displacee->bbox[1][1]);
                     if (!touching_solid((fvec2[2]){
                             {Fsub(Fadd(x, displacee->bbox[0][0]), FxOne),
                              Fsub(Fadd(step, displacee->bbox[0][1]), FxOne)},
@@ -106,14 +107,14 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
             displacee->values[VAL_X_TOUCH] = -(stop && !climbed);
         } else if (displacee->values[VAL_X_SPEED] > FxZero) {
             for (size_t i = 0; i < list->num_objects; i++) {
-                struct GameObject* object = &(state.objects[list->objects[i]]);
+                const struct GameObject* object = &(state.objects[list->objects[i]]);
                 if (object->type != OBJ_SOLID)
                     continue;
 
                 if (displacee->values[VAL_Y_SPEED] >= FxZero &&
                     Fsub(Fadd(displacee->pos[1], displacee->bbox[1][1]), climb) <
                         Fadd(object->pos[1], object->bbox[0][1])) {
-                    fix16_t step = Fsub(Fadd(object->pos[1], object->bbox[0][1]), displacee->bbox[1][1]);
+                    const fix16_t step = Fsub(Fadd(object->pos[1], object->bbox[0][1]), displacee->bbox[1][1]);
                     if (!touching_solid((fvec2[2]){
                             {Fadd(Fadd(x, displacee->bbox[0][0]), FxOne),
                              Fsub(Fadd(step, displacee->bbox[0][1]), FxOne)},
@@ -150,7 +151,7 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
         bool stop = false;
         if (displacee->values[VAL_Y_SPEED] < FxZero) {
             for (size_t i = 0; i < list->num_objects; i++) {
-                struct GameObject* object = &(state.objects[list->objects[i]]);
+                const struct GameObject* object = &(state.objects[list->objects[i]]);
                 if (object->type != OBJ_SOLID)
                     continue;
 
@@ -160,7 +161,7 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
             displacee->values[VAL_Y_TOUCH] = -stop;
         } else if (displacee->values[VAL_Y_SPEED] > FxZero) {
             for (size_t i = 0; i < list->num_objects; i++) {
-                struct GameObject* object = &(state.objects[list->objects[i]]);
+                const struct GameObject* object = &(state.objects[list->objects[i]]);
                 if (object->type != OBJ_SOLID && (object->type != OBJ_SOLID_TOP ||
                                                   Fsub(Fadd(y, displacee->bbox[1][1]), displacee->values[VAL_Y_SPEED]) >
                                                       Fadd(Fadd(object->pos[1], object->bbox[0][1]), climb)))
@@ -325,13 +326,13 @@ static void bump_object(ObjectID bid) {
         for (int bx = bx1; bx <= bx2; bx++) {
             ObjectID oid = state.blockmap[bx + (by * MAX_BLOCKS)];
             while (object_is_alive(oid)) {
-                struct GameObject* other = &(state.objects[oid]);
-                ObjectID next = other->previous_block;
+                const struct GameObject* other = &(state.objects[oid]);
+                const ObjectID next = other->previous_block;
                 if (bid != oid) {
-                    fix16_t ox1 = Fadd(other->pos[0], other->bbox[0][0]);
-                    fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
-                    fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
-                    fix16_t oy2 = Fadd(other->pos[1], other->bbox[1][1]);
+                    const fix16_t ox1 = Fadd(other->pos[0], other->bbox[0][0]);
+                    const fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
+                    const fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
+                    const fix16_t oy2 = Fadd(other->pos[1], other->bbox[1][1]);
                     if (x1 < ox2 && x2 > ox1 && y1 < oy2 && y2 > oy1 && !bump_check(oid, bid))
                         return;
                 }
@@ -347,7 +348,6 @@ static enum PlayerFrames get_player_frame(struct GameObject* object) {
             case POW_BIG: {
                 switch ((object->values[VAL_PLAYER_POWER] / 100L) % 3) {
                     default:
-                    case 0:
                         return PF_GROW1;
                     case 1:
                         return PF_GROW2;
@@ -360,7 +360,6 @@ static enum PlayerFrames get_player_frame(struct GameObject* object) {
             default: {
                 switch ((object->values[VAL_PLAYER_POWER] / 100L) % 4) {
                     default:
-                    case 0:
                         return PF_GROW1;
                     case 1:
                         return PF_GROW2;
@@ -379,10 +378,12 @@ static enum PlayerFrames get_player_frame(struct GameObject* object) {
     if (object->flags & FLG_PLAYER_DUCK)
         return PF_DUCK;
 
+    if (object->values[VAL_PLAYER_FIRE] > 0L)
+        return PF_FIRE;
+
     if (object->values[VAL_X_SPEED] != FxZero)
         switch (FtInt(object->values[VAL_PLAYER_FRAME]) % 3) {
             default:
-            case 0:
                 return PF_WALK1;
             case 1:
                 return PF_WALK2;
@@ -629,6 +630,62 @@ static enum TextureIndices get_player_texture(enum PlayerPowers power, enum Play
     return TEX_MARIO_SMALL;
 }
 
+static bool in_any_view(struct GameObject* object, fix16_t padding) {
+    const fix16_t sx1 = Fadd(object->pos[0], object->bbox[0][0]);
+    const fix16_t sy1 = Fadd(object->pos[1], object->bbox[0][1]);
+    const fix16_t sx2 = Fadd(object->pos[0], object->bbox[1][0]);
+    const fix16_t sy2 = Fadd(object->pos[1], object->bbox[1][1]);
+
+    for (size_t i = 0; i < MAX_PLAYERS; i++) {
+        const struct GamePlayer* player = &(state.players[i]);
+        if (!(player->active && object_is_alive(player->object)))
+            continue;
+
+        const struct GameObject* pawn = &(state.objects[player->object]);
+        const fix16_t ox = Fclamp(
+            pawn->pos[0], Fadd(player->bounds[0][0], F_HALF_SCREEN_WIDTH),
+            Fsub(player->bounds[1][0], F_HALF_SCREEN_WIDTH)
+        );
+        const fix16_t oy = Fclamp(
+            pawn->pos[1], Fadd(player->bounds[0][1], F_HALF_SCREEN_HEIGHT),
+            Fsub(player->bounds[1][1], F_HALF_SCREEN_HEIGHT)
+        );
+        const fix16_t ox1 = Fsub(Fsub(ox, F_HALF_SCREEN_WIDTH), padding);
+        const fix16_t oy1 = Fsub(Fsub(oy, F_HALF_SCREEN_HEIGHT), padding);
+        const fix16_t ox2 = Fadd(Fadd(ox, F_HALF_SCREEN_WIDTH), padding);
+        const fix16_t oy2 = Fadd(Fadd(oy, F_HALF_SCREEN_HEIGHT), padding);
+        if (sx1 < ox2 && sx2 > ox1 && sy1 < oy2 && sy2 > oy1)
+            return true;
+    }
+
+    return false;
+}
+
+static bool in_player_view(struct GameObject* object, int pid, fix16_t padding) {
+    const struct GamePlayer* player = &(state.players[pid]);
+    if (!(player->active && object_is_alive(player->object)))
+        return false;
+
+    const fix16_t sx1 = Fadd(object->pos[0], object->bbox[0][0]);
+    const fix16_t sy1 = Fadd(object->pos[1], object->bbox[0][1]);
+    const fix16_t sx2 = Fadd(object->pos[0], object->bbox[1][0]);
+    const fix16_t sy2 = Fadd(object->pos[1], object->bbox[1][1]);
+
+    const struct GameObject* pawn = &(state.objects[player->object]);
+    const fix16_t ox = Fclamp(
+        pawn->pos[0], Fadd(player->bounds[0][0], F_HALF_SCREEN_WIDTH), Fsub(player->bounds[1][0], F_HALF_SCREEN_WIDTH)
+    );
+    const fix16_t oy = Fclamp(
+        pawn->pos[1], Fadd(player->bounds[0][1], F_HALF_SCREEN_HEIGHT), Fsub(player->bounds[1][1], F_HALF_SCREEN_HEIGHT)
+    );
+    const fix16_t ox1 = Fsub(Fsub(ox, F_HALF_SCREEN_WIDTH), padding);
+    const fix16_t oy1 = Fsub(Fsub(oy, F_HALF_SCREEN_HEIGHT), padding);
+    const fix16_t ox2 = Fadd(Fadd(ox, F_HALF_SCREEN_WIDTH), padding);
+    const fix16_t oy2 = Fadd(Fadd(oy, F_HALF_SCREEN_HEIGHT), padding);
+
+    return sx1 < ox2 && sx2 > ox1 && sy1 < oy2 && sy2 > oy1;
+}
+
 /* ======
 
    ENGINE
@@ -730,7 +787,7 @@ void start_state(int num_players, int local) {
 
     ObjectID oid = create_object(OBJ_SOLID, (fvec2){FxZero, FfInt(416L)});
     if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][0] = FfInt(640L);
         state.objects[oid].bbox[1][1] = FfInt(128L);
     }
     oid = create_object(OBJ_SOLID, (fvec2){FfInt(128L), FfInt(416L)});
@@ -800,11 +857,67 @@ void load_state(GekkoGameEvent* event) {
     SDL_memcpy(&state, event->data.load.state, sizeof(state));
 }
 
-void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
+void dump_state() {
+    INFO("\n[PLAYERS]");
+    for (size_t i = 0; i < MAX_PLAYERS; i++) {
+        const struct GamePlayer* player = &(state.players[i]);
+        if (!(player->active))
+            continue;
+
+        INFO("  Player %zu:", i);
+        INFO("      Input: %u -> %u", player->last_input, player->last_input);
+        INFO("      Object: %i", player->object);
+        INFO(
+            "      Bounds: (%.2f, %.2f) x (%.2f, %.2f)", FtDouble(player->bounds[0][0]), FtDouble(player->bounds[0][1]),
+            FtDouble(player->bounds[1][0]), FtDouble(player->bounds[1][1])
+        );
+        INFO("      Lives: %i", player->lives);
+        INFO("      Coins: %i", player->coins);
+        INFO("      Score: %i", player->score);
+        INFO("      Power: %i", player->power);
+        INFO("");
+    }
+
+    INFO("\n[LEVEL]");
+    INFO("  Flags: %u", state.flags);
+    INFO("  Size: %.2f x %.2f", FtDouble(state.size[0]), FtDouble(state.size[1]));
+    INFO("  Clock: %u", state.clock);
+    INFO("  Time: %zu", state.time);
+    INFO("  Seed: %u", state.seed);
+
+    INFO("\n[OBJECTS]");
+    ObjectID oid = state.live_objects;
+    while (object_is_alive(oid)) {
+        const struct GameObject* object = &(state.objects[oid]);
+
+        INFO("  Object %i:", oid);
+        INFO("      Type: %i", object->type);
+        INFO("      Object Flags: %u", object->object_flags);
+        INFO("      Block: %i", object->block);
+        INFO("      Position: (%.2f, %.2f)", FtDouble(object->pos[0]), FtDouble(object->pos[1]));
+        INFO(
+            "      Hitbox: (%.2f, %.2f) x (%.2f, %.2f)", FtDouble(object->bbox[0][0]), FtDouble(object->bbox[0][1]),
+            FtDouble(object->bbox[1][0]), FtDouble(object->bbox[1][1])
+        );
+        INFO("      Depth: %i", object->depth);
+
+        INFO("      Non-Zero Values:");
+        for (size_t i = 0; i < MAX_VALUES; i++)
+            if (object->values[i] != 0L)
+                INFO("          Value %zu: %i", i, object->values[i]);
+
+        INFO("      Flags: %u", object->flags);
+        INFO("");
+
+        oid = object->previous;
+    }
+}
+
+void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
     for (size_t i = 0; i < MAX_PLAYERS; i++) {
         struct GamePlayer* player = &(state.players[i]);
-        player->last_input.value = player->input.value;
-        player->input.value = inputs[i].value;
+        player->last_input = player->input;
+        player->input = inputs[i];
     }
 
     ObjectID oid = state.live_objects;
@@ -823,37 +936,37 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                 }
                 struct GamePlayer* player = &(state.players[pid]);
 
-                const bool cant_run = !(player->input.action.run);
-                const bool jumped = player->input.action.jump && !(player->last_input.action.jump);
+                const bool cant_run = !(player->input & GI_RUN);
+                const bool jumped = (player->input & GI_JUMP) && !(player->last_input & GI_JUMP);
 
-                if (player->input.action.right && object->values[VAL_X_TOUCH] <= 0L &&
+                if ((player->input & GI_RIGHT) && object->values[VAL_X_TOUCH] <= 0L &&
                     !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] >= FxZero &&
                     ((cant_run && object->values[VAL_X_SPEED] < 0x00046000) ||
                      (!cant_run && object->values[VAL_X_SPEED] < 0x00078000)))
                     object->values[VAL_X_SPEED] = Fadd(object->values[VAL_X_SPEED], 0x00002000);
-                if (player->input.action.left && object->values[VAL_X_TOUCH] >= 0L &&
+                if ((player->input & GI_LEFT) && object->values[VAL_X_TOUCH] >= 0L &&
                     !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] <= FxZero &&
                     ((cant_run && object->values[VAL_X_SPEED] > -0x00046000) ||
                      (!cant_run && object->values[VAL_X_SPEED] > -0x00078000)))
                     object->values[VAL_X_SPEED] = Fsub(object->values[VAL_X_SPEED], 0x00002000);
 
-                if (!(player->input.action.right) && object->values[VAL_X_SPEED] > FxZero)
+                if (!(player->input & GI_RIGHT) && object->values[VAL_X_SPEED] > FxZero)
                     object->values[VAL_X_SPEED] = Fmax(Fsub(object->values[VAL_X_SPEED], 0x00002000), FxZero);
-                if (!(player->input.action.left) && object->values[VAL_X_SPEED] < FxZero)
+                if (!(player->input & GI_LEFT) && object->values[VAL_X_SPEED] < FxZero)
                     object->values[VAL_X_SPEED] = Fmin(Fadd(object->values[VAL_X_SPEED], 0x00002000), FxZero);
 
-                if (player->input.action.right && object->values[VAL_X_TOUCH] <= 0L &&
+                if ((player->input & GI_RIGHT) && object->values[VAL_X_TOUCH] <= 0L &&
                     !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] < FxZero)
                     object->values[VAL_X_SPEED] = Fadd(object->values[VAL_X_SPEED], 0x00006000);
-                if (player->input.action.left && object->values[VAL_X_TOUCH] >= 0L &&
+                if ((player->input & GI_LEFT) && object->values[VAL_X_TOUCH] >= 0L &&
                     !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] > FxZero)
                     object->values[VAL_X_SPEED] = Fsub(object->values[VAL_X_SPEED], 0x00006000);
 
-                if (player->input.action.right && object->values[VAL_X_TOUCH] <= 0L &&
+                if ((player->input & GI_RIGHT) && object->values[VAL_X_TOUCH] <= 0L &&
                     !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] < FxOne &&
                     object->values[VAL_X_SPEED] >= FxZero)
                     object->values[VAL_X_SPEED] = Fadd(object->values[VAL_X_SPEED], FxOne);
-                if (player->input.action.left && object->values[VAL_X_TOUCH] >= 0L &&
+                if ((player->input & GI_LEFT) && object->values[VAL_X_TOUCH] >= 0L &&
                     !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] > -FxOne &&
                     object->values[VAL_X_SPEED] <= FxZero)
                     object->values[VAL_X_SPEED] = Fsub(object->values[VAL_X_SPEED], FxOne);
@@ -863,11 +976,11 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                         object->values[VAL_X_SPEED], object->values[VAL_X_SPEED] >= FxZero ? 0x00002000 : -0x00002000
                     );
 
-                if (player->input.action.down && !(player->input.action.left) && !(player->input.action.right) &&
+                if ((player->input & GI_DOWN) && !(player->input & GI_LEFT) && !(player->input & GI_RIGHT) &&
                     object->values[VAL_PLAYER_GROUND] > 0L && player->power != POW_SMALL)
                     object->flags |= FLG_PLAYER_DUCK;
                 if (object->flags & FLG_PLAYER_DUCK) {
-                    if (!(player->input.action.down) || player->power == POW_SMALL)
+                    if (!(player->input & GI_DOWN) || player->power == POW_SMALL)
                         object->flags &= ~FLG_PLAYER_DUCK;
                     else if (object->values[VAL_X_SPEED] > FxZero)
                         object->values[VAL_X_SPEED] = Fmax(Fsub(object->values[VAL_X_SPEED], 0x00006000), FxZero);
@@ -875,8 +988,8 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                         object->values[VAL_X_SPEED] = Fmin(Fadd(object->values[VAL_X_SPEED], 0x00006000), FxZero);
                 }
 
-                if (player->input.action.jump && object->values[VAL_Y_SPEED] < FxZero /* and _y < _water_y */ &&
-                    !(player->input.action.down))
+                if ((player->input & GI_JUMP) && object->values[VAL_Y_SPEED] < FxZero /* and _y < _water_y */ &&
+                    !(player->input & GI_DOWN))
                     object->values[VAL_Y_SPEED] = Fsub(
                         object->values[VAL_Y_SPEED],
                         (player->power == POW_LUI)
@@ -884,14 +997,14 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                             : ((Fabs(object->values[VAL_X_SPEED]) < 0x0000A000) ? 0x00006666 : FxHalf)
                     );
 
-                if ((jumped || (player->input.action.jump && object->flags & FLG_PLAYER_JUMP)) &&
-                    /* _y < _water_y and */ !(player->input.action.down) && object->values[VAL_PLAYER_GROUND] > 0L) {
+                if ((jumped || ((player->input & GI_JUMP) && object->flags & FLG_PLAYER_JUMP)) &&
+                    /* _y < _water_y and */ !(player->input & GI_DOWN) && object->values[VAL_PLAYER_GROUND] > 0L) {
                     object->values[VAL_PLAYER_GROUND] = 0L;
                     object->values[VAL_Y_SPEED] = FfInt(-13L);
                     object->flags &= ~FLG_PLAYER_JUMP;
                     play_sound_at_object(object, SND_JUMP);
                 }
-                if (!(player->input.action.jump) && /* _y < _water_y and */ !(player->input.action.down) &&
+                if (!(player->input & GI_JUMP) && /* _y < _water_y and */ !(player->input & GI_DOWN) &&
                     object->values[VAL_PLAYER_GROUND] > 0L && (object->flags & FLG_PLAYER_JUMP))
                     object->flags &= ~FLG_PLAYER_JUMP;
                 if (jumped && object->values[VAL_PLAYER_GROUND] <= 0L && object->values[VAL_Y_SPEED] > FxZero)
@@ -922,8 +1035,15 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                 else if (object->values[VAL_X_SPEED] < FxZero)
                     object->object_flags |= OBF_X_FLIP;
 
-                if (object->values[VAL_PLAYER_POWER] > 0L)
+                if (object->values[VAL_PLAYER_POWER] > 0L) {
                     object->values[VAL_PLAYER_POWER] -= 91L;
+                    object->values[VAL_PLAYER_FRAME] = FxZero;
+                }
+                if (object->values[VAL_PLAYER_FIRE] > 0L) {
+                    --(object->values[VAL_PLAYER_FIRE]);
+                    object->values[VAL_PLAYER_FRAME] = FxZero;
+                }
+
                 object->values[VAL_PLAYER_FRAME] =
                     (object->values[VAL_PLAYER_GROUND] > 0L && object->values[VAL_X_SPEED] != FxZero)
                         ? Fadd(
@@ -932,13 +1052,52 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                           )
                         : FxZero;
 
-                if (player->power == POW_LUI && object->values[VAL_PLAYER_GROUND] <= 0L) {
-                    const ObjectID eid = create_object(OBJ_PLAYER_EFFECT, object->pos);
-                    if (object_is_alive(eid)) {
-                        struct GameObject* effect = &(state.objects[eid]);
-                        effect->object_flags |= object->object_flags;
-                        effect->values[VAL_PLAYER_EFFECT_POWER] = player->power;
-                        effect->values[VAL_PLAYER_EFFECT_FRAME] = get_player_frame(object);
+                switch (player->power) {
+                    default:
+                        break;
+
+                    case POW_FIRE:
+                    case POW_BEETROOT:
+                    case POW_HAMMER: {
+                        if ((player->input & GI_FIRE) && !(player->last_input & GI_FIRE) &&
+                            !(object->flags & FLG_PLAYER_DUCK))
+                            for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
+                                if (!object_is_alive((ObjectID)(object->values[i]))) {
+                                    const ObjectID mid = create_object(
+                                        OBJ_MISSILE_FIREBALL,
+                                        (fvec2){
+                                            Fadd(object->pos[0], FfInt((object->object_flags & OBF_X_FLIP) ? -5L : 5L)),
+                                            Fsub(object->pos[1], FfInt(29L))
+                                        }
+                                    );
+                                    if (object_is_alive(mid)) {
+                                        object->values[i] = mid;
+                                        struct GameObject* missile = &(state.objects[mid]);
+                                        missile->object_flags |= object->object_flags & OBF_X_FLIP;
+                                        missile->values[VAL_MISSILE_OWNER] = oid;
+                                        missile->values[VAL_X_SPEED] =
+                                            (object->object_flags & OBF_X_FLIP) ? -0x0007C000 : 0x0007C000;
+                                    }
+
+                                    if (object->values[VAL_PLAYER_GROUND] > 0L)
+                                        object->values[VAL_PLAYER_FIRE] = 2L;
+                                    play_sound_at_object(object, SND_FIRE);
+                                    break;
+                                }
+                        break;
+                    }
+
+                    case POW_LUI: {
+                        if (object->values[VAL_PLAYER_GROUND] <= 0L) {
+                            const ObjectID eid = create_object(OBJ_PLAYER_EFFECT, object->pos);
+                            if (object_is_alive(eid)) {
+                                struct GameObject* effect = &(state.objects[eid]);
+                                effect->object_flags |= object->object_flags;
+                                effect->values[VAL_PLAYER_EFFECT_POWER] = player->power;
+                                effect->values[VAL_PLAYER_EFFECT_FRAME] = get_player_frame(object);
+                            }
+                        }
+                        break;
                     }
                 }
 
@@ -984,6 +1143,30 @@ void tick_state(struct GameInput inputs[MAX_PLAYERS]) {
                     if (time >= 200L)
                         object->object_flags |= OBF_DESTROY;
                 } else if (time >= 100L)
+                    object->object_flags |= OBF_DESTROY;
+
+                break;
+            }
+
+            case OBJ_MISSILE_FIREBALL: {
+                object->values[VAL_MISSILE_ANGLE] = Fadd(
+                    object->values[VAL_MISSILE_ANGLE], object->values[VAL_X_SPEED] < FxZero ? -0x000B4000 : 0x000B4000
+                );
+                object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
+
+                displace_object(oid, FfInt(10L), false);
+                if (object->values[VAL_X_TOUCH] != 0L) {
+                    object->object_flags |= OBF_DESTROY;
+                    break;
+                }
+                if (object->values[VAL_Y_TOUCH] > 0L)
+                    object->values[VAL_Y_SPEED] = FfInt(-5L);
+
+                const ObjectID ownid = (ObjectID)(object->values[VAL_MISSILE_OWNER]);
+                if (object_is_alive(ownid) && state.objects[ownid].type == OBJ_PLAYER) {
+                    if (!in_player_view(object, state.objects[ownid].values[VAL_PLAYER_INDEX], FxZero))
+                        object->object_flags |= OBF_DESTROY;
+                } else if (!in_any_view(object, FxZero))
                     object->object_flags |= OBF_DESTROY;
 
                 break;
@@ -1034,7 +1217,7 @@ void draw_state() {
                             tex = TEX_CLOUD3;
                             break;
                     }
-                    draw_object(object, tex, WHITE);
+                    draw_object(object, tex, 0, WHITE);
                     break;
                 }
 
@@ -1052,7 +1235,7 @@ void draw_state() {
                             tex = TEX_BUSH3;
                             break;
                     }
-                    draw_object(object, tex, WHITE);
+                    draw_object(object, tex, 0, WHITE);
                     break;
                 }
 
@@ -1062,7 +1245,7 @@ void draw_state() {
                         get_player_texture(
                             state.players[object->values[VAL_PLAYER_INDEX]].power, get_player_frame(object)
                         ),
-                        WHITE
+                        0, WHITE
                     );
                     break;
                 }
@@ -1073,7 +1256,7 @@ void draw_state() {
                         get_player_texture(
                             object->values[VAL_PLAYER_EFFECT_POWER], object->values[VAL_PLAYER_EFFECT_FRAME]
                         ),
-                        ALPHA(FtInt(object->values[VAL_PLAYER_EFFECT_ALPHA]))
+                        0, ALPHA(FtInt(object->values[VAL_PLAYER_EFFECT_ALPHA]))
                     );
                     break;
                 }
@@ -1092,12 +1275,12 @@ void draw_state() {
                             tex = TEX_COIN3;
                             break;
                     }
-                    draw_object(object, tex, WHITE);
+                    draw_object(object, tex, 0, WHITE);
                     break;
                 }
 
                 case OBJ_MUSHROOM: {
-                    draw_object(object, TEX_MUSHROOM, WHITE);
+                    draw_object(object, TEX_MUSHROOM, 0, WHITE);
                     break;
                 }
 
@@ -1117,7 +1300,7 @@ void draw_state() {
                             tex = TEX_FIRE_FLOWER4;
                             break;
                     }
-                    draw_object(object, tex, WHITE);
+                    draw_object(object, tex, 0, WHITE);
                     break;
                 }
 
@@ -1135,7 +1318,7 @@ void draw_state() {
                             tex = TEX_BEETROOT3;
                             break;
                     }
-                    draw_object(object, tex, WHITE);
+                    draw_object(object, tex, 0, WHITE);
                     break;
                 }
 
@@ -1185,12 +1368,12 @@ void draw_state() {
                                 tex = TEX_LUI5;
                                 break;
                         }
-                    draw_object(object, tex, WHITE);
+                    draw_object(object, tex, 0, WHITE);
                     break;
                 }
 
                 case OBJ_HAMMER_SUIT: {
-                    draw_object(object, TEX_HAMMER_SUIT, WHITE);
+                    draw_object(object, TEX_HAMMER_SUIT, 0, WHITE);
                     break;
                 }
 
@@ -1230,7 +1413,12 @@ void draw_state() {
                             break;
                     }
 
-                    draw_object(object, tex, WHITE);
+                    draw_object(object, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_MISSILE_FIREBALL: {
+                    draw_object(object, TEX_MISSILE_FIREBALL, FtFloat(object->values[VAL_MISSILE_ANGLE]), WHITE);
                     break;
                 }
             }
@@ -1404,6 +1592,11 @@ void load_object(enum GameObjectType type) {
             load_sound(SND_1UP);
             break;
         }
+
+        case OBJ_MISSILE_FIREBALL: {
+            load_texture(TEX_MISSILE_FIREBALL);
+            break;
+        }
     }
 }
 
@@ -1447,19 +1640,18 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_PLAYER: {
+                    object->depth = -1L;
+
                     object->bbox[0][0] = FfInt(-9L);
                     object->bbox[0][1] = FfInt(-25L);
                     object->bbox[1][0] = FfInt(10L);
                     object->bbox[1][1] = FxOne;
-                    object->depth = -1L;
 
-                    object->values[VAL_X_SPEED] = FxZero;
-                    object->values[VAL_Y_SPEED] = FxZero;
-                    object->values[VAL_X_TOUCH] = 0L;
-                    object->values[VAL_Y_TOUCH] = 0L;
+                    object->values[VAL_X_SPEED] = object->values[VAL_Y_SPEED] = FxZero;
+                    object->values[VAL_X_TOUCH] = object->values[VAL_Y_TOUCH] = 0L;
                     object->values[VAL_PLAYER_INDEX] = -1L;
                     object->values[VAL_PLAYER_FRAME] = FxZero;
-                    object->values[VAL_PLAYER_POWER] = 0L;
+                    object->values[VAL_PLAYER_POWER] = object->values[VAL_PLAYER_FIRE] = 0L;
                     for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
                         object->values[i] = -1L;
 
@@ -1475,6 +1667,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_COIN: {
+                    object->depth = 1L;
+
                     object->bbox[0][0] = FfInt(6L);
                     object->bbox[0][1] = FfInt(2L);
                     object->bbox[1][0] = FfInt(25L);
@@ -1488,10 +1682,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[1][0] = FfInt(15L);
                     object->bbox[1][1] = FxOne;
 
-                    object->values[VAL_X_SPEED] = FxZero;
-                    object->values[VAL_Y_SPEED] = FxZero;
-                    object->values[VAL_X_TOUCH] = 0L;
-                    object->values[VAL_Y_TOUCH] = 0L;
+                    object->values[VAL_X_SPEED] = object->values[VAL_Y_SPEED] = FxZero;
+                    object->values[VAL_X_TOUCH] = object->values[VAL_Y_TOUCH] = 0L;
 
                     object->flags = FLG_POWERUP_DEFAULT;
                     break;
@@ -1523,10 +1715,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[1][0] = FfInt(15L);
                     object->bbox[1][1] = FxOne;
 
-                    object->values[VAL_X_SPEED] = FxZero;
-                    object->values[VAL_Y_SPEED] = FxZero;
-                    object->values[VAL_X_TOUCH] = 0L;
-                    object->values[VAL_Y_TOUCH] = 0L;
+                    object->values[VAL_X_SPEED] = object->values[VAL_Y_SPEED] = FxZero;
+                    object->values[VAL_X_TOUCH] = object->values[VAL_Y_TOUCH] = 0L;
                     object->values[VAL_LUI_BOUNCE] = 0L;
 
                     object->flags = FLG_POWERUP_DEFAULT;
@@ -1549,6 +1739,16 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->values[VAL_POINTS_PLAYER] = -1L;
                     object->values[VAL_POINTS] = 0L;
                     object->values[VAL_POINTS_TIME] = 0L;
+                    break;
+                }
+
+                case OBJ_MISSILE_FIREBALL: {
+                    object->bbox[0][0] = object->bbox[0][1] = FfInt(-7L);
+                    object->bbox[1][0] = object->bbox[1][1] = FfInt(8L);
+
+                    object->values[VAL_X_SPEED] = object->values[VAL_Y_SPEED] = FxZero;
+                    object->values[VAL_X_TOUCH] = object->values[VAL_Y_TOUCH] = 0L;
+                    object->values[VAL_MISSILE_OWNER] = -1;
                     break;
                 }
             }
@@ -1611,11 +1811,11 @@ const struct BlockList* list_block_at(const fvec2 rect[2]) {
         for (int bx = bx1; bx <= bx2; bx++) {
             ObjectID oid = state.blockmap[bx + (by * MAX_BLOCKS)];
             while (object_is_alive(oid)) {
-                struct GameObject* other = &(state.objects[oid]);
-                fix16_t ox1 = Fadd(other->pos[0], other->bbox[0][0]);
-                fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
-                fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
-                fix16_t oy2 = Fadd(other->pos[1], other->bbox[1][1]);
+                const struct GameObject* other = &(state.objects[oid]);
+                const fix16_t ox1 = Fadd(other->pos[0], other->bbox[0][0]);
+                const fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
+                const fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
+                const fix16_t oy2 = Fadd(other->pos[1], other->bbox[1][1]);
                 if (rect[0][0] < ox2 && rect[1][0] > ox1 && rect[0][1] < oy2 && rect[1][1] > oy1)
                     list.objects[list.num_objects++] = oid;
                 oid = other->previous_block;
@@ -1648,6 +1848,24 @@ void destroy_object(ObjectID index) {
 
             break;
         }
+
+        case OBJ_MISSILE_FIREBALL:
+        case OBJ_MISSILE_BEETROOT:
+        case OBJ_MISSILE_HAMMER: {
+            const ObjectID oid = (ObjectID)(object->values[VAL_MISSILE_OWNER]);
+            if (object_is_alive(oid)) {
+                struct GameObject* owner = &(state.objects[oid]);
+                if (owner->type != OBJ_PLAYER)
+                    break;
+
+                for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
+                    if (owner->values[i] == index) {
+                        owner->values[i] = -1L;
+                        break;
+                    }
+            }
+            break;
+        }
     }
     object->type = OBJ_INVALID;
 
@@ -1671,10 +1889,10 @@ void destroy_object(ObjectID index) {
     state.next_object = SDL_min(state.next_object, index);
 }
 
-void draw_object(struct GameObject* object, enum TextureIndices tid, const GLubyte color[4]) {
+void draw_object(struct GameObject* object, enum TextureIndices tid, GLfloat angle, const GLubyte color[4]) {
     draw_sprite(
         tid, (float[3]){FtInt(object->pos[0]), FtInt(object->pos[1]), object->depth},
-        (bool[2]){object->object_flags & OBF_X_FLIP, object->object_flags & OBF_Y_FLIP}, color
+        (bool[2]){object->object_flags & OBF_X_FLIP, object->object_flags & OBF_Y_FLIP}, angle, color
     );
 }
 
