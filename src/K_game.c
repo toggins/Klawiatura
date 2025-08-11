@@ -1849,7 +1849,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[0][0] = object->bbox[0][1] = FfInt(-7L);
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(8L);
 
-                    object->values[VAL_MISSILE_OWNER] = -1;
+                    object->values[VAL_MISSILE_OWNER] = -1L;
                     break;
                 }
             }
@@ -1867,9 +1867,8 @@ void move_object(ObjectID index, const fvec2 pos) {
         return;
 
     struct GameObject* object = &(state.objects[index]);
-    if (fvec2_equal(pos, object->pos))
-        return;
-    fvec2_copy(pos, object->pos);
+    object->pos[0] = pos[0];
+    object->pos[1] = pos[1];
 
     int32_t bx = object->pos[0] / BLOCK_SIZE;
     int32_t by = object->pos[1] / BLOCK_SIZE;
