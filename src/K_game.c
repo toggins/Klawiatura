@@ -1487,8 +1487,6 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                             if (object->values[VAL_MISSILE_HIT] > 0L) {
                                 ++(object->values[VAL_MISSILE_HIT]);
                             } else {
-                                create_object(OBJ_EXPLODE, object->pos);
-
                                 struct GameObject* bumped = &(state.objects[bid]);
                                 if (bumped->type == OBJ_BRICK_BLOCK || bumped->type == OBJ_BRICK_BLOCK_GRAY) {
                                     break_brick(bumped, (ObjectID)(object->values[VAL_MISSILE_OWNER]));
@@ -1501,6 +1499,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                     }
 
                     if (hit > 0L) {
+                        create_object(OBJ_EXPLODE, object->pos);
                         object->values[VAL_X_SPEED] = -(object->values[VAL_X_SPEED]);
                         object->values[VAL_Y_SPEED] = FfInt(-8L);
 
