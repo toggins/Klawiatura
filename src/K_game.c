@@ -191,6 +191,29 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
         default:
             break;
 
+        case OBJ_PLAYER: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type != OBJ_PLAYER)
+                break;
+
+            if (self->values[VAL_PLAYER_GROUND] <= 0L && self->values[VAL_Y_SPEED] > FxZero &&
+                self->pos[1] < Fsub(other->pos[1], FfInt(10L))) {
+                self->values[VAL_Y_SPEED] =
+                    FfInt((state.players[self->values[VAL_PLAYER_INDEX]].input & GI_JUMP) ? -13L : -8L);
+                other->values[VAL_Y_SPEED] = Fmax(other->values[VAL_Y_SPEED], FxZero);
+                play_sound_at_object(other, SND_STOMP);
+            } else if (Fabs(self->values[VAL_X_SPEED]) > Fabs(other->values[VAL_X_SPEED])) {
+                if ((self->values[VAL_X_SPEED] > FxZero && self->pos[0] < other->pos[0]) ||
+                    (self->values[VAL_X_SPEED] < FxZero && self->pos[0] > other->pos[0])) {
+                    other->values[VAL_X_SPEED] = Fadd(other->values[VAL_X_SPEED], Fhalf(self->values[VAL_X_SPEED]));
+                    self->values[VAL_X_SPEED] = -Fhalf(self->values[VAL_X_SPEED]);
+                    if (Fabs(self->values[VAL_X_SPEED]) >= FfInt(2L))
+                        play_sound_at_object(self, SND_BUMP);
+                }
+            }
+            break;
+        }
+
         case OBJ_COIN: {
             struct GameObject* other = &(state.objects[other_id]);
             if (other->type == OBJ_PLAYER) {
@@ -1122,9 +1145,9 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 }
 
                 // Animation
-                if (object->values[VAL_X_SPEED] > FxZero)
+                if (object->values[VAL_X_SPEED] > FxZero && (player->input & GI_RIGHT))
                     object->object_flags &= ~OBF_X_FLIP;
-                else if (object->values[VAL_X_SPEED] < FxZero)
+                else if (object->values[VAL_X_SPEED] < FxZero && (player->input & GI_LEFT))
                     object->object_flags |= OBF_X_FLIP;
 
                 if (object->values[VAL_PLAYER_POWER] > 0L) {
@@ -1425,7 +1448,7 @@ void draw_state() {
                         get_player_texture(
                             state.players[object->values[VAL_PLAYER_INDEX]].power, get_player_frame(object)
                         ),
-                        0, WHITE
+                        0, ALPHA(object->values[VAL_PLAYER_INDEX] != local_player ? 190 : 255)
                     );
                     break;
                 }
@@ -1730,6 +1753,8 @@ void load_object(enum GameObjectType type) {
             load_sound(SND_FIRE);
             load_sound(SND_GROW);
             load_sound(SND_WARP);
+            load_sound(SND_BUMP);
+            load_sound(SND_STOMP);
 
             load_object(OBJ_PLAYER_EFFECT);
             load_object(OBJ_PLAYER_DEAD);
