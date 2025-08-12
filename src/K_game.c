@@ -26,6 +26,19 @@ static void give_points(struct GameObject* item, int player, int points) {
     }
 }
 
+static bool is_solid(ObjectID oid, bool ignore_full, bool ignore_top) {
+    switch (state.objects[oid].type) {
+        case OBJ_SOLID:
+        case OBJ_BRICK_BLOCK:
+        case OBJ_BRICK_BLOCK_GRAY:
+            return !ignore_full;
+        case OBJ_SOLID_TOP:
+            return !ignore_top;
+        default:
+            return false;
+    }
+}
+
 static bool touching_solid(const fvec2 rect[2]) {
     int bx1 = Fsub(rect[0][0], BLOCK_SIZE) / BLOCK_SIZE;
     int by1 = Fsub(rect[0][1], BLOCK_SIZE) / BLOCK_SIZE;
@@ -40,7 +53,7 @@ static bool touching_solid(const fvec2 rect[2]) {
             ObjectID oid = state.blockmap[bx + (by * MAX_BLOCKS)];
             while (object_is_alive(oid)) {
                 const struct GameObject* other = &(state.objects[oid]);
-                if (other->type == OBJ_SOLID) {
+                if (is_solid(oid, false, true)) {
                     const fix16_t ox1 = Fadd(other->pos[0], other->bbox[0][0]);
                     const fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
                     const fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
@@ -53,6 +66,77 @@ static bool touching_solid(const fvec2 rect[2]) {
         }
 
     return false;
+}
+
+static void bump_brick(struct GameObject* brick, ObjectID from) {
+    if (brick->values[VAL_BLOCK_BUMP] <= 0L) {
+        const ObjectID bid = create_object(OBJ_BLOCK_BUMP, brick->pos);
+        if (object_is_alive(bid))
+            state.objects[bid].values[VAL_BLOCK_BUMP_OWNER] = from;
+
+        brick->values[VAL_BLOCK_BUMP] = 1L;
+        play_sound_at_object(brick, SND_BUMP);
+    }
+}
+
+static void break_brick(struct GameObject* brick, ObjectID from) {
+    const ObjectID bid = create_object(OBJ_BLOCK_BUMP, brick->pos);
+    if (object_is_alive(bid))
+        state.objects[bid].values[VAL_BLOCK_BUMP_OWNER] = from;
+
+    const enum GameObjectType stype = (brick->type == OBJ_BRICK_BLOCK_GRAY) ? OBJ_BRICK_SHARD_GRAY : OBJ_BRICK_SHARD;
+    ObjectID sid = create_object(stype, (fvec2){Fadd(brick->pos[0], FfInt(8)), Fadd(brick->pos[1], FfInt(8))});
+    if (object_is_alive(sid)) {
+        state.objects[sid].values[VAL_X_SPEED] = FfInt(-2);
+        state.objects[sid].values[VAL_Y_SPEED] = FfInt(-8);
+    }
+    sid = create_object(stype, (fvec2){Fadd(brick->pos[0], FfInt(16)), Fadd(brick->pos[1], FfInt(8))});
+    if (object_is_alive(sid)) {
+        state.objects[sid].values[VAL_X_SPEED] = FfInt(2);
+        state.objects[sid].values[VAL_Y_SPEED] = FfInt(-8);
+    }
+    sid = create_object(stype, (fvec2){Fadd(brick->pos[0], FfInt(8)), Fadd(brick->pos[1], FfInt(16))});
+    if (object_is_alive(sid)) {
+        state.objects[sid].values[VAL_X_SPEED] = FfInt(-3);
+        state.objects[sid].values[VAL_Y_SPEED] = FfInt(-6);
+    }
+    sid = create_object(stype, (fvec2){Fadd(brick->pos[0], FfInt(16)), Fadd(brick->pos[1], FfInt(16))});
+    if (object_is_alive(sid)) {
+        state.objects[sid].values[VAL_X_SPEED] = FfInt(3);
+        state.objects[sid].values[VAL_Y_SPEED] = FfInt(-6);
+    }
+
+    play_sound_at_object(brick, SND_BREAK);
+    brick->object_flags |= OBF_DESTROY;
+}
+
+static void top_check(ObjectID self_id, ObjectID other_id) {
+    struct GameObject* self = &(state.objects[self_id]);
+    switch (self->type) {
+        default:
+            break;
+    }
+}
+
+static void bottom_check(ObjectID self_id, ObjectID other_id) {
+    struct GameObject* self = &(state.objects[self_id]);
+    switch (self->type) {
+        default:
+            break;
+
+        case OBJ_BRICK_BLOCK:
+        case OBJ_BRICK_BLOCK_GRAY: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type != OBJ_PLAYER)
+                break;
+
+            if (state.players[other->values[VAL_PLAYER_INDEX]].power == POW_SMALL)
+                bump_brick(self, other_id);
+            else
+                break_brick(self, other_id);
+            break;
+        }
+    }
 }
 
 static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
@@ -81,9 +165,10 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
         bool stop = false;
         if (displacee->values[VAL_X_SPEED] < FxZero) {
             for (size_t i = 0; i < list.num_objects; i++) {
-                const struct GameObject* object = &(state.objects[list.objects[i]]);
-                if (object->type != OBJ_SOLID)
+                const ObjectID oid = list.objects[i];
+                if (!is_solid(oid, false, true))
                     continue;
+                const struct GameObject* object = &(state.objects[oid]);
 
                 if (displacee->values[VAL_Y_SPEED] >= FxZero &&
                     Fsub(Fadd(displacee->pos[1], displacee->bbox[1][1]), climb) <
@@ -110,9 +195,10 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
             displacee->values[VAL_X_TOUCH] = -(stop && !climbed);
         } else if (displacee->values[VAL_X_SPEED] > FxZero) {
             for (size_t i = 0; i < list.num_objects; i++) {
-                const struct GameObject* object = &(state.objects[list.objects[i]]);
-                if (object->type != OBJ_SOLID)
+                const ObjectID oid = list.objects[i];
+                if (!is_solid(oid, false, true))
                     continue;
+                const struct GameObject* object = &(state.objects[oid]);
 
                 if (displacee->values[VAL_Y_SPEED] >= FxZero &&
                     Fsub(Fadd(displacee->pos[1], displacee->bbox[1][1]), climb) <
@@ -156,24 +242,29 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
         bool stop = false;
         if (displacee->values[VAL_Y_SPEED] < FxZero) {
             for (size_t i = 0; i < list.num_objects; i++) {
-                const struct GameObject* object = &(state.objects[list.objects[i]]);
-                if (object->type != OBJ_SOLID)
+                const ObjectID oid = list.objects[i];
+                if (!is_solid(oid, false, true))
                     continue;
+                const struct GameObject* object = &(state.objects[oid]);
 
                 y = Fmax(y, Fsub(Fadd(object->pos[1], object->bbox[1][1]), displacee->bbox[0][1]));
                 stop = true;
+                bottom_check(oid, did);
             }
             displacee->values[VAL_Y_TOUCH] = -(fix16_t)stop;
         } else if (displacee->values[VAL_Y_SPEED] > FxZero) {
             for (size_t i = 0; i < list.num_objects; i++) {
-                const struct GameObject* object = &(state.objects[list.objects[i]]);
-                if (object->type != OBJ_SOLID && (object->type != OBJ_SOLID_TOP ||
-                                                  Fsub(Fadd(y, displacee->bbox[1][1]), displacee->values[VAL_Y_SPEED]) >
-                                                      Fadd(Fadd(object->pos[1], object->bbox[0][1]), climb)))
+                const ObjectID oid = list.objects[i];
+                if (!is_solid(oid, false, false))
+                    continue;
+                const struct GameObject* object = &(state.objects[oid]);
+                if (is_solid(oid, true, false) && Fsub(Fadd(y, displacee->bbox[1][1]), displacee->values[VAL_Y_SPEED]) >
+                                                      Fadd(Fadd(object->pos[1], object->bbox[0][1]), climb))
                     continue;
 
                 y = Fmin(y, Fsub(Fadd(object->pos[1], object->bbox[0][1]), displacee->bbox[1][1]));
                 stop = true;
+                top_check(oid, did);
             }
             displacee->values[VAL_Y_TOUCH] = stop;
         }
@@ -243,6 +334,15 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
                 give_points(self, pid, 1000L);
 
                 play_sound_at_object(other, SND_GROW);
+                self->object_flags |= OBF_DESTROY;
+            }
+            break;
+        }
+
+        case OBJ_MUSHROOM_1UP: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type == OBJ_PLAYER) {
+                give_points(self, other->values[VAL_PLAYER_INDEX], -1L);
                 self->object_flags |= OBF_DESTROY;
             }
             break;
@@ -844,6 +944,10 @@ void start_state(int num_players, int local) {
     create_object(OBJ_BEETROOT, (fvec2){FfInt(384L), FfInt(416L)});
     create_object(OBJ_LUI, (fvec2){FfInt(448L), FfInt(416L)});
     create_object(OBJ_HAMMER_SUIT, (fvec2){FfInt(512L), FfInt(416L)});
+    create_object(OBJ_MUSHROOM_1UP, (fvec2){FfInt(800L), FfInt(416L)});
+    create_object(OBJ_BRICK_BLOCK, (fvec2){FfInt(128L), FfInt(240L)});
+    create_object(OBJ_BRICK_BLOCK, (fvec2){FfInt(160L), FfInt(240L)});
+    create_object(OBJ_BRICK_BLOCK, (fvec2){FfInt(192L), FfInt(240L)});
 
     ObjectID oid = create_object(OBJ_SOLID, (fvec2){FxZero, FfInt(416L)});
     if (object_is_alive(oid)) {
@@ -1186,9 +1290,9 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                         case POW_FIRE:
                                             mtype = OBJ_MISSILE_FIREBALL;
                                             break;
-                                        // case POW_BEETROOT:
-                                        //     type = OBJ_MISSILE_BEETROOT;
-                                        //     break;
+                                        case POW_BEETROOT:
+                                            mtype = OBJ_MISSILE_BEETROOT;
+                                            break;
                                         case POW_HAMMER:
                                             mtype = OBJ_MISSILE_HAMMER;
                                             break;
@@ -1203,13 +1307,13 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                     if (object_is_alive(mid)) {
                                         object->values[i] = mid;
                                         struct GameObject* missile = &(state.objects[mid]);
-                                        missile->object_flags |= object->object_flags & OBF_X_FLIP;
                                         missile->values[VAL_MISSILE_OWNER] = oid;
                                         switch (mtype) {
                                             default:
                                                 break;
 
                                             case OBJ_MISSILE_FIREBALL: {
+                                                missile->object_flags |= object->object_flags & OBF_X_FLIP;
                                                 missile->values[VAL_X_SPEED] =
                                                     (object->object_flags & OBF_X_FLIP) ? -0x0007C000 : 0x0007C000;
                                                 break;
@@ -1223,6 +1327,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                             }
 
                                             case OBJ_MISSILE_HAMMER: {
+                                                missile->object_flags |= object->object_flags & OBF_X_FLIP;
                                                 missile->values[VAL_X_SPEED] = Fadd(
                                                     (object->object_flags & OBF_X_FLIP) ? -0x0002A3D7 : 0x0002A3D7,
                                                     object->values[VAL_X_SPEED]
@@ -1350,9 +1455,131 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 break;
             }
 
+            case OBJ_MISSILE_BEETROOT: {
+                object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
+                move_object(
+                    oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
+                                 Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
+                );
+                if (object->values[VAL_MISSILE_HITS] > 0L) {
+                    if (object->values[VAL_MISSILE_HIT] > 0L)
+                        --(object->values[VAL_MISSILE_HIT]);
+
+                    struct BlockList list = {0};
+                    list_block_at(
+                        &list, (fvec2[2]){{
+                                              Fadd(object->pos[0], object->bbox[0][0]),
+                                              Fadd(object->pos[1], object->bbox[0][1]),
+                                          },
+                                          {
+                                              Fadd(object->pos[0], object->bbox[1][0]),
+                                              Fadd(object->pos[1], object->bbox[1][1]),
+                                          }}
+                    );
+
+                    uint8_t hit = 0L;
+                    for (size_t i = 0; i < list.num_objects; i++) {
+                        const ObjectID bid = list.objects[i];
+                        if (bid == oid)
+                            continue;
+
+                        if (is_solid(bid, false, false)) {
+                            if (object->values[VAL_MISSILE_HIT] > 0L) {
+                                ++(object->values[VAL_MISSILE_HIT]);
+                            } else {
+                                create_object(OBJ_EXPLODE, object->pos);
+
+                                struct GameObject* bumped = &(state.objects[bid]);
+                                if (bumped->type == OBJ_BRICK_BLOCK || bumped->type == OBJ_BRICK_BLOCK_GRAY) {
+                                    break_brick(bumped, (ObjectID)(object->values[VAL_MISSILE_OWNER]));
+                                    hit = 2L;
+                                } else {
+                                    hit = 1L;
+                                }
+                            }
+                        }
+                    }
+
+                    if (hit > 0L) {
+                        object->values[VAL_X_SPEED] = -(object->values[VAL_X_SPEED]);
+                        object->values[VAL_Y_SPEED] = FfInt(-8L);
+
+                        --(object->values[VAL_MISSILE_HITS]);
+                        object->values[VAL_MISSILE_HIT] = 2L;
+                        if (hit == 1L)
+                            play_sound_at_object(object, SND_HURT);
+                    }
+                }
+
+                const ObjectID ownid = (ObjectID)(object->values[VAL_MISSILE_OWNER]);
+                if (object_is_alive(ownid) && state.objects[ownid].type == OBJ_PLAYER) {
+                    if (!in_player_view(object, state.objects[ownid].values[VAL_PLAYER_INDEX], FxZero))
+                        object->object_flags |= OBF_DESTROY;
+                } else if (!in_any_view(object, FxZero))
+                    object->object_flags |= OBF_DESTROY;
+
+                break;
+            }
+
             case OBJ_EXPLODE: {
                 object->values[VAL_EXPLODE_FRAME] += 24L;
                 if (object->values[VAL_EXPLODE_FRAME] >= 300L)
+                    object->object_flags |= OBF_DESTROY;
+                break;
+            }
+
+            case OBJ_BRICK_BLOCK:
+            case OBJ_BRICK_BLOCK_GRAY: {
+                if (object->values[VAL_BLOCK_BUMP] > 0L)
+                    if (++(object->values[VAL_BLOCK_BUMP]) > 10L)
+                        object->values[VAL_BLOCK_BUMP] = 0L;
+                break;
+            }
+
+            case OBJ_BLOCK_BUMP: {
+                struct BlockList list = {0};
+                list_block_at(
+                    &list,
+                    (fvec2[2]){{Fadd(object->pos[0], object->bbox[0][0]), Fadd(object->pos[1], object->bbox[0][1])},
+                               {Fadd(object->pos[0], object->bbox[1][0]), Fadd(object->pos[1], object->bbox[1][1])}}
+                );
+
+                for (size_t i = 0; i < list.num_objects; i++) {
+                    const ObjectID bid = list.objects[i];
+                    if (bid == oid || bid == object->values[VAL_BLOCK_BUMP_OWNER])
+                        continue;
+
+                    struct GameObject* bumped = &(state.objects[bid]);
+                    switch (bumped->type) {
+                        default:
+                            break;
+
+                        case OBJ_PLAYER: {
+                            if (bumped->values[VAL_PLAYER_GROUND] > 0L) {
+                                bumped->values[VAL_Y_SPEED] = FfInt(-8L);
+                                bumped->values[VAL_PLAYER_GROUND] = 0L;
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if (++(object->values[VAL_BLOCK_BUMP]) > 4L)
+                    object->object_flags |= OBF_DESTROY;
+                break;
+            }
+
+            case OBJ_BRICK_SHARD:
+            case OBJ_BRICK_SHARD_GRAY: {
+                object->values[VAL_BRICK_SHARD_ANGLE] = Fadd(object->values[VAL_BRICK_SHARD_ANGLE], 0x00193333);
+
+                object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
+                move_object(
+                    oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
+                                 Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
+                );
+
+                if (!in_any_view(object, FxZero))
                     object->object_flags |= OBF_DESTROY;
                 break;
             }
@@ -1484,6 +1711,21 @@ void draw_state() {
 
                 case OBJ_MUSHROOM: {
                     draw_object(object, TEX_MUSHROOM, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_MUSHROOM_1UP: {
+                    draw_object(object, TEX_MUSHROOM_1UP, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_MUSHROOM_POISON: {
+                    draw_object(
+                        object,
+                        ((int)((float)(state.time) / 11.11111111111111f) % 2) ? TEX_MUSHROOM_POISON2
+                                                                              : TEX_MUSHROOM_POISON1,
+                        0, WHITE
+                    );
                     break;
                 }
 
@@ -1649,6 +1891,54 @@ void draw_state() {
                             break;
                     }
                     draw_object(object, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_BRICK_BLOCK:
+                case OBJ_BRICK_BLOCK_GRAY: {
+                    int8_t bump;
+                    switch (object->values[VAL_BLOCK_BUMP]) {
+                        default:
+                            bump = 0;
+                            break;
+                        case 2:
+                        case 10:
+                            bump = 3;
+                            break;
+                        case 3:
+                        case 9:
+                            bump = 6;
+                            break;
+                        case 4:
+                        case 8:
+                            bump = 8;
+                            break;
+                        case 5:
+                        case 7:
+                            bump = 10;
+                            break;
+                        case 6:
+                            bump = 11;
+                            break;
+                    }
+                    draw_sprite(
+                        (object->type == OBJ_BRICK_BLOCK_GRAY) ? TEX_BRICK_BLOCK_GRAY : TEX_BRICK_BLOCK,
+                        (float[3]){
+                            FtInt(object->pos[0]),
+                            FtInt(object->pos[1]) - bump,
+                            object->depth,
+                        },
+                        (bool[2]){false}, 0, WHITE
+                    );
+                    break;
+                }
+
+                case OBJ_BRICK_SHARD:
+                case OBJ_BRICK_SHARD_GRAY: {
+                    draw_object(
+                        object, (object->type == OBJ_BRICK_SHARD_GRAY) ? TEX_BRICK_SHARD_GRAY : TEX_BRICK_SHARD,
+                        FtFloat(object->values[VAL_BRICK_SHARD_ANGLE]), WHITE
+                    );
                     break;
                 }
             }
@@ -1892,6 +2182,36 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_EXPLODE3);
             break;
         }
+
+        case OBJ_BRICK_BLOCK: {
+            load_texture(TEX_BRICK_BLOCK);
+
+            load_sound(SND_BUMP);
+            load_sound(SND_BREAK);
+
+            load_object(OBJ_BRICK_SHARD);
+            break;
+        }
+
+        case OBJ_BRICK_BLOCK_GRAY: {
+            load_texture(TEX_BRICK_BLOCK_GRAY);
+
+            load_sound(SND_BUMP);
+            load_sound(SND_BREAK);
+
+            load_object(OBJ_BRICK_SHARD_GRAY);
+            break;
+        }
+
+        case OBJ_BRICK_SHARD: {
+            load_texture(TEX_BRICK_SHARD);
+            break;
+        }
+
+        case OBJ_BRICK_SHARD_GRAY: {
+            load_texture(TEX_BRICK_SHARD_GRAY);
+            break;
+        }
     }
 }
 
@@ -1966,7 +2286,9 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     break;
                 }
 
-                case OBJ_MUSHROOM: {
+                case OBJ_MUSHROOM:
+                case OBJ_MUSHROOM_1UP:
+                case OBJ_MUSHROOM_POISON: {
                     object->bbox[0][0] = FfInt(-15L);
                     object->bbox[0][1] = FfInt(-31L);
                     object->bbox[1][0] = FfInt(15L);
@@ -2038,6 +2360,40 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[1][1] = FfInt(15L);
 
                     object->values[VAL_MISSILE_OWNER] = -1L;
+                    break;
+                }
+
+                case OBJ_MISSILE_BEETROOT: {
+                    object->bbox[0][0] = FfInt(-11L);
+                    object->bbox[0][1] = FfInt(-31L);
+                    object->bbox[1][0] = FfInt(12L);
+                    object->bbox[1][1] = FxOne;
+
+                    object->values[VAL_MISSILE_OWNER] = -1L;
+                    object->values[VAL_MISSILE_HITS] = 3L;
+                    break;
+                }
+
+                case OBJ_BRICK_BLOCK:
+                case OBJ_BRICK_BLOCK_GRAY: {
+                    object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
+                    break;
+                }
+
+                case OBJ_BLOCK_BUMP: {
+                    object->bbox[1][0] = FfInt(32L);
+                    object->bbox[0][1] = FfInt(-8L);
+
+                    object->values[VAL_BLOCK_BUMP_OWNER] = -1L;
+                    break;
+                }
+
+                case OBJ_BRICK_SHARD:
+                case OBJ_BRICK_SHARD_GRAY: {
+                    object->bbox[0][0] = object->bbox[0][1] = FfInt(-8L);
+                    object->bbox[1][0] = object->bbox[1][1] = FfInt(8L);
+
+                    object->values[VAL_BLOCK_BUMP_OWNER] = -1L;
                     break;
                 }
             }

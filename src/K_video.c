@@ -199,6 +199,15 @@ static struct Texture textures[] = {
     TEXOFFS(TEX_10000, "hud/10000", 20, 16),
     TEXOFFS(TEX_1000000, "hud/1000000", 51, 16),
     TEXOFFS(TEX_1UP, "hud/1up", 16, 16),
+
+    TEXTURE(TEX_ITEM_BLOCK1, "items/block1"),
+    TEXTURE(TEX_ITEM_BLOCK2, "items/block2"),
+    TEXTURE(TEX_ITEM_BLOCK3, "items/block3"),
+    TEXTURE(TEX_EMPTY_BLOCK, "items/empty_block"),
+    TEXTURE(TEX_BRICK_BLOCK, "items/brick"),
+    TEXTURE(TEX_BRICK_BLOCK_GRAY, "items/brick_gray"),
+    TEXOFFS(TEX_BRICK_SHARD, "effects/shard", 8, 8),
+    TEXOFFS(TEX_BRICK_SHARD_GRAY, "effects/shard_gray", 8, 8),
 };
 
 static vec2 camera = {HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT};

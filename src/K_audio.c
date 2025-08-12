@@ -18,9 +18,9 @@ static FMOD_CHANNELGROUP* music_group = NULL;
 static struct Sound sounds[SND_SIZE] = {
     [SND_NULL] = {0},
 
-    SOUND(SND_JUMP, "jump"), SOUND(SND_FIRE, "fire"),   SOUND(SND_BUMP, "bump"), SOUND(SND_COIN, "coin"),
-    SOUND(SND_WARP, "warp"), SOUND(SND_GROW, "grow"),   SOUND(SND_KICK, "kick"), SOUND(SND_1UP, "1up"),
-    SOUND(SND_HURT, "hurt"), SOUND(SND_STOMP, "stomp"),
+    SOUND(SND_JUMP, "jump"), SOUND(SND_FIRE, "fire"),   SOUND(SND_BUMP, "bump"),   SOUND(SND_COIN, "coin"),
+    SOUND(SND_WARP, "warp"), SOUND(SND_GROW, "grow"),   SOUND(SND_KICK, "kick"),   SOUND(SND_1UP, "1up"),
+    SOUND(SND_HURT, "hurt"), SOUND(SND_STOMP, "stomp"), SOUND(SND_BREAK, "break"),
 };
 
 #define TLOOP(i, nm, start, end)                                                                                       \
