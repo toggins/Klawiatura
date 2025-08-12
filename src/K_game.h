@@ -31,7 +31,7 @@
 typedef int16_t ObjectID;
 
 enum GameObjectType {
-    OBJ_INVALID,
+    OBJ_NULL,
 
     OBJ_SOLID,
     OBJ_SOLID_TOP,
@@ -95,6 +95,8 @@ enum ObjectValues {
     VAL_POINTS = VAL_START,
     VAL_POINTS_PLAYER,
     VAL_POINTS_TIME,
+
+    VAL_EXPLODE_FRAME = VAL_START,
 };
 
 enum ObjectFlags {

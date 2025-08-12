@@ -1155,8 +1155,23 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                             !(object->flags & FLG_PLAYER_DUCK))
                             for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
                                 if (!object_is_alive((ObjectID)(object->values[i]))) {
+                                    enum GameObjectType mtype;
+                                    switch (player->power) {
+                                        default:
+                                            mtype = OBJ_NULL;
+                                            break;
+                                        case POW_FIRE:
+                                            mtype = OBJ_MISSILE_FIREBALL;
+                                            break;
+                                        // case POW_BEETROOT:
+                                        //     type = OBJ_MISSILE_BEETROOT;
+                                        //     break;
+                                        case POW_HAMMER:
+                                            mtype = OBJ_MISSILE_HAMMER;
+                                            break;
+                                    }
                                     const ObjectID mid = create_object(
-                                        OBJ_MISSILE_FIREBALL,
+                                        mtype,
                                         (fvec2){
                                             Fadd(object->pos[0], FfInt((object->object_flags & OBF_X_FLIP) ? -5L : 5L)),
                                             Fsub(object->pos[1], FfInt(29L))
@@ -1167,8 +1182,33 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                         struct GameObject* missile = &(state.objects[mid]);
                                         missile->object_flags |= object->object_flags & OBF_X_FLIP;
                                         missile->values[VAL_MISSILE_OWNER] = oid;
-                                        missile->values[VAL_X_SPEED] =
-                                            (object->object_flags & OBF_X_FLIP) ? -0x0007C000 : 0x0007C000;
+                                        switch (mtype) {
+                                            default:
+                                                break;
+
+                                            case OBJ_MISSILE_FIREBALL: {
+                                                missile->values[VAL_X_SPEED] =
+                                                    (object->object_flags & OBF_X_FLIP) ? -0x0007C000 : 0x0007C000;
+                                                break;
+                                            }
+
+                                            case OBJ_MISSILE_BEETROOT: {
+                                                missile->values[VAL_X_SPEED] =
+                                                    (object->object_flags & OBF_X_FLIP) ? -0x00026000 : 0x00026000;
+                                                missile->values[VAL_Y_SPEED] = FfInt(-5);
+                                                break;
+                                            }
+
+                                            case OBJ_MISSILE_HAMMER: {
+                                                missile->values[VAL_X_SPEED] = Fadd(
+                                                    (object->object_flags & OBF_X_FLIP) ? -0x0002A3D7 : 0x0002A3D7,
+                                                    object->values[VAL_X_SPEED]
+                                                );
+                                                missile->values[VAL_Y_SPEED] =
+                                                    Fadd(FfInt(-7), Fmin(0, Fhalf(object->values[VAL_Y_SPEED])));
+                                                break;
+                                            }
+                                        }
                                     }
 
                                     if (object->values[VAL_PLAYER_GROUND] > 0L)
@@ -1247,8 +1287,10 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
 
                 displace_object(oid, FfInt(10L), false);
-                if (object->values[VAL_X_TOUCH] != 0L) {
+                if (object->values[VAL_X_TOUCH] != 0L)
                     object->object_flags |= OBF_DESTROY;
+                if (object->object_flags & OBF_DESTROY) {
+                    create_object(OBJ_EXPLODE, object->pos);
                     break;
                 }
                 if (object->values[VAL_Y_TOUCH] > 0L)
@@ -1261,6 +1303,34 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 } else if (!in_any_view(object, FxZero))
                     object->object_flags |= OBF_DESTROY;
 
+                break;
+            }
+
+            case OBJ_MISSILE_HAMMER: {
+                object->values[VAL_MISSILE_ANGLE] = Fadd(
+                    object->values[VAL_MISSILE_ANGLE], object->values[VAL_X_SPEED] < FxZero ? -0x0005A000 : 0x0005A000
+                );
+                object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00004925);
+
+                move_object(
+                    oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
+                                 Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
+                );
+
+                const ObjectID ownid = (ObjectID)(object->values[VAL_MISSILE_OWNER]);
+                if (object_is_alive(ownid) && state.objects[ownid].type == OBJ_PLAYER) {
+                    if (!in_player_view(object, state.objects[ownid].values[VAL_PLAYER_INDEX], FxZero))
+                        object->object_flags |= OBF_DESTROY;
+                } else if (!in_any_view(object, FxZero))
+                    object->object_flags |= OBF_DESTROY;
+
+                break;
+            }
+
+            case OBJ_EXPLODE: {
+                object->values[VAL_EXPLODE_FRAME] += 24L;
+                if (object->values[VAL_EXPLODE_FRAME] >= 300L)
+                    object->object_flags |= OBF_DESTROY;
                 break;
             }
         }
@@ -1531,6 +1601,33 @@ void draw_state() {
                     draw_object(object, TEX_MISSILE_FIREBALL, FtFloat(object->values[VAL_MISSILE_ANGLE]), WHITE);
                     break;
                 }
+
+                case OBJ_MISSILE_BEETROOT: {
+                    draw_object(object, TEX_MISSILE_BEETROOT, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_MISSILE_HAMMER: {
+                    draw_object(object, TEX_MISSILE_HAMMER, FtFloat(object->values[VAL_MISSILE_ANGLE]), WHITE);
+                    break;
+                }
+
+                case OBJ_EXPLODE: {
+                    enum TextureIndices tex;
+                    switch (object->values[VAL_EXPLODE_FRAME] / 100) {
+                        default:
+                            tex = TEX_EXPLODE1;
+                            break;
+                        case 1:
+                            tex = TEX_EXPLODE2;
+                            break;
+                        case 2:
+                            tex = TEX_EXPLODE3;
+                            break;
+                    }
+                    draw_object(object, tex, 0, WHITE);
+                    break;
+                }
             }
 
         oid = object->previous;
@@ -1633,6 +1730,12 @@ void load_object(enum GameObjectType type) {
             load_sound(SND_FIRE);
             load_sound(SND_GROW);
             load_sound(SND_WARP);
+
+            load_object(OBJ_PLAYER_EFFECT);
+            load_object(OBJ_PLAYER_DEAD);
+            load_object(OBJ_MISSILE_FIREBALL);
+            load_object(OBJ_MISSILE_BEETROOT);
+            load_object(OBJ_MISSILE_HAMMER);
             break;
         }
 
@@ -1642,22 +1745,30 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_COIN3);
 
             load_sound(SND_COIN);
+
+            load_object(OBJ_POINTS);
             break;
         }
 
         case OBJ_MUSHROOM: {
             load_texture(TEX_MUSHROOM);
+
+            load_object(OBJ_POINTS);
             break;
         }
 
         case OBJ_MUSHROOM_1UP: {
             load_texture(TEX_MUSHROOM_1UP);
+
+            load_object(OBJ_POINTS);
             break;
         }
 
         case OBJ_MUSHROOM_POISON: {
             load_texture(TEX_MUSHROOM_POISON1);
             load_texture(TEX_MUSHROOM_POISON2);
+
+            load_object(OBJ_EXPLODE);
             break;
         }
 
@@ -1666,6 +1777,8 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_FIRE_FLOWER2);
             load_texture(TEX_FIRE_FLOWER3);
             load_texture(TEX_FIRE_FLOWER4);
+
+            load_object(OBJ_POINTS);
             break;
         }
 
@@ -1673,6 +1786,8 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_BEETROOT1);
             load_texture(TEX_BEETROOT2);
             load_texture(TEX_BEETROOT3);
+
+            load_object(OBJ_POINTS);
             break;
         }
 
@@ -1687,11 +1802,15 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_LUI_BOUNCE3);
 
             load_sound(SND_KICK);
+
+            load_object(OBJ_POINTS);
             break;
         }
 
         case OBJ_HAMMER_SUIT: {
             load_texture(TEX_HAMMER_SUIT);
+
+            load_object(OBJ_POINTS);
             break;
         }
 
@@ -1712,17 +1831,51 @@ void load_object(enum GameObjectType type) {
 
         case OBJ_MISSILE_FIREBALL: {
             load_texture(TEX_MISSILE_FIREBALL);
+
+            load_sound(SND_BUMP);
+            load_sound(SND_KICK);
+
+            load_object(OBJ_EXPLODE);
+            load_object(OBJ_POINTS);
+            break;
+        }
+
+        case OBJ_MISSILE_BEETROOT: {
+            load_texture(TEX_MISSILE_BEETROOT);
+
+            load_sound(SND_HURT);
+            load_sound(SND_BUMP);
+            load_sound(SND_KICK);
+
+            load_object(OBJ_EXPLODE);
+            load_object(OBJ_POINTS);
+            break;
+        }
+
+        case OBJ_MISSILE_HAMMER: {
+            load_texture(TEX_MISSILE_HAMMER);
+
+            load_sound(SND_KICK);
+
+            load_object(OBJ_POINTS);
+            break;
+        }
+
+        case OBJ_EXPLODE: {
+            load_texture(TEX_EXPLODE1);
+            load_texture(TEX_EXPLODE2);
+            load_texture(TEX_EXPLODE3);
             break;
         }
     }
 }
 
 bool object_is_alive(ObjectID index) {
-    return index >= 0L && index < MAX_OBJECTS && state.objects[index].type != OBJ_INVALID;
+    return index >= 0L && index < MAX_OBJECTS && state.objects[index].type != OBJ_NULL;
 }
 
 ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
-    if (type == OBJ_INVALID)
+    if (type == OBJ_NULL)
         return -1L;
 
     ObjectID index = state.next_object;
@@ -1852,6 +2005,16 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->values[VAL_MISSILE_OWNER] = -1L;
                     break;
                 }
+
+                case OBJ_MISSILE_HAMMER: {
+                    object->bbox[0][0] = FfInt(-13L);
+                    object->bbox[0][1] = FfInt(-18L);
+                    object->bbox[1][0] = FfInt(11L);
+                    object->bbox[1][1] = FfInt(15L);
+
+                    object->values[VAL_MISSILE_OWNER] = -1L;
+                    break;
+                }
             }
 
             state.next_object = (ObjectID)((index + 1L) % MAX_OBJECTS);
@@ -1964,7 +2127,7 @@ void destroy_object(ObjectID index) {
             break;
         }
     }
-    object->type = OBJ_INVALID;
+    object->type = OBJ_NULL;
 
     int32_t block = object->block;
     if (block >= 0L && block < (int32_t)BLOCKMAP_SIZE) {
