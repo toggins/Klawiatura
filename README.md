@@ -26,6 +26,6 @@ to `include/fmod/windows` on Windows. This process is also similar enough on Lin
 Networking is purely peer-to-peer, so you must specify IP:port in each remote
 player slot to be able to play.
 
-**/!\\** Multiplayer with 3+ players is not guaranteed to be stable, it's possible to get a desync error if packets get dropped.
+**WARNING:** Multiplayer with 3+ players is not guaranteed to be stable, it's possible to get a desync error if packets get dropped.
 
 Example command with 4 players where 3rd player is local: `Klawiatura -players 4 <p1 ip:port> <p2 ip:port> <your port> <p4 ip:port>`
