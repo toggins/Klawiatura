@@ -11,26 +11,38 @@ static int local_player = -1L;
 
    ==== */
 
-static void give_points(struct GameObject* item, int player, int points) {
+static struct GamePlayer* get_player(int pid) {
+    return (pid < 0L || pid >= MAX_PLAYERS) ? NULL : &(state.players[pid]);
+}
+
+static void give_points(struct GameObject* item, int pid, int points) {
+    struct GamePlayer* player = get_player(pid);
+    if (player == NULL)
+        return;
+
     if (points < 0L) {
-        state.players[player].lives -= points;
-        if (player == local_player)
+        player->lives -= points;
+        if (pid == local_player)
             play_sound(SND_1UP);
     } else
-        state.players[player].score += points;
+        player->score += points;
 
-    const ObjectID pid = create_object(OBJ_POINTS, (fvec2){item->pos[0], Fadd(item->pos[1], item->bbox[0][1])});
-    if (object_is_alive(pid)) {
-        state.objects[pid].values[VAL_POINTS_PLAYER] = player;
-        state.objects[pid].values[VAL_POINTS] = points;
+    struct GameObject* pts =
+        get_object(create_object(OBJ_POINTS, (fvec2){item->pos[0], Fadd(item->pos[1], item->bbox[0][1])}));
+    if (pts != NULL) {
+        pts->values[VAL_POINTS_PLAYER] = pid;
+        pts->values[VAL_POINTS] = points;
     }
 }
 
 static bool is_solid(ObjectID oid, bool ignore_full, bool ignore_top) {
     switch (state.objects[oid].type) {
         case OBJ_SOLID:
+        case OBJ_ITEM_BLOCK:
         case OBJ_BRICK_BLOCK:
         case OBJ_BRICK_BLOCK_GRAY:
+        case OBJ_BRICK_BLOCK_COIN:
+        case OBJ_BRICK_BLOCK_GRAY_COIN:
             return !ignore_full;
         case OBJ_SOLID_TOP:
             return !ignore_top;
@@ -68,46 +80,142 @@ static bool touching_solid(const fvec2 rect[2]) {
     return false;
 }
 
-static void bump_brick(struct GameObject* brick, ObjectID from) {
-    if (brick->values[VAL_BLOCK_BUMP] <= 0L) {
-        const ObjectID bid = create_object(OBJ_BLOCK_BUMP, brick->pos);
-        if (object_is_alive(bid))
-            state.objects[bid].values[VAL_BLOCK_BUMP_OWNER] = from;
+static int get_owner_id(ObjectID oid) {
+    const struct GameObject* object = get_object(oid);
+    if (object == NULL)
+        return -1;
 
-        brick->values[VAL_BLOCK_BUMP] = 1L;
-        play_sound_at_object(brick, SND_BUMP);
+    switch (object->type) {
+        default:
+            return -1;
+
+        case OBJ_PLAYER:
+            return object->values[VAL_PLAYER_INDEX];
+
+        case OBJ_MISSILE_FIREBALL:
+        case OBJ_MISSILE_BEETROOT:
+        case OBJ_MISSILE_HAMMER:
+            return get_owner_id((ObjectID)(object->values[VAL_MISSILE_OWNER]));
+
+        case OBJ_BLOCK_BUMP:
+            return get_owner_id((ObjectID)(object->values[VAL_BLOCK_BUMP_OWNER]));
+
+        case OBJ_COIN_POP:
+            return get_owner_id((ObjectID)(object->values[VAL_COIN_POP_OWNER]));
+
+        case OBJ_POINTS:
+            return object->values[VAL_POINTS_PLAYER];
     }
 }
 
-static void break_brick(struct GameObject* brick, ObjectID from) {
-    const ObjectID bid = create_object(OBJ_BLOCK_BUMP, brick->pos);
-    if (object_is_alive(bid))
-        state.objects[bid].values[VAL_BLOCK_BUMP_OWNER] = from;
+static struct GamePlayer* get_owner(ObjectID oid) {
+    return get_player(get_owner_id(oid));
+}
 
-    const enum GameObjectType stype = (brick->type == OBJ_BRICK_BLOCK_GRAY) ? OBJ_BRICK_SHARD_GRAY : OBJ_BRICK_SHARD;
-    ObjectID sid = create_object(stype, (fvec2){Fadd(brick->pos[0], FfInt(8)), Fadd(brick->pos[1], FfInt(8))});
-    if (object_is_alive(sid)) {
-        state.objects[sid].values[VAL_X_SPEED] = FfInt(-2);
-        state.objects[sid].values[VAL_Y_SPEED] = FfInt(-8);
-    }
-    sid = create_object(stype, (fvec2){Fadd(brick->pos[0], FfInt(16)), Fadd(brick->pos[1], FfInt(8))});
-    if (object_is_alive(sid)) {
-        state.objects[sid].values[VAL_X_SPEED] = FfInt(2);
-        state.objects[sid].values[VAL_Y_SPEED] = FfInt(-8);
-    }
-    sid = create_object(stype, (fvec2){Fadd(brick->pos[0], FfInt(8)), Fadd(brick->pos[1], FfInt(16))});
-    if (object_is_alive(sid)) {
-        state.objects[sid].values[VAL_X_SPEED] = FfInt(-3);
-        state.objects[sid].values[VAL_Y_SPEED] = FfInt(-6);
-    }
-    sid = create_object(stype, (fvec2){Fadd(brick->pos[0], FfInt(16)), Fadd(brick->pos[1], FfInt(16))});
-    if (object_is_alive(sid)) {
-        state.objects[sid].values[VAL_X_SPEED] = FfInt(3);
-        state.objects[sid].values[VAL_Y_SPEED] = FfInt(-6);
+static void bump_block(struct GameObject* block, ObjectID from, bool strong) {
+    if (block->flags & FLG_BLOCK_EMPTY)
+        return;
+
+    switch (block->type) {
+        default:
+            break;
+
+        case OBJ_ITEM_BLOCK: {
+            bool is_powerup = false;
+            switch (block->values[VAL_BLOCK_ITEM]) {
+                default:
+                    break;
+                case OBJ_MUSHROOM:
+                case OBJ_FIRE_FLOWER:
+                case OBJ_BEETROOT:
+                case OBJ_LUI:
+                case OBJ_HAMMER_SUIT: {
+                    const struct GamePlayer* player = get_owner(from);
+                    if (player != NULL && player->power == POW_SMALL)
+                        block->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM;
+                    else
+                        is_powerup = true;
+                    break;
+                }
+            }
+
+            const ObjectID iid = create_object(block->values[VAL_BLOCK_ITEM], block->pos);
+            if (object_is_alive(iid)) {
+                struct GameObject* item = &(state.objects[iid]);
+
+                move_object(
+                    iid,
+                    (fvec2){Fadd(block->pos[0], Flerp(block->bbox[0][0], block->bbox[1][0], FxHalf)), block->pos[1]}
+                );
+
+                if (item->type == OBJ_COIN_POP) {
+                    item->values[VAL_COIN_POP_OWNER] = from;
+                } else {
+                    item->values[VAL_SPROUT] = 32L;
+                    if (item->type == OBJ_MUSHROOM || item->type == OBJ_MUSHROOM_1UP)
+                        item->values[VAL_X_SPEED] = FfInt(2L);
+                    if (is_powerup)
+                        item->flags &= ~FLG_POWERUP_FULL;
+                    play_sound_at_object(item, SND_SPROUT);
+                }
+            }
+
+            block->values[VAL_BLOCK_BUMP] = 1L;
+            block->flags |= FLG_BLOCK_EMPTY;
+            break;
+        }
+
+        case OBJ_BRICK_BLOCK:
+        case OBJ_BRICK_BLOCK_GRAY: {
+            if (strong) {
+                const enum GameObjectType stype =
+                    (block->type == OBJ_BRICK_BLOCK_GRAY) ? OBJ_BRICK_SHARD_GRAY : OBJ_BRICK_SHARD;
+                struct GameObject* shard = get_object(
+                    create_object(stype, (fvec2){Fadd(block->pos[0], FfInt(8)), Fadd(block->pos[1], FfInt(8))})
+                );
+                if (shard != NULL) {
+                    shard->values[VAL_X_SPEED] = FfInt(-2);
+                    shard->values[VAL_Y_SPEED] = FfInt(-8);
+                }
+                shard = get_object(
+                    create_object(stype, (fvec2){Fadd(block->pos[0], FfInt(16)), Fadd(block->pos[1], FfInt(8))})
+                );
+                if (shard != NULL) {
+                    shard->values[VAL_X_SPEED] = FfInt(2);
+                    shard->values[VAL_Y_SPEED] = FfInt(-8);
+                }
+                shard = get_object(
+                    create_object(stype, (fvec2){Fadd(block->pos[0], FfInt(8)), Fadd(block->pos[1], FfInt(16))})
+                );
+                if (shard != NULL) {
+                    shard->values[VAL_X_SPEED] = FfInt(-3);
+                    shard->values[VAL_Y_SPEED] = FfInt(-6);
+                }
+                shard = get_object(
+                    create_object(stype, (fvec2){Fadd(block->pos[0], FfInt(16)), Fadd(block->pos[1], FfInt(16))})
+                );
+                if (shard != NULL) {
+                    shard->values[VAL_X_SPEED] = FfInt(3);
+                    shard->values[VAL_Y_SPEED] = FfInt(-6);
+                }
+
+                struct GamePlayer* player = get_owner(from);
+                if (player != NULL)
+                    player->score += 50L;
+
+                play_sound_at_object(block, SND_BREAK);
+                block->object_flags |= OBF_DESTROY;
+            } else if (block->values[VAL_BLOCK_BUMP] <= 0L) {
+                block->values[VAL_BLOCK_BUMP] = 1L;
+                play_sound_at_object(block, SND_BUMP);
+            }
+            break;
+        }
     }
 
-    play_sound_at_object(brick, SND_BREAK);
-    brick->object_flags |= OBF_DESTROY;
+    struct GameObject* bump = get_object(create_object(OBJ_BLOCK_BUMP, block->pos));
+    if (bump != NULL)
+        bump->values[VAL_BLOCK_BUMP_OWNER] = from;
 }
 
 static void top_check(ObjectID self_id, ObjectID other_id) {
@@ -124,25 +232,25 @@ static void bottom_check(ObjectID self_id, ObjectID other_id) {
         default:
             break;
 
+        case OBJ_ITEM_BLOCK:
         case OBJ_BRICK_BLOCK:
-        case OBJ_BRICK_BLOCK_GRAY: {
-            struct GameObject* other = &(state.objects[other_id]);
+        case OBJ_BRICK_BLOCK_GRAY:
+        case OBJ_BRICK_BLOCK_COIN:
+        case OBJ_BRICK_BLOCK_GRAY_COIN: {
+            const struct GameObject* other = &(state.objects[other_id]);
             if (other->type != OBJ_PLAYER)
                 break;
-
-            if (state.players[other->values[VAL_PLAYER_INDEX]].power == POW_SMALL)
-                bump_brick(self, other_id);
-            else
-                break_brick(self, other_id);
+            const struct GamePlayer* player = get_owner(other_id);
+            bump_block(self, other_id, player != NULL && player->power != POW_SMALL);
             break;
         }
     }
 }
 
 static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
-    if (!object_is_alive(did))
+    struct GameObject* displacee = get_object(did);
+    if (displacee == NULL)
         return;
-    struct GameObject* displacee = &(state.objects[did]);
 
     displacee->values[VAL_X_TOUCH] = 0L;
     displacee->values[VAL_Y_TOUCH] = 0L;
@@ -289,8 +397,8 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
 
             if (self->values[VAL_PLAYER_GROUND] <= 0L && self->values[VAL_Y_SPEED] > FxZero &&
                 self->pos[1] < Fsub(other->pos[1], FfInt(10L))) {
-                self->values[VAL_Y_SPEED] =
-                    FfInt((state.players[self->values[VAL_PLAYER_INDEX]].input & GI_JUMP) ? -13L : -8L);
+                const struct GamePlayer* player = get_owner(self_id);
+                self->values[VAL_Y_SPEED] = FfInt((player != NULL && (player->input & GI_JUMP)) ? -13L : -8L);
                 other->values[VAL_Y_SPEED] = Fmax(other->values[VAL_Y_SPEED], FxZero);
                 play_sound_at_object(other, SND_STOMP);
             } else if (Fabs(self->values[VAL_X_SPEED]) > Fabs(other->values[VAL_X_SPEED])) {
@@ -306,27 +414,33 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
         }
 
         case OBJ_COIN: {
-            struct GameObject* other = &(state.objects[other_id]);
-            if (other->type == OBJ_PLAYER) {
-                const int pid = other->values[VAL_PLAYER_INDEX];
-                struct GamePlayer* player = &(state.players[pid]);
-                if (++(player->coins) >= 100L) {
-                    give_points(self, pid, -1L);
-                    player->coins = 0L;
-                }
+            const struct GameObject* other = &(state.objects[other_id]);
+            if (other->type != OBJ_PLAYER)
+                break;
+            const int pid = get_owner_id(other_id);
+            struct GamePlayer* player = get_player(pid);
+            if (player == NULL)
+                break;
 
-                player->score += 200L;
-                play_sound_at_object(self, SND_COIN);
-                self->object_flags |= OBF_DESTROY;
+            if (++(player->coins) >= 100L) {
+                give_points(self, pid, -1L);
+                player->coins = 0L;
             }
+
+            player->score += 200L;
+            play_sound_at_object(self, SND_COIN);
+            self->object_flags |= OBF_DESTROY;
             break;
         }
 
         case OBJ_MUSHROOM: {
             struct GameObject* other = &(state.objects[other_id]);
             if (other->type == OBJ_PLAYER) {
-                const int pid = other->values[VAL_PLAYER_INDEX];
-                struct GamePlayer* player = &(state.players[pid]);
+                const int pid = get_owner_id(other_id);
+                struct GamePlayer* player = get_player(pid);
+                if (player == NULL)
+                    break;
+
                 if (player->power == POW_SMALL) {
                     other->values[VAL_PLAYER_POWER] = 3000L;
                     player->power = POW_BIG;
@@ -342,7 +456,7 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
         case OBJ_MUSHROOM_1UP: {
             struct GameObject* other = &(state.objects[other_id]);
             if (other->type == OBJ_PLAYER) {
-                give_points(self, other->values[VAL_PLAYER_INDEX], -1L);
+                give_points(self, get_owner_id(other_id), -1L);
                 self->object_flags |= OBF_DESTROY;
             }
             break;
@@ -351,8 +465,10 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
         case OBJ_FIRE_FLOWER: {
             struct GameObject* other = &(state.objects[other_id]);
             if (other->type == OBJ_PLAYER) {
-                const int pid = other->values[VAL_PLAYER_INDEX];
-                struct GamePlayer* player = &(state.players[pid]);
+                const int pid = get_owner_id(other_id);
+                struct GamePlayer* player = get_player(pid);
+                if (player == NULL)
+                    break;
                 if (player->power == POW_SMALL && !(self->flags & FLG_POWERUP_FULL)) {
                     other->values[VAL_PLAYER_POWER] = 3000L;
                     player->power = POW_BIG;
@@ -371,8 +487,10 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
         case OBJ_BEETROOT: {
             struct GameObject* other = &(state.objects[other_id]);
             if (other->type == OBJ_PLAYER) {
-                const int pid = other->values[VAL_PLAYER_INDEX];
-                struct GamePlayer* player = &(state.players[pid]);
+                const int pid = get_owner_id(other_id);
+                struct GamePlayer* player = get_player(pid);
+                if (player == NULL)
+                    break;
                 if (player->power == POW_SMALL && !(self->flags & FLG_POWERUP_FULL)) {
                     other->values[VAL_PLAYER_POWER] = 3000L;
                     player->power = POW_BIG;
@@ -391,8 +509,10 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
         case OBJ_LUI: {
             struct GameObject* other = &(state.objects[other_id]);
             if (other->type == OBJ_PLAYER) {
-                const int pid = other->values[VAL_PLAYER_INDEX];
-                struct GamePlayer* player = &(state.players[pid]);
+                const int pid = get_owner_id(other_id);
+                struct GamePlayer* player = get_player(pid);
+                if (player == NULL)
+                    break;
                 if (player->power == POW_SMALL && !(self->flags & FLG_POWERUP_FULL)) {
                     other->values[VAL_PLAYER_POWER] = 3000L;
                     player->power = POW_BIG;
@@ -411,8 +531,10 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
         case OBJ_HAMMER_SUIT: {
             struct GameObject* other = &(state.objects[other_id]);
             if (other->type == OBJ_PLAYER) {
-                const int pid = other->values[VAL_PLAYER_INDEX];
-                struct GamePlayer* player = &(state.players[pid]);
+                const int pid = get_owner_id(other_id);
+                struct GamePlayer* player = get_player(pid);
+                if (player == NULL)
+                    break;
                 if (player->power == POW_SMALL && !(self->flags & FLG_POWERUP_FULL)) {
                     other->values[VAL_PLAYER_POWER] = 3000L;
                     player->power = POW_BIG;
@@ -433,10 +555,10 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
 }
 
 static void bump_object(ObjectID bid) {
-    if (!object_is_alive(bid))
+    struct GameObject* object = get_object(bid);
+    if (object == NULL)
         return;
 
-    struct GameObject* object = &(state.objects[bid]);
     fix16_t x1 = Fadd(object->pos[0], object->bbox[0][0]);
     fix16_t y1 = Fadd(object->pos[1], object->bbox[0][1]);
     fix16_t x2 = Fadd(object->pos[0], object->bbox[1][0]);
@@ -456,7 +578,7 @@ static void bump_object(ObjectID bid) {
             while (object_is_alive(oid)) {
                 const struct GameObject* other = &(state.objects[oid]);
                 const ObjectID next = other->previous_block;
-                if (bid != oid) {
+                if (bid != oid && other->values[VAL_SPROUT] <= 0L && !(other->object_flags & OBF_DESTROY)) {
                     const fix16_t ox1 = Fadd(other->pos[0], other->bbox[0][0]);
                     const fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
                     const fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
@@ -470,8 +592,9 @@ static void bump_object(ObjectID bid) {
 }
 
 static enum PlayerFrames get_player_frame(struct GameObject* object) {
-    if (object->values[VAL_PLAYER_POWER] > 0L)
-        switch (state.players[object->values[VAL_PLAYER_INDEX]].power) {
+    if (object->values[VAL_PLAYER_POWER] > 0L) {
+        const struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
+        switch (player == NULL ? POW_SMALL : player->power) {
             case POW_SMALL:
             case POW_BIG: {
                 switch ((object->values[VAL_PLAYER_POWER] / 100L) % 3) {
@@ -499,6 +622,7 @@ static enum PlayerFrames get_player_frame(struct GameObject* object) {
                 break;
             }
         }
+    }
 
     if (object->values[VAL_PLAYER_GROUND] <= 0L)
         return (object->values[VAL_Y_SPEED] < FxZero) ? PF_JUMP : PF_FALL;
@@ -766,7 +890,7 @@ static bool in_any_view(struct GameObject* object, fix16_t padding) {
 
     for (size_t i = 0; i < MAX_PLAYERS; i++) {
         const struct GamePlayer* player = &(state.players[i]);
-        if (!(player->active && object_is_alive(player->object)))
+        if (!(player->active) || !object_is_alive(player->object))
             continue;
 
         const struct GameObject* pawn = &(state.objects[player->object]);
@@ -790,8 +914,8 @@ static bool in_any_view(struct GameObject* object, fix16_t padding) {
 }
 
 static bool in_player_view(struct GameObject* object, int pid, fix16_t padding) {
-    const struct GamePlayer* player = &(state.players[pid]);
-    if (!(player->active && object_is_alive(player->object)))
+    const struct GamePlayer* player = get_player(pid);
+    if (player == NULL || !(player->active) || !object_is_alive(player->object))
         return false;
 
     const fix16_t sx1 = Fadd(object->pos[0], object->bbox[0][0]);
@@ -825,29 +949,11 @@ void start_state(int num_players, int local) {
 
     SDL_memset(&state, 0, sizeof(state));
     clear_tiles();
-
     state.live_objects = -1L;
     for (uint32_t i = 0L; i < BLOCKMAP_SIZE; i++)
         state.blockmap[i] = -1L;
-
     state.size[0] = Fdouble(F_SCREEN_WIDTH);
     state.size[1] = F_SCREEN_HEIGHT;
-
-    for (size_t i = 0; i < num_players; i++) {
-        struct GamePlayer* player = &(state.players[i]);
-        player->active = true;
-
-        player->bounds[0][0] = player->bounds[0][1] = FxZero;
-        player->bounds[1][0] = state.size[0];
-        player->bounds[1][1] = state.size[1];
-
-        player->lives = 4L;
-
-        ObjectID object = create_object(OBJ_PLAYER, (fvec2){FfInt(64L), FfInt(240L)});
-        if (object_is_alive(object))
-            state.objects[object].values[VAL_PLAYER_INDEX] = player->object = object;
-        player->object = object;
-    }
 
     add_gradient(
         0, 0, 11008, 551, 200,
@@ -947,7 +1053,7 @@ void start_state(int num_players, int local) {
     create_object(OBJ_MUSHROOM_1UP, (fvec2){FfInt(800L), FfInt(416L)});
     create_object(OBJ_BRICK_BLOCK, (fvec2){FfInt(128L), FfInt(240L)});
     create_object(OBJ_BRICK_BLOCK, (fvec2){FfInt(160L), FfInt(240L)});
-    create_object(OBJ_BRICK_BLOCK, (fvec2){FfInt(192L), FfInt(240L)});
+    create_object(OBJ_ITEM_BLOCK_FIRE_FLOWER, (fvec2){FfInt(192L), FfInt(240L)});
 
     ObjectID oid = create_object(OBJ_SOLID, (fvec2){FxZero, FfInt(416L)});
     if (object_is_alive(oid)) {
@@ -1055,6 +1161,22 @@ void start_state(int num_players, int local) {
         state.objects[oid].bbox[1][1] = FfInt(32L);
     }
 
+    for (size_t i = 0; i < num_players; i++) {
+        struct GamePlayer* player = &(state.players[i]);
+        player->active = true;
+
+        player->bounds[0][0] = player->bounds[0][1] = FxZero;
+        player->bounds[1][0] = state.size[0];
+        player->bounds[1][1] = state.size[1];
+
+        player->lives = 4L;
+
+        const ObjectID object = create_object(OBJ_PLAYER, (fvec2){FfInt(64L), FfInt(240L)});
+        if (object_is_alive(object))
+            state.objects[object].values[VAL_PLAYER_INDEX] = (fix16_t)i;
+        player->object = object;
+    }
+
     load_track(MUS_SNOW);
     play_track(MUS_SNOW, true);
 }
@@ -1143,446 +1265,468 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
     while (object_is_alive(oid)) {
         struct GameObject* object = &(state.objects[oid]);
 
-        switch (object->type) {
-            default:
-                break;
-
-            case OBJ_PLAYER: {
-                fix16_t pid = object->values[VAL_PLAYER_INDEX];
-                if (pid < 0L || pid >= MAX_PLAYERS || !(state.players[pid].active)) {
-                    object->object_flags |= OBF_DESTROY;
+        if (object->values[VAL_SPROUT] > 0L)
+            --(object->values[VAL_SPROUT]);
+        else
+            switch (object->type) {
+                default:
                     break;
-                }
-                struct GamePlayer* player = &(state.players[pid]);
 
-                const bool cant_run = !(player->input & GI_RUN);
-                const bool jumped = (player->input & GI_JUMP) && !(player->last_input & GI_JUMP);
-
-                if ((player->input & GI_RIGHT) && object->values[VAL_X_TOUCH] <= 0L &&
-                    !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] >= FxZero &&
-                    ((cant_run && object->values[VAL_X_SPEED] < 0x00046000) ||
-                     (!cant_run && object->values[VAL_X_SPEED] < 0x00078000)))
-                    object->values[VAL_X_SPEED] = Fadd(object->values[VAL_X_SPEED], 0x00002000);
-                if ((player->input & GI_LEFT) && object->values[VAL_X_TOUCH] >= 0L &&
-                    !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] <= FxZero &&
-                    ((cant_run && object->values[VAL_X_SPEED] > -0x00046000) ||
-                     (!cant_run && object->values[VAL_X_SPEED] > -0x00078000)))
-                    object->values[VAL_X_SPEED] = Fsub(object->values[VAL_X_SPEED], 0x00002000);
-
-                if (!(player->input & GI_RIGHT) && object->values[VAL_X_SPEED] > FxZero)
-                    object->values[VAL_X_SPEED] = Fmax(Fsub(object->values[VAL_X_SPEED], 0x00002000), FxZero);
-                if (!(player->input & GI_LEFT) && object->values[VAL_X_SPEED] < FxZero)
-                    object->values[VAL_X_SPEED] = Fmin(Fadd(object->values[VAL_X_SPEED], 0x00002000), FxZero);
-
-                if ((player->input & GI_RIGHT) && object->values[VAL_X_TOUCH] <= 0L &&
-                    !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] < FxZero)
-                    object->values[VAL_X_SPEED] = Fadd(object->values[VAL_X_SPEED], 0x00006000);
-                if ((player->input & GI_LEFT) && object->values[VAL_X_TOUCH] >= 0L &&
-                    !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] > FxZero)
-                    object->values[VAL_X_SPEED] = Fsub(object->values[VAL_X_SPEED], 0x00006000);
-
-                if ((player->input & GI_RIGHT) && object->values[VAL_X_TOUCH] <= 0L &&
-                    !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] < FxOne &&
-                    object->values[VAL_X_SPEED] >= FxZero)
-                    object->values[VAL_X_SPEED] = Fadd(object->values[VAL_X_SPEED], FxOne);
-                if ((player->input & GI_LEFT) && object->values[VAL_X_TOUCH] >= 0L &&
-                    !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] > -FxOne &&
-                    object->values[VAL_X_SPEED] <= FxZero)
-                    object->values[VAL_X_SPEED] = Fsub(object->values[VAL_X_SPEED], FxOne);
-
-                if (cant_run && Fabs(object->values[VAL_X_SPEED]) > 0x00046000)
-                    object->values[VAL_X_SPEED] = Fsub(
-                        object->values[VAL_X_SPEED], object->values[VAL_X_SPEED] >= FxZero ? 0x00002000 : -0x00002000
-                    );
-
-                if ((player->input & GI_DOWN) && !(player->input & GI_LEFT) && !(player->input & GI_RIGHT) &&
-                    object->values[VAL_PLAYER_GROUND] > 0L && player->power != POW_SMALL)
-                    object->flags |= FLG_PLAYER_DUCK;
-                if (object->flags & FLG_PLAYER_DUCK) {
-                    if (!(player->input & GI_DOWN) || player->power == POW_SMALL)
-                        object->flags &= ~FLG_PLAYER_DUCK;
-                    else if (object->values[VAL_X_SPEED] > FxZero)
-                        object->values[VAL_X_SPEED] = Fmax(Fsub(object->values[VAL_X_SPEED], 0x00006000), FxZero);
-                    else if (object->values[VAL_X_SPEED] < FxZero)
-                        object->values[VAL_X_SPEED] = Fmin(Fadd(object->values[VAL_X_SPEED], 0x00006000), FxZero);
-                }
-
-                if ((player->input & GI_JUMP) && object->values[VAL_Y_SPEED] < FxZero /* and _y < _water_y */ &&
-                    !(player->input & GI_DOWN))
-                    object->values[VAL_Y_SPEED] = Fsub(
-                        object->values[VAL_Y_SPEED],
-                        (player->power == POW_LUI)
-                            ? 0x0000999A
-                            : ((Fabs(object->values[VAL_X_SPEED]) < 0x0000A000) ? 0x00006666 : FxHalf)
-                    );
-
-                if ((jumped || ((player->input & GI_JUMP) && object->flags & FLG_PLAYER_JUMP)) &&
-                    /* _y < _water_y and */ !(player->input & GI_DOWN) && object->values[VAL_PLAYER_GROUND] > 0L) {
-                    object->values[VAL_PLAYER_GROUND] = 0L;
-                    object->values[VAL_Y_SPEED] = FfInt(-13L);
-                    object->flags &= ~FLG_PLAYER_JUMP;
-                    play_sound_at_object(object, SND_JUMP);
-                }
-                if (!(player->input & GI_JUMP) && /* _y < _water_y and */ !(player->input & GI_DOWN) &&
-                    object->values[VAL_PLAYER_GROUND] > 0L && (object->flags & FLG_PLAYER_JUMP))
-                    object->flags &= ~FLG_PLAYER_JUMP;
-                if (jumped && object->values[VAL_PLAYER_GROUND] <= 0L && object->values[VAL_Y_SPEED] > FxZero)
-                    object->flags |= FLG_PLAYER_JUMP;
-
-                object->bbox[0][1] =
-                    (player->power == POW_SMALL || (object->flags & FLG_PLAYER_DUCK)) ? FfInt(-25L) : FfInt(-51L);
-
-                if (object->values[VAL_PLAYER_GROUND] > 0L)
-                    --(object->values[VAL_PLAYER_GROUND]);
-                displace_object(oid, FfInt(10L), true);
-                if (object->values[VAL_Y_TOUCH] > 0L)
-                    object->values[VAL_PLAYER_GROUND] = 2L;
-
-                if (object->values[VAL_Y_TOUCH] <= 0L) {
-                    const bool carried = object->object_flags & OBF_CARRIED;
-                    if (object->values[VAL_Y_SPEED] > FfInt(10L) && !carried) {
-                        object->values[VAL_Y_SPEED] = Fmin(Fsub(object->values[VAL_Y_SPEED], FxOne), FfInt(10L));
-                    } else if (object->values[VAL_Y_SPEED] < FfInt(10L) || carried) {
-                        object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], FxOne);
-                        object->object_flags &= ~OBF_CARRIED;
-                    }
-                }
-
-                // Animation
-                if (object->values[VAL_X_SPEED] > FxZero && (player->input & GI_RIGHT))
-                    object->object_flags &= ~OBF_X_FLIP;
-                else if (object->values[VAL_X_SPEED] < FxZero && (player->input & GI_LEFT))
-                    object->object_flags |= OBF_X_FLIP;
-
-                if (object->values[VAL_PLAYER_POWER] > 0L) {
-                    object->values[VAL_PLAYER_POWER] -= 91L;
-                    object->values[VAL_PLAYER_FRAME] = FxZero;
-                }
-                if (object->values[VAL_PLAYER_FIRE] > 0L) {
-                    --(object->values[VAL_PLAYER_FIRE]);
-                    object->values[VAL_PLAYER_FRAME] = FxZero;
-                }
-
-                object->values[VAL_PLAYER_FRAME] =
-                    (object->values[VAL_PLAYER_GROUND] > 0L && object->values[VAL_X_SPEED] != FxZero)
-                        ? Fadd(
-                              object->values[VAL_PLAYER_FRAME],
-                              Fclamp(Fmul(Fabs(object->values[VAL_X_SPEED]), 0x0000147B), 0x000023D7, FxHalf)
-                          )
-                        : FxZero;
-
-                switch (player->power) {
-                    default:
-                        break;
-
-                    case POW_FIRE:
-                    case POW_BEETROOT:
-                    case POW_HAMMER: {
-                        if ((player->input & GI_FIRE) && !(player->last_input & GI_FIRE) &&
-                            !(object->flags & FLG_PLAYER_DUCK))
-                            for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
-                                if (!object_is_alive((ObjectID)(object->values[i]))) {
-                                    enum GameObjectType mtype;
-                                    switch (player->power) {
-                                        default:
-                                            mtype = OBJ_NULL;
-                                            break;
-                                        case POW_FIRE:
-                                            mtype = OBJ_MISSILE_FIREBALL;
-                                            break;
-                                        case POW_BEETROOT:
-                                            mtype = OBJ_MISSILE_BEETROOT;
-                                            break;
-                                        case POW_HAMMER:
-                                            mtype = OBJ_MISSILE_HAMMER;
-                                            break;
-                                    }
-                                    const ObjectID mid = create_object(
-                                        mtype,
-                                        (fvec2){
-                                            Fadd(object->pos[0], FfInt((object->object_flags & OBF_X_FLIP) ? -5L : 5L)),
-                                            Fsub(object->pos[1], FfInt(29L))
-                                        }
-                                    );
-                                    if (object_is_alive(mid)) {
-                                        object->values[i] = mid;
-                                        struct GameObject* missile = &(state.objects[mid]);
-                                        missile->values[VAL_MISSILE_OWNER] = oid;
-                                        switch (mtype) {
-                                            default:
-                                                break;
-
-                                            case OBJ_MISSILE_FIREBALL: {
-                                                missile->object_flags |= object->object_flags & OBF_X_FLIP;
-                                                missile->values[VAL_X_SPEED] =
-                                                    (object->object_flags & OBF_X_FLIP) ? -0x0007C000 : 0x0007C000;
-                                                break;
-                                            }
-
-                                            case OBJ_MISSILE_BEETROOT: {
-                                                missile->values[VAL_X_SPEED] =
-                                                    (object->object_flags & OBF_X_FLIP) ? -0x00026000 : 0x00026000;
-                                                missile->values[VAL_Y_SPEED] = FfInt(-5);
-                                                break;
-                                            }
-
-                                            case OBJ_MISSILE_HAMMER: {
-                                                missile->object_flags |= object->object_flags & OBF_X_FLIP;
-                                                missile->values[VAL_X_SPEED] = Fadd(
-                                                    (object->object_flags & OBF_X_FLIP) ? -0x0002A3D7 : 0x0002A3D7,
-                                                    object->values[VAL_X_SPEED]
-                                                );
-                                                missile->values[VAL_Y_SPEED] =
-                                                    Fadd(FfInt(-7), Fmin(0, Fhalf(object->values[VAL_Y_SPEED])));
-                                                break;
-                                            }
-                                        }
-                                    }
-
-                                    if (object->values[VAL_PLAYER_GROUND] > 0L)
-                                        object->values[VAL_PLAYER_FIRE] = 2L;
-                                    play_sound_at_object(object, SND_FIRE);
-                                    break;
-                                }
+                case OBJ_PLAYER: {
+                    struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
+                    if (player == NULL) {
+                        object->object_flags |= OBF_DESTROY;
                         break;
                     }
 
-                    case POW_LUI: {
-                        if (object->values[VAL_PLAYER_GROUND] <= 0L) {
-                            const ObjectID eid = create_object(OBJ_PLAYER_EFFECT, object->pos);
-                            if (object_is_alive(eid)) {
-                                struct GameObject* effect = &(state.objects[eid]);
-                                effect->object_flags |= object->object_flags;
-                                effect->values[VAL_PLAYER_EFFECT_POWER] = player->power;
-                                effect->values[VAL_PLAYER_EFFECT_FRAME] = get_player_frame(object);
-                            }
-                        }
-                        break;
+                    const bool cant_run = !(player->input & GI_RUN);
+                    const bool jumped = (player->input & GI_JUMP) && !(player->last_input & GI_JUMP);
+
+                    if ((player->input & GI_RIGHT) && object->values[VAL_X_TOUCH] <= 0L &&
+                        !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] >= FxZero &&
+                        ((cant_run && object->values[VAL_X_SPEED] < 0x00046000) ||
+                         (!cant_run && object->values[VAL_X_SPEED] < 0x00078000)))
+                        object->values[VAL_X_SPEED] = Fadd(object->values[VAL_X_SPEED], 0x00002000);
+                    if ((player->input & GI_LEFT) && object->values[VAL_X_TOUCH] >= 0L &&
+                        !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] <= FxZero &&
+                        ((cant_run && object->values[VAL_X_SPEED] > -0x00046000) ||
+                         (!cant_run && object->values[VAL_X_SPEED] > -0x00078000)))
+                        object->values[VAL_X_SPEED] = Fsub(object->values[VAL_X_SPEED], 0x00002000);
+
+                    if (!(player->input & GI_RIGHT) && object->values[VAL_X_SPEED] > FxZero)
+                        object->values[VAL_X_SPEED] = Fmax(Fsub(object->values[VAL_X_SPEED], 0x00002000), FxZero);
+                    if (!(player->input & GI_LEFT) && object->values[VAL_X_SPEED] < FxZero)
+                        object->values[VAL_X_SPEED] = Fmin(Fadd(object->values[VAL_X_SPEED], 0x00002000), FxZero);
+
+                    if ((player->input & GI_RIGHT) && object->values[VAL_X_TOUCH] <= 0L &&
+                        !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] < FxZero)
+                        object->values[VAL_X_SPEED] = Fadd(object->values[VAL_X_SPEED], 0x00006000);
+                    if ((player->input & GI_LEFT) && object->values[VAL_X_TOUCH] >= 0L &&
+                        !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] > FxZero)
+                        object->values[VAL_X_SPEED] = Fsub(object->values[VAL_X_SPEED], 0x00006000);
+
+                    if ((player->input & GI_RIGHT) && object->values[VAL_X_TOUCH] <= 0L &&
+                        !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] < FxOne &&
+                        object->values[VAL_X_SPEED] >= FxZero)
+                        object->values[VAL_X_SPEED] = Fadd(object->values[VAL_X_SPEED], FxOne);
+                    if ((player->input & GI_LEFT) && object->values[VAL_X_TOUCH] >= 0L &&
+                        !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] > -FxOne &&
+                        object->values[VAL_X_SPEED] <= FxZero)
+                        object->values[VAL_X_SPEED] = Fsub(object->values[VAL_X_SPEED], FxOne);
+
+                    if (cant_run && Fabs(object->values[VAL_X_SPEED]) > 0x00046000)
+                        object->values[VAL_X_SPEED] = Fsub(
+                            object->values[VAL_X_SPEED],
+                            object->values[VAL_X_SPEED] >= FxZero ? 0x00002000 : -0x00002000
+                        );
+
+                    if ((player->input & GI_DOWN) && !(player->input & GI_LEFT) && !(player->input & GI_RIGHT) &&
+                        object->values[VAL_PLAYER_GROUND] > 0L && player->power != POW_SMALL)
+                        object->flags |= FLG_PLAYER_DUCK;
+                    if (object->flags & FLG_PLAYER_DUCK) {
+                        if (!(player->input & GI_DOWN) || player->power == POW_SMALL)
+                            object->flags &= ~FLG_PLAYER_DUCK;
+                        else if (object->values[VAL_X_SPEED] > FxZero)
+                            object->values[VAL_X_SPEED] = Fmax(Fsub(object->values[VAL_X_SPEED], 0x00006000), FxZero);
+                        else if (object->values[VAL_X_SPEED] < FxZero)
+                            object->values[VAL_X_SPEED] = Fmin(Fadd(object->values[VAL_X_SPEED], 0x00006000), FxZero);
                     }
-                }
 
-                bump_object(oid);
-                break;
-            }
+                    if ((player->input & GI_JUMP) && object->values[VAL_Y_SPEED] < FxZero /* and _y < _water_y */ &&
+                        !(player->input & GI_DOWN))
+                        object->values[VAL_Y_SPEED] = Fsub(
+                            object->values[VAL_Y_SPEED],
+                            (player->power == POW_LUI)
+                                ? 0x0000999A
+                                : ((Fabs(object->values[VAL_X_SPEED]) < 0x0000A000) ? 0x00006666 : FxHalf)
+                        );
 
-            case OBJ_PLAYER_EFFECT: {
-                object->values[VAL_PLAYER_EFFECT_ALPHA] = Fsub(object->values[VAL_PLAYER_EFFECT_ALPHA], 0x0009F600);
-                if (object->values[VAL_PLAYER_EFFECT_ALPHA] <= FxZero)
-                    object->object_flags |= OBF_DESTROY;
-                break;
-            }
+                    if ((jumped || ((player->input & GI_JUMP) && object->flags & FLG_PLAYER_JUMP)) &&
+                        /* _y < _water_y and */ !(player->input & GI_DOWN) && object->values[VAL_PLAYER_GROUND] > 0L) {
+                        object->values[VAL_PLAYER_GROUND] = 0L;
+                        object->values[VAL_Y_SPEED] = FfInt(-13L);
+                        object->flags &= ~FLG_PLAYER_JUMP;
+                        play_sound_at_object(object, SND_JUMP);
+                    }
+                    if (!(player->input & GI_JUMP) && /* _y < _water_y and */ !(player->input & GI_DOWN) &&
+                        object->values[VAL_PLAYER_GROUND] > 0L && (object->flags & FLG_PLAYER_JUMP))
+                        object->flags &= ~FLG_PLAYER_JUMP;
+                    if (jumped && object->values[VAL_PLAYER_GROUND] <= 0L && object->values[VAL_Y_SPEED] > FxZero)
+                        object->flags |= FLG_PLAYER_JUMP;
 
-            case OBJ_LUI: {
-                if (object->values[VAL_LUI_BOUNCE] > 0L) {
-                    object->values[VAL_LUI_BOUNCE] += 62L;
-                    if (object->values[VAL_LUI_BOUNCE] >= 600L)
-                        object->values[VAL_LUI_BOUNCE] = 0L;
-                }
+                    object->bbox[0][1] =
+                        (player->power == POW_SMALL || (object->flags & FLG_PLAYER_DUCK)) ? FfInt(-25L) : FfInt(-51L);
 
-                object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00003333);
+                    if (object->values[VAL_PLAYER_GROUND] > 0L)
+                        --(object->values[VAL_PLAYER_GROUND]);
+                    displace_object(oid, FfInt(10L), true);
+                    if (object->values[VAL_Y_TOUCH] > 0L)
+                        object->values[VAL_PLAYER_GROUND] = 2L;
 
-                displace_object(oid, FxZero, false);
-                if (object->values[VAL_Y_TOUCH] > 0L) {
-                    object->values[VAL_Y_SPEED] = FfInt(-7L);
-                    object->values[VAL_LUI_BOUNCE] = 1L;
-                    play_sound_at_object(object, SND_KICK);
-                }
-
-                break;
-            }
-
-            case OBJ_POINTS: {
-                const int time = (object->values[VAL_POINTS_TIME])++;
-                if (time < 35L)
-                    move_object(oid, (fvec2){object->pos[0], Fsub(object->pos[1], FxOne)});
-
-                if (object->values[VAL_POINTS] >= 10000L) {
-                    if (time >= 300L)
-                        object->object_flags |= OBF_DESTROY;
-                } else if (object->values[VAL_POINTS] >= 1000L) {
-                    if (time >= 200L)
-                        object->object_flags |= OBF_DESTROY;
-                } else if (time >= 100L)
-                    object->object_flags |= OBF_DESTROY;
-
-                break;
-            }
-
-            case OBJ_MISSILE_FIREBALL: {
-                object->values[VAL_MISSILE_ANGLE] = Fadd(
-                    object->values[VAL_MISSILE_ANGLE], object->values[VAL_X_SPEED] < FxZero ? -0x000B4000 : 0x000B4000
-                );
-                object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
-
-                displace_object(oid, FfInt(10L), false);
-                if (object->values[VAL_X_TOUCH] != 0L)
-                    object->object_flags |= OBF_DESTROY;
-                if (object->object_flags & OBF_DESTROY) {
-                    create_object(OBJ_EXPLODE, object->pos);
-                    break;
-                }
-                if (object->values[VAL_Y_TOUCH] > 0L)
-                    object->values[VAL_Y_SPEED] = FfInt(-5L);
-
-                const ObjectID ownid = (ObjectID)(object->values[VAL_MISSILE_OWNER]);
-                if (object_is_alive(ownid) && state.objects[ownid].type == OBJ_PLAYER) {
-                    if (!in_player_view(object, state.objects[ownid].values[VAL_PLAYER_INDEX], FxZero))
-                        object->object_flags |= OBF_DESTROY;
-                } else if (!in_any_view(object, FxZero))
-                    object->object_flags |= OBF_DESTROY;
-
-                break;
-            }
-
-            case OBJ_MISSILE_HAMMER: {
-                object->values[VAL_MISSILE_ANGLE] = Fadd(
-                    object->values[VAL_MISSILE_ANGLE], object->values[VAL_X_SPEED] < FxZero ? -0x0005A000 : 0x0005A000
-                );
-                object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00004925);
-
-                move_object(
-                    oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
-                                 Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
-                );
-
-                const ObjectID ownid = (ObjectID)(object->values[VAL_MISSILE_OWNER]);
-                if (object_is_alive(ownid) && state.objects[ownid].type == OBJ_PLAYER) {
-                    if (!in_player_view(object, state.objects[ownid].values[VAL_PLAYER_INDEX], FxZero))
-                        object->object_flags |= OBF_DESTROY;
-                } else if (!in_any_view(object, FxZero))
-                    object->object_flags |= OBF_DESTROY;
-
-                break;
-            }
-
-            case OBJ_MISSILE_BEETROOT: {
-                object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
-                move_object(
-                    oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
-                                 Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
-                );
-                if (object->values[VAL_MISSILE_HITS] > 0L) {
-                    if (object->values[VAL_MISSILE_HIT] > 0L)
-                        --(object->values[VAL_MISSILE_HIT]);
-
-                    struct BlockList list = {0};
-                    list_block_at(
-                        &list, (fvec2[2]){{
-                                              Fadd(object->pos[0], object->bbox[0][0]),
-                                              Fadd(object->pos[1], object->bbox[0][1]),
-                                          },
-                                          {
-                                              Fadd(object->pos[0], object->bbox[1][0]),
-                                              Fadd(object->pos[1], object->bbox[1][1]),
-                                          }}
-                    );
-
-                    uint8_t hit = 0L;
-                    for (size_t i = 0; i < list.num_objects; i++) {
-                        const ObjectID bid = list.objects[i];
-                        if (bid == oid)
-                            continue;
-
-                        if (is_solid(bid, false, false)) {
-                            if (object->values[VAL_MISSILE_HIT] > 0L) {
-                                ++(object->values[VAL_MISSILE_HIT]);
-                            } else {
-                                struct GameObject* bumped = &(state.objects[bid]);
-                                if (bumped->type == OBJ_BRICK_BLOCK || bumped->type == OBJ_BRICK_BLOCK_GRAY) {
-                                    break_brick(bumped, (ObjectID)(object->values[VAL_MISSILE_OWNER]));
-                                    hit = 2L;
-                                } else {
-                                    hit = 1L;
-                                }
-                            }
+                    if (object->values[VAL_Y_TOUCH] <= 0L) {
+                        const bool carried = object->object_flags & OBF_CARRIED;
+                        if (object->values[VAL_Y_SPEED] > FfInt(10L) && !carried) {
+                            object->values[VAL_Y_SPEED] = Fmin(Fsub(object->values[VAL_Y_SPEED], FxOne), FfInt(10L));
+                        } else if (object->values[VAL_Y_SPEED] < FfInt(10L) || carried) {
+                            object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], FxOne);
+                            object->object_flags &= ~OBF_CARRIED;
                         }
                     }
 
-                    if (hit > 0L) {
-                        create_object(OBJ_EXPLODE, object->pos);
-                        object->values[VAL_X_SPEED] = -(object->values[VAL_X_SPEED]);
-                        object->values[VAL_Y_SPEED] = FfInt(-8L);
+                    // Animation
+                    if (object->values[VAL_X_SPEED] > FxZero && (player->input & GI_RIGHT))
+                        object->object_flags &= ~OBF_X_FLIP;
+                    else if (object->values[VAL_X_SPEED] < FxZero && (player->input & GI_LEFT))
+                        object->object_flags |= OBF_X_FLIP;
 
-                        --(object->values[VAL_MISSILE_HITS]);
-                        object->values[VAL_MISSILE_HIT] = 2L;
-                        if (hit == 1L)
-                            play_sound_at_object(object, SND_HURT);
+                    if (object->values[VAL_PLAYER_POWER] > 0L) {
+                        object->values[VAL_PLAYER_POWER] -= 91L;
+                        object->values[VAL_PLAYER_FRAME] = FxZero;
                     }
-                }
+                    if (object->values[VAL_PLAYER_FIRE] > 0L) {
+                        --(object->values[VAL_PLAYER_FIRE]);
+                        object->values[VAL_PLAYER_FRAME] = FxZero;
+                    }
 
-                const ObjectID ownid = (ObjectID)(object->values[VAL_MISSILE_OWNER]);
-                if (object_is_alive(ownid) && state.objects[ownid].type == OBJ_PLAYER) {
-                    if (!in_player_view(object, state.objects[ownid].values[VAL_PLAYER_INDEX], FxZero))
-                        object->object_flags |= OBF_DESTROY;
-                } else if (!in_any_view(object, FxZero))
-                    object->object_flags |= OBF_DESTROY;
+                    object->values[VAL_PLAYER_FRAME] =
+                        (object->values[VAL_PLAYER_GROUND] > 0L && object->values[VAL_X_SPEED] != FxZero)
+                            ? Fadd(
+                                  object->values[VAL_PLAYER_FRAME],
+                                  Fclamp(Fmul(Fabs(object->values[VAL_X_SPEED]), 0x0000147B), 0x000023D7, FxHalf)
+                              )
+                            : FxZero;
 
-                break;
-            }
-
-            case OBJ_EXPLODE: {
-                object->values[VAL_EXPLODE_FRAME] += 24L;
-                if (object->values[VAL_EXPLODE_FRAME] >= 300L)
-                    object->object_flags |= OBF_DESTROY;
-                break;
-            }
-
-            case OBJ_BRICK_BLOCK:
-            case OBJ_BRICK_BLOCK_GRAY: {
-                if (object->values[VAL_BLOCK_BUMP] > 0L)
-                    if (++(object->values[VAL_BLOCK_BUMP]) > 10L)
-                        object->values[VAL_BLOCK_BUMP] = 0L;
-                break;
-            }
-
-            case OBJ_BLOCK_BUMP: {
-                struct BlockList list = {0};
-                list_block_at(
-                    &list,
-                    (fvec2[2]){{Fadd(object->pos[0], object->bbox[0][0]), Fadd(object->pos[1], object->bbox[0][1])},
-                               {Fadd(object->pos[0], object->bbox[1][0]), Fadd(object->pos[1], object->bbox[1][1])}}
-                );
-
-                for (size_t i = 0; i < list.num_objects; i++) {
-                    const ObjectID bid = list.objects[i];
-                    if (bid == oid || bid == object->values[VAL_BLOCK_BUMP_OWNER])
-                        continue;
-
-                    struct GameObject* bumped = &(state.objects[bid]);
-                    switch (bumped->type) {
+                    switch (player->power) {
                         default:
                             break;
 
-                        case OBJ_PLAYER: {
-                            if (bumped->values[VAL_PLAYER_GROUND] > 0L) {
-                                bumped->values[VAL_Y_SPEED] = FfInt(-8L);
-                                bumped->values[VAL_PLAYER_GROUND] = 0L;
+                        case POW_FIRE:
+                        case POW_BEETROOT:
+                        case POW_HAMMER: {
+                            if ((player->input & GI_FIRE) && !(player->last_input & GI_FIRE) &&
+                                !(object->flags & FLG_PLAYER_DUCK))
+                                for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
+                                    if (!object_is_alive((ObjectID)(object->values[i]))) {
+                                        enum GameObjectType mtype;
+                                        switch (player->power) {
+                                            default:
+                                                mtype = OBJ_NULL;
+                                                break;
+                                            case POW_FIRE:
+                                                mtype = OBJ_MISSILE_FIREBALL;
+                                                break;
+                                            case POW_BEETROOT:
+                                                mtype = OBJ_MISSILE_BEETROOT;
+                                                break;
+                                            case POW_HAMMER:
+                                                mtype = OBJ_MISSILE_HAMMER;
+                                                break;
+                                        }
+                                        const ObjectID mid = create_object(
+                                            mtype, (fvec2){Fadd(
+                                                               object->pos[0],
+                                                               FfInt((object->object_flags & OBF_X_FLIP) ? -5L : 5L)
+                                                           ),
+                                                           Fsub(object->pos[1], FfInt(29L))}
+                                        );
+                                        if (object_is_alive(mid)) {
+                                            object->values[i] = mid;
+                                            struct GameObject* missile = &(state.objects[mid]);
+                                            missile->values[VAL_MISSILE_OWNER] = oid;
+                                            switch (mtype) {
+                                                default:
+                                                    break;
+
+                                                case OBJ_MISSILE_FIREBALL: {
+                                                    missile->object_flags |= object->object_flags & OBF_X_FLIP;
+                                                    missile->values[VAL_X_SPEED] =
+                                                        (object->object_flags & OBF_X_FLIP) ? -0x0007C000 : 0x0007C000;
+                                                    break;
+                                                }
+
+                                                case OBJ_MISSILE_BEETROOT: {
+                                                    missile->values[VAL_X_SPEED] =
+                                                        (object->object_flags & OBF_X_FLIP) ? -0x00026000 : 0x00026000;
+                                                    missile->values[VAL_Y_SPEED] = FfInt(-5);
+                                                    break;
+                                                }
+
+                                                case OBJ_MISSILE_HAMMER: {
+                                                    missile->object_flags |= object->object_flags & OBF_X_FLIP;
+                                                    missile->values[VAL_X_SPEED] = Fadd(
+                                                        (object->object_flags & OBF_X_FLIP) ? -0x0002A3D7 : 0x0002A3D7,
+                                                        object->values[VAL_X_SPEED]
+                                                    );
+                                                    missile->values[VAL_Y_SPEED] =
+                                                        Fadd(FfInt(-7), Fmin(0, Fhalf(object->values[VAL_Y_SPEED])));
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (object->values[VAL_PLAYER_GROUND] > 0L)
+                                            object->values[VAL_PLAYER_FIRE] = 2L;
+                                        play_sound_at_object(object, SND_FIRE);
+                                        break;
+                                    }
+                            break;
+                        }
+
+                        case POW_LUI: {
+                            if (object->values[VAL_PLAYER_GROUND] <= 0L) {
+                                struct GameObject* effect = get_object(create_object(OBJ_PLAYER_EFFECT, object->pos));
+                                if (effect != NULL) {
+                                    effect->object_flags |= object->object_flags;
+                                    effect->values[VAL_PLAYER_EFFECT_POWER] = player->power;
+                                    effect->values[VAL_PLAYER_EFFECT_FRAME] = get_player_frame(object);
+                                }
                             }
                             break;
                         }
                     }
+
+                    bump_object(oid);
+                    break;
                 }
 
-                if (++(object->values[VAL_BLOCK_BUMP]) > 4L)
-                    object->object_flags |= OBF_DESTROY;
-                break;
+                case OBJ_PLAYER_EFFECT: {
+                    object->values[VAL_PLAYER_EFFECT_ALPHA] = Fsub(object->values[VAL_PLAYER_EFFECT_ALPHA], 0x0009F600);
+                    if (object->values[VAL_PLAYER_EFFECT_ALPHA] <= FxZero)
+                        object->object_flags |= OBF_DESTROY;
+                    break;
+                }
+
+                case OBJ_LUI: {
+                    if (object->values[VAL_LUI_BOUNCE] > 0L) {
+                        object->values[VAL_LUI_BOUNCE] += 62L;
+                        if (object->values[VAL_LUI_BOUNCE] >= 600L)
+                            object->values[VAL_LUI_BOUNCE] = 0L;
+                    }
+
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00003333);
+
+                    displace_object(oid, FxZero, false);
+                    if (object->values[VAL_Y_TOUCH] > 0L) {
+                        object->values[VAL_Y_SPEED] = FfInt(-7L);
+                        object->values[VAL_LUI_BOUNCE] = 1L;
+                        play_sound_at_object(object, SND_KICK);
+                    }
+
+                    break;
+                }
+
+                case OBJ_POINTS: {
+                    const int time = (object->values[VAL_POINTS_TIME])++;
+                    if (time < 35L)
+                        move_object(oid, (fvec2){object->pos[0], Fsub(object->pos[1], FxOne)});
+
+                    if (object->values[VAL_POINTS] >= 10000L) {
+                        if (time >= 300L)
+                            object->object_flags |= OBF_DESTROY;
+                    } else if (object->values[VAL_POINTS] >= 1000L) {
+                        if (time >= 200L)
+                            object->object_flags |= OBF_DESTROY;
+                    } else if (time >= 100L)
+                        object->object_flags |= OBF_DESTROY;
+
+                    break;
+                }
+
+                case OBJ_MISSILE_FIREBALL: {
+                    object->values[VAL_MISSILE_ANGLE] = Fadd(
+                        object->values[VAL_MISSILE_ANGLE],
+                        object->values[VAL_X_SPEED] < FxZero ? -0x000B4000 : 0x000B4000
+                    );
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
+
+                    displace_object(oid, FfInt(10L), false);
+                    if (object->values[VAL_X_TOUCH] != 0L)
+                        object->object_flags |= OBF_DESTROY;
+                    if (object->object_flags & OBF_DESTROY) {
+                        create_object(OBJ_EXPLODE, object->pos);
+                        break;
+                    }
+                    if (object->values[VAL_Y_TOUCH] > 0L)
+                        object->values[VAL_Y_SPEED] = FfInt(-5L);
+
+                    const int player = get_owner_id((ObjectID)(object->values[VAL_MISSILE_OWNER]));
+                    if ((player >= 0L && !in_player_view(object, player, FxZero)) ||
+                        (player < 0L && !in_any_view(object, FxZero)))
+                        object->object_flags |= OBF_DESTROY;
+                    break;
+                }
+
+                case OBJ_MISSILE_HAMMER: {
+                    object->values[VAL_MISSILE_ANGLE] = Fadd(
+                        object->values[VAL_MISSILE_ANGLE],
+                        object->values[VAL_X_SPEED] < FxZero ? -0x0005A000 : 0x0005A000
+                    );
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00004925);
+
+                    move_object(
+                        oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
+                                     Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
+                    );
+
+                    const int player = get_owner_id((ObjectID)(object->values[VAL_MISSILE_OWNER]));
+                    if ((player >= 0L && !in_player_view(object, player, FxZero)) ||
+                        (player < 0L && !in_any_view(object, FxZero)))
+                        object->object_flags |= OBF_DESTROY;
+                    break;
+                }
+
+                case OBJ_MISSILE_BEETROOT: {
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
+                    move_object(
+                        oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
+                                     Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
+                    );
+                    if (object->values[VAL_MISSILE_HITS] > 0L) {
+                        if (object->values[VAL_MISSILE_HIT] > 0L)
+                            --(object->values[VAL_MISSILE_HIT]);
+
+                        struct BlockList list = {0};
+                        list_block_at(
+                            &list, (fvec2[2]){{
+                                                  Fadd(object->pos[0], object->bbox[0][0]),
+                                                  Fadd(object->pos[1], object->bbox[0][1]),
+                                              },
+                                              {
+                                                  Fadd(object->pos[0], object->bbox[1][0]),
+                                                  Fadd(object->pos[1], object->bbox[1][1]),
+                                              }}
+                        );
+
+                        uint8_t hit = 0L;
+                        for (size_t i = 0; i < list.num_objects; i++) {
+                            const ObjectID bid = list.objects[i];
+                            if (bid == oid)
+                                continue;
+
+                            if (is_solid(bid, false, true)) {
+                                if (object->values[VAL_MISSILE_HIT] > 0L) {
+                                    ++(object->values[VAL_MISSILE_HIT]);
+                                } else {
+                                    struct GameObject* bumped = &(state.objects[bid]);
+                                    switch (bumped->type) {
+                                        default:
+                                            break;
+                                        case OBJ_ITEM_BLOCK:
+                                        case OBJ_BRICK_BLOCK:
+                                        case OBJ_BRICK_BLOCK_GRAY:
+                                        case OBJ_BRICK_BLOCK_COIN:
+                                        case OBJ_BRICK_BLOCK_GRAY_COIN: {
+                                            bump_block(bumped, oid, true);
+                                            break;
+                                        }
+                                    }
+                                    hit = 1L;
+                                }
+                            } else if (is_solid(bid, true, false)) {
+                                if (object->values[VAL_MISSILE_HIT] > 0L) {
+                                    ++(object->values[VAL_MISSILE_HIT]);
+                                } else {
+                                    struct GameObject* bumped = &(state.objects[bid]);
+                                    if (Fsub(object->pos[1], object->values[VAL_Y_SPEED]) <=
+                                        Fadd(bumped->pos[1], bumped->bbox[0][1]))
+                                        hit = 1L;
+                                }
+                            }
+                        }
+
+                        if (hit > 0L) {
+                            create_object(OBJ_EXPLODE, object->pos);
+                            object->values[VAL_X_SPEED] = -(object->values[VAL_X_SPEED]);
+                            object->values[VAL_Y_SPEED] = FfInt(-8L);
+
+                            --(object->values[VAL_MISSILE_HITS]);
+                            object->values[VAL_MISSILE_HIT] = 2L;
+                            if (hit == 1L)
+                                play_sound_at_object(object, SND_HURT);
+                        }
+                    }
+
+                    const int player = get_owner_id((ObjectID)(object->values[VAL_MISSILE_OWNER]));
+                    if ((player >= 0L && !in_player_view(object, player, FxZero)) ||
+                        (player < 0L && !in_any_view(object, FxZero)))
+                        object->object_flags |= OBF_DESTROY;
+                    break;
+                }
+
+                case OBJ_EXPLODE: {
+                    object->values[VAL_EXPLODE_FRAME] += 24L;
+                    if (object->values[VAL_EXPLODE_FRAME] >= 300L)
+                        object->object_flags |= OBF_DESTROY;
+                    break;
+                }
+
+                case OBJ_ITEM_BLOCK:
+                case OBJ_BRICK_BLOCK:
+                case OBJ_BRICK_BLOCK_GRAY: {
+                    if (object->values[VAL_BLOCK_BUMP] > 0L)
+                        if (++(object->values[VAL_BLOCK_BUMP]) > 10L)
+                            object->values[VAL_BLOCK_BUMP] = 0L;
+                    break;
+                }
+
+                case OBJ_BLOCK_BUMP: {
+                    struct BlockList list = {0};
+                    list_block_at(
+                        &list,
+                        (fvec2[2]){{Fadd(object->pos[0], object->bbox[0][0]), Fadd(object->pos[1], object->bbox[0][1])},
+                                   {Fadd(object->pos[0], object->bbox[1][0]), Fadd(object->pos[1], object->bbox[1][1])}}
+                    );
+
+                    for (size_t i = 0; i < list.num_objects; i++) {
+                        const ObjectID bid = list.objects[i];
+                        if (bid == oid || bid == object->values[VAL_BLOCK_BUMP_OWNER])
+                            continue;
+
+                        struct GameObject* bumped = &(state.objects[bid]);
+                        switch (bumped->type) {
+                            default:
+                                break;
+
+                            case OBJ_PLAYER: {
+                                if (bumped->values[VAL_PLAYER_GROUND] > 0L) {
+                                    bumped->values[VAL_Y_SPEED] = FfInt(-8L);
+                                    bumped->values[VAL_PLAYER_GROUND] = 0L;
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    if (++(object->values[VAL_BLOCK_BUMP]) > 4L)
+                        object->object_flags |= OBF_DESTROY;
+                    break;
+                }
+
+                case OBJ_BRICK_SHARD:
+                case OBJ_BRICK_SHARD_GRAY: {
+                    object->values[VAL_BRICK_SHARD_ANGLE] = Fadd(object->values[VAL_BRICK_SHARD_ANGLE], 0x00193333);
+
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
+                    move_object(
+                        oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
+                                     Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
+                    );
+
+                    if (!in_any_view(object, FxZero))
+                        object->object_flags |= OBF_DESTROY;
+                    break;
+                }
+
+                case OBJ_MUSHROOM:
+                case OBJ_MUSHROOM_1UP:
+                case OBJ_MUSHROOM_POISON: {
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00004A3D);
+                    displace_object(oid, 10, false);
+                    if (object->values[VAL_X_TOUCH] != 0L)
+                        object->values[VAL_X_SPEED] = object->values[VAL_X_TOUCH] * FfInt(-2L);
+                    break;
+                }
             }
-
-            case OBJ_BRICK_SHARD:
-            case OBJ_BRICK_SHARD_GRAY: {
-                object->values[VAL_BRICK_SHARD_ANGLE] = Fadd(object->values[VAL_BRICK_SHARD_ANGLE], 0x00193333);
-
-                object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
-                move_object(
-                    oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
-                                 Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
-                );
-
-                if (!in_any_view(object, FxZero))
-                    object->object_flags |= OBF_DESTROY;
-                break;
-            }
-        }
 
         ObjectID next = object->previous;
         if (object->object_flags & OBF_DESTROY)
@@ -1592,16 +1736,18 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
 
     ++(state.time);
 
-    struct GamePlayer* player = &(state.players[local_player]);
-    if (object_is_alive(player->object)) {
-        struct GameObject* pawn = &(state.objects[player->object]);
-        const float cx = FtInt(pawn->pos[0]);
-        const float cy = FtInt(pawn->pos[1]);
-        const float bx1 = FtFloat(player->bounds[0][0]) + HALF_SCREEN_WIDTH;
-        const float by1 = FtFloat(player->bounds[0][1]) + HALF_SCREEN_HEIGHT;
-        const float bx2 = FtFloat(player->bounds[1][0]) - HALF_SCREEN_WIDTH;
-        const float by2 = FtFloat(player->bounds[1][1]) - HALF_SCREEN_HEIGHT;
-        move_camera(SDL_clamp(cx, bx1, bx2), SDL_clamp(cy, by1, by2));
+    struct GamePlayer* player = get_player(local_player);
+    if (player != NULL) {
+        const struct GameObject* pawn = get_object(player->object);
+        if (pawn != NULL) {
+            const float cx = FtInt(pawn->pos[0]);
+            const float cy = FtInt(pawn->pos[1]);
+            const float bx1 = FtFloat(player->bounds[0][0]) + HALF_SCREEN_WIDTH;
+            const float by1 = FtFloat(player->bounds[0][1]) + HALF_SCREEN_HEIGHT;
+            const float bx2 = FtFloat(player->bounds[1][0]) - HALF_SCREEN_WIDTH;
+            const float by2 = FtFloat(player->bounds[1][1]) - HALF_SCREEN_HEIGHT;
+            move_camera(SDL_clamp(cx, bx1, bx2), SDL_clamp(cy, by1, by2));
+        }
     }
 }
 
@@ -1669,12 +1815,11 @@ void draw_state() {
                 }
 
                 case OBJ_PLAYER: {
+                    const struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
                     draw_object(
                         object,
-                        get_player_texture(
-                            state.players[object->values[VAL_PLAYER_INDEX]].power, get_player_frame(object)
-                        ),
-                        0, ALPHA(object->values[VAL_PLAYER_INDEX] != local_player ? 190 : 255)
+                        get_player_texture(player == NULL ? POW_SMALL : player->power, get_player_frame(object)), 0,
+                        ALPHA(object->values[VAL_PLAYER_INDEX] != local_player ? 190 : 255)
                     );
                     break;
                 }
@@ -1893,6 +2038,59 @@ void draw_state() {
                     break;
                 }
 
+                case OBJ_ITEM_BLOCK: {
+                    enum TextureIndices tex;
+                    if (object->flags & FLG_BLOCK_EMPTY)
+                        tex = TEX_EMPTY_BLOCK;
+                    else
+                        switch ((int)((float)(state.time) / 11.11111111111111f) % 4) {
+                            default:
+                                tex = TEX_ITEM_BLOCK1;
+                                break;
+                            case 1:
+                            case 3:
+                                tex = TEX_ITEM_BLOCK2;
+                                break;
+                            case 2:
+                                tex = TEX_ITEM_BLOCK3;
+                                break;
+                        }
+
+                    int8_t bump;
+                    switch (object->values[VAL_BLOCK_BUMP]) {
+                        default:
+                            bump = 0;
+                            break;
+                        case 2:
+                        case 9:
+                            bump = 1;
+                            break;
+                        case 3:
+                        case 8:
+                            bump = 2;
+                            break;
+                        case 4:
+                        case 7:
+                            bump = 3;
+                            break;
+                        case 5:
+                        case 6:
+                            bump = 4;
+                            break;
+                    }
+
+                    draw_sprite(
+                        tex,
+                        (float[3]){
+                            FtInt(object->pos[0]),
+                            FtInt(object->pos[1]) - bump,
+                            object->depth,
+                        },
+                        (bool[2]){false}, 0, WHITE
+                    );
+                    break;
+                }
+
                 case OBJ_BRICK_BLOCK:
                 case OBJ_BRICK_BLOCK_GRAY: {
                     int8_t bump;
@@ -2061,6 +2259,23 @@ void load_object(enum GameObjectType type) {
             load_sound(SND_COIN);
 
             load_object(OBJ_POINTS);
+            load_object(OBJ_COIN_POP);
+            break;
+        }
+
+        case OBJ_COIN_POP: {
+            // load_texture(TEX_COIN_POP1);
+            // load_texture(TEX_COIN_POP2);
+            // load_texture(TEX_COIN_POP3);
+            // load_texture(TEX_COIN_POP4);
+            // load_texture(TEX_COIN_SPARK1);
+            // load_texture(TEX_COIN_SPARK2);
+            // load_texture(TEX_COIN_SPARK3);
+            // load_texture(TEX_COIN_SPARK4);
+
+            load_sound(SND_COIN);
+
+            load_object(OBJ_POINTS);
             break;
         }
 
@@ -2182,6 +2397,72 @@ void load_object(enum GameObjectType type) {
             break;
         }
 
+        case OBJ_ITEM_BLOCK: {
+            load_texture(TEX_ITEM_BLOCK1);
+            load_texture(TEX_ITEM_BLOCK2);
+            load_texture(TEX_ITEM_BLOCK3);
+            load_texture(TEX_EMPTY_BLOCK);
+
+            load_sound(SND_SPROUT);
+
+            load_object(OBJ_BLOCK_BUMP);
+            break;
+        }
+
+        case OBJ_ITEM_BLOCK_COIN: {
+            load_object(OBJ_ITEM_BLOCK);
+            load_object(OBJ_COIN_POP);
+            break;
+        }
+
+        case OBJ_ITEM_BLOCK_MUSHROOM: {
+            load_object(OBJ_ITEM_BLOCK);
+            load_object(OBJ_MUSHROOM);
+            break;
+        }
+
+        case OBJ_ITEM_BLOCK_MUSHROOM_1UP: {
+            load_object(OBJ_ITEM_BLOCK);
+            load_object(OBJ_MUSHROOM_1UP);
+            break;
+        }
+
+        case OBJ_ITEM_BLOCK_MUSHROOM_POISON: {
+            load_object(OBJ_ITEM_BLOCK);
+            load_object(OBJ_MUSHROOM_POISON);
+            break;
+        }
+
+        case OBJ_ITEM_BLOCK_FIRE_FLOWER: {
+            load_object(OBJ_ITEM_BLOCK);
+            load_object(OBJ_FIRE_FLOWER);
+            break;
+        }
+
+        case OBJ_ITEM_BLOCK_BEETROOT: {
+            load_object(OBJ_ITEM_BLOCK);
+            load_object(OBJ_BEETROOT);
+            break;
+        }
+
+        case OBJ_ITEM_BLOCK_LUI: {
+            load_object(OBJ_ITEM_BLOCK);
+            load_object(OBJ_LUI);
+            break;
+        }
+
+        case OBJ_ITEM_BLOCK_HAMMER_SUIT: {
+            load_object(OBJ_ITEM_BLOCK);
+            load_object(OBJ_HAMMER_SUIT);
+            break;
+        }
+
+        case OBJ_ITEM_BLOCK_STARMAN: {
+            load_object(OBJ_ITEM_BLOCK);
+            load_object(OBJ_STARMAN);
+            break;
+        }
+
         case OBJ_BRICK_BLOCK: {
             load_texture(TEX_BRICK_BLOCK);
 
@@ -2211,11 +2492,35 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_BRICK_SHARD_GRAY);
             break;
         }
+
+        case OBJ_BRICK_BLOCK_COIN: {
+            load_texture(TEX_BRICK_BLOCK);
+            load_texture(TEX_EMPTY_BLOCK);
+
+            load_sound(SND_BUMP);
+
+            load_object(OBJ_COIN_POP);
+            break;
+        }
+
+        case OBJ_BRICK_BLOCK_GRAY_COIN: {
+            load_texture(TEX_BRICK_BLOCK_GRAY);
+            load_texture(TEX_EMPTY_BLOCK);
+
+            load_sound(SND_BUMP);
+
+            load_object(OBJ_COIN_POP);
+            break;
+        }
     }
 }
 
 bool object_is_alive(ObjectID index) {
     return index >= 0L && index < MAX_OBJECTS && state.objects[index].type != OBJ_NULL;
+}
+
+struct GameObject* get_object(ObjectID index) {
+    return object_is_alive(index) ? &(state.objects[index]) : NULL;
 }
 
 ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
@@ -2289,9 +2594,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 case OBJ_MUSHROOM_1UP:
                 case OBJ_MUSHROOM_POISON: {
                     object->bbox[0][0] = FfInt(-15L);
-                    object->bbox[0][1] = FfInt(-31L);
+                    object->bbox[0][1] = FfInt(-32L);
                     object->bbox[1][0] = FfInt(15L);
-                    object->bbox[1][1] = FxOne;
 
                     object->flags = FLG_POWERUP_DEFAULT;
                     break;
@@ -2373,9 +2677,61 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     break;
                 }
 
+                case OBJ_ITEM_BLOCK:
+                case OBJ_ITEM_BLOCK_COIN:
+                case OBJ_ITEM_BLOCK_MUSHROOM:
+                case OBJ_ITEM_BLOCK_MUSHROOM_1UP:
+                case OBJ_ITEM_BLOCK_MUSHROOM_POISON:
+                case OBJ_ITEM_BLOCK_FIRE_FLOWER:
+                case OBJ_ITEM_BLOCK_BEETROOT:
+                case OBJ_ITEM_BLOCK_LUI:
+                case OBJ_ITEM_BLOCK_HAMMER_SUIT:
+                case OBJ_ITEM_BLOCK_STARMAN: {
+                    object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
+                    object->depth = 20L;
+
+                    switch (object->type) {
+                        default:
+                            object->values[VAL_BLOCK_ITEM] = OBJ_NULL;
+                            break;
+                        case OBJ_ITEM_BLOCK_COIN:
+                            object->values[VAL_BLOCK_ITEM] = OBJ_COIN_POP;
+                            break;
+                        case OBJ_ITEM_BLOCK_MUSHROOM:
+                            object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM;
+                            break;
+                        case OBJ_ITEM_BLOCK_MUSHROOM_1UP:
+                            object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM_1UP;
+                            break;
+                        case OBJ_ITEM_BLOCK_MUSHROOM_POISON:
+                            object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM_POISON;
+                            break;
+                        case OBJ_ITEM_BLOCK_FIRE_FLOWER:
+                            object->values[VAL_BLOCK_ITEM] = OBJ_FIRE_FLOWER;
+                            break;
+                        case OBJ_ITEM_BLOCK_BEETROOT:
+                            object->values[VAL_BLOCK_ITEM] = OBJ_BEETROOT;
+                            break;
+                        case OBJ_ITEM_BLOCK_LUI:
+                            object->values[VAL_BLOCK_ITEM] = OBJ_LUI;
+                            break;
+                        case OBJ_ITEM_BLOCK_HAMMER_SUIT:
+                            object->values[VAL_BLOCK_ITEM] = OBJ_HAMMER_SUIT;
+                            break;
+                        case OBJ_ITEM_BLOCK_STARMAN:
+                            object->values[VAL_BLOCK_ITEM] = OBJ_STARMAN;
+                            break;
+                    }
+                    object->type = OBJ_ITEM_BLOCK;
+
+                    object->flags = FLG_BLOCK_DEFAULT;
+                    break;
+                }
+
                 case OBJ_BRICK_BLOCK:
                 case OBJ_BRICK_BLOCK_GRAY: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
+                    object->depth = 20L;
                     break;
                 }
 
@@ -2391,6 +2747,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 case OBJ_BRICK_SHARD_GRAY: {
                     object->bbox[0][0] = object->bbox[0][1] = FfInt(-8L);
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(8L);
+                    object->depth = 20L;
 
                     object->values[VAL_BLOCK_BUMP_OWNER] = -1L;
                     break;
@@ -2406,10 +2763,10 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
 }
 
 void move_object(ObjectID index, const fvec2 pos) {
-    if (!object_is_alive(index))
+    struct GameObject* object = get_object(index);
+    if (object == NULL)
         return;
 
-    struct GameObject* object = &(state.objects[index]);
     object->pos[0] = pos[0];
     object->pos[1] = pos[1];
 
@@ -2466,24 +2823,23 @@ void list_block_at(struct BlockList* list, const fvec2 rect[2]) {
 }
 
 void destroy_object(ObjectID index) {
-    if (!object_is_alive(index))
+    struct GameObject* object = get_object(index);
+    if (object == NULL)
         return;
-
-    struct GameObject* object = &(state.objects[index]);
 
     switch (object->type) {
         default:
             break;
 
         case OBJ_PLAYER: {
-            fix16_t pid = object->values[VAL_PLAYER_INDEX];
-            if (pid >= 0L && pid < MAX_PLAYERS && state.players[pid].object == index)
-                state.players[pid].object = -1L;
+            struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
+            if (player != NULL && player->object == index)
+                player->object = -1L;
 
             for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++) {
-                const ObjectID mid = (ObjectID)(object->values[i]);
-                if (object_is_alive(mid))
-                    state.objects[mid].values[VAL_MISSILE_OWNER] = -1L;
+                struct GameObject* missile = get_object((ObjectID)(object->values[i]));
+                if (missile != NULL)
+                    missile->values[VAL_MISSILE_OWNER] = -1L;
             }
 
             break;
@@ -2492,18 +2848,13 @@ void destroy_object(ObjectID index) {
         case OBJ_MISSILE_FIREBALL:
         case OBJ_MISSILE_BEETROOT:
         case OBJ_MISSILE_HAMMER: {
-            const ObjectID oid = (ObjectID)(object->values[VAL_MISSILE_OWNER]);
-            if (object_is_alive(oid)) {
-                struct GameObject* owner = &(state.objects[oid]);
-                if (owner->type != OBJ_PLAYER)
-                    break;
-
+            struct GameObject* owner = get_object((ObjectID)(object->values[VAL_MISSILE_OWNER]));
+            if (owner != NULL && owner->type == OBJ_PLAYER)
                 for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
                     if (owner->values[i] == index) {
                         owner->values[i] = -1L;
                         break;
                     }
-            }
             break;
         }
     }
@@ -2531,7 +2882,9 @@ void destroy_object(ObjectID index) {
 
 void draw_object(struct GameObject* object, enum TextureIndices tid, GLfloat angle, const GLubyte color[4]) {
     draw_sprite(
-        tid, (float[3]){FtInt(object->pos[0]), FtInt(object->pos[1]), object->depth},
+        tid,
+        (float[3]){FtInt(object->pos[0]), FtInt(object->pos[1]) + object->values[VAL_SPROUT],
+                   (object->values[VAL_SPROUT] > 0L) ? 21 : (float)(object->depth)},
         (bool[2]){object->object_flags & OBF_X_FLIP, object->object_flags & OBF_Y_FLIP}, angle, color
     );
 }

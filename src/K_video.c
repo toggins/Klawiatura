@@ -155,10 +155,10 @@ static struct Texture textures[] = {
     TEXOFFS(TEX_COIN2, "items/coin2", -6, -2),
     TEXOFFS(TEX_COIN3, "items/coin3", -6, -2),
 
-    TEXOFFS(TEX_MUSHROOM, "items/mushroom", 15, 31),
-    TEXOFFS(TEX_MUSHROOM_1UP, "items/mushroom_1up", 15, 31),
-    TEXOFFS(TEX_MUSHROOM_POISON1, "items/mushroom_poison1", 15, 31),
-    TEXOFFS(TEX_MUSHROOM_POISON2, "items/mushroom_poison2", 15, 31),
+    TEXOFFS(TEX_MUSHROOM, "items/mushroom", 15, 32),
+    TEXOFFS(TEX_MUSHROOM_1UP, "items/mushroom_1up", 15, 32),
+    TEXOFFS(TEX_MUSHROOM_POISON1, "items/mushroom_poison1", 15, 32),
+    TEXOFFS(TEX_MUSHROOM_POISON2, "items/mushroom_poison2", 15, 32),
 
     TEXOFFS(TEX_FIRE_FLOWER1, "items/fire_flower1", 16, 31),
     TEXOFFS(TEX_FIRE_FLOWER2, "items/fire_flower2", 16, 31),

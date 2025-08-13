@@ -62,11 +62,25 @@ enum GameObjectType {
     OBJ_MISSILE_BEETROOT,
     OBJ_MISSILE_HAMMER,
 
+    OBJ_BLOCK_BUMP,
+
+    OBJ_ITEM_BLOCK,
+    OBJ_ITEM_BLOCK_COIN,
+    OBJ_ITEM_BLOCK_MUSHROOM,
+    OBJ_ITEM_BLOCK_MUSHROOM_1UP,
+    OBJ_ITEM_BLOCK_MUSHROOM_POISON,
+    OBJ_ITEM_BLOCK_FIRE_FLOWER,
+    OBJ_ITEM_BLOCK_BEETROOT,
+    OBJ_ITEM_BLOCK_LUI,
+    OBJ_ITEM_BLOCK_HAMMER_SUIT,
+    OBJ_ITEM_BLOCK_STARMAN,
+
     OBJ_BRICK_BLOCK,
     OBJ_BRICK_BLOCK_GRAY,
     OBJ_BRICK_SHARD,
     OBJ_BRICK_SHARD_GRAY,
-    OBJ_BLOCK_BUMP,
+    OBJ_BRICK_BLOCK_COIN,
+    OBJ_BRICK_BLOCK_GRAY_COIN,
 
     OBJ_SIZE,
 };
@@ -76,6 +90,7 @@ enum ObjectValues {
     VAL_Y_SPEED,
     VAL_X_TOUCH,
     VAL_Y_TOUCH,
+    VAL_SPROUT,
     VAL_START,
 
     VAL_PLAYER_INDEX = VAL_START,
@@ -108,8 +123,11 @@ enum ObjectValues {
 
     VAL_BLOCK_BUMP = VAL_START,
     VAL_BLOCK_BUMP_OWNER,
+    VAL_BLOCK_ITEM,
 
     VAL_BRICK_SHARD_ANGLE = VAL_START,
+
+    VAL_COIN_POP_OWNER = VAL_START,
 };
 
 enum ObjectFlags {
@@ -120,8 +138,11 @@ enum ObjectFlags {
 
     FLG_POWERUP_NONE = 0,
     FLG_POWERUP_FULL = 1 << 0,
-    FLG_POWERUP_MOVE = 1 << 1,
     FLG_POWERUP_DEFAULT = FLG_POWERUP_FULL,
+
+    FLG_BLOCK_NONE = 0,
+    FLG_BLOCK_EMPTY = 1 << 0,
+    FLG_BLOCK_DEFAULT = FLG_BLOCK_NONE,
 };
 
 enum PlayerFrames {
@@ -225,6 +246,7 @@ void draw_state();
 void load_object(enum GameObjectType);
 
 bool object_is_alive(ObjectID);
+struct GameObject* get_object(ObjectID);
 ObjectID create_object(enum GameObjectType, const fvec2);
 void move_object(ObjectID, const fvec2);
 
