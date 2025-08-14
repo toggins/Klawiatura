@@ -208,6 +208,15 @@ static struct Texture textures[] = {
     TEXTURE(TEX_BRICK_BLOCK_GRAY, "items/brick_gray"),
     TEXOFFS(TEX_BRICK_SHARD, "effects/shard", 8, 8),
     TEXOFFS(TEX_BRICK_SHARD_GRAY, "effects/shard_gray", 8, 8),
+
+    TEXOFFS(TEX_COIN_POP1, "items/coin_pop1", 10, 27),
+    TEXOFFS(TEX_COIN_POP2, "items/coin_pop2", 6, 27),
+    TEXOFFS(TEX_COIN_POP3, "items/coin_pop3", 2, 27),
+    TEXOFFS(TEX_COIN_POP4, "items/coin_pop4", 6, 27),
+    TEXOFFS(TEX_COIN_SPARK1, "items/coin_spark1", 7, 13),
+    TEXOFFS(TEX_COIN_SPARK2, "items/coin_spark2", 14, 31),
+    TEXOFFS(TEX_COIN_SPARK3, "items/coin_spark3", 18, 29),
+    TEXOFFS(TEX_COIN_SPARK4, "items/coin_spark4", 16, 21),
 };
 
 static vec2 camera = {HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT};

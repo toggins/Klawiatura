@@ -124,25 +124,30 @@ enum ObjectValues {
     VAL_BLOCK_BUMP = VAL_START,
     VAL_BLOCK_BUMP_OWNER,
     VAL_BLOCK_ITEM,
+    VAL_BLOCK_TIME,
 
     VAL_BRICK_SHARD_ANGLE = VAL_START,
 
     VAL_COIN_POP_OWNER = VAL_START,
+    VAL_COIN_POP_FRAME,
 };
 
 enum ObjectFlags {
-    FLG_PLAYER_NONE = 0,
-    FLG_PLAYER_DUCK = 1 << 0,
-    FLG_PLAYER_JUMP = 1 << 1,
-    FLG_PLAYER_DEFAULT = FLG_PLAYER_NONE,
+    FLG_VISIBLE = 1 << 0,
+    FLG_DESTROY = 1 << 1,
+    FLG_X_FLIP = 1 << 2,
+    FLG_Y_FLIP = 1 << 3,
+    FLG_CARRIED = 1 << 4,
 
-    FLG_POWERUP_NONE = 0,
-    FLG_POWERUP_FULL = 1 << 0,
-    FLG_POWERUP_DEFAULT = FLG_POWERUP_FULL,
+    FLG_PLAYER_DUCK = 1 << 5,
+    FLG_PLAYER_JUMP = 1 << 6,
 
-    FLG_BLOCK_NONE = 0,
-    FLG_BLOCK_EMPTY = 1 << 0,
-    FLG_BLOCK_DEFAULT = FLG_BLOCK_NONE,
+    FLG_POWERUP_FULL = 1 << 5,
+
+    FLG_BLOCK_EMPTY = 1 << 5,
+
+    FLG_COIN_POP_START = 1 << 5,
+    FLG_COIN_POP_SPARK = 1 << 6,
 };
 
 enum PlayerFrames {
@@ -208,30 +213,18 @@ struct GameState {
 
     struct GameObject {
         enum GameObjectType type;
-        enum GameObjectFlags {
-            OBF_NONE = 0,
-            OBF_VISIBLE = 1 << 0,
-            OBF_DESTROY = 1 << 1,
-            OBF_X_FLIP = 1 << 2,
-            OBF_Y_FLIP = 1 << 3,
-            OBF_CARRIED = 1 << 4,
-
-            OBF_DEFAULT = OBF_VISIBLE,
-        } object_flags;
         ObjectID previous, next;
 
         int32_t block;
         ObjectID previous_block, next_block;
 
-        fvec2 pos;
-        fvec2 bbox[2];
+        fvec2 pos, bbox[2];
         int16_t depth;
 
         fix16_t values[MAX_VALUES];
         uint32_t flags;
     } objects[MAX_OBJECTS];
-    ObjectID live_objects;
-    ObjectID next_object;
+    ObjectID live_objects, next_object;
 
     ObjectID blockmap[BLOCKMAP_SIZE];
 };
