@@ -76,9 +76,7 @@ static bool is_solid(ObjectID oid, bool ignore_full, bool ignore_top) {
         case OBJ_SOLID:
         case OBJ_ITEM_BLOCK:
         case OBJ_BRICK_BLOCK:
-        case OBJ_BRICK_BLOCK_GRAY:
         case OBJ_BRICK_BLOCK_COIN:
-        case OBJ_BRICK_BLOCK_GRAY_COIN:
             return !ignore_full;
         case OBJ_SOLID_TOP:
             return !ignore_top;
@@ -157,8 +155,7 @@ static void bump_block(struct GameObject* block, ObjectID from, bool strong) {
             break;
 
         case OBJ_ITEM_BLOCK:
-        case OBJ_BRICK_BLOCK_COIN:
-        case OBJ_BRICK_BLOCK_GRAY_COIN: {
+        case OBJ_BRICK_BLOCK_COIN: {
             bool is_powerup = false;
             switch (block->values[VAL_BLOCK_ITEM]) {
                 default:
@@ -210,35 +207,32 @@ static void bump_block(struct GameObject* block, ObjectID from, bool strong) {
             break;
         }
 
-        case OBJ_BRICK_BLOCK:
-        case OBJ_BRICK_BLOCK_GRAY: {
+        case OBJ_BRICK_BLOCK: {
             if (strong) {
-                const enum GameObjectType stype =
-                    (block->type == OBJ_BRICK_BLOCK_GRAY) ? OBJ_BRICK_SHARD_GRAY : OBJ_BRICK_SHARD;
-                struct GameObject* shard = get_object(
-                    create_object(stype, (fvec2){Fadd(block->pos[0], FfInt(8)), Fadd(block->pos[1], FfInt(8))})
-                );
+                struct GameObject* shard = get_object(create_object(
+                    OBJ_BRICK_SHARD, (fvec2){Fadd(block->pos[0], FfInt(8)), Fadd(block->pos[1], FfInt(8))}
+                ));
                 if (shard != NULL) {
                     shard->values[VAL_X_SPEED] = FfInt(-2);
                     shard->values[VAL_Y_SPEED] = FfInt(-8);
                 }
-                shard = get_object(
-                    create_object(stype, (fvec2){Fadd(block->pos[0], FfInt(16)), Fadd(block->pos[1], FfInt(8))})
-                );
+                shard = get_object(create_object(
+                    OBJ_BRICK_SHARD, (fvec2){Fadd(block->pos[0], FfInt(16)), Fadd(block->pos[1], FfInt(8))}
+                ));
                 if (shard != NULL) {
                     shard->values[VAL_X_SPEED] = FfInt(2);
                     shard->values[VAL_Y_SPEED] = FfInt(-8);
                 }
-                shard = get_object(
-                    create_object(stype, (fvec2){Fadd(block->pos[0], FfInt(8)), Fadd(block->pos[1], FfInt(16))})
-                );
+                shard = get_object(create_object(
+                    OBJ_BRICK_SHARD, (fvec2){Fadd(block->pos[0], FfInt(8)), Fadd(block->pos[1], FfInt(16))}
+                ));
                 if (shard != NULL) {
                     shard->values[VAL_X_SPEED] = FfInt(-3);
                     shard->values[VAL_Y_SPEED] = FfInt(-6);
                 }
-                shard = get_object(
-                    create_object(stype, (fvec2){Fadd(block->pos[0], FfInt(16)), Fadd(block->pos[1], FfInt(16))})
-                );
+                shard = get_object(create_object(
+                    OBJ_BRICK_SHARD, (fvec2){Fadd(block->pos[0], FfInt(16)), Fadd(block->pos[1], FfInt(16))}
+                ));
                 if (shard != NULL) {
                     shard->values[VAL_X_SPEED] = FfInt(3);
                     shard->values[VAL_Y_SPEED] = FfInt(-6);
@@ -279,9 +273,7 @@ static void bottom_check(ObjectID self_id, ObjectID other_id) {
 
         case OBJ_ITEM_BLOCK:
         case OBJ_BRICK_BLOCK:
-        case OBJ_BRICK_BLOCK_GRAY:
-        case OBJ_BRICK_BLOCK_COIN:
-        case OBJ_BRICK_BLOCK_GRAY_COIN: {
+        case OBJ_BRICK_BLOCK_COIN: {
             const struct GameObject* other = &(state.objects[other_id]);
             if (other->type != OBJ_PLAYER)
                 break;
@@ -1110,11 +1102,11 @@ void start_state(int num_players, int local) {
     create_object(OBJ_LUI, (fvec2){FfInt(448L), FfInt(416L)});
     create_object(OBJ_HAMMER_SUIT, (fvec2){FfInt(512L), FfInt(416L)});
     create_object(OBJ_MUSHROOM_1UP, (fvec2){FfInt(800L), FfInt(416L)});
-    create_object(OBJ_BRICK_BLOCK_MUSHROOM_1UP, (fvec2){FfInt(128L), FfInt(240L)});
+    create_object(OBJ_BRICK_BLOCK_COIN, (fvec2){FfInt(128L), FfInt(240L)});
     create_object(OBJ_BRICK_BLOCK, (fvec2){FfInt(160L), FfInt(240L)});
     create_object(OBJ_COIN, (fvec2){FfInt(160L), FfInt(208L)});
-    create_object(OBJ_ITEM_BLOCK_COIN, (fvec2){FfInt(192L), FfInt(240L)});
-    create_object(OBJ_ITEM_BLOCK_FIRE_FLOWER, (fvec2){FfInt(224L), FfInt(240L)});
+    create_object(OBJ_ITEM_BLOCK, (fvec2){FfInt(192L), FfInt(240L)});
+    create_object(OBJ_ITEM_BLOCK, (fvec2){FfInt(224L), FfInt(240L)});
     create_object(OBJ_CHECKPOINT, (fvec2){FfInt(864L), FfInt(416L)});
     create_object(OBJ_CHECKPOINT, (fvec2){FfInt(1024L), FfInt(416L)});
 
@@ -1646,9 +1638,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                             break;
                                         case OBJ_ITEM_BLOCK:
                                         case OBJ_BRICK_BLOCK:
-                                        case OBJ_BRICK_BLOCK_GRAY:
-                                        case OBJ_BRICK_BLOCK_COIN:
-                                        case OBJ_BRICK_BLOCK_GRAY_COIN: {
+                                        case OBJ_BRICK_BLOCK_COIN: {
                                             bump_block(bumped, oid, true);
                                             break;
                                         }
@@ -1694,16 +1684,14 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 }
 
                 case OBJ_ITEM_BLOCK:
-                case OBJ_BRICK_BLOCK:
-                case OBJ_BRICK_BLOCK_GRAY: {
+                case OBJ_BRICK_BLOCK: {
                     if (object->values[VAL_BLOCK_BUMP] > 0L)
                         if (++(object->values[VAL_BLOCK_BUMP]) > 10L)
                             object->values[VAL_BLOCK_BUMP] = 0L;
                     break;
                 }
 
-                case OBJ_BRICK_BLOCK_COIN:
-                case OBJ_BRICK_BLOCK_GRAY_COIN: {
+                case OBJ_BRICK_BLOCK_COIN: {
                     if (object->values[VAL_BLOCK_TIME] > 0L && object->values[VAL_BLOCK_TIME] <= 300L)
                         ++(object->values[VAL_BLOCK_TIME]);
 
@@ -1757,8 +1745,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                     break;
                 }
 
-                case OBJ_BRICK_SHARD:
-                case OBJ_BRICK_SHARD_GRAY: {
+                case OBJ_BRICK_SHARD: {
                     object->values[VAL_BRICK_SHARD_ANGLE] = Fadd(object->values[VAL_BRICK_SHARD_ANGLE], 0x00193333);
 
                     object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
@@ -2226,8 +2213,7 @@ void draw_state() {
                     break;
                 }
 
-                case OBJ_BRICK_BLOCK:
-                case OBJ_BRICK_BLOCK_GRAY: {
+                case OBJ_BRICK_BLOCK: {
                     int8_t bump;
                     switch (object->values[VAL_BLOCK_BUMP]) {
                         default:
@@ -2255,7 +2241,7 @@ void draw_state() {
                     }
 
                     draw_sprite(
-                        (object->type == OBJ_BRICK_BLOCK_GRAY) ? TEX_BRICK_BLOCK_GRAY : TEX_BRICK_BLOCK,
+                        (object->flags & FLG_BLOCK_GRAY) ? TEX_BRICK_BLOCK_GRAY : TEX_BRICK_BLOCK,
                         (float[3]){
                             FtInt(object->pos[0]),
                             FtInt(object->pos[1]) - bump,
@@ -2266,8 +2252,7 @@ void draw_state() {
                     break;
                 }
 
-                case OBJ_BRICK_BLOCK_COIN:
-                case OBJ_BRICK_BLOCK_GRAY_COIN: {
+                case OBJ_BRICK_BLOCK_COIN: {
                     int8_t bump;
                     if ((object->flags & FLG_BLOCK_EMPTY) || object->values[VAL_BLOCK_ITEM] != OBJ_COIN_POP)
                         switch (object->values[VAL_BLOCK_BUMP]) {
@@ -2320,7 +2305,7 @@ void draw_state() {
                     draw_sprite(
                         (object->flags & FLG_BLOCK_EMPTY)
                             ? TEX_EMPTY_BLOCK
-                            : ((object->type == OBJ_BRICK_BLOCK_GRAY) ? TEX_BRICK_BLOCK_GRAY : TEX_BRICK_BLOCK),
+                            : ((object->type & FLG_BLOCK_GRAY) ? TEX_BRICK_BLOCK_GRAY : TEX_BRICK_BLOCK),
                         (float[3]){
                             FtInt(object->pos[0]),
                             FtInt(object->pos[1]) - bump,
@@ -2331,10 +2316,9 @@ void draw_state() {
                     break;
                 }
 
-                case OBJ_BRICK_SHARD:
-                case OBJ_BRICK_SHARD_GRAY: {
+                case OBJ_BRICK_SHARD: {
                     draw_object(
-                        object, (object->type == OBJ_BRICK_SHARD_GRAY) ? TEX_BRICK_SHARD_GRAY : TEX_BRICK_SHARD,
+                        object, (object->flags & FLG_BLOCK_GRAY) ? TEX_BRICK_SHARD_GRAY : TEX_BRICK_SHARD,
                         FtFloat(object->values[VAL_BRICK_SHARD_ANGLE]), WHITE
                     );
                     break;
@@ -2620,60 +2604,6 @@ void load_object(enum GameObjectType type) {
             break;
         }
 
-        case OBJ_ITEM_BLOCK_COIN: {
-            load_object(OBJ_ITEM_BLOCK);
-            load_object(OBJ_COIN_POP);
-            break;
-        }
-
-        case OBJ_ITEM_BLOCK_MUSHROOM: {
-            load_object(OBJ_ITEM_BLOCK);
-            load_object(OBJ_MUSHROOM);
-            break;
-        }
-
-        case OBJ_ITEM_BLOCK_MUSHROOM_1UP: {
-            load_object(OBJ_ITEM_BLOCK);
-            load_object(OBJ_MUSHROOM_1UP);
-            break;
-        }
-
-        case OBJ_ITEM_BLOCK_MUSHROOM_POISON: {
-            load_object(OBJ_ITEM_BLOCK);
-            load_object(OBJ_MUSHROOM_POISON);
-            break;
-        }
-
-        case OBJ_ITEM_BLOCK_FIRE_FLOWER: {
-            load_object(OBJ_ITEM_BLOCK);
-            load_object(OBJ_FIRE_FLOWER);
-            break;
-        }
-
-        case OBJ_ITEM_BLOCK_BEETROOT: {
-            load_object(OBJ_ITEM_BLOCK);
-            load_object(OBJ_BEETROOT);
-            break;
-        }
-
-        case OBJ_ITEM_BLOCK_LUI: {
-            load_object(OBJ_ITEM_BLOCK);
-            load_object(OBJ_LUI);
-            break;
-        }
-
-        case OBJ_ITEM_BLOCK_HAMMER_SUIT: {
-            load_object(OBJ_ITEM_BLOCK);
-            load_object(OBJ_HAMMER_SUIT);
-            break;
-        }
-
-        case OBJ_ITEM_BLOCK_STARMAN: {
-            load_object(OBJ_ITEM_BLOCK);
-            load_object(OBJ_STARMAN);
-            break;
-        }
-
         case OBJ_BRICK_BLOCK: {
             load_texture(TEX_BRICK_BLOCK);
 
@@ -2684,23 +2614,8 @@ void load_object(enum GameObjectType type) {
             break;
         }
 
-        case OBJ_BRICK_BLOCK_GRAY: {
-            load_texture(TEX_BRICK_BLOCK_GRAY);
-
-            load_sound(SND_BUMP);
-            load_sound(SND_BREAK);
-
-            load_object(OBJ_BRICK_SHARD_GRAY);
-            break;
-        }
-
         case OBJ_BRICK_SHARD: {
             load_texture(TEX_BRICK_SHARD);
-            break;
-        }
-
-        case OBJ_BRICK_SHARD_GRAY: {
-            load_texture(TEX_BRICK_SHARD_GRAY);
             break;
         }
 
@@ -2709,26 +2624,6 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_EMPTY_BLOCK);
 
             load_object(OBJ_COIN_POP);
-            break;
-        }
-
-        case OBJ_BRICK_BLOCK_GRAY_COIN: {
-            load_texture(TEX_BRICK_BLOCK_GRAY);
-            load_texture(TEX_EMPTY_BLOCK);
-
-            load_object(OBJ_COIN_POP);
-            break;
-        }
-
-        case OBJ_BRICK_BLOCK_MUSHROOM_1UP: {
-            load_object(OBJ_BRICK_BLOCK_COIN);
-            load_object(OBJ_MUSHROOM_1UP);
-            break;
-        }
-
-        case OBJ_BRICK_BLOCK_GRAY_MUSHROOM_1UP: {
-            load_object(OBJ_BRICK_BLOCK_GRAY_COIN);
-            load_object(OBJ_MUSHROOM_1UP);
             break;
         }
 
@@ -2910,85 +2805,25 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     break;
                 }
 
-                case OBJ_ITEM_BLOCK:
-                case OBJ_ITEM_BLOCK_COIN:
-                case OBJ_ITEM_BLOCK_MUSHROOM:
-                case OBJ_ITEM_BLOCK_MUSHROOM_1UP:
-                case OBJ_ITEM_BLOCK_MUSHROOM_POISON:
-                case OBJ_ITEM_BLOCK_FIRE_FLOWER:
-                case OBJ_ITEM_BLOCK_BEETROOT:
-                case OBJ_ITEM_BLOCK_LUI:
-                case OBJ_ITEM_BLOCK_HAMMER_SUIT:
-                case OBJ_ITEM_BLOCK_STARMAN: {
+                case OBJ_ITEM_BLOCK: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
                     object->depth = 20L;
 
-                    switch (object->type) {
-                        default:
-                            object->values[VAL_BLOCK_ITEM] = OBJ_NULL;
-                            break;
-                        case OBJ_ITEM_BLOCK_COIN:
-                            object->values[VAL_BLOCK_ITEM] = OBJ_COIN_POP;
-                            break;
-                        case OBJ_ITEM_BLOCK_MUSHROOM:
-                            object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM;
-                            break;
-                        case OBJ_ITEM_BLOCK_MUSHROOM_1UP:
-                            object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM_1UP;
-                            break;
-                        case OBJ_ITEM_BLOCK_MUSHROOM_POISON:
-                            object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM_POISON;
-                            break;
-                        case OBJ_ITEM_BLOCK_FIRE_FLOWER:
-                            object->values[VAL_BLOCK_ITEM] = OBJ_FIRE_FLOWER;
-                            break;
-                        case OBJ_ITEM_BLOCK_BEETROOT:
-                            object->values[VAL_BLOCK_ITEM] = OBJ_BEETROOT;
-                            break;
-                        case OBJ_ITEM_BLOCK_LUI:
-                            object->values[VAL_BLOCK_ITEM] = OBJ_LUI;
-                            break;
-                        case OBJ_ITEM_BLOCK_HAMMER_SUIT:
-                            object->values[VAL_BLOCK_ITEM] = OBJ_HAMMER_SUIT;
-                            break;
-                        case OBJ_ITEM_BLOCK_STARMAN:
-                            object->values[VAL_BLOCK_ITEM] = OBJ_STARMAN;
-                            break;
-                    }
-                    object->type = OBJ_ITEM_BLOCK;
+                    object->values[VAL_BLOCK_ITEM] = OBJ_NULL;
                     break;
                 }
 
-                case OBJ_BRICK_BLOCK:
-                case OBJ_BRICK_BLOCK_GRAY: {
+                case OBJ_BRICK_BLOCK: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
                     object->depth = 20L;
                     break;
                 }
 
-                case OBJ_BRICK_BLOCK_COIN:
-                case OBJ_BRICK_BLOCK_GRAY_COIN:
-                case OBJ_BRICK_BLOCK_MUSHROOM_1UP:
-                case OBJ_BRICK_BLOCK_GRAY_MUSHROOM_1UP: {
+                case OBJ_BRICK_BLOCK_COIN: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
                     object->depth = 20L;
 
-                    switch (object->type) {
-                        default: {
-                            object->values[VAL_BLOCK_ITEM] = OBJ_COIN_POP;
-                            break;
-                        }
-                        case OBJ_BRICK_BLOCK_MUSHROOM_1UP: {
-                            object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM_1UP;
-                            object->type = OBJ_BRICK_BLOCK_COIN;
-                            break;
-                        }
-                        case OBJ_BRICK_BLOCK_GRAY_MUSHROOM_1UP: {
-                            object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM_1UP;
-                            object->type = OBJ_BRICK_BLOCK_GRAY_COIN;
-                            break;
-                        }
-                    }
+                    object->values[VAL_BLOCK_ITEM] = OBJ_NULL;
                     break;
                 }
 
@@ -3000,8 +2835,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     break;
                 }
 
-                case OBJ_BRICK_SHARD:
-                case OBJ_BRICK_SHARD_GRAY: {
+                case OBJ_BRICK_SHARD: {
                     object->bbox[0][0] = object->bbox[0][1] = FfInt(-8L);
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(8L);
                     break;
