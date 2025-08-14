@@ -11,8 +11,44 @@ static int local_player = -1L;
 
    ==== */
 
+static ObjectID find_object(enum GameObjectType type) {
+    ObjectID oid = state.live_objects;
+    while (oid >= 0L) {
+        const struct GameObject* object = &(state.objects[oid]);
+        if (object->type == type)
+            return oid;
+        oid = object->previous;
+    }
+    return -1L;
+}
+
 static struct GamePlayer* get_player(int pid) {
     return (pid < 0L || pid >= MAX_PLAYERS) ? NULL : &(state.players[pid]);
+}
+
+static ObjectID respawn_player(int pid) {
+    struct GamePlayer* player = get_player(pid);
+    if (player == NULL || !(player->active) || player->lives <= 0L)
+        return -1L;
+
+    struct GameObject* pawn = get_object(player->object);
+    if (pawn != NULL) {
+        pawn->flags |= FLG_DESTROY;
+        player->object = -1L;
+    }
+
+    const struct GameObject* spawn = get_object(state.checkpoint);
+    if (spawn == NULL) {
+        spawn = get_object(state.spawn);
+        if (spawn == NULL)
+            return -1L;
+    }
+
+    const ObjectID object = create_object(OBJ_PLAYER, spawn->pos);
+    if (object_is_alive(object))
+        state.objects[object].values[VAL_PLAYER_INDEX] = pid;
+    player->object = object;
+    return object;
 }
 
 static void give_points(struct GameObject* item, int pid, int points) {
@@ -558,6 +594,18 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
             }
             break;
         }
+
+        case OBJ_CHECKPOINT: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type != OBJ_PLAYER)
+                break;
+            if (state.checkpoint < self_id) {
+                give_points(self, get_owner_id(other_id), 1000L);
+                play_sound_at_object(self, SND_SPROUT);
+                state.checkpoint = self_id;
+            }
+            break;
+        }
     }
 
     return true;
@@ -961,8 +1009,9 @@ void start_state(int num_players, int local) {
     state.live_objects = -1L;
     for (uint32_t i = 0L; i < BLOCKMAP_SIZE; i++)
         state.blockmap[i] = -1L;
-    state.size[0] = Fdouble(F_SCREEN_WIDTH);
+    state.size[0] = FfInt(2560L);
     state.size[1] = F_SCREEN_HEIGHT;
+    state.spawn = state.checkpoint = -1L;
 
     add_gradient(
         0, 0, 11008, 551, 200,
@@ -1048,6 +1097,7 @@ void start_state(int num_players, int local) {
     create_object(OBJ_CLOUD, (fvec2){FfInt(789L), FfInt(96L)});
     create_object(OBJ_BUSH_SNOW, (fvec2){FfInt(384L), FfInt(384L)});
 
+    create_object(OBJ_PLAYER_SPAWN, (fvec2){FfInt(80L), FfInt(240L)});
     create_object(OBJ_COIN, (fvec2){FfInt(32L), FfInt(32L)});
     create_object(OBJ_COIN, (fvec2){FfInt(64L), FfInt(32L)});
     create_object(OBJ_COIN, (fvec2){FfInt(32L), FfInt(64L)});
@@ -1060,10 +1110,13 @@ void start_state(int num_players, int local) {
     create_object(OBJ_LUI, (fvec2){FfInt(448L), FfInt(416L)});
     create_object(OBJ_HAMMER_SUIT, (fvec2){FfInt(512L), FfInt(416L)});
     create_object(OBJ_MUSHROOM_1UP, (fvec2){FfInt(800L), FfInt(416L)});
-    create_object(OBJ_BRICK_BLOCK_COIN, (fvec2){FfInt(128L), FfInt(240L)});
+    create_object(OBJ_BRICK_BLOCK_MUSHROOM_1UP, (fvec2){FfInt(128L), FfInt(240L)});
     create_object(OBJ_BRICK_BLOCK, (fvec2){FfInt(160L), FfInt(240L)});
+    create_object(OBJ_COIN, (fvec2){FfInt(160L), FfInt(208L)});
     create_object(OBJ_ITEM_BLOCK_COIN, (fvec2){FfInt(192L), FfInt(240L)});
     create_object(OBJ_ITEM_BLOCK_FIRE_FLOWER, (fvec2){FfInt(224L), FfInt(240L)});
+    create_object(OBJ_CHECKPOINT, (fvec2){FfInt(864L), FfInt(416L)});
+    create_object(OBJ_CHECKPOINT, (fvec2){FfInt(1024L), FfInt(416L)});
 
     ObjectID oid = create_object(OBJ_SOLID, (fvec2){FxZero, FfInt(416L)});
     if (object_is_alive(oid)) {
@@ -1140,21 +1193,6 @@ void start_state(int num_players, int local) {
         state.objects[oid].bbox[1][0] = FfInt(128L);
         state.objects[oid].bbox[1][1] = FfInt(32L);
     }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1280L), FfInt(-64L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(192L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1280L), FfInt(128L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1280L), FfInt(256L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(256L);
-    }
     oid = create_object(OBJ_SOLID, (fvec2){FfInt(1280L), FfInt(384L)});
     if (object_is_alive(oid)) {
         state.objects[oid].bbox[1][0] = FfInt(32L);
@@ -1180,32 +1218,27 @@ void start_state(int num_players, int local) {
         player->bounds[1][1] = state.size[1];
 
         player->lives = 4L;
-
-        const ObjectID object = create_object(OBJ_PLAYER, (fvec2){FfInt(64L), FfInt(240L)});
-        if (object_is_alive(object))
-            state.objects[object].values[VAL_PLAYER_INDEX] = (fix16_t)i;
-        player->object = object;
+        respawn_player((int)i);
     }
 
-    load_track(MUS_SNOW);
-    play_track(MUS_SNOW, true);
+    // load_track(MUS_SNOW);
+    // play_track(MUS_SNOW, true);
 }
 
-static uint32_t check_state(uint8_t* data, uint32_t len) {
+uint32_t check_state() {
     uint32_t checksum = 0;
-    while (len > 0)
-        checksum += data[--len];
+    const uint8_t* data = (uint8_t*)(&state);
+    for (size_t i = 0; i < sizeof(struct GameState); i++)
+        checksum += data[i];
     return checksum;
 }
 
-void save_state(GekkoGameEvent* event) {
-    *(event->data.save.state_len) = sizeof(state);
-    *(event->data.save.checksum) = check_state((uint8_t*)(&state), sizeof(state));
-    SDL_memcpy(event->data.save.state, &state, sizeof(state));
+void save_state(struct GameState* to) {
+    SDL_memcpy(to, &state, sizeof(struct GameState));
 }
 
-void load_state(GekkoGameEvent* event) {
-    SDL_memcpy(&state, event->data.load.state, sizeof(state));
+void load_state(const struct GameState* from) {
+    SDL_memcpy(&state, from, sizeof(struct GameState));
 }
 
 void dump_state() {
@@ -1705,6 +1738,17 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                 }
                                 break;
                             }
+
+                            case OBJ_COIN: {
+                                struct GameObject* pop = get_object(create_object(
+                                    OBJ_COIN_POP,
+                                    (fvec2){Fadd(bumped->pos[0], FfInt(16L)), Fadd(bumped->pos[1], FfInt(28L))}
+                                ));
+                                if (pop != NULL)
+                                    pop->values[VAL_COIN_POP_OWNER] = object->values[VAL_BLOCK_BUMP_OWNER];
+                                bumped->flags |= FLG_DESTROY;
+                                break;
+                            }
                         }
                     }
 
@@ -1764,9 +1808,11 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         object->values[VAL_COIN_POP_FRAME] += 35L;
                         if (object->values[VAL_COIN_POP_FRAME] >= 400L) {
                             struct GameObject* points = get_object(create_object(OBJ_POINTS, object->pos));
-                            if (points != NULL)
+                            if (points != NULL) {
                                 points->values[VAL_POINTS_PLAYER] =
                                     get_owner_id((ObjectID)(object->values[VAL_COIN_POP_OWNER]));
+                                points->values[VAL_POINTS] = 200L;
+                            }
                             object->flags |= FLG_DESTROY;
                         }
                     } else {
@@ -2223,7 +2269,7 @@ void draw_state() {
                 case OBJ_BRICK_BLOCK_COIN:
                 case OBJ_BRICK_BLOCK_GRAY_COIN: {
                     int8_t bump;
-                    if (object->flags & FLG_BLOCK_EMPTY)
+                    if ((object->flags & FLG_BLOCK_EMPTY) || object->values[VAL_BLOCK_ITEM] != OBJ_COIN_POP)
                         switch (object->values[VAL_BLOCK_BUMP]) {
                             default:
                                 bump = 0;
@@ -2290,6 +2336,16 @@ void draw_state() {
                     draw_object(
                         object, (object->type == OBJ_BRICK_SHARD_GRAY) ? TEX_BRICK_SHARD_GRAY : TEX_BRICK_SHARD,
                         FtFloat(object->values[VAL_BRICK_SHARD_ANGLE]), WHITE
+                    );
+                    break;
+                }
+
+                case OBJ_CHECKPOINT: {
+                    draw_object(
+                        object,
+                        (state.checkpoint == oid) ? (((state.time / 10) % 2) ? TEX_CHECKPOINT3 : TEX_CHECKPOINT2)
+                                                  : TEX_CHECKPOINT1,
+                        0, WHITE
                     );
                     break;
                 }
@@ -2652,8 +2708,6 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_BRICK_BLOCK);
             load_texture(TEX_EMPTY_BLOCK);
 
-            load_sound(SND_BUMP);
-
             load_object(OBJ_COIN_POP);
             break;
         }
@@ -2662,9 +2716,30 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_BRICK_BLOCK_GRAY);
             load_texture(TEX_EMPTY_BLOCK);
 
-            load_sound(SND_BUMP);
-
             load_object(OBJ_COIN_POP);
+            break;
+        }
+
+        case OBJ_BRICK_BLOCK_MUSHROOM_1UP: {
+            load_object(OBJ_BRICK_BLOCK_COIN);
+            load_object(OBJ_MUSHROOM_1UP);
+            break;
+        }
+
+        case OBJ_BRICK_BLOCK_GRAY_MUSHROOM_1UP: {
+            load_object(OBJ_BRICK_BLOCK_GRAY_COIN);
+            load_object(OBJ_MUSHROOM_1UP);
+            break;
+        }
+
+        case OBJ_CHECKPOINT: {
+            load_texture(TEX_CHECKPOINT1);
+            load_texture(TEX_CHECKPOINT2);
+            load_texture(TEX_CHECKPOINT3);
+
+            load_sound(SND_SPROUT);
+
+            load_object(OBJ_POINTS);
             break;
         }
     }
@@ -2709,6 +2784,11 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 case OBJ_BUSH:
                 case OBJ_BUSH_SNOW: {
                     object->depth = 25L;
+                    break;
+                }
+
+                case OBJ_PLAYER_SPAWN: {
+                    state.spawn = (ObjectID)i;
                     break;
                 }
 
@@ -2887,11 +2967,28 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_BRICK_BLOCK_COIN:
-                case OBJ_BRICK_BLOCK_GRAY_COIN: {
+                case OBJ_BRICK_BLOCK_GRAY_COIN:
+                case OBJ_BRICK_BLOCK_MUSHROOM_1UP:
+                case OBJ_BRICK_BLOCK_GRAY_MUSHROOM_1UP: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
                     object->depth = 20L;
 
-                    object->values[VAL_BLOCK_ITEM] = OBJ_COIN_POP;
+                    switch (object->type) {
+                        default: {
+                            object->values[VAL_BLOCK_ITEM] = OBJ_COIN_POP;
+                            break;
+                        }
+                        case OBJ_BRICK_BLOCK_MUSHROOM_1UP: {
+                            object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM_1UP;
+                            object->type = OBJ_BRICK_BLOCK_COIN;
+                            break;
+                        }
+                        case OBJ_BRICK_BLOCK_GRAY_MUSHROOM_1UP: {
+                            object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM_1UP;
+                            object->type = OBJ_BRICK_BLOCK_GRAY_COIN;
+                            break;
+                        }
+                    }
                     break;
                 }
 
@@ -2907,6 +3004,15 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 case OBJ_BRICK_SHARD_GRAY: {
                     object->bbox[0][0] = object->bbox[0][1] = FfInt(-8L);
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(8L);
+                    break;
+                }
+
+                case OBJ_CHECKPOINT: {
+                    object->bbox[0][0] = FfInt(-19L);
+                    object->bbox[0][1] = FfInt(-110L);
+                    object->bbox[1][0] = FfInt(21L);
+                    object->bbox[1][1] = FxOne;
+                    object->depth = 2L;
                     break;
                 }
             }
@@ -2990,6 +3096,12 @@ void destroy_object(ObjectID index) {
         default:
             break;
 
+        case OBJ_PLAYER_SPAWN: {
+            if (state.spawn == index)
+                state.spawn = -1L;
+            break;
+        }
+
         case OBJ_PLAYER: {
             struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
             if (player != NULL && player->object == index)
@@ -3014,6 +3126,12 @@ void destroy_object(ObjectID index) {
                         owner->values[i] = -1L;
                         break;
                     }
+            break;
+        }
+
+        case OBJ_CHECKPOINT: {
+            if (state.checkpoint == index)
+                state.checkpoint = -1L;
             break;
         }
     }

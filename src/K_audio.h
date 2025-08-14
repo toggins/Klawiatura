@@ -128,8 +128,7 @@ struct Sound {
 struct Track {
     const char* name;
     FMOD_SOUND* stream;
-    uint32_t length;
-    uint32_t loop[2];
+    uint32_t length, loop[2];
 };
 
 struct SoundState {
@@ -153,8 +152,9 @@ void audio_init();
 void audio_update();
 void audio_teardown();
 
-void save_audio_state();
-void load_audio_state();
+void save_audio_state(struct SoundState*);
+void load_audio_state(const struct SoundState*);
+void tick_audio_state();
 
 void load_sound(enum SoundIndices);
 void load_track(enum TrackIndices);

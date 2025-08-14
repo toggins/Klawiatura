@@ -12,7 +12,13 @@
 #include "K_audio.h"
 #include "K_game.h"
 #include "K_log.h"
+#include "K_net.h" // IWYU pragma: keep
 #include "K_video.h"
+
+struct SaveState {
+    struct GameState game;
+    struct SoundState audio;
+};
 
 int main(int argc, char** argv) {
 #ifdef _MSC_VER
@@ -65,7 +71,7 @@ int main(int argc, char** argv) {
     config.num_players = num_players;
     config.max_spectators = 0;
     config.input_prediction_window = 8;
-    config.state_size = sizeof(struct GameState);
+    config.state_size = sizeof(struct SaveState);
     config.input_size = sizeof(enum GameInput);
     config.desync_detection = true;
     gekko_start(session, &config);
@@ -166,14 +172,20 @@ int main(int argc, char** argv) {
                         break;
 
                     case SaveEvent: {
-                        save_state(event);
-                        save_audio_state();
+                        static struct SaveState save;
+                        save_state(&(save.game));
+                        save_audio_state(&(save.audio));
+
+                        *(event->data.save.state_len) = sizeof(save);
+                        *(event->data.save.checksum) = check_state();
+                        SDL_memcpy(event->data.save.state, &save, sizeof(save));
                         break;
                     }
 
                     case LoadEvent: {
-                        load_state(event);
-                        load_audio_state();
+                        const struct SaveState* load = (struct SaveState*)(event->data.load.state);
+                        load_state(&(load->game));
+                        load_audio_state(&(load->audio));
                         break;
                     }
 
@@ -182,6 +194,7 @@ int main(int argc, char** argv) {
                             inputs[j] = ((enum GameInput*)(event->data.adv.inputs))[j];
                         tick = event->data.adv.frame;
                         tick_state(inputs);
+                        tick_audio_state();
                         break;
                     }
                 }

@@ -437,6 +437,10 @@ enum TextureIndices {
     TEX_BRICK_SHARD,
     TEX_BRICK_SHARD_GRAY,
 
+    TEX_CHECKPOINT1,
+    TEX_CHECKPOINT2,
+    TEX_CHECKPOINT3,
+
     TEX_SIZE,
 };
 

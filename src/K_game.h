@@ -5,7 +5,6 @@
 
 #include "K_audio.h"
 #include "K_math.h"
-#include "K_net.h" // IWYU pragma: keep
 #include "K_video.h"
 
 #define TICKRATE 50L
@@ -40,6 +39,7 @@ enum GameObjectType {
     OBJ_BUSH,
     OBJ_BUSH_SNOW,
 
+    OBJ_PLAYER_SPAWN,
     OBJ_PLAYER,
     OBJ_PLAYER_EFFECT,
     OBJ_PLAYER_DEAD,
@@ -81,6 +81,10 @@ enum GameObjectType {
     OBJ_BRICK_SHARD_GRAY,
     OBJ_BRICK_BLOCK_COIN,
     OBJ_BRICK_BLOCK_GRAY_COIN,
+    OBJ_BRICK_BLOCK_MUSHROOM_1UP,
+    OBJ_BRICK_BLOCK_GRAY_MUSHROOM_1UP,
+
+    OBJ_CHECKPOINT,
 
     OBJ_SIZE,
 };
@@ -210,6 +214,7 @@ struct GameState {
     int32_t clock;
     uint64_t time;
     uint32_t seed;
+    ObjectID spawn, checkpoint;
 
     struct GameObject {
         enum GameObjectType type;
@@ -230,8 +235,9 @@ struct GameState {
 };
 
 void start_state(int, int);
-void save_state(GekkoGameEvent*);
-void load_state(GekkoGameEvent*);
+void save_state(struct GameState*);
+void load_state(const struct GameState*);
+uint32_t check_state();
 void dump_state();
 void tick_state(enum GameInput[MAX_PLAYERS]);
 void draw_state();

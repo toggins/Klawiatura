@@ -217,6 +217,10 @@ static struct Texture textures[] = {
     TEXOFFS(TEX_COIN_SPARK2, "items/coin_spark2", 14, 31),
     TEXOFFS(TEX_COIN_SPARK3, "items/coin_spark3", 18, 29),
     TEXOFFS(TEX_COIN_SPARK4, "items/coin_spark4", 16, 21),
+
+    TEXOFFS(TEX_CHECKPOINT1, "markers/checkpoint1", 44, 110),
+    TEXOFFS(TEX_CHECKPOINT2, "markers/checkpoint2", 44, 110),
+    TEXOFFS(TEX_CHECKPOINT3, "markers/checkpoint3", 44, 110),
 };
 
 static vec2 camera = {HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT};
