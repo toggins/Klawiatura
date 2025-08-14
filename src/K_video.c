@@ -77,12 +77,12 @@ static struct Texture textures[] = {
     TEXTURE(TEX_CLOUD1, "props/cloud1"),
     TEXTURE(TEX_CLOUD2, "props/cloud2"),
     TEXTURE(TEX_CLOUD3, "props/cloud3"),
-    TEXOFFS(TEX_BUSH1, "props/bush1", 0, -2),
-    TEXOFFS(TEX_BUSH2, "props/bush2", 0, -4),
-    TEXOFFS(TEX_BUSH3, "props/bush3", 0, -4),
-    TEXOFFS(TEX_BUSH_SNOW1, "props/bush_snow1", 0, 0),
-    TEXOFFS(TEX_BUSH_SNOW2, "props/bush_snow2", 0, 0),
-    TEXOFFS(TEX_BUSH_SNOW3, "props/bush_snow3", 0, 0),
+    TEXTURE(TEX_BUSH1, "props/bush1"),
+    TEXTURE(TEX_BUSH2, "props/bush2"),
+    TEXTURE(TEX_BUSH3, "props/bush3"),
+    TEXTURE(TEX_BUSH_SNOW1, "props/bush_snow1"),
+    TEXTURE(TEX_BUSH_SNOW2, "props/bush_snow2"),
+    TEXTURE(TEX_BUSH_SNOW3, "props/bush_snow3"),
 
     TEXOFFS(TEX_MARIO_DEAD, "mario/dead", 15, 30),
 
