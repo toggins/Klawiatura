@@ -139,6 +139,9 @@ static int get_owner_id(ObjectID oid) {
 
         case OBJ_POINTS:
             return object->values[VAL_POINTS_PLAYER];
+
+        case OBJ_ROTODISC:
+            return get_owner_id((ObjectID)(object->values[VAL_ROTODISC_OWNER]));
     }
 }
 
@@ -1102,13 +1105,27 @@ void start_state(int num_players, int local) {
     create_object(OBJ_LUI, (fvec2){FfInt(448L), FfInt(416L)});
     create_object(OBJ_HAMMER_SUIT, (fvec2){FfInt(512L), FfInt(416L)});
     create_object(OBJ_MUSHROOM_1UP, (fvec2){FfInt(800L), FfInt(416L)});
-    create_object(OBJ_BRICK_BLOCK_COIN, (fvec2){FfInt(128L), FfInt(240L)});
     create_object(OBJ_BRICK_BLOCK, (fvec2){FfInt(160L), FfInt(240L)});
     create_object(OBJ_COIN, (fvec2){FfInt(160L), FfInt(208L)});
-    create_object(OBJ_ITEM_BLOCK, (fvec2){FfInt(192L), FfInt(240L)});
-    create_object(OBJ_ITEM_BLOCK, (fvec2){FfInt(224L), FfInt(240L)});
     create_object(OBJ_CHECKPOINT, (fvec2){FfInt(864L), FfInt(416L)});
     create_object(OBJ_CHECKPOINT, (fvec2){FfInt(1024L), FfInt(416L)});
+
+    struct GameObject* object = get_object(create_object(OBJ_ROTODISC_BALL, (fvec2){FfInt(608L), FfInt(352L)}));
+    if (object != NULL) {
+        // state.objects[oid].values[VAL_ROTODISC_LENGTH] = FfInt(150L);
+        object->values[VAL_ROTODISC_SPEED] = -0x00001658;
+        object->flags |= FLG_ROTODISC_FLOWER;
+    }
+
+    object = get_object(create_object(OBJ_BRICK_BLOCK_COIN, (fvec2){FfInt(128L), FfInt(240L)}));
+    if (object != NULL)
+        object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM_1UP;
+    object = get_object(create_object(OBJ_ITEM_BLOCK, (fvec2){FfInt(192L), FfInt(240L)}));
+    if (object != NULL)
+        object->values[VAL_BLOCK_ITEM] = OBJ_COIN_POP;
+    object = get_object(create_object(OBJ_ITEM_BLOCK, (fvec2){FfInt(224L), FfInt(240L)}));
+    if (object != NULL)
+        object->values[VAL_BLOCK_ITEM] = OBJ_FIRE_FLOWER;
 
     ObjectID oid = create_object(OBJ_SOLID, (fvec2){FxZero, FfInt(416L)});
     if (object_is_alive(oid)) {
@@ -1812,6 +1829,65 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
 
                     break;
                 }
+
+                case OBJ_ROTODISC_BALL: {
+                    if (object->flags & FLG_ROTODISC_START)
+                        break;
+
+                    const ObjectID rid = create_object(OBJ_ROTODISC, object->pos);
+                    struct GameObject* rotodisc = get_object(rid);
+                    if (rotodisc != NULL) {
+                        rotodisc->values[VAL_ROTODISC_OWNER] = oid;
+                        rotodisc->values[VAL_ROTODISC_ANGLE] = object->values[VAL_ROTODISC_ANGLE];
+                        rotodisc->values[VAL_ROTODISC_SPEED] = object->values[VAL_ROTODISC_SPEED];
+                        if (object->flags & FLG_ROTODISC_FLOWER)
+                            rotodisc->flags |= FLG_ROTODISC_FLOWER;
+                        else
+                            rotodisc->values[VAL_ROTODISC_LENGTH] = object->values[VAL_ROTODISC_LENGTH];
+                    }
+                    object->values[VAL_ROTODISC] = rid;
+
+                    object->flags |= FLG_ROTODISC_START;
+                    break;
+                }
+
+                case OBJ_ROTODISC: {
+                    struct GameObject* owner = get_object((ObjectID)(object->values[VAL_ROTODISC_OWNER]));
+                    if (owner == NULL) {
+                        object->flags |= FLG_DESTROY;
+                        break;
+                    }
+
+                    if (object->flags & FLG_ROTODISC_FLOWER) {
+                        object->values[VAL_ROTODISC_LENGTH] = Fadd(
+                            object->values[VAL_ROTODISC_LENGTH],
+                            FfInt((object->flags & FLG_ROTODISC_FLOWER2) ? -5L : 5L)
+                        );
+
+                        if (object->values[VAL_ROTODISC_LENGTH] >= FfInt(200L) &&
+                            !(object->flags & FLG_ROTODISC_FLOWER2))
+                            object->flags |= FLG_ROTODISC_FLOWER2;
+                        else if (object->values[VAL_ROTODISC_LENGTH] <= FxZero &&
+                                 (object->flags & FLG_ROTODISC_FLOWER2))
+                            object->flags &= ~FLG_ROTODISC_FLOWER2;
+                    }
+
+                    object->values[VAL_ROTODISC_ANGLE] =
+                        Fadd(object->values[VAL_ROTODISC_ANGLE], object->values[VAL_ROTODISC_SPEED]);
+
+                    move_object(
+                        oid,
+                        (fvec2){Fadd(
+                                    owner->pos[0],
+                                    Fmul(Fcos(object->values[VAL_ROTODISC_ANGLE]), object->values[VAL_ROTODISC_LENGTH])
+                                ),
+                                Fadd(
+                                    owner->pos[1],
+                                    Fmul(Fsin(object->values[VAL_ROTODISC_ANGLE]), object->values[VAL_ROTODISC_LENGTH])
+                                )}
+                    );
+                    break;
+                }
             }
 
         ObjectID next = object->previous;
@@ -2329,8 +2405,100 @@ void draw_state() {
                         object,
                         (state.checkpoint == oid) ? (((state.time / 10) % 2) ? TEX_CHECKPOINT3 : TEX_CHECKPOINT2)
                                                   : TEX_CHECKPOINT1,
-                        0, WHITE
+                        0, ALPHA(oid >= state.checkpoint ? 255 : 128)
                     );
+                    break;
+                }
+
+                case OBJ_ROTODISC_BALL: {
+                    draw_object(object, TEX_ROTODISC_BALL, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_ROTODISC: {
+                    enum TextureIndices tex;
+                    switch (state.time % 26) {
+                        default:
+                            tex = TEX_ROTODISC1;
+                            break;
+                        case 1:
+                            tex = TEX_ROTODISC2;
+                            break;
+                        case 2:
+                            tex = TEX_ROTODISC3;
+                            break;
+                        case 3:
+                            tex = TEX_ROTODISC4;
+                            break;
+                        case 4:
+                            tex = TEX_ROTODISC5;
+                            break;
+                        case 5:
+                            tex = TEX_ROTODISC6;
+                            break;
+                        case 6:
+                            tex = TEX_ROTODISC7;
+                            break;
+                        case 7:
+                            tex = TEX_ROTODISC8;
+                            break;
+                        case 8:
+                            tex = TEX_ROTODISC9;
+                            break;
+                        case 9:
+                            tex = TEX_ROTODISC10;
+                            break;
+                        case 10:
+                            tex = TEX_ROTODISC11;
+                            break;
+                        case 11:
+                            tex = TEX_ROTODISC12;
+                            break;
+                        case 12:
+                            tex = TEX_ROTODISC13;
+                            break;
+                        case 13:
+                            tex = TEX_ROTODISC14;
+                            break;
+                        case 14:
+                            tex = TEX_ROTODISC15;
+                            break;
+                        case 15:
+                            tex = TEX_ROTODISC16;
+                            break;
+                        case 16:
+                            tex = TEX_ROTODISC17;
+                            break;
+                        case 17:
+                            tex = TEX_ROTODISC18;
+                            break;
+                        case 18:
+                            tex = TEX_ROTODISC19;
+                            break;
+                        case 19:
+                            tex = TEX_ROTODISC20;
+                            break;
+                        case 20:
+                            tex = TEX_ROTODISC21;
+                            break;
+                        case 21:
+                            tex = TEX_ROTODISC22;
+                            break;
+                        case 22:
+                            tex = TEX_ROTODISC23;
+                            break;
+                        case 23:
+                            tex = TEX_ROTODISC24;
+                            break;
+                        case 24:
+                            tex = TEX_ROTODISC25;
+                            break;
+                        case 25:
+                            tex = TEX_ROTODISC26;
+                            break;
+                    }
+
+                    draw_object(object, tex, 0, WHITE);
                     break;
                 }
             }
@@ -2637,6 +2805,42 @@ void load_object(enum GameObjectType type) {
             load_object(OBJ_POINTS);
             break;
         }
+
+        case OBJ_ROTODISC_BALL: {
+            load_texture(TEX_ROTODISC_BALL);
+            load_object(OBJ_ROTODISC);
+            break;
+        }
+
+        case OBJ_ROTODISC: {
+            load_texture(TEX_ROTODISC1);
+            load_texture(TEX_ROTODISC2);
+            load_texture(TEX_ROTODISC3);
+            load_texture(TEX_ROTODISC4);
+            load_texture(TEX_ROTODISC5);
+            load_texture(TEX_ROTODISC6);
+            load_texture(TEX_ROTODISC7);
+            load_texture(TEX_ROTODISC8);
+            load_texture(TEX_ROTODISC9);
+            load_texture(TEX_ROTODISC10);
+            load_texture(TEX_ROTODISC11);
+            load_texture(TEX_ROTODISC12);
+            load_texture(TEX_ROTODISC13);
+            load_texture(TEX_ROTODISC14);
+            load_texture(TEX_ROTODISC15);
+            load_texture(TEX_ROTODISC16);
+            load_texture(TEX_ROTODISC17);
+            load_texture(TEX_ROTODISC18);
+            load_texture(TEX_ROTODISC19);
+            load_texture(TEX_ROTODISC20);
+            load_texture(TEX_ROTODISC21);
+            load_texture(TEX_ROTODISC22);
+            load_texture(TEX_ROTODISC23);
+            load_texture(TEX_ROTODISC24);
+            load_texture(TEX_ROTODISC25);
+            load_texture(TEX_ROTODISC26);
+            break;
+        }
     }
 }
 
@@ -2849,6 +3053,14 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->depth = 2L;
                     break;
                 }
+
+                case OBJ_ROTODISC: {
+                    object->bbox[0][0] = object->bbox[0][1] = FxOne;
+                    object->bbox[1][0] = object->bbox[1][1] = FfInt(30L);
+
+                    object->values[VAL_ROTODISC_OWNER] = -1L;
+                    break;
+                }
             }
 
             state.next_object = (ObjectID)((index + 1L) % MAX_OBJECTS);
@@ -2966,6 +3178,20 @@ void destroy_object(ObjectID index) {
         case OBJ_CHECKPOINT: {
             if (state.checkpoint == index)
                 state.checkpoint = -1L;
+            break;
+        }
+
+        case OBJ_ROTODISC_BALL: {
+            struct GameObject* rotodisc = get_object((ObjectID)(object->values[VAL_ROTODISC]));
+            if (rotodisc != NULL)
+                rotodisc->flags |= FLG_DESTROY;
+            break;
+        }
+
+        case OBJ_ROTODISC: {
+            struct GameObject* owner = get_object((ObjectID)(object->values[VAL_ROTODISC_OWNER]));
+            if (owner != NULL && owner->type == OBJ_ROTODISC_BALL)
+                owner->values[VAL_ROTODISC] = -1L;
             break;
         }
     }

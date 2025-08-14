@@ -42,7 +42,7 @@ static struct Uniforms uniforms = {-1};
 
 #define TEXTURE(i, nm) TEXOFFS(i, nm, 0, 0)
 
-static struct Texture textures[] = {
+static struct Texture textures[TEX_SIZE] = {
     NULLTEX(TEX_NULL),
 
     TEXTURE(TEX_GRASS1, "tiles/grass1"),
@@ -221,6 +221,157 @@ static struct Texture textures[] = {
     TEXOFFS(TEX_CHECKPOINT1, "markers/checkpoint1", 44, 110),
     TEXOFFS(TEX_CHECKPOINT2, "markers/checkpoint2", 44, 110),
     TEXOFFS(TEX_CHECKPOINT3, "markers/checkpoint3", 44, 110),
+
+    TEXTURE(TEX_ROTODISC_BALL, "enemies/rotodisc_ball"),
+    TEXTURE(TEX_ROTODISC1, "enemies/rotodisc1"),
+    TEXTURE(TEX_ROTODISC2, "enemies/rotodisc2"),
+    TEXTURE(TEX_ROTODISC3, "enemies/rotodisc3"),
+    TEXTURE(TEX_ROTODISC4, "enemies/rotodisc4"),
+    TEXTURE(TEX_ROTODISC5, "enemies/rotodisc5"),
+    TEXTURE(TEX_ROTODISC6, "enemies/rotodisc6"),
+    TEXTURE(TEX_ROTODISC7, "enemies/rotodisc7"),
+    TEXTURE(TEX_ROTODISC8, "enemies/rotodisc8"),
+    TEXTURE(TEX_ROTODISC9, "enemies/rotodisc9"),
+    TEXTURE(TEX_ROTODISC10, "enemies/rotodisc10"),
+    TEXTURE(TEX_ROTODISC11, "enemies/rotodisc11"),
+    TEXTURE(TEX_ROTODISC12, "enemies/rotodisc12"),
+    TEXTURE(TEX_ROTODISC13, "enemies/rotodisc13"),
+    TEXTURE(TEX_ROTODISC14, "enemies/rotodisc14"),
+    TEXTURE(TEX_ROTODISC15, "enemies/rotodisc15"),
+    TEXTURE(TEX_ROTODISC16, "enemies/rotodisc16"),
+    TEXTURE(TEX_ROTODISC17, "enemies/rotodisc17"),
+    TEXTURE(TEX_ROTODISC18, "enemies/rotodisc18"),
+    TEXTURE(TEX_ROTODISC19, "enemies/rotodisc19"),
+    TEXTURE(TEX_ROTODISC20, "enemies/rotodisc20"),
+    TEXTURE(TEX_ROTODISC21, "enemies/rotodisc21"),
+    TEXTURE(TEX_ROTODISC22, "enemies/rotodisc22"),
+    TEXTURE(TEX_ROTODISC23, "enemies/rotodisc23"),
+    TEXTURE(TEX_ROTODISC24, "enemies/rotodisc24"),
+    TEXTURE(TEX_ROTODISC25, "enemies/rotodisc25"),
+    TEXTURE(TEX_ROTODISC26, "enemies/rotodisc26"),
+
+    TEXTURE(TEX_FONT_HUD, "fonts/hud"),
+};
+
+static struct Font fonts[FNT_SIZE] = {
+    [FNT_NULL] = {
+        .texture = TEX_NULL,
+        .glyphs = {0},
+    },
+
+    [FNT_HUD] = {
+        .texture = TEX_FONT_HUD,
+        .glyphs = {
+            [' '] = {
+                .size = {5, 16},
+                .uvs = {0},
+            },
+            ['A'] = {
+                .size = {15, 16},
+                .uvs = {1.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['B'] = {
+                .size = {15, 16},
+                .uvs = {18.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['C'] = {
+                .size = {15, 16},
+                .uvs = {35.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['D'] = {
+                .size = {15, 16},
+                .uvs = {52.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['E'] = {
+                .size = {15, 16},
+                .uvs = {69.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['F'] = {
+                .size = {15, 16},
+                .uvs = {86.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['G'] = {
+                .size = {15, 16},
+                .uvs = {103.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['H'] = {
+                .size = {15, 16},
+                .uvs = {1.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['I'] = {
+                .size = {11, 16},
+                .uvs = {18.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['J'] = {
+                .size = {15, 16},
+                .uvs = {31.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['K'] = {
+                .size = {15, 16},
+                .uvs = {48.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['L'] = {
+                .size = {13, 16},
+                .uvs = {65.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['M'] = {
+                .size = {15, 16},
+                .uvs = {80.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['N'] = {
+                .size = {15, 16},
+                .uvs = {97.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['O'] = {
+                .size = {15, 16},
+                .uvs = {1.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['P'] = {
+                .size = {15, 16},
+                .uvs = {18.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['Q'] = {
+                .size = {15, 16},
+                .uvs = {35.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['R'] = {
+                .size = {15, 16},
+                .uvs = {52.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['S'] = {
+                .size = {15, 16},
+                .uvs = {69.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['T'] = {
+                .size = {15, 16},
+                .uvs = {86.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['U'] = {
+                .size = {15, 16},
+                .uvs = {103.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['V'] = {
+                .size = {15, 16},
+                .uvs = {1.0f / 128.0f, 55.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['W'] = {
+                .size = {15, 16},
+                .uvs = {18.0f / 128.0f, 55.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['X'] = {
+                .size = {15, 16},
+                .uvs = {35.0f / 128.0f, 55.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['Y'] = {
+                .size = {15, 16},
+                .uvs = {52.0f / 128.0f, 55.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+            ['Z'] = {
+                .size = {15, 16},
+                .uvs = {69.0f / 128.0f, 55.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+            },
+        },
+    },
 };
 
 static vec2 camera = {HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT};

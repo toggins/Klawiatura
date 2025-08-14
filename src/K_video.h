@@ -31,7 +31,6 @@ enum VertexAttributes {
 
 enum TextureIndices {
     TEX_NULL,
-
     TEX_GRASS1,
     TEX_GRASS2,
     TEX_GRASS3,
@@ -41,7 +40,6 @@ enum TextureIndices {
     TEX_GRASS7,
     TEX_GRASS8,
     TEX_GRASS9,
-
     TEX_ISLAND1,
     TEX_ISLAND2,
     TEX_ISLAND3,
@@ -51,7 +49,6 @@ enum TextureIndices {
     TEX_ISLAND7,
     TEX_ISLAND8,
     TEX_ISLAND9,
-
     TEX_UNDERWATER1,
     TEX_UNDERWATER2,
     TEX_UNDERWATER3,
@@ -63,7 +60,6 @@ enum TextureIndices {
     TEX_UNDERWATER9,
     TEX_UNDERWATER_BLOCK,
     TEX_UNDERWATER_CORAL,
-
     TEX_STARLAND1,
     TEX_STARLAND2,
     TEX_STARLAND3,
@@ -77,7 +73,6 @@ enum TextureIndices {
     TEX_STARLAND_STAR2,
     TEX_STARLAND_STAR3,
     TEX_STARLAND_STAR4,
-
     TEX_SNOW1,
     TEX_SNOW2,
     TEX_SNOW3,
@@ -87,7 +82,6 @@ enum TextureIndices {
     TEX_SNOW7,
     TEX_SNOW8,
     TEX_SNOW9,
-
     TEX_DESERT1,
     TEX_DESERT2,
     TEX_DESERT3,
@@ -97,7 +91,6 @@ enum TextureIndices {
     TEX_DESERT7,
     TEX_DESERT8,
     TEX_DESERT9,
-
     TEX_CAVE1,
     TEX_CAVE2,
     TEX_CAVE3,
@@ -107,7 +100,6 @@ enum TextureIndices {
     TEX_CAVE7,
     TEX_CAVE8,
     TEX_CAVE9,
-
     TEX_CASTLE1,
     TEX_CASTLE2,
     TEX_CASTLE3,
@@ -130,22 +122,18 @@ enum TextureIndices {
     TEX_CASTLE_BRIDGE2,
     TEX_CASTLE_BRIDGE3,
     TEX_CASTLE_BRIDGE4,
-
     TEX_BLOCK1,
     TEX_BLOCK2,
     TEX_BLOCK3,
     TEX_BLOCK4,
-
     TEX_BRICK1,
     TEX_BRICK2,
     TEX_BRICK3,
     TEX_BRICK4,
     TEX_BRICK5,
-
     TEX_BRIDGE1,
     TEX_BRIDGE2,
     TEX_BRIDGE3,
-
     TEX_PIPE1_H1,
     TEX_PIPE1_H2,
     TEX_PIPE1_H3,
@@ -170,7 +158,6 @@ enum TextureIndices {
     TEX_PIPE4_V1,
     TEX_PIPE4_V2,
     TEX_PIPE4_V3,
-
     TEX_TANK1,
     TEX_TANK2,
     TEX_TANK3,
@@ -196,7 +183,6 @@ enum TextureIndices {
     TEX_TANK_WHEEL3_3,
     TEX_TANK_BOWSER1,
     TEX_TANK_BOWSER2,
-
     TEX_CLOUD1,
     TEX_CLOUD2,
     TEX_CLOUD3,
@@ -242,7 +228,6 @@ enum TextureIndices {
     TEX_PILLAR3,
     TEX_SUPPORT1,
     TEX_SUPPORT2,
-
     TEX_HILL1,
     TEX_HILL2,
     TEX_HILL3,
@@ -274,7 +259,6 @@ enum TextureIndices {
     TEX_BOWSER_EYES5,
     TEX_BOWSER_EYES6,
     TEX_BOWSER_EYES7,
-
     TEX_SIGN_HARDCORE,
     TEX_SIGN_HUMAN_LAB,
     TEX_SIGN_HUMAN_HOUSE,
@@ -285,7 +269,6 @@ enum TextureIndices {
     TEX_SIGN_RIGHT,
     TEX_SIGN_HARDCORE_1_4,
     TEX_SIGN_LAKITUS,
-
     TEX_BG_CLOUDS1,
     TEX_BG_CLOUDS2,
     TEX_BG_STARLAND,
@@ -299,9 +282,7 @@ enum TextureIndices {
     TEX_BG_CASTLE4,
     TEX_BG_CASTLE5,
     TEX_BG_CASTLE6,
-
     TEX_MARIO_DEAD,
-
     TEX_MARIO_SMALL,
     TEX_MARIO_SMALL_WALK1,
     TEX_MARIO_SMALL_WALK2,
@@ -310,7 +291,6 @@ enum TextureIndices {
     TEX_MARIO_SMALL_SWIM2,
     TEX_MARIO_SMALL_SWIM3,
     TEX_MARIO_SMALL_SWIM4,
-
     TEX_MARIO_BIG_GROW,
     TEX_MARIO_BIG,
     TEX_MARIO_BIG_WALK1,
@@ -321,7 +301,6 @@ enum TextureIndices {
     TEX_MARIO_BIG_SWIM2,
     TEX_MARIO_BIG_SWIM3,
     TEX_MARIO_BIG_SWIM4,
-
     TEX_MARIO_FIRE_GROW1,
     TEX_MARIO_FIRE_GROW2,
     TEX_MARIO_FIRE,
@@ -334,7 +313,6 @@ enum TextureIndices {
     TEX_MARIO_FIRE_SWIM2,
     TEX_MARIO_FIRE_SWIM3,
     TEX_MARIO_FIRE_SWIM4,
-
     TEX_MARIO_BEETROOT,
     TEX_MARIO_BEETROOT_WALK1,
     TEX_MARIO_BEETROOT_WALK2,
@@ -345,7 +323,6 @@ enum TextureIndices {
     TEX_MARIO_BEETROOT_SWIM2,
     TEX_MARIO_BEETROOT_SWIM3,
     TEX_MARIO_BEETROOT_SWIM4,
-
     TEX_MARIO_LUI,
     TEX_MARIO_LUI_WALK1,
     TEX_MARIO_LUI_WALK2,
@@ -355,7 +332,6 @@ enum TextureIndices {
     TEX_MARIO_LUI_SWIM2,
     TEX_MARIO_LUI_SWIM3,
     TEX_MARIO_LUI_SWIM4,
-
     TEX_MARIO_HAMMER,
     TEX_MARIO_HAMMER_WALK1,
     TEX_MARIO_HAMMER_WALK2,
@@ -366,7 +342,6 @@ enum TextureIndices {
     TEX_MARIO_HAMMER_SWIM2,
     TEX_MARIO_HAMMER_SWIM3,
     TEX_MARIO_HAMMER_SWIM4,
-
     TEX_COIN1,
     TEX_COIN2,
     TEX_COIN3,
@@ -378,21 +353,17 @@ enum TextureIndices {
     TEX_COIN_SPARK2,
     TEX_COIN_SPARK3,
     TEX_COIN_SPARK4,
-
     TEX_MUSHROOM,
     TEX_MUSHROOM_1UP,
     TEX_MUSHROOM_POISON1,
     TEX_MUSHROOM_POISON2,
-
     TEX_FIRE_FLOWER1,
     TEX_FIRE_FLOWER2,
     TEX_FIRE_FLOWER3,
     TEX_FIRE_FLOWER4,
-
     TEX_BEETROOT1,
     TEX_BEETROOT2,
     TEX_BEETROOT3,
-
     TEX_LUI1,
     TEX_LUI2,
     TEX_LUI3,
@@ -401,24 +372,19 @@ enum TextureIndices {
     TEX_LUI_BOUNCE1,
     TEX_LUI_BOUNCE2,
     TEX_LUI_BOUNCE3,
-
     TEX_HAMMER_SUIT,
-
     TEX_STARMAN1,
     TEX_STARMAN2,
     TEX_STARMAN3,
     TEX_STARMAN4,
-
     TEX_EXPLODE1,
     TEX_EXPLODE2,
     TEX_EXPLODE3,
-
     TEX_MISSILE_FIREBALL,
     TEX_MISSILE_BEETROOT,
     TEX_MISSILE_HAMMER,
     TEX_MISSILE_SILVER_HAMMER,
     TEX_MISSILE_SPIKE_BALL,
-
     TEX_100,
     TEX_200,
     TEX_500,
@@ -428,7 +394,6 @@ enum TextureIndices {
     TEX_10000,
     TEX_1000000,
     TEX_1UP,
-
     TEX_ITEM_BLOCK1,
     TEX_ITEM_BLOCK2,
     TEX_ITEM_BLOCK3,
@@ -437,12 +402,54 @@ enum TextureIndices {
     TEX_BRICK_BLOCK_GRAY,
     TEX_BRICK_SHARD,
     TEX_BRICK_SHARD_GRAY,
-
     TEX_CHECKPOINT1,
     TEX_CHECKPOINT2,
     TEX_CHECKPOINT3,
-
+    TEX_ROTODISC_BALL,
+    TEX_ROTODISC1,
+    TEX_ROTODISC2,
+    TEX_ROTODISC3,
+    TEX_ROTODISC4,
+    TEX_ROTODISC5,
+    TEX_ROTODISC6,
+    TEX_ROTODISC7,
+    TEX_ROTODISC8,
+    TEX_ROTODISC9,
+    TEX_ROTODISC10,
+    TEX_ROTODISC11,
+    TEX_ROTODISC12,
+    TEX_ROTODISC13,
+    TEX_ROTODISC14,
+    TEX_ROTODISC15,
+    TEX_ROTODISC16,
+    TEX_ROTODISC17,
+    TEX_ROTODISC18,
+    TEX_ROTODISC19,
+    TEX_ROTODISC20,
+    TEX_ROTODISC21,
+    TEX_ROTODISC22,
+    TEX_ROTODISC23,
+    TEX_ROTODISC24,
+    TEX_ROTODISC25,
+    TEX_ROTODISC26,
+    TEX_FONT_MAIN,
+    TEX_FONT_HUD,
     TEX_SIZE,
+};
+
+enum FontIndices {
+    FNT_NULL,
+    FNT_MAIN,
+    FNT_HUD,
+    FNT_SIZE,
+};
+
+enum FontAlignment {
+    FA_LEFT = 0,
+    FA_TOP = 0,
+    FA_CENTER = 1,
+    FA_RIGHT = 2,
+    FA_BOTTOM = 2,
 };
 
 struct Uniforms {
@@ -456,6 +463,14 @@ struct Texture {
     GLuint texture;
     GLuint size[2];
     GLfloat offset[2];
+};
+
+struct Font {
+    enum TextureIndices texture;
+    struct Glyph {
+        GLuint size[2];
+        GLfloat uvs[4];
+    } glyphs[256];
 };
 
 struct Vertex {
@@ -492,6 +507,7 @@ void video_teardown();
 void move_camera(float, float);
 
 void load_texture(enum TextureIndices);
+void load_font(enum FontIndices);
 
 void submit_batch();
 void batch_vertex(GLfloat, GLfloat, GLfloat, GLubyte, GLubyte, GLubyte, GLubyte, GLfloat, GLfloat);
@@ -499,3 +515,4 @@ void clear_tiles();
 void add_gradient(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLubyte[4][4]);
 void add_backdrop(enum TextureIndices, GLfloat, GLfloat, GLfloat, GLubyte, GLubyte, GLubyte, GLubyte);
 void draw_sprite(enum TextureIndices, const float[3], const bool[2], GLfloat, const GLubyte[4]);
+void draw_text(enum FontIndices, enum FontAlignment, const float[3]);

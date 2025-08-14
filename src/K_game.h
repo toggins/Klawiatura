@@ -71,6 +71,9 @@ enum GameObjectType {
 
     OBJ_CHECKPOINT,
 
+    OBJ_ROTODISC_BALL,
+    OBJ_ROTODISC,
+
     OBJ_SIZE,
 };
 
@@ -119,6 +122,12 @@ enum ObjectValues {
 
     VAL_COIN_POP_OWNER = VAL_START,
     VAL_COIN_POP_FRAME,
+
+    VAL_ROTODISC = VAL_START,
+    VAL_ROTODISC_OWNER = VAL_START,
+    VAL_ROTODISC_LENGTH,
+    VAL_ROTODISC_ANGLE,
+    VAL_ROTODISC_SPEED,
 };
 
 enum ObjectFlags {
@@ -138,6 +147,10 @@ enum ObjectFlags {
 
     FLG_COIN_POP_START = 1 << 5,
     FLG_COIN_POP_SPARK = 1 << 6,
+
+    FLG_ROTODISC_START = 1 << 5,
+    FLG_ROTODISC_FLOWER = 1 << 6,
+    FLG_ROTODISC_FLOWER2 = 1 << 7,
 };
 
 enum PlayerFrames {
