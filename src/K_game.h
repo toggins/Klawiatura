@@ -85,6 +85,8 @@ enum ObjectValues {
     VAL_SPROUT,
     VAL_START,
 
+    VAL_PROP_FRAME = VAL_START,
+
     VAL_PLAYER_INDEX = VAL_START,
     VAL_PLAYER_FRAME,
     VAL_PLAYER_GROUND,
@@ -240,6 +242,7 @@ uint32_t check_state();
 void dump_state();
 void tick_state(enum GameInput[MAX_PLAYERS]);
 void draw_state();
+void draw_state_hud();
 
 void load_object(enum GameObjectType);
 

@@ -1924,7 +1924,7 @@ void draw_state() {
 
                 case OBJ_CLOUD: {
                     enum TextureIndices tex;
-                    switch ((int)((float)state.time / 12.5f) % 4) {
+                    switch (((int)((float)state.time / 12.5f) + object->values[VAL_PROP_FRAME]) % 4) {
                         default:
                             tex = TEX_CLOUD1;
                             break;
@@ -1942,7 +1942,7 @@ void draw_state() {
 
                 case OBJ_BUSH: {
                     enum TextureIndices tex;
-                    switch ((int)((float)state.time / 7.142857142857143f) % 4) {
+                    switch (((int)((float)state.time / 7.142857142857143f) + object->values[VAL_PROP_FRAME]) % 4) {
                         default:
                             tex = TEX_BUSH1;
                             break;
@@ -1960,7 +1960,7 @@ void draw_state() {
 
                 case OBJ_BUSH_SNOW: {
                     enum TextureIndices tex;
-                    switch ((int)((float)state.time / 7.142857142857143f) % 4) {
+                    switch (((int)((float)state.time / 7.142857142857143f) + object->values[VAL_PROP_FRAME]) % 4) {
                         default:
                             tex = TEX_BUSH_SNOW1;
                             break;
@@ -2507,6 +2507,18 @@ void draw_state() {
     }
 }
 
+void draw_state_hud() {
+    const struct GamePlayer* player = get_player(local_player);
+    if (player != NULL) {
+        static char str[16];
+        SDL_snprintf(str, sizeof(str), "MARIO * %u", player->lives);
+        draw_text(FNT_HUD, FA_LEFT, str, (float[3]){32, 16, 0});
+
+        SDL_snprintf(str, sizeof(str), "%u", player->score);
+        draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){148, 34, 0});
+    }
+}
+
 void load_object(enum GameObjectType type) {
     switch (type) {
         default:
@@ -2598,6 +2610,8 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_MARIO_HAMMER_SWIM2);
             load_texture(TEX_MARIO_HAMMER_SWIM3);
             load_texture(TEX_MARIO_HAMMER_SWIM4);
+
+            load_font(FNT_HUD);
 
             load_sound(SND_JUMP);
             load_sound(SND_FIRE);
@@ -2883,6 +2897,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 case OBJ_BUSH:
                 case OBJ_BUSH_SNOW: {
                     object->depth = 25L;
+
+                    object->values[VAL_PROP_FRAME] = random() % 4;
                     break;
                 }
 

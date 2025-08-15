@@ -254,16 +254,16 @@ static struct Texture textures[TEX_SIZE] = {
 };
 
 static struct Font fonts[FNT_SIZE] = {
-    [FNT_NULL] = {
-        .texture = TEX_NULL,
-        .glyphs = {0},
-    },
+    [FNT_NULL] = {0},
+    [FNT_MAIN] = {0},
 
     [FNT_HUD] = {
         .texture = TEX_FONT_HUD,
+        .spacing = 1,
+        .line_height = 18,
         .glyphs = {
             [' '] = {
-                .size = {5, 16},
+                .size = {4, 16},
                 .uvs = {0},
             },
             ['A'] = {
@@ -272,103 +272,148 @@ static struct Font fonts[FNT_SIZE] = {
             },
             ['B'] = {
                 .size = {15, 16},
-                .uvs = {18.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {18.0f / 128.0f, 1.0f / 128.0f, 33.0f / 128.0f, 17.0f / 128.0f},
             },
             ['C'] = {
                 .size = {15, 16},
-                .uvs = {35.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {35.0f / 128.0f, 1.0f / 128.0f, 50.0f / 128.0f, 17.0f / 128.0f},
             },
             ['D'] = {
                 .size = {15, 16},
-                .uvs = {52.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {52.0f / 128.0f, 1.0f / 128.0f, 67.0f / 128.0f, 17.0f / 128.0f},
             },
             ['E'] = {
                 .size = {15, 16},
-                .uvs = {69.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {69.0f / 128.0f, 1.0f / 128.0f, 84.0f / 128.0f, 17.0f / 128.0f},
             },
             ['F'] = {
                 .size = {15, 16},
-                .uvs = {86.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {86.0f / 128.0f, 1.0f / 128.0f, 101.0f / 128.0f, 17.0f / 128.0f},
             },
             ['G'] = {
                 .size = {15, 16},
-                .uvs = {103.0f / 128.0f, 1.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {103.0f / 128.0f, 1.0f / 128.0f, 118.0f / 128.0f, 17.0f / 128.0f},
             },
             ['H'] = {
                 .size = {15, 16},
-                .uvs = {1.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {1.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 35.0f / 128.0f},
             },
             ['I'] = {
                 .size = {11, 16},
-                .uvs = {18.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {18.0f / 128.0f, 19.0f / 128.0f, 29.0f / 128.0f, 35.0f / 128.0f},
             },
             ['J'] = {
                 .size = {15, 16},
-                .uvs = {31.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {31.0f / 128.0f, 19.0f / 128.0f, 46.0f / 128.0f, 35.0f / 128.0f},
             },
             ['K'] = {
                 .size = {15, 16},
-                .uvs = {48.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {48.0f / 128.0f, 19.0f / 128.0f, 63.0f / 128.0f, 35.0f / 128.0f},
             },
             ['L'] = {
                 .size = {13, 16},
-                .uvs = {65.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {65.0f / 128.0f, 19.0f / 128.0f, 78.0f / 128.0f, 35.0f / 128.0f},
             },
             ['M'] = {
                 .size = {15, 16},
-                .uvs = {80.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {80.0f / 128.0f, 19.0f / 128.0f, 95.0f / 128.0f, 35.0f / 128.0f},
             },
             ['N'] = {
                 .size = {15, 16},
-                .uvs = {97.0f / 128.0f, 19.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {97.0f / 128.0f, 19.0f / 128.0f, 112.0f / 128.0f, 35.0f / 128.0f},
             },
             ['O'] = {
                 .size = {15, 16},
-                .uvs = {1.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {1.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 53.0f / 128.0f},
             },
             ['P'] = {
                 .size = {15, 16},
-                .uvs = {18.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {18.0f / 128.0f, 37.0f / 128.0f, 33.0f / 128.0f, 53.0f / 128.0f},
             },
             ['Q'] = {
                 .size = {15, 16},
-                .uvs = {35.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {35.0f / 128.0f, 37.0f / 128.0f, 50.0f / 128.0f, 53.0f / 128.0f},
             },
             ['R'] = {
                 .size = {15, 16},
-                .uvs = {52.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {52.0f / 128.0f, 37.0f / 128.0f, 67.0f / 128.0f, 53.0f / 128.0f},
             },
             ['S'] = {
                 .size = {15, 16},
-                .uvs = {69.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {69.0f / 128.0f, 37.0f / 128.0f, 84.0f / 128.0f, 53.0f / 128.0f},
             },
             ['T'] = {
                 .size = {15, 16},
-                .uvs = {86.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {86.0f / 128.0f, 37.0f / 128.0f, 101.0f / 128.0f, 53.0f / 128.0f},
             },
             ['U'] = {
                 .size = {15, 16},
-                .uvs = {103.0f / 128.0f, 37.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {103.0f / 128.0f, 37.0f / 128.0f, 118.0f / 128.0f, 53.0f / 128.0f},
             },
             ['V'] = {
                 .size = {15, 16},
-                .uvs = {1.0f / 128.0f, 55.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {1.0f / 128.0f, 55.0f / 128.0f, 16.0f / 128.0f, 71.0f / 128.0f},
             },
             ['W'] = {
                 .size = {15, 16},
-                .uvs = {18.0f / 128.0f, 55.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {18.0f / 128.0f, 55.0f / 128.0f, 33.0f / 128.0f, 71.0f / 128.0f},
             },
             ['X'] = {
                 .size = {15, 16},
-                .uvs = {35.0f / 128.0f, 55.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {35.0f / 128.0f, 55.0f / 128.0f, 50.0f / 128.0f, 71.0f / 128.0f},
             },
             ['Y'] = {
                 .size = {15, 16},
-                .uvs = {52.0f / 128.0f, 55.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {52.0f / 128.0f, 55.0f / 128.0f, 67.0f / 128.0f, 71.0f / 128.0f},
             },
             ['Z'] = {
                 .size = {15, 16},
-                .uvs = {69.0f / 128.0f, 55.0f / 128.0f, 16.0f / 128.0f, 17.0f / 128.0f},
+                .uvs = {69.0f / 128.0f, 55.0f / 128.0f, 84.0f / 128.0f, 71.0f / 128.0f},
+            },
+
+            ['0'] = {
+                .size = {15, 16},
+                .uvs = {86.0f / 128.0f, 55.0f / 128.0f, 101.0f / 128.0f, 71.0f / 128.0f},
+            },
+            ['1'] = {
+                .size = {11, 16},
+                .uvs = {103.0f / 128.0f, 55.0f / 128.0f, 114.0f / 128.0f, 71.0f / 128.0f},
+            },
+            ['2'] = {
+                .size = {15, 16},
+                .uvs = {1.0f / 128.0f, 73.0f / 128.0f, 16.0f / 128.0f, 89.0f / 128.0f},
+            },
+            ['3'] = {
+                .size = {15, 16},
+                .uvs = {18.0f / 128.0f, 73.0f / 128.0f, 33.0f / 128.0f, 89.0f / 128.0f},
+            },
+            ['4'] = {
+                .size = {15, 16},
+                .uvs = {35.0f / 128.0f, 73.0f / 128.0f, 50.0f / 128.0f, 89.0f / 128.0f},
+            },
+            ['5'] = {
+                .size = {15, 16},
+                .uvs = {52.0f / 128.0f, 73.0f / 128.0f, 67.0f / 128.0f, 89.0f / 128.0f},
+            },
+            ['6'] = {
+                .size = {15, 16},
+                .uvs = {69.0f / 128.0f, 73.0f / 128.0f, 84.0f / 128.0f, 89.0f / 128.0f},
+            },
+            ['7'] = {
+                .size = {15, 16},
+                .uvs = {86.0f / 128.0f, 73.0f / 128.0f, 101.0f / 128.0f, 89.0f / 128.0f},
+            },
+            ['8'] = {
+                .size = {15, 16},
+                .uvs = {103.0f / 128.0f, 73.0f / 128.0f, 118.0f / 128.0f, 89.0f / 128.0f},
+            },
+            ['9'] = {
+                .size = {15, 16},
+                .uvs = {1.0f / 128.0f, 91.0f / 128.0f, 16.0f / 128.0f, 107.0f / 128.0f},
+            },
+            ['*'] = {
+                .size = {13, 16},
+                .uvs = {72.0f / 128.0f, 91.0f / 128.0f, 85.0f / 128.0f, 107.0f / 128.0f},
             },
         },
     },
@@ -548,7 +593,6 @@ void video_init(bool bypass_shader) {
     uniforms.alpha_test = glGetUniformLocation(shader, "u_alpha_test");
 
     glEnable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glUseProgram(shader);
     glActiveTexture(GL_TEXTURE0);
@@ -558,6 +602,7 @@ void video_init(bool bypass_shader) {
 void video_update() {
     draw_time = SDL_GetTicks();
 
+    glEnable(GL_DEPTH_TEST);
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -586,6 +631,15 @@ void video_update() {
     }
     draw_state();
     submit_batch();
+
+    glDisable(GL_DEPTH_TEST);
+
+    glm_ortho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, -16000, 16000, mvp);
+    glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)mvp);
+
+    draw_state_hud();
+    submit_batch();
+
     SDL_GL_SwapWindow(window);
 }
 
@@ -614,8 +668,7 @@ void load_texture(enum TextureIndices index) {
         return;
 
     if (texture->name == NULL) {
-        texture->size[0] = 1;
-        texture->size[1] = 1;
+        texture->size[0] = texture->size[1] = 1;
 
         glGenTextures(1, &(texture->texture));
         glBindTexture(GL_TEXTURE_2D, texture->texture);
@@ -683,6 +736,10 @@ void load_texture(enum TextureIndices index) {
 
     glTexImage2D(GL_TEXTURE_2D, 0, format, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
     SDL_DestroySurface(surface);
+}
+
+void load_font(enum FontIndices index) {
+    load_texture(fonts[index].texture);
 }
 
 void submit_batch() {
@@ -863,9 +920,10 @@ void draw_sprite(
     GLuint tex = texture->texture;
     if (tex == 0)
         FATAL("Invalid texture index %u", index);
-    if (batch.texture != tex)
+    if (batch.texture != tex) {
         submit_batch();
-    batch.texture = tex;
+        batch.texture = tex;
+    }
 
     const GLfloat x1 = -(flip[0] ? ((GLfloat)(texture->size[0]) - (texture->offset[0])) : (texture->offset[0]));
     const GLfloat y1 = -(flip[1] ? ((GLfloat)(texture->size[1]) - (texture->offset[1])) : (texture->offset[1]));
@@ -900,4 +958,83 @@ void draw_sprite(
     batch_vertex(p2[0], p2[1], z, color[0], color[1], color[2], color[3], u2, v1);
     batch_vertex(p4[0], p4[1], z, color[0], color[1], color[2], color[3], u2, v2);
     batch_vertex(p3[0], p3[1], z, color[0], color[1], color[2], color[3], u1, v2);
+}
+
+static GLfloat string_width(enum FontIndices index, const char* str) {
+    struct Font* font = &(fonts[index]);
+    GLfloat width = 0;
+
+    GLfloat cx = 0;
+    size_t bytes = SDL_strlen(str);
+    while (bytes > 0) {
+        size_t gid = SDL_StepUTF8(&str, &bytes);
+
+        // Special/invalid characters
+        if (gid == '\r')
+            continue;
+        if (gid == '\n') {
+            cx = 0;
+            continue;
+        }
+        if (SDL_isspace((int)gid))
+            gid = ' ';
+        if (gid >= 256)
+            continue;
+
+        // Valid glyph
+        struct Glyph* glyph = &(font->glyphs[gid]);
+        cx += glyph->size[0] + font->spacing;
+        width = SDL_max(cx, width);
+    }
+
+    return width;
+}
+
+void draw_text(enum FontIndices index, enum FontAlignment align, const char* str, const float pos[3]) {
+    struct Font* font = &(fonts[index]);
+
+    struct Texture* texture = &(textures[font->texture]);
+    GLuint tex = texture->texture;
+    if (tex == 0)
+        FATAL("Invalid texture index %u", index);
+    if (batch.texture != tex) {
+        submit_batch();
+        batch.texture = tex;
+    }
+
+    const GLfloat sx = align == FA_RIGHT ? (pos[0] - string_width(index, str)) : pos[0];
+
+    GLfloat cx = sx, cy = pos[1];
+    size_t bytes = SDL_strlen(str);
+    while (bytes > 0) {
+        size_t gid = SDL_StepUTF8(&str, &bytes);
+
+        // Special/invalid characters
+        if (gid == '\r')
+            continue;
+        if (gid == '\n') {
+            cx = sx;
+            cy += font->line_height;
+            continue;
+        }
+        if (SDL_isspace((int)gid))
+            gid = ' ';
+        if (gid >= 256)
+            continue;
+
+        // Valid glyph
+        struct Glyph* glyph = &(font->glyphs[gid]);
+        const GLfloat x1 = cx;
+        const GLfloat y1 = cy;
+        const GLfloat x2 = x1 + glyph->size[0];
+        const GLfloat y2 = y1 + glyph->size[1];
+        batch_vertex(x1, y2, pos[2], 255, 255, 255, 255, glyph->uvs[0], glyph->uvs[3]);
+        batch_vertex(x1, y1, pos[2], 255, 255, 255, 255, glyph->uvs[0], glyph->uvs[1]);
+        batch_vertex(x2, y1, pos[2], 255, 255, 255, 255, glyph->uvs[2], glyph->uvs[1]);
+        batch_vertex(x2, y1, pos[2], 255, 255, 255, 255, glyph->uvs[2], glyph->uvs[1]);
+        batch_vertex(x2, y2, pos[2], 255, 255, 255, 255, glyph->uvs[2], glyph->uvs[3]);
+        batch_vertex(x1, y2, pos[2], 255, 255, 255, 255, glyph->uvs[0], glyph->uvs[3]);
+
+        cx += glyph->size[0] + font->spacing;
+    }
 }

@@ -467,9 +467,11 @@ struct Texture {
 
 struct Font {
     enum TextureIndices texture;
+
+    GLfloat spacing;
+    GLfloat line_height;
     struct Glyph {
-        GLuint size[2];
-        GLfloat uvs[4];
+        GLfloat size[2], uvs[4];
     } glyphs[256];
 };
 
@@ -515,4 +517,4 @@ void clear_tiles();
 void add_gradient(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLubyte[4][4]);
 void add_backdrop(enum TextureIndices, GLfloat, GLfloat, GLfloat, GLubyte, GLubyte, GLubyte, GLubyte);
 void draw_sprite(enum TextureIndices, const float[3], const bool[2], GLfloat, const GLubyte[4]);
-void draw_text(enum FontIndices, enum FontAlignment, const float[3]);
+void draw_text(enum FontIndices, enum FontAlignment, const char*, const float[3]);
