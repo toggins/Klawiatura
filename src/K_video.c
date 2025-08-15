@@ -251,6 +251,10 @@ static struct Texture textures[TEX_SIZE] = {
     TEXTURE(TEX_ROTODISC26, "enemies/rotodisc26"),
 
     TEXTURE(TEX_FONT_HUD, "fonts/hud"),
+
+    TEXTURE(TEX_HUD_COINS1, "hud/coins1"),
+    TEXTURE(TEX_HUD_COINS2, "hud/coins2"),
+    TEXTURE(TEX_HUD_COINS3, "hud/coins3"),
 };
 
 static struct Font fonts[FNT_SIZE] = {

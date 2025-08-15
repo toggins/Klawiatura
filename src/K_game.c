@@ -1119,7 +1119,7 @@ void start_state(int num_players, int local) {
 
     object = get_object(create_object(OBJ_BRICK_BLOCK_COIN, (fvec2){FfInt(128L), FfInt(240L)}));
     if (object != NULL)
-        object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM_1UP;
+        object->values[VAL_BLOCK_ITEM] = OBJ_COIN_POP;
     object = get_object(create_object(OBJ_ITEM_BLOCK, (fvec2){FfInt(192L), FfInt(240L)}));
     if (object != NULL)
         object->values[VAL_BLOCK_ITEM] = OBJ_COIN_POP;
@@ -2516,6 +2516,23 @@ void draw_state_hud() {
 
         SDL_snprintf(str, sizeof(str), "%u", player->score);
         draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){148, 34, 0});
+
+        enum TextureIndices tex;
+        switch ((int)((float)(state.time) / 6.25f) % 4) {
+            default:
+                tex = TEX_HUD_COINS1;
+                break;
+            case 1:
+            case 3:
+                tex = TEX_HUD_COINS2;
+                break;
+            case 2:
+                tex = TEX_HUD_COINS3;
+                break;
+        }
+        draw_sprite(tex, (float[3]){224, 34, 0}, (bool[2]){false}, 0, WHITE);
+        SDL_snprintf(str, sizeof(str), "%u", player->coins);
+        draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){289, 34, 0});
     }
 }
 
@@ -2542,6 +2559,11 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_BUSH_SNOW1);
             load_texture(TEX_BUSH_SNOW2);
             load_texture(TEX_BUSH_SNOW3);
+            break;
+        }
+
+        case OBJ_PLAYER_SPAWN: {
+            load_object(OBJ_PLAYER);
             break;
         }
 
@@ -2610,6 +2632,10 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_MARIO_HAMMER_SWIM2);
             load_texture(TEX_MARIO_HAMMER_SWIM3);
             load_texture(TEX_MARIO_HAMMER_SWIM4);
+
+            load_texture(TEX_HUD_COINS1);
+            load_texture(TEX_HUD_COINS2);
+            load_texture(TEX_HUD_COINS3);
 
             load_font(FNT_HUD);
 

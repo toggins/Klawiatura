@@ -434,6 +434,9 @@ enum TextureIndices {
     TEX_ROTODISC26,
     TEX_FONT_MAIN,
     TEX_FONT_HUD,
+    TEX_HUD_COINS1,
+    TEX_HUD_COINS2,
+    TEX_HUD_COINS3,
     TEX_SIZE,
 };
 
