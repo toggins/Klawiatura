@@ -34,16 +34,13 @@ enum GameObjectType {
 
     OBJ_SOLID,
     OBJ_SOLID_TOP,
-
     OBJ_CLOUD,
     OBJ_BUSH,
     OBJ_BUSH_SNOW,
-
     OBJ_PLAYER_SPAWN,
     OBJ_PLAYER,
     OBJ_PLAYER_EFFECT,
     OBJ_PLAYER_DEAD,
-
     OBJ_COIN,
     OBJ_COIN_POP,
     OBJ_MUSHROOM,
@@ -54,25 +51,22 @@ enum GameObjectType {
     OBJ_LUI,
     OBJ_HAMMER_SUIT,
     OBJ_STARMAN,
-
     OBJ_POINTS,
-
     OBJ_EXPLODE,
     OBJ_MISSILE_FIREBALL,
     OBJ_MISSILE_BEETROOT,
     OBJ_MISSILE_HAMMER,
-
     OBJ_BLOCK_BUMP,
-
     OBJ_ITEM_BLOCK,
     OBJ_BRICK_BLOCK,
     OBJ_BRICK_SHARD,
     OBJ_BRICK_BLOCK_COIN,
-
     OBJ_CHECKPOINT,
-
     OBJ_ROTODISC_BALL,
     OBJ_ROTODISC,
+    OBJ_GOAL_BAR,
+    OBJ_GOAL_BAR_FLY,
+    OBJ_GOAL_MARK,
 
     OBJ_SIZE,
 };
@@ -92,6 +86,8 @@ enum ObjectValues {
     VAL_PLAYER_GROUND,
     VAL_PLAYER_SPRING,
     VAL_PLAYER_POWER,
+    VAL_PLAYER_FLASH,
+    VAL_PLAYER_STARMAN,
     VAL_PLAYER_FIRE,
     VAL_PLAYER_MISSILE_START,
     VAL_PLAYER_MISSILE1 = VAL_PLAYER_MISSILE_START,
@@ -130,6 +126,11 @@ enum ObjectValues {
     VAL_ROTODISC_LENGTH,
     VAL_ROTODISC_ANGLE,
     VAL_ROTODISC_SPEED,
+
+    VAL_CHECKPOINT_BOUNDS_X1 = VAL_START,
+    VAL_CHECKPOINT_BOUNDS_Y1,
+    VAL_CHECKPOINT_BOUNDS_X2,
+    VAL_CHECKPOINT_BOUNDS_Y2,
 };
 
 enum ObjectFlags {
@@ -141,6 +142,8 @@ enum ObjectFlags {
 
     FLG_PLAYER_DUCK = 1 << 5,
     FLG_PLAYER_JUMP = 1 << 6,
+
+    FLG_PLAYER_DEAD_LAST = 1 << 5,
 
     FLG_POWERUP_FULL = 1 << 5,
 
@@ -211,11 +214,24 @@ struct GameState {
         GF_FUNNY = 1 << 1,
         GF_LOST = 1 << 2,
     } flags;
+
     fvec2 size;
-    int32_t clock;
+    fvec2 bounds[2];
+
     uint64_t time;
     uint32_t seed;
+
+    int32_t clock;
     ObjectID spawn, checkpoint;
+
+    struct GameSequence {
+        enum GameSequenceType {
+            SEQ_NONE,
+            SEQ_LOSE,
+            SEQ_WIN,
+        } type;
+        uint16_t time;
+    } sequence;
 
     struct GameObject {
         enum GameObjectType type;
@@ -258,6 +274,7 @@ struct BlockList {
 
 void list_block_at(struct BlockList*, const fvec2[2]);
 
+void kill_object(ObjectID);
 void destroy_object(ObjectID);
 void draw_object(struct GameObject*, enum TextureIndices, GLfloat, const GLubyte[4]);
 void play_sound_at_object(struct GameObject*, enum SoundIndices);

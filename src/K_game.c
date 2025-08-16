@@ -28,20 +28,31 @@ static struct GamePlayer* get_player(int pid) {
 
 static ObjectID respawn_player(int pid) {
     struct GamePlayer* player = get_player(pid);
-    if (player == NULL || !(player->active) || player->lives <= 0L)
+    if (player == NULL || !(player->active) || player->lives <= 0L || state.sequence.type != SEQ_NONE)
         return -1L;
 
-    struct GameObject* pawn = get_object(player->object);
-    if (pawn != NULL) {
-        pawn->flags |= FLG_DESTROY;
-        player->object = -1L;
-    }
+    kill_object(player->object);
+    player->object = -1L;
 
     const struct GameObject* spawn = get_object(state.checkpoint);
     if (spawn == NULL) {
         spawn = get_object(state.spawn);
         if (spawn == NULL)
             return -1L;
+    }
+
+    if (spawn->type == OBJ_CHECKPOINT &&
+        spawn->values[VAL_CHECKPOINT_BOUNDS_X1] != spawn->values[VAL_CHECKPOINT_BOUNDS_X2] &&
+        spawn->values[VAL_CHECKPOINT_BOUNDS_Y1] != spawn->values[VAL_CHECKPOINT_BOUNDS_Y2]) {
+        player->bounds[0][0] = spawn->values[VAL_CHECKPOINT_BOUNDS_X1];
+        player->bounds[0][1] = spawn->values[VAL_CHECKPOINT_BOUNDS_Y1];
+        player->bounds[1][0] = spawn->values[VAL_CHECKPOINT_BOUNDS_X2];
+        player->bounds[1][1] = spawn->values[VAL_CHECKPOINT_BOUNDS_Y2];
+    } else {
+        player->bounds[0][0] = state.bounds[0][0];
+        player->bounds[0][1] = state.bounds[0][1];
+        player->bounds[1][0] = state.bounds[1][0];
+        player->bounds[1][1] = state.bounds[1][1];
     }
 
     const ObjectID object = create_object(OBJ_PLAYER, spawn->pos);
@@ -124,6 +135,7 @@ static int get_owner_id(ObjectID oid) {
             return -1;
 
         case OBJ_PLAYER:
+        case OBJ_PLAYER_DEAD:
             return object->values[VAL_PLAYER_INDEX];
 
         case OBJ_MISSILE_FIREBALL:
@@ -424,6 +436,86 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
     move_object(did, (fvec2){x, y});
 }
 
+static void win_player(struct GameObject* pawn) {
+    if (state.sequence.type == SEQ_WIN)
+        return;
+    state.sequence.type = SEQ_WIN;
+    state.sequence.time = 1L;
+
+    const int pid = pawn->values[VAL_PLAYER_INDEX];
+    for (size_t i = 0; i < MAX_PLAYERS; i++)
+        if (i != pid) {
+            kill_object(state.players[i].object);
+            state.players[i].object = -1L;
+        }
+
+    for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++) {
+        struct GameObject* missile = get_object((ObjectID)(pawn->values[i]));
+        if (missile != NULL) {
+            int points;
+            switch (missile->type) {
+                default:
+                    points = 100L;
+                    break;
+                case OBJ_MISSILE_BEETROOT:
+                    points = 200L;
+                    break;
+                case OBJ_MISSILE_HAMMER:
+                    points = 500L;
+                    break;
+            }
+            give_points(missile, pid, points);
+            missile->flags |= FLG_DESTROY;
+        }
+    }
+
+    play_track(MUS_WIN1, false);
+}
+
+static void kill_player(struct GameObject* pawn) {
+    struct GameObject* dead = get_object(create_object(OBJ_PLAYER_DEAD, pawn->pos));
+    if (dead != NULL) {
+        struct GamePlayer* player =
+            get_player((ObjectID)(dead->values[VAL_PLAYER_INDEX] = pawn->values[VAL_PLAYER_INDEX]));
+        if (player != NULL)
+            player->power = POW_SMALL;
+
+        bool all_dead = true;
+        if (state.sequence.type == SEQ_NONE)
+            for (size_t i = 0; i < MAX_PLAYERS; i++)
+                if (state.players[i].lives > 0L) {
+                    all_dead = false;
+                    break;
+                }
+        if (all_dead) {
+            state.sequence.type = SEQ_LOSE;
+            state.sequence.time = 0L;
+            dead->flags |= FLG_PLAYER_DEAD_LAST;
+        }
+
+        pawn->flags |= FLG_DESTROY;
+    }
+}
+
+static bool hit_player(struct GameObject* pawn) {
+    if (state.sequence.type == SEQ_WIN || pawn->values[VAL_PLAYER_FLASH] > 0L || pawn->values[VAL_PLAYER_STARMAN] > 0L)
+        return false;
+
+    struct GamePlayer* player = get_player(pawn->values[VAL_PLAYER_INDEX]);
+    if (player != NULL) {
+        if (player->power == POW_SMALL) {
+            kill_player(pawn);
+            return true;
+        }
+        player->power = (player->power == POW_BIG) ? POW_SMALL : POW_BIG;
+    }
+
+    pawn->values[VAL_PLAYER_POWER] = 3000L;
+    pawn->values[VAL_PLAYER_FLASH] = 100L;
+    play_sound_at_object(pawn, SND_WARP);
+    return true;
+}
+
 static bool bump_check(ObjectID self_id, ObjectID other_id) {
     struct GameObject* self = &(state.objects[self_id]);
     switch (self->type) {
@@ -434,7 +526,6 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
             struct GameObject* other = &(state.objects[other_id]);
             if (other->type != OBJ_PLAYER)
                 break;
-
             if (self->values[VAL_PLAYER_GROUND] <= 0L && self->values[VAL_Y_SPEED] > FxZero &&
                 self->pos[1] < Fsub(other->pos[1], FfInt(10L))) {
                 const struct GamePlayer* player = get_owner(self_id);
@@ -595,9 +686,40 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
             if (other->type != OBJ_PLAYER)
                 break;
             if (state.checkpoint < self_id) {
-                give_points(self, get_owner_id(other_id), 1000L);
+                const int pid = get_owner_id(other_id);
+                give_points(self, pid, 1000L);
+
+                struct GamePlayer* player = get_player(pid);
+                if (player != NULL &&
+                    self->values[VAL_CHECKPOINT_BOUNDS_X1] != self->values[VAL_CHECKPOINT_BOUNDS_X2] &&
+                    self->values[VAL_CHECKPOINT_BOUNDS_Y1] != self->values[VAL_CHECKPOINT_BOUNDS_Y2]) {
+                    player->bounds[0][0] = self->values[VAL_CHECKPOINT_BOUNDS_X1];
+                    player->bounds[0][1] = self->values[VAL_CHECKPOINT_BOUNDS_Y1];
+                    player->bounds[1][0] = self->values[VAL_CHECKPOINT_BOUNDS_X2];
+                    player->bounds[1][1] = self->values[VAL_CHECKPOINT_BOUNDS_Y2];
+                }
+
                 play_sound_at_object(self, SND_SPROUT);
                 state.checkpoint = self_id;
+            }
+            break;
+        }
+
+        case OBJ_ROTODISC: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type != OBJ_PLAYER)
+                break;
+            hit_player(other);
+            break;
+        }
+
+        case OBJ_GOAL_MARK: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type != OBJ_PLAYER || state.sequence.type == SEQ_WIN)
+                break;
+            if (other->values[VAL_PLAYER_GROUND] > 0L) {
+                give_points(other, get_owner_id(other_id), 100L);
+                win_player(other);
             }
             break;
         }
@@ -1004,8 +1126,12 @@ void start_state(int num_players, int local) {
     state.live_objects = -1L;
     for (uint32_t i = 0L; i < BLOCKMAP_SIZE; i++)
         state.blockmap[i] = -1L;
+
     state.size[0] = FfInt(2560L);
     state.size[1] = F_SCREEN_HEIGHT;
+    state.bounds[1][0] = FfInt(2560L);
+    state.bounds[1][1] = F_SCREEN_HEIGHT;
+
     state.spawn = state.checkpoint = -1L;
 
     add_gradient(
@@ -1052,26 +1178,17 @@ void start_state(int num_players, int local) {
     add_backdrop(TEX_SNOW5, 544, 448, 20, 255, 255, 255, 255);
     add_backdrop(TEX_SNOW5, 576, 448, 20, 255, 255, 255, 255);
     add_backdrop(TEX_SNOW6, 608, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 640, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 672, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 704, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 736, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 768, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 800, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 832, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 864, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 896, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 928, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 960, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 992, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 1024, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 1056, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 1088, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 1120, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 1152, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 1184, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 1216, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 1248, 416, 20, 255, 255, 255, 255);
+
+    for (int i = 0L; i < 30L; i++) {
+        const int x = 640L + (i * 32L);
+        add_backdrop(TEX_BLOCK3, (GLfloat)x, 416, 20, 255, 255, 255, 255);
+        const ObjectID oid = create_object(OBJ_SOLID, (fvec2){FfInt(x), FfInt(416L)});
+        if (object_is_alive(oid)) {
+            state.objects[oid].bbox[1][0] = FfInt(32L);
+            state.objects[oid].bbox[1][1] = FfInt(32L);
+        }
+    }
+
     add_backdrop(TEX_BLOCK3, 608, 352, 20, 255, 255, 255, 255);
     add_backdrop(TEX_BLOCK3, 608, 384, 20, 255, 255, 255, 255);
     add_backdrop(TEX_BLOCK3, 576, 384, 20, 255, 255, 255, 255);
@@ -1079,6 +1196,51 @@ void start_state(int num_players, int local) {
     add_backdrop(TEX_BRIDGE2, 32, 240, 20, 255, 255, 255, 255);
     add_backdrop(TEX_BRIDGE2, 64, 240, 20, 255, 255, 255, 255);
     add_backdrop(TEX_BRIDGE2, 96, 240, 20, 255, 255, 255, 255);
+
+    add_backdrop(TEX_SNOW1, 1920, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 1952, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 1984, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2016, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2048, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2080, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2112, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2144, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2176, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2208, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2240, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2272, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2304, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2336, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2368, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2400, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2432, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2464, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2496, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2528, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW2, 2560, 416, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW4, 1920, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 1952, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 1984, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2016, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2048, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2080, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2112, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2144, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2176, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2208, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2240, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2272, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2304, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2336, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2368, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2400, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2432, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2464, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2496, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2528, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_SNOW5, 2560, 448, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_GOAL_MARK, 2144, 384, 20, 255, 255, 255, 255);
+    add_backdrop(TEX_GOAL, 2304, 128, 20, 255, 255, 255, 255);
 
     create_object(OBJ_CLOUD, (fvec2){FfInt(128L), FfInt(32L)});
     create_object(OBJ_CLOUD, (fvec2){FfInt(213L), FfInt(56L)});
@@ -1115,6 +1277,27 @@ void start_state(int num_players, int local) {
         // state.objects[oid].values[VAL_ROTODISC_LENGTH] = FfInt(150L);
         object->values[VAL_ROTODISC_SPEED] = -0x00001658;
         object->flags |= FLG_ROTODISC_FLOWER;
+    }
+
+    object = get_object(create_object(OBJ_GOAL_MARK, (fvec2){FfInt(2176L), FfInt(384L)}));
+    if (object != NULL) {
+        object->bbox[1][0] = FfInt(128L);
+        object->bbox[1][1] = FfInt(32L);
+    }
+    object = get_object(create_object(OBJ_GOAL_MARK, (fvec2){FfInt(2304L), FfInt(384L)}));
+    if (object != NULL) {
+        object->bbox[1][0] = FfInt(128L);
+        object->bbox[1][1] = FfInt(32L);
+    }
+    object = get_object(create_object(OBJ_GOAL_MARK, (fvec2){FfInt(2432L), FfInt(384L)}));
+    if (object != NULL) {
+        object->bbox[1][0] = FfInt(128L);
+        object->bbox[1][1] = FfInt(32L);
+    }
+    object = get_object(create_object(OBJ_GOAL_MARK, (fvec2){FfInt(2560L), FfInt(384L)}));
+    if (object != NULL) {
+        object->bbox[1][0] = FfInt(128L);
+        object->bbox[1][1] = FfInt(32L);
     }
 
     object = get_object(create_object(OBJ_BRICK_BLOCK_COIN, (fvec2){FfInt(128L), FfInt(240L)}));
@@ -1177,36 +1360,6 @@ void start_state(int num_players, int local) {
         state.objects[oid].bbox[1][0] = FfInt(96L);
         state.objects[oid].bbox[1][1] = FfInt(16L);
     }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(640L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(32L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(768L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(32L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(896L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(32L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1024L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(32L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1152L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(32L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1280L), FfInt(384L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
     oid = create_object(OBJ_SOLID, (fvec2){FfInt(608L), FfInt(352L)});
     if (object_is_alive(oid)) {
         state.objects[oid].bbox[1][0] = FfInt(32L);
@@ -1217,14 +1370,65 @@ void start_state(int num_players, int local) {
         state.objects[oid].bbox[1][0] = FfInt(32L);
         state.objects[oid].bbox[1][1] = FfInt(32L);
     }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1920L), FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2048L), FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2176L), FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2304L), FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2432L), FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2432L), FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2560L), FfInt(416L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(128L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2624L), FfInt(-64L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(32L);
+        state.objects[oid].bbox[1][1] = FfInt(192L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2624L), FfInt(128L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(32L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2624L), FfInt(256L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(32L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
+    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2624L), FfInt(384L)});
+    if (object_is_alive(oid)) {
+        state.objects[oid].bbox[1][0] = FfInt(32L);
+        state.objects[oid].bbox[1][1] = FfInt(128L);
+    }
 
     for (size_t i = 0; i < num_players; i++) {
         struct GamePlayer* player = &(state.players[i]);
         player->active = true;
-
-        player->bounds[0][0] = player->bounds[0][1] = FxZero;
-        player->bounds[1][0] = state.size[0];
-        player->bounds[1][1] = state.size[1];
 
         player->lives = 4L;
         respawn_player((int)i);
@@ -1329,6 +1533,10 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         object->flags |= FLG_DESTROY;
                         break;
                     }
+                    if (state.sequence.type == SEQ_WIN) {
+                        player->input = GI_NONE;
+                        object->values[VAL_X_SPEED] = 0x00028000;
+                    }
 
                     const bool cant_run = !(player->input & GI_RUN);
                     const bool jumped = (player->input & GI_JUMP) && !(player->last_input & GI_JUMP);
@@ -1425,9 +1633,11 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                     }
 
                     // Animation
-                    if (object->values[VAL_X_SPEED] > FxZero && (player->input & GI_RIGHT))
+                    if (object->values[VAL_X_SPEED] > FxZero &&
+                        (player->input & GI_RIGHT || state.sequence.type == SEQ_WIN))
                         object->flags &= ~FLG_X_FLIP;
-                    else if (object->values[VAL_X_SPEED] < FxZero && (player->input & GI_LEFT))
+                    else if (object->values[VAL_X_SPEED] < FxZero &&
+                             (player->input & GI_LEFT || state.sequence.type == SEQ_WIN))
                         object->flags |= FLG_X_FLIP;
 
                     if (object->values[VAL_PLAYER_POWER] > 0L)
@@ -1532,7 +1742,73 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         }
                     }
 
+                    if (object->values[VAL_PLAYER_FLASH] > 0L)
+                        --(object->values[VAL_PLAYER_FLASH]);
+                    if (object->values[VAL_PLAYER_STARMAN] > 0L) {
+                        if (--(object->values[VAL_PLAYER_STARMAN]) == 100L)
+                            play_sound_at_object(object, SND_STARMAN);
+                    }
+
+                    if (object->pos[1] > Fadd(player->bounds[1][1], FfInt(64L))) {
+                        kill_player(object);
+                        break;
+                    }
+
                     bump_object(oid);
+                    break;
+                }
+
+                case OBJ_PLAYER_DEAD: {
+                    const int pid = object->values[VAL_PLAYER_INDEX];
+                    struct GamePlayer* player = get_player(pid);
+                    if (player == NULL) {
+                        object->flags |= FLG_DESTROY;
+                        break;
+                    }
+
+                    if (object->values[VAL_PLAYER_FRAME] >= 25L) {
+                        object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
+                        move_object(oid, (fvec2){object->pos[0], Fadd(object->pos[1], object->values[VAL_Y_SPEED])});
+                    }
+
+                    switch ((object->values[VAL_PLAYER_FRAME])++) {
+                        default:
+                            break;
+
+                        case 0: {
+                            if (object->flags & FLG_PLAYER_DEAD_LAST)
+                                play_track(MUS_LOSE1, false);
+                            else
+                                play_sound_at_object(object, player->lives > 0L ? SND_LOSE : SND_DEAD);
+                            break;
+                        }
+
+                        case 25: {
+                            object->values[VAL_Y_SPEED] = FfInt(-10L);
+                            break;
+                        }
+
+                        case 150: {
+                            struct GameObject* pawn = get_object(respawn_player(pid));
+                            if (pawn != NULL) {
+                                pawn->values[VAL_PLAYER_FLASH] = 100L;
+                                --(player->lives);
+                                object->flags |= FLG_DESTROY;
+                            }
+                            break;
+                        }
+
+                        case 210: {
+                            if (object->flags & FLG_PLAYER_DEAD_LAST) {
+                                state.sequence.type = SEQ_LOSE;
+                                state.sequence.time = 1L;
+                                play_track(MUS_GAME_OVER, false);
+                            }
+                            object->flags |= FLG_DESTROY;
+                            break;
+                        }
+                    }
+
                     break;
                 }
 
@@ -1911,6 +2187,9 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
             move_camera(SDL_clamp(cx, bx1, bx2), SDL_clamp(cy, by1, by2));
         }
     }
+
+    if (state.sequence.time > 0L && state.sequence.time <= 500L)
+        ++(state.sequence.time);
 }
 
 void draw_state() {
@@ -1977,11 +2256,21 @@ void draw_state() {
                 }
 
                 case OBJ_PLAYER: {
+                    if (object->values[VAL_PLAYER_FLASH] > 0L && (state.time % 2))
+                        break;
+
                     const struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
                     draw_object(
                         object,
                         get_player_texture(player == NULL ? POW_SMALL : player->power, get_player_frame(object)), 0,
                         ALPHA(object->values[VAL_PLAYER_INDEX] != local_player ? 190 : 255)
+                    );
+                    break;
+                }
+
+                case OBJ_PLAYER_DEAD: {
+                    draw_object(
+                        object, TEX_MARIO_DEAD, 0, ALPHA(object->values[VAL_PLAYER_INDEX] != local_player ? 190 : 255)
                     );
                     break;
                 }
@@ -2033,17 +2322,17 @@ void draw_state() {
                                 break;
                         }
                     else
-                        switch ((object->values[VAL_COIN_POP_FRAME] / 100) % 4) {
+                        switch ((object->values[VAL_COIN_POP_FRAME] / 100) % 5) {
                             default:
                                 tex = TEX_COIN_POP1;
                                 break;
-                            case 1:
+                            case 2:
                                 tex = TEX_COIN_POP2;
                                 break;
-                            case 2:
+                            case 3:
                                 tex = TEX_COIN_POP3;
                                 break;
-                            case 3:
+                            case 4:
                                 tex = TEX_COIN_POP4;
                                 break;
                         }
@@ -2381,7 +2670,7 @@ void draw_state() {
                     draw_sprite(
                         (object->flags & FLG_BLOCK_EMPTY)
                             ? TEX_EMPTY_BLOCK
-                            : ((object->type & FLG_BLOCK_GRAY) ? TEX_BRICK_BLOCK_GRAY : TEX_BRICK_BLOCK),
+                            : ((object->flags & FLG_BLOCK_GRAY) ? TEX_BRICK_BLOCK_GRAY : TEX_BRICK_BLOCK),
                         (float[3]){
                             FtInt(object->pos[0]),
                             FtInt(object->pos[1]) - bump,
@@ -2515,7 +2804,7 @@ void draw_state_hud() {
         draw_text(FNT_HUD, FA_LEFT, str, (float[3]){32, 16, 0});
 
         SDL_snprintf(str, sizeof(str), "%u", player->score);
-        draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){148, 34, 0});
+        draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){141, 34, 0});
 
         enum TextureIndices tex;
         switch ((int)((float)(state.time) / 6.25f) % 4) {
@@ -2532,8 +2821,11 @@ void draw_state_hud() {
         }
         draw_sprite(tex, (float[3]){224, 34, 0}, (bool[2]){false}, 0, WHITE);
         SDL_snprintf(str, sizeof(str), "%u", player->coins);
-        draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){289, 34, 0});
+        draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){287, 34, 0});
     }
+
+    if (state.sequence.type == SEQ_LOSE && state.sequence.time > 0L)
+        draw_text(FNT_HUD, FA_CENTER, "GAME OVER", (float[3]){320, 224, 0});
 }
 
 void load_object(enum GameObjectType type) {
@@ -2645,12 +2937,24 @@ void load_object(enum GameObjectType type) {
             load_sound(SND_WARP);
             load_sound(SND_BUMP);
             load_sound(SND_STOMP);
+            load_sound(SND_STARMAN);
 
             load_object(OBJ_PLAYER_EFFECT);
             load_object(OBJ_PLAYER_DEAD);
             load_object(OBJ_MISSILE_FIREBALL);
             load_object(OBJ_MISSILE_BEETROOT);
             load_object(OBJ_MISSILE_HAMMER);
+            break;
+        }
+
+        case OBJ_PLAYER_DEAD: {
+            load_texture(TEX_MARIO_DEAD);
+
+            load_sound(SND_LOSE);
+            load_sound(SND_DEAD);
+
+            load_track(MUS_LOSE1);
+            load_track(MUS_GAME_OVER);
             break;
         }
 
@@ -2881,6 +3185,14 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_ROTODISC26);
             break;
         }
+
+        case OBJ_GOAL_MARK: {
+            load_track(MUS_WIN1);
+            load_track(MUS_WIN2);
+
+            load_object(OBJ_POINTS);
+            break;
+        }
     }
 }
 
@@ -2929,7 +3241,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_PLAYER_SPAWN: {
-                    state.spawn = (ObjectID)i;
+                    state.spawn = (ObjectID)index;
                     break;
                 }
 
@@ -2944,6 +3256,12 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->values[VAL_PLAYER_INDEX] = -1L;
                     for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
                         object->values[i] = -1L;
+                    break;
+                }
+
+                case OBJ_PLAYER_DEAD: {
+                    object->depth = -1L;
+                    object->values[VAL_PLAYER_INDEX] = -1L;
                     break;
                 }
 
@@ -3175,6 +3493,12 @@ void list_block_at(struct BlockList* list, const fvec2 rect[2]) {
         }
 }
 
+void kill_object(ObjectID index) {
+    struct GameObject* object = get_object(index);
+    if (object != NULL)
+        object->flags |= FLG_DESTROY;
+}
+
 void destroy_object(ObjectID index) {
     struct GameObject* object = get_object(index);
     if (object == NULL)
@@ -3224,9 +3548,7 @@ void destroy_object(ObjectID index) {
         }
 
         case OBJ_ROTODISC_BALL: {
-            struct GameObject* rotodisc = get_object((ObjectID)(object->values[VAL_ROTODISC]));
-            if (rotodisc != NULL)
-                rotodisc->flags |= FLG_DESTROY;
+            kill_object((ObjectID)(object->values[VAL_ROTODISC]));
             break;
         }
 
@@ -3255,8 +3577,6 @@ void destroy_object(ObjectID index) {
         state.objects[object->previous].next = object->next;
     if (object_is_alive(object->next))
         state.objects[object->next].previous = object->previous;
-
-    state.next_object = SDL_min(state.next_object, index);
 }
 
 void draw_object(struct GameObject* object, enum TextureIndices tid, GLfloat angle, const GLubyte color[4]) {
