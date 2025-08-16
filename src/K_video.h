@@ -31,6 +31,7 @@ enum VertexAttributes {
 
 enum TextureIndices {
     TEX_NULL,
+
     TEX_GRASS1,
     TEX_GRASS2,
     TEX_GRASS3,
@@ -437,6 +438,11 @@ enum TextureIndices {
     TEX_HUD_COINS1,
     TEX_HUD_COINS2,
     TEX_HUD_COINS3,
+    TEX_GOAL_MARK,
+    TEX_GOAL,
+    TEX_GOAL_BAR1,
+    TEX_GOAL_BAR2,
+
     TEX_SIZE,
 };
 

@@ -255,6 +255,11 @@ static struct Texture textures[TEX_SIZE] = {
     TEXTURE(TEX_HUD_COINS1, "hud/coins1"),
     TEXTURE(TEX_HUD_COINS2, "hud/coins2"),
     TEXTURE(TEX_HUD_COINS3, "hud/coins3"),
+
+    TEXTURE(TEX_GOAL_MARK, "markers/goal_mark"),
+    TEXTURE(TEX_GOAL, "markers/goal"),
+    TEXOFFS(TEX_GOAL_BAR1, "markers/goal_bar1", 23, 0),
+    TEXOFFS(TEX_GOAL_BAR2, "markers/goal_bar2", 21, 7),
 };
 
 static struct Font fonts[FNT_SIZE] = {
@@ -263,11 +268,11 @@ static struct Font fonts[FNT_SIZE] = {
 
     [FNT_HUD] = {
         .texture = TEX_FONT_HUD,
-        .spacing = 1,
+        .spacing = 0,
         .line_height = 18,
         .glyphs = {
             [' '] = {
-                .size = {4, 16},
+                .size = {5, 16},
                 .uvs = {0},
             },
             ['A'] = {
@@ -987,7 +992,9 @@ static GLfloat string_width(enum FontIndices index, const char* str) {
 
         // Valid glyph
         struct Glyph* glyph = &(font->glyphs[gid]);
-        cx += glyph->size[0] + font->spacing;
+        cx += glyph->size[0];
+        if (bytes > 0)
+            cx += font->spacing;
         width = SDL_max(cx, width);
     }
 
@@ -1006,7 +1013,17 @@ void draw_text(enum FontIndices index, enum FontAlignment align, const char* str
         batch.texture = tex;
     }
 
-    const GLfloat sx = align == FA_RIGHT ? (pos[0] - string_width(index, str)) : pos[0];
+    GLfloat sx = pos[0];
+    switch (align) {
+        default:
+            break;
+        case FA_CENTER:
+            sx -= string_width(index, str) * 0.5f;
+            break;
+        case FA_RIGHT:
+            sx -= string_width(index, str);
+            break;
+    }
 
     GLfloat cx = sx, cy = pos[1];
     size_t bytes = SDL_strlen(str);
@@ -1039,6 +1056,8 @@ void draw_text(enum FontIndices index, enum FontAlignment align, const char* str
         batch_vertex(x2, y2, pos[2], 255, 255, 255, 255, glyph->uvs[2], glyph->uvs[3]);
         batch_vertex(x1, y2, pos[2], 255, 255, 255, 255, glyph->uvs[0], glyph->uvs[3]);
 
-        cx += glyph->size[0] + font->spacing;
+        cx += glyph->size[0];
+        if (bytes > 0)
+            cx += font->spacing;
     }
 }

@@ -90,8 +90,55 @@ static struct Track tracks[MUS_SIZE] = {
     TRACK(MUS_OVERWORLD4, "overworld4"),
     TRACK(MUS_OVERWORLD5, "overworld5"),
     TRACK(MUS_OVERWORLD6, "overworld6"),
+    TRACK(MUS_OVERWORLD7, "overworld7"),
 
+    TRACK(MUS_ATHLETIC1, "athletic1"),
+    TRACK(MUS_ATHLETIC2, "athletic2"),
+    TRACK(MUS_ATHLETIC3, "athletic3"),
+    TRACK(MUS_ATHLETIC4, "athletic4"),
+    TRACK(MUS_ATHLETIC5, "athletic5"),
+    TRACK(MUS_ATHLETIC6, "athletic6"),
+    TRACK(MUS_ATHLETIC7, "athletic7"),
+    TRACK(MUS_ATHLETIC8, "athletic8"),
+
+    TRACK(MUS_STARLAND, "starland"),
+    TRACK(MUS_FOREST, "forest"),
     TRACK(MUS_SNOW, "snow"),
+    TRACK(MUS_DESERT, "desert"),
+    TRACK(MUS_VOLCANO, "volcano"),
+
+    TRACK(MUS_WATER1, "water1"),
+    TRACK(MUS_WATER2, "water2"),
+
+    TRACK(MUS_CAVE1, "cave1"),
+    TRACK(MUS_CAVE2, "cave2"),
+    TRACK(MUS_CAVE3, "cave3"),
+
+    TRACK(MUS_CASTLE1, "castle1"),
+    TRACK(MUS_CASTLE2, "castle2"),
+    TRACK(MUS_CASTLE3, "castle3"),
+    TRACK(MUS_CASTLE4, "castle4"),
+    TRACK(MUS_CASTLE5, "castle5"),
+
+    TRACK(MUS_TANKS1, "tanks1"),
+    TRACK(MUS_TANKS2, "tanks2"),
+    TRACK(MUS_TANKS3, "tanks3"),
+
+    TRACK(MUS_AIRSHIP, "airship"),
+
+    TRACK(MUS_BOSS1, "boss1"),
+
+    TRACK(MUS_BOWSER1, "bowser1"),
+    TRACK(MUS_BOWSER2, "bowser2"),
+    TRACK(MUS_BOWSER3, "bowser3"),
+
+    TRACK(MUS_LOSE1, "lose1"),
+    TRACK(MUS_LOSE2, "lose2"),
+    TRACK(MUS_GAME_OVER, "game_over"),
+
+    TRACK(MUS_WIN1, "win1"),
+    TRACK(MUS_WIN2, "win2"),
+    TRACK(MUS_WIN3, "win3"),
 };
 
 static struct SoundState state = {0};
