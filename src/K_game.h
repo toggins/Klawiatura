@@ -55,6 +55,7 @@ enum GameObjectType {
     OBJ_EXPLODE,
     OBJ_MISSILE_FIREBALL,
     OBJ_MISSILE_BEETROOT,
+    OBJ_MISSILE_BEETROOT_SINK,
     OBJ_MISSILE_HAMMER,
     OBJ_BLOCK_BUMP,
     OBJ_ITEM_BLOCK,
@@ -67,6 +68,8 @@ enum GameObjectType {
     OBJ_GOAL_BAR,
     OBJ_GOAL_BAR_FLY,
     OBJ_GOAL_MARK,
+    OBJ_WATER_SPLASH,
+    OBJ_BUBBLE,
 
     OBJ_SIZE,
 };
@@ -93,6 +96,14 @@ enum ObjectValues {
     VAL_PLAYER_MISSILE1 = VAL_PLAYER_MISSILE_START,
     VAL_PLAYER_MISSILE2,
     VAL_PLAYER_MISSILE_END,
+    VAL_PLAYER_BEETROOT_START = VAL_PLAYER_MISSILE_END,
+    VAL_PLAYER_BEETROOT1 = VAL_PLAYER_BEETROOT_START,
+    VAL_PLAYER_BEETROOT2,
+    VAL_PLAYER_BEETROOT3,
+    VAL_PLAYER_BEETROOT4,
+    VAL_PLAYER_BEETROOT5,
+    VAL_PLAYER_BEETROOT6,
+    VAL_PLAYER_BEETROOT_END,
 
     VAL_PLAYER_EFFECT_POWER = VAL_START,
     VAL_PLAYER_EFFECT_FRAME,
@@ -104,6 +115,7 @@ enum ObjectValues {
     VAL_MISSILE_ANGLE,
     VAL_MISSILE_HITS,
     VAL_MISSILE_HIT,
+    VAL_MISSILE_BUBBLE,
 
     VAL_POINTS = VAL_START,
     VAL_POINTS_PLAYER,
@@ -131,6 +143,10 @@ enum ObjectValues {
     VAL_CHECKPOINT_BOUNDS_Y1,
     VAL_CHECKPOINT_BOUNDS_X2,
     VAL_CHECKPOINT_BOUNDS_Y2,
+
+    VAL_WATER_SPLASH_FRAME = VAL_START,
+
+    VAL_BUBBLE_FRAME = VAL_START,
 };
 
 enum ObjectFlags {
@@ -142,6 +158,7 @@ enum ObjectFlags {
 
     FLG_PLAYER_DUCK = 1 << 5,
     FLG_PLAYER_JUMP = 1 << 6,
+    FLG_PLAYER_SWIM = 1 << 7,
 
     FLG_PLAYER_DEAD_LAST = 1 << 5,
 
@@ -156,6 +173,8 @@ enum ObjectFlags {
     FLG_ROTODISC_START = 1 << 5,
     FLG_ROTODISC_FLOWER = 1 << 6,
     FLG_ROTODISC_FLOWER2 = 1 << 7,
+
+    FLG_BUBBLE_POP = 1 << 5,
 };
 
 enum PlayerFrames {
@@ -223,6 +242,7 @@ struct GameState {
 
     int32_t clock;
     ObjectID spawn, checkpoint;
+    fix16_t water;
 
     struct GameSequence {
         enum GameSequenceType {

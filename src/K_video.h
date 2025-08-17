@@ -442,6 +442,37 @@ enum TextureIndices {
     TEX_GOAL,
     TEX_GOAL_BAR1,
     TEX_GOAL_BAR2,
+    TEX_WATER1,
+    TEX_WATER2,
+    TEX_WATER3,
+    TEX_WATER4,
+    TEX_WATER5,
+    TEX_WATER6,
+    TEX_WATER7,
+    TEX_WATER8,
+    TEX_WATER_SPLASH1,
+    TEX_WATER_SPLASH2,
+    TEX_WATER_SPLASH3,
+    TEX_WATER_SPLASH4,
+    TEX_WATER_SPLASH5,
+    TEX_WATER_SPLASH6,
+    TEX_WATER_SPLASH7,
+    TEX_WATER_SPLASH8,
+    TEX_WATER_SPLASH9,
+    TEX_WATER_SPLASH10,
+    TEX_WATER_SPLASH11,
+    TEX_WATER_SPLASH12,
+    TEX_WATER_SPLASH13,
+    TEX_WATER_SPLASH14,
+    TEX_WATER_SPLASH15,
+    TEX_BUBBLE,
+    TEX_BUBBLE_POP1,
+    TEX_BUBBLE_POP2,
+    TEX_BUBBLE_POP3,
+    TEX_BUBBLE_POP4,
+    TEX_BUBBLE_POP5,
+    TEX_BUBBLE_POP6,
+    TEX_BUBBLE_POP7,
 
     TEX_SIZE,
 };
@@ -527,3 +558,4 @@ void add_gradient(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLubyte[4][4]);
 void add_backdrop(enum TextureIndices, GLfloat, GLfloat, GLfloat, GLubyte, GLubyte, GLubyte, GLubyte);
 void draw_sprite(enum TextureIndices, const float[3], const bool[2], GLfloat, const GLubyte[4]);
 void draw_text(enum FontIndices, enum FontAlignment, const char*, const float[3]);
+void draw_rectangle(enum TextureIndices, const float[2][2], float, const GLubyte[4]);

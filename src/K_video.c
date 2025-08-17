@@ -103,7 +103,7 @@ static struct Texture textures[TEX_SIZE] = {
     TEXOFFS(TEX_MARIO_BIG_DUCK, "mario/big/duck", 15, 42),
     TEXOFFS(TEX_MARIO_BIG_SWIM1, "mario/big/swim1", 22, 53),
     TEXOFFS(TEX_MARIO_BIG_SWIM2, "mario/big/swim2", 19, 53),
-    TEXOFFS(TEX_MARIO_BIG_SWIM3, "mario/big/swim3", 21, 58),
+    TEXOFFS(TEX_MARIO_BIG_SWIM3, "mario/big/swim3", 21, 53),
     TEXOFFS(TEX_MARIO_BIG_SWIM4, "mario/big/swim4", 22, 53),
 
     TEXOFFS(TEX_MARIO_FIRE_GROW1, "mario/fire/grow1", 16, 56),
@@ -116,7 +116,7 @@ static struct Texture textures[TEX_SIZE] = {
     TEXOFFS(TEX_MARIO_FIRE_FIRE, "mario/fire/fire", 16, 58),
     TEXOFFS(TEX_MARIO_FIRE_SWIM1, "mario/fire/swim1", 22, 53),
     TEXOFFS(TEX_MARIO_FIRE_SWIM2, "mario/fire/swim2", 19, 53),
-    TEXOFFS(TEX_MARIO_FIRE_SWIM3, "mario/fire/swim3", 21, 58),
+    TEXOFFS(TEX_MARIO_FIRE_SWIM3, "mario/fire/swim3", 21, 53),
     TEXOFFS(TEX_MARIO_FIRE_SWIM4, "mario/fire/swim4", 22, 53),
 
     TEXOFFS(TEX_MARIO_BEETROOT, "mario/beetroot/idle", 15, 61),
@@ -127,7 +127,7 @@ static struct Texture textures[TEX_SIZE] = {
     TEXOFFS(TEX_MARIO_BEETROOT_FIRE, "mario/beetroot/fire", 16, 61),
     TEXOFFS(TEX_MARIO_BEETROOT_SWIM1, "mario/beetroot/swim1", 22, 56),
     TEXOFFS(TEX_MARIO_BEETROOT_SWIM2, "mario/beetroot/swim2", 19, 56),
-    TEXOFFS(TEX_MARIO_BEETROOT_SWIM3, "mario/beetroot/swim3", 21, 54),
+    TEXOFFS(TEX_MARIO_BEETROOT_SWIM3, "mario/beetroot/swim3", 21, 56),
     TEXOFFS(TEX_MARIO_BEETROOT_SWIM4, "mario/beetroot/swim4", 22, 56),
 
     TEXOFFS(TEX_MARIO_LUI, "mario/lui/idle", 15, 58),
@@ -137,7 +137,7 @@ static struct Texture textures[TEX_SIZE] = {
     TEXOFFS(TEX_MARIO_LUI_DUCK, "mario/lui/duck", 15, 42),
     TEXOFFS(TEX_MARIO_LUI_SWIM1, "mario/lui/swim1", 22, 53),
     TEXOFFS(TEX_MARIO_LUI_SWIM2, "mario/lui/swim2", 19, 53),
-    TEXOFFS(TEX_MARIO_LUI_SWIM3, "mario/lui/swim3", 21, 58),
+    TEXOFFS(TEX_MARIO_LUI_SWIM3, "mario/lui/swim3", 21, 53),
     TEXOFFS(TEX_MARIO_LUI_SWIM4, "mario/lui/swim4", 22, 53),
 
     TEXOFFS(TEX_MARIO_HAMMER, "mario/hammer/idle", 17, 60),
@@ -260,6 +260,39 @@ static struct Texture textures[TEX_SIZE] = {
     TEXTURE(TEX_GOAL, "markers/goal"),
     TEXOFFS(TEX_GOAL_BAR1, "markers/goal_bar1", 23, 0),
     TEXOFFS(TEX_GOAL_BAR2, "markers/goal_bar2", 21, 7),
+
+    TEXTURE(TEX_WATER1, "markers/water1"),
+    TEXTURE(TEX_WATER2, "markers/water2"),
+    TEXTURE(TEX_WATER3, "markers/water3"),
+    TEXTURE(TEX_WATER4, "markers/water4"),
+    TEXTURE(TEX_WATER5, "markers/water5"),
+    TEXTURE(TEX_WATER6, "markers/water6"),
+    TEXTURE(TEX_WATER7, "markers/water7"),
+    TEXTURE(TEX_WATER8, "markers/water8"),
+    TEXOFFS(TEX_WATER_SPLASH1, "effects/splash1", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH2, "effects/splash2", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH3, "effects/splash3", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH4, "effects/splash4", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH5, "effects/splash5", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH6, "effects/splash6", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH7, "effects/splash7", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH8, "effects/splash8", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH9, "effects/splash9", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH10, "effects/splash10", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH11, "effects/splash11", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH12, "effects/splash12", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH13, "effects/splash13", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH14, "effects/splash14", 15, 31),
+    TEXOFFS(TEX_WATER_SPLASH15, "effects/splash15", 15, 31),
+
+    TEXOFFS(TEX_BUBBLE, "effects/bubble", 4, 4),
+    TEXOFFS(TEX_BUBBLE_POP1, "effects/bubble_pop1", 7, 8),
+    TEXOFFS(TEX_BUBBLE_POP2, "effects/bubble_pop2", 7, 8),
+    TEXOFFS(TEX_BUBBLE_POP3, "effects/bubble_pop3", 7, 8),
+    TEXOFFS(TEX_BUBBLE_POP4, "effects/bubble_pop4", 7, 8),
+    TEXOFFS(TEX_BUBBLE_POP5, "effects/bubble_pop5", 7, 8),
+    TEXOFFS(TEX_BUBBLE_POP6, "effects/bubble_pop6", 7, 8),
+    TEXOFFS(TEX_BUBBLE_POP7, "effects/bubble_pop7", 7, 8),
 };
 
 static struct Font fonts[FNT_SIZE] = {
@@ -1060,4 +1093,27 @@ void draw_text(enum FontIndices index, enum FontAlignment align, const char* str
         if (bytes > 0)
             cx += font->spacing;
     }
+}
+
+void draw_rectangle(enum TextureIndices index, const float rect[2][2], float z, const GLubyte color[4]) {
+    struct Texture* texture = &(textures[index]);
+    GLuint tex = texture->texture;
+    if (tex == 0)
+        FATAL("Invalid texture index %u", index);
+    if (batch.texture != tex) {
+        submit_batch();
+        batch.texture = tex;
+    }
+
+    const GLfloat u1 = 0;
+    const GLfloat v1 = 0;
+    const GLfloat u2 = (rect[1][0] - rect[0][0]) / (GLfloat)(texture->size[0]);
+    const GLfloat v2 = (rect[1][1] - rect[0][1]) / (GLfloat)(texture->size[1]);
+
+    batch_vertex(rect[0][0], rect[1][1], z, color[0], color[1], color[2], color[3], u1, v2);
+    batch_vertex(rect[0][0], rect[0][1], z, color[0], color[1], color[2], color[3], u1, v1);
+    batch_vertex(rect[1][0], rect[0][1], z, color[0], color[1], color[2], color[3], u2, v1);
+    batch_vertex(rect[1][0], rect[0][1], z, color[0], color[1], color[2], color[3], u2, v1);
+    batch_vertex(rect[1][0], rect[1][1], z, color[0], color[1], color[2], color[3], u2, v2);
+    batch_vertex(rect[0][0], rect[1][1], z, color[0], color[1], color[2], color[3], u1, v2);
 }

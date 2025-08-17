@@ -140,6 +140,7 @@ static int get_owner_id(ObjectID oid) {
 
         case OBJ_MISSILE_FIREBALL:
         case OBJ_MISSILE_BEETROOT:
+        case OBJ_MISSILE_BEETROOT_SINK:
         case OBJ_MISSILE_HAMMER:
             return get_owner_id((ObjectID)(object->values[VAL_MISSILE_OWNER]));
 
@@ -798,8 +799,25 @@ static enum PlayerFrames get_player_frame(struct GameObject* object) {
         }
     }
 
-    if (object->values[VAL_PLAYER_GROUND] <= 0L)
-        return (object->values[VAL_Y_SPEED] < FxZero) ? PF_JUMP : PF_FALL;
+    if (object->values[VAL_PLAYER_GROUND] <= 0L) {
+        if (object->flags & FLG_PLAYER_SWIM) {
+            const int frame = FtInt(object->values[VAL_PLAYER_FRAME]);
+            switch (frame) {
+                case 0:
+                case 3:
+                    return PF_SWIM1;
+                case 1:
+                case 4:
+                    return PF_SWIM2;
+                case 2:
+                case 5:
+                    return PF_SWIM3;
+                default:
+                    return (frame % 2L) ? PF_SWIM5 : PF_SWIM4;
+            }
+        } else
+            return (object->values[VAL_Y_SPEED] < FxZero) ? PF_JUMP : PF_FALL;
+    }
 
     if (object->flags & FLG_PLAYER_DUCK)
         return PF_DUCK;
@@ -1056,7 +1074,7 @@ static enum TextureIndices get_player_texture(enum PlayerPowers power, enum Play
     return TEX_MARIO_SMALL;
 }
 
-static bool in_any_view(struct GameObject* object, fix16_t padding) {
+static bool in_any_view(struct GameObject* object, fix16_t padding, bool ignore_top) {
     const fix16_t sx1 = Fadd(object->pos[0], object->bbox[0][0]);
     const fix16_t sy1 = Fadd(object->pos[1], object->bbox[0][1]);
     const fix16_t sx2 = Fadd(object->pos[0], object->bbox[1][0]);
@@ -1080,14 +1098,14 @@ static bool in_any_view(struct GameObject* object, fix16_t padding) {
         const fix16_t oy1 = Fsub(Fsub(oy, F_HALF_SCREEN_HEIGHT), padding);
         const fix16_t ox2 = Fadd(Fadd(ox, F_HALF_SCREEN_WIDTH), padding);
         const fix16_t oy2 = Fadd(Fadd(oy, F_HALF_SCREEN_HEIGHT), padding);
-        if (sx1 < ox2 && sx2 > ox1 && sy1 < oy2 && sy2 > oy1)
+        if (sx1 < ox2 && sx2 > ox1 && sy1 < oy2 && (ignore_top || sy2 > oy1))
             return true;
     }
 
     return false;
 }
 
-static bool in_player_view(struct GameObject* object, int pid, fix16_t padding) {
+static bool in_player_view(struct GameObject* object, int pid, fix16_t padding, bool ignore_top) {
     const struct GamePlayer* player = get_player(pid);
     if (player == NULL || !(player->active) || !object_is_alive(player->object))
         return false;
@@ -1109,7 +1127,7 @@ static bool in_player_view(struct GameObject* object, int pid, fix16_t padding) 
     const fix16_t ox2 = Fadd(Fadd(ox, F_HALF_SCREEN_WIDTH), padding);
     const fix16_t oy2 = Fadd(Fadd(oy, F_HALF_SCREEN_HEIGHT), padding);
 
-    return sx1 < ox2 && sx2 > ox1 && sy1 < oy2 && sy2 > oy1;
+    return sx1 < ox2 && sx2 > ox1 && sy1 < oy2 && (ignore_top || sy2 > oy1);
 }
 
 /* ======
@@ -1133,7 +1151,32 @@ void start_state(int num_players, int local) {
     state.bounds[1][1] = F_SCREEN_HEIGHT;
 
     state.spawn = state.checkpoint = -1L;
+    state.water = FfInt(240L); // 0x7FFFFFFF;
 
+    //
+    //
+    //
+    // DATA LOADER
+    //
+    //
+    //
+    load_font(FNT_HUD);
+    load_texture(TEX_WATER1);
+    load_texture(TEX_WATER2);
+    load_texture(TEX_WATER3);
+    load_texture(TEX_WATER4);
+    load_texture(TEX_WATER5);
+    load_texture(TEX_WATER6);
+    load_texture(TEX_WATER7);
+    load_texture(TEX_WATER8);
+
+    //
+    //
+    //
+    // LEVEL LOADER
+    //
+    //
+    //
     add_gradient(
         0, 0, 11008, 551, 200,
         (GLubyte[4][4]){{192, 192, 192, 255}, {192, 192, 192, 255}, {255, 255, 255, 255}, {255, 255, 255, 255}}
@@ -1426,6 +1469,13 @@ void start_state(int num_players, int local) {
         state.objects[oid].bbox[1][1] = FfInt(128L);
     }
 
+    //
+    //
+    //
+    // PLAYER START
+    //
+    //
+    //
     for (size_t i = 0; i < num_players; i++) {
         struct GamePlayer* player = &(state.players[i]);
         player->active = true;
@@ -1538,7 +1588,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         object->values[VAL_X_SPEED] = 0x00028000;
                     }
 
-                    const bool cant_run = !(player->input & GI_RUN);
+                    const bool cant_run = !(player->input & GI_RUN) || object->pos[1] >= state.water;
                     const bool jumped = (player->input & GI_JUMP) && !(player->last_input & GI_JUMP);
 
                     if ((player->input & GI_RIGHT) && object->values[VAL_X_TOUCH] <= 0L &&
@@ -1591,8 +1641,8 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                             object->values[VAL_X_SPEED] = Fmin(Fadd(object->values[VAL_X_SPEED], 0x00006000), FxZero);
                     }
 
-                    if ((player->input & GI_JUMP) && object->values[VAL_Y_SPEED] < FxZero /* and _y < _water_y */ &&
-                        !(player->input & GI_DOWN))
+                    if ((player->input & GI_JUMP) && object->values[VAL_Y_SPEED] < FxZero &&
+                        object->pos[1] < state.water && !(player->input & GI_DOWN))
                         object->values[VAL_Y_SPEED] = Fsub(
                             object->values[VAL_Y_SPEED],
                             (player->power == POW_LUI)
@@ -1600,16 +1650,57 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                 : ((Fabs(object->values[VAL_X_SPEED]) < 0x0000A000) ? 0x00006666 : FxHalf)
                         );
 
-                    if ((jumped || ((player->input & GI_JUMP) && object->flags & FLG_PLAYER_JUMP)) &&
-                        /* _y < _water_y and */ !(player->input & GI_DOWN) && object->values[VAL_PLAYER_GROUND] > 0L) {
-                        object->values[VAL_PLAYER_GROUND] = 0L;
-                        object->values[VAL_Y_SPEED] = FfInt(-13L);
-                        object->flags &= ~FLG_PLAYER_JUMP;
-                        play_sound_at_object(object, SND_JUMP);
+                    if (jumped) {
+                        object->values[VAL_PLAYER_SPRING] = 7L;
+                        if (object->pos[1] >= state.water && !(player->input & GI_DOWN)) {
+                            object->values[VAL_Y_TOUCH] = 0L;
+                            object->values[VAL_Y_SPEED] = FfInt(
+                                (Fadd(object->pos[1], object->bbox[0][1]) > Fadd(state.water, FfInt(16L)) ||
+                                 Fadd(object->pos[1], object->bbox[1][1]) < state.water)
+                                    ? -3L
+                                    : -9L
+                            );
+                            object->values[VAL_PLAYER_GROUND] = 0L;
+                            object->values[VAL_PLAYER_FRAME] = FxZero;
+                            play_sound_at_object(object, SND_SWIM);
+                        }
                     }
-                    if (!(player->input & GI_JUMP) && /* _y < _water_y and */ !(player->input & GI_DOWN) &&
-                        object->values[VAL_PLAYER_GROUND] > 0L && (object->flags & FLG_PLAYER_JUMP))
-                        object->flags &= ~FLG_PLAYER_JUMP;
+
+                    if (object->pos[1] >= state.water) {
+                        if (!(object->flags & FLG_PLAYER_SWIM)) {
+                            if (Fabs(object->values[VAL_X_SPEED]) >= FxHalf)
+                                object->values[VAL_X_SPEED] = Fsub(
+                                    object->values[VAL_X_SPEED],
+                                    object->values[VAL_X_SPEED] >= FxZero ? FxHalf : -FxHalf
+                                );
+                            object->values[VAL_PLAYER_FRAME] = FxZero;
+                            if (object->pos[1] < Fadd(state.water, FfInt(11L)))
+                                create_object(OBJ_WATER_SPLASH, object->pos);
+                            object->flags |= FLG_PLAYER_SWIM;
+                        }
+                    } else if (object->flags & FLG_PLAYER_SWIM) {
+                        object->values[VAL_PLAYER_FRAME] = FxZero;
+                        object->flags &= ~FLG_PLAYER_SWIM;
+                    }
+
+                    if (object->pos[1] < state.water) {
+                        if ((jumped || ((player->input & GI_JUMP) && object->flags & FLG_PLAYER_JUMP)) &&
+                            !(player->input & GI_DOWN) && object->values[VAL_PLAYER_GROUND] > 0L) {
+                            object->values[VAL_PLAYER_GROUND] = 0L;
+                            object->values[VAL_Y_SPEED] = FfInt(-13L);
+                            object->flags &= ~FLG_PLAYER_JUMP;
+                            play_sound_at_object(object, SND_JUMP);
+                        }
+                        if (!(player->input & GI_JUMP) && !(player->input & GI_DOWN) &&
+                            object->values[VAL_PLAYER_GROUND] > 0L && (object->flags & FLG_PLAYER_JUMP))
+                            object->flags &= ~FLG_PLAYER_JUMP;
+                    }
+                    if (object->pos[1] > state.water && (state.time % 5L) == 0L && (random() % 10L) == 5L)
+                        create_object(
+                            OBJ_BUBBLE,
+                            (fvec2){object->pos[0], Fsub(object->pos[1], FfInt(player->power == POW_SMALL ? 18L : 39L))}
+                        );
+
                     if (jumped && object->values[VAL_PLAYER_GROUND] <= 0L && object->values[VAL_Y_SPEED] > FxZero)
                         object->flags |= FLG_PLAYER_JUMP;
 
@@ -1624,7 +1715,14 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
 
                     if (object->values[VAL_Y_TOUCH] <= 0L) {
                         const bool carried = object->flags & FLG_CARRIED;
-                        if (object->values[VAL_Y_SPEED] > FfInt(10L) && !carried) {
+                        if (object->pos[1] >= state.water) {
+                            if (object->values[VAL_Y_SPEED] > FfInt(3L) && !carried) {
+                                object->values[VAL_Y_SPEED] = Fmin(Fsub(object->values[VAL_Y_SPEED], FxOne), FfInt(3L));
+                            } else if (object->values[VAL_Y_SPEED] < FfInt(3L) || carried) {
+                                object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x0000199A);
+                                object->flags &= ~FLG_CARRIED;
+                            }
+                        } else if (object->values[VAL_Y_SPEED] > FfInt(10L) && !carried) {
                             object->values[VAL_Y_SPEED] = Fmin(Fsub(object->values[VAL_Y_SPEED], FxOne), FfInt(10L));
                         } else if (object->values[VAL_Y_SPEED] < FfInt(10L) || carried) {
                             object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], FxOne);
@@ -1646,12 +1744,21 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         --(object->values[VAL_PLAYER_FIRE]);
 
                     object->values[VAL_PLAYER_FRAME] =
-                        (object->values[VAL_PLAYER_GROUND] > 0L && object->values[VAL_X_SPEED] != FxZero)
-                            ? Fadd(
-                                  object->values[VAL_PLAYER_FRAME],
-                                  Fclamp(Fmul(Fabs(object->values[VAL_X_SPEED]), 0x0000147B), 0x000023D7, FxHalf)
-                              )
-                            : FxZero;
+                        (object->values[VAL_PLAYER_GROUND] > 0L)
+                            ? (object->values[VAL_X_SPEED] != FxZero
+                                   ? Fadd(
+                                         object->values[VAL_PLAYER_FRAME],
+                                         Fclamp(Fmul(Fabs(object->values[VAL_X_SPEED]), 0x0000147B), 0x000023D7, FxHalf)
+                                     )
+                                   : FxZero)
+                            : ((object->flags & FLG_PLAYER_SWIM)
+                                   ? Fadd(
+                                         object->values[VAL_PLAYER_FRAME],
+                                         Fclamp(
+                                             Fmul(Fabs(object->values[VAL_X_SPEED]), 0x0000147B), 0x000023D7, 0x00003EB8
+                                         )
+                                     )
+                                   : FxZero);
 
                     switch (player->power) {
                         default:
@@ -1672,9 +1779,17 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                             case POW_FIRE:
                                                 mtype = OBJ_MISSILE_FIREBALL;
                                                 break;
-                                            case POW_BEETROOT:
-                                                mtype = OBJ_MISSILE_BEETROOT;
+
+                                            case POW_BEETROOT: {
+                                                int beetroots = 0L;
+                                                for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END;
+                                                     i++)
+                                                    if (object_is_alive((ObjectID)(object->values[i])))
+                                                        ++beetroots;
+                                                mtype = (beetroots >= 6L) ? OBJ_NULL : OBJ_MISSILE_BEETROOT;
                                                 break;
+                                            }
+
                                             case POW_HAMMER:
                                                 mtype = OBJ_MISSILE_HAMMER;
                                                 break;
@@ -1719,11 +1834,11 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                                     break;
                                                 }
                                             }
-                                        }
 
-                                        if (object->values[VAL_PLAYER_GROUND] > 0L)
-                                            object->values[VAL_PLAYER_FIRE] = 2L;
-                                        play_sound_at_object(object, SND_FIRE);
+                                            if (object->values[VAL_PLAYER_GROUND] > 0L)
+                                                object->values[VAL_PLAYER_FIRE] = 2L;
+                                            play_sound_at_object(object, SND_FIRE);
+                                        }
                                         break;
                                     }
                             break;
@@ -1868,8 +1983,8 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         object->values[VAL_Y_SPEED] = FfInt(-5L);
 
                     const int player = get_owner_id((ObjectID)(object->values[VAL_MISSILE_OWNER]));
-                    if ((player >= 0L && !in_player_view(object, player, FxZero)) ||
-                        (player < 0L && !in_any_view(object, FxZero)))
+                    if ((player >= 0L && !in_player_view(object, player, FxZero, true)) ||
+                        (player < 0L && !in_any_view(object, FxZero, true)))
                         object->flags |= FLG_DESTROY;
                     break;
                 }
@@ -1887,8 +2002,8 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                     );
 
                     const int player = get_owner_id((ObjectID)(object->values[VAL_MISSILE_OWNER]));
-                    if ((player >= 0L && !in_player_view(object, player, FxZero)) ||
-                        (player < 0L && !in_any_view(object, FxZero)))
+                    if ((player >= 0L && !in_player_view(object, player, FxZero, true)) ||
+                        (player < 0L && !in_any_view(object, FxZero, true)))
                         object->flags |= FLG_DESTROY;
                     break;
                 }
@@ -1899,6 +2014,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
                                      Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
                     );
+
                     if (object->values[VAL_MISSILE_HITS] > 0L) {
                         if (object->values[VAL_MISSILE_HIT] > 0L)
                             --(object->values[VAL_MISSILE_HIT]);
@@ -1962,9 +2078,42 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         }
                     }
 
+                    if (Fadd(object->pos[1], Fmin(object->values[VAL_Y_SPEED], FxZero)) > state.water) {
+                        const ObjectID sid = create_object(OBJ_MISSILE_BEETROOT_SINK, object->pos);
+                        if (object_is_alive(sid)) {
+                            struct GameObject* pawn =
+                                get_object((ObjectID)(state.objects[sid].values[VAL_MISSILE_OWNER] =
+                                                          object->values[VAL_MISSILE_OWNER]));
+                            if (pawn != NULL)
+                                for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END; i++)
+                                    if (!object_is_alive((ObjectID)(pawn->values[i]))) {
+                                        pawn->values[i] = sid;
+                                        break;
+                                    }
+                        }
+
+                        object->flags |= FLG_DESTROY;
+                        break;
+                    }
+
                     const int player = get_owner_id((ObjectID)(object->values[VAL_MISSILE_OWNER]));
-                    if ((player >= 0L && !in_player_view(object, player, FxZero)) ||
-                        (player < 0L && !in_any_view(object, FxZero)))
+                    if ((player >= 0L && !in_player_view(object, player, FxZero, true)) ||
+                        (player < 0L && !in_any_view(object, FxZero, true)))
+                        object->flags |= FLG_DESTROY;
+                    break;
+                }
+
+                case OBJ_MISSILE_BEETROOT_SINK: {
+                    move_object(oid, (fvec2){object->pos[0], Fadd(object->pos[1], FfInt(random() % 3))});
+
+                    if (object->values[VAL_MISSILE_BUBBLE] < 20L && (state.time % 10L) == 0) {
+                        create_object(OBJ_BUBBLE, (fvec2){object->pos[0], Fsub(object->pos[1], FfInt(3L))});
+                        ++(object->values[VAL_MISSILE_BUBBLE]);
+                    }
+
+                    const int player = get_owner_id((ObjectID)(object->values[VAL_MISSILE_OWNER]));
+                    if ((player >= 0L && !in_player_view(object, player, FxZero, false)) ||
+                        (player < 0L && !in_any_view(object, FxZero, false)))
                         object->flags |= FLG_DESTROY;
                     break;
                 }
@@ -2013,6 +2162,8 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                 break;
 
                             case OBJ_PLAYER: {
+                                if (get_owner_id((ObjectID)(object->values[VAL_BLOCK_BUMP_OWNER])) == get_owner_id(bid))
+                                    break;
                                 if (bumped->values[VAL_PLAYER_GROUND] > 0L) {
                                     bumped->values[VAL_Y_SPEED] = FfInt(-8L);
                                     bumped->values[VAL_PLAYER_GROUND] = 0L;
@@ -2047,7 +2198,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                      Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
                     );
 
-                    if (!in_any_view(object, FxZero))
+                    if (!in_any_view(object, FxZero, true))
                         object->flags |= FLG_DESTROY;
                     break;
                 }
@@ -2162,6 +2313,36 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                     Fmul(Fsin(object->values[VAL_ROTODISC_ANGLE]), object->values[VAL_ROTODISC_LENGTH])
                                 )}
                     );
+                    break;
+                }
+
+                case OBJ_WATER_SPLASH: {
+                    object->values[VAL_WATER_SPLASH_FRAME] += 7L;
+                    if (object->values[VAL_WATER_SPLASH_FRAME] >= 150)
+                        object->flags |= FLG_DESTROY;
+                    break;
+                }
+
+                case OBJ_BUBBLE: {
+                    ++(object->values[VAL_BUBBLE_FRAME]);
+
+                    if (object->flags & FLG_BUBBLE_POP) {
+                        if (object->values[VAL_BUBBLE_FRAME] >= 7L)
+                            object->flags |= FLG_DESTROY;
+                        break;
+                    }
+
+                    int xoffs = random() % 2L;
+                    xoffs -= random() % 2L;
+                    move_object(
+                        oid, (fvec2){Fadd(object->pos[0], FfInt(xoffs)), Fsub(object->pos[1], FfInt(random() % 3L))}
+                    );
+                    if (object->pos[1] < state.water) {
+                        object->values[VAL_BUBBLE_FRAME] = 0L;
+                        object->flags |= FLG_BUBBLE_POP;
+                    }
+                    if (!in_any_view(object, FfInt(28L), false))
+                        object->flags |= FLG_DESTROY;
                     break;
                 }
             }
@@ -2498,7 +2679,8 @@ void draw_state() {
                     break;
                 }
 
-                case OBJ_MISSILE_BEETROOT: {
+                case OBJ_MISSILE_BEETROOT:
+                case OBJ_MISSILE_BEETROOT_SINK: {
                     draw_object(object, TEX_MISSILE_BEETROOT, 0, WHITE);
                     break;
                 }
@@ -2790,10 +2972,145 @@ void draw_state() {
                     draw_object(object, tex, 0, WHITE);
                     break;
                 }
+
+                case OBJ_WATER_SPLASH: {
+                    enum TextureIndices tex;
+                    switch (object->values[VAL_WATER_SPLASH_FRAME] / 10) {
+                        default:
+                            tex = TEX_WATER_SPLASH1;
+                            break;
+                        case 1:
+                            tex = TEX_WATER_SPLASH2;
+                            break;
+                        case 2:
+                            tex = TEX_WATER_SPLASH3;
+                            break;
+                        case 3:
+                            tex = TEX_WATER_SPLASH4;
+                            break;
+                        case 4:
+                            tex = TEX_WATER_SPLASH5;
+                            break;
+                        case 5:
+                            tex = TEX_WATER_SPLASH6;
+                            break;
+                        case 6:
+                            tex = TEX_WATER_SPLASH7;
+                            break;
+                        case 7:
+                            tex = TEX_WATER_SPLASH8;
+                            break;
+                        case 8:
+                            tex = TEX_WATER_SPLASH9;
+                            break;
+                        case 9:
+                            tex = TEX_WATER_SPLASH10;
+                            break;
+                        case 10:
+                            tex = TEX_WATER_SPLASH11;
+                            break;
+                        case 11:
+                            tex = TEX_WATER_SPLASH12;
+                            break;
+                        case 12:
+                            tex = TEX_WATER_SPLASH13;
+                            break;
+                        case 13:
+                            tex = TEX_WATER_SPLASH14;
+                            break;
+                        case 14:
+                            tex = TEX_WATER_SPLASH15;
+                            break;
+                    }
+                    draw_object(object, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_BUBBLE: {
+                    enum TextureIndices tex;
+                    float pos[3] = {FtInt(object->pos[0]), FtInt(object->pos[1]), object->depth};
+                    if (object->flags & FLG_BUBBLE_POP) {
+                        switch (object->values[VAL_BUBBLE_FRAME]) {
+                            default:
+                                tex = TEX_BUBBLE_POP1;
+                                break;
+                            case 1:
+                                tex = TEX_BUBBLE_POP2;
+                                break;
+                            case 2:
+                                tex = TEX_BUBBLE_POP3;
+                                break;
+                            case 3:
+                                tex = TEX_BUBBLE_POP4;
+                                break;
+                            case 4:
+                                tex = TEX_BUBBLE_POP5;
+                                break;
+                            case 5:
+                                tex = TEX_BUBBLE_POP6;
+                                break;
+                            case 6:
+                                tex = TEX_BUBBLE_POP7;
+                                break;
+                        }
+                    } else {
+                        tex = TEX_BUBBLE;
+                        switch ((object->values[VAL_BUBBLE_FRAME] / 2) % 5) {
+                            default:
+                                break;
+                            case 1:
+                                pos[0] -= 1;
+                                break;
+                            case 2:
+                                pos[0] += 1;
+                                break;
+                            case 4:
+                                pos[1] -= 2;
+                                break;
+                        }
+                    }
+
+                    draw_sprite(tex, pos, (bool[2]){false}, 0, WHITE);
+                    break;
+                }
             }
 
         oid = object->previous;
     }
+
+    enum TextureIndices tex;
+    switch ((state.time / 5) % 8) {
+        default:
+            tex = TEX_WATER1;
+            break;
+        case 1:
+            tex = TEX_WATER2;
+            break;
+        case 2:
+            tex = TEX_WATER3;
+            break;
+        case 3:
+            tex = TEX_WATER4;
+            break;
+        case 4:
+            tex = TEX_WATER5;
+            break;
+        case 5:
+            tex = TEX_WATER6;
+            break;
+        case 6:
+            tex = TEX_WATER7;
+            break;
+        case 7:
+            tex = TEX_WATER8;
+            break;
+    }
+    const float x1 = 0;
+    const float y1 = FtInt(state.water);
+    const float x2 = FtInt(state.size[0]);
+    const float y2 = FtInt(state.size[1]);
+    draw_rectangle(tex, (float[2][2]){{x1, y1}, {x2, y1 + 16}}, -100, ALPHA(135));
+    draw_rectangle(TEX_NULL, (float[2][2]){{x1, y1 + 16}, {x2, y2}}, -100, RGBA(88, 136, 224, 135));
 }
 
 void draw_state_hud() {
@@ -2938,12 +3255,14 @@ void load_object(enum GameObjectType type) {
             load_sound(SND_BUMP);
             load_sound(SND_STOMP);
             load_sound(SND_STARMAN);
+            load_sound(SND_SWIM);
 
             load_object(OBJ_PLAYER_EFFECT);
             load_object(OBJ_PLAYER_DEAD);
             load_object(OBJ_MISSILE_FIREBALL);
             load_object(OBJ_MISSILE_BEETROOT);
             load_object(OBJ_MISSILE_HAMMER);
+            load_object(OBJ_BUBBLE);
             break;
         }
 
@@ -3085,6 +3404,14 @@ void load_object(enum GameObjectType type) {
 
             load_object(OBJ_EXPLODE);
             load_object(OBJ_POINTS);
+            load_object(OBJ_MISSILE_BEETROOT_SINK);
+            break;
+        }
+
+        case OBJ_MISSILE_BEETROOT_SINK: {
+            load_texture(TEX_MISSILE_BEETROOT);
+
+            load_object(OBJ_BUBBLE);
             break;
         }
 
@@ -3193,6 +3520,37 @@ void load_object(enum GameObjectType type) {
             load_object(OBJ_POINTS);
             break;
         }
+
+        case OBJ_WATER_SPLASH: {
+            load_texture(TEX_WATER_SPLASH1);
+            load_texture(TEX_WATER_SPLASH2);
+            load_texture(TEX_WATER_SPLASH3);
+            load_texture(TEX_WATER_SPLASH4);
+            load_texture(TEX_WATER_SPLASH5);
+            load_texture(TEX_WATER_SPLASH6);
+            load_texture(TEX_WATER_SPLASH7);
+            load_texture(TEX_WATER_SPLASH8);
+            load_texture(TEX_WATER_SPLASH9);
+            load_texture(TEX_WATER_SPLASH10);
+            load_texture(TEX_WATER_SPLASH11);
+            load_texture(TEX_WATER_SPLASH12);
+            load_texture(TEX_WATER_SPLASH13);
+            load_texture(TEX_WATER_SPLASH14);
+            load_texture(TEX_WATER_SPLASH15);
+            break;
+        }
+
+        case OBJ_BUBBLE: {
+            load_texture(TEX_BUBBLE);
+            load_texture(TEX_BUBBLE_POP1);
+            load_texture(TEX_BUBBLE_POP2);
+            load_texture(TEX_BUBBLE_POP3);
+            load_texture(TEX_BUBBLE_POP4);
+            load_texture(TEX_BUBBLE_POP5);
+            load_texture(TEX_BUBBLE_POP6);
+            load_texture(TEX_BUBBLE_POP7);
+            break;
+        }
     }
 }
 
@@ -3255,6 +3613,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
 
                     object->values[VAL_PLAYER_INDEX] = -1L;
                     for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
+                        object->values[i] = -1L;
+                    for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END; i++)
                         object->values[i] = -1L;
                     break;
                 }
@@ -3358,7 +3718,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     break;
                 }
 
-                case OBJ_MISSILE_BEETROOT: {
+                case OBJ_MISSILE_BEETROOT:
+                case OBJ_MISSILE_BEETROOT_SINK: {
                     object->bbox[0][0] = FfInt(-11L);
                     object->bbox[0][1] = FfInt(-31L);
                     object->bbox[1][0] = FfInt(12L);
@@ -3419,6 +3780,19 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(30L);
 
                     object->values[VAL_ROTODISC_OWNER] = -1L;
+                    break;
+                }
+
+                case OBJ_WATER_SPLASH: {
+                    object->depth = -2L;
+                    break;
+                }
+
+                case OBJ_BUBBLE: {
+                    object->bbox[0][0] = FfInt(-4L);
+                    object->bbox[0][1] = FfInt(-4L);
+                    object->bbox[1][0] = FfInt(5L);
+                    object->bbox[1][1] = FfInt(6L);
                     break;
                 }
             }
@@ -3524,6 +3898,11 @@ void destroy_object(ObjectID index) {
                 if (missile != NULL)
                     missile->values[VAL_MISSILE_OWNER] = -1L;
             }
+            for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END; i++) {
+                struct GameObject* beetroot = get_object((ObjectID)(object->values[i]));
+                if (beetroot != NULL)
+                    beetroot->values[VAL_MISSILE_OWNER] = -1L;
+            }
 
             break;
         }
@@ -3534,6 +3913,17 @@ void destroy_object(ObjectID index) {
             struct GameObject* owner = get_object((ObjectID)(object->values[VAL_MISSILE_OWNER]));
             if (owner != NULL && owner->type == OBJ_PLAYER)
                 for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
+                    if (owner->values[i] == index) {
+                        owner->values[i] = -1L;
+                        break;
+                    }
+            break;
+        }
+
+        case OBJ_MISSILE_BEETROOT_SINK: {
+            struct GameObject* owner = get_object((ObjectID)(object->values[VAL_MISSILE_OWNER]));
+            if (owner != NULL && owner->type == OBJ_PLAYER)
+                for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END; i++)
                     if (owner->values[i] == index) {
                         owner->values[i] = -1L;
                         break;
