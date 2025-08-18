@@ -59,6 +59,7 @@ enum GameObjectType {
     OBJ_MISSILE_HAMMER,
     OBJ_BLOCK_BUMP,
     OBJ_ITEM_BLOCK,
+    OBJ_HIDDEN_BLOCK,
     OBJ_BRICK_BLOCK,
     OBJ_BRICK_SHARD,
     OBJ_BRICK_BLOCK_COIN,
@@ -166,6 +167,7 @@ enum ObjectFlags {
 
     FLG_BLOCK_EMPTY = 1 << 5,
     FLG_BLOCK_GRAY = 1 << 6,
+    FLG_BLOCK_ONCE = 1 << 7,
 
     FLG_COIN_POP_START = 1 << 5,
     FLG_COIN_POP_SPARK = 1 << 6,

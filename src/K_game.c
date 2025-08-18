@@ -163,7 +163,8 @@ static struct GamePlayer* get_owner(ObjectID oid) {
 }
 
 static void bump_block(struct GameObject* block, ObjectID from, bool strong) {
-    if (block->flags & FLG_BLOCK_EMPTY)
+    if ((block->flags & FLG_BLOCK_EMPTY) ||
+        (object_is_alive(from) && state.objects[from].type == OBJ_PLAYER && block->values[VAL_BLOCK_BUMP] > 0L))
         return;
 
     switch (block->type) {
@@ -594,6 +595,16 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
             break;
         }
 
+        case OBJ_MUSHROOM_POISON: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type == OBJ_PLAYER && other->values[VAL_PLAYER_STARMAN] <= 0L) {
+                kill_player(other);
+                create_object(OBJ_EXPLODE, (fvec2){self->pos[0], Fsub(self->pos[1], FfInt(15L))});
+                self->flags |= FLG_DESTROY;
+            }
+            break;
+        }
+
         case OBJ_FIRE_FLOWER: {
             struct GameObject* other = &(state.objects[other_id]);
             if (other->type == OBJ_PLAYER) {
@@ -721,6 +732,27 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
             if (other->values[VAL_PLAYER_GROUND] > 0L) {
                 give_points(other, get_owner_id(other_id), 100L);
                 win_player(other);
+            }
+            break;
+        }
+
+        case OBJ_HIDDEN_BLOCK: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type != OBJ_PLAYER)
+                break;
+            if (other->values[VAL_Y_SPEED] < FxZero &&
+                Fsub(Fadd(other->pos[1], other->bbox[0][1]), other->values[VAL_Y_SPEED]) >
+                    Fadd(self->pos[1], self->bbox[1][1])) {
+                struct GameObject* block = get_object(create_object(OBJ_ITEM_BLOCK, self->pos));
+                if (block != NULL) {
+                    other->values[VAL_Y_SPEED] = FxZero;
+                    move_object(
+                        other_id, (fvec2){other->pos[0], Fsub(Fadd(self->pos[1], self->bbox[1][1]), other->bbox[0][1])}
+                    );
+                    block->values[VAL_BLOCK_ITEM] = self->values[VAL_BLOCK_ITEM];
+                    bump_block(block, other_id, false);
+                    self->flags |= FLG_DESTROY;
+                }
             }
             break;
         }
@@ -1322,6 +1354,9 @@ void start_state(int num_players, int local) {
         object->flags |= FLG_ROTODISC_FLOWER;
     }
 
+    object = get_object(create_object(OBJ_HIDDEN_BLOCK, (fvec2){FfInt(160L), FfInt(128L)}));
+    if (object != NULL)
+        object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM_POISON;
     object = get_object(create_object(OBJ_GOAL_MARK, (fvec2){FfInt(2176L), FfInt(384L)}));
     if (object != NULL) {
         object->bbox[1][0] = FfInt(128L);
@@ -2204,12 +2239,25 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 }
 
                 case OBJ_MUSHROOM:
-                case OBJ_MUSHROOM_1UP:
-                case OBJ_MUSHROOM_POISON: {
+                case OBJ_MUSHROOM_1UP: {
                     object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00004A3D);
                     displace_object(oid, 10, false);
                     if (object->values[VAL_X_TOUCH] != 0L)
                         object->values[VAL_X_SPEED] = object->values[VAL_X_TOUCH] * FfInt(-2L);
+
+                    if (object->pos[1] > Fadd(state.size[1], FfInt(32L)))
+                        object->flags |= FLG_DESTROY;
+                    break;
+                }
+
+                case OBJ_MUSHROOM_POISON: {
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], FxHalf);
+                    displace_object(oid, 10, false);
+                    if (object->values[VAL_X_TOUCH] != 0L)
+                        object->values[VAL_X_SPEED] = object->values[VAL_X_TOUCH] * FfInt(-2L);
+
+                    if (object->pos[1] > Fadd(state.size[1], FfInt(32L)))
+                        object->flags |= FLG_DESTROY;
                     break;
                 }
 
@@ -3643,13 +3691,21 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_MUSHROOM:
-                case OBJ_MUSHROOM_1UP:
-                case OBJ_MUSHROOM_POISON: {
+                case OBJ_MUSHROOM_1UP: {
                     object->bbox[0][0] = FfInt(-15L);
                     object->bbox[0][1] = FfInt(-32L);
                     object->bbox[1][0] = FfInt(15L);
 
                     object->flags |= FLG_POWERUP_FULL;
+                    break;
+                }
+
+                case OBJ_MUSHROOM_POISON: {
+                    object->bbox[0][0] = FfInt(-15L);
+                    object->bbox[0][1] = FfInt(-32L);
+                    object->bbox[1][0] = FfInt(15L);
+
+                    object->values[VAL_X_SPEED] = FfInt(2L);
                     break;
                 }
 
@@ -3730,7 +3786,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     break;
                 }
 
-                case OBJ_ITEM_BLOCK: {
+                case OBJ_ITEM_BLOCK:
+                case OBJ_HIDDEN_BLOCK: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
                     object->depth = 20L;
 
