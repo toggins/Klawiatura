@@ -33,12 +33,12 @@ static struct Sound sounds[SND_SIZE] = {
     SOUND(SND_CONNECT, "connect"),
     SOUND(SND_DEAD, "dead"),
     SOUND(SND_DISCONNECT, "disconnect"),
-    // SOUND(SND_ENTER, "enter"),
+    SOUND(SND_ENTER, "enter"),
     SOUND(SND_FIRE, "fire"),
     SOUND(SND_FLAMETHROWER, "flamethrower"),
     SOUND(SND_GROW, "grow"),
     SOUND(SND_HAMMER, "hammer"),
-    // SOUND(SND_HARDCORE, "hardcore"),
+    SOUND(SND_HARDCORE, "hardcore"),
     SOUND(SND_HURRY, "hurry"),
     SOUND(SND_HURT, "hurt"),
     SOUND(SND_JUMP, "jump"),
@@ -54,21 +54,21 @@ static struct Sound sounds[SND_SIZE] = {
     SOUND(SND_MARIO_CHECKPOINT2, "mario_checkpoint2"),
     SOUND(SND_MARIO_CHECKPOINT3, "mario_checkpoint3"),
     SOUND(SND_MARIO_CHECKPOINT4, "mario_checkpoint4"),
-    // SOUND(SND_RESPAWN, "respawn"),
-    // SOUND(SND_SELECT, "select"),
+    SOUND(SND_RESPAWN, "respawn"),
+    SOUND(SND_SELECT, "select"),
     SOUND(SND_SINK, "sink"),
     SOUND(SND_SPRING, "spring"),
-    // SOUND(SND_SPRINT, "sprint"),
+    SOUND(SND_SPRINT, "sprint"),
     SOUND(SND_SPROUT, "sprout"),
     SOUND(SND_STARMAN, "starman"),
-    // SOUND(SND_START, "start"),
+    SOUND(SND_START, "start"),
     SOUND(SND_STOMP, "stomp"),
     SOUND(SND_SWIM, "swim"),
-    // SOUND(SND_SWITCH, "switch"),
-    // SOUND(SND_TAIL, "tail"),
+    SOUND(SND_SWITCH, "switch"),
+    SOUND(SND_TAIL, "tail"),
     SOUND(SND_THWOMP, "thwomp"),
     SOUND(SND_TICK, "tick"),
-    // SOUND(SND_TOGGLE, "toggle"),
+    SOUND(SND_TOGGLE, "toggle"),
     SOUND(SND_WARP, "warp"),
 };
 
@@ -84,7 +84,7 @@ static struct Sound sounds[SND_SIZE] = {
 static struct Track tracks[MUS_SIZE] = {
     [MUS_NULL] = {0},
 
-    TLOOP(MUS_OVERWORLD1, "overworld1", 78982, 0),
+    TRACK(MUS_OVERWORLD1, "overworld1"),
     TRACK(MUS_OVERWORLD2, "overworld2"),
     TRACK(MUS_OVERWORLD3, "overworld3"),
     TRACK(MUS_OVERWORLD4, "overworld4"),
@@ -131,6 +131,8 @@ static struct Track tracks[MUS_SIZE] = {
     TRACK(MUS_BOWSER1, "bowser1"),
     TRACK(MUS_BOWSER2, "bowser2"),
     TRACK(MUS_BOWSER3, "bowser3"),
+
+    TRACK(MUS_STARMAN, "starman"),
 
     TRACK(MUS_LOSE1, "lose1"),
     TRACK(MUS_LOSE2, "lose2"),
@@ -184,7 +186,7 @@ void save_audio_state(struct SoundState* to) {
     FMOD_BOOL playing = false;
     FMOD_Channel_IsPlaying(music_channel, &playing);
     if (playing)
-        FMOD_Channel_GetPosition(music_channel, &(state.track.offset), FMOD_TIMEUNIT_MS);
+        FMOD_Channel_GetPosition(music_channel, &(state.track.offset), FMOD_TIMEUNIT_PCM);
     SDL_memcpy(to, &state, sizeof(struct SoundState));
 }
 
@@ -201,7 +203,7 @@ void load_audio_state(const struct SoundState* from) {
                 FMOD_Channel_SetMode(
                     music_channel, (state.track.loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME
                 );
-                FMOD_Channel_SetPosition(music_channel, state.track.offset, FMOD_TIMEUNIT_MS);
+                FMOD_Channel_SetPosition(music_channel, state.track.offset, FMOD_TIMEUNIT_PCM);
                 FMOD_Channel_SetPaused(music_channel, false);
             }
         }
@@ -225,7 +227,7 @@ void load_audio_state(const struct SoundState* from) {
                 channel, &((FMOD_VECTOR){sound->pos[0], sound->pos[1], 0}), &((FMOD_VECTOR){0})
             );
         }
-        FMOD_Channel_SetPosition(channel, sound->offset, FMOD_TIMEUNIT_MS);
+        FMOD_Channel_SetPosition(channel, sound->offset, FMOD_TIMEUNIT_PCM);
         FMOD_Channel_SetPaused(channel, false);
     }
 }
@@ -251,7 +253,7 @@ void load_sound(enum SoundIndices index) {
     FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESAMPLE, NULL, &(sound->sound));
     if (result != FMOD_OK)
         FATAL("Sound \"%s\" fail: %s", sound->name, FMOD_ErrorString(result));
-    FMOD_Sound_GetLength(sound->sound, &(sound->length), FMOD_TIMEUNIT_MS);
+    FMOD_Sound_GetLength(sound->sound, &(sound->length), FMOD_TIMEUNIT_PCM);
 }
 
 void load_track(enum TrackIndices index) {
@@ -263,10 +265,10 @@ void load_track(enum TrackIndices index) {
     FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESTREAM, NULL, &(track->stream));
     if (result != FMOD_OK)
         FATAL("Track \"%s\" fail: %s", track->name, FMOD_ErrorString(result));
-    FMOD_Sound_GetLength(track->stream, &(track->length), FMOD_TIMEUNIT_MS);
+    FMOD_Sound_GetLength(track->stream, &(track->length), FMOD_TIMEUNIT_PCM);
     FMOD_Sound_SetLoopPoints(
-        track->stream, track->loop[0], FMOD_TIMEUNIT_MS,
-        (track->loop[1] <= track->loop[0]) ? track->length : track->loop[1], FMOD_TIMEUNIT_MS
+        track->stream, track->loop[0], FMOD_TIMEUNIT_PCM,
+        (track->loop[1] <= track->loop[0]) ? track->length : track->loop[1], FMOD_TIMEUNIT_PCM
     );
 }
 
@@ -317,6 +319,11 @@ void play_sound_at(enum SoundIndices index, float x, float y) {
 }
 
 void play_track(enum TrackIndices index, bool loop) {
+    if (index == MUS_NULL) {
+        FMOD_ChannelGroup_Stop(music_group);
+        return;
+    }
+
     const struct Track* mus = &(tracks[index]);
     if (mus->stream == NULL)
         FATAL("Invalid track index %u", index);
