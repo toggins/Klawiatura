@@ -238,6 +238,8 @@ enum TextureIndices {
     TEX_HILLS_SNOW,
     TEX_FOREST,
     TEX_ROCKS,
+    TEX_FORT1,
+    TEX_FORT2,
     TEX_PYRAMID,
     TEX_CLOUDS,
     TEX_CLOUDS_FACE1,
