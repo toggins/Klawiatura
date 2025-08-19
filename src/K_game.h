@@ -64,13 +64,43 @@ enum GameObjectType {
     OBJ_BRICK_SHARD,
     OBJ_BRICK_BLOCK_COIN,
     OBJ_CHECKPOINT,
-    OBJ_ROTODISC_BALL,
-    OBJ_ROTODISC,
     OBJ_GOAL_BAR,
     OBJ_GOAL_BAR_FLY,
     OBJ_GOAL_MARK,
     OBJ_WATER_SPLASH,
     OBJ_BUBBLE,
+    OBJ_DEAD,
+    OBJ_GOOMBA,
+    OBJ_GOOMBA_FLAT,
+    OBJ_KOOPA,
+    OBJ_KOOPA_SHELL,
+    OBJ_PARAKOOPA,
+    OBJ_BUZZY_BEETLE,
+    OBJ_BUZZY_SHELL,
+    OBJ_SPINY,
+    OBJ_LAKITU,
+    OBJ_SPIKE,
+    OBJ_PIRANHA_PLANT,
+    OBJ_BRO,
+    OBJ_BRO_HAMMER,
+    OBJ_BRO_FIREBALL,
+    OBJ_BRO_SILVER_HAMMER,
+    OBJ_BRO_LAYER,
+    OBJ_BILL_BLASTER,
+    OBJ_BULLET_BILL,
+    OBJ_CHEEP_CHEEP,
+    OBJ_CHEEP_CHEEP_GREEN,
+    OBJ_CHEEP_CHEEP_BLUE,
+    OBJ_CHEEP_CHEEP_SPIKY,
+    OBJ_BLOOPER,
+    OBJ_ROTODISC_BALL,
+    OBJ_ROTODISC,
+    OBJ_THWOMP,
+    OBJ_BOO,
+    OBJ_DRY_BONES,
+    OBJ_LAVA,
+    OBJ_PODOBOO_SPAWNER,
+    OBJ_PODOBOO,
 
     OBJ_SIZE,
 };
@@ -148,6 +178,9 @@ enum ObjectValues {
     VAL_WATER_SPLASH_FRAME = VAL_START,
 
     VAL_BUBBLE_FRAME = VAL_START,
+
+    VAL_GOAL_Y = VAL_START,
+    VAL_GOAL_ANGLE,
 };
 
 enum ObjectFlags {
@@ -177,6 +210,8 @@ enum ObjectFlags {
     FLG_ROTODISC_FLOWER2 = 1 << 7,
 
     FLG_BUBBLE_POP = 1 << 5,
+
+    FLG_GOAL_START = 1 << 5,
 };
 
 enum PlayerFrames {
@@ -231,20 +266,28 @@ struct GameState {
     } players[MAX_PLAYERS];
 
     enum GameFlags {
-        GF_HARDCORE = 1 << 0,
-        GF_FUNNY = 1 << 1,
-        GF_LOST = 1 << 2,
+        GF_HURRY = 1 << 0,
+        GF_END = 1 << 1,
+        GF_SCROLL = 1 << 2,
+        GF_LAVA = 1 << 3,
+        GF_HARDCORE = 1 << 4,
+        GF_SPIKES = 1 << 5,
+        GF_FUNNY = 1 << 6,
+        GF_LOST = 1 << 7,
+        GF_KEVIN = 1 << 8,
     } flags;
 
     fvec2 size;
     fvec2 bounds[2];
+    enum TrackIndices track;
 
     uint64_t time;
     uint32_t seed;
 
     int32_t clock;
     ObjectID spawn, checkpoint;
-    fix16_t water;
+    fvec2 scroll;
+    fix16_t water, hazard;
 
     struct GameSequence {
         enum GameSequenceType {
@@ -253,6 +296,7 @@ struct GameState {
             SEQ_WIN,
         } type;
         uint16_t time;
+        int activator;
     } sequence;
 
     struct GameObject {
@@ -263,7 +307,7 @@ struct GameState {
         ObjectID previous_block, next_block;
 
         fvec2 pos, bbox[2];
-        int16_t depth;
+        fix16_t depth;
 
         fix16_t values[MAX_VALUES];
         uint32_t flags;

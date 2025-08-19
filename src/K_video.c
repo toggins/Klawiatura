@@ -180,6 +180,11 @@ static struct Texture textures[TEX_SIZE] = {
 
     TEXOFFS(TEX_HAMMER_SUIT, "items/hammer_suit", 13, 31),
 
+    TEXOFFS(TEX_STARMAN1, "items/starman1", 16, 32),
+    TEXOFFS(TEX_STARMAN2, "items/starman2", 16, 32),
+    TEXOFFS(TEX_STARMAN3, "items/starman3", 16, 32),
+    TEXOFFS(TEX_STARMAN4, "items/starman4", 16, 32),
+
     TEXOFFS(TEX_EXPLODE1, "effects/explode1", 8, 7),
     TEXOFFS(TEX_EXPLODE2, "effects/explode2", 12, 13),
     TEXOFFS(TEX_EXPLODE3, "effects/explode3", 16, 15),
@@ -301,7 +306,7 @@ static struct Font fonts[FNT_SIZE] = {
 
     [FNT_HUD] = {
         .texture = TEX_FONT_HUD,
-        .spacing = 0,
+        .spacing = 1,
         .line_height = 18,
         .glyphs = {
             [' '] = {
@@ -542,12 +547,14 @@ void video_init(bool bypass_shader) {
     glVertexAttribPointer(VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, uv));
 
     batch.color[0] = batch.color[1] = batch.color[2] = batch.color[3] = 1;
+    batch.stencil = 0;
     batch.texture = textures[TEX_NULL].texture;
     batch.alpha_test = 0.5f;
 
     batch.blend_src[0] = batch.blend_src[1] = GL_SRC_ALPHA;
     batch.blend_dest[0] = GL_ONE_MINUS_SRC_ALPHA;
     batch.blend_dest[1] = GL_ONE;
+    batch.logic = GL_COPY;
 
     batch.filter = false;
 
@@ -589,6 +596,7 @@ void video_init(bool bypass_shader) {
                                            "\n"
                                            "uniform sampler2D u_texture;\n"
                                            "uniform float u_alpha_test;\n"
+                                           "uniform float u_stencil;\n"
                                            "\n"
                                            "void main() {\n"
                                            "   vec4 sample = texture(u_texture, v_uv);\n"
@@ -598,7 +606,8 @@ void video_init(bool bypass_shader) {
                                            "       sample.a = 1.0;\n"
                                            "   }\n"
                                            "\n"
-                                           "   o_color = v_color * sample;\n"
+                                           "   o_color.rgb = v_color.rgb * mix(sample.rgb, vec3(1.0), u_stencil);\n"
+                                           "   o_color.a = v_color.a * sample.a;\n"
                                            "}\n";
 
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -633,12 +642,14 @@ void video_init(bool bypass_shader) {
     uniforms.mvp = glGetUniformLocation(shader, "u_mvp");
     uniforms.texture = glGetUniformLocation(shader, "u_texture");
     uniforms.alpha_test = glGetUniformLocation(shader, "u_alpha_test");
+    uniforms.stencil = glGetUniformLocation(shader, "u_stencil");
 
     glEnable(GL_BLEND);
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glUseProgram(shader);
     glActiveTexture(GL_TEXTURE0);
     glUniform1i(uniforms.texture, 0);
+    glDepthFunc(GL_LEQUAL);
 }
 
 void video_update() {
@@ -650,7 +661,7 @@ void video_update() {
 
     glm_ortho(
         camera[0] - HALF_SCREEN_WIDTH, camera[0] + HALF_SCREEN_WIDTH, camera[1] + HALF_SCREEN_HEIGHT,
-        camera[1] - HALF_SCREEN_HEIGHT, -16000, 16000, mvp
+        camera[1] - HALF_SCREEN_HEIGHT, -1000, 1000, mvp
     );
     glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)mvp);
 
@@ -784,6 +795,24 @@ void load_font(enum FontIndices index) {
     load_texture(fonts[index].texture);
 }
 
+void set_batch_stencil(GLfloat stencil) {
+    if (batch.stencil != stencil) {
+        submit_batch();
+        batch.stencil = stencil;
+    }
+}
+
+void set_batch_logic(GLenum opcode) {
+    if (batch.logic != opcode) {
+        submit_batch();
+        if (opcode == GL_COPY)
+            glDisable(GL_COLOR_LOGIC_OP);
+        else
+            glEnable(GL_COLOR_LOGIC_OP);
+        batch.logic = opcode;
+    }
+}
+
 void submit_batch() {
     if (batch.vertex_count <= 0)
         return;
@@ -798,9 +827,11 @@ void submit_batch() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
     glUniform1f(uniforms.alpha_test, batch.alpha_test);
+    glUniform1f(uniforms.stencil, batch.stencil);
 
     // Apply blend mode
     glBlendFuncSeparate(batch.blend_src[0], batch.blend_dest[0], batch.blend_src[1], batch.blend_dest[1]);
+    glLogicOp(batch.logic);
 
     glDrawArrays(GL_TRIANGLES, 0, (GLsizei)batch.vertex_count);
     batch.vertex_count = 0;
@@ -978,11 +1009,10 @@ void draw_sprite(
     vec2 p3 = {x1, y2};
     vec2 p4 = {x2, y2};
     if (angle != 0) {
-        const float rad = glm_rad(angle);
-        glm_vec2_rotate(p1, rad, p1);
-        glm_vec2_rotate(p2, rad, p2);
-        glm_vec2_rotate(p3, rad, p3);
-        glm_vec2_rotate(p4, rad, p4);
+        glm_vec2_rotate(p1, angle, p1);
+        glm_vec2_rotate(p2, angle, p2);
+        glm_vec2_rotate(p3, angle, p3);
+        glm_vec2_rotate(p4, angle, p4);
     }
     glm_vec2_add((float*)pos, p1, p1);
     glm_vec2_add((float*)pos, p2, p2);
@@ -1116,4 +1146,26 @@ void draw_rectangle(enum TextureIndices index, const float rect[2][2], float z, 
     batch_vertex(rect[1][0], rect[0][1], z, color[0], color[1], color[2], color[3], u2, v1);
     batch_vertex(rect[1][0], rect[1][1], z, color[0], color[1], color[2], color[3], u2, v2);
     batch_vertex(rect[0][0], rect[1][1], z, color[0], color[1], color[2], color[3], u1, v2);
+}
+
+void draw_ellipse(const float rect[2][2], float z, const GLubyte color[4]) {
+    GLuint tex = textures[OBJ_NULL].texture;
+    if (batch.texture != tex) {
+        submit_batch();
+        batch.texture = tex;
+    }
+
+    const GLfloat x = glm_lerp(rect[0][0], rect[1][0], 0.5f);
+    const GLfloat y = glm_lerp(rect[0][1], rect[1][1], 0.5f);
+    const GLfloat nx = SDL_fabsf(rect[1][0] - rect[0][0]) * 0.5f;
+    const GLfloat ny = SDL_fabsf(rect[1][1] - rect[0][1]) * 0.5f;
+
+    for (int i = 0; i < 32; i++) {
+        const GLfloat dir1 = (GLM_PIf * 2.0f) * ((float)i / 32.0f);
+        const GLfloat dir2 = (GLM_PIf * 2.0f) * ((float)(i + 1) / 32.0f);
+
+        batch_vertex(x, y, z, color[0], color[1], color[2], color[3], 0, 0);
+        batch_vertex(x + SDL_cosf(dir1) * nx, y - SDL_sinf(dir1) * ny, z, color[0], color[1], color[2], color[3], 0, 0);
+        batch_vertex(x + SDL_cosf(dir2) * nx, y - SDL_sinf(dir2) * ny, z, color[0], color[1], color[2], color[3], 0, 0);
+    }
 }

@@ -496,6 +496,7 @@ struct Uniforms {
     GLint mvp;
     GLint texture;
     GLint alpha_test;
+    GLint stencil;
 };
 
 struct Texture {
@@ -526,10 +527,11 @@ struct VertexBatch {
     size_t vertex_count, vertex_capacity;
     struct Vertex* vertices;
 
-    GLfloat color[4];
+    GLfloat color[4], stencil;
     GLuint texture;
     GLfloat alpha_test;
     GLenum blend_src[2], blend_dest[2];
+    GLenum logic;
     bool filter;
 };
 
@@ -551,6 +553,8 @@ void move_camera(float, float);
 void load_texture(enum TextureIndices);
 void load_font(enum FontIndices);
 
+void set_batch_stencil(GLfloat);
+void set_batch_logic(GLenum);
 void submit_batch();
 void batch_vertex(GLfloat, GLfloat, GLfloat, GLubyte, GLubyte, GLubyte, GLubyte, GLfloat, GLfloat);
 void clear_tiles();
@@ -559,3 +563,4 @@ void add_backdrop(enum TextureIndices, GLfloat, GLfloat, GLfloat, GLubyte, GLuby
 void draw_sprite(enum TextureIndices, const float[3], const bool[2], GLfloat, const GLubyte[4]);
 void draw_text(enum FontIndices, enum FontAlignment, const char*, const float[3]);
 void draw_rectangle(enum TextureIndices, const float[2][2], float, const GLubyte[4]);
+void draw_ellipse(const float[2][2], float, const GLubyte[4]);

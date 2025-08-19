@@ -28,7 +28,8 @@ static struct GamePlayer* get_player(int pid) {
 
 static ObjectID respawn_player(int pid) {
     struct GamePlayer* player = get_player(pid);
-    if (player == NULL || !(player->active) || player->lives <= 0L || state.sequence.type != SEQ_NONE)
+    if (player == NULL || !(player->active) || player->lives <= 0L || state.clock == 0L ||
+        state.sequence.type != SEQ_NONE)
         return -1L;
 
     kill_object(player->object);
@@ -204,8 +205,17 @@ static void bump_block(struct GameObject* block, ObjectID from, bool strong) {
                     item->values[VAL_COIN_POP_OWNER] = from;
                 } else {
                     item->values[VAL_SPROUT] = 32L;
-                    if (item->type == OBJ_MUSHROOM || item->type == OBJ_MUSHROOM_1UP)
-                        item->values[VAL_X_SPEED] = FfInt(2L);
+                    switch (item->type) {
+                        default:
+                            break;
+                        case OBJ_MUSHROOM:
+                        case OBJ_MUSHROOM_1UP:
+                            item->values[VAL_X_SPEED] = FfInt(2L);
+                            break;
+                        case OBJ_STARMAN:
+                            item->values[VAL_X_SPEED] = 0x00028000;
+                            break;
+                    }
                     if (is_powerup)
                         item->flags &= ~FLG_POWERUP_FULL;
                     play_sound_at_object(item, SND_SPROUT);
@@ -443,6 +453,7 @@ static void win_player(struct GameObject* pawn) {
         return;
     state.sequence.type = SEQ_WIN;
     state.sequence.time = 1L;
+    state.sequence.activator = pawn->values[VAL_PLAYER_INDEX];
 
     const int pid = pawn->values[VAL_PLAYER_INDEX];
     for (size_t i = 0; i < MAX_PLAYERS; i++)
@@ -471,19 +482,25 @@ static void win_player(struct GameObject* pawn) {
         }
     }
 
-    play_track(MUS_WIN1, false);
+    pawn->values[VAL_PLAYER_FLASH] = pawn->values[VAL_PLAYER_STARMAN] = 0L;
+    play_track((state.flags & GF_LOST) ? MUS_WIN2 : MUS_WIN1, false);
 }
 
 static void kill_player(struct GameObject* pawn) {
     struct GameObject* dead = get_object(create_object(OBJ_PLAYER_DEAD, pawn->pos));
     if (dead != NULL) {
+        // !!! CLIENT-SIDE !!!
+        if (pawn->values[VAL_PLAYER_INDEX] == local_player && pawn->values[VAL_PLAYER_STARMAN] > 0L)
+            play_track(state.track, true);
+        // !!! CLIENT-SIDE !!!
+
         struct GamePlayer* player =
             get_player((ObjectID)(dead->values[VAL_PLAYER_INDEX] = pawn->values[VAL_PLAYER_INDEX]));
         if (player != NULL)
             player->power = POW_SMALL;
 
         bool all_dead = true;
-        if (state.sequence.type == SEQ_NONE)
+        if (state.sequence.type == SEQ_NONE && state.clock != 0L)
             for (size_t i = 0; i < MAX_PLAYERS; i++)
                 if (state.players[i].lives > 0L) {
                     all_dead = false;
@@ -693,6 +710,20 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
             break;
         }
 
+        case OBJ_STARMAN: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type == OBJ_PLAYER) {
+                // !!! CLIENT-SIDE !!!
+                if (other->values[VAL_PLAYER_INDEX] == local_player)
+                    play_track(MUS_STARMAN, true);
+                // !!! CLIENT-SIDE !!!
+                other->values[VAL_PLAYER_STARMAN] = 500L;
+                play_sound_at_object(other, SND_GROW);
+                self->flags |= FLG_DESTROY;
+            }
+            break;
+        }
+
         case OBJ_CHECKPOINT: {
             struct GameObject* other = &(state.objects[other_id]);
             if (other->type != OBJ_PLAYER)
@@ -732,6 +763,39 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
             if (other->values[VAL_PLAYER_GROUND] > 0L) {
                 give_points(other, get_owner_id(other_id), 100L);
                 win_player(other);
+            }
+            break;
+        }
+
+        case OBJ_GOAL_BAR: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type != OBJ_PLAYER || state.sequence.type == SEQ_WIN)
+                break;
+
+            int points;
+            if (self->pos[1] < Fadd(self->values[VAL_GOAL_Y], FfInt(30L)))
+                points = 10000L;
+            else if (self->pos[1] < Fadd(self->values[VAL_GOAL_Y], FfInt(60L)))
+                points = 5000L;
+            else if (self->pos[1] < Fadd(self->values[VAL_GOAL_Y], FfInt(100L)))
+                points = 2000L;
+            else if (self->pos[1] < Fadd(self->values[VAL_GOAL_Y], FfInt(150L)))
+                points = 1000L;
+            else if (self->pos[1] < Fadd(self->values[VAL_GOAL_Y], FfInt(200L)))
+                points = 500L;
+            else
+                points = 200L;
+            give_points(self, get_owner_id(other_id), points);
+            win_player(other);
+
+            struct GameObject* bar = get_object(
+                create_object(OBJ_GOAL_BAR_FLY, (fvec2){Fsub(self->pos[0], FfInt(2L)), Fadd(self->pos[1], FfInt(7L))})
+            );
+            if (bar != NULL) {
+                const fix16_t dir = Fadd(0x00025B30, Fadd(-0x00003244, Fmul(FfInt(random() % 3), 0x00003244)));
+                bar->values[VAL_X_SPEED] = Fmul(0x00050000, Fcos(dir));
+                bar->values[VAL_Y_SPEED] = Fmul(0x00050000, -Fsin(dir));
+                self->flags |= FLG_DESTROY;
             }
             break;
         }
@@ -1162,6 +1226,10 @@ static bool in_player_view(struct GameObject* object, int pid, fix16_t padding, 
     return sx1 < ox2 && sx2 > ox1 && sy1 < oy2 && (ignore_top || sy2 > oy1);
 }
 
+static bool below_frame(struct GameObject* object) {
+    return Fadd(object->pos[1], object->bbox[0][1]) > state.size[1];
+}
+
 /* ======
 
    ENGINE
@@ -1181,9 +1249,15 @@ void start_state(int num_players, int local) {
     state.size[1] = F_SCREEN_HEIGHT;
     state.bounds[1][0] = FfInt(2560L);
     state.bounds[1][1] = F_SCREEN_HEIGHT;
+    state.track = MUS_DESERT;
 
     state.spawn = state.checkpoint = -1L;
     state.water = FfInt(240L); // 0x7FFFFFFF;
+
+    state.flags |= GF_HARDCORE | GF_LOST;
+    state.clock = 360L;
+
+    state.sequence.activator = -1L;
 
     //
     //
@@ -1192,7 +1266,6 @@ void start_state(int num_players, int local) {
     //
     //
     //
-    load_font(FNT_HUD);
     load_texture(TEX_WATER1);
     load_texture(TEX_WATER2);
     load_texture(TEX_WATER3);
@@ -1201,6 +1274,14 @@ void start_state(int num_players, int local) {
     load_texture(TEX_WATER6);
     load_texture(TEX_WATER7);
     load_texture(TEX_WATER8);
+
+    load_font(FNT_HUD);
+
+    load_sound(SND_HURRY);
+    load_sound(SND_TICK);
+
+    if (state.track != MUS_NULL)
+        load_track(state.track);
 
     //
     //
@@ -1346,6 +1427,7 @@ void start_state(int num_players, int local) {
     create_object(OBJ_COIN, (fvec2){FfInt(160L), FfInt(208L)});
     create_object(OBJ_CHECKPOINT, (fvec2){FfInt(864L), FfInt(416L)});
     create_object(OBJ_CHECKPOINT, (fvec2){FfInt(1024L), FfInt(416L)});
+    create_object(OBJ_GOAL_BAR, (fvec2){FfInt(2347L), FfInt(144L)});
 
     struct GameObject* object = get_object(create_object(OBJ_ROTODISC_BALL, (fvec2){FfInt(608L), FfInt(352L)}));
     if (object != NULL) {
@@ -1356,7 +1438,7 @@ void start_state(int num_players, int local) {
 
     object = get_object(create_object(OBJ_HIDDEN_BLOCK, (fvec2){FfInt(160L), FfInt(128L)}));
     if (object != NULL)
-        object->values[VAL_BLOCK_ITEM] = OBJ_MUSHROOM_POISON;
+        object->values[VAL_BLOCK_ITEM] = OBJ_STARMAN;
     object = get_object(create_object(OBJ_GOAL_MARK, (fvec2){FfInt(2176L), FfInt(384L)}));
     if (object != NULL) {
         object->bbox[1][0] = FfInt(128L);
@@ -1519,8 +1601,7 @@ void start_state(int num_players, int local) {
         respawn_player((int)i);
     }
 
-    // load_track(MUS_SNOW);
-    // play_track(MUS_SNOW, true);
+    play_track(state.track, true);
 }
 
 uint32_t check_state() {
@@ -1895,8 +1976,13 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                     if (object->values[VAL_PLAYER_FLASH] > 0L)
                         --(object->values[VAL_PLAYER_FLASH]);
                     if (object->values[VAL_PLAYER_STARMAN] > 0L) {
-                        if (--(object->values[VAL_PLAYER_STARMAN]) == 100L)
+                        const int starman = --(object->values[VAL_PLAYER_STARMAN]);
+                        if (starman == 100L)
                             play_sound_at_object(object, SND_STARMAN);
+                        // !!! CLIENT-SIDE !!!
+                        if (starman <= 0L && object->values[VAL_PLAYER_INDEX] == local_player)
+                            play_track(state.track, true);
+                        // !!! CLIENT-SIDE !!!
                     }
 
                     if (object->pos[1] > Fadd(player->bounds[1][1], FfInt(64L))) {
@@ -1926,10 +2012,13 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                             break;
 
                         case 0: {
-                            if (object->flags & FLG_PLAYER_DEAD_LAST)
-                                play_track(MUS_LOSE1, false);
-                            else
+                            if (object->flags & FLG_PLAYER_DEAD_LAST) {
+                                play_track((state.flags & GF_LOST) ? MUS_LOSE2 : MUS_LOSE1, false);
+                                if (state.flags & GF_HARDCORE)
+                                    play_sound(SND_HARDCORE);
+                            } else {
                                 play_sound_at_object(object, player->lives > 0L ? SND_LOSE : SND_DEAD);
+                            }
                             break;
                         }
 
@@ -1941,6 +2030,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         case 150: {
                             struct GameObject* pawn = get_object(respawn_player(pid));
                             if (pawn != NULL) {
+                                play_sound_at_object(pawn, SND_RESPAWN);
                                 pawn->values[VAL_PLAYER_FLASH] = 100L;
                                 --(player->lives);
                                 object->flags |= FLG_DESTROY;
@@ -1949,7 +2039,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         }
 
                         case 210: {
-                            if (object->flags & FLG_PLAYER_DEAD_LAST) {
+                            if ((object->flags & FLG_PLAYER_DEAD_LAST) || state.clock == 0L) {
                                 state.sequence.type = SEQ_LOSE;
                                 state.sequence.time = 1L;
                                 play_track(MUS_GAME_OVER, false);
@@ -1963,6 +2053,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 }
 
                 case OBJ_PLAYER_EFFECT: {
+                    object->depth = Fadd(object->depth, 0x00000FFF);
                     object->values[VAL_PLAYER_EFFECT_ALPHA] = Fsub(object->values[VAL_PLAYER_EFFECT_ALPHA], 0x0009F600);
                     if (object->values[VAL_PLAYER_EFFECT_ALPHA] <= FxZero)
                         object->flags |= FLG_DESTROY;
@@ -2003,7 +2094,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 case OBJ_MISSILE_FIREBALL: {
                     object->values[VAL_MISSILE_ANGLE] = Fadd(
                         object->values[VAL_MISSILE_ANGLE],
-                        object->values[VAL_X_SPEED] < FxZero ? -0x000B4000 : 0x000B4000
+                        object->values[VAL_X_SPEED] < FxZero ? -0x00003244 : 0x00003244
                     );
                     object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
 
@@ -2027,7 +2118,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 case OBJ_MISSILE_HAMMER: {
                     object->values[VAL_MISSILE_ANGLE] = Fadd(
                         object->values[VAL_MISSILE_ANGLE],
-                        object->values[VAL_X_SPEED] < FxZero ? -0x0005A000 : 0x0005A000
+                        object->values[VAL_X_SPEED] < FxZero ? -0x00001922 : 0x00001922
                     );
                     object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00004925);
 
@@ -2245,7 +2336,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                     if (object->values[VAL_X_TOUCH] != 0L)
                         object->values[VAL_X_SPEED] = object->values[VAL_X_TOUCH] * FfInt(-2L);
 
-                    if (object->pos[1] > Fadd(state.size[1], FfInt(32L)))
+                    if (below_frame(object))
                         object->flags |= FLG_DESTROY;
                     break;
                 }
@@ -2256,7 +2347,20 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                     if (object->values[VAL_X_TOUCH] != 0L)
                         object->values[VAL_X_SPEED] = object->values[VAL_X_TOUCH] * FfInt(-2L);
 
-                    if (object->pos[1] > Fadd(state.size[1], FfInt(32L)))
+                    if (below_frame(object))
+                        object->flags |= FLG_DESTROY;
+                    break;
+                }
+
+                case OBJ_STARMAN: {
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00003333);
+                    displace_object(oid, 10, false);
+                    if (object->values[VAL_X_TOUCH] != 0L)
+                        object->values[VAL_X_SPEED] = object->values[VAL_X_TOUCH] * -0x00028000;
+                    if (object->values[VAL_Y_TOUCH] > 0L)
+                        object->values[VAL_Y_SPEED] = FfInt(-5);
+
+                    if (below_frame(object))
                         object->flags |= FLG_DESTROY;
                     break;
                 }
@@ -2393,6 +2497,36 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         object->flags |= FLG_DESTROY;
                     break;
                 }
+
+                case OBJ_GOAL_BAR: {
+                    if (state.sequence.type == SEQ_WIN)
+                        break;
+
+                    if (!(object->flags & FLG_GOAL_START)) {
+                        object->values[VAL_GOAL_Y] = object->pos[1];
+                        object->values[VAL_Y_SPEED] = FfInt(3L);
+                        object->flags |= FLG_GOAL_START;
+                    }
+
+                    if ((object->values[VAL_Y_SPEED] > FxZero &&
+                         object->pos[1] >= Fadd(object->values[VAL_GOAL_Y], FfInt(220L))) ||
+                        (object->values[VAL_Y_SPEED] < FxZero && object->pos[1] <= object->values[VAL_GOAL_Y]))
+                        object->values[VAL_Y_SPEED] = -(object->values[VAL_Y_SPEED]);
+                    move_object(oid, (fvec2){object->pos[0], Fadd(object->pos[1], object->values[VAL_Y_SPEED])});
+                    break;
+                }
+
+                case OBJ_GOAL_BAR_FLY: {
+                    object->values[VAL_GOAL_ANGLE] = Fadd(object->values[VAL_GOAL_ANGLE], 0x00006488);
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00003333);
+                    move_object(
+                        oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
+                                     Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
+                    );
+                    if (below_frame(object))
+                        object->flags |= FLG_DESTROY;
+                    break;
+                }
             }
 
         ObjectID next = object->previous;
@@ -2401,8 +2535,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
         oid = next;
     }
 
-    ++(state.time);
-
+    // !!! CLIENT-SIDE !!!
     struct GamePlayer* player = get_player(local_player);
     if (player != NULL) {
         const struct GameObject* pawn = get_object(player->object);
@@ -2416,9 +2549,45 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
             move_camera(SDL_clamp(cx, bx1, bx2), SDL_clamp(cy, by1, by2));
         }
     }
+    // !!! CLIENT-SIDE !!!
 
-    if (state.sequence.time > 0L && state.sequence.time <= 500L)
+    ++(state.time);
+    if (state.sequence.type == SEQ_NONE && state.clock > 0L && (state.time % 25L) == 0L) {
+        --(state.clock);
+        if (state.clock <= 100L && !(state.flags & GF_HURRY)) {
+            play_sound(SND_HURRY);
+            state.flags |= GF_HURRY;
+        }
+        if (state.clock <= 0L)
+            for (size_t i = 0; i < MAX_PLAYERS; i++) {
+                if (!(state.players[i].active))
+                    continue;
+                struct GameObject* pawn = get_object(state.players[i].object);
+                if (pawn != NULL)
+                    kill_player(pawn);
+            }
+    }
+
+    if (state.sequence.time > 0L && state.sequence.time <= 300L) {
         ++(state.sequence.time);
+
+        if (state.sequence.type == SEQ_WIN && state.sequence.time >= 50L && state.clock > 0L) {
+            const int diff = (state.clock > 0L) + (((state.clock - 1L) >= 10L) * 10L);
+            state.clock -= diff;
+
+            struct GamePlayer* player = get_player(state.sequence.activator);
+            if (player != NULL)
+                player->score += diff * 10L;
+
+            if ((state.time % 5L) == 0L)
+                play_sound(SND_TICK);
+        }
+
+        if (state.sequence.time >= 300L) {
+            state.flags |= GF_END;
+            INFO("Game over");
+        }
+    }
 }
 
 void draw_state() {
@@ -2489,11 +2658,52 @@ void draw_state() {
                         break;
 
                     const struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
-                    draw_object(
-                        object,
-                        get_player_texture(player == NULL ? POW_SMALL : player->power, get_player_frame(object)), 0,
-                        ALPHA(object->values[VAL_PLAYER_INDEX] != local_player ? 190 : 255)
-                    );
+                    const enum TextureIndices tex =
+                        get_player_texture(player == NULL ? POW_SMALL : player->power, get_player_frame(object));
+                    const GLubyte a = (object->values[VAL_PLAYER_INDEX] != local_player) ? 190 : 255;
+                    draw_object(object, tex, 0, ALPHA(a));
+
+                    if (object->values[VAL_PLAYER_STARMAN] > 0L) {
+                        GLubyte r, g, b;
+                        switch (state.time % 5) {
+                            default: {
+                                r = 248;
+                                g = 0;
+                                b = 0;
+                                break;
+                            }
+                            case 1: {
+                                r = 192;
+                                g = 152;
+                                b = 0;
+                                break;
+                            }
+                            case 2: {
+                                r = 144;
+                                g = 192;
+                                b = 40;
+                                break;
+                            }
+                            case 3: {
+                                r = 88;
+                                g = 136;
+                                b = 232;
+                                break;
+                            }
+                            case 4: {
+                                r = 192;
+                                g = 120;
+                                b = 200;
+                                break;
+                            }
+                        }
+
+                        set_batch_stencil(1);
+                        set_batch_logic(GL_XOR);
+                        draw_object(object, tex, 0, RGBA(r, g, b, a));
+                        set_batch_logic(GL_COPY);
+                        set_batch_stencil(0);
+                    }
                     break;
                 }
 
@@ -2682,6 +2892,26 @@ void draw_state() {
                     break;
                 }
 
+                case OBJ_STARMAN: {
+                    enum TextureIndices tex;
+                    switch ((int)((float)state.time / 2.040816326530612f) % 4) {
+                        default:
+                            tex = TEX_STARMAN1;
+                            break;
+                        case 1:
+                            tex = TEX_STARMAN2;
+                            break;
+                        case 2:
+                            tex = TEX_STARMAN3;
+                            break;
+                        case 3:
+                            tex = TEX_STARMAN4;
+                            break;
+                    }
+                    draw_object(object, tex, 0, WHITE);
+                    break;
+                }
+
                 case OBJ_POINTS: {
                     if (object->values[VAL_POINTS_PLAYER] != local_player)
                         break;
@@ -2801,7 +3031,7 @@ void draw_state() {
                         (float[3]){
                             FtInt(object->pos[0]),
                             FtInt(object->pos[1]) - bump,
-                            object->depth,
+                            FtFloat(object->depth),
                         },
                         (bool[2]){false}, 0, WHITE
                     );
@@ -2840,7 +3070,7 @@ void draw_state() {
                         (float[3]){
                             FtInt(object->pos[0]),
                             FtInt(object->pos[1]) - bump,
-                            object->depth,
+                            FtFloat(object->depth),
                         },
                         (bool[2]){false}, 0, WHITE
                     );
@@ -2904,7 +3134,7 @@ void draw_state() {
                         (float[3]){
                             FtInt(object->pos[0]),
                             FtInt(object->pos[1]) - bump,
-                            object->depth,
+                            FtFloat(object->depth),
                         },
                         (bool[2]){false}, 0, WHITE
                     );
@@ -3017,7 +3247,9 @@ void draw_state() {
                             break;
                     }
 
+                    set_batch_logic(GL_OR_REVERSE);
                     draw_object(object, tex, 0, WHITE);
+                    set_batch_logic(GL_COPY);
                     break;
                 }
 
@@ -3076,7 +3308,7 @@ void draw_state() {
 
                 case OBJ_BUBBLE: {
                     enum TextureIndices tex;
-                    float pos[3] = {FtInt(object->pos[0]), FtInt(object->pos[1]), object->depth};
+                    float pos[3] = {FtInt(object->pos[0]), FtInt(object->pos[1]), FtFloat(object->depth)};
                     if (object->flags & FLG_BUBBLE_POP) {
                         switch (object->values[VAL_BUBBLE_FRAME]) {
                             default:
@@ -3119,6 +3351,16 @@ void draw_state() {
                     }
 
                     draw_sprite(tex, pos, (bool[2]){false}, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_GOAL_BAR: {
+                    draw_object(object, TEX_GOAL_BAR1, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_GOAL_BAR_FLY: {
+                    draw_object(object, TEX_GOAL_BAR2, FtFloat(object->values[VAL_GOAL_ANGLE]), WHITE);
                     break;
                 }
             }
@@ -3169,7 +3411,7 @@ void draw_state_hud() {
         draw_text(FNT_HUD, FA_LEFT, str, (float[3]){32, 16, 0});
 
         SDL_snprintf(str, sizeof(str), "%u", player->score);
-        draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){141, 34, 0});
+        draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){149, 34, 0});
 
         enum TextureIndices tex;
         switch ((int)((float)(state.time) / 6.25f) % 4) {
@@ -3186,11 +3428,17 @@ void draw_state_hud() {
         }
         draw_sprite(tex, (float[3]){224, 34, 0}, (bool[2]){false}, 0, WHITE);
         SDL_snprintf(str, sizeof(str), "%u", player->coins);
-        draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){287, 34, 0});
+        draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){288, 34, 0});
+
+        if (state.clock >= 0L) {
+            draw_text(FNT_HUD, FA_RIGHT, "TIME", (float[3]){608, 16, 0});
+            SDL_snprintf(str, sizeof(str), "%u", state.clock);
+            draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){608, 34, 0});
+        }
     }
 
     if (state.sequence.type == SEQ_LOSE && state.sequence.time > 0L)
-        draw_text(FNT_HUD, FA_CENTER, "GAME OVER", (float[3]){320, 224, 0});
+        draw_text(FNT_HUD, FA_CENTER, (state.clock == 0) ? "TIME UP" : "GAME OVER", (float[3]){320, 224, 0});
 }
 
 void load_object(enum GameObjectType type) {
@@ -3304,6 +3552,9 @@ void load_object(enum GameObjectType type) {
             load_sound(SND_STOMP);
             load_sound(SND_STARMAN);
             load_sound(SND_SWIM);
+            load_sound(SND_RESPAWN);
+
+            load_track(MUS_STARMAN);
 
             load_object(OBJ_PLAYER_EFFECT);
             load_object(OBJ_PLAYER_DEAD);
@@ -3319,9 +3570,13 @@ void load_object(enum GameObjectType type) {
 
             load_sound(SND_LOSE);
             load_sound(SND_DEAD);
+            load_sound(SND_HARDCORE);
 
             load_track(MUS_LOSE1);
+            load_track(MUS_LOSE2);
             load_track(MUS_GAME_OVER);
+            load_track(MUS_WIN1);
+            load_track(MUS_WIN2);
             break;
         }
 
@@ -3414,6 +3669,14 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_HAMMER_SUIT);
 
             load_object(OBJ_POINTS);
+            break;
+        }
+
+        case OBJ_STARMAN: {
+            load_texture(TEX_STARMAN1);
+            load_texture(TEX_STARMAN2);
+            load_texture(TEX_STARMAN3);
+            load_texture(TEX_STARMAN4);
             break;
         }
 
@@ -3562,9 +3825,6 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_GOAL_MARK: {
-            load_track(MUS_WIN1);
-            load_track(MUS_WIN2);
-
             load_object(OBJ_POINTS);
             break;
         }
@@ -3597,6 +3857,19 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_BUBBLE_POP5);
             load_texture(TEX_BUBBLE_POP6);
             load_texture(TEX_BUBBLE_POP7);
+            break;
+        }
+
+        case OBJ_GOAL_BAR: {
+            load_texture(TEX_GOAL_BAR1);
+
+            load_object(OBJ_GOAL_BAR_FLY);
+            load_object(OBJ_POINTS);
+            break;
+        }
+
+        case OBJ_GOAL_BAR_FLY: {
+            load_texture(TEX_GOAL_BAR2);
             break;
         }
     }
@@ -3640,7 +3913,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 case OBJ_CLOUD:
                 case OBJ_BUSH:
                 case OBJ_BUSH_SNOW: {
-                    object->depth = 25L;
+                    object->depth = FfInt(25L);
 
                     object->values[VAL_PROP_FRAME] = random() % 4;
                     break;
@@ -3652,7 +3925,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_PLAYER: {
-                    object->depth = -1L;
+                    object->depth = -FxOne;
 
                     object->bbox[0][0] = FfInt(-9L);
                     object->bbox[0][1] = FfInt(-25L);
@@ -3668,7 +3941,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_PLAYER_DEAD: {
-                    object->depth = -1L;
+                    object->depth = -FxOne;
+
                     object->values[VAL_PLAYER_INDEX] = -1L;
                     break;
                 }
@@ -3681,7 +3955,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_COIN: {
-                    object->depth = 1L;
+                    object->depth = FxOne;
 
                     object->bbox[0][0] = FfInt(6L);
                     object->bbox[0][1] = FfInt(2L);
@@ -3749,8 +4023,15 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     break;
                 }
 
+                case OBJ_STARMAN: {
+                    object->bbox[0][0] = FfInt(-16L);
+                    object->bbox[0][1] = FfInt(-32L);
+                    object->bbox[1][0] = FfInt(17L);
+                    break;
+                }
+
                 case OBJ_POINTS: {
-                    object->depth = -100L;
+                    object->depth = FfInt(-100L);
 
                     object->values[VAL_POINTS_PLAYER] = -1L;
                     break;
@@ -3789,7 +4070,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 case OBJ_ITEM_BLOCK:
                 case OBJ_HIDDEN_BLOCK: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
-                    object->depth = 20L;
+                    object->depth = FfInt(20L);
 
                     object->values[VAL_BLOCK_ITEM] = OBJ_NULL;
                     break;
@@ -3797,13 +4078,13 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
 
                 case OBJ_BRICK_BLOCK: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
-                    object->depth = 20L;
+                    object->depth = FfInt(20L);
                     break;
                 }
 
                 case OBJ_BRICK_BLOCK_COIN: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
-                    object->depth = 20L;
+                    object->depth = FfInt(20L);
 
                     object->values[VAL_BLOCK_ITEM] = OBJ_NULL;
                     break;
@@ -3828,7 +4109,12 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[0][1] = FfInt(-110L);
                     object->bbox[1][0] = FfInt(21L);
                     object->bbox[1][1] = FxOne;
-                    object->depth = 2L;
+                    object->depth = FfInt(2L);
+                    break;
+                }
+
+                case OBJ_ROTODISC_BALL: {
+                    object->depth = FfInt(19L);
                     break;
                 }
 
@@ -3841,7 +4127,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_WATER_SPLASH: {
-                    object->depth = -2L;
+                    object->depth = FfInt(-2L);
                     break;
                 }
 
@@ -3850,6 +4136,14 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[0][1] = FfInt(-4L);
                     object->bbox[1][0] = FfInt(5L);
                     object->bbox[1][1] = FfInt(6L);
+                    break;
+                }
+
+                case OBJ_GOAL_BAR:
+                case OBJ_GOAL_BAR_FLY: {
+                    object->bbox[0][0] = FfInt(-23L);
+                    object->bbox[1][0] = FfInt(21L);
+                    object->bbox[1][1] = FfInt(16L);
                     break;
                 }
             }
@@ -4030,7 +4324,7 @@ void draw_object(struct GameObject* object, enum TextureIndices tid, GLfloat ang
     draw_sprite(
         tid,
         (float[3]){FtInt(object->pos[0]), FtInt(object->pos[1]) + object->values[VAL_SPROUT],
-                   (object->values[VAL_SPROUT] > 0L) ? 21 : (float)(object->depth)},
+                   (object->values[VAL_SPROUT] > 0L) ? 21 : FtFloat(object->depth)},
         (bool[2]){object->flags & FLG_X_FLIP, object->flags & FLG_Y_FLIP}, angle, color
     );
 }
