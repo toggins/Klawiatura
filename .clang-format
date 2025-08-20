@@ -13,4 +13,4 @@ AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterReturnType: None
 IndentCaseLabels: true
 AlignAfterOpenBracket: BlockIndent
-SortIncludes: CaseSensitive
+SortIncludes: Never

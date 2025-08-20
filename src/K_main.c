@@ -1,11 +1,15 @@
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define DUMP_MEMLEAKS
+#endif
+
+#ifdef DUMP_MEMLEAKS
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
 #endif
 
 #include <SDL3/SDL_main.h>
-
 #include <SDL3/SDL.h>
+
 #define FIX_IMPLEMENTATION
 #include <S_fixed.h>
 
@@ -15,8 +19,12 @@
 #include "K_net.h" // IWYU pragma: keep
 #include "K_video.h"
 
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define DUMP_MEMLEAKS
+#endif
+
 int main(int argc, char** argv) {
-#ifdef _MSC_VER
+#ifdef DUMP_MEMLEAKS
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF);
 
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
@@ -187,7 +195,7 @@ int main(int argc, char** argv) {
     audio_teardown();
     SDL_Quit();
 
-#ifdef _MSC_VER
+#ifdef DUMP_MEMLEAKS
     _CrtDumpMemoryLeaks();
 #endif
 
