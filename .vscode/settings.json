@@ -6,9 +6,6 @@
     "clangd.enableCodeCompletion": true,
     "cmake.generator": "Ninja",
     "cmake.exportCompileCommandsFile": true,
-    "cmake.debugConfig": {
-        "args": ["-players", "2"]
-    },
     "files.exclude": {
         ".cache": true,
         "build": true
