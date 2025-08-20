@@ -2,7 +2,8 @@ name: Build & release
 
 on:
   push:
-    branches: ["master"]
+    # Can't do this until we figure out fmod:
+    #branches: ["master"]
     tags: ["stable", "dev"]
 
 jobs:
