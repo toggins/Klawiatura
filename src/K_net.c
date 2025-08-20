@@ -11,8 +11,6 @@
 #include "K_log.h"
 #include "K_net.h"
 
-#define LENGTH(v) (sizeof((v)) / sizeof(*(v)))
-
 static int num_players = 1;
 static SOCKET sock = INVALID_SOCKET;
 static GekkoNetAddress addrs[MAX_PLAYERS] = {0};

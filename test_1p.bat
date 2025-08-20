@@ -1,1 +1,1 @@
-start cmd /c "build\Klawiatura" -players 1 6969 ^& pause
+start cmd /c "build\Klawiatura" -players 1 ^& pause
