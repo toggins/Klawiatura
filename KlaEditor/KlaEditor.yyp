@@ -25,8 +25,9 @@
   "name":"KlaEditor",
   "resources":[
     {"id":{"name":"objControl","path":"objects/objControl/objControl.yy",},},
+    {"id":{"name":"objMarker","path":"objects/objMarker/objMarker.yy",},},
     {"id":{"name":"rmMain","path":"rooms/rmMain/rmMain.yy",},},
-    {"id":{"name":"sprObject","path":"sprites/sprObject/sprObject.yy",},},
+    {"id":{"name":"sprMarker","path":"sprites/sprMarker/sprMarker.yy",},},
   ],
   "resourceType":"GMProject",
   "resourceVersion":"2.0",

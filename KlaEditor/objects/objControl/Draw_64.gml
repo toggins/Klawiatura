@@ -1,0 +1,1 @@
+draw_text(8, 8, $"X: {mouse_x}\nY: {mouse_y}\nObjects: {instance_number(objMarker)}")
