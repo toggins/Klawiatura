@@ -7,15 +7,21 @@ Mario Forever with rollback netcode.
 In order to build this you will need CMake and Python installed on your
 computer, as well as these libraries:
 
+### [GekkoNet](https://github.com/HeatXD/GekkoNet)
+
+GekkoNet is already included in this repository due to technical issues. Oh
+well.
+
 ### [FMOD Engine 2.03.08](https://www.fmod.com/download#fmodengine)
 
 Move everything from `C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core`
-to `include/fmod/windows` on Windows. This process is also similar enough on Linux.
+to `include\fmod\windows` on Windows. This process is also similar enough on
+Linux.
 
 ## Launch options
 
-- `-bypass_shader`: Bypass shader support checking for debugging with RenderDoc.
-- `-players <amount>`: Amount of players to assign to the session.
+-   `-bypass_shader`: Bypass shader support checking for debugging with RenderDoc.
+-   `-players <amount>`: Amount of players to assign to the session.
 
 ### Multiplayer
 
