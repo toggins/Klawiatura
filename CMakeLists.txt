@@ -95,7 +95,7 @@ set(S_FIXED_BUILD_TEST OFF)
 FetchContent_Declare(
     S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
-    GIT_TAG master)
+    GIT_TAG 0eceb7db9a8f4b501cf3d9c9ab656b008ab82ddf)
 FetchContent_MakeAvailable(S_fixed)
 
 set(NUTPUNCH_BUILD_TESTS OFF)
