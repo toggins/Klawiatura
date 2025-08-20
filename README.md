@@ -21,18 +21,19 @@ Linux.
 ## Launch options
 
 -   `-bypass_shader`: Bypass shader support checking for debugging with RenderDoc.
--   `-players <amount>`: Amount of players to assign to the session.
+-   `-players <amount>`: Amount of players to assign to the session. (Default: `1`)
+-   `-ip <ip>`: IP address of the UDP hole punching server. (Default: [Public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance))
+-   `-lobby <id>`: The lobby to join after connecting to the server. (Default: `Klawiatura`)
 
 ### Multiplayer
 
-**NOTE:** Klawiatura uses NutPunch, which requires Winsock2. A cross-platform
-solution will be implemented later on.
+> [!NOTE]
+> Klawiatura uses NutPunch, which requires Winsock2. A cross-platform solution will be implemented later on.
 
 Networking is purely peer-to-peer. By specifying 2+ players with the `-players`
-command, the game will automatically connect to a UDP hole-punching server and
-wait for players with a matching lobby ID.
+command, the game will automatically connect to a UDP hole punching server and
+wait for players with a matching lobby ID. You can change your lobby ID with
+`-lobby` and specify a custom server with `-ip`.
 
-There is currently no way to specify a custom server IP or lobby ID.
-
-**WARNING:** Multiplayer with 3+ players is not guaranteed to be stable, it's
-possible to get a desync error & a crash if packets get dropped.
+> [!WARNING]
+> Multiplayer with 3+ players is not guaranteed to be stable, it's possible to get a desync error if packets get dropped.

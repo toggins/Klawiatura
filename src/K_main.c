@@ -37,13 +37,19 @@ int main(int argc, char** argv) {
 
     bool bypass_shader = false;
     int num_players = 1;
+    char* server_ip = "95.163.233.200"; // Public NutPunch server
+    char* lobby_id = "Klawiatura";
     for (size_t i = 0; i < argc; i++) {
-        if (SDL_strcmp(argv[i], "-players") == 0) {
+        if (SDL_strcmp(argv[i], "-bypass_shader") == 0) {
+            bypass_shader = true;
+        } else if (SDL_strcmp(argv[i], "-players") == 0) {
             num_players = SDL_strtol(argv[++i], NULL, 0);
             if (num_players < 1 || num_players > MAX_PLAYERS)
                 FATAL("Player amount must be between 1 and %li", MAX_PLAYERS);
-        } else if (SDL_strcmp(argv[i], "-bypass_shader") == 0) {
-            bypass_shader = true;
+        } else if (SDL_strcmp(argv[i], "-ip") == 0) {
+            server_ip = argv[++i];
+        } else if (SDL_strcmp(argv[i], "-lobby") == 0) {
+            lobby_id = argv[++i];
         }
     }
 
@@ -63,7 +69,7 @@ int main(int argc, char** argv) {
     config.input_size = sizeof(enum GameInput);
     config.desync_detection = true;
     gekko_start(session, &config);
-    gekko_net_adapter_set(session, nutpunch_init(num_players));
+    gekko_net_adapter_set(session, nutpunch_init(num_players, server_ip, lobby_id));
     int local_player = net_wait(session);
     if (num_players > 1)
         gekko_set_local_delay(session, local_player, 2);

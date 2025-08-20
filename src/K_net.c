@@ -13,6 +13,8 @@
 #include "K_net.h"
 
 static int num_players = 1;
+static const char* server_ip = NULL;
+static const char* lobby_id = NULL;
 static SOCKET sock = INVALID_SOCKET;
 static GekkoNetAddress addrs[MAX_PLAYERS] = {0};
 
@@ -131,8 +133,10 @@ static GekkoNetResult** receive_data(int* length) {
     return results;
 }
 
-GekkoNetAdapter* nutpunch_init(int num_players0) {
+GekkoNetAdapter* nutpunch_init(int num_players0, const char* server_ip0, const char* lobby_id0) {
     num_players = num_players0;
+    server_ip = server_ip0;
+    lobby_id = lobby_id0;
 
     static GekkoNetAdapter adapter = {0};
     adapter.send_data = send_data;
@@ -147,8 +151,8 @@ int net_wait(GekkoSession* session) {
         return 0;
     }
 
-    NutPunch_SetServerAddr("95.163.233.200");
-    NutPunch_Join("Klawiatura");
+    NutPunch_SetServerAddr(server_ip);
+    NutPunch_Join(lobby_id);
     INFO("About to punch your nuts... Lobby: '%s'", NutPunch_LobbyId);
 
     for (;;) {

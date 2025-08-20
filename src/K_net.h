@@ -6,6 +6,6 @@
 
 #include "gekkonet.h"
 
-GekkoNetAdapter* nutpunch_init(int);
+GekkoNetAdapter* nutpunch_init(int, const char*, const char*);
 void net_teardown();
 int net_wait(GekkoSession*);
