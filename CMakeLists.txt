@@ -102,23 +102,21 @@ set(LIBS
     nutpunch)
 
 # Build
-set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
-file(GLOB_RECURSE SOURCES ${SOURCE_DIR}/*.c)
-file(GLOB_RECURSE HEADERS ${SOURCE_DIR}/*.h)
+file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
+file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/src/*.h)
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
-target_include_directories(${PROJECT_NAME} PRIVATE ${SOURCE_DIR})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})
-target_compile_definitions(${PROJECT_NAME} PUBLIC -D_POSIX_C_SOURCE=200112L)
+add_executable(Klawiatura ${SOURCES} ${HEADERS})
+target_include_directories(Klawiatura PRIVATE ${SOURCE_DIR})
+target_link_libraries(Klawiatura PRIVATE ${LIBS})
+target_compile_definitions(Klawiatura PUBLIC -D_POSIX_C_SOURCE=200112L)
 
-set(MOD_SOURCE_DIR ${CMAKE_SOURCE_DIR}/modsrc)
 add_custom_command(
-    TARGET ${PROJECT_NAME}
+    TARGET Klawiatura
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:Klawiatura>
+            $<TARGET_FILE_DIR:Klawiatura>
     COMMAND_EXPAND_LISTS
     COMMAND ${CMAKE_COMMAND} -E remove_directory
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${MOD_SOURCE_DIR}
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>/data)
+            $<TARGET_FILE_DIR:Klawiatura>/data
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/modsrc
+            $<TARGET_FILE_DIR:Klawiatura>/data)

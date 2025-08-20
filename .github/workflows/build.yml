@@ -1,0 +1,44 @@
+name: Build & release
+
+on:
+  push:
+    branches: ["master"]
+    tags: ["stable", "dev"]
+
+jobs:
+  binary:
+    name: Release binaries for ${{ matrix.config.fancy-name }}
+    runs-on: ${{ matrix.config.runner-os }}
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - os-name: W64
+            runner-os: windows-latest
+            bin-ext: .exe
+    env:
+      OUTFILE: Klawiatura-${{ matrix.config.os-name }}-${{ github.ref_name }}.zip
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Release
+          cmake --build build --target Klawiatura
+      - name: Assemble
+        run: |
+          mv build Klawiatura
+          7z a $OUTFILE Klawiatura/Klawiatura.exe Klawiatura/*.dll -r Klawiatura/data
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          files: ${{ env.OUTFILE }}
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'branch'
+        with:
+          tag_name: dev
+          files: ${{ env.OUTFILE }}
