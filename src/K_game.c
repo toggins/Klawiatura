@@ -1644,9 +1644,24 @@ void dump_state() {
     INFO("\n[LEVEL]");
     INFO("  Flags: %u", state.flags);
     INFO("  Size: %.2f x %.2f", FtDouble(state.size[0]), FtDouble(state.size[1]));
-    INFO("  Clock: %u", state.clock);
+    INFO(
+        "   Bounds: (%.2f, %.2f) x (%.2f, %.2f)", FtDouble(state.bounds[0][0]), FtDouble(state.bounds[0][1]),
+        FtDouble(state.bounds[1][0]), FtDouble(state.bounds[1][1])
+    );
+    INFO("  Track: %u", state.track);
     INFO("  Time: %zu", state.time);
     INFO("  Seed: %u", state.seed);
+    INFO("  Clock: %u", state.clock);
+    INFO("  Spawn: %u", state.spawn);
+    INFO("  Checkpoint: %u", state.checkpoint);
+    INFO("  Scroll: (%.2f, %.2f)", FtDouble(state.scroll[0]), FtDouble(state.scroll[1]));
+    INFO("  Water Y: %.2f", FtDouble(state.water));
+    INFO("  Hazard Y: %.2f", FtDouble(state.hazard));
+
+    INFO("\n[SEQUENCE]");
+    INFO("  Type: %u", state.sequence.type);
+    INFO("  Time: %u", state.sequence.time);
+    INFO("  Activator: %u", state.sequence.activator);
 
     INFO("\n[OBJECTS]");
     ObjectID oid = state.live_objects;
@@ -1673,6 +1688,10 @@ void dump_state() {
 
         oid = object->previous;
     }
+    INFO("  Last live object: %i", state.live_objects);
+    INFO("  Next object ID: %i", state.next_object);
+
+    // TODO: Dump blockmap
 }
 
 void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
