@@ -26,6 +26,7 @@
   "resources":[
     {"id":{"name":"objControl","path":"objects/objControl/objControl.yy",},},
     {"id":{"name":"rmMain","path":"rooms/rmMain/rmMain.yy",},},
+    {"id":{"name":"sprObject","path":"sprites/sprObject/sprObject.yy",},},
   ],
   "resourceType":"GMProject",
   "resourceVersion":"2.0",
