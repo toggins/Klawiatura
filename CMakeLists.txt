@@ -104,7 +104,7 @@ set(NUTPUNCH_BUILD_SERVER OFF)
 FetchContent_Declare(
     nutpunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG master)
+    GIT_TAG e8ba5e69dfed1b321641bdc6bcaa8ec9eceab673)
 FetchContent_MakeAvailable(nutpunch)
 
 set(LIBS
