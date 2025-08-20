@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #define NUTPUNCH_IMPLEMENTATION
 #include "nutpunch.h"
 
@@ -45,14 +47,19 @@ static void send_data(GekkoNetAddress* addr, const char* data, int len) {
 
 static GekkoNetResult* make_result(int peer_idx, const char* data, int io) {
     GekkoNetResult* res = malloc(sizeof(*res));
-    res->addr = addrs[peer_idx];
+
+    res->addr.size = sizeof(struct NutPunch);
+    res->addr.data = malloc(res->addr.size);
+    memcpy(res->addr.data, &NutPunch_GetPeers()[peer_idx], res->addr.size);
+
     res->data_len = io;
     res->data = malloc(res->data_len);
     memcpy(res->data, data, res->data_len);
+
     return res;
 }
 
-static GekkoNetResult** receive_data(int* resLength) {
+static GekkoNetResult** receive_data(int* length) {
     if (num_players == 1)
         return NULL;
     if (sock == INVALID_SOCKET) {
@@ -63,8 +70,8 @@ static GekkoNetResult** receive_data(int* resLength) {
     NutPunch_Query(); // just in case.....
     static char data[sizeof(struct SaveState)] = {0};
 
-    *resLength = 0;
-    static GekkoNetResult* ptrResults[64] = {0};
+    static GekkoNetResult* results[64] = {0};
+    *length = 0;
 
     while (NutPunch_MayAccept()) {
         struct sockaddr_in baseAddr;
@@ -94,7 +101,7 @@ static GekkoNetResult** receive_data(int* resLength) {
             if (!sameHost | !samePort)
                 continue;
 
-            ptrResults[(*resLength)++] = make_result(i, data, io);
+            results[(*length)++] = make_result(i, data, io);
         }
     }
 
@@ -119,17 +126,14 @@ static GekkoNetResult** receive_data(int* resLength) {
         }
         if (io <= 0 || io > sizeof(data))
             continue;
-        ptrResults[(*resLength)++] = make_result(i, data, io);
+        results[(*length)++] = make_result(i, data, io);
     }
 
-    return ptrResults;
+    return results;
 }
 
 static void free_data(void* data) {
-    // These are statically allocated, so we're skipping their `free`:
-    struct NutPunch *peers_start = NutPunch_GetPeers(), *peers_end = peers_start + NUTPUNCH_MAX_PLAYERS;
-    if (data != NULL && (struct NutPunch*)(data) < peers_start && (struct NutPunch*)(data) >= peers_end)
-        free(data);
+    free(data);
 }
 
 GekkoNetAdapter* nutpunch_init(int num_players0) {
@@ -153,10 +157,17 @@ int net_wait(GekkoSession* session) {
     INFO("About to punch your nuts... Lobby: '%s'", NutPunch_LobbyId);
 
     for (;;) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (SDL_EVENT_QUIT == event.type)
+                exit(EXIT_SUCCESS);
+        }
+
         NutPunch_Query();
         if (NutPunch_GetPeerCount() >= num_players)
             break;
-        sleep_ms(10);
+
+        sleep_ms(1000 / 60);
     }
 
     sock = NutPunch_Release();

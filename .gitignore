@@ -5,3 +5,5 @@
 /include/fmod/windows
 /include/fmod/linux
 /include/gamecontrollerdb.txt
+
+/real_*.bat
