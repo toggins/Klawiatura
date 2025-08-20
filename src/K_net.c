@@ -159,7 +159,7 @@ int net_wait(GekkoSession* session) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (SDL_EVENT_QUIT == event.type)
-                exit(EXIT_SUCCESS);
+                exit(0);
         }
 
         NutPunch_Query();
