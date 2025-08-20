@@ -16,6 +16,9 @@ static SOCKET sock = INVALID_SOCKET;
 static GekkoNetAddress addrs[MAX_PLAYERS] = {0};
 
 static void send_data(GekkoNetAddress* addr, const char* data, int len) {
+    if (num_players == 1)
+        return;
+
     struct NutPunch* peer = (struct NutPunch*)addr->data;
     if (sock == INVALID_SOCKET) {
         INFO("Socket died!!!");
@@ -50,6 +53,8 @@ static GekkoNetResult* make_result(int peer_idx, const char* data, int io) {
 }
 
 static GekkoNetResult** receive_data(int* resLength) {
+    if (num_players == 1)
+        return NULL;
     if (sock == INVALID_SOCKET) {
         INFO("Socket died!!! Catching on fire NOW!!");
         return NULL;
@@ -86,11 +91,10 @@ static GekkoNetResult** receive_data(int* resLength) {
 
             bool sameHost = !memcmp(&baseAddr.sin_addr, peer->addr, 4);
             bool samePort = baseAddr.sin_port == htons(peer->port);
+            if (!sameHost | !samePort)
+                continue;
 
-            if (sameHost && samePort) {
-                ptrResults[(*resLength)++] = make_result(i, data, io);
-                break;
-            }
+            ptrResults[(*resLength)++] = make_result(i, data, io);
         }
     }
 
