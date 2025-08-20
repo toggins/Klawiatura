@@ -131,17 +131,13 @@ static GekkoNetResult** receive_data(int* length) {
     return results;
 }
 
-static void free_data(void* data) {
-    SDL_free(data);
-}
-
 GekkoNetAdapter* nutpunch_init(int num_players0) {
     num_players = num_players0;
 
     static GekkoNetAdapter adapter = {0};
     adapter.send_data = send_data;
     adapter.receive_data = receive_data;
-    adapter.free_data = free_data;
+    adapter.free_data = SDL_free;
     return &adapter;
 }
 
