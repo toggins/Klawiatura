@@ -263,7 +263,8 @@ void load_track(enum TrackIndices index) {
         return;
 
     const char* file = find_file(track->name);
-    FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESTREAM, NULL, &(track->stream));
+    FMOD_RESULT result =
+        FMOD_System_CreateSound(speaker, file, FMOD_CREATESTREAM | FMOD_ACCURATETIME, NULL, &(track->stream));
     if (result != FMOD_OK)
         FATAL("Track \"%s\" fail: %s", track->name, FMOD_ErrorString(result));
     FMOD_Sound_GetLength(track->stream, &(track->length), FMOD_TIMEUNIT_MS);

@@ -1249,7 +1249,7 @@ void start_state(int num_players, int local) {
     state.size[1] = F_SCREEN_HEIGHT;
     state.bounds[1][0] = FfInt(2560L);
     state.bounds[1][1] = F_SCREEN_HEIGHT;
-    state.track = MUS_OVERWORLD2;
+    state.track = MUS_DESERT;
 
     state.spawn = state.checkpoint = -1L;
     state.water = FfInt(240L); // 0x7FFFFFFF;
