@@ -19,13 +19,18 @@ to `include/fmod/windows` on Windows. This process is also similar enough on Lin
 ## Launch options
 
 -   `-bypass_shader`: Bypass shader support checking for debugging with RenderDoc.
--   `-players <amount> <ip:port> ...`: Amount of players to assign to the session as well as the address for each slot. Local player is `port`, remote players are `ip:port`.
+-   `-players <amount>`: Amount of players to assign to the session.
 
 ### Multiplayer
 
-Networking is purely peer-to-peer, so you must specify IP:port in each remote
-player slot to be able to play.
+**NOTE:** Klawiatura uses NutPunch, which requires Winsock2. A cross-platform
+solution will be implemented later on.
 
-**WARNING:** Multiplayer with 3+ players is not guaranteed to be stable, it's possible to get a desync error if packets get dropped.
+Networking is purely peer-to-peer. By specifying 2+ players with the `-players`
+command, the game will automatically connect to a UDP hole-punching server and
+wait for players with a matching lobby ID.
 
-Example command with 4 players where 3rd player is local: `Klawiatura -players 4 <p1 ip:port> <p2 ip:port> <your port> <p4 ip:port>`
+There is currently no way to specify a custom server IP or lobby ID.
+
+**WARNING:** Multiplayer with 3+ players is not guaranteed to be stable, it's
+possible to get a desync error if packets get dropped.
