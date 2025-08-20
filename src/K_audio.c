@@ -92,6 +92,7 @@ static struct Track tracks[MUS_SIZE] = {
     TRACK(MUS_OVERWORLD5, "overworld5"),
     TRACK(MUS_OVERWORLD6, "overworld6"),
     TRACK(MUS_OVERWORLD7, "overworld7"),
+    TRACK(MUS_OVERWORLD8, "overworld8"),
 
     TRACK(MUS_ATHLETIC1, "athletic1"),
     TRACK(MUS_ATHLETIC2, "athletic2"),
@@ -101,8 +102,10 @@ static struct Track tracks[MUS_SIZE] = {
     TRACK(MUS_ATHLETIC6, "athletic6"),
     TRACK(MUS_ATHLETIC7, "athletic7"),
     TRACK(MUS_ATHLETIC8, "athletic8"),
+    TRACK(MUS_ATHLETIC9, "athletic9"),
 
-    TRACK(MUS_STARLAND, "starland"),
+    TRACK(MUS_STARLAND1, "starland1"),
+    TRACK(MUS_STARLAND2, "starland2"),
     TRACK(MUS_FOREST, "forest"),
     TRACK(MUS_SNOW, "snow"),
     TRACK(MUS_DESERT, "desert"),
@@ -110,6 +113,8 @@ static struct Track tracks[MUS_SIZE] = {
 
     TRACK(MUS_WATER1, "water1"),
     TRACK(MUS_WATER2, "water2"),
+    TRACK(MUS_WATER3, "water3"),
+    TRACK(MUS_WATER4, "water4"),
 
     TRACK(MUS_CAVE1, "cave1"),
     TRACK(MUS_CAVE2, "cave2"),
@@ -128,6 +133,7 @@ static struct Track tracks[MUS_SIZE] = {
     TRACK(MUS_AIRSHIP, "airship"),
 
     TRACK(MUS_BOSS1, "boss1"),
+    TRACK(MUS_BOSS2, "boss2"),
 
     TRACK(MUS_BOWSER1, "bowser1"),
     TRACK(MUS_BOWSER2, "bowser2"),
@@ -142,6 +148,11 @@ static struct Track tracks[MUS_SIZE] = {
     TRACK(MUS_WIN1, "win1"),
     TRACK(MUS_WIN2, "win2"),
     TRACK(MUS_WIN3, "win3"),
+
+    TRACK(MUS_WARP, "warp"),
+    TRACK(MUS_SCORE, "score"),
+    TRACK(MUS_CLEAR1, "clear1"),
+    TRACK(MUS_CLEAR2, "clear2"),
 };
 
 static struct SoundState state = {0};
