@@ -3,11 +3,15 @@ cmake_minimum_required(VERSION 3.27.0 FATAL_ERROR)
 project(
     Klawiatura
     VERSION 0.1.0
-    LANGUAGES C)
+    LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
 
 # Libraries
 set(BUILD_SHARED_LIBS OFF)
@@ -70,7 +74,20 @@ FetchContent_MakeAvailable(cglm)
 add_subdirectory(${CMAKE_SOURCE_DIR}/include/fmod)
 
 # GekkoNet
-add_subdirectory(${CMAKE_SOURCE_DIR}/include/GekkoNet)
+FetchContent_Declare(
+    GekkoNet
+    GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
+    GIT_TAG 5e10f41b107d33c2147a08c9ce214670f324e9d1)
+FetchContent_MakeAvailable(GekkoNet)
+
+# TODO: should probably just send a PR for this...
+file(GLOB GEKKO_SRC ${gekkonet_SOURCE_DIR}/GekkoLib/src/*.cpp)
+add_library(GekkoNet STATIC ${GEKKO_SRC})
+target_compile_definitions(GekkoNet PUBLIC GEKKONET_STATIC GEKKONET_NO_ASIO)
+target_include_directories(
+    GekkoNet
+    PUBLIC ${gekkonet_SOURCE_DIR}/GekkoLib/include
+    PRIVATE ${gekkonet_SOURCE_DIR}/GekkoLib/thirdparty)
 
 # S_fixed
 set(S_FIXED_BUILD_TEST OFF)
