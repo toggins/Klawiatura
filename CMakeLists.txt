@@ -81,6 +81,15 @@ FetchContent_Declare(
     GIT_TAG master)
 FetchContent_MakeAvailable(S_fixed)
 
+set(NUTPUNCH_BUILD_TESTS OFF)
+set(NUTPUNCH_BUILD_SERVER OFF)
+
+FetchContent_Declare(
+    nutpunch
+    GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
+    GIT_TAG master)
+FetchContent_MakeAvailable(nutpunch)
+
 set(LIBS
     SDL3::SDL3-static
     SDL3_image::SDL3_image-static
@@ -89,7 +98,8 @@ set(LIBS
     cglm
     fmod
     GekkoNet
-    S_fixed)
+    S_fixed
+    nutpunch)
 
 # Build
 set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)

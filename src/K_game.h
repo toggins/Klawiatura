@@ -317,6 +317,11 @@ struct GameState {
     ObjectID blockmap[BLOCKMAP_SIZE];
 };
 
+struct SaveState {
+    struct GameState game;
+    struct SoundState audio;
+};
+
 void start_state(int, int);
 void save_state(struct GameState*);
 void load_state(const struct GameState*);

@@ -15,11 +15,6 @@
 #include "K_net.h" // IWYU pragma: keep
 #include "K_video.h"
 
-struct SaveState {
-    struct GameState game;
-    struct SoundState audio;
-};
-
 int main(int argc, char** argv) {
 #ifdef _MSC_VER
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF);
@@ -33,31 +28,16 @@ int main(int argc, char** argv) {
 #endif
 
     bool bypass_shader = false;
-    int local_port = 6969;
-    int local_player = 0;
     int num_players = 1;
-    const char* ip[MAX_PLAYERS] = {NULL};
     for (size_t i = 0; i < argc; i++) {
         if (SDL_strcmp(argv[i], "-players") == 0) {
             num_players = SDL_strtol(argv[++i], NULL, 0);
             if (num_players < 1 || num_players > MAX_PLAYERS)
                 FATAL("Player amount must be between 1 and %li", MAX_PLAYERS);
-            for (size_t j = 0; j < num_players; j++) {
-                char* player = argv[++i];
-                if (SDL_strlen(player) <= 5) {
-                    local_port = SDL_strtol(player, NULL, 0);
-                    local_player = (int)j;
-                    ip[j] = NULL;
-                } else {
-                    ip[j] = player;
-                }
-            }
         } else if (SDL_strcmp(argv[i], "-bypass_shader") == 0) {
             bypass_shader = true;
         }
     }
-
-    INFO("Playing as player %i (port %i)", local_player, local_port);
 
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
         FATAL("SDL_Init fail: %s", SDL_GetError());
@@ -75,14 +55,8 @@ int main(int argc, char** argv) {
     config.input_size = sizeof(enum GameInput);
     config.desync_detection = true;
     gekko_start(session, &config);
-    gekko_net_adapter_set(session, gekko_default_adapter(local_port));
-
-    for (size_t i = 0; i < num_players; i++) {
-        if (ip[i] == NULL)
-            gekko_add_actor(session, LocalPlayer, NULL);
-        else
-            gekko_add_actor(session, RemotePlayer, &((GekkoNetAddress){(void*)ip[i], SDL_strlen(ip[i])}));
-    }
+    gekko_net_adapter_set(session, nutpunch_init(num_players));
+    int local_player = net_wait(session);
     if (num_players > 1)
         gekko_set_local_delay(session, local_player, 2);
 
@@ -207,6 +181,7 @@ int main(int argc, char** argv) {
         audio_update();
     }
 
+    net_teardown();
     gekko_destroy(session);
     video_teardown();
     audio_teardown();
