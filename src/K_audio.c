@@ -1,3 +1,4 @@
+#include <fmod_common.h>
 #include <fmod_errors.h>
 
 #include "K_audio.h"
@@ -186,7 +187,7 @@ void save_audio_state(struct SoundState* to) {
     FMOD_BOOL playing = false;
     FMOD_Channel_IsPlaying(music_channel, &playing);
     if (playing)
-        FMOD_Channel_GetPosition(music_channel, &(state.track.offset), FMOD_TIMEUNIT_PCM);
+        FMOD_Channel_GetPosition(music_channel, &(state.track.offset), FMOD_TIMEUNIT_MS);
     SDL_memcpy(to, &state, sizeof(struct SoundState));
 }
 
@@ -203,7 +204,7 @@ void load_audio_state(const struct SoundState* from) {
                 FMOD_Channel_SetMode(
                     music_channel, (state.track.loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME
                 );
-                FMOD_Channel_SetPosition(music_channel, state.track.offset, FMOD_TIMEUNIT_PCM);
+                FMOD_Channel_SetPosition(music_channel, state.track.offset, FMOD_TIMEUNIT_MS);
                 FMOD_Channel_SetPaused(music_channel, false);
             }
         }
@@ -227,7 +228,7 @@ void load_audio_state(const struct SoundState* from) {
                 channel, &((FMOD_VECTOR){sound->pos[0], sound->pos[1], 0}), &((FMOD_VECTOR){0})
             );
         }
-        FMOD_Channel_SetPosition(channel, sound->offset, FMOD_TIMEUNIT_PCM);
+        FMOD_Channel_SetPosition(channel, sound->offset, FMOD_TIMEUNIT_MS);
         FMOD_Channel_SetPaused(channel, false);
     }
 }
@@ -253,7 +254,7 @@ void load_sound(enum SoundIndices index) {
     FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESAMPLE, NULL, &(sound->sound));
     if (result != FMOD_OK)
         FATAL("Sound \"%s\" fail: %s", sound->name, FMOD_ErrorString(result));
-    FMOD_Sound_GetLength(sound->sound, &(sound->length), FMOD_TIMEUNIT_PCM);
+    FMOD_Sound_GetLength(sound->sound, &(sound->length), FMOD_TIMEUNIT_MS);
 }
 
 void load_track(enum TrackIndices index) {
@@ -265,10 +266,10 @@ void load_track(enum TrackIndices index) {
     FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESTREAM, NULL, &(track->stream));
     if (result != FMOD_OK)
         FATAL("Track \"%s\" fail: %s", track->name, FMOD_ErrorString(result));
-    FMOD_Sound_GetLength(track->stream, &(track->length), FMOD_TIMEUNIT_PCM);
+    FMOD_Sound_GetLength(track->stream, &(track->length), FMOD_TIMEUNIT_MS);
     FMOD_Sound_SetLoopPoints(
-        track->stream, track->loop[0], FMOD_TIMEUNIT_PCM,
-        (track->loop[1] <= track->loop[0]) ? track->length : track->loop[1], FMOD_TIMEUNIT_PCM
+        track->stream, track->loop[0], FMOD_TIMEUNIT_MS,
+        (track->loop[1] <= track->loop[0]) ? track->length : track->loop[1], FMOD_TIMEUNIT_MS
     );
 }
 
