@@ -29,4 +29,4 @@ wait for players with a matching lobby ID.
 There is currently no way to specify a custom server IP or lobby ID.
 
 **WARNING:** Multiplayer with 3+ players is not guaranteed to be stable, it's
-possible to get a desync error if packets get dropped.
+possible to get a desync error & a crash if packets get dropped.
