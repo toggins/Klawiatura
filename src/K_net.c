@@ -1,12 +1,11 @@
-#include <stdlib.h>
+#include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_timer.h>
 
 #define NUTPUNCH_IMPLEMENTATION
 #include "nutpunch.h"
 
-#ifdef NUTPUNCH_WINDOSE
-#define sleep_ms(ms) (Sleep((ms)))
-#else
-#error Bad luck.
+#ifndef NUTPUNCH_WINDOSE
+#error SORRY!!! NutPunch currently relies on "winsock2.h" to build.
 #endif
 
 #include "K_game.h"
@@ -33,7 +32,7 @@ static void send_data(GekkoNetAddress* addr, const char* data, int len) {
     struct sockaddr_in baseAddr;
     baseAddr.sin_family = AF_INET;
     baseAddr.sin_port = htons(peer->port); // see NOTE above
-    memcpy(&baseAddr.sin_addr, peer->addr, 4);
+    SDL_memcpy(&baseAddr.sin_addr, peer->addr, 4);
     struct sockaddr* sockAddr = (struct sockaddr*)&baseAddr;
 
     int io = sendto(sock, data, len, 0, sockAddr, sizeof(baseAddr));
@@ -46,15 +45,15 @@ static void send_data(GekkoNetAddress* addr, const char* data, int len) {
 }
 
 static GekkoNetResult* make_result(int peer_idx, const char* data, int io) {
-    GekkoNetResult* res = malloc(sizeof(*res));
+    GekkoNetResult* res = SDL_malloc(sizeof(*res));
 
     res->addr.size = sizeof(struct NutPunch);
-    res->addr.data = malloc(res->addr.size);
-    memcpy(res->addr.data, &NutPunch_GetPeers()[peer_idx], res->addr.size);
+    res->addr.data = SDL_malloc(res->addr.size);
+    SDL_memcpy(res->addr.data, &NutPunch_GetPeers()[peer_idx], res->addr.size);
 
     res->data_len = io;
-    res->data = malloc(res->data_len);
-    memcpy(res->data, data, res->data_len);
+    res->data = SDL_malloc(res->data_len);
+    SDL_memcpy(res->data, data, res->data_len);
 
     return res;
 }
@@ -78,9 +77,9 @@ static GekkoNetResult** receive_data(int* length) {
         int addrSize = sizeof(baseAddr);
 
         struct sockaddr* addr = (struct sockaddr*)&baseAddr;
-        memset(addr, 0, sizeof(*addr));
+        SDL_memset(addr, 0, sizeof(*addr));
 
-        memset(data, 0, sizeof(data));
+        SDL_memset(data, 0, sizeof(data));
         int io = recvfrom(sock, data, sizeof(data), 0, addr, &addrSize);
 
         if (io == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK) {
@@ -96,7 +95,7 @@ static GekkoNetResult** receive_data(int* length) {
             if (NutPunch_LocalPeer() == i || !peer->port)
                 continue;
 
-            bool sameHost = !memcmp(&baseAddr.sin_addr, peer->addr, 4);
+            bool sameHost = !SDL_memcmp(&baseAddr.sin_addr, peer->addr, 4);
             bool samePort = baseAddr.sin_port == htons(peer->port);
             if (!sameHost | !samePort)
                 continue;
@@ -113,10 +112,10 @@ static GekkoNetResult** receive_data(int* length) {
         struct sockaddr_in baseAddr;
         baseAddr.sin_family = AF_INET;
         baseAddr.sin_port = htons(peer->port);
-        memcpy(&baseAddr.sin_addr, peer->addr, 4);
+        SDL_memcpy(&baseAddr.sin_addr, peer->addr, 4);
         int addrSize = sizeof(baseAddr);
 
-        memset(data, 0, sizeof(data));
+        SDL_memset(data, 0, sizeof(data));
         int io = recvfrom(sock, data, sizeof(data), 0, (struct sockaddr*)&baseAddr, &addrSize);
 
         if (io == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK) {
@@ -167,7 +166,7 @@ int net_wait(GekkoSession* session) {
         if (NutPunch_GetPeerCount() >= num_players)
             break;
 
-        sleep_ms(1000 / 60);
+        SDL_Delay(1000 / 60);
     }
 
     sock = NutPunch_Release();
