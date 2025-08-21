@@ -99,7 +99,7 @@ static GekkoNetResult** receive_data(int* length) {
 
             bool sameHost = !SDL_memcmp(&baseAddr.sin_addr, peer->addr, 4);
             bool samePort = baseAddr.sin_port == htons(peer->port);
-            if (!sameHost | !samePort)
+            if (!sameHost || !samePort)
                 continue;
 
             results[(*length)++] = make_result(i, data, io);
