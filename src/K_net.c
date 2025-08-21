@@ -71,7 +71,7 @@ static GekkoNetResult** receive_data(int* length) {
     }
 
     NutPunch_Query(); // just in case.....
-    static char data[sizeof(struct SaveState)] = {0};
+    static char data[512000] = {0};
 
     static GekkoNetResult* results[64] = {0};
     *length = 0;
