@@ -11,3 +11,54 @@ if keyboard_check(vk_f1) {
 		blueprint_path = filename_path(_file)
 	}
 }
+
+if keyboard_check(vk_shift) {
+	cursor_x = mouse_x
+	cursor_y = mouse_y
+} else {
+	cursor_x = round(mouse_x / grid_size) * grid_size
+	cursor_y = round(mouse_y / grid_size) * grid_size
+}
+
+if mouse_check_button_pressed(mb_middle) {
+	drag_x = window_mouse_get_x()
+	drag_y = window_mouse_get_y()
+}
+if mouse_check_button(mb_middle) {
+	var _camera = view_camera[0]
+	var _dx = camera_get_view_x(_camera)
+	var _dy = camera_get_view_y(_camera)
+	var _x = window_mouse_get_x()
+	var _y = window_mouse_get_y()
+	
+	_dx -= (_x - drag_x) * zoom
+	_dy -= (_y - drag_y) * zoom
+	drag_x = _x
+	drag_y = _y
+	camera_set_view_pos(_camera, _dx, _dy)
+}
+
+var _zoom = mouse_wheel_down() - mouse_wheel_up()
+if _zoom != 0 {
+	var _camera = view_camera[0]
+	var _inc = zoom >= 1 ? _zoom * 0.2 : _zoom * 0.1
+	zoom = clamp(zoom + _inc, 0.1, 10)
+	camera_set_view_size(_camera, window_width * zoom, window_height * zoom)
+}
+
+if keyboard_check_pressed(ord("R")) {
+	var _camera = view_camera[0]
+	camera_set_view_pos(_camera, 0, 0)
+	camera_set_view_size(_camera, window_width, window_height)
+	zoom = 1
+	grid_size = 32
+}
+
+if keyboard_check_pressed(ord("G"))
+	switch grid_size {
+		case 1: grid_size = 16 break
+		default:
+		case 16: grid_size = 32 break
+		case 32: grid_size = 64 break
+		case 64: grid_size = 1 break
+	}

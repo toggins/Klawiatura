@@ -1,1 +1,1 @@
-draw_text(8, 8, $"X: {mouse_x}\nY: {mouse_y}\nObjects: {instance_number(objMarker)}")
+draw_text(8, 8, $"X: {cursor_x}\nY: {cursor_y}\nZoom: {round((1 / zoom) * 100)}%\nObjects: {instance_number(objMarker)}")
