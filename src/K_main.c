@@ -1,11 +1,4 @@
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define DUMP_MEMLEAKS
-#endif
-
-#ifdef DUMP_MEMLEAKS
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#endif
+#include <stdlib.h>
 
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL.h>
@@ -19,22 +12,7 @@
 #include "K_net.h" // IWYU pragma: keep
 #include "K_video.h"
 
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define DUMP_MEMLEAKS
-#endif
-
 int main(int argc, char** argv) {
-#ifdef DUMP_MEMLEAKS
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF);
-
-    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-    _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
-    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
-    _CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDOUT);
-    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
-    _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDOUT);
-#endif
-
     bool bypass_shader = false;
     int num_players = 1;
     char* server_ip = "95.163.233.200"; // Public NutPunch server
@@ -195,8 +173,10 @@ int main(int argc, char** argv) {
         audio_update();
     }
 
-    net_teardown();
     gekko_destroy(session);
+    session = NULL;
+
+    net_teardown();
     video_teardown();
     audio_teardown();
     SDL_Quit();
@@ -205,5 +185,5 @@ int main(int argc, char** argv) {
     _CrtDumpMemoryLeaks();
 #endif
 
-    return 0;
+    return EXIT_SUCCESS;
 }

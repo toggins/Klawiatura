@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_timer.h>
 
@@ -5,7 +7,7 @@
 #include "nutpunch.h"
 
 #ifndef NUTPUNCH_WINDOSE
-#error SORRY!!! NutPunch currently relies on "winsock2.h" to build.
+#error SORRY!!! NutPunch currently relies on "winsock2.h"
 #endif
 
 #include "K_game.h"
@@ -33,7 +35,7 @@ static void send_data(GekkoNetAddress* addr, const char* data, int len) {
 
     struct sockaddr_in baseAddr;
     baseAddr.sin_family = AF_INET;
-    baseAddr.sin_port = htons(peer->port); // see NOTE above
+    baseAddr.sin_port = htons(peer->port);
     SDL_memcpy(&baseAddr.sin_addr, peer->addr, 4);
     struct sockaddr* sockAddr = (struct sockaddr*)&baseAddr;
 
@@ -74,19 +76,19 @@ static GekkoNetResult** receive_data(int* length) {
     static GekkoNetResult* results[64] = {0};
     *length = 0;
 
-    while (NutPunch_MayAccept()) {
-        struct sockaddr_in baseAddr;
-        int addrSize = sizeof(baseAddr);
-
-        struct sockaddr* addr = (struct sockaddr*)&baseAddr;
-        SDL_memset(addr, 0, sizeof(*addr));
+    for (;;) {
+        struct sockaddr_in base_addr = {0};
+        int addrSize = sizeof(base_addr);
 
         SDL_memset(data, 0, sizeof(data));
-        int io = recvfrom(sock, data, sizeof(data), 0, addr, &addrSize);
+        int io = recvfrom(sock, data, sizeof(data), 0, (struct sockaddr*)&base_addr, &addrSize);
 
-        if (io == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK) {
+        if (io == SOCKET_ERROR) {
+            if (WSAGetLastError() == WSAEWOULDBLOCK)
+                break;
             INFO("Failed to receive from socket (%d)\n", WSAGetLastError());
-            NutPunch_NukeSocket();
+            closesocket(sock);
+            sock = INVALID_SOCKET;
             continue;
         }
         if (io <= 0 || io > sizeof(data))
@@ -97,12 +99,13 @@ static GekkoNetResult** receive_data(int* length) {
             if (NutPunch_LocalPeer() == i || !peer->port)
                 continue;
 
-            bool sameHost = !SDL_memcmp(&baseAddr.sin_addr, peer->addr, 4);
-            bool samePort = baseAddr.sin_port == htons(peer->port);
-            if (!sameHost || !samePort)
+            bool same_host = !SDL_memcmp(&base_addr.sin_addr, peer->addr, 4);
+            bool same_port = base_addr.sin_port == htons(peer->port);
+            if (!same_host || !same_port)
                 continue;
 
             results[(*length)++] = make_result(i, data, io);
+            break;
         }
     }
 
@@ -111,19 +114,23 @@ static GekkoNetResult** receive_data(int* length) {
         if (NutPunch_LocalPeer() == i || !peer->port)
             continue;
 
-        struct sockaddr_in baseAddr;
-        baseAddr.sin_family = AF_INET;
-        baseAddr.sin_port = htons(peer->port);
-        SDL_memcpy(&baseAddr.sin_addr, peer->addr, 4);
-        int addrSize = sizeof(baseAddr);
+        struct sockaddr_in base_addr;
+        base_addr.sin_family = AF_INET;
+        base_addr.sin_port = htons(peer->port);
+        SDL_memcpy(&base_addr.sin_addr, peer->addr, 4);
+        int addrSize = sizeof(base_addr);
 
         SDL_memset(data, 0, sizeof(data));
-        int io = recvfrom(sock, data, sizeof(data), 0, (struct sockaddr*)&baseAddr, &addrSize);
+        int io = recvfrom(sock, data, sizeof(data), 0, (struct sockaddr*)&base_addr, &addrSize);
 
         if (io == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK) {
             INFO("Failed to receive from peer %d (%d)\n", i + 1, WSAGetLastError());
             NutPunch_GetPeers()[i].port = 0; // just nuke them...
             continue;
+        }
+        if (!io) { // graceful close
+            INFO("Peer %d disconnect\n", i + 1);
+            NutPunch_GetPeers()[i].port = 0;
         }
         if (io <= 0 || io > sizeof(data))
             continue;
@@ -133,10 +140,10 @@ static GekkoNetResult** receive_data(int* length) {
     return results;
 }
 
-GekkoNetAdapter* nutpunch_init(int num_players0, const char* server_ip0, const char* lobby_id0) {
-    num_players = num_players0;
-    server_ip = server_ip0;
-    lobby_id = lobby_id0;
+GekkoNetAdapter* nutpunch_init(int _num_players, const char* _server_ip, const char* _lobby_id) {
+    num_players = _num_players;
+    server_ip = _server_ip;
+    lobby_id = _lobby_id;
 
     static GekkoNetAdapter adapter = {0};
     adapter.send_data = send_data;
@@ -158,8 +165,11 @@ int net_wait(GekkoSession* session) {
     for (;;) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            if (SDL_EVENT_QUIT == event.type)
-                exit(0);
+            if (SDL_EVENT_QUIT == event.type) {
+                gekko_destroy(session);
+                session = NULL;
+                exit(EXIT_SUCCESS);
+            }
         }
 
         NutPunch_Query();

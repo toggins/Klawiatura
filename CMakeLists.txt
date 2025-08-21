@@ -70,7 +70,12 @@ FetchContent_MakeAvailable(cglm)
 add_subdirectory(${CMAKE_SOURCE_DIR}/include/fmod)
 
 # GekkoNet
-add_subdirectory(${CMAKE_SOURCE_DIR}/include/GekkoNet)
+set(NO_ASIO_BUILD ON)
+FetchContent_Declare(
+    GekkoNet
+    GIT_REPOSITORY https://github.com/Schwungus/GekkoNet.git
+    GIT_TAG main) # TODO: pin to a specific commit/version
+FetchContent_MakeAvailable(GekkoNet)
 
 # S_fixed
 set(S_FIXED_BUILD_TEST OFF)
@@ -105,7 +110,8 @@ set(LIBS
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
 file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/src/*.h)
 
-add_executable(Klawiatura ${SOURCES} ${HEADERS} ${CMAKE_SOURCE_DIR}/res/Klawiatura.rc)
+add_executable(Klawiatura ${SOURCES} ${HEADERS}
+                          ${CMAKE_SOURCE_DIR}/res/Klawiatura.rc)
 target_include_directories(Klawiatura PRIVATE ${SOURCE_DIR})
 target_link_libraries(Klawiatura PRIVATE ${LIBS})
 target_compile_definitions(Klawiatura PUBLIC -D_POSIX_C_SOURCE=200112L)
