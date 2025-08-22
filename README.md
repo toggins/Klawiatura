@@ -4,8 +4,11 @@ Mario Forever with rollback netcode.
 
 ## External Dependencies
 
-In order to build this you will need CMake and Python installed on your
-computer, as well as these libraries:
+In order to build this, you will need CMake and Python installed on your computer, as well as the libraries listed below. You will also need to install `jinja2` globally, using e.g.:
+
+```bash
+py -m pip install jinja2
+```
 
 ### [FMOD Engine 2.03.08](https://www.fmod.com/download#fmodengine)
 
