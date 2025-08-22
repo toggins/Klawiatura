@@ -50,6 +50,7 @@ jobs:
           key: cmake-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
       - name: Assemble
         run: |
+          Remove-Item -Recurse Klawiatura
           Copy-Item -Recurse -Path build -Destination Klawiatura # ew...
           7z a -tzip $OUTFILE Klawiatura/Klawiatura.exe Klawiatura/fmodL.dll Klawiatura/data -r
       - name: Release
