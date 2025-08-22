@@ -50,9 +50,9 @@ jobs:
           key: cmake-${{ github.ref_name }}-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
       - name: Assemble
         run: |
-          Remove-Item -Recurse Klawiatura
-          Copy-Item -Recurse -Path build -Destination Klawiatura # ew...
-          7z a -tzip $OUTFILE Klawiatura/Klawiatura.exe Klawiatura/fmodL.dll Klawiatura/data -r
+          New-Item -Force -Path Klawiatura -ItemType Directory
+          Copy-Item -Recurse -Destination Klawiatura -Path build/Klawiatura.exe build/fmodL.dll build/data
+          7z a -tzip $OUTFILE Klawiatura -r
       - name: Release
         uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
