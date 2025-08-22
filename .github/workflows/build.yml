@@ -41,7 +41,7 @@ jobs:
       - name: Assemble
         run: |
           mv build Klawiatura
-          7z a $OUTFILE Klawiatura/Klawiatura.exe Klawiatura/*.dll -r Klawiatura/data
+          7z a $OUTFILE Klawiatura/Klawiatura.exe Klawiatura/fmodL.dll -r Klawiatura/data
       - name: Release
         uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
