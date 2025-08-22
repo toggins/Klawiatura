@@ -7,7 +7,7 @@ on:
 
 jobs:
   binary:
-    name: Release binaries for ${{ matrix.config.fancy-name }}
+    name: Release binaries for ${{ matrix.config.os-name }}
     runs-on: ${{ matrix.config.runner-os }}
     permissions:
       contents: write
@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - os-name: W64
+          - os-name: Win64
             runner-os: windows-latest
             bin-ext: .exe
     env:
@@ -30,6 +30,8 @@ jobs:
           token: ${{ secrets.FMOD_TOKEN }}
           path: include/fmod
           ref: master
+      - name: Install Python deps
+        run: py -m pip install jinja2
       - name: Restore build cache
         uses: actions/cache/restore@v4
         with:
