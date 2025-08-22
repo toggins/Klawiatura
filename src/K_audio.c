@@ -156,7 +156,7 @@ static struct Track tracks[MUS_SIZE] = {
 };
 
 static struct SoundState state = {0};
-static FMOD_CHANNEL* music_channel = NULL;
+static FMOD_CHANNEL* music_channels[TS_SIZE] = {0};
 
 void audio_init() {
     FMOD_RESULT result = FMOD_System_Create(&speaker, FMOD_VERSION);
@@ -195,31 +195,31 @@ void audio_teardown() {
 }
 
 void save_audio_state(struct SoundState* to) {
-    FMOD_BOOL playing = false;
-    FMOD_Channel_IsPlaying(music_channel, &playing);
-    if (playing)
-        FMOD_Channel_GetPosition(music_channel, &(state.track.offset), FMOD_TIMEUNIT_MS);
     SDL_memcpy(to, &state, sizeof(struct SoundState));
 }
 
 void load_audio_state(const struct SoundState* from) {
-    const struct TrackObject old_track = state.track;
     SDL_memcpy(&state, from, sizeof(struct SoundState));
 
-    if (state.track.index != old_track.index || state.track.loop != old_track.loop) {
-        FMOD_ChannelGroup_Stop(music_group);
-        if (state.track.index != MUS_NULL) {
-            const struct Track* track = &(tracks[state.track.index]);
-            if (state.track.offset < track->length || state.track.loop) {
-                FMOD_System_PlaySound(speaker, track->stream, state_group, true, &music_channel);
-                FMOD_Channel_SetMode(
-                    music_channel, (state.track.loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME
-                );
-                FMOD_Channel_SetPosition(music_channel, state.track.offset, FMOD_TIMEUNIT_MS);
-                FMOD_Channel_SetPaused(music_channel, false);
-            }
-        }
+    FMOD_ChannelGroup_Stop(music_group);
+    int latest_track = -1;
+    for (size_t i = 0; i < TS_SIZE; i++) {
+        const struct TrackObject* track = &(state.tracks[i]);
+        if (track->index == MUS_NULL)
+            continue;
+        const struct Track* mus = &(tracks[track->index]);
+        if (track->offset >= mus->length)
+            continue;
+
+        FMOD_System_PlaySound(speaker, mus->stream, state_group, true, &(music_channels[i]));
+        FMOD_Channel_SetMode(music_channels[i], (track->loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
+        FMOD_Channel_SetPosition(music_channels[i], track->offset, FMOD_TIMEUNIT_MS);
+        FMOD_Channel_SetVolume(music_channels[i], 0);
+        FMOD_Channel_SetPaused(music_channels[i], false);
+        latest_track = (int)i;
     }
+    if (latest_track >= 0)
+        FMOD_Channel_SetVolume(music_channels[latest_track], 1);
 
     FMOD_ChannelGroup_Stop(state_group);
     for (size_t i = 0; i < MAX_SOUNDS; i++) {
@@ -245,6 +245,16 @@ void load_audio_state(const struct SoundState* from) {
 }
 
 void tick_audio_state() {
+    for (size_t i = 0; i < TS_SIZE; i++) {
+        struct TrackObject* track = &(state.tracks[i]);
+        if (track->index == MUS_NULL)
+            continue;
+
+        track->offset += 20L;
+        if (!(track->loop) && track->offset >= tracks[track->index].length)
+            stop_track(i);
+    }
+
     for (size_t i = 0; i < MAX_SOUNDS; i++) {
         struct SoundObject* sound = &(state.sounds[i]);
         if (sound->index == SND_NULL)
@@ -331,23 +341,49 @@ void play_sound_at(enum SoundIndices index, float x, float y) {
     state.next_sound = (state.next_sound + 1) % MAX_SOUNDS;
 }
 
-void play_track(enum TrackIndices index, bool loop) {
-    if (index == MUS_NULL) {
-        FMOD_ChannelGroup_Stop(music_group);
-        return;
-    }
-
+void play_track(enum TrackSlots slot, enum TrackIndices index, bool loop) {
     const struct Track* mus = &(tracks[index]);
     if (mus->stream == NULL)
         FATAL("Invalid track index %u", index);
 
-    struct TrackObject* track = &(state.track);
+    struct TrackObject* track = &(state.tracks[slot]);
     track->index = index;
     track->offset = 0;
     track->loop = loop;
 
-    FMOD_ChannelGroup_Stop(music_group);
-    FMOD_System_PlaySound(speaker, mus->stream, music_group, true, &music_channel);
-    FMOD_Channel_SetMode(music_channel, (loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
-    FMOD_Channel_SetPaused(music_channel, false);
+    if (music_channels[slot] != NULL)
+        FMOD_Channel_Stop(music_channels[slot]);
+    FMOD_System_PlaySound(speaker, mus->stream, music_group, true, &(music_channels[slot]));
+    FMOD_Channel_SetMode(music_channels[slot], (loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
+    FMOD_Channel_SetVolume(music_channels[slot], (float)(state.top_track <= slot));
+    FMOD_Channel_SetPaused(music_channels[slot], false);
+
+    if (state.top_track < slot) {
+        for (size_t i = 0; i < slot; i++)
+            if (music_channels[i] != NULL)
+                FMOD_Channel_SetVolume(music_channels[i], 0);
+        state.top_track = slot;
+    }
+}
+
+void stop_track(enum TrackSlots slot) {
+    struct TrackObject* track = &(state.tracks[slot]);
+    if (track->index == MUS_NULL)
+        return;
+    track->index = MUS_NULL;
+
+    if (music_channels[slot] != NULL) {
+        FMOD_Channel_Stop(music_channels[slot]);
+        music_channels[slot] = NULL;
+    }
+
+    if (state.top_track == slot && slot > 0) {
+        enum TrackSlots i = slot - 1;
+        for (; i >= 0; i--)
+            if (music_channels[i] != NULL) {
+                FMOD_Channel_SetVolume(music_channels[i], 1);
+                break;
+            }
+        state.top_track = i;
+    }
 }

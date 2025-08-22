@@ -485,7 +485,10 @@ static void win_player(struct GameObject* pawn) {
     }
 
     pawn->values[VAL_PLAYER_FLASH] = pawn->values[VAL_PLAYER_STARMAN] = 0L;
-    play_track((state.flags & GF_LOST) ? MUS_WIN2 : MUS_WIN1, false);
+    stop_track(TS_LEVEL);
+    stop_track(TS_SWITCH);
+    stop_track(TS_POWER);
+    play_track(TS_FANFARE, (state.flags & GF_LOST) ? MUS_WIN2 : MUS_WIN1, false);
 }
 
 static void kill_player(struct GameObject* pawn) {
@@ -493,7 +496,7 @@ static void kill_player(struct GameObject* pawn) {
     if (dead != NULL) {
         // !!! CLIENT-SIDE !!!
         if (pawn->values[VAL_PLAYER_INDEX] == local_player && pawn->values[VAL_PLAYER_STARMAN] > 0L)
-            play_track(state.track, true);
+            stop_track(TS_POWER);
         // !!! CLIENT-SIDE !!!
 
         struct GamePlayer* player =
@@ -717,7 +720,7 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
             if (other->type == OBJ_PLAYER) {
                 // !!! CLIENT-SIDE !!!
                 if (other->values[VAL_PLAYER_INDEX] == local_player)
-                    play_track(MUS_STARMAN, true);
+                    play_track(TS_POWER, MUS_STARMAN, true);
                 // !!! CLIENT-SIDE !!!
                 other->values[VAL_PLAYER_STARMAN] = 500L;
                 play_sound_at_object(other, SND_GROW);
@@ -1251,7 +1254,7 @@ void start_state(int num_players, int local) {
     state.size[1] = F_SCREEN_HEIGHT;
     state.bounds[1][0] = FfInt(2560L);
     state.bounds[1][1] = F_SCREEN_HEIGHT;
-    state.track = MUS_DESERT;
+    state.track = MUS_SNOW;
 
     state.spawn = state.checkpoint = -1L;
     state.water = FfInt(240L); // 0x7FFFFFFF;
@@ -1603,7 +1606,8 @@ void start_state(int num_players, int local) {
         respawn_player((int)i);
     }
 
-    play_track(state.track, true);
+    if (state.track != MUS_NULL)
+        play_track(TS_LEVEL, state.track, true);
 }
 
 uint32_t check_state() {
@@ -2005,7 +2009,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                             play_sound_at_object(object, SND_STARMAN);
                         // !!! CLIENT-SIDE !!!
                         if (starman <= 0L && object->values[VAL_PLAYER_INDEX] == local_player)
-                            play_track(state.track, true);
+                            stop_track(TS_POWER);
                         // !!! CLIENT-SIDE !!!
                     }
 
@@ -2037,7 +2041,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
 
                         case 0: {
                             if (object->flags & FLG_PLAYER_DEAD_LAST) {
-                                play_track((state.flags & GF_LOST) ? MUS_LOSE2 : MUS_LOSE1, false);
+                                play_track(TS_FANFARE, (state.flags & GF_LOST) ? MUS_LOSE2 : MUS_LOSE1, false);
                                 if (state.flags & GF_HARDCORE)
                                     play_sound(SND_HARDCORE);
                             } else {
@@ -2066,7 +2070,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                             if ((object->flags & FLG_PLAYER_DEAD_LAST) || state.clock == 0L) {
                                 state.sequence.type = SEQ_LOSE;
                                 state.sequence.time = 1L;
-                                play_track(MUS_GAME_OVER, false);
+                                play_track(TS_FANFARE, MUS_GAME_OVER, false);
                             }
                             object->flags |= FLG_DESTROY;
                             break;

@@ -130,6 +130,15 @@ enum TrackIndices {
     MUS_SIZE,
 };
 
+enum TrackSlots {
+    TS_LEVEL,
+    TS_SWITCH,
+    TS_POWER,
+    TS_SCORE,
+    TS_FANFARE,
+    TS_SIZE,
+};
+
 struct Sound {
     const char* name;
     FMOD_SOUND* sound;
@@ -147,7 +156,8 @@ struct SoundState {
         enum TrackIndices index;
         uint32_t offset;
         bool loop;
-    } track;
+    } tracks[TS_SIZE];
+    enum TrackSlots top_track;
 
     struct SoundObject {
         enum SoundIndices index;
@@ -173,4 +183,5 @@ void load_track(enum TrackIndices);
 void move_ears(float, float);
 void play_sound(enum SoundIndices);
 void play_sound_at(enum SoundIndices, float, float);
-void play_track(enum TrackIndices, bool);
+void play_track(enum TrackSlots, enum TrackIndices, bool);
+void stop_track(enum TrackSlots);

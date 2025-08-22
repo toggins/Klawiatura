@@ -483,6 +483,10 @@ enum TextureIndices {
     TEX_BUBBLE_POP5,
     TEX_BUBBLE_POP6,
     TEX_BUBBLE_POP7,
+    TEX_PSWITCH1,
+    TEX_PSWITCH2,
+    TEX_PSWITCH3,
+    TEX_PSWITCH_FLAT,
 
     TEX_SIZE,
 };

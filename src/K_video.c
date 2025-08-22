@@ -10,6 +10,7 @@
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
+
 #include "K_video.h"
 
 #define CHECK_GL_EXTENSION(ext)                                                                                        \
