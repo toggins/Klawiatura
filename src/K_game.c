@@ -1983,8 +1983,11 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
 
                         case POW_LUI: {
                             if (object->values[VAL_PLAYER_GROUND] <= 0L) {
-                                struct GameObject* effect = get_object(create_object(OBJ_PLAYER_EFFECT, object->pos));
+                                const ObjectID eid = create_object(OBJ_PLAYER_EFFECT, object->pos);
+                                struct GameObject* effect = get_object(eid);
                                 if (effect != NULL) {
+                                    interp[eid].from[0] = interp[oid].pos[0];
+                                    interp[eid].from[1] = interp[oid].pos[1];
                                     effect->flags |= object->flags;
                                     effect->values[VAL_PLAYER_EFFECT_POWER] = player->power;
                                     effect->values[VAL_PLAYER_EFFECT_FRAME] = get_player_frame(object);
