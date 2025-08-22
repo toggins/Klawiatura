@@ -2,8 +2,7 @@ name: Build & release
 
 on:
   push:
-    # Can't do this until we figure out fmod:
-    #branches: ["master"]
+    branches: ["master"]
     tags: ["stable", "dev"]
 
 jobs:
@@ -24,6 +23,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Source fmod legally
+        uses: actions/checkout@v4
+        with:
+          repository: toggins/fmod
+          token: ${{ secrets.FMOD_TOKEN }}
+          path: include/fmod
+          ref: master
       - name: Restore build cache
         uses: actions/cache/restore@v4
         with:
