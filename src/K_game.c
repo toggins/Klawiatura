@@ -2591,7 +2591,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 play_sound(SND_TICK);
         }
 
-        if (state.sequence.time >= 300L) {
+        if (state.sequence.time > 300L) {
             state.flags |= GF_END;
             INFO("Game over");
         }
