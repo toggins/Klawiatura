@@ -51,7 +51,7 @@ jobs:
       - name: Assemble
         run: |
           Copy-Item -Recurse -Path build -Destination Klawiatura # ew...
-          7za a -tzip $OUTFILE Klawiatura/Klawiatura.exe Klawiatura/fmodL.dll Klawiatura/data -r
+          7z a -tzip $OUTFILE Klawiatura/Klawiatura.exe Klawiatura/fmodL.dll Klawiatura/data -r
       - name: Release
         uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
