@@ -52,7 +52,7 @@ jobs:
         run: |
           New-Item -Force -Path 'Klawiatura' -ItemType 'Directory'
           Copy-Item -Recurse -Destination 'Klawiatura' -Path @('build/Klawiatura.exe', 'build/fmodL.dll', 'build/data')
-          7z a -tzip $OUTFILE Klawiatura -r
+          7z a $OUTFILE Klawiatura\
       - name: Release
         uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
