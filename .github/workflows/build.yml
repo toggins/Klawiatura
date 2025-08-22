@@ -40,8 +40,8 @@ jobs:
           key: cmake-${{ github.ref_name }}-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
       - name: Build
         run: |
-          cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Release
-          cmake --build build --target Klawiatura
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release --target Klawiatura
       - name: Save build cache
         uses: actions/cache/save@v4
         id: cache-save
