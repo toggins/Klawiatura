@@ -101,6 +101,10 @@ enum GameObjectType {
     OBJ_LAVA,
     OBJ_PODOBOO_SPAWNER,
     OBJ_PODOBOO,
+    OBJ_SPRING,
+    OBJ_PSWITCH,
+    OBJ_PSWITCH_COIN,
+    OBJ_PSWITCH_BRICK,
 
     OBJ_SIZE,
 };
@@ -181,6 +185,8 @@ enum ObjectValues {
 
     VAL_GOAL_Y = VAL_START,
     VAL_GOAL_ANGLE,
+
+    VAL_PSWITCH = VAL_START,
 };
 
 enum ObjectFlags {
@@ -212,6 +218,8 @@ enum ObjectFlags {
     FLG_BUBBLE_POP = 1 << 5,
 
     FLG_GOAL_START = 1 << 5,
+
+    FLG_PSWITCH_ONCE = 1 << 5,
 };
 
 enum PlayerFrames {
@@ -288,6 +296,7 @@ struct GameState {
     ObjectID spawn, checkpoint;
     fvec2 scroll;
     fix16_t water, hazard;
+    uint16_t pswitch;
 
     struct GameSequence {
         enum GameSequenceType {

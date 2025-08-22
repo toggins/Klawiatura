@@ -91,6 +91,7 @@ static bool is_solid(ObjectID oid, bool ignore_full, bool ignore_top) {
         case OBJ_ITEM_BLOCK:
         case OBJ_BRICK_BLOCK:
         case OBJ_BRICK_BLOCK_COIN:
+        case OBJ_PSWITCH_BRICK:
             return !ignore_full;
         case OBJ_SOLID_TOP:
             return !ignore_top;
@@ -236,7 +237,8 @@ static void bump_block(struct GameObject* block, ObjectID from, bool strong) {
             break;
         }
 
-        case OBJ_BRICK_BLOCK: {
+        case OBJ_BRICK_BLOCK:
+        case OBJ_PSWITCH_BRICK: {
             if (strong) {
                 struct GameObject* shard = get_object(create_object(
                     OBJ_BRICK_SHARD, (fvec2){Fadd(block->pos[0], FfInt(8)), Fadd(block->pos[1], FfInt(8))}
@@ -302,7 +304,8 @@ static void bottom_check(ObjectID self_id, ObjectID other_id) {
 
         case OBJ_ITEM_BLOCK:
         case OBJ_BRICK_BLOCK:
-        case OBJ_BRICK_BLOCK_COIN: {
+        case OBJ_BRICK_BLOCK_COIN:
+        case OBJ_PSWITCH_BRICK: {
             const struct GameObject* other = &(state.objects[other_id]);
             if (other->type != OBJ_PLAYER)
                 break;
@@ -484,6 +487,7 @@ static void win_player(struct GameObject* pawn) {
         }
     }
 
+    state.pswitch = 0L;
     pawn->values[VAL_PLAYER_FLASH] = pawn->values[VAL_PLAYER_STARMAN] = 0L;
     stop_track(TS_LEVEL);
     stop_track(TS_SWITCH);
@@ -568,7 +572,8 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
             break;
         }
 
-        case OBJ_COIN: {
+        case OBJ_COIN:
+        case OBJ_PSWITCH_COIN: {
             const struct GameObject* other = &(state.objects[other_id]);
             if (other->type != OBJ_PLAYER)
                 break;
@@ -823,6 +828,33 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
                     self->flags |= FLG_DESTROY;
                 }
             }
+            break;
+        }
+
+        case OBJ_PSWITCH: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type != OBJ_PLAYER || other->values[VAL_Y_SPEED] <= FxZero ||
+                other->pos[1] > Fadd(self->pos[1], FfInt(20L)) || self->values[VAL_PSWITCH] > 0L)
+                break;
+
+            other->values[VAL_Y_SPEED] = -FxOne;
+            self->values[VAL_PSWITCH] = state.pswitch = 600L;
+
+            ObjectID oid = state.live_objects;
+            while (object_is_alive(oid)) {
+                struct GameObject* object = &(state.objects[oid]);
+                if (object->type == OBJ_COIN) {
+                    create_object(OBJ_PSWITCH_BRICK, object->pos);
+                    object->flags |= FLG_DESTROY;
+                } else if (object->type == OBJ_BRICK_BLOCK) {
+                    create_object(OBJ_PSWITCH_COIN, object->pos);
+                    object->flags |= FLG_DESTROY;
+                }
+                oid = object->previous;
+            }
+
+            play_sound_at_object(self, SND_TOGGLE);
+            play_track(TS_SWITCH, MUS_PSWITCH, true);
             break;
         }
     }
@@ -1433,6 +1465,7 @@ void start_state(int num_players, int local) {
     create_object(OBJ_CHECKPOINT, (fvec2){FfInt(864L), FfInt(416L)});
     create_object(OBJ_CHECKPOINT, (fvec2){FfInt(1024L), FfInt(416L)});
     create_object(OBJ_GOAL_BAR, (fvec2){FfInt(2347L), FfInt(144L)});
+    create_object(OBJ_PSWITCH, (fvec2){FfInt(128L), FfInt(208L)});
 
     struct GameObject* object = get_object(create_object(OBJ_ROTODISC_BALL, (fvec2){FfInt(608L), FfInt(352L)}));
     if (object != NULL) {
@@ -2201,7 +2234,8 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                             break;
                                         case OBJ_ITEM_BLOCK:
                                         case OBJ_BRICK_BLOCK:
-                                        case OBJ_BRICK_BLOCK_COIN: {
+                                        case OBJ_BRICK_BLOCK_COIN:
+                                        case OBJ_PSWITCH_BRICK: {
                                             bump_block(bumped, oid, true);
                                             break;
                                         }
@@ -2280,7 +2314,8 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 }
 
                 case OBJ_ITEM_BLOCK:
-                case OBJ_BRICK_BLOCK: {
+                case OBJ_BRICK_BLOCK:
+                case OBJ_PSWITCH_BRICK: {
                     if (object->values[VAL_BLOCK_BUMP] > 0L)
                         if (++(object->values[VAL_BLOCK_BUMP]) > 10L)
                             object->values[VAL_BLOCK_BUMP] = 0L;
@@ -2555,12 +2590,41 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         object->flags |= FLG_DESTROY;
                     break;
                 }
+
+                case OBJ_PSWITCH: {
+                    if (object->values[VAL_PSWITCH] > 0L && !(object->flags & FLG_PSWITCH_ONCE))
+                        --(object->values[VAL_PSWITCH]);
+                    break;
+                }
             }
 
-        ObjectID next = object->previous;
+        const ObjectID next = object->previous;
         if (object->flags & FLG_DESTROY)
             destroy_object(oid);
         oid = next;
+    }
+
+    if (state.pswitch > 0L) {
+        --(state.pswitch);
+        if (state.pswitch == 100L)
+            play_sound(SND_STARMAN);
+        if (state.pswitch <= 0L) {
+            ObjectID oid = state.live_objects;
+            while (object_is_alive(oid)) {
+                struct GameObject* object = &(state.objects[oid]);
+                const ObjectID next = object->previous;
+                if (object->type == OBJ_PSWITCH_BRICK) {
+                    create_object(OBJ_COIN, object->pos);
+                    destroy_object(oid);
+                } else if (object->type == OBJ_PSWITCH_COIN) {
+                    create_object(OBJ_BRICK_BLOCK, object->pos);
+                    destroy_object(oid);
+                }
+                oid = next;
+            }
+
+            stop_track(TS_SWITCH);
+        }
     }
 
     ++(state.time);
@@ -2737,7 +2801,8 @@ void draw_state() {
                     break;
                 }
 
-                case OBJ_COIN: {
+                case OBJ_COIN:
+                case OBJ_PSWITCH_COIN: {
                     enum TextureIndices tex;
                     switch ((state.time / 5) % 4) {
                         default:
@@ -3050,7 +3115,8 @@ void draw_state() {
                     break;
                 }
 
-                case OBJ_BRICK_BLOCK: {
+                case OBJ_BRICK_BLOCK:
+                case OBJ_PSWITCH_BRICK: {
                     int8_t bump;
                     switch (object->values[VAL_BLOCK_BUMP]) {
                         default:
@@ -3375,6 +3441,27 @@ void draw_state() {
                     draw_object(oid, TEX_GOAL_BAR2, FtFloat(object->values[VAL_GOAL_ANGLE]), WHITE);
                     break;
                 }
+
+                case OBJ_PSWITCH: {
+                    enum TextureIndices tex;
+                    if (object->values[VAL_PSWITCH] > 0L)
+                        tex = TEX_PSWITCH_FLAT;
+                    else
+                        switch ((int)((float)state.time / 3.703703703703704f) % 3) {
+                            default:
+                                tex = TEX_PSWITCH1;
+                                break;
+                            case 1:
+                                tex = TEX_PSWITCH2;
+                                break;
+                            case 2:
+                                tex = TEX_PSWITCH3;
+                                break;
+                        }
+
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
             }
 
         oid = object->previous;
@@ -3592,7 +3679,8 @@ void load_object(enum GameObjectType type) {
             break;
         }
 
-        case OBJ_COIN: {
+        case OBJ_COIN:
+        case OBJ_PSWITCH_COIN: {
             load_texture(TEX_COIN1);
             load_texture(TEX_COIN2);
             load_texture(TEX_COIN3);
@@ -3766,7 +3854,8 @@ void load_object(enum GameObjectType type) {
             break;
         }
 
-        case OBJ_BRICK_BLOCK: {
+        case OBJ_BRICK_BLOCK:
+        case OBJ_PSWITCH_BRICK: {
             load_texture(TEX_BRICK_BLOCK);
 
             load_sound(SND_BUMP);
@@ -3884,6 +3973,22 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_GOAL_BAR2);
             break;
         }
+
+        case OBJ_PSWITCH: {
+            load_texture(TEX_PSWITCH1);
+            load_texture(TEX_PSWITCH2);
+            load_texture(TEX_PSWITCH3);
+            load_texture(TEX_PSWITCH_FLAT);
+
+            load_sound(SND_TOGGLE);
+            load_sound(SND_STARMAN);
+
+            load_track(MUS_PSWITCH);
+
+            load_object(OBJ_PSWITCH_COIN);
+            load_object(OBJ_PSWITCH_BRICK);
+            break;
+        }
     }
 }
 
@@ -3970,7 +4075,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     break;
                 }
 
-                case OBJ_COIN: {
+                case OBJ_COIN:
+                case OBJ_PSWITCH_COIN: {
                     object->depth = FxOne;
 
                     object->bbox[0][0] = FfInt(6L);
@@ -4092,7 +4198,8 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     break;
                 }
 
-                case OBJ_BRICK_BLOCK: {
+                case OBJ_BRICK_BLOCK:
+                case OBJ_PSWITCH_BRICK: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
                     object->depth = FfInt(20L);
                     break;
@@ -4160,6 +4267,12 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[0][0] = FfInt(-23L);
                     object->bbox[1][0] = FfInt(21L);
                     object->bbox[1][1] = FfInt(16L);
+                    break;
+                }
+
+                case OBJ_PSWITCH: {
+                    object->bbox[1][0] = FfInt(31L);
+                    object->bbox[1][1] = FfInt(32L);
                     break;
                 }
             }

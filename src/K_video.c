@@ -299,6 +299,11 @@ static struct Texture textures[TEX_SIZE] = {
     TEXOFFS(TEX_BUBBLE_POP5, "effects/bubble_pop5", 7, 8),
     TEXOFFS(TEX_BUBBLE_POP6, "effects/bubble_pop6", 7, 8),
     TEXOFFS(TEX_BUBBLE_POP7, "effects/bubble_pop7", 7, 8),
+
+    TEXTURE(TEX_PSWITCH1, "markers/pswitch1"),
+    TEXTURE(TEX_PSWITCH2, "markers/pswitch2"),
+    TEXTURE(TEX_PSWITCH3, "markers/pswitch3"),
+    TEXOFFS(TEX_PSWITCH_FLAT, "markers/pswitch_flat", 0, -20),
 };
 
 static struct Font fonts[FNT_SIZE] = {
