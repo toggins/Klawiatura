@@ -37,7 +37,7 @@ jobs:
         id: cache-load
         with:
           path: build
-          key: cmake-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+          key: cmake-${{ github.ref_name }}-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
       - name: Build
         run: |
           cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Release
@@ -47,7 +47,7 @@ jobs:
         id: cache-save
         with:
           path: build
-          key: cmake-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+          key: cmake-${{ github.ref_name }}-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
       - name: Assemble
         run: |
           Remove-Item -Recurse Klawiatura
