@@ -203,6 +203,7 @@ static void bump_block(struct GameObject* block, ObjectID from, bool strong) {
                     iid,
                     (fvec2){Fadd(block->pos[0], Flerp(block->bbox[0][0], block->bbox[1][0], FxHalf)), block->pos[1]}
                 );
+                skip_interp(iid);
 
                 if (item->type == OBJ_COIN_POP) {
                     item->values[VAL_COIN_POP_OWNER] = from;
