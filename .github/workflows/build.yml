@@ -34,18 +34,20 @@ jobs:
         run: py -m pip install jinja2
       - name: Restore build cache
         uses: actions/cache/restore@v4
+        id: cache-load
         with:
           path: build
-          key: cmake-${{ matrix.config.runner-os }}-${{ hashFiles('CMakeLists.txt') }}
+          key: cmake-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
       - name: Build
         run: |
           cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Release
           cmake --build build --target Klawiatura
       - name: Save build cache
         uses: actions/cache/save@v4
+        id: cache-save
         with:
           path: build
-          key: cmake-${{ matrix.config.runner-os }}-${{ hashFiles('CMakeLists.txt') }}
+          key: cmake-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
       - name: Assemble
         run: |
           Copy-Item -Recurse -Path build -Destination Klawiatura # ew...
