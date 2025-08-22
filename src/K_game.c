@@ -5,6 +5,8 @@
 static struct GameState state = {0};
 static int local_player = -1L;
 
+static struct InterpObject interp[MAX_OBJECTS] = {0};
+
 /* ====
 
    GAME
@@ -862,7 +864,7 @@ static void bump_object(ObjectID bid) {
         }
 }
 
-static enum PlayerFrames get_player_frame(struct GameObject* object) {
+static enum PlayerFrames get_player_frame(const struct GameObject* object) {
     if (object->values[VAL_PLAYER_POWER] > 0L) {
         const struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
         switch (player == NULL ? POW_SMALL : player->power) {
@@ -2554,22 +2556,6 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
         oid = next;
     }
 
-    // !!! CLIENT-SIDE !!!
-    struct GamePlayer* player = get_player(local_player);
-    if (player != NULL) {
-        const struct GameObject* pawn = get_object(player->object);
-        if (pawn != NULL) {
-            const float cx = FtInt(pawn->pos[0]);
-            const float cy = FtInt(pawn->pos[1]);
-            const float bx1 = FtFloat(player->bounds[0][0]) + HALF_SCREEN_WIDTH;
-            const float by1 = FtFloat(player->bounds[0][1]) + HALF_SCREEN_HEIGHT;
-            const float bx2 = FtFloat(player->bounds[1][0]) - HALF_SCREEN_WIDTH;
-            const float by2 = FtFloat(player->bounds[1][1]) - HALF_SCREEN_HEIGHT;
-            move_camera(SDL_clamp(cx, bx1, bx2), SDL_clamp(cy, by1, by2));
-        }
-    }
-    // !!! CLIENT-SIDE !!!
-
     ++(state.time);
     if (state.sequence.type == SEQ_NONE && state.clock > 0L && (state.time % 25L) == 0L) {
         --(state.clock);
@@ -2612,7 +2598,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
 void draw_state() {
     ObjectID oid = state.live_objects;
     while (object_is_alive(oid)) {
-        struct GameObject* object = &(state.objects[oid]);
+        const struct GameObject* object = &(state.objects[oid]);
         if (object->flags & FLG_VISIBLE)
             switch (object->type) {
                 default:
@@ -2632,7 +2618,7 @@ void draw_state() {
                             tex = TEX_CLOUD3;
                             break;
                     }
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     break;
                 }
 
@@ -2650,7 +2636,7 @@ void draw_state() {
                             tex = TEX_BUSH3;
                             break;
                     }
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     break;
                 }
 
@@ -2668,7 +2654,7 @@ void draw_state() {
                             tex = TEX_BUSH_SNOW3;
                             break;
                     }
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     break;
                 }
 
@@ -2680,7 +2666,7 @@ void draw_state() {
                     const enum TextureIndices tex =
                         get_player_texture(player == NULL ? POW_SMALL : player->power, get_player_frame(object));
                     const GLubyte a = (object->values[VAL_PLAYER_INDEX] != local_player) ? 190 : 255;
-                    draw_object(object, tex, 0, ALPHA(a));
+                    draw_object(oid, tex, 0, ALPHA(a));
 
                     if (object->values[VAL_PLAYER_STARMAN] > 0L) {
                         GLubyte r, g, b;
@@ -2719,7 +2705,7 @@ void draw_state() {
 
                         set_batch_stencil(1);
                         set_batch_logic(GL_XOR);
-                        draw_object(object, tex, 0, RGBA(r, g, b, a));
+                        draw_object(oid, tex, 0, RGBA(r, g, b, a));
                         set_batch_logic(GL_COPY);
                         set_batch_stencil(0);
                     }
@@ -2728,14 +2714,14 @@ void draw_state() {
 
                 case OBJ_PLAYER_DEAD: {
                     draw_object(
-                        object, TEX_MARIO_DEAD, 0, ALPHA(object->values[VAL_PLAYER_INDEX] != local_player ? 190 : 255)
+                        oid, TEX_MARIO_DEAD, 0, ALPHA(object->values[VAL_PLAYER_INDEX] != local_player ? 190 : 255)
                     );
                     break;
                 }
 
                 case OBJ_PLAYER_EFFECT: {
                     draw_object(
-                        object,
+                        oid,
                         get_player_texture(
                             object->values[VAL_PLAYER_EFFECT_POWER], object->values[VAL_PLAYER_EFFECT_FRAME]
                         ),
@@ -2758,7 +2744,7 @@ void draw_state() {
                             tex = TEX_COIN3;
                             break;
                     }
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     break;
                 }
 
@@ -2794,23 +2780,23 @@ void draw_state() {
                                 tex = TEX_COIN_POP4;
                                 break;
                         }
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     break;
                 }
 
                 case OBJ_MUSHROOM: {
-                    draw_object(object, TEX_MUSHROOM, 0, WHITE);
+                    draw_object(oid, TEX_MUSHROOM, 0, WHITE);
                     break;
                 }
 
                 case OBJ_MUSHROOM_1UP: {
-                    draw_object(object, TEX_MUSHROOM_1UP, 0, WHITE);
+                    draw_object(oid, TEX_MUSHROOM_1UP, 0, WHITE);
                     break;
                 }
 
                 case OBJ_MUSHROOM_POISON: {
                     draw_object(
-                        object,
+                        oid,
                         ((int)((float)(state.time) / 11.11111111111111f) % 2) ? TEX_MUSHROOM_POISON2
                                                                               : TEX_MUSHROOM_POISON1,
                         0, WHITE
@@ -2834,7 +2820,7 @@ void draw_state() {
                             tex = TEX_FIRE_FLOWER4;
                             break;
                     }
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     break;
                 }
 
@@ -2852,7 +2838,7 @@ void draw_state() {
                             tex = TEX_BEETROOT3;
                             break;
                     }
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     break;
                 }
 
@@ -2902,12 +2888,12 @@ void draw_state() {
                                 tex = TEX_LUI5;
                                 break;
                         }
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     break;
                 }
 
                 case OBJ_HAMMER_SUIT: {
-                    draw_object(object, TEX_HAMMER_SUIT, 0, WHITE);
+                    draw_object(oid, TEX_HAMMER_SUIT, 0, WHITE);
                     break;
                 }
 
@@ -2927,7 +2913,7 @@ void draw_state() {
                             tex = TEX_STARMAN4;
                             break;
                     }
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     break;
                 }
 
@@ -2967,23 +2953,23 @@ void draw_state() {
                             break;
                     }
 
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     break;
                 }
 
                 case OBJ_MISSILE_FIREBALL: {
-                    draw_object(object, TEX_MISSILE_FIREBALL, FtFloat(object->values[VAL_MISSILE_ANGLE]), WHITE);
+                    draw_object(oid, TEX_MISSILE_FIREBALL, FtFloat(object->values[VAL_MISSILE_ANGLE]), WHITE);
                     break;
                 }
 
                 case OBJ_MISSILE_BEETROOT:
                 case OBJ_MISSILE_BEETROOT_SINK: {
-                    draw_object(object, TEX_MISSILE_BEETROOT, 0, WHITE);
+                    draw_object(oid, TEX_MISSILE_BEETROOT, 0, WHITE);
                     break;
                 }
 
                 case OBJ_MISSILE_HAMMER: {
-                    draw_object(object, TEX_MISSILE_HAMMER, FtFloat(object->values[VAL_MISSILE_ANGLE]), WHITE);
+                    draw_object(oid, TEX_MISSILE_HAMMER, FtFloat(object->values[VAL_MISSILE_ANGLE]), WHITE);
                     break;
                 }
 
@@ -3000,7 +2986,7 @@ void draw_state() {
                             tex = TEX_EXPLODE3;
                             break;
                     }
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     break;
                 }
 
@@ -3162,7 +3148,7 @@ void draw_state() {
 
                 case OBJ_BRICK_SHARD: {
                     draw_object(
-                        object, (object->flags & FLG_BLOCK_GRAY) ? TEX_BRICK_SHARD_GRAY : TEX_BRICK_SHARD,
+                        oid, (object->flags & FLG_BLOCK_GRAY) ? TEX_BRICK_SHARD_GRAY : TEX_BRICK_SHARD,
                         FtFloat(object->values[VAL_BRICK_SHARD_ANGLE]), WHITE
                     );
                     break;
@@ -3170,7 +3156,7 @@ void draw_state() {
 
                 case OBJ_CHECKPOINT: {
                     draw_object(
-                        object,
+                        oid,
                         (state.checkpoint == oid) ? (((state.time / 10) % 2) ? TEX_CHECKPOINT3 : TEX_CHECKPOINT2)
                                                   : TEX_CHECKPOINT1,
                         0, ALPHA(oid >= state.checkpoint ? 255 : 128)
@@ -3179,7 +3165,7 @@ void draw_state() {
                 }
 
                 case OBJ_ROTODISC_BALL: {
-                    draw_object(object, TEX_ROTODISC_BALL, 0, WHITE);
+                    draw_object(oid, TEX_ROTODISC_BALL, 0, WHITE);
                     break;
                 }
 
@@ -3267,7 +3253,7 @@ void draw_state() {
                     }
 
                     set_batch_logic(GL_OR_REVERSE);
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     set_batch_logic(GL_COPY);
                     break;
                 }
@@ -3321,7 +3307,7 @@ void draw_state() {
                             tex = TEX_WATER_SPLASH15;
                             break;
                     }
-                    draw_object(object, tex, 0, WHITE);
+                    draw_object(oid, tex, 0, WHITE);
                     break;
                 }
 
@@ -3374,12 +3360,12 @@ void draw_state() {
                 }
 
                 case OBJ_GOAL_BAR: {
-                    draw_object(object, TEX_GOAL_BAR1, 0, WHITE);
+                    draw_object(oid, TEX_GOAL_BAR1, 0, WHITE);
                     break;
                 }
 
                 case OBJ_GOAL_BAR_FLY: {
-                    draw_object(object, TEX_GOAL_BAR2, FtFloat(object->values[VAL_GOAL_ANGLE]), WHITE);
+                    draw_object(oid, TEX_GOAL_BAR2, FtFloat(object->values[VAL_GOAL_ANGLE]), WHITE);
                     break;
                 }
             }
@@ -3925,6 +3911,10 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
             object->previous_block = object->next_block = -1L;
             move_object(index, pos);
 
+            interp[index].type = type;
+            interp[index].from[0] = interp[index].to[0] = interp[index].pos[0] = pos[0];
+            interp[index].from[1] = interp[index].to[1] = interp[index].pos[1] = pos[1];
+
             switch (type) {
                 default:
                     break;
@@ -4339,10 +4329,12 @@ void destroy_object(ObjectID index) {
         state.objects[object->next].previous = object->previous;
 }
 
-void draw_object(struct GameObject* object, enum TextureIndices tid, GLfloat angle, const GLubyte color[4]) {
+void draw_object(ObjectID oid, enum TextureIndices tid, GLfloat angle, const GLubyte color[4]) {
+    struct GameObject* object = &(state.objects[oid]);
+    struct InterpObject* smooth = &(interp[oid]);
     draw_sprite(
         tid,
-        (float[3]){FtInt(object->pos[0]), FtInt(object->pos[1]) + object->values[VAL_SPROUT],
+        (float[3]){FtInt(smooth->pos[0]), FtInt(smooth->pos[1]) + object->values[VAL_SPROUT],
                    (object->values[VAL_SPROUT] > 0L) ? 21 : FtFloat(object->depth)},
         (bool[2]){object->flags & FLG_X_FLIP, object->flags & FLG_Y_FLIP}, angle, color
     );
@@ -4356,4 +4348,65 @@ int32_t random() {
     // https://rosettacode.org/wiki/Linear_congruential_generator
     state.seed = (state.seed * 214013 + 2531011) & ((1U << 31) - 1);
     return (int32_t)state.seed >> 16;
+}
+
+void interp_start() {
+    ObjectID oid = state.live_objects;
+    while (object_is_alive(oid)) {
+        interp[oid].from[0] = interp[oid].to[0];
+        interp[oid].from[1] = interp[oid].to[1];
+        oid = state.objects[oid].previous;
+    }
+}
+
+void interp_end() {
+    ObjectID oid = state.live_objects;
+    while (object_is_alive(oid)) {
+        const struct GameObject* object = &(state.objects[oid]);
+        interp[oid].to[0] = object->pos[0];
+        interp[oid].to[1] = object->pos[1];
+        oid = object->previous;
+    }
+}
+
+void interp_update(float ticfrac) {
+    ObjectID oid = state.live_objects;
+    while (object_is_alive(oid)) {
+        const struct GameObject* object = &(state.objects[oid]);
+        struct InterpObject* smooth = &(interp[oid]);
+        if (smooth->type != object->type) { // Game state mismatch, skip interpolating this object
+            smooth->type = object->type;
+            smooth->from[0] = smooth->to[0] = smooth->pos[0] = object->pos[0];
+            smooth->from[1] = smooth->to[1] = smooth->pos[1] = object->pos[1];
+        } else {
+            smooth->pos[0] = (fix16_t)((float)(smooth->from[0]) + ((float)(smooth->to[0] - smooth->from[0]) * ticfrac));
+            smooth->pos[1] = (fix16_t)((float)(smooth->from[1]) + ((float)(smooth->to[1] - smooth->from[1]) * ticfrac));
+        }
+        oid = object->previous;
+    }
+
+    const struct GamePlayer* player = get_player(local_player);
+    if (player != NULL) {
+        const ObjectID pwid = player->object;
+        if (object_is_alive(pwid)) {
+            const float cx = FtInt(interp[pwid].pos[0]);
+            const float cy = FtInt(interp[pwid].pos[1]);
+            const float bx1 = FtFloat(player->bounds[0][0]) + HALF_SCREEN_WIDTH;
+            const float by1 = FtFloat(player->bounds[0][1]) + HALF_SCREEN_HEIGHT;
+            const float bx2 = FtFloat(player->bounds[1][0]) - HALF_SCREEN_WIDTH;
+            const float by2 = FtFloat(player->bounds[1][1]) - HALF_SCREEN_HEIGHT;
+            move_camera(SDL_clamp(cx, bx1, bx2), SDL_clamp(cy, by1, by2));
+        }
+    }
+}
+
+void skip_interp(ObjectID oid) {
+    const struct GameObject* object = get_object(oid);
+    if (object == NULL)
+        return;
+
+    struct InterpObject* smooth = &(interp[oid]);
+    smooth->type = object->type;
+    smooth->from[0] = smooth->to[0] = smooth->pos[0] = object->pos[0];
+    smooth->from[1] = smooth->to[1] = smooth->pos[1] = object->pos[1];
 }

@@ -322,6 +322,12 @@ struct SaveState {
     struct SoundState audio;
 };
 
+struct InterpObject {
+    enum GameObjectType type;
+    fvec2 from, to;
+    fvec2 pos;
+};
+
 void start_state(int, int);
 void save_state(struct GameState*);
 void load_state(const struct GameState*);
@@ -347,7 +353,12 @@ void list_block_at(struct BlockList*, const fvec2[2]);
 
 void kill_object(ObjectID);
 void destroy_object(ObjectID);
-void draw_object(struct GameObject*, enum TextureIndices, GLfloat, const GLubyte[4]);
+void draw_object(ObjectID, enum TextureIndices, GLfloat, const GLubyte[4]);
 void play_sound_at_object(struct GameObject*, enum SoundIndices);
 
 int32_t random();
+
+void interp_start();
+void interp_end();
+void interp_update(float);
+void skip_interp(ObjectID);
