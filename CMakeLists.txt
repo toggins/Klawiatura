@@ -73,19 +73,26 @@ FetchContent_Declare(
     GIT_TAG 0eceb7db9a8f4b501cf3d9c9ab656b008ab82ddf)
 FetchContent_MakeAvailable(S_fixed)
 
+# S_tructures
+set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
+
+FetchContent_Declare(
+    S_tructures GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
+    GIT_TAG master)
+FetchContent_MakeAvailable(S_tructures)
+
+# NutPunch
 set(NUTPUNCH_BUILD_TESTS OFF CACHE INTERNAL "")
 set(NUTPUNCH_BUILD_SERVER OFF CACHE INTERNAL "")
 
-# NutPunch
 FetchContent_Declare(
     nutpunch GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
     GIT_TAG fe079aed194263aa05876d01afdc9548b04bdbb2)
 FetchContent_MakeAvailable(nutpunch)
 
 # yyjson (0.12.0)
-FetchContent_Declare(
-    yyjson GIT_REPOSITORY https://github.com/ibireme/yyjson.git
-    GIT_TAG 0.12.0)
+FetchContent_Declare(yyjson GIT_REPOSITORY https://github.com/ibireme/yyjson.git
+                     GIT_TAG 0.12.0)
 FetchContent_MakeAvailable(yyjson)
 
 set(LIBS
@@ -97,6 +104,7 @@ set(LIBS
     fmod
     GekkoNet
     S_fixed
+    S_tructures
     nutpunch
     yyjson)
 
