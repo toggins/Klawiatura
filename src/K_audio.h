@@ -60,6 +60,7 @@ void load_track(const char*);
 const struct Track* get_track(const char*);
 
 void move_ears(float, float);
+void play_ui_sound(const char*);
 void play_sound(const char*);
 void play_sound_at(const char*, float, float);
 void play_track(enum TrackSlots, const char*, bool);

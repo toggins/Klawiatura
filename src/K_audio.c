@@ -205,6 +205,16 @@ void move_ears(float x, float y) {
     );
 }
 
+void play_ui_sound(const char* index) {
+    const struct Sound* snd = get_sound(index);
+    if (snd == NULL) {
+        INFO("Unknown sound \"%s\"", index);
+        return;
+    }
+
+    FMOD_System_PlaySound(speaker, snd->sound, NULL, false, NULL);
+}
+
 void play_sound(const char* index) {
     const struct Sound* snd = get_sound(index);
     if (snd == NULL) {
