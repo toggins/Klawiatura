@@ -362,7 +362,7 @@ void list_block_at(struct BlockList*, const fvec2[2]);
 void kill_object(ObjectID);
 void destroy_object(ObjectID);
 void draw_object(ObjectID, enum TextureIndices, GLfloat, const GLubyte[4]);
-void play_sound_at_object(struct GameObject*, enum SoundIndices);
+void play_sound_at_object(struct GameObject*, const char*);
 
 int32_t random();
 

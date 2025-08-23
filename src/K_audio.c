@@ -4,162 +4,20 @@
 #include "K_audio.h"
 #include "K_file.h"
 #include "K_log.h"
+#include "K_memory.h"
 
 static FMOD_SYSTEM* speaker = NULL;
 static FMOD_CHANNELGROUP* state_group = NULL;
 static FMOD_CHANNELGROUP* music_group = NULL;
 
-#define SOUND(i, nm)                                                                                                   \
-    [(i)] = {                                                                                                          \
-        .name = "sounds/" nm,                                                                                          \
-        .sound = NULL,                                                                                                 \
-        .length = 0,                                                                                                   \
-    }
-
-static struct Sound sounds[SND_SIZE] = {
-    [SND_NULL] = {0},
-    SOUND(SND_1UP, "1up"),
-    SOUND(SND_BANG1, "bang1"),
-    SOUND(SND_BANG2, "bang2"),
-    SOUND(SND_BANG3, "bang3"),
-    SOUND(SND_BOWSER_DEAD, "bowser_dead"),
-    SOUND(SND_BOWSER_FALL, "bowser_fall"),
-    SOUND(SND_BOWSER_FIRE, "bowser_fire"),
-    SOUND(SND_BOWSER_HURT, "bowser_hurt"),
-    SOUND(SND_BOWSER_LAVA, "bowser_lava"),
-    SOUND(SND_BREAK, "break"),
-    SOUND(SND_BUMP, "bump"),
-    SOUND(SND_CENTIPEDE, "centipede"),
-    SOUND(SND_COIN, "coin"),
-    SOUND(SND_CONNECT, "connect"),
-    SOUND(SND_DEAD, "dead"),
-    SOUND(SND_DISCONNECT, "disconnect"),
-    SOUND(SND_ENTER, "enter"),
-    SOUND(SND_FIRE, "fire"),
-    SOUND(SND_FLAMETHROWER, "flamethrower"),
-    SOUND(SND_GROW, "grow"),
-    SOUND(SND_HAMMER, "hammer"),
-    SOUND(SND_HARDCORE, "hardcore"),
-    SOUND(SND_HURRY, "hurry"),
-    SOUND(SND_HURT, "hurt"),
-    SOUND(SND_JUMP, "jump"),
-    SOUND(SND_KEVIN_ACTIVATE, "kevin_activate"),
-    SOUND(SND_KEVIN_KILL, "kevin_kill"),
-    SOUND(SND_KEVIN_SPAWN, "kevin_spawn"),
-    SOUND(SND_KICK, "kick"),
-    SOUND(SND_LAKITU1, "lakitu1"),
-    SOUND(SND_LAKITU2, "lakitu2"),
-    SOUND(SND_LAKITU3, "lakitu3"),
-    SOUND(SND_LOSE, "lose"),
-    SOUND(SND_MARIO_CHECKPOINT1, "mario_checkpoint1"),
-    SOUND(SND_MARIO_CHECKPOINT2, "mario_checkpoint2"),
-    SOUND(SND_MARIO_CHECKPOINT3, "mario_checkpoint3"),
-    SOUND(SND_MARIO_CHECKPOINT4, "mario_checkpoint4"),
-    SOUND(SND_RESPAWN, "respawn"),
-    SOUND(SND_SELECT, "select"),
-    SOUND(SND_SINK, "sink"),
-    SOUND(SND_SPRING, "spring"),
-    SOUND(SND_SPRINT, "sprint"),
-    SOUND(SND_SPROUT, "sprout"),
-    SOUND(SND_STARMAN, "starman"),
-    SOUND(SND_START, "start"),
-    SOUND(SND_STOMP, "stomp"),
-    SOUND(SND_SWIM, "swim"),
-    SOUND(SND_SWITCH, "switch"),
-    SOUND(SND_TAIL, "tail"),
-    SOUND(SND_THWOMP, "thwomp"),
-    SOUND(SND_TICK, "tick"),
-    SOUND(SND_TOGGLE, "toggle"),
-    SOUND(SND_WARP, "warp"),
-};
-
-#define TLOOP(i, nm, start, end)                                                                                       \
-    [(i)] = {                                                                                                          \
-        .name = "music/" nm,                                                                                           \
-        .stream = NULL,                                                                                                \
-        .length = 0,                                                                                                   \
-        .loop = {(start), (end)},                                                                                      \
-    }
-#define TRACK(i, nm) TLOOP(i, nm, 0, 0)
-
-static struct Track tracks[MUS_SIZE] = {
-    [MUS_NULL] = {0},
-
-    TRACK(MUS_OVERWORLD1, "overworld1"),
-    TRACK(MUS_OVERWORLD2, "overworld2"),
-    TRACK(MUS_OVERWORLD3, "overworld3"),
-    TRACK(MUS_OVERWORLD4, "overworld4"),
-    TRACK(MUS_OVERWORLD5, "overworld5"),
-    TRACK(MUS_OVERWORLD6, "overworld6"),
-    TRACK(MUS_OVERWORLD7, "overworld7"),
-    TRACK(MUS_OVERWORLD8, "overworld8"),
-
-    TRACK(MUS_ATHLETIC1, "athletic1"),
-    TRACK(MUS_ATHLETIC2, "athletic2"),
-    TRACK(MUS_ATHLETIC3, "athletic3"),
-    TRACK(MUS_ATHLETIC4, "athletic4"),
-    TRACK(MUS_ATHLETIC5, "athletic5"),
-    TRACK(MUS_ATHLETIC6, "athletic6"),
-    TRACK(MUS_ATHLETIC7, "athletic7"),
-    TRACK(MUS_ATHLETIC8, "athletic8"),
-    TRACK(MUS_ATHLETIC9, "athletic9"),
-
-    TRACK(MUS_STARLAND1, "starland1"),
-    TRACK(MUS_STARLAND2, "starland2"),
-    TRACK(MUS_FOREST, "forest"),
-    TRACK(MUS_SNOW, "snow"),
-    TRACK(MUS_DESERT, "desert"),
-    TRACK(MUS_VOLCANO, "volcano"),
-
-    TRACK(MUS_WATER1, "water1"),
-    TRACK(MUS_WATER2, "water2"),
-    TRACK(MUS_WATER3, "water3"),
-    TRACK(MUS_WATER4, "water4"),
-
-    TRACK(MUS_CAVE1, "cave1"),
-    TRACK(MUS_CAVE2, "cave2"),
-    TRACK(MUS_CAVE3, "cave3"),
-
-    TRACK(MUS_CASTLE1, "castle1"),
-    TRACK(MUS_CASTLE2, "castle2"),
-    TRACK(MUS_CASTLE3, "castle3"),
-    TRACK(MUS_CASTLE4, "castle4"),
-    TRACK(MUS_CASTLE5, "castle5"),
-
-    TRACK(MUS_TANKS1, "tanks1"),
-    TRACK(MUS_TANKS2, "tanks2"),
-    TRACK(MUS_TANKS3, "tanks3"),
-
-    TRACK(MUS_AIRSHIP, "airship"),
-
-    TRACK(MUS_BOSS1, "boss1"),
-    TRACK(MUS_BOSS2, "boss2"),
-
-    TRACK(MUS_BOWSER1, "bowser1"),
-    TRACK(MUS_BOWSER2, "bowser2"),
-    TRACK(MUS_BOWSER3, "bowser3"),
-
-    TRACK(MUS_STARMAN, "starman"),
-    TLOOP(MUS_PSWITCH, "pswitch", 10429, 0),
-
-    TRACK(MUS_LOSE1, "lose1"),
-    TRACK(MUS_LOSE2, "lose2"),
-    TRACK(MUS_GAME_OVER, "game_over"),
-
-    TRACK(MUS_WIN1, "win1"),
-    TRACK(MUS_WIN2, "win2"),
-    TRACK(MUS_WIN3, "win3"),
-
-    TRACK(MUS_WARP, "warp"),
-    TRACK(MUS_SCORE, "score"),
-    TRACK(MUS_CLEAR1, "clear1"),
-    TRACK(MUS_CLEAR2, "clear2"),
-};
-
 static struct SoundState state = {0};
 static FMOD_CHANNEL* music_channels[TS_SIZE] = {0};
 
+static struct HashMap* sounds = NULL;
+static struct HashMap* tracks = NULL;
+
 void audio_init() {
+    FMOD_Debug_Initialize(FMOD_DEBUG_LEVEL_WARNING, FMOD_DEBUG_MODE_TTY, NULL, NULL);
     FMOD_RESULT result = FMOD_System_Create(&speaker, FMOD_VERSION);
     if (result != FMOD_OK)
         FATAL("Audio create fail: %s", FMOD_ErrorString(result));
@@ -177,19 +35,29 @@ void audio_init() {
 
     FMOD_System_CreateChannelGroup(speaker, "state", &state_group);
     FMOD_System_CreateChannelGroup(speaker, "music", &music_group);
+
+    sounds = create_hash_map();
+    tracks = create_hash_map();
 }
 
 void audio_update() {
     FMOD_System_Update(speaker);
 }
 
+static void nuke_sound(void* val) {
+    FMOD_Sound_Release(((struct Sound*)val)->sound);
+    SDL_free(val);
+}
+
+static void nuke_track(void* val) {
+    FMOD_Sound_Release(((struct Track*)val)->stream);
+    SDL_free(val);
+}
+
 void audio_teardown() {
-    for (size_t i = 0; i < SND_SIZE; i++)
-        if (sounds[i].sound != NULL)
-            FMOD_Sound_Release(sounds[i].sound);
-    for (size_t i = 0; i < MUS_SIZE; i++)
-        if (tracks[i].stream != NULL)
-            FMOD_Sound_Release(tracks[i].stream);
+    // Destroy hashmaps or something
+    destroy_hash_map(sounds, nuke_sound);
+    destroy_hash_map(tracks, nuke_track);
     FMOD_ChannelGroup_Release(state_group);
     FMOD_ChannelGroup_Release(music_group);
     FMOD_System_Release(speaker);
@@ -205,12 +73,10 @@ void load_audio_state(const struct SoundState* from) {
         struct TrackObject* cur_track = &(state.tracks[i]);
         if (cur_track->index != load_track->index || cur_track->loop != load_track->loop) {
             stop_track(i);
-
-            if (load_track->index == MUS_NULL ||
-                (!(load_track->loop) && load_track->offset >= tracks[load_track->index].length))
+            if (load_track->index == NULL || (!(load_track->loop) && load_track->offset >= load_track->index->length))
                 continue;
 
-            FMOD_System_PlaySound(speaker, tracks[load_track->index].stream, music_group, true, &(music_channels[i]));
+            FMOD_System_PlaySound(speaker, load_track->index->stream, music_group, true, &(music_channels[i]));
             FMOD_Channel_SetMode(
                 music_channels[i], (load_track->loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME
             );
@@ -232,14 +98,11 @@ void load_audio_state(const struct SoundState* from) {
     FMOD_ChannelGroup_Stop(state_group);
     for (size_t i = 0; i < MAX_SOUNDS; i++) {
         const struct SoundObject* sound = &(state.sounds[i]);
-        if (sound->index == SND_NULL)
-            continue;
-        const struct Sound* snd = &(sounds[sound->index]);
-        if (sound->offset >= snd->length)
+        if (sound->index == NULL || sound->offset >= sound->index->length)
             continue;
 
         FMOD_CHANNEL* channel;
-        FMOD_System_PlaySound(speaker, snd->sound, state_group, true, &channel);
+        FMOD_System_PlaySound(speaker, sound->index->sound, state_group, true, &channel);
         if (sound->pan) {
             FMOD_Channel_SetMode(channel, FMOD_3D | FMOD_3D_LINEARROLLOFF);
             FMOD_Channel_Set3DMinMaxDistance(channel, 320, 640);
@@ -255,52 +118,91 @@ void load_audio_state(const struct SoundState* from) {
 void tick_audio_state() {
     for (size_t i = 0; i < TS_SIZE; i++) {
         struct TrackObject* track = &(state.tracks[i]);
-        if (track->index == MUS_NULL)
+        if (track->index == NULL)
             continue;
 
         track->offset += 20L;
-        if (!(track->loop) && track->offset >= tracks[track->index].length)
+        if (!(track->loop) && track->offset >= track->index->length)
             stop_track(i);
     }
 
     for (size_t i = 0; i < MAX_SOUNDS; i++) {
         struct SoundObject* sound = &(state.sounds[i]);
-        if (sound->index == SND_NULL)
+        if (sound->index == NULL)
             continue;
 
         sound->offset += 20L;
-        if (sound->offset >= sounds[sound->index].length)
-            sound->index = SND_NULL;
+        if (sound->offset >= sound->index->length)
+            sound->index = NULL;
     }
 }
 
-void load_sound(enum SoundIndices index) {
-    struct Sound* sound = &(sounds[index]);
-    if (sound->sound != NULL)
+void load_sound(const char* index) {
+    if (get_sound(index) != NULL)
         return;
 
-    const char* file = find_file(sound->name);
-    FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESAMPLE, NULL, &(sound->sound));
+    const char* file = find_file(file_pattern("data/sounds/%s.*", index), ".json");
+    FMOD_SOUND* data = NULL;
+    FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESAMPLE, NULL, &data);
     if (result != FMOD_OK)
-        FATAL("Sound \"%s\" fail: %s", sound->name, FMOD_ErrorString(result));
-    FMOD_Sound_GetLength(sound->sound, &(sound->length), FMOD_TIMEUNIT_MS);
+        FATAL("Sound \"%s\" fail: %s", index, FMOD_ErrorString(result));
+
+    struct Sound* sound = SDL_malloc(sizeof(struct Sound));
+    if (sound == NULL)
+        FATAL("Sound \"%s\" fail", index);
+    sound->name = SDL_strdup(index);
+    sound->sound = data;
+    FMOD_Sound_GetLength(data, &(sound->length), FMOD_TIMEUNIT_MS);
+    to_hash_map(sounds, index, sound);
 }
 
-void load_track(enum TrackIndices index) {
-    struct Track* track = &(tracks[index]);
-    if (track->stream != NULL)
+const struct Sound* get_sound(const char* index) {
+    if (index[0] == '\0')
+        return NULL;
+    return (const struct Sound*)from_hash_map(sounds, index);
+}
+
+void load_track(const char* index) {
+    if (get_track(index) != NULL)
         return;
 
-    const char* file = find_file(track->name);
-    FMOD_RESULT result =
-        FMOD_System_CreateSound(speaker, file, FMOD_CREATESTREAM | FMOD_ACCURATETIME, NULL, &(track->stream));
+    const char* file = find_file(file_pattern("data/music/%s.*", index), ".json");
+    FMOD_SOUND* data = NULL;
+    FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESTREAM | FMOD_ACCURATETIME, NULL, &data);
     if (result != FMOD_OK)
-        FATAL("Track \"%s\" fail: %s", track->name, FMOD_ErrorString(result));
-    FMOD_Sound_GetLength(track->stream, &(track->length), FMOD_TIMEUNIT_MS);
-    FMOD_Sound_SetLoopPoints(
-        track->stream, track->loop[0], FMOD_TIMEUNIT_MS,
-        (track->loop[1] <= track->loop[0]) ? track->length : track->loop[1], FMOD_TIMEUNIT_MS
-    );
+        FATAL("Track \"%s\" fail: %s", index, FMOD_ErrorString(result));
+
+    struct Track* track = SDL_malloc(sizeof(struct Track));
+    if (track == NULL)
+        FATAL("Track \"%s\" fail", index);
+    track->name = SDL_strdup(index);
+    track->stream = data;
+    FMOD_Sound_GetLength(data, &(track->length), FMOD_TIMEUNIT_MS);
+
+    file = find_file(file_pattern("data/music/%s.json", index), NULL);
+    if (file != NULL) {
+        yyjson_doc* json =
+            yyjson_read_file(file, YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS, NULL, NULL);
+        if (json != NULL) {
+            yyjson_val* root = yyjson_doc_get_root(json);
+            if (yyjson_is_obj(root)) {
+                unsigned int loop_start = yyjson_get_uint(yyjson_obj_get(root, "loop_start"));
+                unsigned int loop_end = yyjson_get_uint(yyjson_obj_get(root, "loop_end"));
+                if (loop_end <= 0)
+                    loop_end = track->length;
+                FMOD_Sound_SetLoopPoints(data, loop_start, FMOD_TIMEUNIT_MS, loop_end, FMOD_TIMEUNIT_MS);
+            }
+            yyjson_doc_free(json);
+        }
+    }
+
+    to_hash_map(tracks, index, track);
+}
+
+const struct Track* get_track(const char* index) {
+    if (index[0] == '\0')
+        return NULL;
+    return (const struct Track*)from_hash_map(tracks, index);
 }
 
 void move_ears(float x, float y) {
@@ -310,13 +212,15 @@ void move_ears(float x, float y) {
     );
 }
 
-void play_sound(enum SoundIndices index) {
-    const struct Sound* snd = &(sounds[index]);
-    if (snd->sound == NULL)
-        FATAL("Invalid sound index %u", index);
+void play_sound(const char* index) {
+    const struct Sound* snd = get_sound(index);
+    if (snd == NULL) {
+        INFO("Unknown sound \"%s\"", index);
+        return;
+    }
 
     struct SoundObject* sound = &(state.sounds[state.next_sound]);
-    sound->index = index;
+    sound->index = snd;
     sound->offset = 0;
     sound->pan = false;
 
@@ -326,13 +230,15 @@ void play_sound(enum SoundIndices index) {
     state.next_sound = (state.next_sound + 1) % MAX_SOUNDS;
 }
 
-void play_sound_at(enum SoundIndices index, float x, float y) {
-    const struct Sound* snd = &(sounds[index]);
-    if (snd->sound == NULL)
-        FATAL("Invalid sound index %u", index);
+void play_sound_at(const char* index, float x, float y) {
+    const struct Sound* snd = get_sound(index);
+    if (snd == NULL) {
+        INFO("Unknown sound \"%s\"", index);
+        return;
+    }
 
     struct SoundObject* sound = &(state.sounds[state.next_sound]);
-    sound->index = index;
+    sound->index = snd;
     sound->offset = 0;
 
     sound->pan = true;
@@ -349,13 +255,15 @@ void play_sound_at(enum SoundIndices index, float x, float y) {
     state.next_sound = (state.next_sound + 1) % MAX_SOUNDS;
 }
 
-void play_track(enum TrackSlots slot, enum TrackIndices index, bool loop) {
-    const struct Track* mus = &(tracks[index]);
-    if (mus->stream == NULL)
-        FATAL("Invalid track index %u", index);
+void play_track(enum TrackSlots slot, const char* index, bool loop) {
+    const struct Track* mus = get_track(index);
+    if (mus == NULL) {
+        INFO("Unknown track \"%s\"", index);
+        return;
+    }
 
     struct TrackObject* track = &(state.tracks[slot]);
-    track->index = index;
+    track->index = mus;
     track->offset = 0;
     track->loop = loop;
 
@@ -376,9 +284,9 @@ void play_track(enum TrackSlots slot, enum TrackIndices index, bool loop) {
 
 void stop_track(enum TrackSlots slot) {
     struct TrackObject* track = &(state.tracks[slot]);
-    if (track->index == MUS_NULL)
+    if (track->index == NULL)
         return;
-    track->index = MUS_NULL;
+    track->index = NULL;
 
     if (music_channels[slot] != NULL) {
         FMOD_Channel_Stop(music_channels[slot]);
