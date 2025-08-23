@@ -45,12 +45,16 @@ void audio_update() {
 }
 
 static void nuke_sound(void* val) {
-    FMOD_Sound_Release(((struct Sound*)val)->sound);
-    SDL_free(val);
+    struct Sound* sound = (struct Sound*)val;
+    FMOD_Sound_Release(sound->sound);
+    SDL_free((void*)(sound->name));
+    SDL_free(sound);
 }
 
 static void nuke_track(void* val) {
-    FMOD_Sound_Release(((struct Track*)val)->stream);
+    struct Track* track = (struct Track*)val;
+    FMOD_Sound_Release(track->stream);
+    SDL_free((void*)(track->name));
     SDL_free(val);
 }
 
