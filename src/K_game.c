@@ -73,7 +73,7 @@ static void give_points(struct GameObject* item, int pid, int points) {
     if (points < 0L) {
         player->lives -= points;
         if (pid == local_player)
-            play_sound(SND_1UP);
+            play_sound("1UP");
     } else
         player->score += points;
 
@@ -222,7 +222,7 @@ static void bump_block(struct GameObject* block, ObjectID from, bool strong) {
                     }
                     if (is_powerup)
                         item->flags &= ~FLG_POWERUP_FULL;
-                    play_sound_at_object(item, SND_SPROUT);
+                    play_sound_at_object(item, "SPROUT");
                 }
             }
 
@@ -274,11 +274,11 @@ static void bump_block(struct GameObject* block, ObjectID from, bool strong) {
                 if (player != NULL)
                     player->score += 50L;
 
-                play_sound_at_object(block, SND_BREAK);
+                play_sound_at_object(block, "BREAK");
                 block->flags |= FLG_DESTROY;
             } else if (block->values[VAL_BLOCK_BUMP] <= 0L) {
                 block->values[VAL_BLOCK_BUMP] = 1L;
-                play_sound_at_object(block, SND_BUMP);
+                play_sound_at_object(block, "BUMP");
             }
             break;
         }
@@ -493,7 +493,7 @@ static void win_player(struct GameObject* pawn) {
     stop_track(TS_LEVEL);
     stop_track(TS_SWITCH);
     stop_track(TS_POWER);
-    play_track(TS_FANFARE, (state.flags & GF_LOST) ? MUS_WIN2 : MUS_WIN1, false);
+    play_track(TS_FANFARE, (state.flags & GF_LOST) ? "WIN2" : "WIN", false);
 }
 
 static void kill_player(struct GameObject* pawn) {
@@ -541,7 +541,7 @@ static bool hit_player(struct GameObject* pawn) {
 
     pawn->values[VAL_PLAYER_POWER] = 3000L;
     pawn->values[VAL_PLAYER_FLASH] = 100L;
-    play_sound_at_object(pawn, SND_WARP);
+    play_sound_at_object(pawn, "WARP");
     return true;
 }
 
@@ -560,14 +560,14 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
                 const struct GamePlayer* player = get_owner(self_id);
                 self->values[VAL_Y_SPEED] = FfInt((player != NULL && (player->input & GI_JUMP)) ? -13L : -8L);
                 other->values[VAL_Y_SPEED] = Fmax(other->values[VAL_Y_SPEED], FxZero);
-                play_sound_at_object(other, SND_STOMP);
+                play_sound_at_object(other, "STOMP");
             } else if (Fabs(self->values[VAL_X_SPEED]) > Fabs(other->values[VAL_X_SPEED])) {
                 if ((self->values[VAL_X_SPEED] > FxZero && self->pos[0] < other->pos[0]) ||
                     (self->values[VAL_X_SPEED] < FxZero && self->pos[0] > other->pos[0])) {
                     other->values[VAL_X_SPEED] = Fadd(other->values[VAL_X_SPEED], Fhalf(self->values[VAL_X_SPEED]));
                     self->values[VAL_X_SPEED] = -Fhalf(self->values[VAL_X_SPEED]);
                     if (Fabs(self->values[VAL_X_SPEED]) >= FfInt(2L))
-                        play_sound_at_object(self, SND_BUMP);
+                        play_sound_at_object(self, "BUMP");
                 }
             }
             break;
@@ -589,7 +589,7 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
             }
 
             player->score += 200L;
-            play_sound_at_object(self, SND_COIN);
+            play_sound_at_object(self, "COIN");
             self->flags |= FLG_DESTROY;
             break;
         }
@@ -608,7 +608,7 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
                 }
                 give_points(self, pid, 1000L);
 
-                play_sound_at_object(other, SND_GROW);
+                play_sound_at_object(other, "GROW");
                 self->flags |= FLG_DESTROY;
             }
             break;
@@ -649,7 +649,7 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
                 }
                 give_points(self, pid, 1000L);
 
-                play_sound_at_object(other, SND_GROW);
+                play_sound_at_object(other, "GROW");
                 self->flags |= FLG_DESTROY;
             }
             break;
@@ -671,7 +671,7 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
                 }
                 give_points(self, pid, 1000L);
 
-                play_sound_at_object(other, SND_GROW);
+                play_sound_at_object(other, "GROW");
                 self->flags |= FLG_DESTROY;
             }
             break;
@@ -693,7 +693,7 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
                 }
                 give_points(self, pid, 1000L);
 
-                play_sound_at_object(other, SND_GROW);
+                play_sound_at_object(other, "GROW");
                 self->flags |= FLG_DESTROY;
             }
             break;
@@ -715,7 +715,7 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
                 }
                 give_points(self, pid, 1000L);
 
-                play_sound_at_object(other, SND_GROW);
+                play_sound_at_object(other, "GROW");
                 self->flags |= FLG_DESTROY;
             }
             break;
@@ -726,10 +726,10 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
             if (other->type == OBJ_PLAYER) {
                 // !!! CLIENT-SIDE !!!
                 if (other->values[VAL_PLAYER_INDEX] == local_player)
-                    play_track(TS_POWER, MUS_STARMAN, true);
+                    play_track(TS_POWER, "STARMAN", true);
                 // !!! CLIENT-SIDE !!!
                 other->values[VAL_PLAYER_STARMAN] = 500L;
-                play_sound_at_object(other, SND_GROW);
+                play_sound_at_object(other, "GROW");
                 self->flags |= FLG_DESTROY;
             }
             break;
@@ -753,7 +753,7 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
                     player->bounds[1][1] = self->values[VAL_CHECKPOINT_BOUNDS_Y2];
                 }
 
-                play_sound_at_object(self, SND_SPROUT);
+                play_sound_at_object(self, "SPROUT");
                 state.checkpoint = self_id;
             }
             break;
@@ -854,8 +854,8 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
                 oid = object->previous;
             }
 
-            play_sound_at_object(self, SND_TOGGLE);
-            play_track(TS_SWITCH, MUS_PSWITCH, true);
+            play_sound_at_object(self, "TOGGLE");
+            play_track(TS_SWITCH, "PSWITCH", true);
             break;
         }
     }
@@ -1314,8 +1314,8 @@ void start_state(int num_players, int local) {
 
     load_font(FNT_HUD);
 
-    load_sound(SND_HURRY);
-    load_sound(SND_TICK);
+    load_sound("HURRY");
+    load_sound("TICK");
 
     //
     //
@@ -1636,8 +1636,8 @@ void start_state(int num_players, int local) {
         respawn_player((int)i);
     }
 
-    load_track(MUS_SNOW);
-    play_track(TS_LEVEL, MUS_SNOW, true);
+    load_track("1WATER");
+    play_track(TS_LEVEL, "1WATER", true);
 }
 
 uint32_t check_state() {
@@ -1832,7 +1832,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                             );
                             object->values[VAL_PLAYER_GROUND] = 0L;
                             object->values[VAL_PLAYER_FRAME] = FxZero;
-                            play_sound_at_object(object, SND_SWIM);
+                            play_sound_at_object(object, "SWIM");
                         }
                     }
 
@@ -1859,7 +1859,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                             object->values[VAL_PLAYER_GROUND] = 0L;
                             object->values[VAL_Y_SPEED] = FfInt(-13L);
                             object->flags &= ~FLG_PLAYER_JUMP;
-                            play_sound_at_object(object, SND_JUMP);
+                            play_sound_at_object(object, "JUMP");
                         }
                         if (!(player->input & GI_JUMP) && !(player->input & GI_DOWN) &&
                             object->values[VAL_PLAYER_GROUND] > 0L && (object->flags & FLG_PLAYER_JUMP))
@@ -2007,7 +2007,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
 
                                             if (object->values[VAL_PLAYER_GROUND] > 0L)
                                                 object->values[VAL_PLAYER_FIRE] = 2L;
-                                            play_sound_at_object(object, SND_FIRE);
+                                            play_sound_at_object(object, "FIRE");
                                         }
                                         break;
                                     }
@@ -2035,7 +2035,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                     if (object->values[VAL_PLAYER_STARMAN] > 0L) {
                         const int starman = --(object->values[VAL_PLAYER_STARMAN]);
                         if (starman == 100L)
-                            play_sound_at_object(object, SND_STARMAN);
+                            play_sound_at_object(object, "STARMAN");
                         // !!! CLIENT-SIDE !!!
                         if (starman <= 0L && object->values[VAL_PLAYER_INDEX] == local_player)
                             stop_track(TS_POWER);
@@ -2070,11 +2070,14 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
 
                         case 0: {
                             if (object->flags & FLG_PLAYER_DEAD_LAST) {
-                                play_track(TS_FANFARE, (state.flags & GF_LOST) ? MUS_LOSE2 : MUS_LOSE1, false);
+                                stop_track(TS_LEVEL);
+                                stop_track(TS_SWITCH);
+                                stop_track(TS_POWER);
+                                play_track(TS_FANFARE, (state.flags & GF_LOST) ? "LOSE2" : "LOSE", false);
                                 if (state.flags & GF_HARDCORE)
-                                    play_sound(SND_HARDCORE);
+                                    play_sound("HARDCORE");
                             } else {
-                                play_sound_at_object(object, player->lives > 0L ? SND_LOSE : SND_DEAD);
+                                play_sound_at_object(object, (player->lives > 0L) ? "LOSE" : "DEAD");
                             }
                             break;
                         }
@@ -2087,7 +2090,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         case 150: {
                             struct GameObject* pawn = get_object(respawn_player(pid));
                             if (pawn != NULL) {
-                                play_sound_at_object(pawn, SND_RESPAWN);
+                                play_sound_at_object(pawn, "RESPAWN");
                                 pawn->values[VAL_PLAYER_FLASH] = 100L;
                                 --(player->lives);
                                 object->flags |= FLG_DESTROY;
@@ -2099,7 +2102,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                             if ((object->flags & FLG_PLAYER_DEAD_LAST) || state.clock == 0L) {
                                 state.sequence.type = SEQ_LOSE;
                                 state.sequence.time = 1L;
-                                play_track(TS_FANFARE, MUS_GAME_OVER, false);
+                                play_track(TS_FANFARE, "GAMEOVER", false);
                             }
                             object->flags |= FLG_DESTROY;
                             break;
@@ -2130,7 +2133,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                     if (object->values[VAL_Y_TOUCH] > 0L) {
                         object->values[VAL_Y_SPEED] = FfInt(-7L);
                         object->values[VAL_LUI_BOUNCE] = 1L;
-                        play_sound_at_object(object, SND_KICK);
+                        play_sound_at_object(object, "KICK");
                     }
 
                     break;
@@ -2258,7 +2261,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                             --(object->values[VAL_MISSILE_HITS]);
                             object->values[VAL_MISSILE_HIT] = 2L;
                             if (hit == 1L)
-                                play_sound_at_object(object, SND_HURT);
+                                play_sound_at_object(object, "HURT");
                         }
                     }
 
@@ -2436,7 +2439,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                             player->score += 200L;
                         }
 
-                        play_sound_at_object(object, SND_COIN);
+                        play_sound_at_object(object, "COIN");
                         object->values[VAL_Y_SPEED] = -0x00044000;
                         object->flags |= FLG_COIN_POP_START;
                     }
@@ -2603,7 +2606,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
     if (state.pswitch > 0L) {
         --(state.pswitch);
         if (state.pswitch == 100L)
-            play_sound(SND_STARMAN);
+            play_sound("STARMAN");
         if (state.pswitch <= 0L) {
             ObjectID oid = state.live_objects;
             while (object_is_alive(oid)) {
@@ -2627,7 +2630,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
     if (state.sequence.type == SEQ_NONE && state.clock > 0L && (state.time % 25L) == 0L) {
         --(state.clock);
         if (state.clock <= 100L && !(state.flags & GF_HURRY)) {
-            play_sound(SND_HURRY);
+            play_sound("HURRY");
             state.flags |= GF_HURRY;
         }
         if (state.clock <= 0L)
@@ -2652,7 +2655,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 player->score += diff * 10L;
 
             if ((state.time % 5L) == 0L)
-                play_sound(SND_TICK);
+                play_sound("TICK");
         }
 
         if (state.sequence.time > 300L) {
@@ -3639,17 +3642,17 @@ void load_object(enum GameObjectType type) {
 
             load_font(FNT_HUD);
 
-            load_sound(SND_JUMP);
-            load_sound(SND_FIRE);
-            load_sound(SND_GROW);
-            load_sound(SND_WARP);
-            load_sound(SND_BUMP);
-            load_sound(SND_STOMP);
-            load_sound(SND_STARMAN);
-            load_sound(SND_SWIM);
-            load_sound(SND_RESPAWN);
+            load_sound("JUMP");
+            load_sound("FIRE");
+            load_sound("GROW");
+            load_sound("WARP");
+            load_sound("BUMP");
+            load_sound("STOMP");
+            load_sound("STARMAN");
+            load_sound("SWIM");
+            load_sound("RESPAWN");
 
-            load_track(MUS_STARMAN);
+            load_track("STARMAN");
 
             load_object(OBJ_PLAYER_EFFECT);
             load_object(OBJ_PLAYER_DEAD);
@@ -3663,15 +3666,15 @@ void load_object(enum GameObjectType type) {
         case OBJ_PLAYER_DEAD: {
             load_texture(TEX_MARIO_DEAD);
 
-            load_sound(SND_LOSE);
-            load_sound(SND_DEAD);
-            load_sound(SND_HARDCORE);
+            load_sound("LOSE");
+            load_sound("DEAD");
+            load_sound("HARDCORE");
 
-            load_track(MUS_LOSE1);
-            load_track(MUS_LOSE2);
-            load_track(MUS_GAME_OVER);
-            load_track(MUS_WIN1);
-            load_track(MUS_WIN2);
+            load_track("LOSE");
+            load_track("LOSE2");
+            load_track("GAMEOVER");
+            load_track("WIN");
+            load_track("WIN2");
             break;
         }
 
@@ -3681,7 +3684,7 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_COIN2);
             load_texture(TEX_COIN3);
 
-            load_sound(SND_COIN);
+            load_sound("COIN");
 
             load_object(OBJ_POINTS);
             load_object(OBJ_COIN_POP);
@@ -3698,7 +3701,7 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_COIN_SPARK3);
             load_texture(TEX_COIN_SPARK4);
 
-            load_sound(SND_COIN);
+            load_sound("COIN");
 
             load_object(OBJ_POINTS);
             break;
@@ -3755,7 +3758,7 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_LUI_BOUNCE2);
             load_texture(TEX_LUI_BOUNCE3);
 
-            load_sound(SND_KICK);
+            load_sound("KICK");
 
             load_object(OBJ_POINTS);
             break;
@@ -3787,15 +3790,15 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_1000000);
             load_texture(TEX_1UP);
 
-            load_sound(SND_1UP);
+            load_sound("1UP");
             break;
         }
 
         case OBJ_MISSILE_FIREBALL: {
             load_texture(TEX_MISSILE_FIREBALL);
 
-            load_sound(SND_BUMP);
-            load_sound(SND_KICK);
+            load_sound("BUMP");
+            load_sound("KICK");
 
             load_object(OBJ_EXPLODE);
             load_object(OBJ_POINTS);
@@ -3805,9 +3808,9 @@ void load_object(enum GameObjectType type) {
         case OBJ_MISSILE_BEETROOT: {
             load_texture(TEX_MISSILE_BEETROOT);
 
-            load_sound(SND_HURT);
-            load_sound(SND_BUMP);
-            load_sound(SND_KICK);
+            load_sound("HURT");
+            load_sound("BUMP");
+            load_sound("KICK");
 
             load_object(OBJ_EXPLODE);
             load_object(OBJ_POINTS);
@@ -3825,7 +3828,7 @@ void load_object(enum GameObjectType type) {
         case OBJ_MISSILE_HAMMER: {
             load_texture(TEX_MISSILE_HAMMER);
 
-            load_sound(SND_KICK);
+            load_sound("KICK");
 
             load_object(OBJ_POINTS);
             break;
@@ -3844,7 +3847,7 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_ITEM_BLOCK3);
             load_texture(TEX_EMPTY_BLOCK);
 
-            load_sound(SND_SPROUT);
+            load_sound("SPROUT");
 
             load_object(OBJ_BLOCK_BUMP);
             break;
@@ -3854,8 +3857,8 @@ void load_object(enum GameObjectType type) {
         case OBJ_PSWITCH_BRICK: {
             load_texture(TEX_BRICK_BLOCK);
 
-            load_sound(SND_BUMP);
-            load_sound(SND_BREAK);
+            load_sound("BUMP");
+            load_sound("BREAK");
 
             load_object(OBJ_BRICK_SHARD);
             break;
@@ -3879,7 +3882,7 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_CHECKPOINT2);
             load_texture(TEX_CHECKPOINT3);
 
-            load_sound(SND_SPROUT);
+            load_sound("SPROUT");
 
             load_object(OBJ_POINTS);
             break;
@@ -3976,10 +3979,10 @@ void load_object(enum GameObjectType type) {
             load_texture(TEX_PSWITCH3);
             load_texture(TEX_PSWITCH_FLAT);
 
-            load_sound(SND_TOGGLE);
-            load_sound(SND_STARMAN);
+            load_sound("TOGGLE");
+            load_sound("STARMAN");
 
-            load_track(MUS_PSWITCH);
+            load_track("PSWITCH");
 
             load_object(OBJ_PSWITCH_COIN);
             load_object(OBJ_PSWITCH_BRICK);
@@ -4456,7 +4459,7 @@ void draw_object(ObjectID oid, enum TextureIndices tid, GLfloat angle, const GLu
     );
 }
 
-void play_sound_at_object(struct GameObject* object, enum SoundIndices sid) {
+void play_sound_at_object(struct GameObject* object, const char* sid) {
     play_sound_at(sid, FtFloat(object->pos[0]), FtFloat(object->pos[1]));
 }
 

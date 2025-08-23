@@ -35,7 +35,7 @@ static struct Uniforms uniforms = {-1};
 
 #define TEXOFFS(i, nm, xoffs, yoffs)                                                                                   \
     [(i)] = {                                                                                                          \
-        .name = "textures/" nm,                                                                                        \
+        .name = (nm),                                                                                                  \
         .texture = 0,                                                                                                  \
         .size = {0, 0},                                                                                                \
         .offset = {(xoffs), (yoffs)},                                                                                  \
@@ -738,7 +738,7 @@ void load_texture(enum TextureIndices index) {
         return;
     }
 
-    const char* file = find_file(texture->name);
+    const char* file = find_file(file_pattern("data/textures/%s.*", texture->name), ".json");
     if (file == NULL)
         FATAL("Texture \"%s\" not found", texture->name);
     SDL_Surface* surface = IMG_Load(file);
