@@ -172,14 +172,15 @@ int net_wait(GekkoSession* session) {
             }
         }
 
-        NutPunch_Query();
-        if (NutPunch_GetPeerCount() >= num_players)
+        if (NP_Status_Started == NutPunch_Query())
             break;
+        if (NutPunch_GetPeerCount() >= num_players)
+            NutPunch_Start();
 
         SDL_Delay(1000 / 60);
     }
 
-    sock = NutPunch_Release();
+    sock = NutPunch_Done();
     INFO("Nuts have been punched!");
 
     for (int i = 0; i < num_players; i++) {
