@@ -4,7 +4,6 @@
 #include "K_audio.h"
 #include "K_file.h"
 #include "K_log.h"
-#include "K_memory.h"
 
 static FMOD_SYSTEM* speaker = NULL;
 static FMOD_CHANNELGROUP* state_group = NULL;
@@ -13,8 +12,8 @@ static FMOD_CHANNELGROUP* music_group = NULL;
 static struct SoundState state = {0};
 static FMOD_CHANNEL* music_channels[TS_SIZE] = {0};
 
-static struct HashMap* sounds = NULL;
-static struct HashMap* tracks = NULL;
+static StTinyMap* sounds = NULL;
+static StTinyMap* tracks = NULL;
 
 void audio_init() {
     FMOD_Debug_Initialize(FMOD_DEBUG_LEVEL_WARNING, FMOD_DEBUG_MODE_TTY, NULL, NULL);
@@ -36,8 +35,8 @@ void audio_init() {
     FMOD_System_CreateChannelGroup(speaker, "state", &state_group);
     FMOD_System_CreateChannelGroup(speaker, "music", &music_group);
 
-    sounds = create_hash_map();
-    tracks = create_hash_map();
+    sounds = StNewTinyMap();
+    tracks = StNewTinyMap();
 }
 
 void audio_update() {
@@ -60,8 +59,8 @@ static void nuke_track(void* val) {
 
 void audio_teardown() {
     // Destroy hashmaps or something
-    destroy_hash_map(sounds, nuke_sound);
-    destroy_hash_map(tracks, nuke_track);
+    StFreeTinyMap(sounds);
+    StFreeTinyMap(tracks);
     FMOD_ChannelGroup_Release(state_group);
     FMOD_ChannelGroup_Release(music_group);
     FMOD_System_Release(speaker);
@@ -145,30 +144,31 @@ void load_sound(const char* index) {
     if (get_sound(index) != NULL)
         return;
 
+    struct Sound sound = {0};
+
     const char* file = find_file(file_pattern("data/sounds/%s.*", index), ".json");
     FMOD_SOUND* data = NULL;
     FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESAMPLE, NULL, &data);
     if (result != FMOD_OK)
         FATAL("Sound \"%s\" fail: %s", index, FMOD_ErrorString(result));
 
-    struct Sound* sound = SDL_malloc(sizeof(struct Sound));
-    if (sound == NULL)
-        FATAL("Sound \"%s\" fail", index);
-    sound->name = SDL_strdup(index);
-    sound->sound = data;
-    FMOD_Sound_GetLength(data, &(sound->length), FMOD_TIMEUNIT_MS);
-    to_hash_map(sounds, index, sound);
+    SDL_strlcpy(sound.name, index, sizeof(sound.name));
+    sound.sound = data;
+    FMOD_Sound_GetLength(data, &(sound.length), FMOD_TIMEUNIT_MS);
+
+    StMapPut(sounds, StTinyStr(index), &sound, sizeof(sound));
 }
 
 const struct Sound* get_sound(const char* index) {
-    if (index[0] == '\0')
-        return NULL;
-    return (const struct Sound*)from_hash_map(sounds, index);
+    StTinyBucket* bucket = StMapLookup(sounds, StTinyStr(index));
+    return (bucket == NULL) ? NULL : (struct Sound*)(bucket->data);
 }
 
 void load_track(const char* index) {
     if (get_track(index) != NULL)
         return;
+
+    struct Track track = {0};
 
     const char* file = find_file(file_pattern("data/music/%s.*", index), ".json");
     FMOD_SOUND* data = NULL;
@@ -176,12 +176,9 @@ void load_track(const char* index) {
     if (result != FMOD_OK)
         FATAL("Track \"%s\" fail: %s", index, FMOD_ErrorString(result));
 
-    struct Track* track = SDL_malloc(sizeof(struct Track));
-    if (track == NULL)
-        FATAL("Track \"%s\" fail", index);
-    track->name = SDL_strdup(index);
-    track->stream = data;
-    FMOD_Sound_GetLength(data, &(track->length), FMOD_TIMEUNIT_MS);
+    SDL_strlcpy(track.name, index, sizeof(track.name));
+    track.stream = data;
+    FMOD_Sound_GetLength(data, &(track.length), FMOD_TIMEUNIT_MS);
 
     file = find_file(file_pattern("data/music/%s.json", index), NULL);
     if (file != NULL) {
@@ -193,20 +190,19 @@ void load_track(const char* index) {
                 unsigned int loop_start = yyjson_get_uint(yyjson_obj_get(root, "loop_start"));
                 unsigned int loop_end = yyjson_get_uint(yyjson_obj_get(root, "loop_end"));
                 if (loop_end <= 0)
-                    loop_end = track->length;
+                    loop_end = track.length;
                 FMOD_Sound_SetLoopPoints(data, loop_start, FMOD_TIMEUNIT_MS, loop_end, FMOD_TIMEUNIT_MS);
             }
             yyjson_doc_free(json);
         }
     }
 
-    to_hash_map(tracks, index, track);
+    StMapPut(tracks, StTinyStr(index), &track, sizeof(track));
 }
 
 const struct Track* get_track(const char* index) {
-    if (index[0] == '\0')
-        return NULL;
-    return (const struct Track*)from_hash_map(tracks, index);
+    StTinyBucket* bucket = StMapLookup(tracks, StTinyStr(index));
+    return (bucket == NULL) ? NULL : (struct Track*)(bucket->data);
 }
 
 void move_ears(float x, float y) {
