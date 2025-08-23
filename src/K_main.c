@@ -6,10 +6,21 @@
 #define FIX_IMPLEMENTATION
 #include <S_fixed.h>
 
+#include <SDL3/SDL_stdinc.h>
+#define StAlloc SDL_malloc
+#define StFree SDL_free
+#define StMemset SDL_memset
+#define StMemcpy SDL_memcpy
+
+#include "K_log.h"
+#define StLog INFO
+
+#define S_TRUCTURES_IMPLEMENTATION
+#include <S_tructures.h>
+
 #include "K_audio.h"
 #include "K_game.h"
-#include "K_log.h"
-#include "K_net.h" // IWYU pragma: keep
+#include "K_net.h"
 #include "K_video.h"
 
 int main(int argc, char** argv) {

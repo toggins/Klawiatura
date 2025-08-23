@@ -3,6 +3,8 @@
 #include <SDL3/SDL_stdinc.h>
 #include <fmod.h>
 
+#include "K_memory.h" // IWYU pragma: keep
+
 #define MAX_SOUNDS 16
 
 enum TrackSlots {
@@ -15,13 +17,13 @@ enum TrackSlots {
 };
 
 struct Sound {
-    const char* name;
+    char name[sizeof(StTinyKey)];
     FMOD_SOUND* sound;
     uint32_t length;
 };
 
 struct Track {
-    const char* name;
+    char name[sizeof(StTinyKey)];
     FMOD_SOUND* stream;
     uint32_t length, loop[2];
 };
