@@ -61,8 +61,8 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/include/fmod)
 # GekkoNet
 set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 FetchContent_Declare(
-    GekkoNet GIT_REPOSITORY https://github.com/Schwungus/GekkoNet.git
-    GIT_TAG main) # TODO: pin to a specific commit/version
+    GekkoNet GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
+    GIT_TAG e12c0089b5541c3e07a38c4085363211e341af2f)
 FetchContent_MakeAvailable(GekkoNet)
 
 # S_fixed
