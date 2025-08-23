@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
     enum GameInput inputs[MAX_PLAYERS] = {GI_NONE};
     start_state(num_players, local_player);
 
-    uint64_t last_time = 0;
+    uint64_t last_time = SDL_GetTicks();
     float ticks = 0;
     uint64_t tick = 0;
     bool running = true;
