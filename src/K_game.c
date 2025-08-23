@@ -972,240 +972,242 @@ static enum PlayerFrames get_player_frame(const struct GameObject* object) {
     return PF_IDLE;
 }
 
-static enum TextureIndices get_player_texture(enum PlayerPowers power, enum PlayerFrames frame) {
+static const char* get_player_texture(enum PlayerPowers power, enum PlayerFrames frame) {
     switch (power) {
         default:
         case POW_SMALL: {
             switch (frame) {
                 default:
-                    return TEX_MARIO_SMALL;
+                    return "P_S_IDLE";
 
                 case PF_WALK1:
-                    return TEX_MARIO_SMALL_WALK1;
+                    return "P_S_WLKA";
                 case PF_WALK2:
-                    return TEX_MARIO_SMALL_WALK2;
+                    return "P_S_WLKB";
 
                 case PF_JUMP:
                 case PF_FALL:
-                    return TEX_MARIO_SMALL_JUMP;
+                    return "P_S_JUMP";
 
                 case PF_SWIM1:
                 case PF_SWIM4:
-                    return TEX_MARIO_SMALL_SWIM1;
+                    return "P_S_SWMA";
                 case PF_SWIM2:
-                    return TEX_MARIO_SMALL_SWIM2;
+                    return "P_S_SWMB";
                 case PF_SWIM3:
-                    return TEX_MARIO_SMALL_SWIM3;
+                    return "P_S_SWMC";
                 case PF_SWIM5:
-                    return TEX_MARIO_SMALL_SWIM4;
+                    return "P_S_SWMD";
 
                 case PF_GROW2:
-                    return TEX_MARIO_BIG_GROW;
+                    return "P_GROWA";
                 case PF_GROW3:
-                    return TEX_MARIO_BIG_WALK2;
+                    return "P_B_WLKB";
             }
             break;
         }
 
-        case POW_BIG: {
-            switch (frame) {
-                default:
-                    return TEX_MARIO_BIG;
+            // case POW_BIG: {
+            //     switch (frame) {
+            //         default:
+            //             return "P_B_IDLE";
 
-                case PF_WALK1:
-                    return TEX_MARIO_BIG_WALK1;
-                case PF_WALK2:
-                case PF_GROW1:
-                    return TEX_MARIO_BIG_WALK2;
+            //         case PF_WALK1:
+            //             return "P_B_WLKA";
+            //         case PF_WALK2:
+            //         case PF_GROW1:
+            //             return "P_B_WLKB";
 
-                case PF_JUMP:
-                case PF_FALL:
-                    return TEX_MARIO_BIG_JUMP;
+            //         case PF_JUMP:
+            //         case PF_FALL:
+            //             return "P_B_JUMP";
 
-                case PF_DUCK:
-                    return TEX_MARIO_BIG_DUCK;
+            //         case PF_DUCK:
+            //             return "P_B_DUCK";
 
-                case PF_SWIM1:
-                case PF_SWIM4:
-                    return TEX_MARIO_BIG_SWIM1;
-                case PF_SWIM2:
-                    return TEX_MARIO_BIG_SWIM2;
-                case PF_SWIM3:
-                    return TEX_MARIO_BIG_SWIM3;
-                case PF_SWIM5:
-                    return TEX_MARIO_BIG_SWIM4;
+            //         case PF_SWIM1:
+            //         case PF_SWIM4:
+            //             return TEX_MARIO_BIG_SWIM1;
+            //         case PF_SWIM2:
+            //             return TEX_MARIO_BIG_SWIM2;
+            //         case PF_SWIM3:
+            //             return TEX_MARIO_BIG_SWIM3;
+            //         case PF_SWIM5:
+            //             return TEX_MARIO_BIG_SWIM4;
 
-                case PF_GROW2:
-                    return TEX_MARIO_BIG_GROW;
-                case PF_GROW3:
-                    return TEX_MARIO_SMALL;
-            }
-            break;
-        }
+            //         case PF_GROW2:
+            //             return "P_GROWA";
+            //         case PF_GROW3:
+            //             return "P_S_IDLE";
+            //     }
+            //     break;
+            // }
 
-        case POW_FIRE: {
-            switch (frame) {
-                default:
-                    return TEX_MARIO_FIRE;
+            // case POW_FIRE: {
+            //     switch (frame) {
+            //         default:
+            //             return TEX_MARIO_FIRE;
 
-                case PF_WALK1:
-                    return TEX_MARIO_FIRE_WALK1;
-                case PF_WALK2:
-                case PF_GROW3:
-                    return TEX_MARIO_FIRE_WALK2;
+            //         case PF_WALK1:
+            //             return TEX_MARIO_FIRE_WALK1;
+            //         case PF_WALK2:
+            //         case PF_GROW3:
+            //             return TEX_MARIO_FIRE_WALK2;
 
-                case PF_JUMP:
-                case PF_FALL:
-                    return TEX_MARIO_FIRE_JUMP;
+            //         case PF_JUMP:
+            //         case PF_FALL:
+            //             return TEX_MARIO_FIRE_JUMP;
 
-                case PF_DUCK:
-                    return TEX_MARIO_FIRE_DUCK;
+            //         case PF_DUCK:
+            //             return TEX_MARIO_FIRE_DUCK;
 
-                case PF_FIRE:
-                    return TEX_MARIO_FIRE_FIRE;
+            //         case PF_FIRE:
+            //             return TEX_MARIO_FIRE_FIRE;
 
-                case PF_SWIM1:
-                case PF_SWIM4:
-                    return TEX_MARIO_FIRE_SWIM1;
-                case PF_SWIM2:
-                    return TEX_MARIO_FIRE_SWIM2;
-                case PF_SWIM3:
-                    return TEX_MARIO_FIRE_SWIM3;
-                case PF_SWIM5:
-                    return TEX_MARIO_FIRE_SWIM4;
+            //         case PF_SWIM1:
+            //         case PF_SWIM4:
+            //             return TEX_MARIO_FIRE_SWIM1;
+            //         case PF_SWIM2:
+            //             return TEX_MARIO_FIRE_SWIM2;
+            //         case PF_SWIM3:
+            //             return TEX_MARIO_FIRE_SWIM3;
+            //         case PF_SWIM5:
+            //             return TEX_MARIO_FIRE_SWIM4;
 
-                case PF_GROW1:
-                    return TEX_MARIO_BIG_WALK2;
-                case PF_GROW2:
-                    return TEX_MARIO_FIRE_GROW1;
-                case PF_GROW4:
-                    return TEX_MARIO_FIRE_GROW2;
-            }
-            break;
-        }
+            //         case PF_GROW1:
+            //             return "P_B_WLKB";
+            //         case PF_GROW2:
+            //             return TEX_MARIO_FIRE_GROW1;
+            //         case PF_GROW4:
+            //             return TEX_MARIO_FIRE_GROW2;
+            //     }
+            //     break;
+            // }
 
-        case POW_BEETROOT: {
-            switch (frame) {
-                default:
-                    return TEX_MARIO_BEETROOT;
+            // case POW_BEETROOT: {
+            //     switch (frame) {
+            //         default:
+            //             return TEX_MARIO_BEETROOT;
 
-                case PF_WALK1:
-                    return TEX_MARIO_BEETROOT_WALK1;
-                case PF_WALK2:
-                case PF_GROW3:
-                    return TEX_MARIO_BEETROOT_WALK2;
+            //         case PF_WALK1:
+            //             return TEX_MARIO_BEETROOT_WALK1;
+            //         case PF_WALK2:
+            //         case PF_GROW3:
+            //             return TEX_MARIO_BEETROOT_WALK2;
 
-                case PF_JUMP:
-                case PF_FALL:
-                    return TEX_MARIO_BEETROOT_JUMP;
+            //         case PF_JUMP:
+            //         case PF_FALL:
+            //             return TEX_MARIO_BEETROOT_JUMP;
 
-                case PF_DUCK:
-                    return TEX_MARIO_BEETROOT_DUCK;
+            //         case PF_DUCK:
+            //             return TEX_MARIO_BEETROOT_DUCK;
 
-                case PF_FIRE:
-                    return TEX_MARIO_BEETROOT_FIRE;
+            //         case PF_FIRE:
+            //             return TEX_MARIO_BEETROOT_FIRE;
 
-                case PF_SWIM1:
-                case PF_SWIM4:
-                    return TEX_MARIO_BEETROOT_SWIM1;
-                case PF_SWIM2:
-                    return TEX_MARIO_BEETROOT_SWIM2;
-                case PF_SWIM3:
-                    return TEX_MARIO_BEETROOT_SWIM3;
-                case PF_SWIM5:
-                    return TEX_MARIO_BEETROOT_SWIM4;
+            //         case PF_SWIM1:
+            //         case PF_SWIM4:
+            //             return TEX_MARIO_BEETROOT_SWIM1;
+            //         case PF_SWIM2:
+            //             return TEX_MARIO_BEETROOT_SWIM2;
+            //         case PF_SWIM3:
+            //             return TEX_MARIO_BEETROOT_SWIM3;
+            //         case PF_SWIM5:
+            //             return TEX_MARIO_BEETROOT_SWIM4;
 
-                case PF_GROW1:
-                    return TEX_MARIO_BIG_WALK2;
-                case PF_GROW2:
-                    return TEX_MARIO_FIRE_GROW1;
-                case PF_GROW4:
-                    return TEX_MARIO_FIRE_GROW2;
-            }
-            break;
-        }
+            //         case PF_GROW1:
+            //             return "P_B_WLKB";
+            //         case PF_GROW2:
+            //             return TEX_MARIO_FIRE_GROW1;
+            //         case PF_GROW4:
+            //             return TEX_MARIO_FIRE_GROW2;
+            //     }
+            //     break;
+            // }
 
-        case POW_LUI: {
-            switch (frame) {
-                default:
-                    return TEX_MARIO_LUI;
+            // case POW_LUI: {
+            //     switch (frame) {
+            //         default:
+            //             return TEX_MARIO_LUI;
 
-                case PF_WALK1:
-                    return TEX_MARIO_LUI_WALK1;
-                case PF_WALK2:
-                case PF_GROW3:
-                    return TEX_MARIO_LUI_WALK2;
+            //         case PF_WALK1:
+            //             return TEX_MARIO_LUI_WALK1;
 
-                case PF_JUMP:
-                case PF_FALL:
-                    return TEX_MARIO_LUI_JUMP;
+            //         case PF_WALK2:
+            //         case PF_GROW3:
+            //             return TEX_MARIO_LUI_WALK2;
 
-                case PF_DUCK:
-                    return TEX_MARIO_LUI_DUCK;
+            //         case PF_JUMP:
+            //         case PF_FALL:
+            //             return TEX_MARIO_LUI_JUMP;
 
-                case PF_SWIM1:
-                case PF_SWIM4:
-                    return TEX_MARIO_LUI_SWIM1;
-                case PF_SWIM2:
-                    return TEX_MARIO_LUI_SWIM2;
-                case PF_SWIM3:
-                    return TEX_MARIO_LUI_SWIM3;
-                case PF_SWIM5:
-                    return TEX_MARIO_LUI_SWIM4;
+            //         case PF_DUCK:
+            //             return TEX_MARIO_LUI_DUCK;
 
-                case PF_GROW1:
-                    return TEX_MARIO_BIG_WALK2;
-                case PF_GROW2:
-                    return TEX_MARIO_FIRE_GROW1;
-                case PF_GROW4:
-                    return TEX_MARIO_FIRE_GROW2;
-            }
-            break;
-        }
+            //         case PF_SWIM1:
+            //         case PF_SWIM4:
+            //             return TEX_MARIO_LUI_SWIM1;
 
-        case POW_HAMMER: {
-            switch (frame) {
-                default:
-                    return TEX_MARIO_HAMMER;
+            //         case PF_SWIM2:
+            //             return TEX_MARIO_LUI_SWIM2;
 
-                case PF_WALK1:
-                    return TEX_MARIO_HAMMER_WALK1;
-                case PF_WALK2:
-                case PF_GROW3:
-                    return TEX_MARIO_HAMMER_WALK2;
+            //         case PF_SWIM3:
+            //             return TEX_MARIO_LUI_SWIM3;
 
-                case PF_JUMP:
-                case PF_FALL:
-                    return TEX_MARIO_HAMMER_JUMP;
+            //         case PF_SWIM5:
+            //             return TEX_MARIO_LUI_SWIM4;
 
-                case PF_DUCK:
-                    return TEX_MARIO_HAMMER_DUCK;
+            //         case PF_GROW1:
+            //             return "P_B_WLKB";
+            //         case PF_GROW2:
+            //             return TEX_MARIO_FIRE_GROW1;
+            //         case PF_GROW4:
+            //             return TEX_MARIO_FIRE_GROW2;
+            //     }
+            //     break;
+            // }
 
-                case PF_FIRE:
-                    return TEX_MARIO_HAMMER_FIRE;
+            // case POW_HAMMER: {
+            //     switch (frame) {
+            //         default:
+            //             return TEX_MARIO_HAMMER;
 
-                case PF_SWIM1:
-                case PF_SWIM4:
-                    return TEX_MARIO_HAMMER_SWIM1;
-                case PF_SWIM2:
-                    return TEX_MARIO_HAMMER_SWIM2;
-                case PF_SWIM3:
-                    return TEX_MARIO_HAMMER_SWIM3;
-                case PF_SWIM5:
-                    return TEX_MARIO_HAMMER_SWIM4;
+            //         case PF_WALK1:
+            //             return TEX_MARIO_HAMMER_WALK1;
+            //         case PF_WALK2:
+            //         case PF_GROW3:
+            //             return TEX_MARIO_HAMMER_WALK2;
 
-                case PF_GROW1:
-                    return TEX_MARIO_BIG_WALK2;
-                case PF_GROW2:
-                    return TEX_MARIO_FIRE_GROW1;
-                case PF_GROW4:
-                    return TEX_MARIO_FIRE_GROW2;
-            }
-            break;
-        }
+            //         case PF_JUMP:
+            //         case PF_FALL:
+            //             return TEX_MARIO_HAMMER_JUMP;
+
+            //         case PF_DUCK:
+            //             return TEX_MARIO_HAMMER_DUCK;
+
+            //         case PF_FIRE:
+            //             return TEX_MARIO_HAMMER_FIRE;
+
+            //         case PF_SWIM1:
+            //         case PF_SWIM4:
+            //             return TEX_MARIO_HAMMER_SWIM1;
+            //         case PF_SWIM2:
+            //             return TEX_MARIO_HAMMER_SWIM2;
+            //         case PF_SWIM3:
+            //             return TEX_MARIO_HAMMER_SWIM3;
+            //         case PF_SWIM5:
+            //             return TEX_MARIO_HAMMER_SWIM4;
+
+            //         case PF_GROW1:
+            //             return "P_B_WLKB";
+            //         case PF_GROW2:
+            //             return TEX_MARIO_FIRE_GROW1;
+            //         case PF_GROW4:
+            //             return TEX_MARIO_FIRE_GROW2;
+            //     }
+            //     break;
+            //
     }
-
-    return TEX_MARIO_SMALL;
 }
 
 static bool in_any_view(struct GameObject* object, fix16_t padding, bool ignore_top) {
@@ -1303,14 +1305,14 @@ void start_state(int num_players, int local) {
     //
     //
     //
-    load_texture(TEX_WATER1);
-    load_texture(TEX_WATER2);
-    load_texture(TEX_WATER3);
-    load_texture(TEX_WATER4);
-    load_texture(TEX_WATER5);
-    load_texture(TEX_WATER6);
-    load_texture(TEX_WATER7);
-    load_texture(TEX_WATER8);
+    load_texture("M_WATERA");
+    load_texture("M_WATERB");
+    load_texture("M_WATERC");
+    load_texture("M_WATERD");
+    load_texture("M_WATERE");
+    load_texture("M_WATERF");
+    load_texture("M_WATERG");
+    load_texture("M_WATERH");
 
     load_font(FNT_HUD);
 
@@ -1328,50 +1330,50 @@ void start_state(int num_players, int local) {
         0, 0, 11008, 551, 200,
         (GLubyte[4][4]){{192, 192, 192, 255}, {192, 192, 192, 255}, {255, 255, 255, 255}, {255, 255, 255, 255}}
     );
-    add_backdrop(TEX_SNOW1, 0, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 32, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 64, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 96, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 128, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 160, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 192, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 224, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 256, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 288, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 320, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 352, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 384, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 416, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 448, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 480, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 512, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 544, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 576, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW3, 608, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW4, 0, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 32, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 64, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 96, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 128, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 160, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 192, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 224, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 256, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 288, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 320, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 352, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 384, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 416, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 448, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 480, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 512, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 544, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 576, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW6, 608, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWA", 0, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 32, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 64, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 96, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 128, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 160, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 192, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 224, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 256, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 288, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 320, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 352, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 384, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 416, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 448, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 480, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 512, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 544, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 576, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWC", 608, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWD", 0, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 32, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 64, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 96, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 128, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 160, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 192, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 224, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 256, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 288, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 320, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 352, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 384, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 416, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 448, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 480, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 512, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 544, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 576, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWF", 608, 448, 20, 255, 255, 255, 255);
 
     for (int i = 0L; i < 30L; i++) {
         const int x = 640L + (i * 32L);
-        add_backdrop(TEX_BLOCK3, (GLfloat)x, 416, 20, 255, 255, 255, 255);
+        add_backdrop("T_BLOCKC", (GLfloat)x, 416, 20, 255, 255, 255, 255);
         const ObjectID oid = create_object(OBJ_SOLID, (fvec2){FfInt(x), FfInt(416L)});
         if (object_is_alive(oid)) {
             state.objects[oid].bbox[1][0] = FfInt(32L);
@@ -1379,58 +1381,58 @@ void start_state(int num_players, int local) {
         }
     }
 
-    add_backdrop(TEX_BLOCK3, 608, 352, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 608, 384, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BLOCK3, 576, 384, 20, 255, 255, 255, 255);
+    add_backdrop("T_BLOCKC", 608, 352, 20, 255, 255, 255, 255);
+    add_backdrop("T_BLOCKC", 608, 384, 20, 255, 255, 255, 255);
+    add_backdrop("T_BLOCKC", 576, 384, 20, 255, 255, 255, 255);
 
-    add_backdrop(TEX_BRIDGE2, 32, 240, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BRIDGE2, 64, 240, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_BRIDGE2, 96, 240, 20, 255, 255, 255, 255);
+    add_backdrop("T_PLATFB", 32, 240, 20, 255, 255, 255, 255);
+    add_backdrop("T_PLATFB", 64, 240, 20, 255, 255, 255, 255);
+    add_backdrop("T_PLATFB", 96, 240, 20, 255, 255, 255, 255);
 
-    add_backdrop(TEX_SNOW1, 1920, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 1952, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 1984, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2016, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2048, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2080, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2112, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2144, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2176, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2208, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2240, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2272, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2304, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2336, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2368, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2400, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2432, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2464, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2496, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2528, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW2, 2560, 416, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW4, 1920, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 1952, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 1984, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2016, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2048, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2080, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2112, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2144, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2176, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2208, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2240, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2272, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2304, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2336, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2368, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2400, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2432, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2464, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2496, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2528, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_SNOW5, 2560, 448, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GOAL_MARK, 2144, 384, 20, 255, 255, 255, 255);
-    add_backdrop(TEX_GOAL, 2304, 128, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWA", 1920, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 1952, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 1984, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2016, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2048, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2080, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2112, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2144, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2176, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2208, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2240, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2272, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2304, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2336, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2368, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2400, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2432, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2464, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2496, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2528, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWB", 2560, 416, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWD", 1920, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 1952, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 1984, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2016, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2048, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2080, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2112, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2144, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2176, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2208, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2240, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2272, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2304, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2336, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2368, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2400, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2432, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2464, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2496, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2528, 448, 20, 255, 255, 255, 255);
+    add_backdrop("T_SNOWE", 2560, 448, 20, 255, 255, 255, 255);
+    add_backdrop("M_GOALM", 2144, 384, 20, 255, 255, 255, 255);
+    add_backdrop("M_GOAL", 2304, 128, 20, 255, 255, 255, 255);
 
     create_object(OBJ_CLOUD, (fvec2){FfInt(128L), FfInt(32L)});
     create_object(OBJ_CLOUD, (fvec2){FfInt(213L), FfInt(56L)});
@@ -2675,17 +2677,17 @@ void draw_state() {
                     break;
 
                 case OBJ_CLOUD: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     switch (((int)((float)state.time / 12.5f) + object->values[VAL_PROP_FRAME]) % 4) {
                         default:
-                            tex = TEX_CLOUD1;
+                            tex = "S_CLOUDA";
                             break;
                         case 1:
                         case 3:
-                            tex = TEX_CLOUD2;
+                            tex = "S_CLOUDB";
                             break;
                         case 2:
-                            tex = TEX_CLOUD3;
+                            tex = "S_CLOUDC";
                             break;
                     }
                     draw_object(oid, tex, 0, WHITE);
@@ -2693,17 +2695,17 @@ void draw_state() {
                 }
 
                 case OBJ_BUSH: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     switch (((int)((float)state.time / 7.142857142857143f) + object->values[VAL_PROP_FRAME]) % 4) {
                         default:
-                            tex = TEX_BUSH1;
+                            tex = "S_BUSHA";
                             break;
                         case 1:
                         case 3:
-                            tex = TEX_BUSH2;
+                            tex = "S_BUSHB";
                             break;
                         case 2:
-                            tex = TEX_BUSH3;
+                            tex = "S_BUSHC";
                             break;
                     }
                     draw_object(oid, tex, 0, WHITE);
@@ -2711,17 +2713,17 @@ void draw_state() {
                 }
 
                 case OBJ_BUSH_SNOW: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     switch (((int)((float)state.time / 7.142857142857143f) + object->values[VAL_PROP_FRAME]) % 4) {
                         default:
-                            tex = TEX_BUSH_SNOW1;
+                            tex = "S_BUSHSA";
                             break;
                         case 1:
                         case 3:
-                            tex = TEX_BUSH_SNOW2;
+                            tex = "S_BUSHSB";
                             break;
                         case 2:
-                            tex = TEX_BUSH_SNOW3;
+                            tex = "S_BUSHSC";
                             break;
                     }
                     draw_object(oid, tex, 0, WHITE);
@@ -2733,7 +2735,7 @@ void draw_state() {
                         break;
 
                     const struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
-                    const enum TextureIndices tex =
+                    const char* tex =
                         get_player_texture(player == NULL ? POW_SMALL : player->power, get_player_frame(object));
                     const GLubyte a = (object->values[VAL_PLAYER_INDEX] != local_player) ? 190 : 255;
                     draw_object(oid, tex, 0, ALPHA(a));
@@ -2783,9 +2785,7 @@ void draw_state() {
                 }
 
                 case OBJ_PLAYER_DEAD: {
-                    draw_object(
-                        oid, TEX_MARIO_DEAD, 0, ALPHA(object->values[VAL_PLAYER_INDEX] != local_player ? 190 : 255)
-                    );
+                    draw_object(oid, "P_DEAD", 0, ALPHA(object->values[VAL_PLAYER_INDEX] != local_player ? 190 : 255));
                     break;
                 }
 
@@ -2802,17 +2802,17 @@ void draw_state() {
 
                 case OBJ_COIN:
                 case OBJ_PSWITCH_COIN: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     switch ((state.time / 5) % 4) {
                         default:
-                            tex = TEX_COIN1;
+                            tex = "I_COINA";
                             break;
                         case 1:
                         case 3:
-                            tex = TEX_COIN2;
+                            tex = "I_COINB";
                             break;
                         case 2:
-                            tex = TEX_COIN3;
+                            tex = "I_COINC";
                             break;
                     }
                     draw_object(oid, tex, 0, WHITE);
@@ -2820,35 +2820,35 @@ void draw_state() {
                 }
 
                 case OBJ_COIN_POP: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     if (object->flags & FLG_COIN_POP_SPARK)
                         switch (object->values[VAL_COIN_POP_FRAME] / 100) {
                             default:
-                                tex = TEX_COIN_SPARK1;
+                                tex = "I_CPOPE";
                                 break;
                             case 1:
-                                tex = TEX_COIN_SPARK2;
+                                tex = "I_CPOPF";
                                 break;
                             case 2:
-                                tex = TEX_COIN_SPARK3;
+                                tex = "I_CPOPG";
                                 break;
                             case 3:
-                                tex = TEX_COIN_SPARK4;
+                                tex = "I_CPOPH";
                                 break;
                         }
                     else
                         switch ((object->values[VAL_COIN_POP_FRAME] / 100) % 5) {
                             default:
-                                tex = TEX_COIN_POP1;
+                                tex = "I_CPOPA";
                                 break;
                             case 2:
-                                tex = TEX_COIN_POP2;
+                                tex = "I_CPOPB";
                                 break;
                             case 3:
-                                tex = TEX_COIN_POP3;
+                                tex = "I_CPOPC";
                                 break;
                             case 4:
-                                tex = TEX_COIN_POP4;
+                                tex = "I_CPOPD";
                                 break;
                         }
                     draw_object(oid, tex, 0, WHITE);
@@ -2856,39 +2856,36 @@ void draw_state() {
                 }
 
                 case OBJ_MUSHROOM: {
-                    draw_object(oid, TEX_MUSHROOM, 0, WHITE);
+                    draw_object(oid, "I_SHROOM", 0, WHITE);
                     break;
                 }
 
                 case OBJ_MUSHROOM_1UP: {
-                    draw_object(oid, TEX_MUSHROOM_1UP, 0, WHITE);
+                    draw_object(oid, "I_1UP", 0, WHITE);
                     break;
                 }
 
                 case OBJ_MUSHROOM_POISON: {
                     draw_object(
-                        oid,
-                        ((int)((float)(state.time) / 11.11111111111111f) % 2) ? TEX_MUSHROOM_POISON2
-                                                                              : TEX_MUSHROOM_POISON1,
-                        0, WHITE
+                        oid, ((int)((float)(state.time) / 11.11111111111111f) % 2) ? "I_POISOB" : "I_POISOA", 0, WHITE
                     );
                     break;
                 }
 
                 case OBJ_FIRE_FLOWER: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     switch ((int)((float)state.time / 3.703703703703704f) % 4) {
                         default:
-                            tex = TEX_FIRE_FLOWER1;
+                            tex = "I_FLWRA";
                             break;
                         case 1:
-                            tex = TEX_FIRE_FLOWER2;
+                            tex = "I_FLWRB";
                             break;
                         case 2:
-                            tex = TEX_FIRE_FLOWER3;
+                            tex = "I_FLWRC";
                             break;
                         case 3:
-                            tex = TEX_FIRE_FLOWER4;
+                            tex = "I_FLWRD";
                             break;
                     }
                     draw_object(oid, tex, 0, WHITE);
@@ -2896,17 +2893,17 @@ void draw_state() {
                 }
 
                 case OBJ_BEETROOT: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     switch ((int)((float)state.time / 12.5f) % 4) {
                         default:
-                            tex = TEX_BEETROOT1;
+                            tex = "I_BEETA";
                             break;
                         case 1:
                         case 3:
-                            tex = TEX_BEETROOT2;
+                            tex = "I_BEETB";
                             break;
                         case 2:
-                            tex = TEX_BEETROOT3;
+                            tex = "I_BEETC";
                             break;
                     }
                     draw_object(oid, tex, 0, WHITE);
@@ -2914,23 +2911,23 @@ void draw_state() {
                 }
 
                 case OBJ_LUI: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     if (object->values[VAL_LUI_BOUNCE] > 0L)
                         switch (object->values[VAL_LUI_BOUNCE] / 100) {
                             default:
                             case 0:
-                                tex = TEX_LUI2;
+                                tex = "I_LUIB";
                                 break;
                             case 1:
                             case 5:
-                                tex = TEX_LUI_BOUNCE1;
+                                tex = "I_LUIF";
                                 break;
                             case 2:
                             case 4:
-                                tex = TEX_LUI_BOUNCE2;
+                                tex = "I_LUIG";
                                 break;
                             case 3:
-                                tex = TEX_LUI_BOUNCE3;
+                                tex = "I_LUIH";
                                 break;
                         }
                     else
@@ -2938,25 +2935,25 @@ void draw_state() {
                             default:
                             case 10:
                             case 11:
-                                tex = TEX_LUI1;
+                                tex = "I_LUIA";
                                 break;
                             case 0:
-                                tex = TEX_LUI2;
+                                tex = "I_LUIB";
                                 break;
                             case 1:
                             case 8:
                             case 9:
-                                tex = TEX_LUI3;
+                                tex = "I_LUIC";
                                 break;
                             case 2:
                             case 6:
                             case 7:
-                                tex = TEX_LUI4;
+                                tex = "I_LUID";
                                 break;
                             case 3:
                             case 4:
                             case 5:
-                                tex = TEX_LUI5;
+                                tex = "I_LUIE";
                                 break;
                         }
                     draw_object(oid, tex, 0, WHITE);
@@ -2964,24 +2961,24 @@ void draw_state() {
                 }
 
                 case OBJ_HAMMER_SUIT: {
-                    draw_object(oid, TEX_HAMMER_SUIT, 0, WHITE);
+                    draw_object(oid, "I_HAMMER", 0, WHITE);
                     break;
                 }
 
                 case OBJ_STARMAN: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     switch ((int)((float)state.time / 2.040816326530612f) % 4) {
                         default:
-                            tex = TEX_STARMAN1;
+                            tex = "I_STARA";
                             break;
                         case 1:
-                            tex = TEX_STARMAN2;
+                            tex = "I_STARB";
                             break;
                         case 2:
-                            tex = TEX_STARMAN3;
+                            tex = "I_STARC";
                             break;
                         case 3:
-                            tex = TEX_STARMAN4;
+                            tex = "I_STARD";
                             break;
                     }
                     draw_object(oid, tex, 0, WHITE);
@@ -2992,35 +2989,35 @@ void draw_state() {
                     if (object->values[VAL_POINTS_PLAYER] != local_player)
                         break;
 
-                    enum TextureIndices tex;
+                    const char* tex;
                     switch (object->values[VAL_POINTS]) {
                         default:
                         case 100:
-                            tex = TEX_100;
+                            tex = "H_100";
                             break;
                         case 200:
-                            tex = TEX_200;
+                            tex = "H_200";
                             break;
                         case 500:
-                            tex = TEX_500;
+                            tex = "H_500";
                             break;
                         case 1000:
-                            tex = TEX_1000;
+                            tex = "H_1000";
                             break;
                         case 2000:
-                            tex = TEX_2000;
+                            tex = "H_2000";
                             break;
                         case 5000:
-                            tex = TEX_5000;
+                            tex = "H_5000";
                             break;
                         case 10000:
-                            tex = TEX_10000;
+                            tex = "H_10000";
                             break;
                         case 1000000:
-                            tex = TEX_1000000;
+                            tex = "H_1M";
                             break;
                         case -1:
-                            tex = TEX_1UP;
+                            tex = "H_1UP";
                             break;
                     }
 
@@ -3029,32 +3026,32 @@ void draw_state() {
                 }
 
                 case OBJ_MISSILE_FIREBALL: {
-                    draw_object(oid, TEX_MISSILE_FIREBALL, FtFloat(object->values[VAL_MISSILE_ANGLE]), WHITE);
+                    draw_object(oid, "R_FIRE", FtFloat(object->values[VAL_MISSILE_ANGLE]), WHITE);
                     break;
                 }
 
                 case OBJ_MISSILE_BEETROOT:
                 case OBJ_MISSILE_BEETROOT_SINK: {
-                    draw_object(oid, TEX_MISSILE_BEETROOT, 0, WHITE);
+                    draw_object(oid, "R_BEET", 0, WHITE);
                     break;
                 }
 
                 case OBJ_MISSILE_HAMMER: {
-                    draw_object(oid, TEX_MISSILE_HAMMER, FtFloat(object->values[VAL_MISSILE_ANGLE]), WHITE);
+                    draw_object(oid, "R_HAMMRA", FtFloat(object->values[VAL_MISSILE_ANGLE]), WHITE);
                     break;
                 }
 
                 case OBJ_EXPLODE: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     switch (object->values[VAL_EXPLODE_FRAME] / 100) {
                         default:
-                            tex = TEX_EXPLODE1;
+                            tex = "X_BOOMA";
                             break;
                         case 1:
-                            tex = TEX_EXPLODE2;
+                            tex = "X_BOOMB";
                             break;
                         case 2:
-                            tex = TEX_EXPLODE3;
+                            tex = "X_BOOMC";
                             break;
                     }
                     draw_object(oid, tex, 0, WHITE);
@@ -3062,20 +3059,20 @@ void draw_state() {
                 }
 
                 case OBJ_ITEM_BLOCK: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     if (object->flags & FLG_BLOCK_EMPTY)
-                        tex = TEX_EMPTY_BLOCK;
+                        tex = "I_EMPTY";
                     else
                         switch ((int)((float)(state.time) / 11.11111111111111f) % 4) {
                             default:
-                                tex = TEX_ITEM_BLOCK1;
+                                tex = "I_BLOCKA";
                                 break;
                             case 1:
                             case 3:
-                                tex = TEX_ITEM_BLOCK2;
+                                tex = "I_BLOCKB";
                                 break;
                             case 2:
-                                tex = TEX_ITEM_BLOCK3;
+                                tex = "I_BLOCKC";
                                 break;
                         }
 
@@ -3143,7 +3140,7 @@ void draw_state() {
                     }
 
                     draw_sprite(
-                        (object->flags & FLG_BLOCK_GRAY) ? TEX_BRICK_BLOCK_GRAY : TEX_BRICK_BLOCK,
+                        (object->flags & FLG_BLOCK_GRAY) ? "I_BRICKB" : "I_BRICKA",
                         (float[3]){
                             FtInt(object->pos[0]),
                             FtInt(object->pos[1]) - bump,
@@ -3206,8 +3203,8 @@ void draw_state() {
 
                     draw_sprite(
                         (object->flags & FLG_BLOCK_EMPTY)
-                            ? TEX_EMPTY_BLOCK
-                            : ((object->flags & FLG_BLOCK_GRAY) ? TEX_BRICK_BLOCK_GRAY : TEX_BRICK_BLOCK),
+                            ? "I_EMPTY"
+                            : ((object->flags & FLG_BLOCK_GRAY) ? "I_BRICKB" : "I_BRICKA"),
                         (float[3]){
                             FtInt(object->pos[0]),
                             FtInt(object->pos[1]) - bump,
@@ -3220,7 +3217,7 @@ void draw_state() {
 
                 case OBJ_BRICK_SHARD: {
                     draw_object(
-                        oid, (object->flags & FLG_BLOCK_GRAY) ? TEX_BRICK_SHARD_GRAY : TEX_BRICK_SHARD,
+                        oid, (object->flags & FLG_BLOCK_GRAY) ? "X_SHARDB" : "X_SHARDA",
                         FtFloat(object->values[VAL_BRICK_SHARD_ANGLE]), WHITE
                     );
                     break;
@@ -3229,98 +3226,97 @@ void draw_state() {
                 case OBJ_CHECKPOINT: {
                     draw_object(
                         oid,
-                        (state.checkpoint == oid) ? (((state.time / 10) % 2) ? TEX_CHECKPOINT3 : TEX_CHECKPOINT2)
-                                                  : TEX_CHECKPOINT1,
-                        0, ALPHA(oid >= state.checkpoint ? 255 : 128)
+                        (state.checkpoint == oid) ? (((state.time / 10) % 2) ? "M_CHECKC" : "M_CHECKB") : "M_CHECKA", 0,
+                        ALPHA(oid >= state.checkpoint ? 255 : 128)
                     );
                     break;
                 }
 
                 case OBJ_ROTODISC_BALL: {
-                    draw_object(oid, TEX_ROTODISC_BALL, 0, WHITE);
+                    draw_object(oid, "E_RDBALL", 0, WHITE);
                     break;
                 }
 
                 case OBJ_ROTODISC: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     switch (state.time % 26) {
                         default:
-                            tex = TEX_ROTODISC1;
+                            tex = "E_ROTODA";
                             break;
                         case 1:
-                            tex = TEX_ROTODISC2;
+                            tex = "E_ROTODB";
                             break;
                         case 2:
-                            tex = TEX_ROTODISC3;
+                            tex = "E_ROTODC";
                             break;
                         case 3:
-                            tex = TEX_ROTODISC4;
+                            tex = "E_ROTODD";
                             break;
                         case 4:
-                            tex = TEX_ROTODISC5;
+                            tex = "E_ROTODE";
                             break;
                         case 5:
-                            tex = TEX_ROTODISC6;
+                            tex = "E_ROTODF";
                             break;
                         case 6:
-                            tex = TEX_ROTODISC7;
+                            tex = "E_ROTODG";
                             break;
                         case 7:
-                            tex = TEX_ROTODISC8;
+                            tex = "E_ROTODH";
                             break;
                         case 8:
-                            tex = TEX_ROTODISC9;
+                            tex = "E_ROTODI";
                             break;
                         case 9:
-                            tex = TEX_ROTODISC10;
+                            tex = "E_ROTODJ";
                             break;
                         case 10:
-                            tex = TEX_ROTODISC11;
+                            tex = "E_ROTODK";
                             break;
                         case 11:
-                            tex = TEX_ROTODISC12;
+                            tex = "E_ROTODL";
                             break;
                         case 12:
-                            tex = TEX_ROTODISC13;
+                            tex = "E_ROTODM";
                             break;
                         case 13:
-                            tex = TEX_ROTODISC14;
+                            tex = "E_ROTODN";
                             break;
                         case 14:
-                            tex = TEX_ROTODISC15;
+                            tex = "E_ROTODO";
                             break;
                         case 15:
-                            tex = TEX_ROTODISC16;
+                            tex = "E_ROTODP";
                             break;
                         case 16:
-                            tex = TEX_ROTODISC17;
+                            tex = "E_ROTODQ";
                             break;
                         case 17:
-                            tex = TEX_ROTODISC18;
+                            tex = "E_ROTODR";
                             break;
                         case 18:
-                            tex = TEX_ROTODISC19;
+                            tex = "E_ROTODS";
                             break;
                         case 19:
-                            tex = TEX_ROTODISC20;
+                            tex = "E_ROTODT";
                             break;
                         case 20:
-                            tex = TEX_ROTODISC21;
+                            tex = "E_ROTODU";
                             break;
                         case 21:
-                            tex = TEX_ROTODISC22;
+                            tex = "E_ROTODV";
                             break;
                         case 22:
-                            tex = TEX_ROTODISC23;
+                            tex = "E_ROTODW";
                             break;
                         case 23:
-                            tex = TEX_ROTODISC24;
+                            tex = "E_ROTODX";
                             break;
                         case 24:
-                            tex = TEX_ROTODISC25;
+                            tex = "E_ROTODY";
                             break;
                         case 25:
-                            tex = TEX_ROTODISC26;
+                            tex = "E_ROTODZ";
                             break;
                     }
 
@@ -3331,52 +3327,52 @@ void draw_state() {
                 }
 
                 case OBJ_WATER_SPLASH: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     switch (object->values[VAL_WATER_SPLASH_FRAME] / 10) {
                         default:
-                            tex = TEX_WATER_SPLASH1;
+                            tex = "X_SPLSHA";
                             break;
                         case 1:
-                            tex = TEX_WATER_SPLASH2;
+                            tex = "X_SPLSHB";
                             break;
                         case 2:
-                            tex = TEX_WATER_SPLASH3;
+                            tex = "X_SPLSHC";
                             break;
                         case 3:
-                            tex = TEX_WATER_SPLASH4;
+                            tex = "X_SPLSHD";
                             break;
                         case 4:
-                            tex = TEX_WATER_SPLASH5;
+                            tex = "X_SPLSHE";
                             break;
                         case 5:
-                            tex = TEX_WATER_SPLASH6;
+                            tex = "X_SPLSHF";
                             break;
                         case 6:
-                            tex = TEX_WATER_SPLASH7;
+                            tex = "X_SPLSHG";
                             break;
                         case 7:
-                            tex = TEX_WATER_SPLASH8;
+                            tex = "X_SPLSHH";
                             break;
                         case 8:
-                            tex = TEX_WATER_SPLASH9;
+                            tex = "X_SPLSHI";
                             break;
                         case 9:
-                            tex = TEX_WATER_SPLASH10;
+                            tex = "X_SPLSHJ";
                             break;
                         case 10:
-                            tex = TEX_WATER_SPLASH11;
+                            tex = "X_SPLSHK";
                             break;
                         case 11:
-                            tex = TEX_WATER_SPLASH12;
+                            tex = "X_SPLSHL";
                             break;
                         case 12:
-                            tex = TEX_WATER_SPLASH13;
+                            tex = "X_SPLSHM";
                             break;
                         case 13:
-                            tex = TEX_WATER_SPLASH14;
+                            tex = "X_SPLSHN";
                             break;
                         case 14:
-                            tex = TEX_WATER_SPLASH15;
+                            tex = "X_SPLSHO";
                             break;
                     }
                     draw_object(oid, tex, 0, WHITE);
@@ -3384,34 +3380,34 @@ void draw_state() {
                 }
 
                 case OBJ_BUBBLE: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     float pos[3] = {FtInt(object->pos[0]), FtInt(object->pos[1]), FtFloat(object->depth)};
                     if (object->flags & FLG_BUBBLE_POP) {
                         switch (object->values[VAL_BUBBLE_FRAME]) {
                             default:
-                                tex = TEX_BUBBLE_POP1;
+                                tex = "X_BUBBLB";
                                 break;
                             case 1:
-                                tex = TEX_BUBBLE_POP2;
+                                tex = "X_BUBBLC";
                                 break;
                             case 2:
-                                tex = TEX_BUBBLE_POP3;
+                                tex = "X_BUBBLD";
                                 break;
                             case 3:
-                                tex = TEX_BUBBLE_POP4;
+                                tex = "X_BUBBLE";
                                 break;
                             case 4:
-                                tex = TEX_BUBBLE_POP5;
+                                tex = "X_BUBBLF";
                                 break;
                             case 5:
-                                tex = TEX_BUBBLE_POP6;
+                                tex = "X_BUBBLG";
                                 break;
                             case 6:
-                                tex = TEX_BUBBLE_POP7;
+                                tex = "X_BUBBLH";
                                 break;
                         }
                     } else {
-                        tex = TEX_BUBBLE;
+                        tex = "X_BUBBLA";
                         switch ((object->values[VAL_BUBBLE_FRAME] / 2) % 5) {
                             default:
                                 break;
@@ -3432,29 +3428,29 @@ void draw_state() {
                 }
 
                 case OBJ_GOAL_BAR: {
-                    draw_object(oid, TEX_GOAL_BAR1, 0, WHITE);
+                    draw_object(oid, "M_GOALBA", 0, WHITE);
                     break;
                 }
 
                 case OBJ_GOAL_BAR_FLY: {
-                    draw_object(oid, TEX_GOAL_BAR2, FtFloat(object->values[VAL_GOAL_ANGLE]), WHITE);
+                    draw_object(oid, "M_GOALBB", FtFloat(object->values[VAL_GOAL_ANGLE]), WHITE);
                     break;
                 }
 
                 case OBJ_PSWITCH: {
-                    enum TextureIndices tex;
+                    const char* tex;
                     if (object->values[VAL_PSWITCH] > 0L)
-                        tex = TEX_PSWITCH_FLAT;
+                        tex = "M_PSWITD";
                     else
                         switch ((int)((float)state.time / 3.703703703703704f) % 3) {
                             default:
-                                tex = TEX_PSWITCH1;
+                                tex = "M_PSWITA";
                                 break;
                             case 1:
-                                tex = TEX_PSWITCH2;
+                                tex = "M_PSWITB";
                                 break;
                             case 2:
-                                tex = TEX_PSWITCH3;
+                                tex = "M_PSWITC";
                                 break;
                         }
 
@@ -3466,31 +3462,31 @@ void draw_state() {
         oid = object->previous;
     }
 
-    enum TextureIndices tex;
+    const char* tex;
     switch ((state.time / 5) % 8) {
         default:
-            tex = TEX_WATER1;
+            tex = "M_WATERA";
             break;
         case 1:
-            tex = TEX_WATER2;
+            tex = "M_WATERB";
             break;
         case 2:
-            tex = TEX_WATER3;
+            tex = "M_WATERC";
             break;
         case 3:
-            tex = TEX_WATER4;
+            tex = "M_WATERD";
             break;
         case 4:
-            tex = TEX_WATER5;
+            tex = "M_WATERE";
             break;
         case 5:
-            tex = TEX_WATER6;
+            tex = "M_WATERF";
             break;
         case 6:
-            tex = TEX_WATER7;
+            tex = "M_WATERG";
             break;
         case 7:
-            tex = TEX_WATER8;
+            tex = "M_WATERH";
             break;
     }
     const float x1 = 0;
@@ -3498,7 +3494,7 @@ void draw_state() {
     const float x2 = FtInt(state.size[0]);
     const float y2 = FtInt(state.size[1]);
     draw_rectangle(tex, (float[2][2]){{x1, y1}, {x2, y1 + 16}}, -100, ALPHA(135));
-    draw_rectangle(TEX_NULL, (float[2][2]){{x1, y1 + 16}, {x2, y2}}, -100, RGBA(88, 136, 224, 135));
+    draw_rectangle("", (float[2][2]){{x1, y1 + 16}, {x2, y2}}, -100, RGBA(88, 136, 224, 135));
 }
 
 void draw_state_hud() {
@@ -3511,17 +3507,17 @@ void draw_state_hud() {
         SDL_snprintf(str, sizeof(str), "%u", player->score);
         draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){149, 34, 0});
 
-        enum TextureIndices tex;
+        const char* tex;
         switch ((int)((float)(state.time) / 6.25f) % 4) {
             default:
-                tex = TEX_HUD_COINS1;
+                tex = "H_COINSA";
                 break;
             case 1:
             case 3:
-                tex = TEX_HUD_COINS2;
+                tex = "H_COINSB";
                 break;
             case 2:
-                tex = TEX_HUD_COINS3;
+                tex = "H_COINSC";
                 break;
         }
         draw_sprite(tex, (float[3]){224, 34, 0}, (bool[2]){false}, 0, WHITE);
@@ -3545,23 +3541,23 @@ void load_object(enum GameObjectType type) {
             break;
 
         case OBJ_CLOUD: {
-            load_texture(TEX_CLOUD1);
-            load_texture(TEX_CLOUD2);
-            load_texture(TEX_CLOUD3);
+            load_texture("S_CLOUDA");
+            load_texture("S_CLOUDB");
+            load_texture("S_CLOUDC");
             break;
         }
 
         case OBJ_BUSH: {
-            load_texture(TEX_BUSH1);
-            load_texture(TEX_BUSH2);
-            load_texture(TEX_BUSH3);
+            load_texture("S_BUSHA");
+            load_texture("S_BUSHB");
+            load_texture("S_BUSHC");
             break;
         }
 
         case OBJ_BUSH_SNOW: {
-            load_texture(TEX_BUSH_SNOW1);
-            load_texture(TEX_BUSH_SNOW2);
-            load_texture(TEX_BUSH_SNOW3);
+            load_texture("S_BUSHSA");
+            load_texture("S_BUSHSB");
+            load_texture("S_BUSHSC");
             break;
         }
 
@@ -3571,74 +3567,74 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_PLAYER: {
-            load_texture(TEX_MARIO_SMALL);
-            load_texture(TEX_MARIO_SMALL_WALK1);
-            load_texture(TEX_MARIO_SMALL_WALK2);
-            load_texture(TEX_MARIO_SMALL_JUMP);
-            load_texture(TEX_MARIO_SMALL_SWIM1);
-            load_texture(TEX_MARIO_SMALL_SWIM2);
-            load_texture(TEX_MARIO_SMALL_SWIM3);
-            load_texture(TEX_MARIO_SMALL_SWIM4);
+            load_texture("P_S_IDLE");
+            load_texture("P_S_WLKA");
+            load_texture("P_S_WLKB");
+            load_texture("P_S_JUMP");
+            load_texture("P_S_SWMA");
+            load_texture("P_S_SWMB");
+            load_texture("P_S_SWMC");
+            load_texture("P_S_SWMD");
 
-            load_texture(TEX_MARIO_BIG_GROW);
-            load_texture(TEX_MARIO_BIG);
-            load_texture(TEX_MARIO_BIG_WALK1);
-            load_texture(TEX_MARIO_BIG_WALK2);
-            load_texture(TEX_MARIO_BIG_JUMP);
-            load_texture(TEX_MARIO_BIG_DUCK);
-            load_texture(TEX_MARIO_BIG_SWIM1);
-            load_texture(TEX_MARIO_BIG_SWIM2);
-            load_texture(TEX_MARIO_BIG_SWIM3);
-            load_texture(TEX_MARIO_BIG_SWIM4);
+            load_texture("P_GROWA");
+            load_texture("P_B_IDLE");
+            load_texture("P_B_WLKA");
+            load_texture("P_B_WLKB");
+            load_texture("P_B_JUMP");
+            load_texture("P_B_DUCK");
+            // load_texture(TEX_MARIO_BIG_SWIM1);
+            // load_texture(TEX_MARIO_BIG_SWIM2);
+            // load_texture(TEX_MARIO_BIG_SWIM3);
+            // load_texture(TEX_MARIO_BIG_SWIM4);
 
-            load_texture(TEX_MARIO_FIRE_GROW1);
-            load_texture(TEX_MARIO_FIRE_GROW2);
-            load_texture(TEX_MARIO_FIRE);
-            load_texture(TEX_MARIO_FIRE_WALK1);
-            load_texture(TEX_MARIO_FIRE_WALK2);
-            load_texture(TEX_MARIO_FIRE_JUMP);
-            load_texture(TEX_MARIO_FIRE_DUCK);
-            load_texture(TEX_MARIO_FIRE_FIRE);
-            load_texture(TEX_MARIO_FIRE_SWIM1);
-            load_texture(TEX_MARIO_FIRE_SWIM2);
-            load_texture(TEX_MARIO_FIRE_SWIM3);
-            load_texture(TEX_MARIO_FIRE_SWIM4);
+            // load_texture(TEX_MARIO_FIRE_GROW1);
+            // load_texture(TEX_MARIO_FIRE_GROW2);
+            // load_texture(TEX_MARIO_FIRE);
+            // load_texture(TEX_MARIO_FIRE_WALK1);
+            // load_texture(TEX_MARIO_FIRE_WALK2);
+            // load_texture(TEX_MARIO_FIRE_JUMP);
+            // load_texture(TEX_MARIO_FIRE_DUCK);
+            // load_texture(TEX_MARIO_FIRE_FIRE);
+            // load_texture(TEX_MARIO_FIRE_SWIM1);
+            // load_texture(TEX_MARIO_FIRE_SWIM2);
+            // load_texture(TEX_MARIO_FIRE_SWIM3);
+            // load_texture(TEX_MARIO_FIRE_SWIM4);
 
-            load_texture(TEX_MARIO_BEETROOT);
-            load_texture(TEX_MARIO_BEETROOT_WALK1);
-            load_texture(TEX_MARIO_BEETROOT_WALK2);
-            load_texture(TEX_MARIO_BEETROOT_JUMP);
-            load_texture(TEX_MARIO_BEETROOT_DUCK);
-            load_texture(TEX_MARIO_BEETROOT_FIRE);
-            load_texture(TEX_MARIO_BEETROOT_SWIM1);
-            load_texture(TEX_MARIO_BEETROOT_SWIM2);
-            load_texture(TEX_MARIO_BEETROOT_SWIM3);
-            load_texture(TEX_MARIO_BEETROOT_SWIM4);
+            // load_texture(TEX_MARIO_BEETROOT);
+            // load_texture(TEX_MARIO_BEETROOT_WALK1);
+            // load_texture(TEX_MARIO_BEETROOT_WALK2);
+            // load_texture(TEX_MARIO_BEETROOT_JUMP);
+            // load_texture(TEX_MARIO_BEETROOT_DUCK);
+            // load_texture(TEX_MARIO_BEETROOT_FIRE);
+            // load_texture(TEX_MARIO_BEETROOT_SWIM1);
+            // load_texture(TEX_MARIO_BEETROOT_SWIM2);
+            // load_texture(TEX_MARIO_BEETROOT_SWIM3);
+            // load_texture(TEX_MARIO_BEETROOT_SWIM4);
 
-            load_texture(TEX_MARIO_LUI);
-            load_texture(TEX_MARIO_LUI_WALK1);
-            load_texture(TEX_MARIO_LUI_WALK2);
-            load_texture(TEX_MARIO_LUI_JUMP);
-            load_texture(TEX_MARIO_LUI_DUCK);
-            load_texture(TEX_MARIO_LUI_SWIM1);
-            load_texture(TEX_MARIO_LUI_SWIM2);
-            load_texture(TEX_MARIO_LUI_SWIM3);
-            load_texture(TEX_MARIO_LUI_SWIM4);
+            // load_texture(TEX_MARIO_LUI);
+            // load_texture(TEX_MARIO_LUI_WALK1);
+            // load_texture(TEX_MARIO_LUI_WALK2);
+            // load_texture(TEX_MARIO_LUI_JUMP);
+            // load_texture(TEX_MARIO_LUI_DUCK);
+            // load_texture(TEX_MARIO_LUI_SWIM1);
+            // load_texture(TEX_MARIO_LUI_SWIM2);
+            // load_texture(TEX_MARIO_LUI_SWIM3);
+            // load_texture(TEX_MARIO_LUI_SWIM4);
 
-            load_texture(TEX_MARIO_HAMMER);
-            load_texture(TEX_MARIO_HAMMER_WALK1);
-            load_texture(TEX_MARIO_HAMMER_WALK2);
-            load_texture(TEX_MARIO_HAMMER_JUMP);
-            load_texture(TEX_MARIO_HAMMER_DUCK);
-            load_texture(TEX_MARIO_HAMMER_FIRE);
-            load_texture(TEX_MARIO_HAMMER_SWIM1);
-            load_texture(TEX_MARIO_HAMMER_SWIM2);
-            load_texture(TEX_MARIO_HAMMER_SWIM3);
-            load_texture(TEX_MARIO_HAMMER_SWIM4);
+            // load_texture(TEX_MARIO_HAMMER);
+            // load_texture(TEX_MARIO_HAMMER_WALK1);
+            // load_texture(TEX_MARIO_HAMMER_WALK2);
+            // load_texture(TEX_MARIO_HAMMER_JUMP);
+            // load_texture(TEX_MARIO_HAMMER_DUCK);
+            // load_texture(TEX_MARIO_HAMMER_FIRE);
+            // load_texture(TEX_MARIO_HAMMER_SWIM1);
+            // load_texture(TEX_MARIO_HAMMER_SWIM2);
+            // load_texture(TEX_MARIO_HAMMER_SWIM3);
+            // load_texture(TEX_MARIO_HAMMER_SWIM4);
 
-            load_texture(TEX_HUD_COINS1);
-            load_texture(TEX_HUD_COINS2);
-            load_texture(TEX_HUD_COINS3);
+            load_texture("H_COINSA");
+            load_texture("H_COINSB");
+            load_texture("H_COINSC");
 
             load_font(FNT_HUD);
 
@@ -3664,7 +3660,7 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_PLAYER_DEAD: {
-            load_texture(TEX_MARIO_DEAD);
+            load_texture("P_DEAD");
 
             load_sound("LOSE");
             load_sound("DEAD");
@@ -3680,9 +3676,9 @@ void load_object(enum GameObjectType type) {
 
         case OBJ_COIN:
         case OBJ_PSWITCH_COIN: {
-            load_texture(TEX_COIN1);
-            load_texture(TEX_COIN2);
-            load_texture(TEX_COIN3);
+            load_texture("I_COINA");
+            load_texture("I_COINB");
+            load_texture("I_COINC");
 
             load_sound("COIN");
 
@@ -3692,14 +3688,14 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_COIN_POP: {
-            load_texture(TEX_COIN_POP1);
-            load_texture(TEX_COIN_POP2);
-            load_texture(TEX_COIN_POP3);
-            load_texture(TEX_COIN_POP4);
-            load_texture(TEX_COIN_SPARK1);
-            load_texture(TEX_COIN_SPARK2);
-            load_texture(TEX_COIN_SPARK3);
-            load_texture(TEX_COIN_SPARK4);
+            load_texture("I_CPOPA");
+            load_texture("I_CPOPB");
+            load_texture("I_CPOPC");
+            load_texture("I_CPOPD");
+            load_texture("I_CPOPE");
+            load_texture("I_CPOPF");
+            load_texture("I_CPOPG");
+            load_texture("I_CPOPH");
 
             load_sound("COIN");
 
@@ -3708,55 +3704,55 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_MUSHROOM: {
-            load_texture(TEX_MUSHROOM);
+            load_texture("I_SHROOM");
 
             load_object(OBJ_POINTS);
             break;
         }
 
         case OBJ_MUSHROOM_1UP: {
-            load_texture(TEX_MUSHROOM_1UP);
+            load_texture("I_1UP");
 
             load_object(OBJ_POINTS);
             break;
         }
 
         case OBJ_MUSHROOM_POISON: {
-            load_texture(TEX_MUSHROOM_POISON1);
-            load_texture(TEX_MUSHROOM_POISON2);
+            load_texture("I_POISOA");
+            load_texture("I_POISOB");
 
             load_object(OBJ_EXPLODE);
             break;
         }
 
         case OBJ_FIRE_FLOWER: {
-            load_texture(TEX_FIRE_FLOWER1);
-            load_texture(TEX_FIRE_FLOWER2);
-            load_texture(TEX_FIRE_FLOWER3);
-            load_texture(TEX_FIRE_FLOWER4);
+            load_texture("I_FLWRA");
+            load_texture("I_FLWRB");
+            load_texture("I_FLWRC");
+            load_texture("I_FLWRD");
 
             load_object(OBJ_POINTS);
             break;
         }
 
         case OBJ_BEETROOT: {
-            load_texture(TEX_BEETROOT1);
-            load_texture(TEX_BEETROOT2);
-            load_texture(TEX_BEETROOT3);
+            load_texture("I_BEETA");
+            load_texture("I_BEETB");
+            load_texture("I_BEETC");
 
             load_object(OBJ_POINTS);
             break;
         }
 
         case OBJ_LUI: {
-            load_texture(TEX_LUI1);
-            load_texture(TEX_LUI2);
-            load_texture(TEX_LUI3);
-            load_texture(TEX_LUI4);
-            load_texture(TEX_LUI5);
-            load_texture(TEX_LUI_BOUNCE1);
-            load_texture(TEX_LUI_BOUNCE2);
-            load_texture(TEX_LUI_BOUNCE3);
+            load_texture("I_LUIA");
+            load_texture("I_LUIB");
+            load_texture("I_LUIC");
+            load_texture("I_LUID");
+            load_texture("I_LUIE");
+            load_texture("I_LUIF");
+            load_texture("I_LUIG");
+            load_texture("I_LUIH");
 
             load_sound("KICK");
 
@@ -3765,37 +3761,37 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_HAMMER_SUIT: {
-            load_texture(TEX_HAMMER_SUIT);
+            load_texture("I_HAMMER");
 
             load_object(OBJ_POINTS);
             break;
         }
 
         case OBJ_STARMAN: {
-            load_texture(TEX_STARMAN1);
-            load_texture(TEX_STARMAN2);
-            load_texture(TEX_STARMAN3);
-            load_texture(TEX_STARMAN4);
+            load_texture("I_STARA");
+            load_texture("I_STARB");
+            load_texture("I_STARC");
+            load_texture("I_STARD");
             break;
         }
 
         case OBJ_POINTS: {
-            load_texture(TEX_100);
-            load_texture(TEX_200);
-            load_texture(TEX_500);
-            load_texture(TEX_1000);
-            load_texture(TEX_2000);
-            load_texture(TEX_5000);
-            load_texture(TEX_10000);
-            load_texture(TEX_1000000);
-            load_texture(TEX_1UP);
+            load_texture("H_100");
+            load_texture("H_200");
+            load_texture("H_500");
+            load_texture("H_1000");
+            load_texture("H_2000");
+            load_texture("H_5000");
+            load_texture("H_10000");
+            load_texture("H_1M");
+            load_texture("H_1UP");
 
             load_sound("1UP");
             break;
         }
 
         case OBJ_MISSILE_FIREBALL: {
-            load_texture(TEX_MISSILE_FIREBALL);
+            load_texture("R_FIRE");
 
             load_sound("BUMP");
             load_sound("KICK");
@@ -3806,7 +3802,7 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_MISSILE_BEETROOT: {
-            load_texture(TEX_MISSILE_BEETROOT);
+            load_texture("R_BEET");
 
             load_sound("HURT");
             load_sound("BUMP");
@@ -3819,14 +3815,14 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_MISSILE_BEETROOT_SINK: {
-            load_texture(TEX_MISSILE_BEETROOT);
+            load_texture("R_BEET");
 
             load_object(OBJ_BUBBLE);
             break;
         }
 
         case OBJ_MISSILE_HAMMER: {
-            load_texture(TEX_MISSILE_HAMMER);
+            load_texture("R_HAMMRA");
 
             load_sound("KICK");
 
@@ -3835,17 +3831,17 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_EXPLODE: {
-            load_texture(TEX_EXPLODE1);
-            load_texture(TEX_EXPLODE2);
-            load_texture(TEX_EXPLODE3);
+            load_texture("X_BOOMA");
+            load_texture("X_BOOMB");
+            load_texture("X_BOOMC");
             break;
         }
 
         case OBJ_ITEM_BLOCK: {
-            load_texture(TEX_ITEM_BLOCK1);
-            load_texture(TEX_ITEM_BLOCK2);
-            load_texture(TEX_ITEM_BLOCK3);
-            load_texture(TEX_EMPTY_BLOCK);
+            load_texture("I_BLOCKA");
+            load_texture("I_BLOCKB");
+            load_texture("I_BLOCKC");
+            load_texture("I_EMPTY");
 
             load_sound("SPROUT");
 
@@ -3855,7 +3851,7 @@ void load_object(enum GameObjectType type) {
 
         case OBJ_BRICK_BLOCK:
         case OBJ_PSWITCH_BRICK: {
-            load_texture(TEX_BRICK_BLOCK);
+            load_texture("I_BRICKA");
 
             load_sound("BUMP");
             load_sound("BREAK");
@@ -3865,22 +3861,22 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_BRICK_SHARD: {
-            load_texture(TEX_BRICK_SHARD);
+            load_texture("X_SHARDA");
             break;
         }
 
         case OBJ_BRICK_BLOCK_COIN: {
-            load_texture(TEX_BRICK_BLOCK);
-            load_texture(TEX_EMPTY_BLOCK);
+            load_texture("I_BRICKA");
+            load_texture("I_EMPTY");
 
             load_object(OBJ_COIN_POP);
             break;
         }
 
         case OBJ_CHECKPOINT: {
-            load_texture(TEX_CHECKPOINT1);
-            load_texture(TEX_CHECKPOINT2);
-            load_texture(TEX_CHECKPOINT3);
+            load_texture("M_CHECKA");
+            load_texture("M_CHECKB");
+            load_texture("M_CHECKC");
 
             load_sound("SPROUT");
 
@@ -3889,38 +3885,38 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_ROTODISC_BALL: {
-            load_texture(TEX_ROTODISC_BALL);
+            load_texture("E_RDBALL");
             load_object(OBJ_ROTODISC);
             break;
         }
 
         case OBJ_ROTODISC: {
-            load_texture(TEX_ROTODISC1);
-            load_texture(TEX_ROTODISC2);
-            load_texture(TEX_ROTODISC3);
-            load_texture(TEX_ROTODISC4);
-            load_texture(TEX_ROTODISC5);
-            load_texture(TEX_ROTODISC6);
-            load_texture(TEX_ROTODISC7);
-            load_texture(TEX_ROTODISC8);
-            load_texture(TEX_ROTODISC9);
-            load_texture(TEX_ROTODISC10);
-            load_texture(TEX_ROTODISC11);
-            load_texture(TEX_ROTODISC12);
-            load_texture(TEX_ROTODISC13);
-            load_texture(TEX_ROTODISC14);
-            load_texture(TEX_ROTODISC15);
-            load_texture(TEX_ROTODISC16);
-            load_texture(TEX_ROTODISC17);
-            load_texture(TEX_ROTODISC18);
-            load_texture(TEX_ROTODISC19);
-            load_texture(TEX_ROTODISC20);
-            load_texture(TEX_ROTODISC21);
-            load_texture(TEX_ROTODISC22);
-            load_texture(TEX_ROTODISC23);
-            load_texture(TEX_ROTODISC24);
-            load_texture(TEX_ROTODISC25);
-            load_texture(TEX_ROTODISC26);
+            load_texture("E_ROTODA");
+            load_texture("E_ROTODB");
+            load_texture("E_ROTODC");
+            load_texture("E_ROTODD");
+            load_texture("E_ROTODE");
+            load_texture("E_ROTODF");
+            load_texture("E_ROTODG");
+            load_texture("E_ROTODH");
+            load_texture("E_ROTODI");
+            load_texture("E_ROTODJ");
+            load_texture("E_ROTODK");
+            load_texture("E_ROTODL");
+            load_texture("E_ROTODM");
+            load_texture("E_ROTODN");
+            load_texture("E_ROTODO");
+            load_texture("E_ROTODP");
+            load_texture("E_ROTODQ");
+            load_texture("E_ROTODR");
+            load_texture("E_ROTODS");
+            load_texture("E_ROTODT");
+            load_texture("E_ROTODU");
+            load_texture("E_ROTODV");
+            load_texture("E_ROTODW");
+            load_texture("E_ROTODX");
+            load_texture("E_ROTODY");
+            load_texture("E_ROTODZ");
             break;
         }
 
@@ -3930,38 +3926,38 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_WATER_SPLASH: {
-            load_texture(TEX_WATER_SPLASH1);
-            load_texture(TEX_WATER_SPLASH2);
-            load_texture(TEX_WATER_SPLASH3);
-            load_texture(TEX_WATER_SPLASH4);
-            load_texture(TEX_WATER_SPLASH5);
-            load_texture(TEX_WATER_SPLASH6);
-            load_texture(TEX_WATER_SPLASH7);
-            load_texture(TEX_WATER_SPLASH8);
-            load_texture(TEX_WATER_SPLASH9);
-            load_texture(TEX_WATER_SPLASH10);
-            load_texture(TEX_WATER_SPLASH11);
-            load_texture(TEX_WATER_SPLASH12);
-            load_texture(TEX_WATER_SPLASH13);
-            load_texture(TEX_WATER_SPLASH14);
-            load_texture(TEX_WATER_SPLASH15);
+            load_texture("X_SPLSHA");
+            load_texture("X_SPLSHB");
+            load_texture("X_SPLSHC");
+            load_texture("X_SPLSHD");
+            load_texture("X_SPLSHE");
+            load_texture("X_SPLSHF");
+            load_texture("X_SPLSHG");
+            load_texture("X_SPLSHH");
+            load_texture("X_SPLSHI");
+            load_texture("X_SPLSHJ");
+            load_texture("X_SPLSHK");
+            load_texture("X_SPLSHL");
+            load_texture("X_SPLSHM");
+            load_texture("X_SPLSHN");
+            load_texture("X_SPLSHO");
             break;
         }
 
         case OBJ_BUBBLE: {
-            load_texture(TEX_BUBBLE);
-            load_texture(TEX_BUBBLE_POP1);
-            load_texture(TEX_BUBBLE_POP2);
-            load_texture(TEX_BUBBLE_POP3);
-            load_texture(TEX_BUBBLE_POP4);
-            load_texture(TEX_BUBBLE_POP5);
-            load_texture(TEX_BUBBLE_POP6);
-            load_texture(TEX_BUBBLE_POP7);
+            load_texture("X_BUBBLA");
+            load_texture("X_BUBBLB");
+            load_texture("X_BUBBLC");
+            load_texture("X_BUBBLD");
+            load_texture("X_BUBBLE");
+            load_texture("X_BUBBLF");
+            load_texture("X_BUBBLG");
+            load_texture("X_BUBBLH");
             break;
         }
 
         case OBJ_GOAL_BAR: {
-            load_texture(TEX_GOAL_BAR1);
+            load_texture("M_GOALBA");
 
             load_object(OBJ_GOAL_BAR_FLY);
             load_object(OBJ_POINTS);
@@ -3969,15 +3965,15 @@ void load_object(enum GameObjectType type) {
         }
 
         case OBJ_GOAL_BAR_FLY: {
-            load_texture(TEX_GOAL_BAR2);
+            load_texture("M_GOALBB");
             break;
         }
 
         case OBJ_PSWITCH: {
-            load_texture(TEX_PSWITCH1);
-            load_texture(TEX_PSWITCH2);
-            load_texture(TEX_PSWITCH3);
-            load_texture(TEX_PSWITCH_FLAT);
+            load_texture("M_PSWITA");
+            load_texture("M_PSWITB");
+            load_texture("M_PSWITC");
+            load_texture("M_PSWITD");
 
             load_sound("TOGGLE");
             load_sound("STARMAN");
@@ -4448,7 +4444,7 @@ void destroy_object(ObjectID index) {
         state.objects[object->next].previous = object->previous;
 }
 
-void draw_object(ObjectID oid, enum TextureIndices tid, GLfloat angle, const GLubyte color[4]) {
+void draw_object(ObjectID oid, const char* tid, GLfloat angle, const GLubyte color[4]) {
     struct GameObject* object = &(state.objects[oid]);
     struct InterpObject* smooth = &(interp[oid]);
     draw_sprite(

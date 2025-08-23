@@ -35,32 +35,17 @@ void audio_init() {
     FMOD_System_CreateChannelGroup(speaker, "state", &state_group);
     FMOD_System_CreateChannelGroup(speaker, "music", &music_group);
 
-    sounds = StNewTinyMap();
-    tracks = StNewTinyMap();
+    sounds = NewTinyMap();
+    tracks = NewTinyMap();
 }
 
 void audio_update() {
     FMOD_System_Update(speaker);
 }
 
-static void nuke_sound(void* val) {
-    struct Sound* sound = (struct Sound*)val;
-    FMOD_Sound_Release(sound->sound);
-    SDL_free((void*)(sound->name));
-    SDL_free(sound);
-}
-
-static void nuke_track(void* val) {
-    struct Track* track = (struct Track*)val;
-    FMOD_Sound_Release(track->stream);
-    SDL_free((void*)(track->name));
-    SDL_free(val);
-}
-
 void audio_teardown() {
-    // Destroy hashmaps or something
-    StFreeTinyMap(sounds);
-    StFreeTinyMap(tracks);
+    FreeTinyMap(sounds);
+    FreeTinyMap(tracks);
     FMOD_ChannelGroup_Release(state_group);
     FMOD_ChannelGroup_Release(music_group);
     FMOD_System_Release(speaker);
@@ -140,6 +125,10 @@ void tick_audio_state() {
     }
 }
 
+static void nuke_sound(void* ptr) {
+    FMOD_Sound_Release(((struct Sound*)ptr)->sound);
+}
+
 void load_sound(const char* index) {
     if (get_sound(index) != NULL)
         return;
@@ -156,12 +145,17 @@ void load_sound(const char* index) {
     sound.sound = data;
     FMOD_Sound_GetLength(data, &(sound.length), FMOD_TIMEUNIT_MS);
 
-    StMapPut(sounds, StTinyStr(index), &sound, sizeof(sound));
+    const StTinyKey key = StStrKey(index);
+    StMapPut(sounds, key, &sound, sizeof(sound));
+    StMapLookup(sounds, key)->cleanup = nuke_sound;
 }
 
 const struct Sound* get_sound(const char* index) {
-    StTinyBucket* bucket = StMapLookup(sounds, StTinyStr(index));
-    return (bucket == NULL) ? NULL : (struct Sound*)(bucket->data);
+    return (struct Sound*)StMapGet(sounds, StStrKey(index));
+}
+
+static void nuke_track(void* ptr) {
+    FMOD_Sound_Release(((struct Track*)ptr)->stream);
 }
 
 void load_track(const char* index) {
@@ -197,12 +191,11 @@ void load_track(const char* index) {
         }
     }
 
-    StMapPut(tracks, StTinyStr(index), &track, sizeof(track));
+    StMapPut(tracks, StStrKey(index), &track, sizeof(track));
 }
 
 const struct Track* get_track(const char* index) {
-    StTinyBucket* bucket = StMapLookup(tracks, StTinyStr(index));
-    return (bucket == NULL) ? NULL : (struct Track*)(bucket->data);
+    return (struct Track*)StMapGet(tracks, StStrKey(index));
 }
 
 void move_ears(float x, float y) {
