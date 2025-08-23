@@ -76,10 +76,17 @@ FetchContent_MakeAvailable(S_fixed)
 set(NUTPUNCH_BUILD_TESTS OFF CACHE INTERNAL "")
 set(NUTPUNCH_BUILD_SERVER OFF CACHE INTERNAL "")
 
+# NutPunch
 FetchContent_Declare(
     nutpunch GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
     GIT_TAG fe079aed194263aa05876d01afdc9548b04bdbb2)
 FetchContent_MakeAvailable(nutpunch)
+
+# yyjson (0.12.0)
+FetchContent_Declare(
+    yyjson GIT_REPOSITORY https://github.com/ibireme/yyjson.git
+    GIT_TAG 0.12.0)
+FetchContent_MakeAvailable(yyjson)
 
 set(LIBS
     SDL3::SDL3-static
@@ -90,7 +97,8 @@ set(LIBS
     fmod
     GekkoNet
     S_fixed
-    nutpunch)
+    nutpunch
+    yyjson)
 
 # Build
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
