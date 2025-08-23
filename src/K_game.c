@@ -1007,206 +1007,202 @@ static const char* get_player_texture(enum PlayerPowers power, enum PlayerFrames
             break;
         }
 
-            // case POW_BIG: {
-            //     switch (frame) {
-            //         default:
-            //             return "P_B_IDLE";
+        case POW_BIG: {
+            switch (frame) {
+                default:
+                    return "P_B_IDLE";
 
-            //         case PF_WALK1:
-            //             return "P_B_WLKA";
-            //         case PF_WALK2:
-            //         case PF_GROW1:
-            //             return "P_B_WLKB";
+                case PF_WALK1:
+                    return "P_B_WLKA";
+                case PF_WALK2:
+                case PF_GROW1:
+                    return "P_B_WLKB";
 
-            //         case PF_JUMP:
-            //         case PF_FALL:
-            //             return "P_B_JUMP";
+                case PF_JUMP:
+                case PF_FALL:
+                    return "P_B_JUMP";
 
-            //         case PF_DUCK:
-            //             return "P_B_DUCK";
+                case PF_DUCK:
+                    return "P_B_DUCK";
 
-            //         case PF_SWIM1:
-            //         case PF_SWIM4:
-            //             return TEX_MARIO_BIG_SWIM1;
-            //         case PF_SWIM2:
-            //             return TEX_MARIO_BIG_SWIM2;
-            //         case PF_SWIM3:
-            //             return TEX_MARIO_BIG_SWIM3;
-            //         case PF_SWIM5:
-            //             return TEX_MARIO_BIG_SWIM4;
+                case PF_SWIM1:
+                case PF_SWIM4:
+                    return "P_B_SWMA";
+                case PF_SWIM2:
+                    return "P_B_SWMB";
+                case PF_SWIM3:
+                    return "P_B_SWMC";
+                case PF_SWIM5:
+                    return "P_B_SWMD";
 
-            //         case PF_GROW2:
-            //             return "P_GROWA";
-            //         case PF_GROW3:
-            //             return "P_S_IDLE";
-            //     }
-            //     break;
-            // }
+                case PF_GROW2:
+                    return "P_GROWA";
+                case PF_GROW3:
+                    return "P_S_IDLE";
+            }
+            break;
+        }
 
-            // case POW_FIRE: {
-            //     switch (frame) {
-            //         default:
-            //             return TEX_MARIO_FIRE;
+        case POW_FIRE: {
+            switch (frame) {
+                default:
+                    return "P_F_IDLE";
 
-            //         case PF_WALK1:
-            //             return TEX_MARIO_FIRE_WALK1;
-            //         case PF_WALK2:
-            //         case PF_GROW3:
-            //             return TEX_MARIO_FIRE_WALK2;
+                case PF_WALK1:
+                    return "P_F_WLKA";
+                case PF_WALK2:
+                case PF_GROW3:
+                    return "P_F_WLKB";
 
-            //         case PF_JUMP:
-            //         case PF_FALL:
-            //             return TEX_MARIO_FIRE_JUMP;
+                case PF_JUMP:
+                case PF_FALL:
+                    return "P_F_JUMP";
 
-            //         case PF_DUCK:
-            //             return TEX_MARIO_FIRE_DUCK;
+                case PF_DUCK:
+                    return "P_F_DUCK";
 
-            //         case PF_FIRE:
-            //             return TEX_MARIO_FIRE_FIRE;
+                case PF_FIRE:
+                    return "P_F_FIRE";
 
-            //         case PF_SWIM1:
-            //         case PF_SWIM4:
-            //             return TEX_MARIO_FIRE_SWIM1;
-            //         case PF_SWIM2:
-            //             return TEX_MARIO_FIRE_SWIM2;
-            //         case PF_SWIM3:
-            //             return TEX_MARIO_FIRE_SWIM3;
-            //         case PF_SWIM5:
-            //             return TEX_MARIO_FIRE_SWIM4;
+                case PF_SWIM1:
+                case PF_SWIM4:
+                    return "P_F_SWMA";
+                case PF_SWIM2:
+                    return "P_F_SWMB";
+                case PF_SWIM3:
+                    return "P_F_SWMC";
+                case PF_SWIM5:
+                    return "P_F_SWMD";
 
-            //         case PF_GROW1:
-            //             return "P_B_WLKB";
-            //         case PF_GROW2:
-            //             return TEX_MARIO_FIRE_GROW1;
-            //         case PF_GROW4:
-            //             return TEX_MARIO_FIRE_GROW2;
-            //     }
-            //     break;
-            // }
+                case PF_GROW1:
+                    return "P_B_WLKB";
+                case PF_GROW2:
+                    return "P_GROWB";
+                case PF_GROW4:
+                    return "P_GROWC";
+            }
+            break;
+        }
 
-            // case POW_BEETROOT: {
-            //     switch (frame) {
-            //         default:
-            //             return TEX_MARIO_BEETROOT;
+        case POW_BEETROOT: {
+            switch (frame) {
+                default:
+                    return "P_P_IDLE";
 
-            //         case PF_WALK1:
-            //             return TEX_MARIO_BEETROOT_WALK1;
-            //         case PF_WALK2:
-            //         case PF_GROW3:
-            //             return TEX_MARIO_BEETROOT_WALK2;
+                case PF_WALK1:
+                    return "P_P_WLKA";
+                case PF_WALK2:
+                case PF_GROW3:
+                    return "P_P_WLKB";
 
-            //         case PF_JUMP:
-            //         case PF_FALL:
-            //             return TEX_MARIO_BEETROOT_JUMP;
+                case PF_JUMP:
+                case PF_FALL:
+                    return "P_P_JUMP";
 
-            //         case PF_DUCK:
-            //             return TEX_MARIO_BEETROOT_DUCK;
+                case PF_DUCK:
+                    return "P_P_DUCK";
 
-            //         case PF_FIRE:
-            //             return TEX_MARIO_BEETROOT_FIRE;
+                case PF_FIRE:
+                    return "P_P_FIRE";
 
-            //         case PF_SWIM1:
-            //         case PF_SWIM4:
-            //             return TEX_MARIO_BEETROOT_SWIM1;
-            //         case PF_SWIM2:
-            //             return TEX_MARIO_BEETROOT_SWIM2;
-            //         case PF_SWIM3:
-            //             return TEX_MARIO_BEETROOT_SWIM3;
-            //         case PF_SWIM5:
-            //             return TEX_MARIO_BEETROOT_SWIM4;
+                case PF_SWIM1:
+                case PF_SWIM4:
+                    return "P_P_SWMA";
+                case PF_SWIM2:
+                    return "P_P_SWMB";
+                case PF_SWIM3:
+                    return "P_P_SWMC";
+                case PF_SWIM5:
+                    return "P_P_SWMD";
 
-            //         case PF_GROW1:
-            //             return "P_B_WLKB";
-            //         case PF_GROW2:
-            //             return TEX_MARIO_FIRE_GROW1;
-            //         case PF_GROW4:
-            //             return TEX_MARIO_FIRE_GROW2;
-            //     }
-            //     break;
-            // }
+                case PF_GROW1:
+                    return "P_B_WLKB";
+                case PF_GROW2:
+                    return "P_GROWB";
+                case PF_GROW4:
+                    return "P_GROWC";
+            }
+            break;
+        }
 
-            // case POW_LUI: {
-            //     switch (frame) {
-            //         default:
-            //             return TEX_MARIO_LUI;
+        case POW_LUI: {
+            switch (frame) {
+                default:
+                    return "P_L_IDLE";
 
-            //         case PF_WALK1:
-            //             return TEX_MARIO_LUI_WALK1;
+                case PF_WALK1:
+                    return "P_L_WLKA";
+                case PF_WALK2:
+                case PF_GROW3:
+                    return "P_L_WLKB";
 
-            //         case PF_WALK2:
-            //         case PF_GROW3:
-            //             return TEX_MARIO_LUI_WALK2;
+                case PF_JUMP:
+                case PF_FALL:
+                    return "P_L_JUMP";
 
-            //         case PF_JUMP:
-            //         case PF_FALL:
-            //             return TEX_MARIO_LUI_JUMP;
+                case PF_DUCK:
+                    return "P_L_DUCK";
 
-            //         case PF_DUCK:
-            //             return TEX_MARIO_LUI_DUCK;
+                case PF_SWIM1:
+                case PF_SWIM4:
+                    return "P_L_SWMA";
+                case PF_SWIM2:
+                    return "P_L_SWMB";
+                case PF_SWIM3:
+                    return "P_L_SWMC";
+                case PF_SWIM5:
+                    return "P_L_SWMD";
 
-            //         case PF_SWIM1:
-            //         case PF_SWIM4:
-            //             return TEX_MARIO_LUI_SWIM1;
+                case PF_GROW1:
+                    return "P_B_WLKB";
+                case PF_GROW2:
+                    return "P_GROWB";
+                case PF_GROW4:
+                    return "P_GROWC";
+            }
+            break;
+        }
 
-            //         case PF_SWIM2:
-            //             return TEX_MARIO_LUI_SWIM2;
+        case POW_HAMMER: {
+            switch (frame) {
+                default:
+                    return "P_H_IDLE";
 
-            //         case PF_SWIM3:
-            //             return TEX_MARIO_LUI_SWIM3;
+                case PF_WALK1:
+                    return "P_H_WLKA";
+                case PF_WALK2:
+                case PF_GROW3:
+                    return "P_H_WLKB";
 
-            //         case PF_SWIM5:
-            //             return TEX_MARIO_LUI_SWIM4;
+                case PF_JUMP:
+                case PF_FALL:
+                    return "P_H_JUMP";
 
-            //         case PF_GROW1:
-            //             return "P_B_WLKB";
-            //         case PF_GROW2:
-            //             return TEX_MARIO_FIRE_GROW1;
-            //         case PF_GROW4:
-            //             return TEX_MARIO_FIRE_GROW2;
-            //     }
-            //     break;
-            // }
+                case PF_DUCK:
+                    return "P_H_DUCK";
 
-            // case POW_HAMMER: {
-            //     switch (frame) {
-            //         default:
-            //             return TEX_MARIO_HAMMER;
+                case PF_FIRE:
+                    return "P_H_FIRE";
 
-            //         case PF_WALK1:
-            //             return TEX_MARIO_HAMMER_WALK1;
-            //         case PF_WALK2:
-            //         case PF_GROW3:
-            //             return TEX_MARIO_HAMMER_WALK2;
+                case PF_SWIM1:
+                case PF_SWIM4:
+                    return "P_H_SWMA";
+                case PF_SWIM2:
+                    return "P_H_SWMB";
+                case PF_SWIM3:
+                    return "P_H_SWMC";
+                case PF_SWIM5:
+                    return "P_H_SWMD";
 
-            //         case PF_JUMP:
-            //         case PF_FALL:
-            //             return TEX_MARIO_HAMMER_JUMP;
-
-            //         case PF_DUCK:
-            //             return TEX_MARIO_HAMMER_DUCK;
-
-            //         case PF_FIRE:
-            //             return TEX_MARIO_HAMMER_FIRE;
-
-            //         case PF_SWIM1:
-            //         case PF_SWIM4:
-            //             return TEX_MARIO_HAMMER_SWIM1;
-            //         case PF_SWIM2:
-            //             return TEX_MARIO_HAMMER_SWIM2;
-            //         case PF_SWIM3:
-            //             return TEX_MARIO_HAMMER_SWIM3;
-            //         case PF_SWIM5:
-            //             return TEX_MARIO_HAMMER_SWIM4;
-
-            //         case PF_GROW1:
-            //             return "P_B_WLKB";
-            //         case PF_GROW2:
-            //             return TEX_MARIO_FIRE_GROW1;
-            //         case PF_GROW4:
-            //             return TEX_MARIO_FIRE_GROW2;
-            //     }
-            //     break;
-            //
+                case PF_GROW1:
+                    return "P_B_WLKB";
+                case PF_GROW2:
+                    return "P_GROWB";
+                case PF_GROW4:
+                    return "P_GROWC";
+            }
+            break;
+        }
     }
 }
 
@@ -4268,6 +4264,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                 case OBJ_PSWITCH: {
                     object->bbox[1][0] = FfInt(31L);
                     object->bbox[1][1] = FfInt(32L);
+                    object->depth = FxOne;
                     break;
                 }
             }
