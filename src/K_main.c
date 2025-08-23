@@ -68,7 +68,6 @@ int main(int argc, char** argv) {
 
     uint64_t last_time = SDL_GetTicks();
     float ticks = 0;
-    uint64_t tick = 0;
     bool running = true;
     while (running) {
         SDL_Event event;
@@ -172,7 +171,6 @@ int main(int argc, char** argv) {
                         case AdvanceEvent: {
                             for (size_t j = 0; j < num_players; j++)
                                 inputs[j] = ((enum GameInput*)(event->data.adv.inputs))[j];
-                            tick = event->data.adv.frame;
                             tick_state(inputs);
                             tick_audio_state();
                             break;
