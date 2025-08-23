@@ -24,294 +24,16 @@ static uint64_t draw_time = 0;
 
 static GLuint shader = 0;
 static struct Uniforms uniforms = {-1};
+static GLuint blank_texture = 0;
 
-#define NULLTEX(i)                                                                                                     \
-    [(i)] = {                                                                                                          \
-        .name = NULL,                                                                                                  \
-        .texture = 0,                                                                                                  \
-        .size = {0, 0},                                                                                                \
-        .offset = {0, 0},                                                                                              \
-    }
-
-#define TEXOFFS(i, nm, xoffs, yoffs)                                                                                   \
-    [(i)] = {                                                                                                          \
-        .name = (nm),                                                                                                  \
-        .texture = 0,                                                                                                  \
-        .size = {0, 0},                                                                                                \
-        .offset = {(xoffs), (yoffs)},                                                                                  \
-    }
-
-#define TEXTURE(i, nm) TEXOFFS(i, nm, 0, 0)
-
-static struct Texture textures[TEX_SIZE] = {
-    NULLTEX(TEX_NULL),
-
-    TEXTURE(TEX_GRASS1, "tiles/grass1"),
-    TEXTURE(TEX_GRASS2, "tiles/grass2"),
-    TEXTURE(TEX_GRASS3, "tiles/grass3"),
-    TEXTURE(TEX_GRASS4, "tiles/grass4"),
-    TEXTURE(TEX_GRASS5, "tiles/grass5"),
-    TEXTURE(TEX_GRASS6, "tiles/grass6"),
-    TEXTURE(TEX_GRASS7, "tiles/grass7"),
-    TEXTURE(TEX_GRASS8, "tiles/grass8"),
-    TEXTURE(TEX_GRASS9, "tiles/grass9"),
-
-    TEXTURE(TEX_SNOW1, "tiles/snow1"),
-    TEXTURE(TEX_SNOW2, "tiles/snow2"),
-    TEXTURE(TEX_SNOW3, "tiles/snow3"),
-    TEXTURE(TEX_SNOW4, "tiles/snow4"),
-    TEXTURE(TEX_SNOW5, "tiles/snow5"),
-    TEXTURE(TEX_SNOW6, "tiles/snow6"),
-    TEXTURE(TEX_SNOW7, "tiles/snow7"),
-    TEXTURE(TEX_SNOW8, "tiles/snow8"),
-    TEXTURE(TEX_SNOW9, "tiles/snow9"),
-
-    TEXTURE(TEX_BLOCK1, "tiles/block1"),
-    TEXTURE(TEX_BLOCK2, "tiles/block2"),
-    TEXTURE(TEX_BLOCK3, "tiles/block3"),
-    TEXTURE(TEX_BLOCK4, "tiles/block4"),
-
-    TEXTURE(TEX_BRIDGE1, "tiles/bridge1"),
-    TEXTURE(TEX_BRIDGE2, "tiles/bridge2"),
-    TEXTURE(TEX_BRIDGE3, "tiles/bridge3"),
-
-    TEXTURE(TEX_CLOUD1, "props/cloud1"),
-    TEXTURE(TEX_CLOUD2, "props/cloud2"),
-    TEXTURE(TEX_CLOUD3, "props/cloud3"),
-    TEXTURE(TEX_BUSH1, "props/bush1"),
-    TEXTURE(TEX_BUSH2, "props/bush2"),
-    TEXTURE(TEX_BUSH3, "props/bush3"),
-    TEXTURE(TEX_BUSH_SNOW1, "props/bush_snow1"),
-    TEXTURE(TEX_BUSH_SNOW2, "props/bush_snow2"),
-    TEXTURE(TEX_BUSH_SNOW3, "props/bush_snow3"),
-
-    TEXOFFS(TEX_MARIO_DEAD, "mario/dead", 15, 30),
-
-    TEXOFFS(TEX_MARIO_SMALL, "mario/small/idle", 10, 28),
-    TEXOFFS(TEX_MARIO_SMALL_WALK1, "mario/small/walk1", 15, 30),
-    TEXOFFS(TEX_MARIO_SMALL_WALK2, "mario/small/walk2", 11, 28),
-    TEXOFFS(TEX_MARIO_SMALL_JUMP, "mario/small/jump", 15, 30),
-    TEXOFFS(TEX_MARIO_SMALL_SWIM1, "mario/small/swim1", 15, 30),
-    TEXOFFS(TEX_MARIO_SMALL_SWIM2, "mario/small/swim2", 15, 29),
-    TEXOFFS(TEX_MARIO_SMALL_SWIM3, "mario/small/swim3", 15, 31),
-    TEXOFFS(TEX_MARIO_SMALL_SWIM4, "mario/small/swim4", 15, 30),
-
-    TEXOFFS(TEX_MARIO_BIG_GROW, "mario/big/grow", 12, 42),
-    TEXOFFS(TEX_MARIO_BIG, "mario/big/idle", 15, 58),
-    TEXOFFS(TEX_MARIO_BIG_WALK1, "mario/big/walk1", 16, 55),
-    TEXOFFS(TEX_MARIO_BIG_WALK2, "mario/big/walk2", 16, 56),
-    TEXOFFS(TEX_MARIO_BIG_JUMP, "mario/big/jump", 16, 58),
-    TEXOFFS(TEX_MARIO_BIG_DUCK, "mario/big/duck", 15, 42),
-    TEXOFFS(TEX_MARIO_BIG_SWIM1, "mario/big/swim1", 22, 53),
-    TEXOFFS(TEX_MARIO_BIG_SWIM2, "mario/big/swim2", 19, 53),
-    TEXOFFS(TEX_MARIO_BIG_SWIM3, "mario/big/swim3", 21, 53),
-    TEXOFFS(TEX_MARIO_BIG_SWIM4, "mario/big/swim4", 22, 53),
-
-    TEXOFFS(TEX_MARIO_FIRE_GROW1, "mario/fire/grow1", 16, 56),
-    TEXOFFS(TEX_MARIO_FIRE_GROW2, "mario/fire/grow2", 16, 58),
-    TEXOFFS(TEX_MARIO_FIRE, "mario/fire/idle", 15, 58),
-    TEXOFFS(TEX_MARIO_FIRE_WALK1, "mario/fire/walk1", 16, 56),
-    TEXOFFS(TEX_MARIO_FIRE_WALK2, "mario/fire/walk2", 16, 58),
-    TEXOFFS(TEX_MARIO_FIRE_JUMP, "mario/fire/jump", 16, 58),
-    TEXOFFS(TEX_MARIO_FIRE_DUCK, "mario/fire/duck", 15, 42),
-    TEXOFFS(TEX_MARIO_FIRE_FIRE, "mario/fire/fire", 16, 58),
-    TEXOFFS(TEX_MARIO_FIRE_SWIM1, "mario/fire/swim1", 22, 53),
-    TEXOFFS(TEX_MARIO_FIRE_SWIM2, "mario/fire/swim2", 19, 53),
-    TEXOFFS(TEX_MARIO_FIRE_SWIM3, "mario/fire/swim3", 21, 53),
-    TEXOFFS(TEX_MARIO_FIRE_SWIM4, "mario/fire/swim4", 22, 53),
-
-    TEXOFFS(TEX_MARIO_BEETROOT, "mario/beetroot/idle", 15, 61),
-    TEXOFFS(TEX_MARIO_BEETROOT_WALK1, "mario/beetroot/walk1", 16, 59),
-    TEXOFFS(TEX_MARIO_BEETROOT_WALK2, "mario/beetroot/walk2", 16, 61),
-    TEXOFFS(TEX_MARIO_BEETROOT_JUMP, "mario/beetroot/jump", 16, 59),
-    TEXOFFS(TEX_MARIO_BEETROOT_DUCK, "mario/beetroot/duck", 15, 45),
-    TEXOFFS(TEX_MARIO_BEETROOT_FIRE, "mario/beetroot/fire", 16, 61),
-    TEXOFFS(TEX_MARIO_BEETROOT_SWIM1, "mario/beetroot/swim1", 22, 56),
-    TEXOFFS(TEX_MARIO_BEETROOT_SWIM2, "mario/beetroot/swim2", 19, 56),
-    TEXOFFS(TEX_MARIO_BEETROOT_SWIM3, "mario/beetroot/swim3", 21, 56),
-    TEXOFFS(TEX_MARIO_BEETROOT_SWIM4, "mario/beetroot/swim4", 22, 56),
-
-    TEXOFFS(TEX_MARIO_LUI, "mario/lui/idle", 15, 58),
-    TEXOFFS(TEX_MARIO_LUI_WALK1, "mario/lui/walk1", 16, 56),
-    TEXOFFS(TEX_MARIO_LUI_WALK2, "mario/lui/walk2", 16, 58),
-    TEXOFFS(TEX_MARIO_LUI_JUMP, "mario/lui/jump", 16, 58),
-    TEXOFFS(TEX_MARIO_LUI_DUCK, "mario/lui/duck", 15, 42),
-    TEXOFFS(TEX_MARIO_LUI_SWIM1, "mario/lui/swim1", 22, 53),
-    TEXOFFS(TEX_MARIO_LUI_SWIM2, "mario/lui/swim2", 19, 53),
-    TEXOFFS(TEX_MARIO_LUI_SWIM3, "mario/lui/swim3", 21, 53),
-    TEXOFFS(TEX_MARIO_LUI_SWIM4, "mario/lui/swim4", 22, 53),
-
-    TEXOFFS(TEX_MARIO_HAMMER, "mario/hammer/idle", 17, 60),
-    TEXOFFS(TEX_MARIO_HAMMER_WALK1, "mario/hammer/walk1", 16, 58),
-    TEXOFFS(TEX_MARIO_HAMMER_WALK2, "mario/hammer/walk2", 17, 60),
-    TEXOFFS(TEX_MARIO_HAMMER_JUMP, "mario/hammer/jump", 16, 58),
-    TEXOFFS(TEX_MARIO_HAMMER_DUCK, "mario/hammer/duck", 15, 44),
-    TEXOFFS(TEX_MARIO_HAMMER_FIRE, "mario/hammer/fire", 16, 60),
-    TEXOFFS(TEX_MARIO_HAMMER_SWIM1, "mario/hammer/swim1", 22, 55),
-    TEXOFFS(TEX_MARIO_HAMMER_SWIM2, "mario/hammer/swim2", 19, 55),
-    TEXOFFS(TEX_MARIO_HAMMER_SWIM3, "mario/hammer/swim3", 21, 55),
-    TEXOFFS(TEX_MARIO_HAMMER_SWIM4, "mario/hammer/swim4", 22, 55),
-
-    TEXOFFS(TEX_COIN1, "items/coin1", -6, -2),
-    TEXOFFS(TEX_COIN2, "items/coin2", -6, -2),
-    TEXOFFS(TEX_COIN3, "items/coin3", -6, -2),
-
-    TEXOFFS(TEX_MUSHROOM, "items/mushroom", 15, 32),
-    TEXOFFS(TEX_MUSHROOM_1UP, "items/mushroom_1up", 15, 32),
-    TEXOFFS(TEX_MUSHROOM_POISON1, "items/mushroom_poison1", 15, 32),
-    TEXOFFS(TEX_MUSHROOM_POISON2, "items/mushroom_poison2", 15, 32),
-
-    TEXOFFS(TEX_FIRE_FLOWER1, "items/fire_flower1", 16, 31),
-    TEXOFFS(TEX_FIRE_FLOWER2, "items/fire_flower2", 16, 31),
-    TEXOFFS(TEX_FIRE_FLOWER3, "items/fire_flower3", 16, 31),
-    TEXOFFS(TEX_FIRE_FLOWER4, "items/fire_flower4", 16, 31),
-
-    TEXOFFS(TEX_BEETROOT1, "items/beetroot1", 13, 32),
-    TEXOFFS(TEX_BEETROOT2, "items/beetroot2", 13, 31),
-    TEXOFFS(TEX_BEETROOT3, "items/beetroot3", 13, 30),
-
-    TEXOFFS(TEX_LUI1, "items/lui1", 15, 30),
-    TEXOFFS(TEX_LUI2, "items/lui2", 15, 30),
-    TEXOFFS(TEX_LUI3, "items/lui3", 15, 30),
-    TEXOFFS(TEX_LUI4, "items/lui4", 15, 30),
-    TEXOFFS(TEX_LUI5, "items/lui5", 15, 30),
-    TEXOFFS(TEX_LUI_BOUNCE1, "items/lui_bounce1", 15, 28),
-    TEXOFFS(TEX_LUI_BOUNCE2, "items/lui_bounce2", 15, 26),
-    TEXOFFS(TEX_LUI_BOUNCE3, "items/lui_bounce3", 15, 25),
-
-    TEXOFFS(TEX_HAMMER_SUIT, "items/hammer_suit", 13, 31),
-
-    TEXOFFS(TEX_STARMAN1, "items/starman1", 16, 32),
-    TEXOFFS(TEX_STARMAN2, "items/starman2", 16, 32),
-    TEXOFFS(TEX_STARMAN3, "items/starman3", 16, 32),
-    TEXOFFS(TEX_STARMAN4, "items/starman4", 16, 32),
-
-    TEXOFFS(TEX_EXPLODE1, "effects/explode1", 8, 7),
-    TEXOFFS(TEX_EXPLODE2, "effects/explode2", 12, 13),
-    TEXOFFS(TEX_EXPLODE3, "effects/explode3", 16, 15),
-
-    TEXOFFS(TEX_MISSILE_FIREBALL, "missiles/fireball", 7, 7),
-    TEXOFFS(TEX_MISSILE_BEETROOT, "missiles/beetroot", 11, 31),
-    TEXOFFS(TEX_MISSILE_HAMMER, "missiles/hammer", 13, 18),
-    TEXOFFS(TEX_MISSILE_SILVER_HAMMER, "missiles/silver_hammer", 13, 18),
-    TEXOFFS(TEX_MISSILE_SPIKE_BALL, "missiles/spike_ball", 20, 20),
-
-    TEXOFFS(TEX_100, "hud/100", 12, 16),
-    TEXOFFS(TEX_200, "hud/200", 13, 16),
-    TEXOFFS(TEX_500, "hud/500", 13, 16),
-    TEXOFFS(TEX_1000, "hud/1000", 16, 16),
-    TEXOFFS(TEX_2000, "hud/2000", 17, 16),
-    TEXOFFS(TEX_5000, "hud/5000", 17, 16),
-    TEXOFFS(TEX_10000, "hud/10000", 20, 16),
-    TEXOFFS(TEX_1000000, "hud/1000000", 51, 16),
-    TEXOFFS(TEX_1UP, "hud/1up", 16, 16),
-
-    TEXTURE(TEX_ITEM_BLOCK1, "items/block1"),
-    TEXTURE(TEX_ITEM_BLOCK2, "items/block2"),
-    TEXTURE(TEX_ITEM_BLOCK3, "items/block3"),
-    TEXTURE(TEX_EMPTY_BLOCK, "items/empty_block"),
-    TEXTURE(TEX_BRICK_BLOCK, "items/brick"),
-    TEXTURE(TEX_BRICK_BLOCK_GRAY, "items/brick_gray"),
-    TEXOFFS(TEX_BRICK_SHARD, "effects/shard", 8, 8),
-    TEXOFFS(TEX_BRICK_SHARD_GRAY, "effects/shard_gray", 8, 8),
-
-    TEXOFFS(TEX_COIN_POP1, "items/coin_pop1", 10, 27),
-    TEXOFFS(TEX_COIN_POP2, "items/coin_pop2", 6, 27),
-    TEXOFFS(TEX_COIN_POP3, "items/coin_pop3", 2, 27),
-    TEXOFFS(TEX_COIN_POP4, "items/coin_pop4", 6, 27),
-    TEXOFFS(TEX_COIN_SPARK1, "items/coin_spark1", 7, 13),
-    TEXOFFS(TEX_COIN_SPARK2, "items/coin_spark2", 14, 31),
-    TEXOFFS(TEX_COIN_SPARK3, "items/coin_spark3", 18, 29),
-    TEXOFFS(TEX_COIN_SPARK4, "items/coin_spark4", 16, 21),
-
-    TEXOFFS(TEX_CHECKPOINT1, "markers/checkpoint1", 44, 110),
-    TEXOFFS(TEX_CHECKPOINT2, "markers/checkpoint2", 44, 110),
-    TEXOFFS(TEX_CHECKPOINT3, "markers/checkpoint3", 44, 110),
-
-    TEXTURE(TEX_ROTODISC_BALL, "enemies/rotodisc_ball"),
-    TEXTURE(TEX_ROTODISC1, "enemies/rotodisc1"),
-    TEXTURE(TEX_ROTODISC2, "enemies/rotodisc2"),
-    TEXTURE(TEX_ROTODISC3, "enemies/rotodisc3"),
-    TEXTURE(TEX_ROTODISC4, "enemies/rotodisc4"),
-    TEXTURE(TEX_ROTODISC5, "enemies/rotodisc5"),
-    TEXTURE(TEX_ROTODISC6, "enemies/rotodisc6"),
-    TEXTURE(TEX_ROTODISC7, "enemies/rotodisc7"),
-    TEXTURE(TEX_ROTODISC8, "enemies/rotodisc8"),
-    TEXTURE(TEX_ROTODISC9, "enemies/rotodisc9"),
-    TEXTURE(TEX_ROTODISC10, "enemies/rotodisc10"),
-    TEXTURE(TEX_ROTODISC11, "enemies/rotodisc11"),
-    TEXTURE(TEX_ROTODISC12, "enemies/rotodisc12"),
-    TEXTURE(TEX_ROTODISC13, "enemies/rotodisc13"),
-    TEXTURE(TEX_ROTODISC14, "enemies/rotodisc14"),
-    TEXTURE(TEX_ROTODISC15, "enemies/rotodisc15"),
-    TEXTURE(TEX_ROTODISC16, "enemies/rotodisc16"),
-    TEXTURE(TEX_ROTODISC17, "enemies/rotodisc17"),
-    TEXTURE(TEX_ROTODISC18, "enemies/rotodisc18"),
-    TEXTURE(TEX_ROTODISC19, "enemies/rotodisc19"),
-    TEXTURE(TEX_ROTODISC20, "enemies/rotodisc20"),
-    TEXTURE(TEX_ROTODISC21, "enemies/rotodisc21"),
-    TEXTURE(TEX_ROTODISC22, "enemies/rotodisc22"),
-    TEXTURE(TEX_ROTODISC23, "enemies/rotodisc23"),
-    TEXTURE(TEX_ROTODISC24, "enemies/rotodisc24"),
-    TEXTURE(TEX_ROTODISC25, "enemies/rotodisc25"),
-    TEXTURE(TEX_ROTODISC26, "enemies/rotodisc26"),
-
-    TEXTURE(TEX_FONT_HUD, "fonts/hud"),
-
-    TEXTURE(TEX_HUD_COINS1, "hud/coins1"),
-    TEXTURE(TEX_HUD_COINS2, "hud/coins2"),
-    TEXTURE(TEX_HUD_COINS3, "hud/coins3"),
-
-    TEXTURE(TEX_GOAL_MARK, "markers/goal_mark"),
-    TEXTURE(TEX_GOAL, "markers/goal"),
-    TEXOFFS(TEX_GOAL_BAR1, "markers/goal_bar1", 23, 0),
-    TEXOFFS(TEX_GOAL_BAR2, "markers/goal_bar2", 21, 7),
-
-    TEXTURE(TEX_WATER1, "markers/water1"),
-    TEXTURE(TEX_WATER2, "markers/water2"),
-    TEXTURE(TEX_WATER3, "markers/water3"),
-    TEXTURE(TEX_WATER4, "markers/water4"),
-    TEXTURE(TEX_WATER5, "markers/water5"),
-    TEXTURE(TEX_WATER6, "markers/water6"),
-    TEXTURE(TEX_WATER7, "markers/water7"),
-    TEXTURE(TEX_WATER8, "markers/water8"),
-    TEXOFFS(TEX_WATER_SPLASH1, "effects/splash1", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH2, "effects/splash2", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH3, "effects/splash3", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH4, "effects/splash4", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH5, "effects/splash5", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH6, "effects/splash6", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH7, "effects/splash7", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH8, "effects/splash8", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH9, "effects/splash9", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH10, "effects/splash10", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH11, "effects/splash11", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH12, "effects/splash12", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH13, "effects/splash13", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH14, "effects/splash14", 15, 31),
-    TEXOFFS(TEX_WATER_SPLASH15, "effects/splash15", 15, 31),
-
-    TEXOFFS(TEX_BUBBLE, "effects/bubble", 4, 4),
-    TEXOFFS(TEX_BUBBLE_POP1, "effects/bubble_pop1", 7, 8),
-    TEXOFFS(TEX_BUBBLE_POP2, "effects/bubble_pop2", 7, 8),
-    TEXOFFS(TEX_BUBBLE_POP3, "effects/bubble_pop3", 7, 8),
-    TEXOFFS(TEX_BUBBLE_POP4, "effects/bubble_pop4", 7, 8),
-    TEXOFFS(TEX_BUBBLE_POP5, "effects/bubble_pop5", 7, 8),
-    TEXOFFS(TEX_BUBBLE_POP6, "effects/bubble_pop6", 7, 8),
-    TEXOFFS(TEX_BUBBLE_POP7, "effects/bubble_pop7", 7, 8),
-
-    TEXTURE(TEX_PSWITCH1, "markers/pswitch1"),
-    TEXTURE(TEX_PSWITCH2, "markers/pswitch2"),
-    TEXTURE(TEX_PSWITCH3, "markers/pswitch3"),
-    TEXOFFS(TEX_PSWITCH_FLAT, "markers/pswitch_flat", 0, -20),
-};
+static StTinyMap* textures = NULL;
 
 static struct Font fonts[FNT_SIZE] = {
     [FNT_NULL] = {0},
     [FNT_MAIN] = {0},
 
     [FNT_HUD] = {
-        .texture = TEX_FONT_HUD,
+        .tname = "F_HUD",
         .spacing = 1,
         .line_height = 18,
         .glyphs = {
@@ -476,7 +198,7 @@ static vec2 camera = {HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT};
 static mat4 mvp = GLM_MAT4_IDENTITY_INIT;
 static struct VertexBatch batch = {0};
 
-static struct TileBatch* tiles[TEX_SIZE] = {NULL};
+static StTinyMap* tiles = NULL;
 static struct TileBatch* valid_tiles = NULL;
 
 void video_init(bool bypass_shader) {
@@ -517,7 +239,9 @@ void video_init(bool bypass_shader) {
     INFO("OpenGL shading language version: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     // Blank texture
-    load_texture(TEX_NULL);
+    glGenTextures(1, &blank_texture);
+    glBindTexture(GL_TEXTURE_2D, blank_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, WHITE);
 
     // Vertex batch
     glGenVertexArrays(1, &(batch.vao));
@@ -554,7 +278,7 @@ void video_init(bool bypass_shader) {
 
     batch.color[0] = batch.color[1] = batch.color[2] = batch.color[3] = 1;
     batch.stencil = 0;
-    batch.texture = textures[TEX_NULL].texture;
+    batch.texture = blank_texture;
     batch.alpha_test = 0.5f;
 
     batch.blend_src[0] = batch.blend_src[1] = GL_SRC_ALPHA;
@@ -656,6 +380,9 @@ void video_init(bool bypass_shader) {
     glActiveTexture(GL_TEXTURE0);
     glUniform1i(uniforms.texture, 0);
     glDepthFunc(GL_LEQUAL);
+
+    textures = NewTinyMap();
+    tiles = NewTinyMap();
 }
 
 void video_update() {
@@ -681,7 +408,7 @@ void video_update() {
             glBufferSubData(
                 GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(struct Vertex) * tilemap->vertex_count), tilemap->vertices
             );
-            glBindTexture(GL_TEXTURE_2D, tilemap->texture);
+            glBindTexture(GL_TEXTURE_2D, (tilemap->texture == NULL) ? blank_texture : tilemap->texture->texture);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glDrawArrays(GL_TRIANGLES, 0, (GLsizei)tilemap->vertex_count);
@@ -705,9 +432,9 @@ void video_update() {
 void video_teardown() {
     glDeleteVertexArrays(1, &(batch.vao));
     glDeleteBuffers(1, &(batch.vbo));
-    clear_tiles();
-    for (size_t i = 0; i < TEX_SIZE; i++)
-        glDeleteTextures(1, &(textures[i].texture));
+    FreeTinyMap(tiles);
+    glDeleteTextures(1, &blank_texture);
+    FreeTinyMap(textures);
     glDeleteProgram(shader);
     SDL_free(batch.vertices);
 
@@ -721,35 +448,29 @@ void move_camera(float x, float y) {
     move_ears(x, y);
 }
 
-void load_texture(enum TextureIndices index) {
-    struct Texture* texture = &(textures[index]);
-    if (texture->texture != 0)
+static void nuke_texture(void* ptr) {
+    glDeleteTextures(1, &(((struct Texture*)ptr)->texture));
+}
+
+void load_texture(const char* index) {
+    if (get_texture(index) != NULL)
         return;
 
-    if (texture->name == NULL) {
-        texture->size[0] = texture->size[1] = 1;
+    struct Texture texture = {0};
 
-        glGenTextures(1, &(texture->texture));
-        glBindTexture(GL_TEXTURE_2D, texture->texture);
-        glTexImage2D(
-            GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, (const uint8_t[]){255, 255, 255, 255}
-        );
-
-        return;
-    }
-
-    const char* file = find_file(file_pattern("data/textures/%s.*", texture->name), ".json");
+    const char* file = find_file(file_pattern("data/textures/%s.*", index), ".json");
     if (file == NULL)
-        FATAL("Texture \"%s\" not found", texture->name);
+        FATAL("Texture \"%s\" not found", index);
     SDL_Surface* surface = IMG_Load(file);
     if (surface == NULL)
-        FATAL("Texture \"%s\" fail: %s", texture->name, SDL_GetError());
+        FATAL("Texture \"%s\" fail: %s", index, SDL_GetError());
 
-    texture->size[0] = surface->w;
-    texture->size[1] = surface->h;
+    SDL_strlcpy(texture.name, index, sizeof(texture.name));
+    texture.size[0] = surface->w;
+    texture.size[1] = surface->h;
 
-    glGenTextures(1, &(texture->texture));
-    glBindTexture(GL_TEXTURE_2D, texture->texture);
+    glGenTextures(1, &(texture.texture));
+    glBindTexture(GL_TEXTURE_2D, texture.texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
 
@@ -758,7 +479,7 @@ void load_texture(enum TextureIndices index) {
         default: {
             SDL_Surface* temp = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
             if (temp == NULL)
-                FATAL("Texture \"%s\" conversion fail: %s", texture->name, SDL_GetError());
+                FATAL("Texture \"%s\" conversion fail: %s", index, SDL_GetError());
             SDL_DestroySurface(surface);
             surface = temp;
 
@@ -795,10 +516,21 @@ void load_texture(enum TextureIndices index) {
 
     glTexImage2D(GL_TEXTURE_2D, 0, format, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
     SDL_DestroySurface(surface);
+
+    const StTinyKey key = StStrKey(index);
+    StMapPut(textures, key, &texture, sizeof(texture));
+    StMapLookup(textures, key)->cleanup = nuke_texture;
+}
+
+const struct Texture* get_texture(const char* index) {
+    return (struct Texture*)StMapGet(textures, StStrKey(index));
 }
 
 void load_font(enum FontIndices index) {
-    load_texture(fonts[index].texture);
+    if (fonts[index].texture != NULL)
+        return;
+    load_texture(fonts[index].tname);
+    fonts[index].texture = get_texture(fonts[index].tname);
 }
 
 void set_batch_stencil(GLfloat stencil) {
@@ -844,70 +576,74 @@ void submit_batch() {
 }
 
 void clear_tiles() {
-    for (size_t i = 0; i < TEX_SIZE; i++) {
-        struct TileBatch* tilemap = tiles[i];
-        if (tilemap != NULL) {
-            glDeleteVertexArrays(1, &(tilemap->vao));
-            glDeleteBuffers(1, &(tilemap->vbo));
-            SDL_free(tilemap->vertices);
-            SDL_free(tilemap);
-            tiles[i] = NULL;
-        }
-    }
+    while (valid_tiles != NULL)
+        StMapNuke(tiles, StStrKey((valid_tiles->texture == NULL) ? "" : valid_tiles->texture->name));
 }
 
-static struct TileBatch* load_tile(enum TextureIndices index) {
-    load_texture(index);
-    struct Texture* texture = &(textures[index]);
+static void nuke_tiles(void* ptr) {
+    struct TileBatch* tilemap = (struct TileBatch*)ptr;
+    if (valid_tiles == tilemap)
+        valid_tiles = tilemap->next;
+    glDeleteVertexArrays(1, &(tilemap->vao));
+    glDeleteBuffers(1, &(tilemap->vbo));
+    SDL_free(tilemap->vertices);
+}
 
-    struct TileBatch* tilemap = tiles[index];
-    if (tilemap == NULL) {
-        tilemap = tiles[index] = SDL_malloc(sizeof(struct TileBatch));
-        if (tilemap == NULL)
-            FATAL("Out of memory for tile batch %u", index);
-
-        tilemap->next = valid_tiles;
-        tilemap->texture = texture->texture;
-        glGenVertexArrays(1, &(tilemap->vao));
-        glBindVertexArray(tilemap->vao);
-        glEnableVertexArrayAttrib(tilemap->vao, VATT_POSITION);
-        glVertexArrayAttribFormat(tilemap->vao, VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3);
-        glEnableVertexArrayAttrib(tilemap->vao, VATT_COLOR);
-        glVertexArrayAttribFormat(tilemap->vao, VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GLubyte) * 4);
-        glEnableVertexArrayAttrib(tilemap->vao, VATT_UV);
-        glVertexArrayAttribFormat(tilemap->vao, VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2);
-
-        tilemap->vertex_count = 0;
-        tilemap->vertex_capacity = 6;
-        tilemap->vertices = SDL_malloc(tilemap->vertex_capacity * sizeof(struct Vertex));
-        if (tilemap->vertices == NULL)
-            FATAL("Out of memory for tile batch %u vertices", index);
-
-        glGenBuffers(1, &(tilemap->vbo));
-        glBindBuffer(GL_ARRAY_BUFFER, tilemap->vbo);
-        glBufferData(
-            GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(struct Vertex) * tilemap->vertex_capacity), NULL, GL_STATIC_DRAW
-        );
-
-        glEnableVertexAttribArray(VATT_POSITION);
-        glVertexAttribPointer(
-            VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, position)
-        );
-
-        glEnableVertexAttribArray(VATT_COLOR);
-        glVertexAttribPointer(
-            VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, color)
-        );
-
-        glEnableVertexAttribArray(VATT_UV);
-        glVertexAttribPointer(
-            VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, uv)
-        );
-
-        valid_tiles = tilemap;
+static struct TileBatch* load_tile(const char* index) {
+    const struct Texture* texture = NULL;
+    if (index != NULL) {
+        load_texture(index);
+        texture = get_texture(index);
     }
 
-    return tilemap;
+    const StTinyKey key = StStrKey((index == NULL) ? "" : index);
+    struct TileBatch* tilemap = StMapGet(tiles, key);
+    if (tilemap != NULL)
+        return tilemap;
+
+    struct TileBatch new = {0};
+    new.next = valid_tiles;
+    new.texture = texture;
+
+    glGenVertexArrays(1, &(new.vao));
+    glBindVertexArray(new.vao);
+    glEnableVertexArrayAttrib(new.vao, VATT_POSITION);
+    glVertexArrayAttribFormat(new.vao, VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3);
+    glEnableVertexArrayAttrib(new.vao, VATT_COLOR);
+    glVertexArrayAttribFormat(new.vao, VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GLubyte) * 4);
+    glEnableVertexArrayAttrib(new.vao, VATT_UV);
+    glVertexArrayAttribFormat(new.vao, VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2);
+
+    new.vertex_count = 0;
+    new.vertex_capacity = 6;
+    new.vertices = SDL_malloc(new.vertex_capacity * sizeof(struct Vertex));
+    if (new.vertices == NULL)
+        FATAL("Out of memory for tile batch \"%s\" vertices", index);
+
+    glGenBuffers(1, &(new.vbo));
+    glBindBuffer(GL_ARRAY_BUFFER, new.vbo);
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(struct Vertex) * new.vertex_capacity), NULL, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(VATT_POSITION);
+    glVertexAttribPointer(
+        VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, position)
+    );
+
+    glEnableVertexAttribArray(VATT_COLOR);
+    glVertexAttribPointer(
+        VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, color)
+    );
+
+    glEnableVertexAttribArray(VATT_UV);
+    glVertexAttribPointer(VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, uv));
+
+    StMapPut(tiles, key, &new, sizeof(new));
+    tilemap = StMapGet(tiles, key);
+    if (tilemap == NULL)
+        FATAL("Out of memory for tile batch \"%s\"", index);
+    StMapLookup(tiles, key)->cleanup = nuke_tiles;
+
+    return (valid_tiles = tilemap);
 }
 
 static void tile_vertex(
@@ -934,7 +670,7 @@ static void tile_vertex(
 }
 
 void add_gradient(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, GLfloat z, GLubyte colors[4][4]) {
-    struct TileBatch* tilemap = load_tile(TEX_NULL);
+    struct TileBatch* tilemap = load_tile(NULL);
     tile_vertex(tilemap, x1, y2, z, colors[2][0], colors[2][1], colors[2][2], colors[2][3], 0, 1);
     tile_vertex(tilemap, x1, y1, z, colors[0][0], colors[0][1], colors[0][2], colors[0][3], 0, 0);
     tile_vertex(tilemap, x2, y1, z, colors[1][0], colors[1][1], colors[1][2], colors[1][3], 1, 0);
@@ -943,11 +679,9 @@ void add_gradient(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, GLfloat z, GLu
     tile_vertex(tilemap, x1, y2, z, colors[2][0], colors[2][1], colors[2][2], colors[2][3], 0, 1);
 }
 
-void add_backdrop(
-    enum TextureIndices index, GLfloat x, GLfloat y, GLfloat z, GLubyte r, GLubyte g, GLubyte b, GLubyte a
-) {
+void add_backdrop(const char* index, GLfloat x, GLfloat y, GLfloat z, GLubyte r, GLubyte g, GLubyte b, GLubyte a) {
     struct TileBatch* tilemap = load_tile(index);
-    struct Texture* texture = &(textures[index]);
+    const struct Texture* texture = get_texture(index);
 
     const GLfloat x1 = x - texture->offset[0];
     const GLfloat y1 = y - texture->offset[1];
@@ -992,16 +726,14 @@ void batch_vertex(GLfloat x, GLfloat y, GLfloat z, GLubyte r, GLubyte g, GLubyte
                                                            v};
 }
 
-void draw_sprite(
-    enum TextureIndices index, const GLfloat pos[3], const bool flip[2], GLfloat angle, const GLubyte color[4]
-) {
-    struct Texture* texture = &(textures[index]);
-    GLuint tex = texture->texture;
-    if (tex == 0)
-        FATAL("Invalid texture index %u", index);
-    if (batch.texture != tex) {
+void draw_sprite(const char* index, const GLfloat pos[3], const bool flip[2], GLfloat angle, const GLubyte color[4]) {
+    const struct Texture* texture = get_texture(index);
+    if (texture == NULL)
+        return;
+
+    if (batch.texture != texture->texture) {
         submit_batch();
-        batch.texture = tex;
+        batch.texture = texture->texture;
     }
 
     const GLfloat x1 = -(flip[0] ? ((GLfloat)(texture->size[0]) - (texture->offset[0])) : (texture->offset[0]));
@@ -1071,15 +803,14 @@ static GLfloat string_width(enum FontIndices index, const char* str) {
 }
 
 void draw_text(enum FontIndices index, enum FontAlignment align, const char* str, const float pos[3]) {
-    struct Font* font = &(fonts[index]);
+    const struct Font* font = &(fonts[index]);
 
-    struct Texture* texture = &(textures[font->texture]);
-    GLuint tex = texture->texture;
-    if (tex == 0)
-        FATAL("Invalid texture index %u", index);
-    if (batch.texture != tex) {
+    const struct Texture* texture = font->texture;
+    if (texture == NULL)
+        FATAL("Invalid font texture \"%s\"", font->tname);
+    if (batch.texture != texture->texture) {
         submit_batch();
-        batch.texture = tex;
+        batch.texture = texture->texture;
     }
 
     GLfloat sx = pos[0];
@@ -1113,7 +844,7 @@ void draw_text(enum FontIndices index, enum FontAlignment align, const char* str
             continue;
 
         // Valid glyph
-        struct Glyph* glyph = &(font->glyphs[gid]);
+        const struct Glyph* glyph = &(font->glyphs[gid]);
         const GLfloat x1 = cx;
         const GLfloat y1 = cy;
         const GLfloat x2 = x1 + glyph->size[0];
@@ -1131,34 +862,35 @@ void draw_text(enum FontIndices index, enum FontAlignment align, const char* str
     }
 }
 
-void draw_rectangle(enum TextureIndices index, const float rect[2][2], float z, const GLubyte color[4]) {
-    struct Texture* texture = &(textures[index]);
-    GLuint tex = texture->texture;
-    if (tex == 0)
-        FATAL("Invalid texture index %u", index);
+void draw_rectangle(const char* index, const float rect[2][2], float z, const GLubyte color[4]) {
+    const struct Texture* texture = get_texture(index);
+
+    GLuint tex = (texture == NULL) ? blank_texture : texture->texture;
     if (batch.texture != tex) {
         submit_batch();
         batch.texture = tex;
     }
 
-    const GLfloat u1 = 0;
-    const GLfloat v1 = 0;
-    const GLfloat u2 = (rect[1][0] - rect[0][0]) / (GLfloat)(texture->size[0]);
-    const GLfloat v2 = (rect[1][1] - rect[0][1]) / (GLfloat)(texture->size[1]);
+    GLfloat u, v;
+    if (texture == NULL) {
+        u = v = 1;
+    } else {
+        u = (rect[1][0] - rect[0][0]) / (GLfloat)(texture->size[0]);
+        v = (rect[1][1] - rect[0][1]) / (GLfloat)(texture->size[1]);
+    }
 
-    batch_vertex(rect[0][0], rect[1][1], z, color[0], color[1], color[2], color[3], u1, v2);
-    batch_vertex(rect[0][0], rect[0][1], z, color[0], color[1], color[2], color[3], u1, v1);
-    batch_vertex(rect[1][0], rect[0][1], z, color[0], color[1], color[2], color[3], u2, v1);
-    batch_vertex(rect[1][0], rect[0][1], z, color[0], color[1], color[2], color[3], u2, v1);
-    batch_vertex(rect[1][0], rect[1][1], z, color[0], color[1], color[2], color[3], u2, v2);
-    batch_vertex(rect[0][0], rect[1][1], z, color[0], color[1], color[2], color[3], u1, v2);
+    batch_vertex(rect[0][0], rect[1][1], z, color[0], color[1], color[2], color[3], 0, v);
+    batch_vertex(rect[0][0], rect[0][1], z, color[0], color[1], color[2], color[3], 0, 0);
+    batch_vertex(rect[1][0], rect[0][1], z, color[0], color[1], color[2], color[3], u, 0);
+    batch_vertex(rect[1][0], rect[0][1], z, color[0], color[1], color[2], color[3], u, 0);
+    batch_vertex(rect[1][0], rect[1][1], z, color[0], color[1], color[2], color[3], u, v);
+    batch_vertex(rect[0][0], rect[1][1], z, color[0], color[1], color[2], color[3], 0, v);
 }
 
 void draw_ellipse(const float rect[2][2], float z, const GLubyte color[4]) {
-    GLuint tex = textures[OBJ_NULL].texture;
-    if (batch.texture != tex) {
+    if (batch.texture != blank_texture) {
         submit_batch();
-        batch.texture = tex;
+        batch.texture = blank_texture;
     }
 
     const GLfloat x = glm_lerp(rect[0][0], rect[1][0], 0.5f);
