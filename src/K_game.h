@@ -10,9 +10,11 @@
 #define TICKRATE 50L
 
 #define MAX_PLAYERS 4L
+#define KEVIN_DELAY TICKRATE
 
 #define MAX_OBJECTS 1000L
 #define MAX_VALUES 32L
+#define NULLOBJ ((ObjectID)(-1L))
 
 #define MAX_BLOCKS 128L
 #define BLOCKMAP_SIZE (MAX_BLOCKS * MAX_BLOCKS)
@@ -41,6 +43,7 @@ enum GameObjectType {
     OBJ_PLAYER,
     OBJ_PLAYER_EFFECT,
     OBJ_PLAYER_DEAD,
+    OBJ_KEVIN,
     OBJ_COIN,
     OBJ_COIN_POP,
     OBJ_MUSHROOM,
@@ -139,10 +142,17 @@ enum ObjectValues {
     VAL_PLAYER_BEETROOT5,
     VAL_PLAYER_BEETROOT6,
     VAL_PLAYER_BEETROOT_END,
+    VAL_PLAYER_KEVIN,
+    VAL_PLAYER_KEVIN_X,
+    VAL_PLAYER_KEVIN_Y,
 
     VAL_PLAYER_EFFECT_POWER = VAL_START,
     VAL_PLAYER_EFFECT_FRAME,
     VAL_PLAYER_EFFECT_ALPHA,
+
+    VAL_KEVIN_PLAYER = VAL_START,
+    VAL_KEVIN_X_JITTER,
+    VAL_KEVIN_Y_JITTER,
 
     VAL_LUI_BOUNCE = VAL_START,
 
@@ -271,6 +281,16 @@ struct GameState {
             POW_LUI,
             POW_HAMMER,
         } power;
+
+        struct Kevin {
+            ObjectID object;
+            struct KevinFrame {
+                fvec2 pos;
+                bool flipped;
+                enum PlayerPowers power;
+                enum PlayerFrames frame;
+            } frames[KEVIN_DELAY];
+        } kevin;
     } players[MAX_PLAYERS];
 
     enum GameFlags {
@@ -336,7 +356,7 @@ struct InterpObject {
     fvec2 pos;
 };
 
-void start_state(int, int);
+void start_state(int, int, enum GameFlags);
 void save_state(struct GameState*);
 void load_state(const struct GameState*);
 uint32_t check_state();

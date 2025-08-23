@@ -28,6 +28,7 @@ int main(int argc, char** argv) {
     int num_players = 1;
     char* server_ip = "95.163.233.200"; // Public NutPunch server
     char* lobby_id = "Klawiatura";
+    enum GameFlags start_flags = 0;
     for (size_t i = 0; i < argc; i++) {
         if (SDL_strcmp(argv[i], "-bypass_shader") == 0) {
             bypass_shader = true;
@@ -39,6 +40,8 @@ int main(int argc, char** argv) {
             server_ip = argv[++i];
         } else if (SDL_strcmp(argv[i], "-lobby") == 0) {
             lobby_id = argv[++i];
+        } else if (SDL_strcmp(argv[i], "-kevin") == 0) {
+            start_flags |= GF_KEVIN;
         }
     }
 
@@ -46,6 +49,14 @@ int main(int argc, char** argv) {
         FATAL("SDL_Init fail: %s", SDL_GetError());
     video_init(bypass_shader);
     audio_init();
+
+    if (start_flags & GF_KEVIN) {
+        load_sound("KEVINON");
+        play_sound("KEVINON");
+        INFO("\n==================================");
+        INFO("Kevin Mode activated. Good luck...");
+        INFO("==================================\n");
+    }
 
     GekkoSession* session = NULL;
     if (!gekko_create(&session))
@@ -64,7 +75,7 @@ int main(int argc, char** argv) {
         gekko_set_local_delay(session, local_player, 2);
 
     enum GameInput inputs[MAX_PLAYERS] = {GI_NONE};
-    start_state(num_players, local_player);
+    start_state(num_players, local_player, start_flags);
 
     uint64_t last_time = SDL_GetTicks();
     float ticks = 0;

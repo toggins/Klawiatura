@@ -21,7 +21,7 @@ static ObjectID find_object(enum GameObjectType type) {
             return oid;
         oid = object->previous;
     }
-    return -1L;
+    return NULLOBJ;
 }
 
 static struct GamePlayer* get_player(int pid) {
@@ -32,16 +32,20 @@ static ObjectID respawn_player(int pid) {
     struct GamePlayer* player = get_player(pid);
     if (player == NULL || !(player->active) || player->lives <= 0L || state.clock == 0L ||
         state.sequence.type != SEQ_NONE)
-        return -1L;
+        return NULLOBJ;
 
     kill_object(player->object);
-    player->object = -1L;
+    player->object = NULLOBJ;
+
+    struct Kevin* kevin = &(player->kevin);
+    kill_object(kevin->object);
+    kevin->object = NULLOBJ;
 
     const struct GameObject* spawn = get_object(state.checkpoint);
     if (spawn == NULL) {
         spawn = get_object(state.spawn);
         if (spawn == NULL)
-            return -1L;
+            return NULLOBJ;
     }
 
     if (spawn->type == OBJ_CHECKPOINT &&
@@ -58,11 +62,14 @@ static ObjectID respawn_player(int pid) {
         player->bounds[1][1] = state.bounds[1][1];
     }
 
-    const ObjectID object = create_object(OBJ_PLAYER, spawn->pos);
-    if (object_is_alive(object))
-        state.objects[object].values[VAL_PLAYER_INDEX] = pid;
-    player->object = object;
-    return object;
+    player->object = create_object(OBJ_PLAYER, spawn->pos);
+    struct GameObject* pawn = get_object(player->object);
+    if (pawn != NULL) {
+        pawn->values[VAL_PLAYER_INDEX] = pid;
+        pawn->values[VAL_PLAYER_KEVIN_X] = pawn->pos[0];
+        pawn->values[VAL_PLAYER_KEVIN_Y] = pawn->pos[1];
+    }
+    return player->object;
 }
 
 static void give_points(struct GameObject* item, int pid, int points) {
@@ -132,15 +139,18 @@ static bool touching_solid(const fvec2 rect[2]) {
 static int get_owner_id(ObjectID oid) {
     const struct GameObject* object = get_object(oid);
     if (object == NULL)
-        return -1;
+        return -1L;
 
     switch (object->type) {
         default:
-            return -1;
+            return -1L;
 
         case OBJ_PLAYER:
         case OBJ_PLAYER_DEAD:
             return object->values[VAL_PLAYER_INDEX];
+
+        case OBJ_KEVIN:
+            return object->values[VAL_KEVIN_PLAYER];
 
         case OBJ_MISSILE_FIREBALL:
         case OBJ_MISSILE_BEETROOT:
@@ -462,11 +472,20 @@ static void win_player(struct GameObject* pawn) {
     state.sequence.activator = pawn->values[VAL_PLAYER_INDEX];
 
     const int pid = pawn->values[VAL_PLAYER_INDEX];
-    for (size_t i = 0; i < MAX_PLAYERS; i++)
+    for (size_t i = 0; i < MAX_PLAYERS; i++) {
+        struct GamePlayer* player = &(state.players[i]);
         if (i != pid) {
-            kill_object(state.players[i].object);
-            state.players[i].object = -1L;
+            kill_object(player->object);
+            player->object = NULLOBJ;
         }
+
+        struct GameObject* kpawn = get_object(player->kevin.object);
+        if (kpawn != NULL) {
+            create_object(OBJ_EXPLODE, (fvec2){kpawn->pos[0], Fsub(kpawn->pos[1], FfInt(16L))});
+            kpawn->flags |= FLG_DESTROY;
+        }
+        player->kevin.object = NULLOBJ;
+    }
 
     for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++) {
         struct GameObject* missile = get_object((ObjectID)(pawn->values[i]));
@@ -506,8 +525,16 @@ static void kill_player(struct GameObject* pawn) {
 
         struct GamePlayer* player =
             get_player((ObjectID)(dead->values[VAL_PLAYER_INDEX] = pawn->values[VAL_PLAYER_INDEX]));
-        if (player != NULL)
+        if (player != NULL) {
             player->power = POW_SMALL;
+
+            struct GameObject* kpawn = get_object(player->kevin.object);
+            if (kpawn != NULL) {
+                create_object(OBJ_EXPLODE, (fvec2){kpawn->pos[0], Fsub(kpawn->pos[1], FfInt(16L))});
+                kpawn->flags |= FLG_DESTROY;
+            }
+            player->kevin.object = NULLOBJ;
+        }
 
         bool all_dead = true;
         if (state.sequence.type == SEQ_NONE && state.clock != 0L)
@@ -569,6 +596,19 @@ static bool bump_check(ObjectID self_id, ObjectID other_id) {
                     if (Fabs(self->values[VAL_X_SPEED]) >= FfInt(2L))
                         play_sound_at_object(self, "BUMP");
                 }
+            }
+            break;
+        }
+
+        case OBJ_KEVIN: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type != OBJ_PLAYER)
+                break;
+            if (other->values[VAL_PLAYER_INDEX] != self->values[VAL_KEVIN_PLAYER]) {
+                hit_player(other);
+            } else {
+                kill_player(other);
+                play_sound_at_object(self, "KEVINDIE");
             }
             break;
         }
@@ -1272,24 +1312,24 @@ static bool below_frame(struct GameObject* object) {
 
    ====== */
 
-void start_state(int num_players, int local) {
+void start_state(int num_players, int local, enum GameFlags flags) {
     local_player = local;
 
     SDL_memset(&state, 0, sizeof(state));
     clear_tiles();
-    state.live_objects = -1L;
+    state.live_objects = NULLOBJ;
     for (uint32_t i = 0L; i < BLOCKMAP_SIZE; i++)
-        state.blockmap[i] = -1L;
+        state.blockmap[i] = NULLOBJ;
 
     state.size[0] = FfInt(2560L);
     state.size[1] = F_SCREEN_HEIGHT;
     state.bounds[1][0] = FfInt(2560L);
     state.bounds[1][1] = F_SCREEN_HEIGHT;
 
-    state.spawn = state.checkpoint = -1L;
+    state.spawn = state.checkpoint = NULLOBJ;
     state.water = FfInt(240L); // 0x7FFFFFFF;
 
-    state.flags |= GF_HARDCORE | GF_LOST;
+    state.flags |= GF_HARDCORE | GF_LOST | flags;
     state.clock = 360L;
 
     state.sequence.activator = -1L;
@@ -1630,6 +1670,7 @@ void start_state(int num_players, int local) {
         struct GamePlayer* player = &(state.players[i]);
         player->active = true;
 
+        player->object = player->kevin.object = NULLOBJ;
         player->lives = 4L;
         respawn_player((int)i);
     }
@@ -2045,6 +2086,38 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         break;
                     }
 
+                    if ((state.flags & GF_KEVIN) && state.sequence.type == SEQ_NONE) {
+                        struct Kevin* kevin = &(player->kevin);
+
+                        if ((object->values[VAL_PLAYER_KEVIN] <= 0L &&
+                             Fabs(Fadd(
+                                 Fsub(object->pos[0], object->values[VAL_PLAYER_KEVIN_X]),
+                                 Fsub(object->pos[1], object->values[VAL_PLAYER_KEVIN_Y])
+                             )) > FxOne) ||
+                            object->values[VAL_PLAYER_KEVIN] > 0L) {
+                            SDL_memmove(
+                                kevin->frames, kevin->frames + 1L, (KEVIN_DELAY - 1L) * sizeof(struct KevinFrame)
+                            );
+
+                            if (object->values[VAL_PLAYER_KEVIN] < KEVIN_DELAY)
+                                if (++(object->values[VAL_PLAYER_KEVIN]) >= KEVIN_DELAY) {
+                                    struct GameObject* kpawn =
+                                        get_object(kevin->object = create_object(OBJ_KEVIN, kevin->frames[0].pos));
+                                    if (kpawn != NULL) {
+                                        kpawn->values[VAL_KEVIN_PLAYER] = object->values[VAL_PLAYER_INDEX];
+                                        play_sound_at_object(kpawn, "KEVINACT");
+                                    }
+                                }
+
+                            struct KevinFrame* kframe = &(kevin->frames[KEVIN_DELAY - 1L]);
+                            kframe->pos[0] = object->pos[0];
+                            kframe->pos[1] = object->pos[1];
+                            kframe->flipped = object->flags & FLG_X_FLIP;
+                            kframe->power = player->power;
+                            kframe->frame = get_player_frame(object);
+                        }
+                    }
+
                     bump_object(oid);
                     break;
                 }
@@ -2115,6 +2188,27 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                     object->values[VAL_PLAYER_EFFECT_ALPHA] = Fsub(object->values[VAL_PLAYER_EFFECT_ALPHA], 0x0009F600);
                     if (object->values[VAL_PLAYER_EFFECT_ALPHA] <= FxZero)
                         object->flags |= FLG_DESTROY;
+                    break;
+                }
+
+                case OBJ_KEVIN: {
+                    const struct GamePlayer* player = get_player(object->values[VAL_KEVIN_PLAYER]);
+                    if (player == NULL) {
+                        object->flags |= FLG_DESTROY;
+                        break;
+                    }
+
+                    const struct KevinFrame* kframe = &(player->kevin.frames[0]);
+                    move_object(oid, kframe->pos);
+                    if (kframe->flipped)
+                        object->flags |= FLG_X_FLIP;
+                    else
+                        object->flags &= ~FLG_X_FLIP;
+
+                    object->values[VAL_KEVIN_X_JITTER] = random() % 5L;
+                    object->values[VAL_KEVIN_X_JITTER] -= random() % 5L;
+                    object->values[VAL_KEVIN_Y_JITTER] = random() % 5L;
+                    object->values[VAL_KEVIN_Y_JITTER] -= random() % 5L;
                     break;
                 }
 
@@ -2782,6 +2876,26 @@ void draw_state() {
 
                 case OBJ_PLAYER_DEAD: {
                     draw_object(oid, "P_DEAD", 0, ALPHA(object->values[VAL_PLAYER_INDEX] != local_player ? 190 : 255));
+                    break;
+                }
+
+                case OBJ_KEVIN: {
+                    const struct GamePlayer* player = get_player(object->values[VAL_KEVIN_PLAYER]);
+                    if (player == NULL)
+                        break;
+
+                    const struct KevinFrame* kframe = &(player->kevin.frames[0]);
+                    const char* tex = get_player_texture(kframe->power, kframe->frame);
+                    const GLubyte a = (object->values[VAL_KEVIN_PLAYER] != local_player) ? 160 : 210;
+
+                    const struct InterpObject* smooth = &(interp[oid]);
+                    float pos[3] = {FtInt(smooth->pos[0]), FtInt(smooth->pos[1]), FtFloat(object->depth)};
+                    bool flip[2] = {object->flags & FLG_X_FLIP, false};
+
+                    draw_sprite(tex, pos, flip, 0, RGBA(80, 80, 80, a));
+                    pos[0] += (float)(object->values[VAL_KEVIN_X_JITTER]);
+                    pos[1] += (float)(object->values[VAL_KEVIN_Y_JITTER]);
+                    draw_sprite(tex, pos, flip, 0, RGBA(80, 80, 80, a * 0.75f));
                     break;
                 }
 
@@ -3648,6 +3762,7 @@ void load_object(enum GameObjectType type) {
 
             load_object(OBJ_PLAYER_EFFECT);
             load_object(OBJ_PLAYER_DEAD);
+            load_object(OBJ_KEVIN);
             load_object(OBJ_MISSILE_FIREBALL);
             load_object(OBJ_MISSILE_BEETROOT);
             load_object(OBJ_MISSILE_HAMMER);
@@ -3667,6 +3782,14 @@ void load_object(enum GameObjectType type) {
             load_track("GAMEOVER");
             load_track("WIN");
             load_track("WIN2");
+            break;
+        }
+
+        case OBJ_KEVIN: {
+            load_sound("KEVINACT");
+            load_sound("KEVINDIE");
+
+            load_object(OBJ_EXPLODE);
             break;
         }
 
@@ -3993,7 +4116,7 @@ struct GameObject* get_object(ObjectID index) {
 
 ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
     if (type == OBJ_NULL)
-        return -1L;
+        return NULLOBJ;
 
     ObjectID index = state.next_object;
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
@@ -4005,13 +4128,13 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
             object->type = type;
             object->flags = FLG_VISIBLE;
             object->previous = state.live_objects;
-            object->next = -1L;
+            object->next = NULLOBJ;
             if (object_is_alive(state.live_objects))
                 state.objects[state.live_objects].next = index;
             state.live_objects = index;
 
             object->block = -1L;
-            object->previous_block = object->next_block = -1L;
+            object->previous_block = object->next_block = NULLOBJ;
             move_object(index, pos);
 
             interp[index].type = type;
@@ -4046,9 +4169,9 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
 
                     object->values[VAL_PLAYER_INDEX] = -1L;
                     for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
-                        object->values[i] = -1L;
+                        object->values[i] = NULLOBJ;
                     for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END; i++)
-                        object->values[i] = -1L;
+                        object->values[i] = NULLOBJ;
                     break;
                 }
 
@@ -4056,6 +4179,18 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->depth = -FxOne;
 
                     object->values[VAL_PLAYER_INDEX] = -1L;
+                    break;
+                }
+
+                case OBJ_KEVIN: {
+                    object->depth = -FxOne;
+
+                    object->bbox[0][0] = FfInt(-9L);
+                    object->bbox[0][1] = FfInt(-25L);
+                    object->bbox[1][0] = FfInt(10L);
+                    object->bbox[1][1] = FxOne;
+
+                    object->values[VAL_KEVIN_PLAYER] = -1L;
                     break;
                 }
 
@@ -4154,7 +4289,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[0][0] = object->bbox[0][1] = FfInt(-7L);
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(8L);
 
-                    object->values[VAL_MISSILE_OWNER] = -1L;
+                    object->values[VAL_MISSILE_OWNER] = NULLOBJ;
                     break;
                 }
 
@@ -4164,7 +4299,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[1][0] = FfInt(11L);
                     object->bbox[1][1] = FfInt(15L);
 
-                    object->values[VAL_MISSILE_OWNER] = -1L;
+                    object->values[VAL_MISSILE_OWNER] = NULLOBJ;
                     break;
                 }
 
@@ -4175,7 +4310,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[1][0] = FfInt(12L);
                     object->bbox[1][1] = FxOne;
 
-                    object->values[VAL_MISSILE_OWNER] = -1L;
+                    object->values[VAL_MISSILE_OWNER] = NULLOBJ;
                     object->values[VAL_MISSILE_HITS] = 3L;
                     break;
                 }
@@ -4208,7 +4343,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[1][0] = FfInt(32L);
                     object->bbox[0][1] = FfInt(-8L);
 
-                    object->values[VAL_BLOCK_BUMP_OWNER] = -1L;
+                    object->values[VAL_BLOCK_BUMP_OWNER] = NULLOBJ;
                     break;
                 }
 
@@ -4236,7 +4371,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
                     object->bbox[0][0] = object->bbox[0][1] = FxOne;
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(30L);
 
-                    object->values[VAL_ROTODISC_OWNER] = -1L;
+                    object->values[VAL_ROTODISC_OWNER] = NULLOBJ;
                     break;
                 }
 
@@ -4274,7 +4409,7 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
         }
         index = (ObjectID)((index + 1L) % MAX_OBJECTS);
     }
-    return -1L;
+    return NULLOBJ;
 }
 
 void move_object(ObjectID index, const fvec2 pos) {
@@ -4304,7 +4439,7 @@ void move_object(ObjectID index, const fvec2 pos) {
 
     object->block = block;
     object->previous_block = state.blockmap[block];
-    object->next_block = -1L;
+    object->next_block = NULLOBJ;
     if (object_is_alive(state.blockmap[block]))
         state.objects[state.blockmap[block]].next_block = index;
     state.blockmap[block] = index;
@@ -4356,26 +4491,33 @@ void destroy_object(ObjectID index) {
 
         case OBJ_PLAYER_SPAWN: {
             if (state.spawn == index)
-                state.spawn = -1L;
+                state.spawn = NULLOBJ;
             break;
         }
 
         case OBJ_PLAYER: {
             struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
             if (player != NULL && player->object == index)
-                player->object = -1L;
+                player->object = NULLOBJ;
 
             for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++) {
                 struct GameObject* missile = get_object((ObjectID)(object->values[i]));
                 if (missile != NULL)
-                    missile->values[VAL_MISSILE_OWNER] = -1L;
+                    missile->values[VAL_MISSILE_OWNER] = NULLOBJ;
             }
             for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END; i++) {
                 struct GameObject* beetroot = get_object((ObjectID)(object->values[i]));
                 if (beetroot != NULL)
-                    beetroot->values[VAL_MISSILE_OWNER] = -1L;
+                    beetroot->values[VAL_MISSILE_OWNER] = NULLOBJ;
             }
 
+            break;
+        }
+
+        case OBJ_KEVIN: {
+            struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
+            if (player != NULL && player->kevin.object == index)
+                player->kevin.object = NULLOBJ;
             break;
         }
 
@@ -4386,7 +4528,7 @@ void destroy_object(ObjectID index) {
             if (owner != NULL && owner->type == OBJ_PLAYER)
                 for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
                     if (owner->values[i] == index) {
-                        owner->values[i] = -1L;
+                        owner->values[i] = NULLOBJ;
                         break;
                     }
             break;
@@ -4397,7 +4539,7 @@ void destroy_object(ObjectID index) {
             if (owner != NULL && owner->type == OBJ_PLAYER)
                 for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END; i++)
                     if (owner->values[i] == index) {
-                        owner->values[i] = -1L;
+                        owner->values[i] = NULLOBJ;
                         break;
                     }
             break;
@@ -4405,7 +4547,7 @@ void destroy_object(ObjectID index) {
 
         case OBJ_CHECKPOINT: {
             if (state.checkpoint == index)
-                state.checkpoint = -1L;
+                state.checkpoint = NULLOBJ;
             break;
         }
 
@@ -4417,7 +4559,7 @@ void destroy_object(ObjectID index) {
         case OBJ_ROTODISC: {
             struct GameObject* owner = get_object((ObjectID)(object->values[VAL_ROTODISC_OWNER]));
             if (owner != NULL && owner->type == OBJ_ROTODISC_BALL)
-                owner->values[VAL_ROTODISC] = -1L;
+                owner->values[VAL_ROTODISC] = NULLOBJ;
             break;
         }
     }
@@ -4442,8 +4584,8 @@ void destroy_object(ObjectID index) {
 }
 
 void draw_object(ObjectID oid, const char* tid, GLfloat angle, const GLubyte color[4]) {
-    struct GameObject* object = &(state.objects[oid]);
-    struct InterpObject* smooth = &(interp[oid]);
+    const struct GameObject* object = &(state.objects[oid]);
+    const struct InterpObject* smooth = &(interp[oid]);
     draw_sprite(
         tid,
         (float[3]){FtInt(smooth->pos[0]), FtInt(smooth->pos[1]) + object->values[VAL_SPROUT],
