@@ -517,6 +517,20 @@ void load_texture(const char* index) {
     glTexImage2D(GL_TEXTURE_2D, 0, format, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
     SDL_DestroySurface(surface);
 
+    file = find_file(file_pattern("data/textures/%s.json", index), NULL);
+    if (file != NULL) {
+        yyjson_doc* json =
+            yyjson_read_file(file, YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS, NULL, NULL);
+        if (json != NULL) {
+            yyjson_val* root = yyjson_doc_get_root(json);
+            if (yyjson_is_obj(root)) {
+                texture.offset[0] = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "x_offset"));
+                texture.offset[1] = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "y_offset"));
+            }
+            yyjson_doc_free(json);
+        }
+    }
+
     const StTinyKey key = StStrKey(index);
     StMapPut(textures, key, &texture, sizeof(texture));
     StMapLookup(textures, key)->cleanup = nuke_texture;
