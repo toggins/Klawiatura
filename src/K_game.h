@@ -287,7 +287,6 @@ struct GameState {
 
     fvec2 size;
     fvec2 bounds[2];
-    enum TrackIndices track;
 
     uint64_t time;
     uint32_t seed;

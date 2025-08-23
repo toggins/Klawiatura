@@ -1287,7 +1287,6 @@ void start_state(int num_players, int local) {
     state.size[1] = F_SCREEN_HEIGHT;
     state.bounds[1][0] = FfInt(2560L);
     state.bounds[1][1] = F_SCREEN_HEIGHT;
-    state.track = MUS_SNOW;
 
     state.spawn = state.checkpoint = -1L;
     state.water = FfInt(240L); // 0x7FFFFFFF;
@@ -1317,9 +1316,6 @@ void start_state(int num_players, int local) {
 
     load_sound(SND_HURRY);
     load_sound(SND_TICK);
-
-    if (state.track != MUS_NULL)
-        load_track(state.track);
 
     //
     //
@@ -1640,8 +1636,8 @@ void start_state(int num_players, int local) {
         respawn_player((int)i);
     }
 
-    if (state.track != MUS_NULL)
-        play_track(TS_LEVEL, state.track, true);
+    load_track(MUS_SNOW);
+    play_track(TS_LEVEL, MUS_SNOW, true);
 }
 
 uint32_t check_state() {
@@ -1688,7 +1684,6 @@ void dump_state() {
         "   Bounds: (%.2f, %.2f) x (%.2f, %.2f)", FtDouble(state.bounds[0][0]), FtDouble(state.bounds[0][1]),
         FtDouble(state.bounds[1][0]), FtDouble(state.bounds[1][1])
     );
-    INFO("  Track: %u", state.track);
     INFO("  Time: %zu", state.time);
     INFO("  Seed: %u", state.seed);
     INFO("  Clock: %u", state.clock);
@@ -2380,7 +2375,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                 }
 
                 case OBJ_BRICK_SHARD: {
-                    object->values[VAL_BRICK_SHARD_ANGLE] = Fadd(object->values[VAL_BRICK_SHARD_ANGLE], 0x00193333);
+                    object->values[VAL_BRICK_SHARD_ANGLE] = Fadd(object->values[VAL_BRICK_SHARD_ANGLE], 0x00007098);
 
                     object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
                     move_object(
