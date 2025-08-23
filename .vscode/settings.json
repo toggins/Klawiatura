@@ -6,6 +6,7 @@
     "clangd.enableCodeCompletion": true,
     "cmake.generator": "Ninja",
     "cmake.exportCompileCommandsFile": true,
+    "clangd.arguments": ["--header-insertion=never"],
     "files.exclude": {
         ".cache": true,
         ".build": true
@@ -15,6 +16,5 @@
     },
     "[cmake]": {
         "editor.defaultFormatter": "cheshirekow.cmake-format"
-    },
-    "clangd.arguments": ["--header-insertion=never"]
+    }
 }
