@@ -4,6 +4,9 @@
 #include <SDL3/SDL_timer.h>
 
 #define NUTPUNCH_IMPLEMENTATION
+#define NutPunch_Memcmp SDL_memcmp
+#define NutPunch_Memset SDL_memset
+#define NutPunch_Memcpy SDL_memcpy
 #include "nutpunch.h"
 
 #ifndef NUTPUNCH_WINDOSE
@@ -152,47 +155,58 @@ GekkoNetAdapter* nutpunch_init(int _num_players, const char* _server_ip, const c
     return &adapter;
 }
 
-int net_wait(GekkoSession* session) {
-    if (num_players <= 1) {
-        gekko_add_actor(session, LocalPlayer, NULL);
+int net_wait(int* _num_players) {
+    if (num_players <= 1)
         return 0;
-    }
 
     NutPunch_SetServerAddr(server_ip);
     NutPunch_Join(lobby_id);
-    INFO("About to punch your nuts... Lobby: '%s'", NutPunch_LobbyId);
+    NutPunch_Set("PLAYERS", sizeof(num_players), (char*)(&num_players));
+    INFO("Waiting in lobby \"%s\"...", NutPunch_LobbyId);
 
     for (;;) {
         SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            if (SDL_EVENT_QUIT == event.type) {
-                gekko_destroy(session);
-                session = NULL;
+        while (SDL_PollEvent(&event))
+            if (event.type == SDL_EVENT_QUIT)
                 exit(EXIT_SUCCESS);
+
+        switch (NutPunch_Query()) {
+            default:
+                break;
+
+            case NP_Status_Error:
+                FATAL("NutPunch_Query fail: %s", NutPunch_GetLastError());
+                break;
+
+            case NP_Status_Punched: {
+                int size = 0;
+                int* ptr = (int*)NutPunch_Get("PLAYERS", &size);
+                if (ptr != NULL && size >= sizeof(num_players)) {
+                    num_players = *_num_players = *ptr;
+                    if (num_players >= NutPunch_GetPeerCount()) {
+                        INFO("%i player start!", num_players);
+                        sock = NutPunch_Done();
+                        return NutPunch_LocalPeer();
+                    }
+                }
+                break;
             }
         }
 
-        if (NP_Status_Started == NutPunch_Query())
-            break;
-        if (NutPunch_GetPeerCount() >= num_players)
-            NutPunch_Start();
-
         SDL_Delay(1000 / 60);
     }
+}
 
-    sock = NutPunch_Done();
-    INFO("Nuts have been punched!");
-
+void net_fill(GekkoSession* session) {
     for (int i = 0; i < num_players; i++) {
         addrs[i].data = &NutPunch_GetPeers()[i];
         addrs[i].size = sizeof(struct NutPunch);
-        if (NutPunch_LocalPeer() == i)
+        if (i == NutPunch_LocalPeer()) {
             gekko_add_actor(session, LocalPlayer, NULL);
-        else
+            INFO("You are player %i", i);
+        } else
             gekko_add_actor(session, RemotePlayer, &addrs[i]);
     }
-
-    return NutPunch_LocalPeer();
 }
 
 void net_teardown() {

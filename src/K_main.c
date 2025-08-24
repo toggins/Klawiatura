@@ -61,6 +61,16 @@ int main(int argc, char** argv) {
     GekkoSession* session = NULL;
     if (!gekko_create(&session))
         FATAL("gekko_create fail");
+
+    GekkoNetAdapter* adapter = nutpunch_init(num_players, server_ip, lobby_id);
+    int local_player = net_wait(&num_players);
+    if (num_players > 1) {
+        load_sound("CONNECT");
+        play_sound("CONNECT");
+        load_sound("DCONNECT");
+        load_font(FNT_HUD);
+    }
+
     GekkoConfig config = {0};
     config.num_players = num_players;
     config.max_spectators = 0;
@@ -69,15 +79,10 @@ int main(int argc, char** argv) {
     config.input_size = sizeof(enum GameInput);
     config.desync_detection = true;
     gekko_start(session, &config);
-    gekko_net_adapter_set(session, nutpunch_init(num_players, server_ip, lobby_id));
-    int local_player = net_wait(session);
-    if (num_players > 1) {
+    gekko_net_adapter_set(session, adapter);
+    net_fill(session);
+    if (num_players > 1)
         gekko_set_local_delay(session, local_player, 2);
-        load_sound("CONNECT");
-        play_sound("CONNECT");
-        load_sound("DCONNECT");
-        load_font(FNT_HUD);
-    }
 
     enum GameInput inputs[MAX_PLAYERS] = {GI_NONE};
     start_state(num_players, local_player, start_flags);
