@@ -94,6 +94,10 @@ int main(int argc, char** argv) {
             switch (event.type) {
                 default:
                     break;
+                case SDL_EVENT_WINDOW_MOVED:
+                case SDL_EVENT_WINDOW_RESIZED:
+                    last_time = SDL_GetTicks();
+                    break;
                 case SDL_EVENT_QUIT:
                     goto teardown;
             }
