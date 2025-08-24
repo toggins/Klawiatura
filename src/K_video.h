@@ -100,7 +100,7 @@ struct TileBatch {
 };
 
 void video_init(bool);
-void video_update();
+void video_update(const char*);
 void video_teardown();
 
 void move_camera(float, float);
