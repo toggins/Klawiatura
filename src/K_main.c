@@ -50,25 +50,27 @@ int main(int argc, char** argv) {
     video_init(bypass_shader);
     audio_init();
 
+    GekkoSession* session = NULL;
+    if (!gekko_create(&session))
+        FATAL("gekko_create fail");
+
+    GekkoNetAdapter* adapter = nutpunch_init(num_players, server_ip, lobby_id);
+    int local_player = net_wait(&num_players, &start_flags);
+    if ((num_players <= 0 || num_players > MAX_PLAYERS) || (local_player < 0 || local_player >= MAX_PLAYERS))
+        FATAL("Don't think I didn't see you trying to set invalid player indices! I'll kick your ass!");
+    if (num_players > 1) {
+        load_sound("CONNECT");
+        play_sound("CONNECT");
+        load_sound("DCONNECT");
+        load_font(FNT_HUD);
+    }
+
     if (start_flags & GF_KEVIN) {
         load_sound("KEVINON");
         play_sound("KEVINON");
         INFO("\n==================================");
         INFO("Kevin Mode activated. Good luck...");
         INFO("==================================\n");
-    }
-
-    GekkoSession* session = NULL;
-    if (!gekko_create(&session))
-        FATAL("gekko_create fail");
-
-    GekkoNetAdapter* adapter = nutpunch_init(num_players, server_ip, lobby_id);
-    int local_player = net_wait(&num_players);
-    if (num_players > 1) {
-        load_sound("CONNECT");
-        play_sound("CONNECT");
-        load_sound("DCONNECT");
-        load_font(FNT_HUD);
     }
 
     GekkoConfig config = {0};

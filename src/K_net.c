@@ -155,13 +155,14 @@ GekkoNetAdapter* nutpunch_init(int _num_players, const char* _server_ip, const c
     return &adapter;
 }
 
-int net_wait(int* _num_players) {
+int net_wait(int* _num_players, enum GameFlags* _start_flags) {
     if (num_players <= 1)
         return 0;
 
     NutPunch_SetServerAddr(server_ip);
     NutPunch_Join(lobby_id);
-    NutPunch_Set("PLAYERS", sizeof(num_players), (char*)(&num_players));
+    NutPunch_Set("PLAYERS", sizeof(int), (char*)(&num_players));
+    NutPunch_Set("FLAGS", sizeof(enum GameFlags), (char*)(&_start_flags));
     INFO("Waiting in lobby \"%s\"...", NutPunch_LobbyId);
 
     for (;;) {
@@ -179,14 +180,19 @@ int net_wait(int* _num_players) {
                 break;
 
             case NP_Status_Punched: {
-                int size, *ptr = (int*)NutPunch_Get("PLAYERS", &size);
-                if (ptr != NULL && size == sizeof(num_players)) {
-                    num_players = *_num_players = *ptr;
-                    if (NutPunch_GetPeerCount() >= num_players) {
-                        INFO("%i player start!", num_players);
-                        sock = NutPunch_Done();
-                        return NutPunch_LocalPeer();
-                    }
+                int size;
+                int* pplayers = (int*)NutPunch_Get("PLAYERS", &size);
+                if (pplayers != NULL && size == sizeof(int))
+                    num_players = *_num_players = *pplayers;
+
+                enum GameFlags* pflags = (enum GameFlags*)NutPunch_Get("FLAGS", &size);
+                if (pflags != NULL && size == sizeof(enum GameFlags))
+                    *_start_flags = *pflags;
+
+                if (NutPunch_GetPeerCount() >= num_players) {
+                    INFO("%i player start!", num_players);
+                    sock = NutPunch_Done();
+                    return NutPunch_LocalPeer();
                 }
                 break;
             }
@@ -197,6 +203,11 @@ int net_wait(int* _num_players) {
 }
 
 void net_fill(GekkoSession* session) {
+    if (num_players <= 1) {
+        gekko_add_actor(session, LocalPlayer, NULL);
+        return;
+    }
+
     for (int i = 0; i < num_players; i++) {
         addrs[i].data = &NutPunch_GetPeers()[i];
         addrs[i].size = sizeof(struct NutPunch);
