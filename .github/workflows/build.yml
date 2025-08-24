@@ -19,7 +19,7 @@ jobs:
             runner-os: windows-latest
             bin-ext: .exe
     env:
-      OUTFILE: Klawiatura-${{ matrix.config.os-name }}-${{ github.ref_name }}.zip
+      OUTFILE: Klawiatura-${{ matrix.config.os-name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}.zip
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,7 +60,7 @@ jobs:
           files: ${{ env.OUTFILE }}
       - name: Release (dev)
         uses: softprops/action-gh-release@v2
-        if: github.ref_type == 'branch'
+        if: github.ref_name == 'master'
         with:
           tag_name: dev
           files: ${{ env.OUTFILE }}
