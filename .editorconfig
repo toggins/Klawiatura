@@ -13,8 +13,5 @@ indent_size = 4
 [{CMakeLists.txt,*.cmake}]
 indent_size = 4
 
-[*.yml]
-indent_size = 2
-
-[.clang*]
+[{*.yml,.clang*}]
 indent_size = 2

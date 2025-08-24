@@ -117,8 +117,8 @@ add_executable(Klawiatura ${SOURCES} ${HEADERS}
 target_include_directories(Klawiatura PRIVATE ${SOURCE_DIR})
 target_link_libraries(Klawiatura PRIVATE ${LIBS})
 target_compile_definitions(Klawiatura PUBLIC -D_POSIX_C_SOURCE=200112L)
-if(MSVC AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo)
-    target_compile_options(GekkoNet PUBLIC /fsanitize=address)
+if(MSVC AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo) # you're sus my guy...
+    target_compile_options(GekkoNet PRIVATE /fsanitize=address)
 endif()
 
 add_custom_command(

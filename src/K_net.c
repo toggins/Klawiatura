@@ -179,11 +179,10 @@ int net_wait(int* _num_players) {
                 break;
 
             case NP_Status_Punched: {
-                int size = 0;
-                int* ptr = (int*)NutPunch_Get("PLAYERS", &size);
-                if (ptr != NULL && size >= sizeof(num_players)) {
+                int size, *ptr = (int*)NutPunch_Get("PLAYERS", &size);
+                if (ptr != NULL && size == sizeof(num_players)) {
                     num_players = *_num_players = *ptr;
-                    if (num_players >= NutPunch_GetPeerCount()) {
+                    if (NutPunch_GetPeerCount() >= num_players) {
                         INFO("%i player start!", num_players);
                         sock = NutPunch_Done();
                         return NutPunch_LocalPeer();
