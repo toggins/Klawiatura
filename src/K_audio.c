@@ -258,6 +258,11 @@ void play_sound_at(const char* index, float x, float y) {
     state.next_sound = (state.next_sound + 1) % MAX_SOUNDS;
 }
 
+void stop_all_sounds() {
+    FMOD_ChannelGroup_Stop(state_group);
+    FMOD_ChannelGroup_Stop(music_group);
+}
+
 void play_track(enum TrackSlots slot, const char* index, bool loop) {
     const struct Track* mus = get_track(index);
     if (mus == NULL) {

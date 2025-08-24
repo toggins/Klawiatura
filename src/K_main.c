@@ -71,24 +71,31 @@ int main(int argc, char** argv) {
     gekko_start(session, &config);
     gekko_net_adapter_set(session, nutpunch_init(num_players, server_ip, lobby_id));
     int local_player = net_wait(session);
-    if (num_players > 1)
+    if (num_players > 1) {
         gekko_set_local_delay(session, local_player, 2);
+        load_sound("CONNECT");
+        play_sound("CONNECT");
+        load_sound("DCONNECT");
+        load_font(FNT_HUD);
+    }
 
     enum GameInput inputs[MAX_PLAYERS] = {GI_NONE};
     start_state(num_players, local_player, start_flags);
 
+    bool success = true;
+    char errmsg[1024] = "No errors detected.";
+
     uint64_t last_time = SDL_GetTicks();
     float ticks = 0;
-    bool running = true;
-    while (running) {
+
+    while (true) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
                 default:
                     break;
                 case SDL_EVENT_QUIT:
-                    running = false;
-                    break;
+                    goto teardown;
             }
         }
 
@@ -132,11 +139,17 @@ int main(int argc, char** argv) {
                         case DesyncDetected: {
                             dump_state();
                             struct Desynced desync = event->data.desynced;
-                            FATAL(
-                                "DESYNC!!! f:%d, rh:%d, lc:%u, rc:%u", desync.frame, desync.remote_handle,
-                                desync.local_checksum, desync.remote_checksum
+                            INFO(
+                                "OOPS: Out of sync with player %d (tick %d, l %u != r %u)", desync.remote_handle,
+                                desync.frame, desync.local_checksum, desync.remote_checksum
                             );
-                            break;
+                            SDL_snprintf(
+                                errmsg, sizeof(errmsg),
+                                "Failed to sync with player %d.\nThe game has now stopped and dumped its state.",
+                                desync.remote_handle
+                            );
+                            success = false;
+                            goto teardown;
                         }
 
                         case PlayerConnected: {
@@ -147,8 +160,13 @@ int main(int argc, char** argv) {
 
                         case PlayerDisconnected: {
                             struct Disconnected disconnect = event->data.disconnected;
-                            FATAL("Player %i disconnected", disconnect.handle);
-                            break;
+                            INFO("OOPS: Player %i disconnected", disconnect.handle);
+                            SDL_snprintf(
+                                errmsg, sizeof(errmsg), "Lost connection to player %i.\nThe game has now stopped.",
+                                disconnect.handle
+                            );
+                            success = false;
+                            goto teardown;
                         }
                     }
                 }
@@ -196,12 +214,35 @@ int main(int argc, char** argv) {
         }
 
         interp_update(ticks);
-        video_update();
+        video_update(NULL);
         audio_update();
     }
 
+teardown:
     gekko_destroy(session);
     session = NULL;
+
+    if (!success) {
+        stop_all_sounds();
+        play_sound("DCONNECT");
+        SDL_Event event;
+
+        bool running = true;
+        while (running) {
+            while (SDL_PollEvent(&event)) {
+                switch (event.type) {
+                    default:
+                        break;
+                    case SDL_EVENT_QUIT:
+                        running = false;
+                        break;
+                }
+            }
+
+            video_update(errmsg);
+            audio_update();
+        }
+    }
 
     net_teardown();
     video_teardown();
