@@ -26,7 +26,7 @@ static void send_data(GekkoNetAddress* addr, const char* data, int len) {
 
     struct NutPunch* peer = (struct NutPunch*)addr->data;
     if (sock == INVALID_SOCKET) {
-        INFO("Socket died!!!");
+        // INFO("Socket died!!!");
         peer->port = 0;
         return;
     }
@@ -66,12 +66,12 @@ static GekkoNetResult** receive_data(int* length) {
     if (num_players == 1)
         return NULL;
     if (sock == INVALID_SOCKET) {
-        INFO("Socket died!!! Catching on fire NOW!!");
+        // INFO("Socket died!!! Catching on fire NOW!!");
         return NULL;
     }
 
-    NutPunch_Query(); // just in case.....
-    static char data[512000] = {0};
+    NutPunch_Query();               // just in case.....
+    static char data[512000] = {0}; // larger than SaveState for leeway
 
     static GekkoNetResult* results[64] = {0};
     *length = 0;
@@ -89,7 +89,7 @@ static GekkoNetResult** receive_data(int* length) {
             INFO("Failed to receive from socket (%d)\n", WSAGetLastError());
             closesocket(sock);
             sock = INVALID_SOCKET;
-            continue;
+            break;
         }
         if (io <= 0 || io > sizeof(data))
             continue;
