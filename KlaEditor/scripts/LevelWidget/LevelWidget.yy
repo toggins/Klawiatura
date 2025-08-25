@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"LevelWidget",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"LevelWidget",
+  "parent":{
+    "name":"Widgets",
+    "path":"folders/Scripts/Widgets.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

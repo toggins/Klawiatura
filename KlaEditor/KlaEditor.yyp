@@ -55,6 +55,7 @@
     {"id":{"name":"kla_folders","path":"scripts/kla_folders/kla_folders.yy",},},
     {"id":{"name":"kla_level","path":"scripts/kla_level/kla_level.yy",},},
     {"id":{"name":"kla_sprites","path":"scripts/kla_sprites/kla_sprites.yy",},},
+    {"id":{"name":"LevelWidget","path":"scripts/LevelWidget/LevelWidget.yy",},},
     {"id":{"name":"load_editor","path":"scripts/load_editor/load_editor.yy",},},
     {"id":{"name":"load_json","path":"scripts/load_json/load_json.yy",},},
     {"id":{"name":"load_level","path":"scripts/load_level/load_level.yy",},},

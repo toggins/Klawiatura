@@ -55,7 +55,7 @@ function FolderWidget(_x, _y, _folder) : Widget(_x, _y) constructor {
 			y: _yy,
 			widget: _widget,
 		}, function () {
-			// TODO
+			widget.link_widget(new LevelWidget(widget.width + 2, y))
 		})))
 		
 		_yy += 33

@@ -18,6 +18,13 @@ if grid_size > 1 {
 	draw_set_alpha(1)
 }
 
+with global.level {
+	draw_set_alpha(0.5)
+	draw_rectangle(0, 0, size[0], size[1], true)
+	draw_rectangle(bounds[0], bounds[1], bounds[2], bounds[3], true)
+	draw_set_alpha(1)
+}
+
 var _highlighted = global.highlighted
 if instance_exists(_highlighted) {
 	with _highlighted {
