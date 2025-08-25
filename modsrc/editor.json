@@ -9,54 +9,63 @@
                         {
                             "def": "Grass TL",
                             "type": "backdrop",
+                            "z": 20,
                             "texture": "T_GRASSA"
                         },
 
                         {
                             "def": "Grass T",
                             "type": "backdrop",
+                            "z": 20,
                             "texture": "T_GRASSB"
                         },
 
                         {
                             "def": "Grass TR",
                             "type": "backdrop",
+                            "z": 20,
                             "texture": "T_GRASSC"
                         },
 
                         {
                             "def": "Grass ML",
                             "type": "backdrop",
+                            "z": 20,
                             "texture": "T_GRASSD"
                         },
 
                         {
                             "def": "Grass M",
                             "type": "backdrop",
+                            "z": 20,
                             "texture": "T_GRASSE"
                         },
 
                         {
                             "def": "Grass MR",
                             "type": "backdrop",
+                            "z": 20,
                             "texture": "T_GRASSF"
                         },
 
                         {
                             "def": "Grass BL",
                             "type": "backdrop",
+                            "z": 20,
                             "texture": "T_GRASSG"
                         },
 
                         {
                             "def": "Grass B",
                             "type": "backdrop",
+                            "z": 20,
                             "texture": "T_GRASSH"
                         },
 
                         {
                             "def": "Grass BR",
                             "type": "backdrop",
+                            "z": 20,
                             "texture": "T_GRASSI"
                         }
                     ]
@@ -85,6 +94,7 @@
                     "def": "Player",
                     "type": "object",
                     "index": 5,
+                    "z": -1,
                     "texture": "M_PLAYER",
                     "flags": [
                         {

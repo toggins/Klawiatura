@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"InputElement",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"InputElement",
+  "parent":{
+    "name":"Elements",
+    "path":"folders/Scripts/Widgets/Elements.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

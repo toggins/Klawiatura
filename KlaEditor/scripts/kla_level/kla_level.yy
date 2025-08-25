@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"kla_level",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"kla_level",
+  "parent":{
+    "name":"Level",
+    "path":"folders/Scripts/Level.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -24,6 +24,7 @@ global.data_path = _data_path
 load_editor()
 
 global.last_name = "UNTITLED.kla"
+global.last_path = _data_path
 
 global.widget = undefined
 global.widget_step = false
@@ -31,6 +32,9 @@ global.element_focus = undefined
 global.override_element_focus = false
 
 global.def = undefined
+
+update_highlight = false
+highlight_list = ds_list_create()
 global.highlighted = noone
 
 blueprint = -1

@@ -34,7 +34,7 @@ function FolderWidget(_x, _y, _folder) : Widget(_x, _y) constructor {
 				widget.link_widget(new FolderWidget(widget.width + 2, y, item))
 			} else {
 				global.def = item
-				// global.grid_size = content.grid_size
+				global.last_folder = widget.folder
 				widget.close()
 			}
 		})))
@@ -55,7 +55,7 @@ function FolderWidget(_x, _y, _folder) : Widget(_x, _y) constructor {
 			y: _yy,
 			widget: _widget,
 		}, function () {
-			//widget.link_widget(new ConfirmNewWidget(widget.width + 2, y))
+			// TODO
 		})))
 		
 		_yy += 33
@@ -64,15 +64,15 @@ function FolderWidget(_x, _y, _folder) : Widget(_x, _y) constructor {
 			y: _yy,
 			widget: _widget,
 		}, function () {
-			//widget.link_widget(new ConfirmNewWidget(widget.width + 2, y))
+			widget.link_widget(new ConfirmNewWidget(widget.width + 2, y))
 		})))
 		
 		add_element(new ButtonElement(8, _yy + 22, "Open", function () {
-			//load_level(get_open_filename_ext("Klawiatura Level File|*.kla", global.last_name, global.data_path, "Open..."))
+			load_level(get_open_filename_ext("Klawiatura Level File|*.kla", global.last_name, global.last_path, "Open..."))
 		}))
 		
 		add_element(new ButtonElement(8, _yy + 44, "Save", function () {
-			//save_level(get_save_filename_ext("Klawiatura Level File|*.kla", global.last_name, global.data_path, "Save As..."))
+			save_level(get_save_filename_ext("Klawiatura Level File|*.kla", global.last_name, global.last_path, "Save As..."))
 		}))
 	}
 }

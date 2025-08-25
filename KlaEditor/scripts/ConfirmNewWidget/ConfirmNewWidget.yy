@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ConfirmNewWidget",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ConfirmNewWidget",
+  "parent":{
+    "name":"Widgets",
+    "path":"folders/Scripts/Widgets.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

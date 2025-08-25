@@ -13,6 +13,7 @@ if _widget != undefined {
 		_element_focus.tick()
 	
 	global.widget_step = true
+	exit
 }
 
 if keyboard_check(vk_f1) {
@@ -33,8 +34,8 @@ if keyboard_check(vk_shift) {
 	cursor_x = mouse_x
 	cursor_y = mouse_y
 } else {
-	cursor_x = round(mouse_x / grid_size) * grid_size
-	cursor_y = round(mouse_y / grid_size) * grid_size
+	cursor_x = floor(mouse_x / grid_size) * grid_size
+	cursor_y = floor(mouse_y / grid_size) * grid_size
 }
 
 if mouse_check_button_pressed(mb_middle) {
@@ -82,3 +83,5 @@ if keyboard_check_pressed(ord("G"))
 
 if keyboard_check_pressed(vk_space)
 	global.widget = new FolderWidget(window_mouse_get_x(), window_mouse_get_y(), global.root_folder)
+else if keyboard_check_pressed(ord("Q")) and global.last_folder != undefined
+	global.widget = new FolderWidget(window_mouse_get_x(), window_mouse_get_y(), global.last_folder)

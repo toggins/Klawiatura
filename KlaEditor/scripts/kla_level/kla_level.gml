@@ -1,0 +1,1 @@
+global.markers = ds_list_create()

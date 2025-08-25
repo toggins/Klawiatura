@@ -13,6 +13,8 @@ if _widget != undefined {
 } else {
 	draw_text(16, 16, $"X: {cursor_x}\nY: {cursor_y}\n{round((1 / zoom) * 100)}%")
 	_indicators = "[Space] Menu"
+	if global.last_folder != undefined
+	_indicators += "\n[Q] Open Last Folder"
 	_indicators += "\n[Shift] Unsnap Cursor (Hold)"
 	_indicators += $"\n[G] Grid Size ({grid_size})"
 	_indicators += "\n[R] Reset View"
