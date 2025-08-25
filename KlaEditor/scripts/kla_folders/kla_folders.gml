@@ -1,0 +1,1 @@
+global.root_folder = undefined

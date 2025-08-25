@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"force_type_fallback",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"force_type_fallback",
+  "parent":{
+    "name":"Scripts",
+    "path":"folders/Scripts.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

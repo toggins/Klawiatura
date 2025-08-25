@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"FolderWidget",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"FolderWidget",
+  "parent":{
+    "name":"Widgets",
+    "path":"folders/Scripts/Widgets.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

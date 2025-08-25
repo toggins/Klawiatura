@@ -1,0 +1,1 @@
+global.sprites = ds_map_create();

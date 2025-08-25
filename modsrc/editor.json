@@ -1,98 +1,89 @@
-[
-    [
-        {
-            "type": "folder",
-            "name": "Tiles",
-            "items": [
-                {
-                    "type": "folder",
-                    "name": "Grass",
-                    "items": [
+{
+    "defs": [
+        [
+            "Tiles",
+            [
+                [
+                    "Grass",
+                    [
                         {
-                            "type": "tile",
-                            "name": "Grass TL",
+                            "def": "Grass TL",
+                            "type": "backdrop",
                             "texture": "T_GRASSA"
                         },
 
                         {
-                            "type": "tile",
-                            "name": "Grass T",
+                            "def": "Grass T",
+                            "type": "backdrop",
                             "texture": "T_GRASSB"
                         },
 
                         {
-                            "type": "tile",
-                            "name": "Grass TR",
+                            "def": "Grass TR",
+                            "type": "backdrop",
                             "texture": "T_GRASSC"
                         },
 
                         {
-                            "type": "tile",
-                            "name": "Grass ML",
+                            "def": "Grass ML",
+                            "type": "backdrop",
                             "texture": "T_GRASSD"
                         },
 
                         {
-                            "type": "tile",
-                            "name": "Grass M",
+                            "def": "Grass M",
+                            "type": "backdrop",
                             "texture": "T_GRASSE"
                         },
 
                         {
-                            "type": "tile",
-                            "name": "Grass MR",
+                            "def": "Grass MR",
+                            "type": "backdrop",
                             "texture": "T_GRASSF"
                         },
 
                         {
-                            "type": "tile",
-                            "name": "Grass BL",
+                            "def": "Grass BL",
+                            "type": "backdrop",
                             "texture": "T_GRASSG"
                         },
 
                         {
-                            "type": "tile",
-                            "name": "Grass B",
+                            "def": "Grass B",
+                            "type": "backdrop",
                             "texture": "T_GRASSH"
                         },
 
                         {
-                            "type": "tile",
-                            "name": "Grass BR",
+                            "def": "Grass BR",
+                            "type": "backdrop",
                             "texture": "T_GRASSI"
                         }
                     ]
-                }
+                ]
             ]
-        },
+        ],
 
-        {
-            "type": "folder",
-            "name": "Scenery",
-            "items": []
-        },
-
-        {
-            "type": "folder",
-            "name": "Markers",
-            "items": [
+        [
+            "Markers",
+            [
                 {
+                    "def": "Solid",
                     "type": "object",
-                    "name": "Solid",
                     "index": 1,
                     "texture": "M_SOLID"
                 },
 
                 {
+                    "def": "Solid Top",
                     "type": "object",
-                    "name": "Solid Top",
                     "index": 2,
                     "texture": "M_SOLIDT"
                 },
 
                 {
+                    "def": "Player",
                     "type": "object",
-                    "name": "Player",
                     "index": 5,
                     "texture": "M_PLAYER",
                     "flags": [
@@ -103,18 +94,6 @@
                     ]
                 }
             ]
-        },
-
-        {
-            "type": "folder",
-            "name": "Items",
-            "items": []
-        },
-
-        {
-            "type": "folder",
-            "name": "Enemies",
-            "items": []
-        }
+        ]
     ]
-]
+}

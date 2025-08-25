@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BackdropDef",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BackdropDef",
+  "parent":{
+    "name":"Defs",
+    "path":"folders/Scripts/Defs.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

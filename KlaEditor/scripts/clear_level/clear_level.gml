@@ -1,0 +1,1 @@
+function clear_level() {}

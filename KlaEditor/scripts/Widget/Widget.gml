@@ -37,17 +37,19 @@ function Widget(_x, _y) constructor {
 			else
 				return false
 		}
+		
 		if not handle_close()
 			return false
-		
 		if parent != undefined and parent.child == self
 			parent.child = undefined
+		
 		if global.widget == self
 			global.widget = undefined
 		
-		var _item_focus = global.item_focus
-		if _item_focus != undefined and _item_focus.widget == self
-			global.item_focus = undefined
+		var _element_focus = global.element_focus
+		if _element_focus != undefined and _element_focus.widget == self {
+			global.element_focus = undefined
+		}
 		
 		return true
 	}
@@ -78,19 +80,21 @@ function Widget(_x, _y) constructor {
 			}
 			
 			var i = 0
-			repeat array_length(elements)
+			repeat array_length(elements) {
 				with elements[i++] {
 					var _x1 = x + _x
 					var _y1 = y + _y
+					
 					if point_in_rectangle(_mx, _my, _x1, _y1, _x1 + width, _y1 + height) {
 						on_click()
-						if global.override_item_focus
-							global.override_item_focus = false
+						if global.override_element_focus
+							global.override_element_focus = false
 						else
-							global.item_focus = self
+							global.element_focus = self
 						other.clicked = true
 					}
 				}
+			}
 		} else {
 			clicked = false
 		}
@@ -99,8 +103,8 @@ function Widget(_x, _y) constructor {
 	static draw = function (_x, _y) {
 		_x += x
 		_y += y
-		
 		draw_rectangle_color(_x, _y, _x + width, _y + height, c_dkgray, c_dkgray, c_dkgray, c_dkgray, false)
+		
 		var i = 0
 		repeat array_length(elements)
 			elements[i++].draw(_x, _y)
@@ -110,6 +114,6 @@ function Widget(_x, _y) constructor {
 	}
 
 	static indicators = function (_str) {
-		return _str + "\n[RMB] Move Window (Hold)"
+		return _str + "\n[RMB] Move Widget (Hold)"
 	}
 }

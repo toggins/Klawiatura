@@ -1,13 +1,8 @@
 function load_editor() {
-	var _editor_file = global.data_path + "editor.json"
-	if not file_exists(_editor_file)
-		return false
+	var _json = force_type(load_json(global.data_path + "editor.json"), "struct")
+	var _defs = force_type(_json[$ "defs"], "array")
+	var _root_folder = global.root_folder ?? new Folder("")
 	
-	var _json = load_json(_editor_file)
-	if not is_struct(_json)
-		return false
-	
-	
-	
-	return true
+	_root_folder.add_items(_defs)
+	global.root_folder = _root_folder
 }

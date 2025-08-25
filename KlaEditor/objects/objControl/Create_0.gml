@@ -21,13 +21,17 @@ if _save {
 }
 
 global.data_path = _data_path
-if not load_editor() {
-	show_message("Failed to load editor.json!")
-	game_end(1)
-	exit
-}
+load_editor()
+
+global.last_name = "UNTITLED.kla"
 
 global.widget = undefined
+global.widget_step = false
+global.element_focus = undefined
+global.override_element_focus = false
+
+global.def = undefined
+global.highlighted = noone
 
 blueprint = -1
 blueprint_path = _data_path

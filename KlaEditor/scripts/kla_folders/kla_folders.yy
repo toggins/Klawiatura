@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"kla_folders",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"kla_folders",
+  "parent":{
+    "name":"Folders",
+    "path":"folders/Scripts/Folders.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

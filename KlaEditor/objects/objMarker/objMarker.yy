@@ -28,8 +28,8 @@
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"sprMarker",
-    "path":"sprites/sprMarker/sprMarker.yy",
+    "name":"sprEmpty",
+    "path":"sprites/sprEmpty/sprEmpty.yy",
   },
   "spriteMaskId":null,
   "visible":true,

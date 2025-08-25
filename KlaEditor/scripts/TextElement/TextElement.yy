@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"TextElement",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"TextElement",
+  "parent":{
+    "name":"Elements",
+    "path":"folders/Scripts/Widgets/Elements.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
