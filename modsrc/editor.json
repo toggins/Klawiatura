@@ -1,0 +1,120 @@
+[
+    [
+        {
+            "type": "folder",
+            "name": "Tiles",
+            "items": [
+                {
+                    "type": "folder",
+                    "name": "Grass",
+                    "items": [
+                        {
+                            "type": "tile",
+                            "name": "Grass TL",
+                            "texture": "T_GRASSA"
+                        },
+
+                        {
+                            "type": "tile",
+                            "name": "Grass T",
+                            "texture": "T_GRASSB"
+                        },
+
+                        {
+                            "type": "tile",
+                            "name": "Grass TR",
+                            "texture": "T_GRASSC"
+                        },
+
+                        {
+                            "type": "tile",
+                            "name": "Grass ML",
+                            "texture": "T_GRASSD"
+                        },
+
+                        {
+                            "type": "tile",
+                            "name": "Grass M",
+                            "texture": "T_GRASSE"
+                        },
+
+                        {
+                            "type": "tile",
+                            "name": "Grass MR",
+                            "texture": "T_GRASSF"
+                        },
+
+                        {
+                            "type": "tile",
+                            "name": "Grass BL",
+                            "texture": "T_GRASSG"
+                        },
+
+                        {
+                            "type": "tile",
+                            "name": "Grass B",
+                            "texture": "T_GRASSH"
+                        },
+
+                        {
+                            "type": "tile",
+                            "name": "Grass BR",
+                            "texture": "T_GRASSI"
+                        }
+                    ]
+                }
+            ]
+        },
+
+        {
+            "type": "folder",
+            "name": "Scenery",
+            "items": []
+        },
+
+        {
+            "type": "folder",
+            "name": "Markers",
+            "items": [
+                {
+                    "type": "object",
+                    "name": "Solid",
+                    "index": 1,
+                    "texture": "M_SOLID"
+                },
+
+                {
+                    "type": "object",
+                    "name": "Solid Top",
+                    "index": 2,
+                    "texture": "M_SOLIDT"
+                },
+
+                {
+                    "type": "object",
+                    "name": "Player",
+                    "index": 5,
+                    "texture": "M_PLAYER",
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 4
+                        }
+                    ]
+                }
+            ]
+        },
+
+        {
+            "type": "folder",
+            "name": "Items",
+            "items": []
+        },
+
+        {
+            "type": "folder",
+            "name": "Enemies",
+            "items": []
+        }
+    ]
+]

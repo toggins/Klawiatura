@@ -1,3 +1,9 @@
+var _widget = global.widget
+if _widget != undefined {
+	_widget.tick(0, 0)
+	exit
+}
+
 if keyboard_check(vk_f1) {
 	var _file = get_open_filename_ext("All files|*.*", "", blueprint_path, "Open blueprint image");
 	

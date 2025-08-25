@@ -17,7 +17,7 @@ var _y2 = _y + _h
 
 if grid_size > 1 {
 	draw_set_color(c_black)
-	draw_set_alpha(0.25)
+	draw_set_alpha(0.2)
 	for (var i = floor(_x / grid_size) * grid_size; i <= _x2; i += grid_size)
 		draw_line(i, _y - grid_size, i, _y2 + grid_size)
 	for (var i = floor(_y / grid_size) * grid_size; i <= _y2; i += grid_size)

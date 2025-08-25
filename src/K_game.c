@@ -95,6 +95,7 @@ static void give_points(struct GameObject* item, int pid, int points) {
 static bool is_solid(ObjectID oid, bool ignore_full, bool ignore_top) {
     switch (state.objects[oid].type) {
         case OBJ_SOLID:
+        case OBJ_SOLID_SLOPE:
         case OBJ_ITEM_BLOCK:
         case OBJ_BRICK_BLOCK:
         case OBJ_BRICK_BLOCK_COIN:
@@ -2021,13 +2022,13 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                                 case OBJ_MISSILE_FIREBALL: {
                                                     missile->flags |= object->flags & FLG_X_FLIP;
                                                     missile->values[VAL_X_SPEED] =
-                                                        (object->flags & FLG_X_FLIP) ? -0x0007C000 : 0x0007C000;
+                                                        (object->flags & FLG_X_FLIP) ? -0x00082000 : 0x00082000;
                                                     break;
                                                 }
 
                                                 case OBJ_MISSILE_BEETROOT: {
                                                     missile->values[VAL_X_SPEED] =
-                                                        (object->flags & FLG_X_FLIP) ? -0x00026000 : 0x00026000;
+                                                        (object->flags & FLG_X_FLIP) ? -0x00022000 : 0x00022000;
                                                     missile->values[VAL_Y_SPEED] = FfInt(-5);
                                                     break;
                                                 }
@@ -4144,6 +4145,13 @@ ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
             switch (type) {
                 default:
                     break;
+
+                case OBJ_SOLID:
+                case OBJ_SOLID_TOP:
+                case OBJ_SOLID_SLOPE: {
+                    object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
+                    break;
+                }
 
                 case OBJ_CLOUD:
                 case OBJ_BUSH:

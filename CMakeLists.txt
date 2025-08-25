@@ -62,7 +62,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/include/fmod)
 set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 FetchContent_Declare(
     GekkoNet GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG e12c0089b5541c3e07a38c4085363211e341af2f)
+    GIT_TAG cc7318f8088ce2561f3adcb055f3d09a2e919f76)
 FetchContent_MakeAvailable(GekkoNet)
 
 # S_fixed
@@ -87,12 +87,13 @@ set(NUTPUNCH_BUILD_SERVER OFF CACHE INTERNAL "")
 
 FetchContent_Declare(
     nutpunch GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG 4d848139f6942697e14afda1b1163464680fce4d)
+    GIT_TAG 941032e71d2986133309b6386d9993c85b5400ad)
 FetchContent_MakeAvailable(nutpunch)
 
 # yyjson (0.12.0)
-FetchContent_Declare(yyjson GIT_REPOSITORY https://github.com/ibireme/yyjson.git
-                     GIT_TAG 0.12.0)
+FetchContent_Declare(
+    yyjson GIT_REPOSITORY https://github.com/ibireme/yyjson.git
+    GIT_TAG 0.12.0)
 FetchContent_MakeAvailable(yyjson)
 
 set(LIBS

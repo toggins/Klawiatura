@@ -36,9 +36,7 @@ enum GameObjectType {
 
     OBJ_SOLID,
     OBJ_SOLID_TOP,
-    OBJ_CLOUD,
-    OBJ_BUSH,
-    OBJ_BUSH_SNOW,
+    OBJ_SOLID_SLOPE,
     OBJ_PLAYER_SPAWN,
     OBJ_PLAYER,
     OBJ_PLAYER_EFFECT,
@@ -108,6 +106,9 @@ enum GameObjectType {
     OBJ_PSWITCH,
     OBJ_PSWITCH_COIN,
     OBJ_PSWITCH_BRICK,
+    OBJ_CLOUD,
+    OBJ_BUSH,
+    OBJ_BUSH_SNOW,
 
     OBJ_SIZE,
 };
