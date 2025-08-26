@@ -29,7 +29,29 @@
 #define F_HALF_SCREEN_WIDTH Fhalf(F_SCREEN_WIDTH)
 #define F_HALF_SCREEN_HEIGHT Fhalf(F_SCREEN_HEIGHT)
 
+typedef uint8_t Bool;
+
 typedef int16_t ObjectID;
+
+enum GameFlags {
+    GF_HURRY = 1 << 0,
+    GF_END = 1 << 1,
+    GF_SCROLL = 1 << 2,
+    GF_LAVA = 1 << 3,
+    GF_HARDCORE = 1 << 4,
+    GF_SPIKES = 1 << 5,
+    GF_FUNNY = 1 << 6,
+    GF_LOST = 1 << 7,
+    GF_KEVIN = 1 << 8,
+};
+typedef uint16_t GameFlags;
+
+enum GameSequenceType {
+    SEQ_NONE,
+    SEQ_LOSE,
+    SEQ_WIN,
+};
+typedef uint8_t GameSequenceType;
 
 enum GameObjectType {
     OBJ_NULL,
@@ -112,6 +134,7 @@ enum GameObjectType {
 
     OBJ_SIZE,
 };
+typedef uint16_t GameObjectType;
 
 enum ObjectValues {
     VAL_X_SPEED,
@@ -199,6 +222,7 @@ enum ObjectValues {
 
     VAL_PSWITCH = VAL_START,
 };
+typedef uint8_t ObjectValues;
 
 enum ObjectFlags {
     FLG_VISIBLE = 1 << 0,
@@ -232,6 +256,17 @@ enum ObjectFlags {
 
     FLG_PSWITCH_ONCE = 1 << 5,
 };
+typedef uint32_t ObjectFlags;
+
+enum PlayerPowers {
+    POW_SMALL,
+    POW_BIG,
+    POW_FIRE,
+    POW_BEETROOT,
+    POW_LUI,
+    POW_HAMMER,
+};
+typedef uint8_t PlayerPowers;
 
 enum PlayerFrames {
     PF_IDLE,
@@ -252,6 +287,7 @@ enum PlayerFrames {
     PF_GROW3,
     PF_GROW4,
 };
+typedef uint8_t PlayerFrames;
 
 enum GameInput {
     GI_NONE = 0,
@@ -263,48 +299,32 @@ enum GameInput {
     GI_RUN = 1 << 5,
     GI_FIRE = 1 << 6,
 };
+typedef uint8_t GameInput;
 
 struct GameState {
     struct GamePlayer {
-        bool active;
-        enum GameInput input, last_input;
+        Bool active;
+        GameInput input, last_input;
 
         ObjectID object;
         fvec2 bounds[2];
 
         uint8_t lives, coins;
         uint32_t score;
-        enum PlayerPowers {
-            POW_SMALL,
-            POW_BIG,
-            POW_FIRE,
-            POW_BEETROOT,
-            POW_LUI,
-            POW_HAMMER,
-        } power;
+        int32_t power;
 
         struct Kevin {
             ObjectID object;
             struct KevinFrame {
                 fvec2 pos;
-                bool flipped;
-                enum PlayerPowers power;
-                enum PlayerFrames frame;
+                Bool flipped;
+                PlayerPowers power;
+                PlayerFrames frame;
             } frames[KEVIN_DELAY];
         } kevin;
     } players[MAX_PLAYERS];
 
-    enum GameFlags {
-        GF_HURRY = 1 << 0,
-        GF_END = 1 << 1,
-        GF_SCROLL = 1 << 2,
-        GF_LAVA = 1 << 3,
-        GF_HARDCORE = 1 << 4,
-        GF_SPIKES = 1 << 5,
-        GF_FUNNY = 1 << 6,
-        GF_LOST = 1 << 7,
-        GF_KEVIN = 1 << 8,
-    } flags;
+    GameFlags flags;
 
     fvec2 size;
     fvec2 bounds[2];
@@ -319,17 +339,13 @@ struct GameState {
     uint16_t pswitch;
 
     struct GameSequence {
-        enum GameSequenceType {
-            SEQ_NONE,
-            SEQ_LOSE,
-            SEQ_WIN,
-        } type;
+        GameSequenceType type;
         uint16_t time;
         int activator;
     } sequence;
 
     struct GameObject {
-        enum GameObjectType type;
+        GameObjectType type;
         ObjectID previous, next;
 
         int32_t block;
@@ -352,25 +368,25 @@ struct SaveState {
 };
 
 struct InterpObject {
-    enum GameObjectType type;
+    GameObjectType type;
     fvec2 from, to;
     fvec2 pos;
 };
 
-void start_state(int, int, enum GameFlags);
+void start_state(int, int, GameFlags);
 void save_state(struct GameState*);
 void load_state(const struct GameState*);
 uint32_t check_state();
 void dump_state();
-void tick_state(enum GameInput[MAX_PLAYERS]);
+void tick_state(GameInput[MAX_PLAYERS]);
 void draw_state();
 void draw_state_hud();
 
-void load_object(enum GameObjectType);
+void load_object(GameObjectType);
 
-bool object_is_alive(ObjectID);
+Bool object_is_alive(ObjectID);
 struct GameObject* get_object(ObjectID);
-ObjectID create_object(enum GameObjectType, const fvec2);
+ObjectID create_object(GameObjectType, const fvec2);
 void move_object(ObjectID, const fvec2);
 
 struct BlockList {

@@ -13,7 +13,7 @@ static struct InterpObject interp[MAX_OBJECTS] = {0};
 
    ==== */
 
-static ObjectID find_object(enum GameObjectType type) {
+static ObjectID find_object(GameObjectType type) {
     ObjectID oid = state.live_objects;
     while (oid >= 0L) {
         const struct GameObject* object = &(state.objects[oid]);
@@ -92,7 +92,7 @@ static void give_points(struct GameObject* item, int pid, int points) {
     }
 }
 
-static bool is_solid(ObjectID oid, bool ignore_full, bool ignore_top) {
+static Bool is_solid(ObjectID oid, Bool ignore_full, Bool ignore_top) {
     switch (state.objects[oid].type) {
         case OBJ_SOLID:
         case OBJ_SOLID_SLOPE:
@@ -108,7 +108,7 @@ static bool is_solid(ObjectID oid, bool ignore_full, bool ignore_top) {
     }
 }
 
-static bool touching_solid(const fvec2 rect[2]) {
+static Bool touching_solid(const fvec2 rect[2]) {
     int bx1 = Fsub(rect[0][0], BLOCK_SIZE) / BLOCK_SIZE;
     int by1 = Fsub(rect[0][1], BLOCK_SIZE) / BLOCK_SIZE;
     int bx2 = Fadd(rect[1][0], BLOCK_SIZE) / BLOCK_SIZE;
@@ -177,7 +177,7 @@ static struct GamePlayer* get_owner(ObjectID oid) {
     return get_player(get_owner_id(oid));
 }
 
-static void bump_block(struct GameObject* block, ObjectID from, bool strong) {
+static void bump_block(struct GameObject* block, ObjectID from, Bool strong) {
     if ((block->flags & FLG_BLOCK_EMPTY) ||
         (object_is_alive(from) && state.objects[from].type == OBJ_PLAYER && block->values[VAL_BLOCK_BUMP] > 0L))
         return;
@@ -188,7 +188,7 @@ static void bump_block(struct GameObject* block, ObjectID from, bool strong) {
 
         case OBJ_ITEM_BLOCK:
         case OBJ_BRICK_BLOCK_COIN: {
-            bool is_powerup = false;
+            Bool is_powerup = false;
             switch (block->values[VAL_BLOCK_ITEM]) {
                 default:
                     break;
@@ -328,7 +328,7 @@ static void bottom_check(ObjectID self_id, ObjectID other_id) {
     }
 }
 
-static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
+static void displace_object(ObjectID did, fix16_t climb, Bool unstuck) {
     struct GameObject* displacee = get_object(did);
     if (displacee == NULL)
         return;
@@ -348,10 +348,10 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
                    {Fadd(x, displacee->bbox[1][0]), Fadd(y, displacee->bbox[1][1])},
                }
     );
-    bool climbed = false;
+    Bool climbed = false;
 
     if (list.num_objects > 0L) {
-        bool stop = false;
+        Bool stop = false;
         if (displacee->values[VAL_X_SPEED] < FxZero) {
             for (size_t i = 0; i < list.num_objects; i++) {
                 const ObjectID oid = list.objects[i];
@@ -428,7 +428,7 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
     );
 
     if (list.num_objects > 0L) {
-        bool stop = false;
+        Bool stop = false;
         if (displacee->values[VAL_Y_SPEED] < FxZero) {
             for (size_t i = 0; i < list.num_objects; i++) {
                 const ObjectID oid = list.objects[i];
@@ -455,7 +455,7 @@ static void displace_object(ObjectID did, fix16_t climb, bool unstuck) {
                 stop = true;
                 top_check(oid, did);
             }
-            displacee->values[VAL_Y_TOUCH] = stop;
+            displacee->values[VAL_Y_TOUCH] = (fix16_t)stop;
         }
 
         if (stop)
@@ -537,7 +537,7 @@ static void kill_player(struct GameObject* pawn) {
             player->kevin.object = NULLOBJ;
         }
 
-        bool all_dead = true;
+        Bool all_dead = true;
         if (state.sequence.type == SEQ_NONE && state.clock != 0L)
             for (size_t i = 0; i < MAX_PLAYERS; i++)
                 if (state.players[i].lives > 0L) {
@@ -554,7 +554,7 @@ static void kill_player(struct GameObject* pawn) {
     }
 }
 
-static bool hit_player(struct GameObject* pawn) {
+static Bool hit_player(struct GameObject* pawn) {
     if (state.sequence.type == SEQ_WIN || pawn->values[VAL_PLAYER_FLASH] > 0L || pawn->values[VAL_PLAYER_STARMAN] > 0L)
         return false;
 
@@ -573,7 +573,7 @@ static bool hit_player(struct GameObject* pawn) {
     return true;
 }
 
-static bool bump_check(ObjectID self_id, ObjectID other_id) {
+static Bool bump_check(ObjectID self_id, ObjectID other_id) {
     struct GameObject* self = &(state.objects[self_id]);
     switch (self->type) {
         default:
@@ -941,7 +941,7 @@ static void bump_object(ObjectID bid) {
         }
 }
 
-static enum PlayerFrames get_player_frame(const struct GameObject* object) {
+static PlayerFrames get_player_frame(const struct GameObject* object) {
     if (object->values[VAL_PLAYER_POWER] > 0L) {
         const struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
         switch (player == NULL ? POW_SMALL : player->power) {
@@ -1013,7 +1013,7 @@ static enum PlayerFrames get_player_frame(const struct GameObject* object) {
     return PF_IDLE;
 }
 
-static const char* get_player_texture(enum PlayerPowers power, enum PlayerFrames frame) {
+static const char* get_player_texture(PlayerPowers power, PlayerFrames frame) {
     switch (power) {
         default:
         case POW_SMALL: {
@@ -1247,7 +1247,7 @@ static const char* get_player_texture(enum PlayerPowers power, enum PlayerFrames
     }
 }
 
-static bool in_any_view(struct GameObject* object, fix16_t padding, bool ignore_top) {
+static Bool in_any_view(struct GameObject* object, fix16_t padding, Bool ignore_top) {
     const fix16_t sx1 = Fadd(object->pos[0], object->bbox[0][0]);
     const fix16_t sy1 = Fadd(object->pos[1], object->bbox[0][1]);
     const fix16_t sx2 = Fadd(object->pos[0], object->bbox[1][0]);
@@ -1278,7 +1278,7 @@ static bool in_any_view(struct GameObject* object, fix16_t padding, bool ignore_
     return false;
 }
 
-static bool in_player_view(struct GameObject* object, int pid, fix16_t padding, bool ignore_top) {
+static Bool in_player_view(struct GameObject* object, int pid, fix16_t padding, Bool ignore_top) {
     const struct GamePlayer* player = get_player(pid);
     if (player == NULL || !(player->active) || !object_is_alive(player->object))
         return false;
@@ -1303,7 +1303,7 @@ static bool in_player_view(struct GameObject* object, int pid, fix16_t padding, 
     return sx1 < ox2 && sx2 > ox1 && sy1 < oy2 && (ignore_top || sy2 > oy1);
 }
 
-static bool below_frame(struct GameObject* object) {
+static Bool below_frame(struct GameObject* object) {
     return Fadd(object->pos[1], object->bbox[0][1]) > state.size[1];
 }
 
@@ -1313,7 +1313,7 @@ static bool below_frame(struct GameObject* object) {
 
    ====== */
 
-void start_state(int num_players, int local, enum GameFlags flags) {
+void start_state(int num_players, int local, GameFlags flags) {
     local_player = local;
 
     SDL_memset(&state, 0, sizeof(state));
@@ -1769,7 +1769,7 @@ void dump_state() {
     // TODO: Dump blockmap
 }
 
-void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
+void tick_state(GameInput inputs[MAX_PLAYERS]) {
     for (size_t i = 0; i < MAX_PLAYERS; i++) {
         struct GamePlayer* player = &(state.players[i]);
         player->last_input = player->input;
@@ -1798,8 +1798,8 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         object->values[VAL_X_SPEED] = 0x00028000;
                     }
 
-                    const bool cant_run = !(player->input & GI_RUN) || object->pos[1] >= state.water;
-                    const bool jumped = (player->input & GI_JUMP) && !(player->last_input & GI_JUMP);
+                    const Bool cant_run = !(player->input & GI_RUN) || object->pos[1] >= state.water;
+                    const Bool jumped = (player->input & GI_JUMP) && !(player->last_input & GI_JUMP);
 
                     if ((player->input & GI_RIGHT) && object->values[VAL_X_TOUCH] <= 0L &&
                         !(object->flags & FLG_PLAYER_DUCK) && object->values[VAL_X_SPEED] >= FxZero &&
@@ -1924,7 +1924,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                         object->values[VAL_PLAYER_GROUND] = 2L;
 
                     if (object->values[VAL_Y_TOUCH] <= 0L) {
-                        const bool carried = object->flags & FLG_CARRIED;
+                        const Bool carried = object->flags & FLG_CARRIED;
                         if (object->pos[1] >= state.water) {
                             if (object->values[VAL_Y_SPEED] > FfInt(3L) && !carried) {
                                 object->values[VAL_Y_SPEED] = Fmin(Fsub(object->values[VAL_Y_SPEED], FxOne), FfInt(3L));
@@ -1981,7 +1981,7 @@ void tick_state(enum GameInput inputs[MAX_PLAYERS]) {
                                 !(object->flags & FLG_PLAYER_DUCK))
                                 for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
                                     if (!object_is_alive((ObjectID)(object->values[i]))) {
-                                        enum GameObjectType mtype;
+                                        GameObjectType mtype;
                                         switch (player->power) {
                                             default:
                                                 mtype = OBJ_NULL;
@@ -3646,7 +3646,7 @@ void draw_state_hud() {
         draw_text(FNT_HUD, FA_CENTER, (state.clock == 0) ? "TIME UP" : "GAME OVER", (float[3]){320, 224, 0});
 }
 
-void load_object(enum GameObjectType type) {
+void load_object(GameObjectType type) {
     switch (type) {
         default:
             break;
@@ -4107,7 +4107,7 @@ void load_object(enum GameObjectType type) {
     }
 }
 
-bool object_is_alive(ObjectID index) {
+Bool object_is_alive(ObjectID index) {
     return index >= 0L && index < MAX_OBJECTS && state.objects[index].type != OBJ_NULL;
 }
 
@@ -4115,7 +4115,7 @@ struct GameObject* get_object(ObjectID index) {
     return object_is_alive(index) ? &(state.objects[index]) : NULL;
 }
 
-ObjectID create_object(enum GameObjectType type, const fvec2 pos) {
+ObjectID create_object(GameObjectType type, const fvec2 pos) {
     if (type == OBJ_NULL)
         return NULLOBJ;
 

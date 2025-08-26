@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     int num_players = 1;
     char* server_ip = "95.163.233.200"; // Public NutPunch server
     char* lobby_id = "Klawiatura";
-    enum GameFlags start_flags = 0;
+    GameFlags start_flags = 0;
     for (size_t i = 0; i < argc; i++) {
         if (SDL_strcmp(argv[i], "-bypass_shader") == 0) {
             bypass_shader = true;
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
     config.max_spectators = 0;
     config.input_prediction_window = 8;
     config.state_size = sizeof(struct SaveState);
-    config.input_size = sizeof(enum GameInput);
+    config.input_size = sizeof(GameInput);
     config.desync_detection = true;
     gekko_start(session, &config);
     gekko_net_adapter_set(session, adapter);
@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
     if (num_players > 1)
         gekko_set_local_delay(session, local_player, 2);
 
-    enum GameInput inputs[MAX_PLAYERS] = {GI_NONE};
+    GameInput inputs[MAX_PLAYERS] = {GI_NONE};
     start_state(num_players, local_player, start_flags);
 
     bool success = true;
@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
             interp_start();
 
             while (ticks >= frame_time) {
-                enum GameInput input = GI_NONE;
+                GameInput input = GI_NONE;
                 const bool* keyboard = SDL_GetKeyboardState(NULL);
                 if (keyboard[SDL_SCANCODE_UP])
                     input |= GI_UP;
@@ -210,7 +210,7 @@ int main(int argc, char** argv) {
 
                         case AdvanceEvent: {
                             for (size_t j = 0; j < num_players; j++)
-                                inputs[j] = ((enum GameInput*)(event->data.adv.inputs))[j];
+                                inputs[j] = ((GameInput*)(event->data.adv.inputs))[j];
                             tick_state(inputs);
                             tick_audio_state();
                             break;

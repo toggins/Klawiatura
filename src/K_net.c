@@ -155,14 +155,14 @@ GekkoNetAdapter* nutpunch_init(int _num_players, const char* _server_ip, const c
     return &adapter;
 }
 
-int net_wait(int* _num_players, enum GameFlags* _start_flags) {
+int net_wait(int* _num_players, GameFlags* _start_flags) {
     if (num_players <= 1)
         return 0;
 
     NutPunch_SetServerAddr(server_ip);
     NutPunch_Join(lobby_id);
     NutPunch_Set("PLAYERS", sizeof(int), (char*)(&num_players));
-    NutPunch_Set("FLAGS", sizeof(enum GameFlags), (char*)(&_start_flags));
+    NutPunch_Set("FLAGS", sizeof(GameFlags), (char*)(&_start_flags));
     INFO("Waiting in lobby \"%s\"...", NutPunch_LobbyId);
 
     for (;;) {
@@ -185,8 +185,8 @@ int net_wait(int* _num_players, enum GameFlags* _start_flags) {
                 if (pplayers != NULL && size == sizeof(int))
                     num_players = *_num_players = *pplayers;
 
-                enum GameFlags* pflags = (enum GameFlags*)NutPunch_Get("FLAGS", &size);
-                if (pflags != NULL && size == sizeof(enum GameFlags))
+                GameFlags* pflags = (GameFlags*)NutPunch_Get("FLAGS", &size);
+                if (pflags != NULL && size == sizeof(GameFlags))
                     *_start_flags = *pflags;
 
                 if (NutPunch_GetPeerCount() >= num_players) {
