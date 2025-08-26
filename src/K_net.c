@@ -17,14 +17,14 @@
 #include "K_log.h"
 #include "K_net.h"
 
-static int num_players = 1;
+static int32_t num_players = 1;
 static const char* server_ip = NULL;
 static const char* lobby_id = NULL;
 static SOCKET sock = INVALID_SOCKET;
 static GekkoNetAddress addrs[MAX_PLAYERS] = {0};
 
 static void send_data(GekkoNetAddress* addr, const char* data, int len) {
-    if (num_players == 1)
+    if (num_players <= 1)
         return;
 
     struct NutPunch* peer = (struct NutPunch*)addr->data;
@@ -155,13 +155,13 @@ GekkoNetAdapter* nutpunch_init(int _num_players, const char* _server_ip, const c
     return &adapter;
 }
 
-int net_wait(int* _num_players, GameFlags* _start_flags) {
+PlayerID net_wait(int32_t* _num_players, GameFlags* _start_flags) {
     if (num_players <= 1)
         return 0;
 
     NutPunch_SetServerAddr(server_ip);
     NutPunch_Join(lobby_id);
-    NutPunch_Set("PLAYERS", sizeof(int), (char*)(&num_players));
+    NutPunch_Set("PLAYERS", sizeof(int32_t), (char*)(&num_players));
     NutPunch_Set("FLAGS", sizeof(GameFlags), (char*)(&_start_flags));
     INFO("Waiting in lobby \"%s\"...", NutPunch_LobbyId);
 
@@ -181,8 +181,8 @@ int net_wait(int* _num_players, GameFlags* _start_flags) {
 
             case NP_Status_Punched: {
                 int size;
-                int* pplayers = (int*)NutPunch_Get("PLAYERS", &size);
-                if (pplayers != NULL && size == sizeof(int))
+                int32_t* pplayers = (int32_t*)NutPunch_Get("PLAYERS", &size);
+                if (pplayers != NULL && size == sizeof(int32_t))
                     num_players = *_num_players = *pplayers;
 
                 GameFlags* pflags = (GameFlags*)NutPunch_Get("FLAGS", &size);

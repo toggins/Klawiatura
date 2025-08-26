@@ -7,5 +7,5 @@
 
 GekkoNetAdapter* nutpunch_init(int, const char*, const char*);
 void net_teardown();
-int net_wait(int*, GameFlags*);
+PlayerID net_wait(int32_t*, GameFlags*);
 void net_fill(GekkoSession*);

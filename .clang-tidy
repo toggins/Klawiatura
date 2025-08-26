@@ -5,4 +5,5 @@ Checks: |
   -bugprone-easily-swappable-parameters,
   -bugprone-reserved-identifier,
   performance-*,
-  -performance-no-int-to-ptr,portability-*,
+  -performance-no-int-to-ptr,
+  portability-*,

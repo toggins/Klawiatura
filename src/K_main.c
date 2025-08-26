@@ -25,7 +25,7 @@
 
 int main(int argc, char** argv) {
     bool bypass_shader = false;
-    int num_players = 1;
+    int32_t num_players = 1;
     char* server_ip = "95.163.233.200"; // Public NutPunch server
     char* lobby_id = "Klawiatura";
     GameFlags start_flags = 0;
@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
         FATAL("gekko_create fail");
 
     GekkoNetAdapter* adapter = nutpunch_init(num_players, server_ip, lobby_id);
-    int local_player = net_wait(&num_players, &start_flags);
+    PlayerID local_player = net_wait(&num_players, &start_flags);
     if ((num_players <= 0 || num_players > MAX_PLAYERS) || (local_player < 0 || local_player >= MAX_PLAYERS))
         FATAL("Don't think I didn't see you trying to set invalid player indices! I'll kick your ass!");
     if (num_players > 1) {

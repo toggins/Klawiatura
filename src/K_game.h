@@ -31,6 +31,7 @@
 
 typedef uint8_t Bool;
 
+typedef int32_t PlayerID;
 typedef int16_t ObjectID;
 
 enum GameFlags {
@@ -341,7 +342,7 @@ struct GameState {
     struct GameSequence {
         GameSequenceType type;
         uint16_t time;
-        int activator;
+        PlayerID activator;
     } sequence;
 
     struct GameObject {
@@ -373,7 +374,7 @@ struct InterpObject {
     fvec2 pos;
 };
 
-void start_state(int, int, GameFlags);
+void start_state(int, PlayerID, GameFlags);
 void save_state(struct GameState*);
 void load_state(const struct GameState*);
 uint32_t check_state();
