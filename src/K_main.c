@@ -54,10 +54,10 @@ int main(int argc, char** argv) {
     if (!gekko_create(&session))
         FATAL("gekko_create fail");
 
-    GekkoNetAdapter* adapter = nutpunch_init(num_players, server_ip, lobby_id);
+    GekkoNetAdapter* adapter = net_init(num_players, server_ip, lobby_id);
     PlayerID local_player = net_wait(&num_players, &start_flags);
     if ((num_players <= 0 || num_players > MAX_PLAYERS) || (local_player < 0 || local_player >= MAX_PLAYERS))
-        FATAL("Don't think I didn't see you trying to set invalid player indices! I'll kick your ass!");
+        FATAL("Don't think I didn't see you trying to set invalid player indices!! I'll kick your ass!!");
     if (num_players > 1) {
         load_sound("CONNECT");
         play_sound("CONNECT");
@@ -117,6 +117,7 @@ int main(int argc, char** argv) {
         ticks += (float)(current_time - last_time) / 1000.0f;
         last_time = current_time;
 
+        net_update();
         gekko_network_poll(session);
 
         if (ticks >= frame_time) {

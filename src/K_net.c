@@ -20,6 +20,7 @@
 static int32_t num_players = 1;
 static const char* server_ip = NULL;
 static const char* lobby_id = NULL;
+
 static SOCKET sock = INVALID_SOCKET;
 static GekkoNetAddress addrs[MAX_PLAYERS] = {0};
 
@@ -66,16 +67,10 @@ static GekkoNetResult* make_result(int peer_idx, const char* data, int io) {
 }
 
 static GekkoNetResult** receive_data(int* length) {
-    if (num_players == 1)
+    if (num_players <= 1 || sock == INVALID_SOCKET)
         return NULL;
-    if (sock == INVALID_SOCKET) {
-        // INFO("Socket died!!! Catching on fire NOW!!");
-        return NULL;
-    }
 
-    NutPunch_Query();               // just in case.....
-    static char data[512000] = {0}; // larger than SaveState for leeway
-
+    static char data[sizeof(struct SaveState)] = {0};
     static GekkoNetResult* results[64] = {0};
     *length = 0;
 
@@ -102,7 +97,7 @@ static GekkoNetResult** receive_data(int* length) {
             if (NutPunch_LocalPeer() == i || !peer->port)
                 continue;
 
-            bool same_host = !SDL_memcmp(&base_addr.sin_addr, peer->addr, 4);
+            bool same_host = SDL_memcmp(&base_addr.sin_addr, peer->addr, 4) == 0;
             bool same_port = base_addr.sin_port == htons(peer->port);
             if (!same_host || !same_port)
                 continue;
@@ -143,7 +138,7 @@ static GekkoNetResult** receive_data(int* length) {
     return results;
 }
 
-GekkoNetAdapter* nutpunch_init(int _num_players, const char* _server_ip, const char* _lobby_id) {
+GekkoNetAdapter* net_init(int _num_players, const char* _server_ip, const char* _lobby_id) {
     num_players = _num_players;
     server_ip = _server_ip;
     lobby_id = _lobby_id;
@@ -163,7 +158,7 @@ PlayerID net_wait(int32_t* _num_players, GameFlags* _start_flags) {
     NutPunch_Join(lobby_id);
     NutPunch_Set("PLAYERS", sizeof(int32_t), (char*)(&num_players));
     NutPunch_Set("FLAGS", sizeof(GameFlags), (char*)(&_start_flags));
-    INFO("Waiting in lobby \"%s\"...", NutPunch_LobbyId);
+    INFO("Waiting in lobby \"%s\"... (FLAG: %d)", NutPunch_LobbyId, *_start_flags);
 
     for (;;) {
         SDL_Event event;
@@ -182,12 +177,16 @@ PlayerID net_wait(int32_t* _num_players, GameFlags* _start_flags) {
             case NP_Status_Punched: {
                 int size;
                 int32_t* pplayers = (int32_t*)NutPunch_Get("PLAYERS", &size);
-                if (pplayers != NULL && size == sizeof(int32_t))
+                if (pplayers != NULL && size == sizeof(int32_t)) {
                     num_players = *_num_players = *pplayers;
+                    INFO("PLAYERS: %d", *_num_players);
+                }
 
                 GameFlags* pflags = (GameFlags*)NutPunch_Get("FLAGS", &size);
-                if (pflags != NULL && size == sizeof(GameFlags))
+                if (pflags != NULL && size == sizeof(GameFlags)) {
                     *_start_flags = *pflags;
+                    INFO("FLAGS: %d", *_start_flags);
+                }
 
                 if (NutPunch_GetPeerCount() >= num_players) {
                     INFO("%i player start!", num_players);
@@ -198,7 +197,7 @@ PlayerID net_wait(int32_t* _num_players, GameFlags* _start_flags) {
             }
         }
 
-        SDL_Delay(1000 / 60);
+        SDL_Delay(1000 / TICKRATE);
     }
 }
 
@@ -214,9 +213,14 @@ void net_fill(GekkoSession* session) {
         if (i == NutPunch_LocalPeer()) {
             gekko_add_actor(session, LocalPlayer, NULL);
             INFO("You are player %i", i);
-        } else
+        } else {
             gekko_add_actor(session, RemotePlayer, &addrs[i]);
+        }
     }
+}
+
+void net_update() {
+    NutPunch_Query();
 }
 
 void net_teardown() {
