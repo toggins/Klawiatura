@@ -16,6 +16,9 @@ if _widget != undefined {
 	exit
 }
 
+if keyboard_check(vk_f5) and show_question("Reload editor?\nAll unsaved progress will be lost!")
+	load_editor()
+
 if keyboard_check(vk_f1) {
 	var _file = get_open_filename_ext("All files|*.*", "", blueprint_path, "Open blueprint image");
 	

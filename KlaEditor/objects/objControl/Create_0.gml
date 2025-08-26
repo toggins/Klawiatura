@@ -49,6 +49,8 @@ zoom = 1
 
 cursor_x = 0
 cursor_y = 0
+highlight_x = 0
+highlight_y = 0
 grid_size = 32
 
 application_surface_enable(false)

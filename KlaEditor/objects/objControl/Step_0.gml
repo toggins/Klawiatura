@@ -7,9 +7,12 @@ if global.widget_step {
 
 if keyboard_check(vk_control) {
 	global.highlighted = noone
-} else if update_highlight or mouse_x != cursor_x or mouse_y != cursor_y {
+} else if update_highlight or mouse_x != highlight_x or mouse_y != highlight_y {
+	highlight_x = mouse_x
+	highlight_y = mouse_y
+	
 	var _highlighted = noone
-	var n = instance_position_list(cursor_x, cursor_y, objMarker, highlight_list, false)
+	var n = instance_position_list(highlight_x, highlight_y, objMarker, highlight_list, false)
 	if n {
 		var _def = global.def
 		var _def_type = _def == undefined ? undefined : instanceof(_def)

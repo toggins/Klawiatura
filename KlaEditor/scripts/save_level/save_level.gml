@@ -1,1 +1,73 @@
-function save_level(_filename) {}
+function save_level(_filename) {
+	if _filename == ""
+		exit
+	
+	var _kla = buffer_create(1, buffer_grow, 1)
+	
+	// Header
+	buffer_write_char(_kla, "Klawiatura", 10) // char[10]
+	buffer_write(_kla, buffer_u8, MAJOR_FILE_VERSION) // uint8_t
+	buffer_write(_kla, buffer_u8, MINOR_FILE_VERSION) // uint8_t
+	
+	// Level
+	with global.level {
+		buffer_write_char(_kla, name, 32) // char[32]
+		buffer_write_char(_kla, texture, 8) // char[8]
+		buffer_write_char(_kla, next, 8) // char[8]
+		buffer_write_char(_kla, track[0], 8) // char[8]
+		buffer_write_char(_kla, track[1], 8) // char[8]
+		buffer_write(_kla, buffer_u16, flags) // uint16_t
+		buffer_write(_kla, buffer_s32, round(size[0] * 65536)) // int32_t (Q16.16)
+		buffer_write(_kla, buffer_s32, round(size[1] * 65536)) // int32_t (Q16.16)
+		buffer_write(_kla, buffer_s32, round(bounds[0] * 65536)) // int32_t (Q16.16)
+		buffer_write(_kla, buffer_s32, round(bounds[1] * 65536)) // int32_t (Q16.16)
+		buffer_write(_kla, buffer_s32, round(bounds[2] * 65536)) // int32_t (Q16.16)
+		buffer_write(_kla, buffer_s32, round(bounds[3] * 65536)) // int32_t (Q16.16)
+		buffer_write(_kla, buffer_s32, time) // int32_t
+		buffer_write(_kla, buffer_s32, round(water * 65536)) // int32_t (Q16.16)
+		buffer_write(_kla, buffer_s32, round(hazard * 65536)) // int32_t (Q16.16)
+	}
+	
+	// Markers
+	var _markers = global.markers
+	var n = ds_list_size(_markers)
+	buffer_write(_kla, buffer_u32, n) // uint32_t
+	
+	var i = 0
+	repeat n
+		with _markers[| i++] {
+			buffer_write(_kla, buffer_string, def.name)
+			if is_instanceof(def, BackdropDef) {
+				buffer_write(_kla, buffer_u8, DefTypes.BACKDROP)
+				buffer_write_char(_kla, def.sprite_name, 8)
+				buffer_write(_kla, buffer_s32, round(x * 65536)) // int32_t (Q16.16)
+				buffer_write(_kla, buffer_s32, round(y * 65536)) // int32_t (Q16.16)
+				buffer_write(_kla, buffer_s32, round(depth * 65536)) // int32_t (Q16.16)
+				buffer_write(_kla, buffer_s32, round(image_xscale * 65536)) // int32_t (Q16.16)
+				buffer_write(_kla, buffer_s32, round(image_yscale * 65536)) // int32_t (Q16.16)
+				buffer_write(_kla, buffer_u8, color_get_red(image_blend)) // uint8_t
+				buffer_write(_kla, buffer_u8, color_get_green(image_blend)) // uint8_t
+				buffer_write(_kla, buffer_u8, color_get_blue(image_blend)) // uint8_t
+				buffer_write(_kla, buffer_u8, round(image_alpha * 255)) // uint8_t
+			} else if is_instanceof(def, ObjectDef) {
+				buffer_write(_kla, buffer_u8, DefTypes.OBJECT)
+				buffer_write(_kla, buffer_u16, def.index)
+				buffer_write(_kla, buffer_s32, round(x * 65536)) // int32_t (Q16.16)
+				buffer_write(_kla, buffer_s32, round(y * 65536)) // int32_t (Q16.16)
+				buffer_write(_kla, buffer_s32, round(depth * 65536)) // int32_t (Q16.16)
+				buffer_write(_kla, buffer_s32, round(image_xscale * 65536)) // int32_t (Q16.16)
+				buffer_write(_kla, buffer_s32, round(image_yscale * 65536)) // int32_t (Q16.16)
+				
+				buffer_write(_kla, buffer_u8, 0) // uint8_t
+				// TODO: Write defined values
+				
+				buffer_write(_kla, buffer_u32, flags)
+			}
+		}
+	
+	buffer_save_ext(_kla, _filename, 0, buffer_tell(_kla))
+	buffer_delete(_kla)
+	global.last_name = filename_name(_filename)
+	global.last_path = filename_path(_filename)
+	show_debug_message($"Saved level \"{global.last_name}\"")
+}

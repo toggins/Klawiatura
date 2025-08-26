@@ -69,6 +69,18 @@
                             "texture": "T_GRASSI"
                         }
                     ]
+                ],
+
+                [
+                    "Blocks",
+                    [
+                        {
+                            "def": "Block",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLOCKA"
+                        }
+                    ]
                 ]
             ]
         ],
@@ -102,6 +114,33 @@
                             "bit": 4
                         }
                     ]
+                },
+
+                {
+                    "def": "Checkpoint",
+                    "type": "object",
+                    "index": 31,
+                    "z": 1,
+                    "texture": "M_CHECKA",
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 4
+                        }
+                    ]
+                }
+            ]
+        ],
+
+        [
+            "Items",
+            [
+                {
+                    "def": "Coin",
+                    "type": "object",
+                    "index": 9,
+                    "z": 1,
+                    "texture": "I_COINA"
                 }
             ]
         ]

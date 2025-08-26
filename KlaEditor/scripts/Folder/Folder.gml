@@ -37,20 +37,22 @@ function Folder(_name, _items = undefined, _from = undefined) constructor {
 				switch _type {
 					case DefTypes.GRADIENT: {
 						_def = new GradientDef()
-						_def.sprite = fetch_sprite(force_type_fallback(_item[$ "texture"], "string", ""))
+						_def.sprite_name = force_type_fallback(_item[$ "texture"], "string", "")
+						_def.sprite = fetch_sprite(_def.sprite_name)
 						break
 					}
 					
 					case DefTypes.BACKDROP: {
 						_def = new BackdropDef()
-						_def.sprite = fetch_sprite(force_type_fallback(_item[$ "texture"], "string", ""))
+						_def.sprite_name = force_type_fallback(_item[$ "texture"], "string", "")
+						_def.sprite = fetch_sprite(_def.sprite_name)
 						break
 					}
 					
 					case DefTypes.OBJECT: {
 						_def = new ObjectDef()
 						with _def {
-							index = force_type_fallback(_item[$ "index"], "string")
+							index = force_type_fallback(_item[$ "index"], "number", 0)
 							sprite = fetch_sprite(force_type_fallback(_item[$ "texture"], "string", ""))
 						}
 						break

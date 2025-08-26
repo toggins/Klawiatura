@@ -1,1 +1,3 @@
-function GradientDef() : Def() constructor {}
+function GradientDef() : Def() constructor {
+	sprite_name = ""
+}

@@ -37,6 +37,8 @@
     {"id":{"name":"objMarker","path":"objects/objMarker/objMarker.yy",},},
     {"id":{"name":"rmMain","path":"rooms/rmMain/rmMain.yy",},},
     {"id":{"name":"BackdropDef","path":"scripts/BackdropDef/BackdropDef.yy",},},
+    {"id":{"name":"buffer_read_char","path":"scripts/buffer_read_char/buffer_read_char.yy",},},
+    {"id":{"name":"buffer_write_char","path":"scripts/buffer_write_char/buffer_write_char.yy",},},
     {"id":{"name":"ButtonElement","path":"scripts/ButtonElement/ButtonElement.yy",},},
     {"id":{"name":"clear_level","path":"scripts/clear_level/clear_level.yy",},},
     {"id":{"name":"ConfirmNewWidget","path":"scripts/ConfirmNewWidget/ConfirmNewWidget.yy",},},

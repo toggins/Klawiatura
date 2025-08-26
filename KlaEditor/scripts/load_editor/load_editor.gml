@@ -1,4 +1,7 @@
 function load_editor() {
+	clear_level()
+	ds_map_clear(global.defs)
+	
 	var _json = force_type(load_json(global.data_path + "editor.json"), "struct")
 	var _defs = force_type(_json[$ "defs"], "array")
 	var _root_folder = global.root_folder ?? new Folder("")
