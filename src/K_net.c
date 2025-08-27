@@ -17,7 +17,7 @@
 #include "K_log.h"
 #include "K_net.h"
 
-static int32_t num_players = 1;
+static PlayerID num_players = 1;
 static const char* server_ip = NULL;
 static const char* lobby_id = NULL;
 
@@ -138,7 +138,7 @@ static GekkoNetResult** receive_data(int* length) {
     return results;
 }
 
-GekkoNetAdapter* net_init(int _num_players, const char* _server_ip, const char* _lobby_id) {
+GekkoNetAdapter* net_init(PlayerID _num_players, const char* _server_ip, const char* _lobby_id) {
     num_players = _num_players;
     server_ip = _server_ip;
     lobby_id = _lobby_id;
@@ -150,13 +150,14 @@ GekkoNetAdapter* net_init(int _num_players, const char* _server_ip, const char* 
     return &adapter;
 }
 
-PlayerID net_wait(int32_t* _num_players, GameFlags* _start_flags) {
+PlayerID net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
     if (num_players <= 1)
         return 0;
 
     NutPunch_SetServerAddr(server_ip);
     NutPunch_Join(lobby_id);
-    NutPunch_Set("PLAYERS", sizeof(int32_t), (char*)(&num_players));
+    NutPunch_Set("PLAYERS", sizeof(PlayerID), (char*)(&num_players));
+    NutPunch_Set("LEVEL", (int)SDL_strnlen(_level, sizeof(char[8])), _level);
     NutPunch_Set("FLAGS", sizeof(GameFlags), (char*)(&_start_flags));
     INFO("Waiting in lobby \"%s\"... (FLAG: %d)", NutPunch_LobbyId, *_start_flags);
 
@@ -176,10 +177,16 @@ PlayerID net_wait(int32_t* _num_players, GameFlags* _start_flags) {
 
             case NP_Status_Punched: {
                 int size;
-                int32_t* pplayers = (int32_t*)NutPunch_Get("PLAYERS", &size);
-                if (pplayers != NULL && size == sizeof(int32_t)) {
+                PlayerID* pplayers = (PlayerID*)NutPunch_Get("PLAYERS", &size);
+                if (pplayers != NULL && size == sizeof(PlayerID)) {
                     num_players = *_num_players = *pplayers;
                     INFO("PLAYERS: %d", *_num_players);
+                }
+
+                char* plevel = (char*)NutPunch_Get("LEVEL", &size);
+                if (plevel != NULL && size <= sizeof(char[8])) {
+                    *_level = *plevel;
+                    INFO("LEVEL: %d", *_level);
                 }
 
                 GameFlags* pflags = (GameFlags*)NutPunch_Get("FLAGS", &size);
@@ -191,7 +198,7 @@ PlayerID net_wait(int32_t* _num_players, GameFlags* _start_flags) {
                 if (NutPunch_GetPeerCount() >= num_players) {
                     INFO("%i player start!", num_players);
                     sock = NutPunch_Done();
-                    return NutPunch_LocalPeer();
+                    return (PlayerID)NutPunch_LocalPeer();
                 }
                 break;
             }

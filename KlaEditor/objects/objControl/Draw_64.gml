@@ -1,6 +1,7 @@
 var _indicators
 var _widget = global.widget
 var _highlighted = global.highlighted
+var _stretched = global.stretched
 
 draw_set_font(fntMain)
 if _widget != undefined {
@@ -19,7 +20,7 @@ if _widget != undefined {
 	_indicators += $"\n[G] Grid Size ({grid_size})"
 	_indicators += "\n[R] Reset View"
 	
-	if instance_exists(_highlighted) {
+	if instance_exists(_highlighted) and not instance_exists(_stretched) {
 		_indicators += "\n[LMB] Inspect Marker"
 		_indicators += "\n[RMB] Remove Marker"
 		_indicators += "\n[Ctrl] Ignore Highlight (Hold)"
@@ -36,7 +37,7 @@ draw_set_valign(fa_bottom)
 
 if _def != undefined {
 	draw_sprite_stretched(_def.sprite, 0, window_width - 80, window_height - 80, 64, 64)
-	if _widget == undefined and not instance_exists(_highlighted) {
+	if _widget == undefined and not instance_exists(_highlighted) and not instance_exists(_stretched) {
 		_indicators += "\n[LMB] Place Marker"
 		_indicators += "\n[Ctrl] Ignore Highlight (Hold)"
 		_indicators += "\n[Alt] Spam Mode (Hold)"

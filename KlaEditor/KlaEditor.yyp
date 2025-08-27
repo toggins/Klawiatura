@@ -69,6 +69,7 @@
     {"id":{"name":"TextElement","path":"scripts/TextElement/TextElement.yy",},},
     {"id":{"name":"Widget","path":"scripts/Widget/Widget.yy",},},
     {"id":{"name":"sprEmpty","path":"sprites/sprEmpty/sprEmpty.yy",},},
+    {"id":{"name":"sprGradient","path":"sprites/sprGradient/sprGradient.yy",},},
   ],
   "resourceType":"GMProject",
   "resourceVersion":"2.0",

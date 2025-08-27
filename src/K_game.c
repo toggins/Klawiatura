@@ -1,6 +1,7 @@
 #include "K_game.h"
 #include "K_audio.h"
 #include "K_log.h"
+#include "K_file.h"
 
 static struct GameState state = {0};
 static PlayerID local_player = -1L;
@@ -65,7 +66,7 @@ static ObjectID respawn_player(PlayerID pid) {
     player->object = create_object(OBJ_PLAYER, spawn->pos);
     struct GameObject* pawn = get_object(player->object);
     if (pawn != NULL) {
-        pawn->values[VAL_PLAYER_INDEX] = pid;
+        pawn->values[VAL_PLAYER_INDEX] = (fix16_t)pid;
         pawn->values[VAL_PLAYER_KEVIN_X] = pawn->pos[0];
         pawn->values[VAL_PLAYER_KEVIN_Y] = pawn->pos[1];
     }
@@ -87,7 +88,7 @@ static void give_points(struct GameObject* item, PlayerID pid, int32_t points) {
     struct GameObject* pts =
         get_object(create_object(OBJ_POINTS, (fvec2){item->pos[0], Fadd(item->pos[1], item->bbox[0][1])}));
     if (pts != NULL) {
-        pts->values[VAL_POINTS_PLAYER] = pid;
+        pts->values[VAL_POINTS_PLAYER] = (fix16_t)pid;
         pts->values[VAL_POINTS] = points;
     }
 }
@@ -149,10 +150,10 @@ static PlayerID get_owner_id(ObjectID oid) {
 
         case OBJ_PLAYER:
         case OBJ_PLAYER_DEAD:
-            return object->values[VAL_PLAYER_INDEX];
+            return (PlayerID)(object->values[VAL_PLAYER_INDEX]);
 
         case OBJ_KEVIN:
-            return object->values[VAL_KEVIN_PLAYER];
+            return (PlayerID)(object->values[VAL_KEVIN_PLAYER]);
 
         case OBJ_MISSILE_FIREBALL:
         case OBJ_MISSILE_BEETROOT:
@@ -167,7 +168,7 @@ static PlayerID get_owner_id(ObjectID oid) {
             return get_owner_id((ObjectID)(object->values[VAL_COIN_POP_OWNER]));
 
         case OBJ_POINTS:
-            return object->values[VAL_POINTS_PLAYER];
+            return (PlayerID)(object->values[VAL_POINTS_PLAYER]);
 
         case OBJ_ROTODISC:
             return get_owner_id((ObjectID)(object->values[VAL_ROTODISC_OWNER]));
@@ -480,9 +481,8 @@ static void win_player(struct GameObject* pawn) {
         return;
     state.sequence.type = SEQ_WIN;
     state.sequence.time = 1L;
-    state.sequence.activator = pawn->values[VAL_PLAYER_INDEX];
+    const PlayerID pid = state.sequence.activator = (PlayerID)(pawn->values[VAL_PLAYER_INDEX]);
 
-    const PlayerID pid = pawn->values[VAL_PLAYER_INDEX];
     for (size_t i = 0; i < MAX_PLAYERS; i++) {
         struct GamePlayer* player = &(state.players[i]);
         if (i != pid) {
@@ -535,7 +535,7 @@ static void kill_player(struct GameObject* pawn) {
         // !!! CLIENT-SIDE !!!
 
         struct GamePlayer* player =
-            get_player((ObjectID)(dead->values[VAL_PLAYER_INDEX] = pawn->values[VAL_PLAYER_INDEX]));
+            get_player((PlayerID)(dead->values[VAL_PLAYER_INDEX] = pawn->values[VAL_PLAYER_INDEX]));
         if (player != NULL) {
             player->power = POW_SMALL;
 
@@ -568,7 +568,7 @@ static Bool hit_player(struct GameObject* pawn) {
     if (state.sequence.type == SEQ_WIN || pawn->values[VAL_PLAYER_FLASH] > 0L || pawn->values[VAL_PLAYER_STARMAN] > 0L)
         return false;
 
-    struct GamePlayer* player = get_player(pawn->values[VAL_PLAYER_INDEX]);
+    struct GamePlayer* player = get_player((PlayerID)(pawn->values[VAL_PLAYER_INDEX]));
     if (player != NULL) {
         if (player->power == POW_SMALL) {
             kill_player(pawn);
@@ -969,7 +969,7 @@ static void bump_object(ObjectID bid) {
 
 static PlayerFrames get_player_frame(const struct GameObject* object) {
     if (object->values[VAL_PLAYER_POWER] > 0L) {
-        const struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
+        const struct GamePlayer* player = get_player((PlayerID)(object->values[VAL_PLAYER_INDEX]));
         switch (player == NULL ? POW_SMALL : player->power) {
             case POW_SMALL:
             case POW_BIG: {
@@ -1341,7 +1341,7 @@ static Bool below_frame(struct GameObject* object) {
 
    ====== */
 
-void start_state(int32_t num_players, PlayerID local, GameFlags flags) {
+void start_state(PlayerID num_players, PlayerID local, const char* level, GameFlags flags) {
     local_player = local;
 
     SDL_memset(&state, 0, sizeof(state));
@@ -1350,16 +1350,14 @@ void start_state(int32_t num_players, PlayerID local, GameFlags flags) {
     for (uint32_t i = 0L; i < BLOCKMAP_SIZE; i++)
         state.blockmap[i] = NULLOBJ;
 
-    state.size[0] = FfInt(2560L);
-    state.size[1] = F_SCREEN_HEIGHT;
-    state.bounds[1][0] = FfInt(2560L);
-    state.bounds[1][1] = F_SCREEN_HEIGHT;
+    state.size[0] = state.bounds[1][0] = F_SCREEN_WIDTH;
+    state.size[1] = state.bounds[1][1] = F_SCREEN_HEIGHT;
 
     state.spawn = state.checkpoint = NULLOBJ;
-    state.water = FfInt(240L); // 0x7FFFFFFF;
+    state.water = FfInt(32767L);
 
-    state.flags |= GF_HARDCORE | GF_LOST | flags;
-    state.clock = 360L;
+    state.flags |= flags;
+    state.clock = -1L;
 
     state.sequence.activator = -1L;
 
@@ -1391,302 +1389,175 @@ void start_state(int32_t num_players, PlayerID local, GameFlags flags) {
     //
     //
     //
-    add_gradient(
-        0, 0, 11008, 551, 200,
-        (GLubyte[4][4]){{192, 192, 192, 255}, {192, 192, 192, 255}, {255, 255, 255, 255}, {255, 255, 255, 255}}
-    );
-    add_backdrop("T_SNOWA", 0, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 32, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 64, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 96, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 128, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 160, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 192, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 224, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 256, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 288, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 320, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 352, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 384, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 416, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 448, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 480, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 512, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 544, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 576, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWC", 608, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWD", 0, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 32, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 64, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 96, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 128, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 160, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 192, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 224, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 256, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 288, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 320, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 352, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 384, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 416, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 448, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 480, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 512, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 544, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 576, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWF", 608, 448, 20, 255, 255, 255, 255);
+    uint8_t* data = SDL_LoadFile(find_file(file_pattern("data/levels/%s.kla", level), NULL), NULL);
+    if (data == NULL)
+        FATAL("Failed to load level \"%s\": %s", level, SDL_GetError());
+    const uint8_t* buf = data;
 
-    for (int32_t i = 0L; i < 30L; i++) {
-        const int32_t x = 640L + (i * 32L);
-        add_backdrop("T_BLOCKC", (GLfloat)x, 416, 20, 255, 255, 255, 255);
-        const ObjectID oid = create_object(OBJ_SOLID, (fvec2){FfInt(x), FfInt(416L)});
-        if (object_is_alive(oid)) {
-            state.objects[oid].bbox[1][0] = FfInt(32L);
-            state.objects[oid].bbox[1][1] = FfInt(32L);
+    // Header
+    if (SDL_strncmp((const char*)buf, "Klawiatura", sizeof(char[10])) != 0)
+        FATAL("Invalid level header");
+    buf += sizeof(char[10]);
+    buf += sizeof(uint8_t); // MAJOR_LEVEL_VERSION
+    buf += sizeof(uint8_t); // MINOR_LEVEL_VERSION
+
+    // Level
+    char level_name[32];
+    SDL_memcpy(level_name, buf, sizeof(char[32]));
+    INFO("Level: %s (%s)", level, level_name);
+    buf += sizeof(char[32]);
+
+    buf += sizeof(char[8]); // HUD Texture
+    buf += sizeof(char[8]); // Next Level
+
+    char track[8];
+    SDL_memcpy(track, buf, sizeof(char[8]));
+    load_track(track);
+    buf += sizeof(char[8]);
+
+    buf += sizeof(char[8]); // Secondary Track
+
+    state.flags |= *((GameFlags*)buf);
+    buf += sizeof(GameFlags);
+
+    state.size[0] = *((fix16_t*)buf);
+    buf += sizeof(fix16_t);
+    state.size[1] = *((fix16_t*)buf);
+    buf += sizeof(fix16_t);
+
+    state.bounds[0][0] = *((fix16_t*)buf);
+    buf += sizeof(fix16_t);
+    state.bounds[0][1] = *((fix16_t*)buf);
+    buf += sizeof(fix16_t);
+    state.bounds[1][0] = *((fix16_t*)buf);
+    buf += sizeof(fix16_t);
+    state.bounds[1][1] = *((fix16_t*)buf);
+    buf += sizeof(fix16_t);
+
+    state.clock = *((int32_t*)buf);
+    buf += sizeof(int32_t);
+
+    state.water = *((fix16_t*)buf);
+    buf += sizeof(fix16_t);
+
+    state.hazard = *((fix16_t*)buf);
+    buf += sizeof(fix16_t);
+
+    // Markers
+    uint32_t num_markers = *((uint32_t*)buf);
+    buf += sizeof(uint32_t);
+
+    for (uint32_t i = 0; i < num_markers; i++) {
+        // Skip editor def
+        while (*buf != '\0')
+            buf += sizeof(char);
+        buf += sizeof(char);
+
+        uint8_t marker_type = *((uint8_t*)buf);
+        buf += sizeof(uint8_t);
+
+        switch (marker_type) {
+            default: {
+                FATAL("Unknown marker type %u", marker_type);
+                break;
+            }
+
+            case 1: { // Gradient
+                char texture[9];
+                SDL_memcpy(texture, buf, sizeof(char[8]));
+                texture[8] = '\0';
+                buf += sizeof(char[8]);
+
+                GLfloat rect[2][2] = {
+                    {*((GLfloat*)buf), *((GLfloat*)(buf + sizeof(GLfloat)))},
+                    {*((GLfloat*)(buf + sizeof(GLfloat[2]))), *((GLfloat*)(buf + sizeof(GLfloat[3])))},
+                };
+                buf += sizeof(GLfloat[2][2]);
+
+                GLfloat z = *((GLfloat*)buf);
+                buf += sizeof(GLfloat);
+
+                GLubyte color[4][4] = {
+                    {*((GLubyte*)buf), *((GLubyte*)(buf + sizeof(GLubyte))), *((GLubyte*)(buf + sizeof(GLubyte[2]))),
+                     *((GLubyte*)(buf + sizeof(GLubyte[3])))},
+
+                    {*((GLubyte*)(buf + sizeof(GLubyte[4]))), *((GLubyte*)(buf + sizeof(GLubyte[5]))),
+                     *((GLubyte*)(buf + sizeof(GLubyte[6]))), *((GLubyte*)(buf + sizeof(GLubyte[7])))},
+
+                    {*((GLubyte*)(buf + sizeof(GLubyte[8]))), *((GLubyte*)(buf + sizeof(GLubyte[9]))),
+                     *((GLubyte*)(buf + sizeof(GLubyte[10]))), *((GLubyte*)(buf + sizeof(GLubyte[11])))},
+
+                    {*((GLubyte*)(buf + sizeof(GLubyte[12]))), *((GLubyte*)(buf + sizeof(GLubyte[13]))),
+                     *((GLubyte*)(buf + sizeof(GLubyte[14]))), *((GLubyte*)(buf + sizeof(GLubyte[15])))}
+                };
+                buf += sizeof(GLubyte[4][4]);
+
+                add_gradient(texture, rect, z, color);
+                break;
+            }
+
+            case 2: { // Backdrop
+                char texture[9];
+                SDL_memcpy(texture, buf, sizeof(char[8]));
+                texture[8] = '\0';
+                buf += sizeof(char[8]);
+
+                GLfloat pos[3] = {
+                    *((GLfloat*)buf), *((GLfloat*)(buf + sizeof(GLfloat))), *((GLfloat*)(buf + sizeof(GLfloat[2])))
+                };
+                buf += sizeof(GLfloat[3]);
+
+                buf += sizeof(GLfloat[2]); // Scale
+
+                GLubyte color[4] = {
+                    *((GLubyte*)buf), *((GLubyte*)(buf + sizeof(GLubyte))), *((GLubyte*)(buf + sizeof(GLubyte[2]))),
+                    *((GLubyte*)(buf + sizeof(GLubyte[3])))
+                };
+                buf += sizeof(GLubyte[4]);
+
+                add_backdrop(texture, pos, color);
+                break;
+            }
+
+            case 3: {
+                GameObjectType type = *((GameObjectType*)buf);
+                buf += sizeof(GameObjectType);
+
+                fvec2 pos = {*((fix16_t*)buf), *((fix16_t*)(buf + sizeof(fix16_t)))};
+                buf += sizeof(fix16_t[2]);
+
+                fix16_t depth = *((fix16_t*)buf);
+                buf += sizeof(fix16_t);
+
+                fvec2 scale = {*((fix16_t*)buf), *((fix16_t*)(buf + sizeof(fix16_t)))};
+                buf += sizeof(fix16_t[2]);
+
+                uint8_t num_values = *((uint8_t*)buf);
+                buf += sizeof(uint8_t);
+
+                for (uint8_t j = 0; j < num_values; j++) {
+                    buf += sizeof(uint8_t);
+                    buf += sizeof(fix16_t);
+                }
+
+                ObjectFlags flags = *((ObjectFlags*)buf);
+                buf += sizeof(ObjectFlags);
+
+                struct GameObject* object = get_object(create_object(type, pos));
+                if (object != NULL) {
+                    object->bbox[0][0] = Fmul(object->bbox[0][0], scale[0]);
+                    object->bbox[0][1] = Fmul(object->bbox[0][1], scale[1]);
+                    object->bbox[1][0] = Fmul(object->bbox[1][0], scale[0]);
+                    object->bbox[1][1] = Fmul(object->bbox[1][1], scale[1]);
+                    object->depth = depth;
+                    object->flags |= flags;
+                }
+                break;
+            }
         }
     }
 
-    add_backdrop("T_BLOCKC", 608, 352, 20, 255, 255, 255, 255);
-    add_backdrop("T_BLOCKC", 608, 384, 20, 255, 255, 255, 255);
-    add_backdrop("T_BLOCKC", 576, 384, 20, 255, 255, 255, 255);
-
-    add_backdrop("T_PLATFB", 32, 240, 20, 255, 255, 255, 255);
-    add_backdrop("T_PLATFB", 64, 240, 20, 255, 255, 255, 255);
-    add_backdrop("T_PLATFB", 96, 240, 20, 255, 255, 255, 255);
-
-    add_backdrop("T_SNOWA", 1920, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 1952, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 1984, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2016, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2048, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2080, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2112, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2144, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2176, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2208, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2240, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2272, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2304, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2336, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2368, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2400, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2432, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2464, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2496, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2528, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWB", 2560, 416, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWD", 1920, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 1952, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 1984, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2016, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2048, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2080, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2112, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2144, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2176, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2208, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2240, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2272, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2304, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2336, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2368, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2400, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2432, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2464, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2496, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2528, 448, 20, 255, 255, 255, 255);
-    add_backdrop("T_SNOWE", 2560, 448, 20, 255, 255, 255, 255);
-    add_backdrop("M_GOALM", 2144, 384, 20, 255, 255, 255, 255);
-    add_backdrop("M_GOAL", 2304, 128, 20, 255, 255, 255, 255);
-
-    create_object(OBJ_CLOUD, (fvec2){FfInt(128L), FfInt(32L)});
-    create_object(OBJ_CLOUD, (fvec2){FfInt(213L), FfInt(56L)});
-    create_object(OBJ_CLOUD, (fvec2){FfInt(431L), FfInt(93L)});
-    create_object(OBJ_CLOUD, (fvec2){FfInt(512L), FfInt(47L)});
-    create_object(OBJ_CLOUD, (fvec2){FfInt(679L), FfInt(78L)});
-    create_object(OBJ_CLOUD, (fvec2){FfInt(744L), FfInt(60L)});
-    create_object(OBJ_CLOUD, (fvec2){FfInt(820L), FfInt(39L)});
-    create_object(OBJ_CLOUD, (fvec2){FfInt(984L), FfInt(49L)});
-    create_object(OBJ_CLOUD, (fvec2){FfInt(1184L), FfInt(87L)});
-    create_object(OBJ_CLOUD, (fvec2){FfInt(789L), FfInt(96L)});
-    create_object(OBJ_BUSH_SNOW, (fvec2){FfInt(384L), FfInt(384L)});
-
-    create_object(OBJ_PLAYER_SPAWN, (fvec2){FfInt(80L), FfInt(240L)});
-    create_object(OBJ_COIN, (fvec2){FfInt(32L), FfInt(32L)});
-    create_object(OBJ_COIN, (fvec2){FfInt(64L), FfInt(32L)});
-    create_object(OBJ_COIN, (fvec2){FfInt(32L), FfInt(64L)});
-    create_object(OBJ_COIN, (fvec2){FfInt(64L), FfInt(64L)});
-    create_object(OBJ_COIN, (fvec2){FfInt(32L), FfInt(96L)});
-    create_object(OBJ_COIN, (fvec2){FfInt(64L), FfInt(96L)});
-    create_object(OBJ_MUSHROOM, (fvec2){FfInt(256L), FfInt(416L)});
-    create_object(OBJ_FIRE_FLOWER, (fvec2){FfInt(320L), FfInt(416L)});
-    create_object(OBJ_BEETROOT, (fvec2){FfInt(384L), FfInt(416L)});
-    create_object(OBJ_LUI, (fvec2){FfInt(448L), FfInt(416L)});
-    create_object(OBJ_HAMMER_SUIT, (fvec2){FfInt(512L), FfInt(416L)});
-    create_object(OBJ_MUSHROOM_1UP, (fvec2){FfInt(800L), FfInt(416L)});
-    create_object(OBJ_BRICK_BLOCK, (fvec2){FfInt(160L), FfInt(240L)});
-    create_object(OBJ_COIN, (fvec2){FfInt(160L), FfInt(208L)});
-    create_object(OBJ_CHECKPOINT, (fvec2){FfInt(864L), FfInt(416L)});
-    create_object(OBJ_CHECKPOINT, (fvec2){FfInt(1024L), FfInt(416L)});
-    create_object(OBJ_GOAL_BAR, (fvec2){FfInt(2347L), FfInt(144L)});
-    create_object(OBJ_PSWITCH, (fvec2){FfInt(128L), FfInt(208L)});
-
-    struct GameObject* object = get_object(create_object(OBJ_ROTODISC_BALL, (fvec2){FfInt(608L), FfInt(352L)}));
-    if (object != NULL) {
-        // state.objects[oid].values[VAL_ROTODISC_LENGTH] = FfInt(150L);
-        object->values[VAL_ROTODISC_SPEED] = -0x00001658;
-        object->flags |= FLG_ROTODISC_FLOWER;
-    }
-
-    object = get_object(create_object(OBJ_HIDDEN_BLOCK, (fvec2){FfInt(160L), FfInt(128L)}));
-    if (object != NULL)
-        object->values[VAL_BLOCK_ITEM] = OBJ_STARMAN;
-    object = get_object(create_object(OBJ_GOAL_MARK, (fvec2){FfInt(2176L), FfInt(384L)}));
-    if (object != NULL) {
-        object->bbox[1][0] = FfInt(128L);
-        object->bbox[1][1] = FfInt(32L);
-    }
-    object = get_object(create_object(OBJ_GOAL_MARK, (fvec2){FfInt(2304L), FfInt(384L)}));
-    if (object != NULL) {
-        object->bbox[1][0] = FfInt(128L);
-        object->bbox[1][1] = FfInt(32L);
-    }
-    object = get_object(create_object(OBJ_GOAL_MARK, (fvec2){FfInt(2432L), FfInt(384L)}));
-    if (object != NULL) {
-        object->bbox[1][0] = FfInt(128L);
-        object->bbox[1][1] = FfInt(32L);
-    }
-    object = get_object(create_object(OBJ_GOAL_MARK, (fvec2){FfInt(2560L), FfInt(384L)}));
-    if (object != NULL) {
-        object->bbox[1][0] = FfInt(128L);
-        object->bbox[1][1] = FfInt(32L);
-    }
-
-    object = get_object(create_object(OBJ_BRICK_BLOCK_COIN, (fvec2){FfInt(128L), FfInt(240L)}));
-    if (object != NULL)
-        object->values[VAL_BLOCK_ITEM] = OBJ_COIN_POP;
-    object = get_object(create_object(OBJ_ITEM_BLOCK, (fvec2){FfInt(192L), FfInt(240L)}));
-    if (object != NULL)
-        object->values[VAL_BLOCK_ITEM] = OBJ_COIN_POP;
-    object = get_object(create_object(OBJ_ITEM_BLOCK, (fvec2){FfInt(224L), FfInt(240L)}));
-    if (object != NULL)
-        object->values[VAL_BLOCK_ITEM] = OBJ_FIRE_FLOWER;
-
-    ObjectID oid = create_object(OBJ_SOLID, (fvec2){FxZero, FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(640L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(128L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(256L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(384L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(512L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(-32L), FfInt(-64L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(192L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(-32L), FfInt(128L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(-32L), FfInt(256L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(-32L), FfInt(384L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID_TOP, (fvec2){FfInt(32L), FfInt(240L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(96L);
-        state.objects[oid].bbox[1][1] = FfInt(16L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(608L), FfInt(352L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(64L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(576L), FfInt(384L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(32L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(1920L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2048L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2176L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2304L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2432L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2432L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2560L), FfInt(416L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(128L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2624L), FfInt(-64L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(192L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2624L), FfInt(128L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2624L), FfInt(256L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
-    oid = create_object(OBJ_SOLID, (fvec2){FfInt(2624L), FfInt(384L)});
-    if (object_is_alive(oid)) {
-        state.objects[oid].bbox[1][0] = FfInt(32L);
-        state.objects[oid].bbox[1][1] = FfInt(128L);
-    }
+    SDL_free(data);
 
     //
     //
@@ -1704,8 +1575,7 @@ void start_state(int32_t num_players, PlayerID local, GameFlags flags) {
         respawn_player(i);
     }
 
-    load_track("1WATER");
-    play_track(TS_LEVEL, "1WATER", true);
+    play_track(TS_LEVEL, track, true);
 }
 
 uint32_t check_state() {
@@ -1816,7 +1686,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     break;
 
                 case OBJ_PLAYER: {
-                    struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
+                    struct GamePlayer* player = get_player((PlayerID)(object->values[VAL_PLAYER_INDEX]));
                     if (player == NULL) {
                         object->flags |= FLG_DESTROY;
                         break;
@@ -2156,7 +2026,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                 }
 
                 case OBJ_PLAYER_DEAD: {
-                    const PlayerID pid = object->values[VAL_PLAYER_INDEX];
+                    const PlayerID pid = (PlayerID)(object->values[VAL_PLAYER_INDEX]);
                     struct GamePlayer* player = get_player(pid);
                     if (player == NULL) {
                         object->flags |= FLG_DESTROY;
@@ -2227,7 +2097,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                 }
 
                 case OBJ_KEVIN: {
-                    const struct GamePlayer* player = get_player(object->values[VAL_KEVIN_PLAYER]);
+                    const struct GamePlayer* player = get_player((PlayerID)(object->values[VAL_KEVIN_PLAYER]));
                     if (player == NULL) {
                         object->flags |= FLG_DESTROY;
                         break;
@@ -2583,7 +2453,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                             struct GameObject* points = get_object(create_object(OBJ_POINTS, object->pos));
                             if (points != NULL) {
                                 points->values[VAL_POINTS_PLAYER] =
-                                    get_owner_id((ObjectID)(object->values[VAL_COIN_POP_OWNER]));
+                                    (fix16_t)(get_owner_id((ObjectID)(object->values[VAL_COIN_POP_OWNER])));
                                 points->values[VAL_POINTS] = 200L;
                             }
                             object->flags |= FLG_DESTROY;
@@ -2870,7 +2740,7 @@ void draw_state() {
                     if (object->values[VAL_PLAYER_FLASH] > 0L && (state.time % 2))
                         break;
 
-                    const struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
+                    const struct GamePlayer* player = get_player((PlayerID)(object->values[VAL_PLAYER_INDEX]));
                     const char* tex =
                         get_player_texture(player == NULL ? POW_SMALL : player->power, get_player_frame(object));
                     const GLubyte a = (object->values[VAL_PLAYER_INDEX] != local_player) ? 190 : 255;
@@ -2926,7 +2796,7 @@ void draw_state() {
                 }
 
                 case OBJ_KEVIN: {
-                    const struct GamePlayer* player = get_player(object->values[VAL_KEVIN_PLAYER]);
+                    const struct GamePlayer* player = get_player((PlayerID)(object->values[VAL_KEVIN_PLAYER]));
                     if (player == NULL)
                         break;
 
@@ -4161,8 +4031,10 @@ struct GameObject* get_object(ObjectID index) {
 }
 
 ObjectID create_object(GameObjectType type, const fvec2 pos) {
-    if (type == OBJ_NULL)
+    if (type <= OBJ_NULL || type >= OBJ_SIZE) {
+        INFO("Invalid object type %u", type);
         return NULLOBJ;
+    }
 
     ObjectID index = state.next_object;
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
@@ -4552,7 +4424,7 @@ void destroy_object(ObjectID index) {
         }
 
         case OBJ_PLAYER: {
-            struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
+            struct GamePlayer* player = get_player((PlayerID)(object->values[VAL_PLAYER_INDEX]));
             if (player != NULL && player->object == index)
                 player->object = NULLOBJ;
 
@@ -4572,7 +4444,7 @@ void destroy_object(ObjectID index) {
         }
 
         case OBJ_KEVIN: {
-            struct GamePlayer* player = get_player(object->values[VAL_PLAYER_INDEX]);
+            struct GamePlayer* player = get_player((PlayerID)(object->values[VAL_PLAYER_INDEX]));
             if (player != NULL && player->kevin.object == index)
                 player->kevin.object = NULLOBJ;
             break;

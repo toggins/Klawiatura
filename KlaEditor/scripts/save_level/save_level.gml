@@ -37,14 +37,33 @@ function save_level(_filename) {
 	repeat n
 		with _markers[| i++] {
 			buffer_write(_kla, buffer_string, def.name)
-			if is_instanceof(def, BackdropDef) {
+			if is_instanceof(def, GradientDef) {
+				buffer_write(_kla, buffer_u8, DefTypes.GRADIENT)
+				buffer_write_char(_kla, def.sprite_name, 8)
+				buffer_write(_kla, buffer_f32, x) // float
+				buffer_write(_kla, buffer_f32, y) // float
+				buffer_write(_kla, buffer_f32, x + image_xscale) // float
+				buffer_write(_kla, buffer_f32, y + image_yscale) // float
+				buffer_write(_kla, buffer_f32, depth) // float
+				
+				var j = 0
+				repeat 4 {
+					var _color = colors[j]
+					var _alpha = alphas[j]
+					buffer_write(_kla, buffer_u8, color_get_red(_color)) // uint8_t
+					buffer_write(_kla, buffer_u8, color_get_green(_color)) // uint8_t
+					buffer_write(_kla, buffer_u8, color_get_blue(_color)) // uint8_t
+					buffer_write(_kla, buffer_u8, round(_alpha * 255)); // uint8_t
+					++j
+				}
+			} else if is_instanceof(def, BackdropDef) {
 				buffer_write(_kla, buffer_u8, DefTypes.BACKDROP)
 				buffer_write_char(_kla, def.sprite_name, 8)
-				buffer_write(_kla, buffer_s32, round(x * 65536)) // int32_t (Q16.16)
-				buffer_write(_kla, buffer_s32, round(y * 65536)) // int32_t (Q16.16)
-				buffer_write(_kla, buffer_s32, round(depth * 65536)) // int32_t (Q16.16)
-				buffer_write(_kla, buffer_s32, round(image_xscale * 65536)) // int32_t (Q16.16)
-				buffer_write(_kla, buffer_s32, round(image_yscale * 65536)) // int32_t (Q16.16)
+				buffer_write(_kla, buffer_f32, x) // float
+				buffer_write(_kla, buffer_f32, y) // float
+				buffer_write(_kla, buffer_f32, depth) // float
+				buffer_write(_kla, buffer_f32, image_xscale) // float
+				buffer_write(_kla, buffer_f32, image_yscale) // float
 				buffer_write(_kla, buffer_u8, color_get_red(image_blend)) // uint8_t
 				buffer_write(_kla, buffer_u8, color_get_green(image_blend)) // uint8_t
 				buffer_write(_kla, buffer_u8, color_get_blue(image_blend)) // uint8_t

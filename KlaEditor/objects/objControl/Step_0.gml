@@ -5,7 +5,8 @@ if global.widget_step {
 	exit
 }
 
-if keyboard_check(vk_control) {
+var _stretched = global.stretched
+if keyboard_check(vk_control) or instance_exists(_stretched) {
 	global.highlighted = noone
 } else if update_highlight or mouse_x != highlight_x or mouse_y != highlight_y {
 	highlight_x = mouse_x
@@ -31,32 +32,53 @@ if keyboard_check(vk_control) {
 
 var _highlighted = global.highlighted
 if not instance_exists(_highlighted) {
-	var _spam = keyboard_check(vk_alt)
-	if mouse_check_button_pressed(mb_left) or (_spam and mouse_check_button(mb_left)) {
-		// Don't place if a window was closed on the last frame.
-		var _def = global.def
-		if _def != undefined {
-			var _place = true
-			if _spam and not keyboard_check(vk_shift) {
-				var n = collision_rectangle_list(cursor_x, cursor_y, cursor_x + grid_size, cursor_y + grid_size, objMarker, false, true, highlight_list, false)
-				if n {
-					var i = 0
-					repeat n {
-						var _marker = highlight_list[| i++]
-						if _marker.def == _def {
-							_place = false
-							break
+	if instance_exists(_stretched) {
+		var _sprite = _stretched.sprite_index
+		_stretched.image_xscale = max(16, cursor_x - _stretched.x) / sprite_get_width(_sprite)
+		_stretched.image_yscale = max(16, cursor_y - _stretched.y) / sprite_get_height(_sprite)
+		if not mouse_check_button(mb_left)
+			global.stretched = noone
+	} else {
+		var _spam = keyboard_check(vk_alt)
+		if mouse_check_button_pressed(mb_left) or (_spam and mouse_check_button(mb_left)) {
+			// Don't place if a window was closed on the last frame.
+			var _def = global.def
+			if _def != undefined {
+				var _place = true
+				if _spam and not keyboard_check(vk_shift) {
+					var n = collision_rectangle_list(cursor_x, cursor_y, cursor_x + grid_size, cursor_y + grid_size, objMarker, false, true, highlight_list, false)
+					if n {
+						var i = 0
+						repeat n {
+							var _marker = highlight_list[| i++]
+							if _marker.def == _def {
+								_place = false
+								break
+							}
 						}
 					}
 				}
-			}
 			
-			if _place {
-				with instance_create_depth(cursor_x, cursor_y, _def.z, objMarker) {
-					def = _def
-					sprite_index = _def.sprite
+				if _place {
+					var _marker = instance_create_depth(cursor_x, cursor_y, _def.z, objMarker)
+					with _marker {
+						def = _def
+						if is_instanceof(_def, GradientDef) {
+							sprite_index = sprGradient
+							texture = sprite_get_texture(_def.sprite, 0)
+							array_copy(colors, 0, _def.colors, 0, 4)
+							array_copy(alphas, 0, _def.alphas, 0, 4)
+						} else {
+							sprite_index = _def.sprite
+						}
+					}
+					if _def.stretch {
+						global.highlighted = noone
+						global.stretched = _marker
+					} else {
+						update_highlight = true
+					}
 				}
-				update_highlight = true
 			}
 		}
 	}

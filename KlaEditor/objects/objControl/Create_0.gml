@@ -36,6 +36,7 @@ global.def = undefined
 update_highlight = false
 highlight_list = ds_list_create()
 global.highlighted = noone
+global.stretched = noone
 
 blueprint = -1
 blueprint_path = _data_path
@@ -54,3 +55,4 @@ highlight_y = 0
 grid_size = 32
 
 application_surface_enable(false)
+gpu_set_tex_repeat(true)

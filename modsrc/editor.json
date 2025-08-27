@@ -86,26 +86,159 @@
         ],
 
         [
+            "Scenery",
+            [
+                [
+                    "Parallax",
+                    [
+                        {
+                            "def": "Back Gradient",
+                            "type": "gradient",
+                            "z": 200,
+                            "colors": [
+                                [0, 111, 223, 255],
+                                [0, 111, 223, 255],
+                                [242, 253, 252, 255],
+                                [242, 253, 252, 255]
+                            ],
+                            "stretch": true
+                        },
+                        {
+                            "def": "Fog Gradient",
+                            "type": "gradient",
+                            "z": 180,
+                            "colors": [
+                                [8, 0, 0, 109],
+                                [8, 0, 0, 109],
+                                [219, 0, 19, 109],
+                                [219, 0, 19, 109]
+                            ],
+                            "stretch": true
+                        },
+                        {
+                            "def": "Front Gradient",
+                            "type": "gradient",
+                            "z": -100,
+                            "colors": [
+                                [8, 0, 0, 0],
+                                [8, 0, 0, 0],
+                                [219, 0, 19, 109],
+                                [219, 0, 19, 109]
+                            ],
+                            "stretch": true
+                        }
+                    ]
+                ],
+
+                [
+                    "Background",
+                    [
+                        {
+                            "def": "Giant Cloud",
+                            "type": "backdrop",
+                            "z": 52,
+                            "texture": "B_CLOUDS"
+                        },
+
+                        {
+                            "def": "Hill",
+                            "type": "backdrop",
+                            "z": 51,
+                            "texture": "B_HILLA"
+                        },
+
+                        {
+                            "def": "Hill Minix",
+                            "type": "backdrop",
+                            "z": 51,
+                            "texture": "B_HILLB"
+                        },
+
+                        {
+                            "def": "Forest",
+                            "type": "backdrop",
+                            "z": 50,
+                            "texture": "B_FOREST"
+                        },
+
+                        {
+                            "def": "Hills",
+                            "type": "backdrop",
+                            "z": 51,
+                            "texture": "B_HILLS"
+                        },
+
+                        {
+                            "def": "Pyramid",
+                            "type": "backdrop",
+                            "z": 50,
+                            "texture": "B_PYRAM"
+                        }
+                    ]
+                ],
+
+                [
+                    "Props",
+                    [
+                        {
+                            "def": "Cloud",
+                            "type": "object",
+                            "index": 73,
+                            "texture": "S_CLOUDA",
+                            "z": 26
+                        },
+
+                        {
+                            "def": "Cloud Dark",
+                            "type": "object",
+                            "index": 74,
+                            "texture": "S_CLODDA",
+                            "z": 26
+                        },
+
+                        {
+                            "def": "Bush",
+                            "type": "object",
+                            "index": 75,
+                            "texture": "S_BUSHA",
+                            "z": 25
+                        },
+
+                        {
+                            "def": "Bush Snow",
+                            "type": "object",
+                            "index": 76,
+                            "texture": "S_BUSHSA",
+                            "z": 25
+                        }
+                    ]
+                ]
+            ]
+        ],
+
+        [
             "Markers",
             [
                 {
                     "def": "Solid",
                     "type": "object",
                     "index": 1,
-                    "texture": "M_SOLID"
+                    "texture": "M_SOLID",
+                    "stretch": true
                 },
 
                 {
                     "def": "Solid Top",
                     "type": "object",
                     "index": 2,
-                    "texture": "M_SOLIDT"
+                    "texture": "M_SOLIDT",
+                    "stretch": true
                 },
 
                 {
                     "def": "Player",
                     "type": "object",
-                    "index": 5,
+                    "index": 4,
                     "z": -1,
                     "texture": "M_PLAYER",
                     "flags": [

@@ -1,3 +1,1 @@
-function BackdropDef() : Def() constructor {
-	sprite_name = ""
-}
+function BackdropDef() : Def() constructor {}

@@ -506,6 +506,9 @@ void video_update(const char* errmsg) {
     );
     glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)mvp);
 
+    draw_state();
+    submit_batch();
+
     struct TileBatch* tilemap = valid_tiles;
     if (tilemap != NULL) {
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
@@ -516,15 +519,15 @@ void video_update(const char* errmsg) {
             glBufferSubData(
                 GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(struct Vertex) * tilemap->vertex_count), tilemap->vertices
             );
+
             glBindTexture(GL_TEXTURE_2D, (tilemap->texture == NULL) ? blank_texture : tilemap->texture->texture);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glDrawArrays(GL_TRIANGLES, 0, (GLsizei)tilemap->vertex_count);
+
             tilemap = tilemap->next;
         }
     }
-    draw_state();
-    submit_batch();
 
     glDisable(GL_DEPTH_TEST);
 
@@ -567,7 +570,7 @@ static void nuke_texture(void* ptr) {
 }
 
 void load_texture(const char* index) {
-    if (get_texture(index) != NULL)
+    if (index[0] == '\0' || get_texture(index) != NULL)
         return;
 
     struct Texture texture = {0};
@@ -797,31 +800,31 @@ static void tile_vertex(
     tilemap->vertices[tilemap->vertex_count++] = (struct Vertex){x, y, z, r, g, b, a, u, v};
 }
 
-void add_gradient(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, GLfloat z, GLubyte colors[4][4]) {
-    struct TileBatch* tilemap = load_tile(NULL);
-    tile_vertex(tilemap, x1, y2, z, colors[2][0], colors[2][1], colors[2][2], colors[2][3], 0, 1);
-    tile_vertex(tilemap, x1, y1, z, colors[0][0], colors[0][1], colors[0][2], colors[0][3], 0, 0);
-    tile_vertex(tilemap, x2, y1, z, colors[1][0], colors[1][1], colors[1][2], colors[1][3], 1, 0);
-    tile_vertex(tilemap, x2, y1, z, colors[1][0], colors[1][1], colors[1][2], colors[1][3], 1, 0);
-    tile_vertex(tilemap, x2, y2, z, colors[3][0], colors[3][1], colors[3][2], colors[3][3], 1, 1);
-    tile_vertex(tilemap, x1, y2, z, colors[2][0], colors[2][1], colors[2][2], colors[2][3], 0, 1);
+void add_gradient(const char* index, const GLfloat rect[2][2], GLfloat z, const GLubyte color[4][4]) {
+    struct TileBatch* tilemap = load_tile(index);
+    tile_vertex(tilemap, rect[0][0], rect[1][1], z, color[2][0], color[2][1], color[2][2], color[2][3], 0, 1);
+    tile_vertex(tilemap, rect[0][0], rect[0][1], z, color[0][0], color[0][1], color[0][2], color[0][3], 0, 0);
+    tile_vertex(tilemap, rect[1][0], rect[0][1], z, color[1][0], color[1][1], color[1][2], color[1][3], 1, 0);
+    tile_vertex(tilemap, rect[1][0], rect[0][1], z, color[1][0], color[1][1], color[1][2], color[1][3], 1, 0);
+    tile_vertex(tilemap, rect[1][0], rect[1][1], z, color[3][0], color[3][1], color[3][2], color[3][3], 1, 1);
+    tile_vertex(tilemap, rect[0][0], rect[1][1], z, color[2][0], color[2][1], color[2][2], color[2][3], 0, 1);
 }
 
-void add_backdrop(const char* index, GLfloat x, GLfloat y, GLfloat z, GLubyte r, GLubyte g, GLubyte b, GLubyte a) {
+void add_backdrop(const char* index, const GLfloat pos[3], const GLubyte color[4]) {
     struct TileBatch* tilemap = load_tile(index);
     const struct Texture* texture = get_texture(index);
 
-    const GLfloat x1 = x - texture->offset[0];
-    const GLfloat y1 = y - texture->offset[1];
+    const GLfloat x1 = pos[0] - texture->offset[0];
+    const GLfloat y1 = pos[1] - texture->offset[1];
     const GLfloat x2 = x1 + (GLfloat)texture->size[0];
     const GLfloat y2 = y1 + (GLfloat)texture->size[1];
 
-    tile_vertex(tilemap, x1, y2, z, r, g, b, a, 0, 1);
-    tile_vertex(tilemap, x1, y1, z, r, g, b, a, 0, 0);
-    tile_vertex(tilemap, x2, y1, z, r, g, b, a, 1, 0);
-    tile_vertex(tilemap, x2, y1, z, r, g, b, a, 1, 0);
-    tile_vertex(tilemap, x2, y2, z, r, g, b, a, 1, 1);
-    tile_vertex(tilemap, x1, y2, z, r, g, b, a, 0, 1);
+    tile_vertex(tilemap, x1, y2, pos[2], color[0], color[1], color[2], color[3], 0, 1);
+    tile_vertex(tilemap, x1, y1, pos[2], color[0], color[1], color[2], color[3], 0, 0);
+    tile_vertex(tilemap, x2, y1, pos[2], color[0], color[1], color[2], color[3], 1, 0);
+    tile_vertex(tilemap, x2, y1, pos[2], color[0], color[1], color[2], color[3], 1, 0);
+    tile_vertex(tilemap, x2, y2, pos[2], color[0], color[1], color[2], color[3], 1, 1);
+    tile_vertex(tilemap, x1, y2, pos[2], color[0], color[1], color[2], color[3], 0, 1);
 }
 
 void batch_vertex(GLfloat x, GLfloat y, GLfloat z, GLubyte r, GLubyte g, GLubyte b, GLubyte a, GLfloat u, GLfloat v) {

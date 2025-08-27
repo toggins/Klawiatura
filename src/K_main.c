@@ -25,15 +25,18 @@
 
 int main(int argc, char** argv) {
     bool bypass_shader = false;
-    int32_t num_players = 1;
+    char* level = "TEST";
+    PlayerID num_players = 1;
     char* server_ip = "95.163.233.200"; // Public NutPunch server
     char* lobby_id = "Klawiatura";
     GameFlags start_flags = 0;
     for (size_t i = 0; i < argc; i++) {
         if (SDL_strcmp(argv[i], "-bypass_shader") == 0) {
             bypass_shader = true;
+        } else if (SDL_strcmp(argv[i], "-level") == 0) {
+            level = argv[++i];
         } else if (SDL_strcmp(argv[i], "-players") == 0) {
-            num_players = SDL_strtol(argv[++i], NULL, 0);
+            num_players = (PlayerID)SDL_strtol(argv[++i], NULL, 0);
             if (num_players < 1 || num_players > MAX_PLAYERS)
                 FATAL("Player amount must be between 1 and %li", MAX_PLAYERS);
         } else if (SDL_strcmp(argv[i], "-ip") == 0) {
@@ -55,7 +58,7 @@ int main(int argc, char** argv) {
         FATAL("gekko_create fail");
 
     GekkoNetAdapter* adapter = net_init(num_players, server_ip, lobby_id);
-    PlayerID local_player = net_wait(&num_players, &start_flags);
+    PlayerID local_player = net_wait(&num_players, level, &start_flags);
     if ((num_players <= 0 || num_players > MAX_PLAYERS) || (local_player < 0 || local_player >= MAX_PLAYERS))
         FATAL("Don't think I didn't see you trying to set invalid player indices!! I'll kick your ass!!");
     if (num_players > 1) {
@@ -87,7 +90,7 @@ int main(int argc, char** argv) {
         gekko_set_local_delay(session, local_player, 2);
 
     GameInput inputs[MAX_PLAYERS] = {GI_NONE};
-    start_state(num_players, local_player, start_flags);
+    start_state(num_players, local_player, level, start_flags);
 
     bool success = true;
     char errmsg[1024] = "No errors detected.";

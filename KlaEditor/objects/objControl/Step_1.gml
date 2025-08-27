@@ -88,3 +88,7 @@ if keyboard_check_pressed(vk_space)
 	global.widget = new FolderWidget(window_mouse_get_x(), window_mouse_get_y(), global.root_folder)
 else if keyboard_check_pressed(ord("Q")) and global.last_folder != undefined
 	global.widget = new FolderWidget(window_mouse_get_x(), window_mouse_get_y(), global.last_folder)
+if global.widget != undefined {
+	global.highlighted = noone
+	global.stretched = noone
+}

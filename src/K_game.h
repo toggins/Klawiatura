@@ -31,7 +31,7 @@
 
 typedef uint8_t Bool;
 
-typedef int32_t PlayerID;
+typedef int8_t PlayerID;
 typedef int16_t ObjectID;
 
 enum GameFlags {
@@ -130,6 +130,7 @@ enum GameObjectType {
     OBJ_PSWITCH_COIN,
     OBJ_PSWITCH_BRICK,
     OBJ_CLOUD,
+    OBJ_CLOUD_DARK,
     OBJ_BUSH,
     OBJ_BUSH_SNOW,
 
@@ -374,7 +375,7 @@ struct InterpObject {
     fvec2 pos;
 };
 
-void start_state(int, PlayerID, GameFlags);
+void start_state(PlayerID, PlayerID, const char*, GameFlags);
 void save_state(struct GameState*);
 void load_state(const struct GameState*);
 uint32_t check_state();

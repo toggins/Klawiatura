@@ -1,3 +1,4 @@
 function GradientDef() : Def() constructor {
-	sprite_name = ""
+	colors = [c_white, c_white, c_white, c_white]
+	alphas = [1, 1, 1, 1]
 }
