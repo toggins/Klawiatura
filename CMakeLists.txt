@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.27.0 FATAL_ERROR)
 
-project(Klawiatura VERSION 0.1.0 LANGUAGES C CXX)
+project(Klawiatura VERSION 0.1.0 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -8,8 +8,6 @@ set(CMAKE_C_EXTENSIONS ON)
 
 # Libraries
 set(BUILD_SHARED_LIBS OFF)
-set(BUILD_STATIC_LIBS ON)
-
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
@@ -58,13 +56,6 @@ FetchContent_MakeAvailable(cglm)
 # FMOD Core API (2.03.08)
 add_subdirectory(${CMAKE_SOURCE_DIR}/include/fmod)
 
-# GekkoNet
-set(NO_ASIO_BUILD ON CACHE INTERNAL "")
-FetchContent_Declare(
-    GekkoNet GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG cc7318f8088ce2561f3adcb055f3d09a2e919f76)
-FetchContent_MakeAvailable(GekkoNet)
-
 # S_fixed
 set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
 
@@ -91,10 +82,17 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(nutpunch)
 
 # yyjson (0.12.0)
-FetchContent_Declare(
-    yyjson GIT_REPOSITORY https://github.com/ibireme/yyjson.git
-    GIT_TAG 0.12.0)
+FetchContent_Declare(yyjson GIT_REPOSITORY https://github.com/ibireme/yyjson.git
+                     GIT_TAG 0.12.0)
 FetchContent_MakeAvailable(yyjson)
+
+# GekkoNet
+set(NO_ASIO_BUILD ON CACHE INTERNAL "")
+set(BUILD_SHARED_LIBS ON)
+FetchContent_Declare(
+    GekkoNet GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
+    GIT_TAG cc7318f8088ce2561f3adcb055f3d09a2e919f76)
+FetchContent_MakeAvailable(GekkoNet)
 
 set(LIBS
     SDL3::SDL3-static
