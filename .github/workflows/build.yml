@@ -34,7 +34,16 @@ jobs:
         run: py -m pip install jinja2
       - name: Restore build cache
         uses: actions/cache/restore@v4
-        id: cache-load
+        with:
+          path: build
+          key: cmake-${{ github.ref_name }}-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+      - name: Configure for ${{ matrix.config.os-name }}
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x86
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 17 2022" -A Win32
+      - name: Save post-configure cache
+        uses: actions/cache/save@v4
         with:
           path: build
           key: cmake-${{ github.ref_name }}-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -42,11 +51,9 @@ jobs:
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x86
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 17 2022" -A Win32
-          cmake --build build --config Release --target all
-      - name: Save build cache
+          cmake --build build --target all
+      - name: Save post-build cache
         uses: actions/cache/save@v4
-        id: cache-save
         with:
           path: build
           key: cmake-${{ github.ref_name }}-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
