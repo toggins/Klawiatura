@@ -52,7 +52,7 @@ jobs:
         run: |
           New-Item -Force -Path 'Klawiatura' -ItemType 'Directory'
           Copy-Item -Recurse -Destination 'Klawiatura' -Path `
-            @('build/Klawiatura.exe', 'build/data', 'build/fmodL.dll', 'build/GekkoNet_NO_ASIO.dll')
+            @('build/Klawiatura.exe', 'build/data', 'build/fmodL.dll', 'build/libGekkoNet_NO_ASIO.dll')
           7z a $env:OUTFILE Klawiatura\
       - name: Release
         uses: softprops/action-gh-release@v2
