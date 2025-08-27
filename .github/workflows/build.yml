@@ -42,7 +42,7 @@ jobs:
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x86
-          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -A x86
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -A x86
           cmake --build build --config Release --target all
       - name: Save build cache
         uses: actions/cache/save@v4
