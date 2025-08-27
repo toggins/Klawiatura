@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.27.0 FATAL_ERROR)
 
-project(Klawiatura VERSION 0.1.0 LANGUAGES C)
+project(Klawiatura VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -88,7 +88,6 @@ FetchContent_MakeAvailable(yyjson)
 
 # GekkoNet
 set(NO_ASIO_BUILD ON CACHE INTERNAL "")
-set(BUILD_SHARED_LIBS ON)
 FetchContent_Declare(
     GekkoNet GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
     GIT_TAG cc7318f8088ce2561f3adcb055f3d09a2e919f76)
