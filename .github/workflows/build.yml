@@ -39,9 +39,9 @@ jobs:
           path: build
           key: cmake-${{ github.ref_name }}-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
       - name: Build for ${{ matrix.config.os-name }}
-        shell: pwsh -ExecutionPolicy Unrestricted
+        shell: cmd
         run: |
-          & 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\Launch-VsDevShell.ps1' -Arch x86
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x86
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -A x86
           cmake --build build --config Release --target all
       - name: Save build cache
