@@ -261,7 +261,55 @@
                             "bit": 4
                         }
                     ]
-                }
+                },
+
+                [
+                    "Goal",
+                    [
+                        {
+                            "def": "Goal",
+                            "type": "backdrop",
+                            "z": 24,
+                            "texture": "M_GOAL"
+                        },
+
+                        {
+                            "def": "Goal Bar",
+                            "type": "object",
+                            "index": 32,
+                            "z": 23,
+                            "texture": "M_GOALBA",
+                            "flags": [
+                                {
+                                    "name": "Flip?",
+                                    "bit": 4
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Goal Mark",
+                            "type": "backdrop",
+                            "z": 24,
+                            "texture": "M_GOALM"
+                        },
+
+                        {
+                            "def": "Goal Line",
+                            "type": "object",
+                            "index": 34,
+                            "z": 24,
+                            "texture": "M_GOALM",
+                            "flags": [
+                                {
+                                    "name": "Flip?",
+                                    "bit": 4
+                                }
+                            ],
+                            "stretch": true
+                        }
+                    ]
+                ]
             ]
         ],
 
