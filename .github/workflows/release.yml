@@ -1,4 +1,4 @@
-name: Build & release
+name: Build and release binaries
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
     tags: ["stable", "dev"]
 
 jobs:
-  binary:
-    name: Release binaries for ${{ matrix.cfg.os-name }}
+  release:
+    name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} binaries for ${{ matrix.cfg.os-name }}
     runs-on: ${{ matrix.cfg.runner-os }}
     permissions:
       contents: write
