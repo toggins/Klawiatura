@@ -69,7 +69,7 @@ set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
 
 FetchContent_Declare(
     S_tructures GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
-    GIT_TAG master) # TODO: pin to a specific commit
+    GIT_TAG d0825e2b08d1ec66ec4bafd5f7e0cbc74ef95f5d)
 FetchContent_MakeAvailable(S_tructures)
 
 # NutPunch

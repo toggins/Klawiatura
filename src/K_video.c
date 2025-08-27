@@ -650,7 +650,7 @@ void load_texture(const char* index) {
 
     const StTinyKey key = StStrKey(index);
     StMapPut(textures, key, &texture, sizeof(texture));
-    StMapLookup(textures, key)->cleanup = nuke_texture;
+    StMapFind(textures, key)->cleanup = nuke_texture;
 }
 
 const struct Texture* get_texture(const char* index) {
@@ -772,7 +772,7 @@ static struct TileBatch* load_tile(const char* index) {
     tilemap = StMapGet(tiles, key);
     if (tilemap == NULL)
         FATAL("Out of memory for tile batch \"%s\"", index);
-    StMapLookup(tiles, key)->cleanup = nuke_tiles;
+    StMapFind(tiles, key)->cleanup = nuke_tiles;
 
     return (valid_tiles = tilemap);
 }

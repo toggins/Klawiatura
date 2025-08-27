@@ -147,7 +147,7 @@ void load_sound(const char* index) {
 
     const StTinyKey key = StStrKey(index);
     StMapPut(sounds, key, &sound, sizeof(sound));
-    StMapLookup(sounds, key)->cleanup = nuke_sound;
+    StMapFind(sounds, key)->cleanup = nuke_sound;
 }
 
 const struct Sound* get_sound(const char* index) {
