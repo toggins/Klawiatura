@@ -1566,13 +1566,16 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
     //
     //
     //
-    for (PlayerID i = 0; i < num_players; i++) {
+    for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
         struct GamePlayer* player = &(state.players[i]);
-        player->active = true;
+        player->active = i < num_players;
 
-        player->object = player->kevin.object = NULLOBJ;
-        player->lives = 4L;
-        respawn_player(i);
+        player->object = NULLOBJ;
+        player->kevin.object = NULLOBJ;
+        if (player->active) {
+            player->lives = 4L;
+            respawn_player(i);
+        }
     }
 
     play_track(TS_LEVEL, track, true);
@@ -1989,36 +1992,32 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                         break;
                     }
 
-                    if ((state.flags & GF_KEVIN) && state.sequence.type == SEQ_NONE) {
+                    if ((state.flags & GF_KEVIN) && state.sequence.type == SEQ_NONE &&
+                        ((object->values[VAL_PLAYER_KEVIN] <= 0L &&
+                          Fabs(Fadd(
+                              Fsub(object->pos[0], object->values[VAL_PLAYER_KEVIN_X]),
+                              Fsub(object->pos[1], object->values[VAL_PLAYER_KEVIN_Y])
+                          )) > FxOne) ||
+                         object->values[VAL_PLAYER_KEVIN] > 0L)) {
                         struct Kevin* kevin = &(player->kevin);
+                        SDL_memmove(kevin->frames, kevin->frames + 1L, (KEVIN_DELAY - 1L) * sizeof(struct KevinFrame));
 
-                        if ((object->values[VAL_PLAYER_KEVIN] <= 0L &&
-                             Fabs(Fadd(
-                                 Fsub(object->pos[0], object->values[VAL_PLAYER_KEVIN_X]),
-                                 Fsub(object->pos[1], object->values[VAL_PLAYER_KEVIN_Y])
-                             )) > FxOne) ||
-                            object->values[VAL_PLAYER_KEVIN] > 0L) {
-                            SDL_memmove(
-                                kevin->frames, kevin->frames + 1L, (KEVIN_DELAY - 1L) * sizeof(struct KevinFrame)
-                            );
-
-                            if (object->values[VAL_PLAYER_KEVIN] < KEVIN_DELAY)
-                                if (++(object->values[VAL_PLAYER_KEVIN]) >= KEVIN_DELAY) {
-                                    struct GameObject* kpawn =
-                                        get_object(kevin->object = create_object(OBJ_KEVIN, kevin->frames[0].pos));
-                                    if (kpawn != NULL) {
-                                        kpawn->values[VAL_KEVIN_PLAYER] = object->values[VAL_PLAYER_INDEX];
-                                        play_sound_at_object(kpawn, "KEVINACT");
-                                    }
+                        if (object->values[VAL_PLAYER_KEVIN] < KEVIN_DELAY)
+                            if (++(object->values[VAL_PLAYER_KEVIN]) >= KEVIN_DELAY) {
+                                struct GameObject* kpawn =
+                                    get_object(kevin->object = create_object(OBJ_KEVIN, kevin->frames[0].pos));
+                                if (kpawn != NULL) {
+                                    kpawn->values[VAL_KEVIN_PLAYER] = object->values[VAL_PLAYER_INDEX];
+                                    play_sound_at_object(kpawn, "KEVINACT");
                                 }
+                            }
 
-                            struct KevinFrame* kframe = &(kevin->frames[KEVIN_DELAY - 1L]);
-                            kframe->pos[0] = object->pos[0];
-                            kframe->pos[1] = object->pos[1];
-                            kframe->flipped = object->flags & FLG_X_FLIP;
-                            kframe->power = player->power;
-                            kframe->frame = get_player_frame(object);
-                        }
+                        struct KevinFrame* kframe = &(kevin->frames[KEVIN_DELAY - 1L]);
+                        kframe->pos[0] = object->pos[0];
+                        kframe->pos[1] = object->pos[1];
+                        kframe->flipped = object->flags & FLG_X_FLIP;
+                        kframe->power = player->power;
+                        kframe->frame = get_player_frame(object);
                     }
 
                     bump_object(oid);
@@ -4310,6 +4309,12 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                     object->bbox[0][1] = FfInt(-4L);
                     object->bbox[1][0] = FfInt(5L);
                     object->bbox[1][1] = FfInt(6L);
+                    break;
+                }
+
+                case OBJ_GOAL_MARK: {
+                    object->bbox[1][0] = FfInt(31L);
+                    object->bbox[1][1] = FfInt(32L);
                     break;
                 }
 
