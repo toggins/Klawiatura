@@ -51,7 +51,7 @@ jobs:
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x86
-          cmake --build build --target all
+          cmake --build build --config Release --target ALL_BUILD
       - name: Save post-build cache
         uses: actions/cache/save@v4
         with:
