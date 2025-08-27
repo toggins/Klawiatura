@@ -120,13 +120,13 @@ if(MSVC AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo) # you're sus my guy...
     target_compile_options(GekkoNet PRIVATE /fsanitize=address)
 endif()
 
-add_custom_command(
-    TARGET Klawiatura
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:Klawiatura>
-            $<TARGET_FILE_DIR:Klawiatura>
-    COMMAND_EXPAND_LISTS
+add_custom_target(
+    KlawiaturaPost ALL
+    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:Klawiatura>
+            $<TARGET_RUNTIME_DLLS:Klawiatura>
     COMMAND ${CMAKE_COMMAND} -E remove_directory
             $<TARGET_FILE_DIR:Klawiatura>/data
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/modsrc
-            $<TARGET_FILE_DIR:Klawiatura>/data)
+            $<TARGET_FILE_DIR:Klawiatura>/data
+    COMMAND_EXPAND_LISTS)
+add_dependencies(KlawiaturaPost Klawiatura)
