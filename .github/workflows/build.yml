@@ -7,19 +7,24 @@ on:
 
 jobs:
   binary:
-    name: Release binaries for ${{ matrix.config.os-name }}
-    runs-on: ${{ matrix.config.runner-os }}
+    name: Release binaries for ${{ matrix.cfg.os-name }}
+    runs-on: ${{ matrix.cfg.runner-os }}
     permissions:
       contents: write
     strategy:
       fail-fast: false
       matrix:
-        config:
+        cfg:
           - os-name: WinXP
             runner-os: windows-2022
-            bin-ext: .exe
+            vstools_arch: x86
+            vsproj_arch: Win32
+          - os-name: Win64
+            runner-os: windows-2022
+            vstools_arch: amd64
+            vsproj_arch: x64
     env:
-      OUTFILE: Klawiatura-${{ matrix.config.os-name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}.zip
+      OUTFILE: Klawiatura-${{ matrix.cfg.os-name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}.zip
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,43 +37,24 @@ jobs:
           ref: master
       - name: Install Python deps
         run: py -m pip install jinja2
-      - name: Restore build cache
-        uses: actions/cache/restore@v4
-        with:
-          path: build
-          key: cmake-${{ github.ref_name }}-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
-      - name: Configure for ${{ matrix.config.os-name }}
+      - name: Build for ${{ matrix.cfg.os-name }}
         shell: cmd
         run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x86
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 17 2022" -A Win32
-      - name: Save post-configuration cache
-        uses: actions/cache/save@v4
-        with:
-          path: build
-          key: cmake-${{ github.ref_name }}-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
-      - name: Build for ${{ matrix.config.os-name }}
-        shell: cmd
-        run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x86
-          cmake --build build --config Release --target ALL_BUILD
-      - name: Save post-build cache
-        uses: actions/cache/save@v4
-        with:
-          path: build
-          key: cmake-${{ github.ref_name }}-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ matrix.cfg.vstools_arch }}
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 17 2022" -A ${{ matrix.cfg.vsproj_arch }}
+          cmake --build build --config Release --target 'ALL_BUILD'
       - name: Assemble
         run: |
           New-Item -Force -Path 'Klawiatura' -ItemType 'Directory'
           Copy-Item -Recurse -Destination 'Klawiatura' -Path `
             @('build/Release/Klawiatura.exe', 'build/Release/fmodL.dll', 'build/Release/data')
           7z a $env:OUTFILE Klawiatura\
-      - name: Release for ${{ matrix.config.os-name }}
+      - name: Release ${{ github.ref_name }} for ${{ matrix.cfg.os-name }}
         uses: softprops/action-gh-release@v2
-        if: github.ref_type == 'tag'
+        if: github.ref_name != 'master'
         with:
           files: ${{ env.OUTFILE }}
-      - name: Release for ${{ matrix.config.os-name }} (dev)
+      - name: Release dev for ${{ matrix.cfg.os-name }}
         uses: softprops/action-gh-release@v2
         if: github.ref_name == 'master'
         with:

@@ -1,4 +1,3 @@
-# Change this comment whenever you need to re-hash for GitHub Actions: BLERGH
 cmake_minimum_required(VERSION 3.27.0 FATAL_ERROR)
 
 project(Klawiatura VERSION 0.1.0 LANGUAGES C CXX)
