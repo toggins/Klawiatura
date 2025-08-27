@@ -69,7 +69,7 @@ set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
 
 FetchContent_Declare(
     S_tructures GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
-    GIT_TAG master)
+    GIT_TAG master) # TODO: pin to a specific commit
 FetchContent_MakeAvailable(S_tructures)
 
 # NutPunch
@@ -78,7 +78,7 @@ set(NUTPUNCH_BUILD_SERVER OFF CACHE INTERNAL "")
 
 FetchContent_Declare(
     nutpunch GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG 941032e71d2986133309b6386d9993c85b5400ad)
+    GIT_TAG 2ba6cb6c8ce6c2b2d72f38f6de404bff894ee760)
 FetchContent_MakeAvailable(nutpunch)
 
 # yyjson (0.12.0)

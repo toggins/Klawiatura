@@ -3,6 +3,8 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL.h>
 
+#include <nutpunch.h>
+
 #define FIX_IMPLEMENTATION
 #include <S_fixed.h>
 
@@ -25,7 +27,8 @@
 
 int main(int argc, char** argv) {
     bool bypass_shader = false;
-    char* level = "TEST";
+    char level[NUTPUNCH_FIELD_DATA_MAX + 1] = {0};
+    SDL_memcpy(level, "TEST", SDL_strlen("TEST"));
     PlayerID num_players = 1;
     char* server_ip = "95.163.233.200"; // Public NutPunch server
     char* lobby_id = "Klawiatura";
@@ -34,7 +37,8 @@ int main(int argc, char** argv) {
         if (SDL_strcmp(argv[i], "-bypass_shader") == 0) {
             bypass_shader = true;
         } else if (SDL_strcmp(argv[i], "-level") == 0) {
-            level = argv[++i];
+            size_t str_len = SDL_strlen(argv[++i]), len = SDL_min(str_len, sizeof(level) - 1);
+            SDL_memcpy(level, argv[i], len);
         } else if (SDL_strcmp(argv[i], "-players") == 0) {
             num_players = (PlayerID)SDL_strtol(argv[++i], NULL, 0);
             if (num_players < 1 || num_players > MAX_PLAYERS)
@@ -57,9 +61,9 @@ int main(int argc, char** argv) {
     if (!gekko_create(&session))
         FATAL("gekko_create fail");
 
-    GekkoNetAdapter* adapter = net_init(num_players, server_ip, lobby_id);
-    PlayerID local_player = net_wait(&num_players, level, &start_flags);
-    if ((num_players <= 0 || num_players > MAX_PLAYERS) || (local_player < 0 || local_player >= MAX_PLAYERS))
+    GekkoNetAdapter* adapter = net_init(server_ip, lobby_id);
+    net_wait(&num_players, level, &start_flags);
+    if ((num_players <= 0 || num_players > MAX_PLAYERS))
         FATAL("Don't think I didn't see you trying to set invalid player indices!! I'll kick your ass!!");
     if (num_players > 1) {
         load_sound("CONNECT");
@@ -85,7 +89,7 @@ int main(int argc, char** argv) {
     config.desync_detection = true;
     gekko_start(session, &config);
     gekko_net_adapter_set(session, adapter);
-    net_fill(session);
+    PlayerID local_player = net_fill(session);
     if (num_players > 1)
         gekko_set_local_delay(session, local_player, 2);
 

@@ -5,8 +5,8 @@
 
 #include "K_game.h"
 
-GekkoNetAdapter* net_init(PlayerID, const char*, const char*);
+GekkoNetAdapter* net_init(const char*, const char*);
 void net_update();
 void net_teardown();
-PlayerID net_wait(PlayerID*, char*, GameFlags*);
-void net_fill(GekkoSession*);
+void net_wait(PlayerID*, char*, GameFlags*);
+PlayerID net_fill(GekkoSession*);
