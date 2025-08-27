@@ -42,7 +42,7 @@ jobs:
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ matrix.cfg.vstools_arch }}
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 17 2022" -A ${{ matrix.cfg.vsproj_arch }}
-          cmake --build build --config Release --target 'ALL_BUILD'
+          cmake --build build --config Release --target ALL_BUILD
       - name: Assemble
         run: |
           New-Item -Force -Path 'Klawiatura' -ItemType 'Directory'
