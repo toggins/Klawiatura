@@ -506,9 +506,6 @@ void video_update(const char* errmsg) {
     );
     glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)mvp);
 
-    draw_state();
-    submit_batch();
-
     struct TileBatch* tilemap = valid_tiles;
     if (tilemap != NULL) {
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
@@ -528,6 +525,9 @@ void video_update(const char* errmsg) {
             tilemap = tilemap->next;
         }
     }
+
+    draw_state();
+    submit_batch();
 
     glDisable(GL_DEPTH_TEST);
 
