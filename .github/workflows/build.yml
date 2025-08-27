@@ -61,7 +61,7 @@ jobs:
         run: |
           New-Item -Force -Path 'Klawiatura' -ItemType 'Directory'
           Copy-Item -Recurse -Destination 'Klawiatura' -Path `
-            @('build/Release/Klawiatura.exe', 'build/Release/fmodL.dll', 'build/data')
+            @('build/Release/Klawiatura.exe', 'build/Release/fmodL.dll', 'build/Release/data')
           7z a $env:OUTFILE Klawiatura\
       - name: Release for ${{ matrix.config.os-name }}
         uses: softprops/action-gh-release@v2
