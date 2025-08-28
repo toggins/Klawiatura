@@ -16,5 +16,8 @@
     },
     "[cmake]": {
         "editor.defaultFormatter": "cheshirekow.cmake-format"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "yzhang.markdown-all-in-one"
     }
 }
