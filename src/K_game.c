@@ -69,6 +69,7 @@ static ObjectID respawn_player(PlayerID pid) {
         pawn->values[VAL_PLAYER_INDEX] = (fix16_t)pid;
         pawn->values[VAL_PLAYER_KEVIN_X] = pawn->pos[0];
         pawn->values[VAL_PLAYER_KEVIN_Y] = pawn->pos[1];
+        pawn->flags |= spawn->flags & FLG_X_FLIP;
     }
     return player->object;
 }
