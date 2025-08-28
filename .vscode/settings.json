@@ -7,10 +7,6 @@
     "cmake.generator": "Ninja",
     "cmake.exportCompileCommandsFile": true,
     "clangd.arguments": ["--header-insertion=never"],
-    "files.exclude": {
-        ".cache": true,
-        ".build": true
-    },
     "[c]": {
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
     },
