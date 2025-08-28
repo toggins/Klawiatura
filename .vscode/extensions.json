@@ -2,7 +2,6 @@
     "recommendations": [
         "llvm-vs-code-extensions.vscode-clangd",
         "ms-vscode.cmake-tools",
-        "cheshirekow.cmake-format",
         "yzhang.markdown-all-in-one"
     ]
 }
