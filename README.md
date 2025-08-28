@@ -83,8 +83,10 @@ Listing some of the things we learned the hard way that you should consider:
 
 ------------
 
-**This project is licensed under [Unlicense](https://github.com/toggins/Klawiatura/blob/master/UNLICENSE).**
+## Footnote
 
-All of the assets belong to Nintendo. This is a free, open-source project and is not created for any sort of profit. We do not condone any commercial use of this project.
+**This project's code is public-domain under the terms of [the Unlicense](https://unlicense.org). Refer to [the copy provided](/UNLICENSE) in this repository for more info.**
+
+All of the assets belong to Nintendo. This is a free, open-source project not created for any sort of profit. We do not condone any commercial use of this project. ~~Don't go buying Klawiatura NFTs anywhere please.~~
 
 Module music provided by [modarchive.org](https://modarchive.org).
