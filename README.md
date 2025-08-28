@@ -5,7 +5,7 @@
 <img align="right" src=".github/assets/icon-upscaled.png">
 
 > [!TIP]
-> Check out [the releases](releases) to get started.
+> Check out [the releases](https://github.com/toggins/Klawiatura/releases) to get started.
 
 Mario Forever with rollback netcode.
 
