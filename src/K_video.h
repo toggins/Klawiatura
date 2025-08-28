@@ -1,23 +1,19 @@
 #pragma once
 
-// #include order matters!
-// clang-format off
 #include <glad/gl.h>
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_opengl.h>
-// clang-format on
 
 #include "K_memory.h" // IWYU pragma: keep
-
-#define WHITE (GLubyte[4]){255, 255, 255, 255}
-#define GRAY (GLubyte[4]){128, 128, 128, 255}
-#define BLACK (GLubyte[4]){0, 0, 0, 255}
 
 #ifdef RGB
 #undef RGB
 #endif
-
 #define RGB(r, g, b) (GLubyte[4]){r, g, b, 255}
+
+#define WHITE RGB(255, 255, 255)
+#define GRAY RGB(128, 128, 128)
+#define BLACK RGB(0, 0, 0, 255)
 
 #define RGBA(r, g, b, a)                                                                                               \
     (GLubyte[4]) {                                                                                                     \
