@@ -1,11 +1,13 @@
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_timer.h>
 
+#include <zlib.h>
+
 #define NUTPUNCH_IMPLEMENTATION
 #define NutPunch_Memcmp SDL_memcmp
 #define NutPunch_Memset SDL_memset
 #define NutPunch_Memcpy SDL_memcpy
-#include "nutpunch.h"
+#include <nutpunch.h>
 
 #ifndef NUTPUNCH_WINDOSE
 #error SORRY!!! NutPunch currently relies on Winsock
@@ -20,6 +22,32 @@ static const char* lobby_id = NULL;
 
 static SOCKET sock = INVALID_SOCKET;
 static GekkoNetAddress addrs[MAX_PLAYERS] = {0};
+
+#define DATA_MAX (512000)
+#define ZIP_DECOMPRESS (0)
+#define ZIP_COMPRESS (1)
+
+static const char* zippy(const char* input, int* len, uint8_t direction) {
+    static char output[DATA_MAX] = {0};
+    int ret = 0, destLen = sizeof(output);
+
+    if (direction == ZIP_COMPRESS) {
+        ret = compress2((Bytef*)output, (uLongf*)&destLen, (Bytef*)input, *len, Z_BEST_COMPRESSION);
+        if (Z_OK != ret)
+            goto skip;
+    } else {
+        ret = uncompress((Bytef*)output, (uLongf*)&destLen, (Bytef*)input, *len);
+        if (Z_OK != ret)
+            goto skip;
+    }
+
+    // printf("in: %d\tout: %d\n", *len, destLen);
+    *len = destLen;
+    return output;
+
+skip:
+    return input;
+}
 
 static void send_data(GekkoNetAddress* gn_addr, const char* data, int len) {
     if (!NutPunch_GetPeerCount() || gn_addr->data == NULL || !gn_addr->size)
@@ -39,7 +67,14 @@ static void send_data(GekkoNetAddress* gn_addr, const char* data, int len) {
     ws_addr.sin_port = htons(peer->port);
     SDL_memcpy(&ws_addr.sin_addr, peer->addr, 4);
 
-    int io = sendto(sock, data, len, 0, (struct sockaddr*)&ws_addr, sizeof(ws_addr));
+    const char* defl = zippy(data, &len, ZIP_COMPRESS);
+    if (defl == NULL) {
+        INFO("Failed to deflate (%d)\n", len);
+        return;
+    }
+
+    int io = sendto(sock, defl, len, 0, (struct sockaddr*)&ws_addr, sizeof(ws_addr));
+
     if (SOCKET_ERROR == io && WSAGetLastError() != WSAEWOULDBLOCK) {
         INFO("Failed to send to peer %d (%d)\n", peer->port, WSAGetLastError());
         peer->port = 0; // just nuke them...
@@ -55,9 +90,15 @@ static GekkoNetResult* make_packet(int peer_idx, const char* data, int io) {
     res->addr.data = SDL_malloc(res->addr.size);
     SDL_memcpy(res->addr.data, &NutPunch_GetPeers()[peer_idx], res->addr.size);
 
+    const char* infl = zippy(data, &io, ZIP_DECOMPRESS);
+    if (infl == NULL) {
+        INFO("Failed to deflate (%d)\n", io);
+        return NULL;
+    }
+
     res->data_len = io;
-    res->data = SDL_malloc(res->data_len);
-    SDL_memcpy(res->data, data, res->data_len);
+    res->data = SDL_malloc(io);
+    SDL_memcpy(res->data, infl, io);
 
     return res;
 }
@@ -66,7 +107,7 @@ static GekkoNetResult** receive_data(int* length) {
     if (!NutPunch_GetPeerCount() || sock == INVALID_SOCKET)
         return NULL;
 
-    static char data[512000] = {0};
+    static char data[DATA_MAX] = {0};
     static GekkoNetResult* packets[64] = {0};
     *length = 0;
 

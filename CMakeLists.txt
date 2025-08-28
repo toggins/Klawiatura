@@ -93,6 +93,15 @@ FetchContent_Declare(
     GIT_TAG cc7318f8088ce2561f3adcb055f3d09a2e919f76)
 FetchContent_MakeAvailable(GekkoNet)
 
+# zlib
+set(ZLIB_BUILD_TESTING OFF CACHE INTERNAL "")
+set(ZLIB_BUILD_SHARED OFF CACHE INTERNAL "")
+set(ZLIB_BUILD_MINIZIP OFF CACHE INTERNAL "")
+set(ZLIB_INSTALL OFF CACHE INTERNAL "")
+FetchContent_Declare(zlib GIT_REPOSITORY https://github.com/madler/zlib.git
+                     GIT_TAG v1.3.1)
+FetchContent_MakeAvailable(zlib)
+
 set(LIBS
     SDL3::SDL3-static
     SDL3_image::SDL3_image-static
@@ -104,7 +113,8 @@ set(LIBS
     S_fixed
     S_tructures
     nutpunch
-    yyjson)
+    yyjson
+    zlibstatic)
 
 # Build
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
