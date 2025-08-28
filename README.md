@@ -9,6 +9,16 @@
 
 Mario Forever with rollback netcode.
 
+## Multiplayer
+
+> [!NOTE]
+> Klawiatura uses [NutPunch](https://github.com/Schwungus/nutpunch), which relies heavily on Winsock. A cross-platform solution will be implemented later on.
+
+The main kicker of this project. Networking is purely peer-to-peer. By specifying 2+ players with the `-players` command, the game will automatically connect to a matchmaking server and wait for players with a matching lobby ID. You can change your lobby ID with `-lobby`, and specify a custom [nutpuncher](https://github.com/Schwungus/nutpunch) instance with `-ip`.
+
+> [!WARNING]
+> Multiplayer with 3+ players is not guaranteed to be stable. It's possible to get a desync error & crash if packets get dropped.
+
 ## Launch options
 
 You can adjust the game's settings per session with these launch options:
@@ -34,19 +44,6 @@ Or you can just use a batch file with the following contents:
 ```bat
 start cmd /c ./Klawiatura.exe -players 2 -lobby Gaming ^& pause
 ```
-
-### Multiplayer
-
-> [!NOTE]
-> Klawiatura uses [NutPunch](https://github.com/Schwungus/nutpunch), which relies heavily on Winsock. A cross-platform solution will be implemented later on.
-
-Networking is purely peer-to-peer. By specifying 2+ players with the `-players`
-command, the game will automatically connect to a UDP hole punching server and
-wait for players with a matching lobby ID. You can change your lobby ID with
-`-lobby` and specify a custom [nutpunch](https://github.com/Schwungus/nutpunch) server with `-ip`.
-
-> [!WARNING]
-> Multiplayer with 3+ players is not guaranteed to be stable. It's possible to get a desync error if packets get dropped.
 
 ## Building from Sources
 
