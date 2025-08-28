@@ -13,6 +13,10 @@
 #define GRAY (GLubyte[4]){128, 128, 128, 255}
 #define BLACK (GLubyte[4]){0, 0, 0, 255}
 
+#ifdef RGB
+#undef RGB
+#endif
+
 #define RGB(r, g, b) (GLubyte[4]){r, g, b, 255}
 
 #define RGBA(r, g, b, a)                                                                                               \
