@@ -7,7 +7,7 @@
 > [!TIP]
 > Check out [the releases](releases) to get started.
 
-Mario Forever with rollback netcode.
+Mario Forever with rollback netcode. Open source and [public domain](UNLICENSE).
 
 ## Multiplayer
 
