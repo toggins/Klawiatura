@@ -54,7 +54,7 @@ FetchContent_Declare(
     GIT_TAG v0.9.6)
 
 # FMOD Core API (2.03.08)
-add_subdirectory(${CMAKE_SOURCE_DIR}/include/fmod)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
 
 # S_fixed
 set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")

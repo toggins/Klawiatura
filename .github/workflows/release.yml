@@ -33,7 +33,7 @@ jobs:
         with:
           repository: toggins/fmod
           token: ${{ secrets.FMOD_TOKEN }}
-          path: include/fmod
+          path: external/fmod
           ref: master
       - name: Install Python deps
         run: py -m pip install jinja2
