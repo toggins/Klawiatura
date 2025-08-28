@@ -244,7 +244,15 @@
                     "flags": [
                         {
                             "name": "Flip?",
-                            "bit": 4
+                            "bit": 2
+                        },
+                        {
+                            "name": "Ascend?",
+                            "bit": 8
+                        },
+                        {
+                            "name": "Descend?",
+                            "bit": 9
                         }
                     ]
                 },
@@ -258,7 +266,7 @@
                     "flags": [
                         {
                             "name": "Flip?",
-                            "bit": 4
+                            "bit": 2
                         }
                     ]
                 },
@@ -282,7 +290,7 @@
                             "flags": [
                                 {
                                     "name": "Flip?",
-                                    "bit": 4
+                                    "bit": 2
                                 }
                             ]
                         },
@@ -303,7 +311,7 @@
                             "flags": [
                                 {
                                     "name": "Flip?",
-                                    "bit": 4
+                                    "bit": 2
                                 }
                             ],
                             "stretch": true
@@ -316,6 +324,74 @@
         [
             "Items",
             [
+                [
+                    "Blocks",
+                    [
+                        {
+                            "def": "Item Block",
+                            "type": "object",
+                            "index": 26,
+                            "z": 20,
+                            "texture": "I_BLOCKA",
+                            "values": [
+                                {
+                                    "name": "Object Index",
+                                    "index": 7,
+                                    "default": 10
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Hidden Block",
+                            "type": "object",
+                            "index": 27,
+                            "z": 20,
+                            "texture": "I_BLOCKC",
+                            "values": [
+                                {
+                                    "name": "Object Index",
+                                    "index": 7,
+                                    "default": 10
+                                }
+                            ],
+                            "flags": [
+                                {
+                                    "name": "Appear Once?",
+                                    "bit": 7
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Brick Block",
+                            "type": "object",
+                            "index": 28,
+                            "z": 20,
+                            "texture": "I_BRICKA",
+                            "flags": [
+                                {
+                                    "name": "Gray?",
+                                    "bit": 6
+                                }
+                            ]
+                        }
+                    ]
+                ],
+
+                [
+                    "Powerups",
+                    [
+                        {
+                            "def": "Mushroom",
+                            "type": "object",
+                            "index": 11,
+                            "z": 1,
+                            "texture": "I_SHROOM"
+                        }
+                    ]
+                ],
+
                 {
                     "def": "Coin",
                     "type": "object",

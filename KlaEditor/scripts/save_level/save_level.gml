@@ -77,8 +77,25 @@ function save_level(_filename) {
 				buffer_write(_kla, buffer_s32, round(image_xscale * 65536)) // int32_t (Q16.16)
 				buffer_write(_kla, buffer_s32, round(image_yscale * 65536)) // int32_t (Q16.16)
 				
-				buffer_write(_kla, buffer_u8, 0) // uint8_t
-				// TODO: Write defined values
+				var _num_values = 0
+				var j = 0
+				repeat array_length(values) {
+					if values[j] != undefined {
+						++_num_values
+					}
+					++j
+				}
+				buffer_write(_kla, buffer_u8, _num_values) // uint8_t
+				
+				j = 0
+				repeat array_length(values) {
+					var _value = values[j]
+					if _value != undefined {
+						buffer_write(_kla, buffer_u8, j)
+						buffer_write(_kla, buffer_s32, _value);
+					}
+					++j
+				}
 				
 				buffer_write(_kla, buffer_u32, flags)
 			}

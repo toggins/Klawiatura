@@ -133,22 +133,23 @@ function load_level(_filename) {
 				var _x_scale = buffer_read(_kla, buffer_s32) / 65536
 				var _y_scale = buffer_read(_kla, buffer_s32) / 65536
 				
-				// TODO: Read values
-				repeat buffer_read(_kla, buffer_u8) {
-					buffer_read(_kla, buffer_u8)
-					buffer_read(_kla, buffer_s32)
-				}
+				var _mobj = instance_create_depth(_x, _y, _z, objMarker)
 				
-				var _flags = buffer_read(_kla, buffer_u32)
-				
-				with instance_create_depth(_x, _y, _z, objMarker) {
+				with _mobj {
 					def = global.defs[? _marker]
 					if def != undefined
 						sprite_index = def.sprite
 					
 					image_xscale = _x_scale
 					image_yscale = _y_scale
-					flags = _flags
+					
+					repeat buffer_read(_kla, buffer_u8) {
+						var _index = buffer_read(_kla, buffer_u8)
+						var _value = buffer_read(_kla, buffer_s32)
+						values[_index] = _value
+					}
+					
+					flags = buffer_read(_kla, buffer_u32)
 				}
 				break
 			}

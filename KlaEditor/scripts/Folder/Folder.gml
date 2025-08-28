@@ -39,7 +39,6 @@ function Folder(_name, _items = undefined, _from = undefined) constructor {
 						_def = new GradientDef()
 						
 						var _icolors = _item[$ "colors"]
-						show_debug_message(_icolors)
 						if is_array(_icolors) and array_length(_icolors) >= 4 {
 							var j = 0
 							repeat 4 {
@@ -48,11 +47,10 @@ function Folder(_name, _items = undefined, _from = undefined) constructor {
 								var _fa = _def.alphas
 								
 								_fc[j] = make_color_rgb(_ic[0], _ic[1], _ic[2])
-								_fa[j] = _ic[3] / 255
+								_fa[j] = _ic[3] / 255;
 								++j
 							}
 						}
-						show_debug_message(_def.colors)
 						break
 					}
 					
@@ -64,6 +62,34 @@ function Folder(_name, _items = undefined, _from = undefined) constructor {
 					case DefTypes.OBJECT: {
 						_def = new ObjectDef()
 						_def.index = force_type_fallback(_item[$ "index"], "number", 0)
+						
+						var _ivalues = _item[$ "values"]
+						if is_array(_ivalues) {
+							var j = 0
+							repeat array_length(_ivalues) {
+								var _ivalue = force_type(_ivalues[j], "struct")
+								array_push(_def.values, {
+									name: force_type(_ivalue[$ "name"], "string"),
+									index: force_type(_ivalue[$ "index"], "number"),
+									default_value: force_type_fallback(_ivalue[$ "default"], "number"),
+								});
+								++j
+							}
+						}
+						
+						var _iflags = _item[$ "flags"]
+						if is_array(_iflags) {
+							var j = 0
+							repeat array_length(_iflags) {
+								var _iflag = force_type(_iflags[j], "struct")
+								array_push(_def.flags, {
+									name: force_type(_iflag[$ "name"], "string"),
+									bit: (1 << force_type(_iflag[$ "bit"], "number")),
+									default_value: force_type_fallback(_iflag[$ "default"], "bool", false),
+								});
+								++j
+							}
+						}
 						break
 					}
 				}

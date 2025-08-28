@@ -70,6 +70,24 @@ if not instance_exists(_highlighted) {
 							array_copy(alphas, 0, _def.alphas, 0, 4)
 						} else {
 							sprite_index = _def.sprite
+							
+							if is_instanceof(_def, ObjectDef) {
+								var _values = _def.values
+								var i = 0
+								repeat array_length(_values) {
+									var _value = _def.values[i]
+									values[_value.index] = _value.default_value;
+									++i
+								}
+								
+								var _flags = _def.flags
+								i = 0
+								repeat array_length(_flags) {
+									var _flag = _def.flags[i]
+									flags |= (_flag.default_value * _flag.bit);
+									++i
+								}
+							}
 						}
 					}
 					if _def.stretch {

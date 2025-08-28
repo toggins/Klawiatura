@@ -2,13 +2,13 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 	width = 272
 	height = 8
 	
-	static push_field = function (_y, _name, _value, _callback = undefined) {
+	static push_field = function (_y, _name, _value, _callback) {
 		add_element(new TextElement(8, _y, _name))
 		var _input_x = 16 + string_width(_name)
 		add_element(new InputElement(_input_x, _y, 264 - _input_x, 22, _value, _callback))
 	}
 	
-	static push_button = function (_y, _name, _value, _callback = undefined) {
+	static push_button = function (_y, _name, _value, _callback) {
 		add_element(new TextElement(8, _y, _name))
 		
 		var _button = new ButtonElement(16 + string_width(_name), _y, _value ? "ON" : "OFF", undefined)
@@ -137,11 +137,11 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 	
 	push_button(_yy, "8-3 Lava?", _level.flags & LevelFlags.LAVA, function () {
 		with global.level {
-			if flags & LevelFlags.LAVA
+			if (flags & LevelFlags.LAVA)
 				flags &= ~LevelFlags.LAVA
 			else
 				flags |= LevelFlags.LAVA
-			return flags & LevelFlags.LAVA
+			return (flags & LevelFlags.LAVA)
 		}
 		return false
 	})
@@ -149,11 +149,11 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 	
 	push_button(_yy, "Hardcore?", _level.flags & LevelFlags.HARDCORE, function () {
 		with global.level {
-			if flags & LevelFlags.HARDCORE
+			if (flags & LevelFlags.HARDCORE)
 				flags &= ~LevelFlags.HARDCORE
 			else
 				flags |= LevelFlags.HARDCORE
-			return flags & LevelFlags.HARDCORE
+			return (flags & LevelFlags.HARDCORE)
 		}
 		return false
 	})
@@ -161,11 +161,11 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 	
 	push_button(_yy, "Spike Ceiling?", _level.flags & LevelFlags.SPIKES, function () {
 		with global.level {
-			if flags & LevelFlags.SPIKES
+			if (flags & LevelFlags.SPIKES)
 				flags &= ~LevelFlags.SPIKES
 			else
 				flags |= LevelFlags.SPIKES
-			return flags & LevelFlags.SPIKES
+			return (flags & LevelFlags.SPIKES)
 		}
 		return false
 	})
@@ -173,11 +173,11 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 	
 	push_button(_yy, "Lost Map?", _level.flags & LevelFlags.LOST, function () {
 		with global.level {
-			if flags & LevelFlags.LOST
+			if (flags & LevelFlags.LOST)
 				flags &= ~LevelFlags.LOST
 			else
 				flags |= LevelFlags.LOST
-			return flags & LevelFlags.LOST
+			return (flags & LevelFlags.LOST)
 		}
 		return false
 	})
@@ -185,11 +185,11 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 	
 	push_button(_yy, "Funny Tanks?", _level.flags & LevelFlags.FUNNY, function () {
 		with global.level {
-			if flags & LevelFlags.FUNNY
+			if (flags & LevelFlags.FUNNY)
 				flags &= ~LevelFlags.FUNNY
 			else
 				flags |= LevelFlags.FUNNY
-			return flags & LevelFlags.FUNNY
+			return (flags & LevelFlags.FUNNY)
 		}
 		return false
 	})
