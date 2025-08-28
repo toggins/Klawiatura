@@ -69,7 +69,7 @@ static ObjectID respawn_player(PlayerID pid) {
         pawn->values[VAL_PLAYER_INDEX] = (fix16_t)pid;
         pawn->values[VAL_PLAYER_KEVIN_X] = pawn->pos[0];
         pawn->values[VAL_PLAYER_KEVIN_Y] = pawn->pos[1];
-        pawn->flags |= spawn->flags & FLG_X_FLIP;
+        pawn->flags |= (spawn->flags & (FLG_X_FLIP | FLG_PLAYER_ASCEND | FLG_PLAYER_DESCEND));
     }
     return player->object;
 }
@@ -215,8 +215,11 @@ static void bump_block(struct GameObject* block, ObjectID from, Bool strong) {
                 struct GameObject* item = &(state.objects[iid]);
 
                 move_object(
-                    iid,
-                    (fvec2){Fadd(block->pos[0], Flerp(block->bbox[0][0], block->bbox[1][0], FxHalf)), block->pos[1]}
+                    iid, (fvec2){Fsub(
+                                     Fadd(block->pos[0], Flerp(block->bbox[0][0], block->bbox[1][0], FxHalf)),
+                                     Flerp(item->bbox[0][0], item->bbox[1][0], FxHalf)
+                                 ),
+                                 Fsub(block->pos[1], item->bbox[1][1])}
                 );
                 skip_interp(iid);
 
@@ -888,7 +891,6 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
                     Fadd(self->pos[1], self->bbox[1][1])) {
                 struct GameObject* block = get_object(create_object(OBJ_ITEM_BLOCK, self->pos));
                 if (block != NULL) {
-                    other->values[VAL_Y_SPEED] = FxZero;
                     move_object(
                         other_id, (fvec2){other->pos[0], Fsub(Fadd(self->pos[1], self->bbox[1][1]), other->bbox[0][1])}
                     );
@@ -1527,32 +1529,33 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
                 fvec2 pos = {*((fix16_t*)buf), *((fix16_t*)(buf + sizeof(fix16_t)))};
                 buf += sizeof(fix16_t[2]);
 
-                fix16_t depth = *((fix16_t*)buf);
+                struct GameObject* object = get_object(create_object(type, pos));
+                if (object == NULL)
+                    FATAL("Failed to create object type %u", type);
+
+                object->depth = *((fix16_t*)buf);
                 buf += sizeof(fix16_t);
 
                 fvec2 scale = {*((fix16_t*)buf), *((fix16_t*)(buf + sizeof(fix16_t)))};
                 buf += sizeof(fix16_t[2]);
+                object->bbox[0][0] = Fmul(object->bbox[0][0], scale[0]);
+                object->bbox[0][1] = Fmul(object->bbox[0][1], scale[1]);
+                object->bbox[1][0] = Fmul(object->bbox[1][0], scale[0]);
+                object->bbox[1][1] = Fmul(object->bbox[1][1], scale[1]);
 
                 uint8_t num_values = *((uint8_t*)buf);
                 buf += sizeof(uint8_t);
 
                 for (uint8_t j = 0; j < num_values; j++) {
+                    uint8_t index = *((uint8_t*)buf);
                     buf += sizeof(uint8_t);
+                    object->values[index] = *((fix16_t*)buf);
                     buf += sizeof(fix16_t);
                 }
 
-                ObjectFlags flags = *((ObjectFlags*)buf);
+                object->flags |= *((ObjectFlags*)buf);
                 buf += sizeof(ObjectFlags);
 
-                struct GameObject* object = get_object(create_object(type, pos));
-                if (object != NULL) {
-                    object->bbox[0][0] = Fmul(object->bbox[0][0], scale[0]);
-                    object->bbox[0][1] = Fmul(object->bbox[0][1], scale[1]);
-                    object->bbox[1][0] = Fmul(object->bbox[1][0], scale[0]);
-                    object->bbox[1][1] = Fmul(object->bbox[1][1], scale[1]);
-                    object->depth = depth;
-                    object->flags |= flags;
-                }
                 break;
             }
         }
@@ -4139,6 +4142,8 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
 
                 case OBJ_MUSHROOM:
                 case OBJ_MUSHROOM_1UP: {
+                    object->depth = FxOne;
+
                     object->bbox[0][0] = FfInt(-15L);
                     object->bbox[0][1] = FfInt(-32L);
                     object->bbox[1][0] = FfInt(15L);
@@ -4148,6 +4153,8 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_MUSHROOM_POISON: {
+                    object->depth = FxOne;
+
                     object->bbox[0][0] = FfInt(-15L);
                     object->bbox[0][1] = FfInt(-32L);
                     object->bbox[1][0] = FfInt(15L);
@@ -4157,6 +4164,8 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_FIRE_FLOWER: {
+                    object->depth = FxOne;
+
                     object->bbox[0][0] = FfInt(-17L);
                     object->bbox[0][1] = FfInt(-31L);
                     object->bbox[1][0] = FfInt(16L);
@@ -4167,6 +4176,8 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_BEETROOT: {
+                    object->depth = FxOne;
+
                     object->bbox[0][0] = FfInt(-13L);
                     object->bbox[0][1] = FfInt(-32L);
                     object->bbox[1][0] = FfInt(14L);
@@ -4177,6 +4188,8 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_LUI: {
+                    object->depth = FxOne;
+
                     object->bbox[0][0] = FfInt(-15L);
                     object->bbox[0][1] = FfInt(-30L);
                     object->bbox[1][0] = FfInt(15L);
@@ -4187,6 +4200,8 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_HAMMER_SUIT: {
+                    object->depth = FxOne;
+
                     object->bbox[0][0] = FfInt(-13L);
                     object->bbox[0][1] = FfInt(-31L);
                     object->bbox[1][0] = FfInt(14L);
@@ -4197,6 +4212,8 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_STARMAN: {
+                    object->depth = FxOne;
+
                     object->bbox[0][0] = FfInt(-16L);
                     object->bbox[0][1] = FfInt(-32L);
                     object->bbox[1][0] = FfInt(17L);

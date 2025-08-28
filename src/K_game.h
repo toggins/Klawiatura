@@ -236,6 +236,8 @@ enum ObjectFlags {
     FLG_PLAYER_DUCK = 1 << 5,
     FLG_PLAYER_JUMP = 1 << 6,
     FLG_PLAYER_SWIM = 1 << 7,
+    FLG_PLAYER_ASCEND = 1 << 8,
+    FLG_PLAYER_DESCEND = 1 << 9,
 
     FLG_PLAYER_DEAD_LAST = 1 << 5,
 
