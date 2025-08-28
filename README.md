@@ -7,7 +7,7 @@
 > [!TIP]
 > Check out [the releases](releases) to get started.
 
-Mario Forever with rollback netcode. Open source and [public domain](UNLICENSE).
+Mario Forever with rollback netcode.
 
 ## Multiplayer
 
@@ -80,3 +80,11 @@ Listing some of the things we learned the hard way that you should consider:
 
 1. MSVC Debug builds require Debug versions of the Visual C++ libraries to run outside the machine that built the binary. If you really need to test Klawiatura on an external machine with the debug information present, pass `RelWithDebInfo` to `--config` and for `CMAKE_BUILD_TYPE`.
 2. If you're building with anything other than MSVC, you'll have to replace `--target ALL_BUILD` with `--target all`. It's actually an MSVC-specific quirk of CMake that the `all` target is named `ALL_BUILD` for whatever reason.
+
+------------
+
+**This project is licensed under [Unlicense](https://github.com/toggins/Klawiatura/blob/master/UNLICENSE).**
+
+All of the assets belong to Nintendo. This is a free, open-source project and is not created for any sort of profit. We do not condone any commercial use of this project.
+
+Module music provided by [modarchive.org](https://modarchive.org).
