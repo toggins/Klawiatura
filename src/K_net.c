@@ -225,23 +225,16 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
 
             case NP_Status_Punched: {
                 PlayerID* pplayers = NutPunch_Get("PLAYERS", &size);
-                if (size == sizeof(PlayerID) && *pplayers) {
+                if (size == sizeof(PlayerID) && *pplayers)
                     *_num_players = *pplayers;
-                    INFO("PLAYERS: %d", *_num_players);
-                } else
-                    *_num_players = 0;
 
                 char* plevel = NutPunch_Get("LEVEL", &size);
-                if (size && size <= NUTPUNCH_FIELD_DATA_MAX) {
+                if (size && size <= NUTPUNCH_FIELD_DATA_MAX)
                     SDL_memcpy(_level, plevel, size);
-                    INFO("LEVEL: %s", _level);
-                }
 
                 GameFlags* pflags = NutPunch_Get("FLAGS", &size);
-                if (size == sizeof(GameFlags)) {
+                if (size == sizeof(GameFlags))
                     *_start_flags = *pflags;
-                    INFO("FLAGS: %d", *_start_flags);
-                }
 
                 if (*_num_players && NutPunch_GetPeerCount() >= *_num_players) {
                     INFO("%d player start!\n", *_num_players);
