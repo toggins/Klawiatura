@@ -9,10 +9,6 @@
 #define NutPunch_Free SDL_free
 #include <nutpunch.h>
 
-#ifndef NUTPUNCH_WINDOSE
-#error SORRY!!! NutPunch currently relies on Winsock
-#endif
-
 #include "K_game.h"
 #include "K_log.h"
 #include "K_net.h"
@@ -142,10 +138,6 @@ PlayerID net_fill(GekkoSession* session) {
     }
 
     return 0;
-}
-
-void net_update() {
-    NutPunch_Update();
 }
 
 void net_teardown() {

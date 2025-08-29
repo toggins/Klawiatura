@@ -124,8 +124,8 @@ int main(int argc, char** argv) {
         ticks += (float)(current_time - last_time) / 1000.0f;
         last_time = current_time;
 
-        net_update();
         gekko_network_poll(session);
+        NutPunch_Update();
 
         if (ticks >= frame_time) {
             interp_start();
