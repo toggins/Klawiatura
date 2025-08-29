@@ -7,6 +7,8 @@
 #define NutPunch_Memcmp SDL_memcmp
 #define NutPunch_Memset SDL_memset
 #define NutPunch_Memcpy SDL_memcpy
+#define NutPunch_Malloc SDL_malloc
+#define NutPunch_Free SDL_free
 #include <nutpunch.h>
 
 #ifndef NUTPUNCH_WINDOSE
@@ -17,11 +19,7 @@
 #include "K_log.h"
 #include "K_net.h"
 
-static const char* server_ip = NULL;
-static const char* lobby_id = NULL;
-
-static SOCKET sock = INVALID_SOCKET;
-static GekkoNetAddress addrs[MAX_PLAYERS] = {0};
+static const char *server_ip = NULL, *lobby_id = NULL;
 
 #define DATA_MAX (512000)
 #define ZIP_DECOMPRESS (0)
@@ -34,154 +32,47 @@ static const char* zippy(const char* input, int* len, uint8_t direction) {
     if (direction == ZIP_COMPRESS) {
         ret = compress2((Bytef*)output, (uLongf*)&destLen, (Bytef*)input, *len, Z_BEST_COMPRESSION);
         if (Z_OK != ret)
-            goto skip;
+            return input;
     } else {
         ret = uncompress((Bytef*)output, (uLongf*)&destLen, (Bytef*)input, *len);
         if (Z_OK != ret)
-            goto skip;
+            return input;
     }
 
-    // printf("in: %d\tout: %d\n", *len, destLen);
+#if 0
+    printf("in: %d\tout: %d\n", *len, destLen);
+#endif
     *len = destLen;
     return output;
-
-skip:
-    return input;
 }
 
 static void send_data(GekkoNetAddress* gn_addr, const char* data, int len) {
-    if (!NutPunch_GetPeerCount() || gn_addr->data == NULL || !gn_addr->size)
+    int peer = *(int*)gn_addr->data;
+    if (!NutPunch_PeerAlive(peer))
         return;
-
-    struct NutPunch* peer = (struct NutPunch*)(gn_addr->data);
-    if (sock == INVALID_SOCKET) {
-        // INFO("Socket died!!!");
-        peer->port = 0;
-        return;
-    }
-    if (!peer->port || 0xFFFFFFFF == *(uint32_t*)peer->addr)
-        return;
-
-    struct sockaddr_in ws_addr;
-    ws_addr.sin_family = AF_INET;
-    ws_addr.sin_port = htons(peer->port);
-    SDL_memcpy(&ws_addr.sin_addr, peer->addr, 4);
-
-    const char* defl = zippy(data, &len, ZIP_COMPRESS);
-    if (defl == NULL) {
-        INFO("Failed to deflate (%d)\n", len);
-        return;
-    }
-
-    int io = sendto(sock, defl, len, 0, (struct sockaddr*)&ws_addr, sizeof(ws_addr));
-
-    if (SOCKET_ERROR == io && WSAGetLastError() != WSAEWOULDBLOCK) {
-        INFO("Failed to send to peer %d (%d)\n", peer->port, WSAGetLastError());
-        peer->port = 0; // just nuke them...
-    }
-    if (!io)
-        peer->port = 0; // graceful close
+    data = zippy(data, &len, ZIP_COMPRESS);
+    NutPunch_Send(peer, data, len);
 }
 
-static GekkoNetResult* make_packet(int peer_idx, const char* data, int io) {
-    GekkoNetResult* res = SDL_malloc(sizeof(GekkoNetResult));
-
-    res->addr.size = sizeof(struct NutPunch);
-    res->addr.data = SDL_malloc(res->addr.size);
-    SDL_memcpy(res->addr.data, &NutPunch_GetPeers()[peer_idx], res->addr.size);
-
-    const char* infl = zippy(data, &io, ZIP_DECOMPRESS);
-    if (infl == NULL) {
-        INFO("Failed to deflate (%d)\n", io);
-        return NULL;
-    }
-
-    res->data_len = io;
-    res->data = SDL_malloc(io);
-    SDL_memcpy(res->data, infl, io);
-
-    return res;
-}
-
-static GekkoNetResult** receive_data(int* length) {
-    if (!NutPunch_GetPeerCount() || sock == INVALID_SOCKET)
-        return NULL;
-
-    static char data[DATA_MAX] = {0};
+static GekkoNetResult** receive_data(int* pCount) {
     static GekkoNetResult* packets[64] = {0};
-    *length = 0;
+    static char data[NUTPUNCH_BUFFER_SIZE] = {0};
+    *pCount = 0;
 
-    for (;;) { // accept connections
-        static struct timeval instantBitchNoodles = {0, 0};
-        fd_set s = {1, {sock}};
+    while (NutPunch_HasNext()) {
+        int size = sizeof(data), peer = NutPunch_NextPacket(data, &size);
+        GekkoNetResult* res = SDL_malloc(sizeof(GekkoNetResult));
 
-        int res = select(0, &s, NULL, NULL, &instantBitchNoodles);
-        if (res == SOCKET_ERROR) {
-            if (WSAGetLastError() == WSAEWOULDBLOCK)
-                break;
-            INFO("Failed to poll socket: %d\n", WSAGetLastError());
-        }
-        if (!res)
-            break;
+        res->addr.size = sizeof(peer);
+        res->addr.data = SDL_malloc(res->addr.size);
+        SDL_memcpy(res->addr.data, &peer, res->addr.size);
 
-        struct sockaddr_in addr = {0};
-        int addrSize = sizeof(addr);
+        const char* zip = zippy(data, &size, ZIP_DECOMPRESS);
+        res->data_len = size;
+        res->data = SDL_malloc(size);
+        SDL_memcpy(res->data, zip, size);
 
-        SDL_memset(data, 0, sizeof(data));
-        int io = recvfrom(sock, data, sizeof(data), 0, (struct sockaddr*)&addr, &addrSize);
-
-        if (io == SOCKET_ERROR) {
-            if (WSAGetLastError() == WSAEWOULDBLOCK)
-                break;
-            INFO("Failed to receive from socket (%d)\n", WSAGetLastError());
-            closesocket(sock);
-            sock = INVALID_SOCKET;
-            break;
-        }
-        if (io <= 0)
-            continue;
-
-        for (int i = 0; i < NUTPUNCH_MAX_PLAYERS; i++) {
-            struct NutPunch* peer = &NutPunch_GetPeers()[i];
-            if (NutPunch_LocalPeer() == i || !peer->port)
-                continue;
-
-            bool same_host = !SDL_memcmp(&addr.sin_addr, peer->addr, 4);
-            bool same_port = addr.sin_port == htons(peer->port);
-            if (!same_host || !same_port)
-                continue;
-
-            packets[(*length)++] = make_packet(i, data, io);
-            break;
-        }
-    }
-
-    for (int i = 0; i < NUTPUNCH_MAX_PLAYERS; i++) { // process existing peers
-        struct NutPunch* peer = &NutPunch_GetPeers()[i];
-        if (NutPunch_LocalPeer() == i || !peer->port)
-            continue;
-
-        struct sockaddr_in addr = {0};
-        addr.sin_family = AF_INET;
-        addr.sin_port = htons(peer->port);
-        SDL_memcpy(&addr.sin_addr, peer->addr, 4);
-        int addrSize = sizeof(addr);
-
-        SDL_memset(data, 0, sizeof(data));
-        int io = recvfrom(sock, data, sizeof(data), 0, (struct sockaddr*)&addr, &addrSize);
-
-        if (io == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK) {
-            INFO("Failed to receive from peer %d (%d)\n", peer->port, WSAGetLastError());
-            peer->port = 0; // just nuke them...
-            continue;
-        }
-        if (!io) { // graceful close
-            INFO("Peer %d disconnect\n", i + 1);
-            peer->port = 0;
-        }
-        if (io <= 0)
-            continue;
-        packets[(*length)++] = make_packet(i, data, io);
+        packets[(*pCount)++] = res;
     }
 
     return packets;
@@ -199,7 +90,7 @@ GekkoNetAdapter* net_init(const char* _server_ip, const char* _lobby_id) {
 }
 
 void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
-    if (*_num_players <= 1)
+    if (*_num_players < 2)
         return;
 
     int size;
@@ -208,7 +99,7 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
     NutPunch_Set("PLAYERS", sizeof(PlayerID), _num_players);
     NutPunch_Set("LEVEL", (int)SDL_strnlen(_level, 8), _level);
     NutPunch_Set("FLAGS", sizeof(GameFlags), _start_flags);
-    INFO("Waiting in lobby \"%s\"... (FLAG: %d)", NutPunch_LobbyId, *_start_flags);
+    INFO("Waiting in lobby \"%s\"... (FLAG: %d)", lobby_id, *_start_flags);
 
     for (;;) {
         SDL_Event event;
@@ -218,12 +109,13 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
                 exit(EXIT_SUCCESS);
             }
 
-        switch (NutPunch_Query()) {
+        switch (NutPunch_Update()) {
             case NP_Status_Error:
                 FATAL("NutPunch_Query fail: %s", NutPunch_GetLastError());
-                break;
+                *_num_players = 0;
+                return;
 
-            case NP_Status_Punched: {
+            case NP_Status_Online: {
                 PlayerID* pplayers = NutPunch_Get("PLAYERS", &size);
                 if (size == sizeof(PlayerID) && *pplayers)
                     *_num_players = *pplayers;
@@ -236,13 +128,13 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
                 if (size == sizeof(GameFlags))
                     *_start_flags = *pflags;
 
-                if (*_num_players && NutPunch_GetPeerCount() >= *_num_players) {
+                if (*_num_players && NutPunch_PeerCount() + 1 >= *_num_players) {
                     INFO("%d player start!\n", *_num_players);
-                    sock = NutPunch_Done();
                     return;
                 }
                 break;
             }
+
             default:
                 break;
         }
@@ -252,41 +144,37 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
 }
 
 PlayerID net_fill(GekkoSession* session) {
-    int size;
-    PlayerID* count = NutPunch_Get("PLAYERS", &size);
-    if (size != sizeof(*count) || !*count) {
+    int count = NutPunch_PeerCount();
+    if (count > MAX_PLAYERS)
+        count = MAX_PLAYERS;
+    if (!count) {
         gekko_add_actor(session, LocalPlayer, NULL);
         return 0;
     }
 
-    PlayerID counter = 0, local = MAX_PLAYERS;
-    SDL_memset(addrs, 0, sizeof(addrs));
+    PlayerID counter = 0;
+    static int indices[MAX_PLAYERS] = {0};
+    static GekkoNetAddress addrs[MAX_PLAYERS] = {0};
 
+    gekko_add_actor(session, LocalPlayer, NULL);
     for (int i = 0; i < NUTPUNCH_MAX_PLAYERS; i++) {
-        struct NutPunch* peer = &NutPunch_GetPeers()[i];
-        if (!peer->port)
+        if (!NutPunch_PeerAlive(i))
             continue;
 
-        addrs[counter].data = peer;
-        addrs[counter].size = sizeof(*peer);
+        indices[counter] = i;
+        addrs[counter].data = &indices[counter];
+        addrs[counter].size = sizeof(*indices);
+        gekko_add_actor(session, RemotePlayer, &addrs[counter]);
 
-        if (i == NutPunch_LocalPeer()) {
-            gekko_add_actor(session, LocalPlayer, NULL);
-            local = counter;
-            INFO("You are peer %i", i);
-        } else {
-            gekko_add_actor(session, RemotePlayer, &addrs[counter]);
-        }
-
-        if (++counter == *count)
+        if (++counter == count)
             break;
     }
 
-    return local;
+    return 0;
 }
 
 void net_update() {
-    NutPunch_Query();
+    NutPunch_Update();
 }
 
 void net_teardown() {
