@@ -4,4 +4,5 @@ function Def() constructor {
 	sprite = sprEmpty
 	z = 0
 	stretch = false
+	max_stretch = [infinity, infinity]
 }

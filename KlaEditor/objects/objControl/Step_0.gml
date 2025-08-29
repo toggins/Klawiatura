@@ -34,8 +34,9 @@ var _highlighted = global.highlighted
 if not instance_exists(_highlighted) {
 	if instance_exists(_stretched) {
 		var _sprite = _stretched.sprite_index
-		_stretched.image_xscale = max(16, cursor_x - _stretched.x) / sprite_get_width(_sprite)
-		_stretched.image_yscale = max(16, cursor_y - _stretched.y) / sprite_get_height(_sprite)
+		var _max_stretch = _stretched.def.max_stretch
+		_stretched.image_xscale = min(max(16, cursor_x - _stretched.x), _max_stretch[0]) / sprite_get_width(_sprite)
+		_stretched.image_yscale = min(max(16, cursor_y - _stretched.y), _max_stretch[1]) / sprite_get_height(_sprite)
 		if not mouse_check_button(mb_left)
 			global.stretched = noone
 	} else {

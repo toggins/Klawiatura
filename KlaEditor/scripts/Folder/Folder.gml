@@ -72,6 +72,7 @@ function Folder(_name, _items = undefined, _from = undefined) constructor {
 									name: force_type(_ivalue[$ "name"], "string"),
 									index: force_type(_ivalue[$ "index"], "number"),
 									default_value: force_type_fallback(_ivalue[$ "default"], "number"),
+									fixed: force_type_fallback(_ivalue[$ "fixed"], "bool", false),
 								});
 								++j
 							}
@@ -106,6 +107,12 @@ function Folder(_name, _items = undefined, _from = undefined) constructor {
 						sprite = sprGradient
 					
 					stretch = force_type_fallback(_item[$ "stretch"], "bool", false)
+					var _max_stretch = force_type_fallback(_item[$ "max_stretch"], "array")
+					if _max_stretch != undefined {
+						max_stretch[0] = force_type(_max_stretch[0], "number")
+						max_stretch[1] = force_type(_max_stretch[1], "number")
+					}
+					
 					_defs[? name] = _def
 					
 					var __items = other.items

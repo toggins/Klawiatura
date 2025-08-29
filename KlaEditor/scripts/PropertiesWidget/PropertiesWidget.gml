@@ -186,12 +186,13 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 		var i = 0
 		repeat array_length(_values) {
 			var _value = _values[i]
-			push_field(_yy, _value.name, _marker.values[_value.index] ?? "", method({
+			
+			push_field(_yy, _value.name, _marker.values[_value.index], method({
 				marker: _marker,
-				index: _value.index
+				value: _value,
 			}, function (_value) {
 				try {
-					marker.values[index] = real(_value)
+					marker.values[value.index] = clamp(real(_value), -2147483648, 2147483647)
 					return true
 				} catch (e) {}
 				return false

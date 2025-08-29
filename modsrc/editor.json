@@ -81,6 +81,35 @@
                             "texture": "T_BLOCKA"
                         }
                     ]
+                ],
+
+                [
+                    "Tanks",
+                    [
+                        {
+                            "def": "Wheel L",
+                            "type": "object",
+                            "index": 78,
+                            "z": 20,
+                            "texture": "T_WHELLA"
+                        },
+
+                        {
+                            "def": "Wheel M",
+                            "type": "object",
+                            "index": 79,
+                            "z": 20,
+                            "texture": "T_WHEELA"
+                        },
+
+                        {
+                            "def": "Wheel R",
+                            "type": "object",
+                            "index": 80,
+                            "z": 20,
+                            "texture": "T_WHELRA"
+                        }
+                    ]
                 ]
             ]
         ],
@@ -95,37 +124,37 @@
                             "def": "Back Gradient",
                             "type": "gradient",
                             "z": 200,
+                            "stretch": true,
                             "colors": [
                                 [0, 111, 223, 255],
                                 [0, 111, 223, 255],
                                 [242, 253, 252, 255],
                                 [242, 253, 252, 255]
-                            ],
-                            "stretch": true
+                            ]
                         },
                         {
                             "def": "Fog Gradient",
                             "type": "gradient",
                             "z": 180,
+                            "stretch": true,
                             "colors": [
                                 [8, 0, 0, 109],
                                 [8, 0, 0, 109],
                                 [219, 0, 19, 109],
                                 [219, 0, 19, 109]
-                            ],
-                            "stretch": true
+                            ]
                         },
                         {
                             "def": "Front Gradient",
                             "type": "gradient",
                             "z": -100,
+                            "stretch": true,
                             "colors": [
                                 [8, 0, 0, 0],
                                 [8, 0, 0, 0],
                                 [219, 0, 19, 109],
                                 [219, 0, 19, 109]
-                            ],
-                            "stretch": true
+                            ]
                         }
                     ]
                 ],
@@ -224,7 +253,8 @@
                     "type": "object",
                     "index": 1,
                     "texture": "M_SOLID",
-                    "stretch": true
+                    "stretch": true,
+                    "max_stretch": [256, 256]
                 },
 
                 {
@@ -232,7 +262,8 @@
                     "type": "object",
                     "index": 2,
                     "texture": "M_SOLIDT",
-                    "stretch": true
+                    "stretch": true,
+                    "max_stretch": [256, 256]
                 },
 
                 {
@@ -241,15 +272,18 @@
                     "index": 4,
                     "z": -1,
                     "texture": "M_PLAYER",
+
                     "flags": [
                         {
                             "name": "Flip?",
                             "bit": 2
                         },
+
                         {
                             "name": "Ascend?",
                             "bit": 8
                         },
+
                         {
                             "name": "Descend?",
                             "bit": 9
@@ -287,6 +321,7 @@
                             "index": 32,
                             "z": 23,
                             "texture": "M_GOALBA",
+
                             "flags": [
                                 {
                                     "name": "Flip?",
@@ -308,13 +343,15 @@
                             "index": 34,
                             "z": 24,
                             "texture": "M_GOALM",
+                            "stretch": true,
+                            "max_stretch": [256, 256],
+
                             "flags": [
                                 {
                                     "name": "Flip?",
                                     "bit": 2
                                 }
-                            ],
-                            "stretch": true
+                            ]
                         }
                     ]
                 ],
@@ -324,17 +361,26 @@
                     "type": "object",
                     "index": 77,
                     "texture": "M_SCROLL",
+
                     "values": [
                         {
                             "name": "X Speed",
                             "index": 0,
-                            "default": 65536
+                            "default": 1,
+                            "fixed": true
                         },
 
                         {
                             "name": "Y Speed",
                             "index": 1,
-                            "default": 0
+                            "fixed": true
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Tanks?",
+                            "bit": 5
                         }
                     ]
                 }
