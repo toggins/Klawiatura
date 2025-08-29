@@ -113,6 +113,9 @@ static Bool is_solid(ObjectID oid, Bool ignore_full, Bool ignore_top) {
         case OBJ_BRICK_BLOCK:
         case OBJ_BRICK_BLOCK_COIN:
         case OBJ_PSWITCH_BRICK:
+        case OBJ_WHEEL_LEFT:
+        case OBJ_WHEEL:
+        case OBJ_WHEEL_RIGHT:
             return !ignore_full;
         case OBJ_SOLID_TOP:
             return !ignore_top;
@@ -1738,10 +1741,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     }
 
                     if (object->flags & FLG_PLAYER_RESPAWN) {
-                        if (touching_solid((fvec2[2]){
-                                {Fadd(object->pos[0], object->bbox[0][0]), Fadd(object->pos[1], object->bbox[0][1])},
-                                {Fadd(object->pos[0], object->bbox[1][0]), Fadd(object->pos[1], object->bbox[1][1])}
-                            })) {
+                        if (touching_solid(HITBOX(object))) {
                             move_object(
                                 oid, (fvec2){Flerp(state.bounds[0][0], state.bounds[1][0], FxHalf),
                                              Fadd(object->pos[1], FxOne)}
@@ -1887,7 +1887,8 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     } else {
                         displace_object(oid, FfInt(10L), true);
 
-                        if (object_is_alive(state.autoscroll)) {
+                        const struct GameObject* autoscroll = get_object(state.autoscroll);
+                        if (autoscroll != NULL) {
                             if (Fadd(object->pos[0], object->bbox[0][0]) < state.bounds[0][0]) {
                                 move_object(oid, (fvec2){Fsub(state.bounds[0][0], object->bbox[0][0]), object->pos[1]});
                                 object->values[VAL_X_SPEED] = Fmax(object->values[VAL_X_SPEED], FxZero);
@@ -1904,6 +1905,11 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                                 if (touching_solid(HITBOX(object)))
                                     kill_player(object);
                             }
+
+                            if ((autoscroll->flags & FLG_SCROLL_TANKS) &&
+                                Fadd(object->pos[1], object->bbox[1][1]) >= Fsub(state.bounds[1][1], FfInt(64L)) &&
+                                !touching_solid(HITBOX_ADD(object, autoscroll->values[VAL_X_SPEED], FxZero)))
+                                move_object(oid, POS_ADD(object, autoscroll->values[VAL_X_SPEED], FxZero));
                         }
                     }
 
@@ -2677,14 +2683,36 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                         if (autoscroll != NULL) {
                             autoscroll->values[VAL_X_SPEED] = object->values[VAL_X_SPEED];
                             autoscroll->values[VAL_Y_SPEED] = object->values[VAL_Y_SPEED];
+                            autoscroll->flags |= (object->flags & FLG_SCROLL_TANKS);
                             object->flags |= FLG_DESTROY;
                             break;
                         } else {
                             state.autoscroll = oid;
                         }
                     }
-                    if (state.autoscroll == oid)
+                    if (state.autoscroll == oid) {
                         move_object(oid, POS_SPEED(object));
+                        if (object->flags & FLG_SCROLL_TANKS) {
+                            const fix16_t end = Fsub(state.size[0], F_SCREEN_WIDTH);
+                            if (object->pos[0] > end) {
+                                object->values[VAL_X_SPEED] = FxZero;
+                                move_object(oid, (fvec2){end, object->pos[1]});
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case OBJ_WHEEL_LEFT:
+                case OBJ_WHEEL:
+                case OBJ_WHEEL_RIGHT: {
+                    const struct GameObject* autoscroll = get_object(state.autoscroll);
+                    if (autoscroll != NULL && (autoscroll->flags & FLG_SCROLL_TANKS) &&
+                        autoscroll->values[VAL_X_SPEED] != FxZero)
+                        object->values[VAL_WHEEL_FRAME] = Fadd(
+                            object->values[VAL_WHEEL_FRAME],
+                            (autoscroll->values[VAL_X_SPEED] > FxZero) ? FxHalf : -FxHalf
+                        );
                     break;
                 }
             }
@@ -3574,6 +3602,72 @@ void draw_state() {
                     draw_object(oid, tex, 0, WHITE);
                     break;
                 }
+
+                case OBJ_AUTOSCROLL: {
+                    if (object->flags & FLG_SCROLL_TANKS) {
+                        const struct InterpObject* smooth = &(interp[oid]);
+                        const float x = FtInt(smooth->pos[0]);
+                        const float y = FtInt(smooth->pos[1]) + SCREEN_HEIGHT - 64;
+                        draw_rectangle(
+                            "M_PTANKS", (float[2][2]){{x - 32, y}, {x + SCREEN_WIDTH + 32, y + 64}}, 20, WHITE
+                        );
+                    }
+                    break;
+                }
+
+                case OBJ_WHEEL_LEFT: {
+                    const char* tex;
+                    switch (FtInt(object->values[VAL_WHEEL_FRAME]) % 3) {
+                        default:
+                            tex = "T_WHELLA";
+                            break;
+                        case 1:
+                            tex = "T_WHELLB";
+                            break;
+                        case 2:
+                            tex = "T_WHELLC";
+                            break;
+                    }
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_WHEEL: {
+                    const char* tex;
+                    switch (FtInt(object->values[VAL_WHEEL_FRAME]) % 4) {
+                        default:
+                            tex = "T_WHEELA";
+                            break;
+                        case 1:
+                            tex = "T_WHEELB";
+                            break;
+                        case 2:
+                            tex = "T_WHEELC";
+                            break;
+                        case 3:
+                            tex = "T_WHEELD";
+                            break;
+                    }
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_WHEEL_RIGHT: {
+                    const char* tex;
+                    switch (FtInt(object->values[VAL_WHEEL_FRAME]) % 3) {
+                        default:
+                            tex = "T_WHELRA";
+                            break;
+                        case 1:
+                            tex = "T_WHELRB";
+                            break;
+                        case 2:
+                            tex = "T_WHELRC";
+                            break;
+                    }
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
             }
 
         oid = object->previous;
@@ -4110,6 +4204,33 @@ void load_object(GameObjectType type) {
             load_object(OBJ_PSWITCH_BRICK);
             break;
         }
+
+        case OBJ_AUTOSCROLL: {
+            load_texture("M_PTANKS");
+            break;
+        }
+
+        case OBJ_WHEEL_LEFT: {
+            load_texture("T_WHELLA");
+            load_texture("T_WHELLB");
+            load_texture("T_WHELLC");
+            break;
+        }
+
+        case OBJ_WHEEL: {
+            load_texture("T_WHEELA");
+            load_texture("T_WHEELB");
+            load_texture("T_WHEELC");
+            load_texture("T_WHEELD");
+            break;
+        }
+
+        case OBJ_WHEEL_RIGHT: {
+            load_texture("T_WHELRA");
+            load_texture("T_WHELRB");
+            load_texture("T_WHELRC");
+            break;
+        }
     }
 }
 
@@ -4157,7 +4278,10 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                 case OBJ_SOLID:
                 case OBJ_SOLID_TOP:
                 case OBJ_SOLID_SLOPE:
-                case OBJ_AUTOSCROLL: {
+                case OBJ_AUTOSCROLL:
+                case OBJ_WHEEL_LEFT:
+                case OBJ_WHEEL:
+                case OBJ_WHEEL_RIGHT: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
                     break;
                 }

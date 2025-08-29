@@ -29,13 +29,21 @@
 #define F_HALF_SCREEN_WIDTH Fhalf(F_SCREEN_WIDTH)
 #define F_HALF_SCREEN_HEIGHT Fhalf(F_SCREEN_HEIGHT)
 
+#define POS_SPEED(object)                                                                                              \
+    ((fvec2){Fadd((object)->pos[0], (object)->values[VAL_X_SPEED]),                                                    \
+             Fadd((object)->pos[1], (object)->values[VAL_Y_SPEED])})
+
+#define POS_ADD(object, x, y) ((fvec2){Fadd((object)->pos[0], (x)), Fadd((object)->pos[1], (y))})
+
 #define HITBOX(object)                                                                                                 \
     ((fvec2[2]){{Fadd((object)->pos[0], (object)->bbox[0][0]), Fadd((object)->pos[1], (object)->bbox[0][1])},          \
                 {Fadd((object)->pos[0], (object)->bbox[1][0]), Fadd((object)->pos[1], (object)->bbox[1][1])}})
 
-#define POS_SPEED(object)                                                                                              \
-    ((fvec2){Fadd((object)->pos[0], (object)->values[VAL_X_SPEED]),                                                    \
-             Fadd((object)->pos[1], (object)->values[VAL_Y_SPEED])})
+#define HITBOX_ADD(object, x, y)                                                                                       \
+    ((fvec2[2]){{Fadd(Fadd((object)->pos[0], (object)->bbox[0][0]), (x)),                                              \
+                 Fadd(Fadd((object)->pos[1], (object)->bbox[0][1]), (y))},                                             \
+                {Fadd(Fadd((object)->pos[0], (object)->bbox[1][0]), (x)),                                              \
+                 Fadd(Fadd((object)->pos[1], (object)->bbox[1][1]), (y))}})
 
 typedef uint8_t Bool;
 
@@ -142,6 +150,9 @@ enum GameObjectType {
     OBJ_BUSH,
     OBJ_BUSH_SNOW,
     OBJ_AUTOSCROLL,
+    OBJ_WHEEL_LEFT,
+    OBJ_WHEEL,
+    OBJ_WHEEL_RIGHT,
 
     OBJ_SIZE,
 };
@@ -232,6 +243,8 @@ enum ObjectValues {
     VAL_GOAL_ANGLE,
 
     VAL_PSWITCH = VAL_START,
+
+    VAL_WHEEL_FRAME = VAL_START,
 };
 typedef uint8_t ObjectValues;
 
@@ -269,6 +282,8 @@ enum ObjectFlags {
     FLG_GOAL_START = 1 << 5,
 
     FLG_PSWITCH_ONCE = 1 << 5,
+
+    FLG_SCROLL_TANKS = 1 << 5,
 };
 typedef uint32_t ObjectFlags;
 
