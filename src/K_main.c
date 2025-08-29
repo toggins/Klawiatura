@@ -268,9 +268,5 @@ teardown:
     audio_teardown();
     SDL_Quit();
 
-#ifdef DUMP_MEMLEAKS
-    _CrtDumpMemoryLeaks();
-#endif
-
     return EXIT_SUCCESS;
 }
