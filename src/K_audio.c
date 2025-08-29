@@ -34,6 +34,7 @@ void audio_init() {
 
     FMOD_System_CreateChannelGroup(speaker, "state", &state_group);
     FMOD_System_CreateChannelGroup(speaker, "music", &music_group);
+    FMOD_ChannelGroup_SetVolume(music_group, 0.5f);
 
     sounds = NewTinyMap();
     tracks = NewTinyMap();
