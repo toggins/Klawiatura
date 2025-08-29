@@ -87,6 +87,104 @@
                     "Tanks",
                     [
                         {
+                            "def": "Tank Block L",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKA"
+                        },
+
+                        {
+                            "def": "Tank Block M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKB"
+                        },
+
+                        {
+                            "def": "Tank Block R",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKC"
+                        },
+
+                        {
+                            "def": "Tank Block",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKD"
+                        },
+
+                        {
+                            "def": "Tank Block Dirty",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKE"
+                        },
+
+                        {
+                            "def": "Tank Block Screws",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKF"
+                        },
+
+                        {
+                            "def": "Tank Block Bolts",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKG"
+                        },
+
+                        {
+                            "def": "Tank Slope L",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKH"
+                        },
+
+                        {
+                            "def": "Tank Slope R",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKI"
+                        },
+
+                        {
+                            "def": "Tank Support M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKJ"
+                        },
+
+                        {
+                            "def": "Tank Support T",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKK"
+                        },
+
+                        {
+                            "def": "Tank Support Back",
+                            "type": "backdrop",
+                            "z": 23,
+                            "texture": "T_TANKL"
+                        },
+
+                        {
+                            "def": "Tank Lid",
+                            "type": "backdrop",
+                            "z": 22,
+                            "texture": "T_TANKM"
+                        },
+
+                        {
+                            "def": "Tank Chains",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKN"
+                        },
+
+                        {
                             "def": "Wheel L",
                             "type": "object",
                             "index": 78,
@@ -264,6 +362,22 @@
                     "texture": "M_SOLIDT",
                     "stretch": true,
                     "max_stretch": [256, 256]
+                },
+
+                {
+                    "def": "Solid Slope",
+                    "type": "object",
+                    "index": 3,
+                    "texture": "M_SLOPE",
+                    "stretch": true,
+                    "max_stretch": [256, 256],
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2
+                        }
+                    ]
                 },
 
                 {

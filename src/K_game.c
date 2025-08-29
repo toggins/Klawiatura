@@ -282,6 +282,7 @@ static void bump_block(struct GameObject* block, ObjectID from, Bool strong) {
                 if (shard != NULL) {
                     shard->values[VAL_X_SPEED] = FfInt(-2);
                     shard->values[VAL_Y_SPEED] = FfInt(-8);
+                    shard->flags |= (block->flags & FLG_BLOCK_GRAY);
                 }
 
                 shard = get_object(create_object(
@@ -290,6 +291,7 @@ static void bump_block(struct GameObject* block, ObjectID from, Bool strong) {
                 if (shard != NULL) {
                     shard->values[VAL_X_SPEED] = FfInt(2);
                     shard->values[VAL_Y_SPEED] = FfInt(-8);
+                    shard->flags |= (block->flags & FLG_BLOCK_GRAY);
                 }
 
                 shard = get_object(create_object(
@@ -298,6 +300,7 @@ static void bump_block(struct GameObject* block, ObjectID from, Bool strong) {
                 if (shard != NULL) {
                     shard->values[VAL_X_SPEED] = FfInt(-3);
                     shard->values[VAL_Y_SPEED] = FfInt(-6);
+                    shard->flags |= (block->flags & FLG_BLOCK_GRAY);
                 }
 
                 shard = get_object(create_object(
@@ -306,6 +309,7 @@ static void bump_block(struct GameObject* block, ObjectID from, Bool strong) {
                 if (shard != NULL) {
                     shard->values[VAL_X_SPEED] = FfInt(3);
                     shard->values[VAL_Y_SPEED] = FfInt(-6);
+                    shard->flags |= (block->flags & FLG_BLOCK_GRAY);
                 }
 
                 struct GamePlayer* player = get_owner(from);
@@ -387,6 +391,9 @@ static void displace_object(ObjectID did, fix16_t climb, Bool unstuck) {
                     continue;
 
                 const struct GameObject* object = &(state.objects[oid]);
+                if (object->type == OBJ_SOLID_SLOPE)
+                    continue;
+
                 if (displacee->values[VAL_Y_SPEED] >= FxZero &&
                     Fsub(Fadd(displacee->pos[1], displacee->bbox[1][1]), climb) <
                         Fadd(object->pos[1], object->bbox[0][1])) {
@@ -417,6 +424,9 @@ static void displace_object(ObjectID did, fix16_t climb, Bool unstuck) {
                     continue;
 
                 const struct GameObject* object = &(state.objects[oid]);
+                if (object->type == OBJ_SOLID_SLOPE)
+                    continue;
+
                 if (displacee->values[VAL_Y_SPEED] >= FxZero &&
                     Fsub(Fadd(displacee->pos[1], displacee->bbox[1][1]), climb) <
                         Fadd(object->pos[1], object->bbox[0][1])) {
@@ -464,6 +474,9 @@ static void displace_object(ObjectID did, fix16_t climb, Bool unstuck) {
                     continue;
 
                 const struct GameObject* object = &(state.objects[oid]);
+                if (object->type == OBJ_SOLID_SLOPE)
+                    continue;
+
                 y = Fmax(y, Fsub(Fadd(object->pos[1], object->bbox[1][1]), displacee->bbox[0][1]));
                 stop = true;
                 bottom_check(oid, did);
@@ -476,6 +489,26 @@ static void displace_object(ObjectID did, fix16_t climb, Bool unstuck) {
                     continue;
 
                 const struct GameObject* object = &(state.objects[oid]);
+                if (object->type == OBJ_SOLID_SLOPE) {
+                    const Bool side = (object->flags & FLG_X_FLIP) == FLG_X_FLIP;
+                    const fix16_t slope = Flerp(
+                        Fadd(object->pos[1], object->bbox[!side][1]), Fadd(object->pos[1], object->bbox[side][1]),
+                        Fclamp(
+                            Fdiv(
+                                Fsub(Fadd(x, displacee->bbox[!side][0]), Fadd(object->pos[0], object->bbox[side][0])),
+                                Fsub(object->bbox[1][0], object->bbox[0][0])
+                            ),
+                            FxZero, FxOne
+                        )
+                    );
+
+                    if (y >= slope) {
+                        y = slope;
+                        stop = true;
+                    }
+                    continue;
+                }
+
                 if (is_solid(oid, true, false) && Fsub(Fadd(y, displacee->bbox[1][1]), displacee->values[VAL_Y_SPEED]) >
                                                       Fadd(Fadd(object->pos[1], object->bbox[0][1]), climb))
                     continue;
@@ -1886,35 +1919,41 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                             object->flags &= ~FLG_PLAYER_ASCEND;
                     } else {
                         displace_object(oid, FfInt(10L), true);
+                        if (object->values[VAL_Y_TOUCH] > 0L)
+                            object->values[VAL_PLAYER_GROUND] = 2L;
 
                         const struct GameObject* autoscroll = get_object(state.autoscroll);
                         if (autoscroll != NULL) {
-                            if (Fadd(object->pos[0], object->bbox[0][0]) < state.bounds[0][0]) {
-                                move_object(oid, (fvec2){Fsub(state.bounds[0][0], object->bbox[0][0]), object->pos[1]});
-                                object->values[VAL_X_SPEED] = Fmax(object->values[VAL_X_SPEED], FxZero);
-                                object->values[VAL_X_TOUCH] = -1L;
+                            if (state.sequence.type != SEQ_WIN) {
+                                if (Fadd(object->pos[0], object->bbox[0][0]) < state.bounds[0][0]) {
+                                    move_object(
+                                        oid, (fvec2){Fsub(state.bounds[0][0], object->bbox[0][0]), object->pos[1]}
+                                    );
+                                    object->values[VAL_X_SPEED] = Fmax(object->values[VAL_X_SPEED], FxZero);
+                                    object->values[VAL_X_TOUCH] = -1L;
 
-                                if (touching_solid(HITBOX(object)))
-                                    kill_player(object);
-                            }
-                            if (Fadd(object->pos[0], object->bbox[1][0]) > state.bounds[1][0]) {
-                                move_object(oid, (fvec2){Fsub(state.bounds[1][0], object->bbox[1][0]), object->pos[1]});
-                                object->values[VAL_X_SPEED] = Fmin(object->values[VAL_X_SPEED], FxZero);
-                                object->values[VAL_X_TOUCH] = 1L;
+                                    if (touching_solid(HITBOX(object)))
+                                        kill_player(object);
+                                }
+                                if (Fadd(object->pos[0], object->bbox[1][0]) > state.bounds[1][0]) {
+                                    move_object(
+                                        oid, (fvec2){Fsub(state.bounds[1][0], object->bbox[1][0]), object->pos[1]}
+                                    );
+                                    object->values[VAL_X_SPEED] = Fmin(object->values[VAL_X_SPEED], FxZero);
+                                    object->values[VAL_X_TOUCH] = 1L;
 
-                                if (touching_solid(HITBOX(object)))
-                                    kill_player(object);
+                                    if (touching_solid(HITBOX(object)))
+                                        kill_player(object);
+                                }
                             }
 
                             if ((autoscroll->flags & FLG_SCROLL_TANKS) &&
-                                Fadd(object->pos[1], object->bbox[1][1]) >= Fsub(state.bounds[1][1], FfInt(64L)) &&
+                                (Fadd(object->pos[1], object->bbox[1][1]) >= Fsub(state.bounds[1][1], FfInt(64L)) ||
+                                 object->values[VAL_PLAYER_GROUND] <= 0L) &&
                                 !touching_solid(HITBOX_ADD(object, autoscroll->values[VAL_X_SPEED], FxZero)))
                                 move_object(oid, POS_ADD(object, autoscroll->values[VAL_X_SPEED], FxZero));
                         }
                     }
-
-                    if (object->values[VAL_Y_TOUCH] > 0L)
-                        object->values[VAL_PLAYER_GROUND] = 2L;
 
                     if (object->values[VAL_Y_TOUCH] <= 0L) {
                         const Bool carried = object->flags & FLG_CARRIED;
@@ -4072,6 +4111,7 @@ void load_object(GameObjectType type) {
         case OBJ_BRICK_BLOCK:
         case OBJ_PSWITCH_BRICK: {
             load_texture("I_BRICKA");
+            load_texture("I_BRICKB");
 
             load_sound("BUMP");
             load_sound("BREAK");
@@ -4082,6 +4122,7 @@ void load_object(GameObjectType type) {
 
         case OBJ_BRICK_SHARD: {
             load_texture("X_SHARDA");
+            load_texture("X_SHARDB");
             break;
         }
 
