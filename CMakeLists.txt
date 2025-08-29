@@ -91,24 +91,14 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
     GIT_TAG cc7318f8088ce2561f3adcb055f3d09a2e919f76)
 
-# zlib
-set(ZLIB_BUILD_TESTING OFF CACHE INTERNAL "")
-set(ZLIB_BUILD_SHARED OFF CACHE INTERNAL "")
-set(ZLIB_BUILD_MINIZIP OFF CACHE INTERNAL "")
-set(ZLIB_INSTALL OFF CACHE INTERNAL "")
-FetchContent_Declare(
-    zlib
-    GIT_REPOSITORY https://github.com/madler/zlib.git
-    GIT_TAG v1.3.1)
-
-FetchContent_MakeAvailable(SDL3 SDL3_image glad cglm S_fixed S_tructures nutpunch yyjson GekkoNet zlib)
+FetchContent_MakeAvailable(SDL3 SDL3_image glad cglm S_fixed S_tructures nutpunch yyjson GekkoNet)
 
 set(LIBS
     SDL3::SDL3-static SDL3_image::SDL3_image-static
     ${OPENGL_gl_LIBRARY} glad_gl_core_33
     cglm fmod  GekkoNet
     S_fixed S_tructures nutpunch
-    yyjson zlibstatic)
+    yyjson)
 glad_add_library(glad_gl_core_33 STATIC API gl:core=3.3)
 
 # Build

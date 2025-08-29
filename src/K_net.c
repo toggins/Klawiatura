@@ -1,8 +1,6 @@
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_timer.h>
 
-#include <zlib.h>
-
 #define NUTPUNCH_IMPLEMENTATION
 #define NutPunch_Memcmp SDL_memcmp
 #define NutPunch_Memset SDL_memset
@@ -21,36 +19,10 @@
 
 static const char *server_ip = NULL, *lobby_id = NULL;
 
-#define DATA_MAX (512000)
-#define ZIP_DECOMPRESS (0)
-#define ZIP_COMPRESS (1)
-
-static const char* zippy(const char* input, int* len, uint8_t direction) {
-    static char output[DATA_MAX] = {0};
-    int ret = 0, destLen = sizeof(output);
-
-    if (direction == ZIP_COMPRESS) {
-        ret = compress2((Bytef*)output, (uLongf*)&destLen, (Bytef*)input, *len, Z_BEST_COMPRESSION);
-        if (Z_OK != ret)
-            return input;
-    } else {
-        ret = uncompress((Bytef*)output, (uLongf*)&destLen, (Bytef*)input, *len);
-        if (Z_OK != ret)
-            return input;
-    }
-
-#if 0
-    printf("in: %d\tout: %d\n", *len, destLen);
-#endif
-    *len = destLen;
-    return output;
-}
-
 static void send_data(GekkoNetAddress* gn_addr, const char* data, int len) {
     int peer = *(int*)gn_addr->data;
     if (!NutPunch_PeerAlive(peer))
         return;
-    data = zippy(data, &len, ZIP_COMPRESS);
     NutPunch_Send(peer, data, len);
 }
 
@@ -67,10 +39,9 @@ static GekkoNetResult** receive_data(int* pCount) {
         res->addr.data = SDL_malloc(res->addr.size);
         SDL_memcpy(res->addr.data, &peer, res->addr.size);
 
-        const char* zip = zippy(data, &size, ZIP_DECOMPRESS);
         res->data_len = size;
         res->data = SDL_malloc(size);
-        SDL_memcpy(res->data, zip, size);
+        SDL_memcpy(res->data, data, size);
 
         packets[(*pCount)++] = res;
     }
