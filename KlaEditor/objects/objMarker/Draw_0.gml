@@ -13,5 +13,20 @@ if is_instanceof(def, GradientDef) {
 	draw_vertex_texture_colour(_x2, _y1, _u, 0, colors[1], alphas[1])
 	draw_primitive_end()
 } else {
-	draw_self()
+	var _x = x
+	var _y = y
+	var _x_scale = image_xscale
+	var _y_scale = image_yscale
+	
+	if (flags & (1 << 2)) {
+		_x += sprite_xoffset - (sprite_width - sprite_xoffset)
+		_x_scale *= -1
+	}
+	
+	if (flags & (1 << 3)) {
+		_y += sprite_yoffset - (sprite_height - sprite_yoffset)
+		_y_scale *= -1
+	}
+	
+	draw_sprite_ext(sprite_index, image_index, _x, _y, _x_scale, _y_scale, image_angle, image_blend, image_alpha)
 }
