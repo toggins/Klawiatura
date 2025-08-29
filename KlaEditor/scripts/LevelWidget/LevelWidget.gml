@@ -58,7 +58,7 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 		try {
 			global.level.size[0] = clamp(real(_value), 0, 32767)
 			return true
-		}
+		} catch (e) {}
 		return false
 	})
 	_yy += 24
@@ -67,7 +67,7 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 		try {
 			global.level.size[1] = clamp(real(_value), 0, 32767)
 			return true
-		}
+		} catch (e) {}
 		return false
 	})
 	_yy += 32
@@ -76,7 +76,7 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 		try {
 			global.level.bounds[0] = clamp(real(_value), -32768, 32767)
 			return true
-		}
+		} catch (e) {}
 		return false
 	})
 	_yy += 24
@@ -85,7 +85,7 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 		try {
 			global.level.bounds[1] = clamp(real(_value), -32768, 32767)
 			return true
-		}
+		} catch (e) {}
 		return false
 	})
 	_yy += 24
@@ -94,7 +94,7 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 		try {
 			global.level.bounds[2] = clamp(real(_value), -32768, 32767)
 			return true
-		}
+		} catch (e) {}
 		return false
 	})
 	_yy += 24
@@ -103,7 +103,7 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 		try {
 			global.level.bounds[3] = clamp(real(_value), -32768, 32767)
 			return true
-		}
+		} catch (e) {}
 		return false
 	})
 	_yy += 32
@@ -112,7 +112,7 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 		try {
 			global.level.time = clamp(round(real(_value)), -1, 2147483647)
 			return true
-		}
+		} catch (e) {}
 		return false
 	})
 	_yy += 24
@@ -121,7 +121,7 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 		try {
 			global.level.water = clamp(real(_value), -32768, 32767)
 			return true
-		}
+		} catch (e) {}
 		return false
 	})
 	_yy += 24
@@ -130,7 +130,7 @@ function LevelWidget(_x, _y) : Widget(_x, _y) constructor {
 		try {
 			global.level.hazard = clamp(real(_value), -32768, 32767)
 			return true
-		}
+		} catch (e) {}
 		return false
 	})
 	_yy += 32

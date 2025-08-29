@@ -37,7 +37,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				image_xscale = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 24
@@ -46,7 +46,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				image_yscale = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 32
@@ -55,7 +55,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				colors[0] = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 24
@@ -64,7 +64,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				alphas[0] = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 24
@@ -72,7 +72,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				colors[1] = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 24
@@ -81,7 +81,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				alphas[1] = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 24
@@ -89,7 +89,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				colors[2] = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 24
@@ -98,7 +98,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				alphas[2] = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 24
@@ -106,7 +106,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				colors[3] = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 24
@@ -115,7 +115,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				alphas[3] = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 22
@@ -128,7 +128,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				image_xscale = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 24
@@ -137,7 +137,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				image_yscale = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 32
@@ -146,7 +146,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				image_blend = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 24
@@ -155,7 +155,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				image_alpha = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 22
@@ -168,7 +168,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				image_xscale = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 24
@@ -177,7 +177,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 			try {
 				image_yscale = real(_value)
 				return true
-			}
+			} catch (e) {}
 			return false
 		}))
 		_yy += 32
@@ -193,7 +193,7 @@ function PropertiesWidget(_x, _y, _title, _marker = noone) : Widget(_x, _y) cons
 				try {
 					marker.values[index] = real(_value)
 					return true
-				}
+				} catch (e) {}
 				return false
 			}))
 			_yy += 24;
