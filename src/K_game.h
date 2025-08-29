@@ -29,6 +29,14 @@
 #define F_HALF_SCREEN_WIDTH Fhalf(F_SCREEN_WIDTH)
 #define F_HALF_SCREEN_HEIGHT Fhalf(F_SCREEN_HEIGHT)
 
+#define HITBOX(object)                                                                                                 \
+    ((fvec2[2]){{Fadd((object)->pos[0], (object)->bbox[0][0]), Fadd((object)->pos[1], (object)->bbox[0][1])},          \
+                {Fadd((object)->pos[0], (object)->bbox[1][0]), Fadd((object)->pos[1], (object)->bbox[1][1])}})
+
+#define POS_SPEED(object)                                                                                              \
+    ((fvec2){Fadd((object)->pos[0], (object)->values[VAL_X_SPEED]),                                                    \
+             Fadd((object)->pos[1], (object)->values[VAL_Y_SPEED])})
+
 typedef uint8_t Bool;
 
 typedef int8_t PlayerID;
@@ -133,6 +141,7 @@ enum GameObjectType {
     OBJ_CLOUD_DARK,
     OBJ_BUSH,
     OBJ_BUSH_SNOW,
+    OBJ_AUTOSCROLL,
 
     OBJ_SIZE,
 };
@@ -238,6 +247,7 @@ enum ObjectFlags {
     FLG_PLAYER_SWIM = 1 << 7,
     FLG_PLAYER_ASCEND = 1 << 8,
     FLG_PLAYER_DESCEND = 1 << 9,
+    FLG_PLAYER_RESPAWN = 1 << 10,
 
     FLG_PLAYER_DEAD_LAST = 1 << 5,
 
@@ -337,8 +347,7 @@ struct GameState {
     uint32_t seed;
 
     int32_t clock;
-    ObjectID spawn, checkpoint;
-    fvec2 scroll;
+    ObjectID spawn, checkpoint, autoscroll;
     fix16_t water, hazard;
     uint16_t pswitch;
 

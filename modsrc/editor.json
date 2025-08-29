@@ -317,7 +317,27 @@
                             "stretch": true
                         }
                     ]
-                ]
+                ],
+
+                {
+                    "def": "Autoscroll",
+                    "type": "object",
+                    "index": 77,
+                    "texture": "M_SCROLL",
+                    "values": [
+                        {
+                            "name": "X Speed",
+                            "index": 0,
+                            "default": 65536
+                        },
+
+                        {
+                            "name": "Y Speed",
+                            "index": 1,
+                            "default": 0
+                        }
+                    ]
+                }
             ]
         ],
 

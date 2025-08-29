@@ -42,12 +42,13 @@ static ObjectID respawn_player(PlayerID pid) {
     kill_object(kevin->object);
     kevin->object = NULLOBJ;
 
-    const struct GameObject* spawn = get_object(state.checkpoint);
-    if (spawn == NULL) {
+    const struct GameObject* spawn = get_object(state.autoscroll);
+    if (spawn == NULL)
+        spawn = get_object(state.checkpoint);
+    if (spawn == NULL)
         spawn = get_object(state.spawn);
-        if (spawn == NULL)
-            return NULLOBJ;
-    }
+    if (spawn == NULL)
+        return NULLOBJ;
 
     if (spawn->type == OBJ_CHECKPOINT &&
         spawn->values[VAL_CHECKPOINT_BOUNDS_X1] != spawn->values[VAL_CHECKPOINT_BOUNDS_X2] &&
@@ -63,13 +64,23 @@ static ObjectID respawn_player(PlayerID pid) {
         player->bounds[1][1] = state.bounds[1][1];
     }
 
-    player->object = create_object(OBJ_PLAYER, spawn->pos);
+    player->object = create_object(
+        OBJ_PLAYER, (spawn->type == OBJ_AUTOSCROLL)
+                        ? (fvec2){Flerp(state.bounds[0][0], state.bounds[1][0], FxHalf), state.bounds[0][1]}
+                        : spawn->pos
+    );
     struct GameObject* pawn = get_object(player->object);
     if (pawn != NULL) {
         pawn->values[VAL_PLAYER_INDEX] = (fix16_t)pid;
         pawn->values[VAL_PLAYER_KEVIN_X] = pawn->pos[0];
         pawn->values[VAL_PLAYER_KEVIN_Y] = pawn->pos[1];
+
         pawn->flags |= (spawn->flags & (FLG_X_FLIP | FLG_PLAYER_ASCEND | FLG_PLAYER_DESCEND));
+        if (pawn->flags & FLG_PLAYER_ASCEND)
+            pawn->values[VAL_Y_SPEED] = Fsub(pawn->values[VAL_Y_SPEED], FfInt(22L));
+
+        if (spawn->type == OBJ_AUTOSCROLL)
+            pawn->flags |= FLG_PLAYER_RESPAWN;
     }
     return player->object;
 }
@@ -1282,28 +1293,37 @@ static Bool in_any_view(struct GameObject* object, fix16_t padding, Bool ignore_
     const fix16_t sx2 = Fadd(object->pos[0], object->bbox[1][0]);
     const fix16_t sy2 = Fadd(object->pos[1], object->bbox[1][1]);
 
-    for (size_t i = 0; i < MAX_PLAYERS; i++) {
-        const struct GamePlayer* player = &(state.players[i]);
-        if (!(player->active) || !object_is_alive(player->object))
-            continue;
-
-        const struct GameObject* pawn = &(state.objects[player->object]);
-        const fix16_t ox = Fclamp(
-            pawn->pos[0], Fadd(player->bounds[0][0], F_HALF_SCREEN_WIDTH),
-            Fsub(player->bounds[1][0], F_HALF_SCREEN_WIDTH)
-        );
-        const fix16_t oy = Fclamp(
-            pawn->pos[1], Fadd(player->bounds[0][1], F_HALF_SCREEN_HEIGHT),
-            Fsub(player->bounds[1][1], F_HALF_SCREEN_HEIGHT)
-        );
-
-        const fix16_t ox1 = Fsub(Fsub(ox, F_HALF_SCREEN_WIDTH), padding);
-        const fix16_t oy1 = Fsub(Fsub(oy, F_HALF_SCREEN_HEIGHT), padding);
-        const fix16_t ox2 = Fadd(Fadd(ox, F_HALF_SCREEN_WIDTH), padding);
-        const fix16_t oy2 = Fadd(Fadd(oy, F_HALF_SCREEN_HEIGHT), padding);
+    const struct GameObject* scroller = get_object(state.autoscroll);
+    if (scroller != NULL) {
+        const fix16_t ox1 = Fsub(state.bounds[0][0], padding);
+        const fix16_t oy1 = Fsub(state.bounds[0][1], padding);
+        const fix16_t ox2 = Fadd(state.bounds[1][0], padding);
+        const fix16_t oy2 = Fadd(state.bounds[1][1], padding);
         if (sx1 < ox2 && sx2 > ox1 && sy1 < oy2 && (ignore_top || sy2 > oy1))
             return true;
-    }
+    } else
+        for (size_t i = 0; i < MAX_PLAYERS; i++) {
+            const struct GamePlayer* player = &(state.players[i]);
+            if (!(player->active) || !object_is_alive(player->object))
+                continue;
+
+            const struct GameObject* pawn = &(state.objects[player->object]);
+            const fix16_t ox = Fclamp(
+                pawn->pos[0], Fadd(player->bounds[0][0], F_HALF_SCREEN_WIDTH),
+                Fsub(player->bounds[1][0], F_HALF_SCREEN_WIDTH)
+            );
+            const fix16_t oy = Fclamp(
+                pawn->pos[1], Fadd(player->bounds[0][1], F_HALF_SCREEN_HEIGHT),
+                Fsub(player->bounds[1][1], F_HALF_SCREEN_HEIGHT)
+            );
+
+            const fix16_t ox1 = Fsub(Fsub(ox, F_HALF_SCREEN_WIDTH), padding);
+            const fix16_t oy1 = Fsub(Fsub(oy, F_HALF_SCREEN_HEIGHT), padding);
+            const fix16_t ox2 = Fadd(Fadd(ox, F_HALF_SCREEN_WIDTH), padding);
+            const fix16_t oy2 = Fadd(Fadd(oy, F_HALF_SCREEN_HEIGHT), padding);
+            if (sx1 < ox2 && sx2 > ox1 && sy1 < oy2 && (ignore_top || sy2 > oy1))
+                return true;
+        }
 
     return false;
 }
@@ -1317,6 +1337,15 @@ static Bool in_player_view(struct GameObject* object, PlayerID pid, fix16_t padd
     const fix16_t sy1 = Fadd(object->pos[1], object->bbox[0][1]);
     const fix16_t sx2 = Fadd(object->pos[0], object->bbox[1][0]);
     const fix16_t sy2 = Fadd(object->pos[1], object->bbox[1][1]);
+
+    const struct GameObject* scroller = get_object(state.autoscroll);
+    if (scroller != NULL) {
+        const fix16_t ox1 = Fsub(state.bounds[0][0], padding);
+        const fix16_t oy1 = Fsub(state.bounds[0][1], padding);
+        const fix16_t ox2 = Fadd(state.bounds[1][0], padding);
+        const fix16_t oy2 = Fadd(state.bounds[1][1], padding);
+        return sx1 < ox2 && sx2 > ox1 && sy1 < oy2 && (ignore_top || sy2 > oy1);
+    }
 
     const struct GameObject* pawn = &(state.objects[player->object]);
     const fix16_t ox = Fclamp(
@@ -1356,7 +1385,7 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
     state.size[0] = state.bounds[1][0] = F_SCREEN_WIDTH;
     state.size[1] = state.bounds[1][1] = F_SCREEN_HEIGHT;
 
-    state.spawn = state.checkpoint = NULLOBJ;
+    state.spawn = state.checkpoint = state.autoscroll = NULLOBJ;
     state.water = FfInt(32767L);
 
     state.flags |= flags;
@@ -1413,8 +1442,9 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
     buf += sizeof(char[8]); // HUD Texture
     buf += sizeof(char[8]); // Next Level
 
-    char track[8];
+    char track[9];
     SDL_memcpy(track, buf, sizeof(char[8]));
+    track[8] = '\0';
     load_track(track);
     buf += sizeof(char[8]);
 
@@ -1527,7 +1557,7 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
                 buf += sizeof(GameObjectType);
 
                 fvec2 pos = {*((fix16_t*)buf), *((fix16_t*)(buf + sizeof(fix16_t)))};
-                buf += sizeof(fix16_t[2]);
+                buf += sizeof(fvec2);
 
                 struct GameObject* object = get_object(create_object(type, pos));
                 if (object == NULL)
@@ -1537,7 +1567,7 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
                 buf += sizeof(fix16_t);
 
                 fvec2 scale = {*((fix16_t*)buf), *((fix16_t*)(buf + sizeof(fix16_t)))};
-                buf += sizeof(fix16_t[2]);
+                buf += sizeof(fvec2);
                 object->bbox[0][0] = Fmul(object->bbox[0][0], scale[0]);
                 object->bbox[0][1] = Fmul(object->bbox[0][1], scale[1]);
                 object->bbox[1][0] = Fmul(object->bbox[1][0], scale[0]);
@@ -1634,7 +1664,7 @@ void dump_state() {
     INFO("  Clock: %u", state.clock);
     INFO("  Spawn: %u", state.spawn);
     INFO("  Checkpoint: %u", state.checkpoint);
-    INFO("  Scroll: (%.2f, %.2f)", FtDouble(state.scroll[0]), FtDouble(state.scroll[1]));
+    INFO("  Autoscroll: %u", state.autoscroll);
     INFO("  Water Y: %.2f", FtDouble(state.water));
     INFO("  Hazard Y: %.2f", FtDouble(state.hazard));
 
@@ -1681,6 +1711,14 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
         player->input = inputs[i];
     }
 
+    const struct GameObject* autoscroll = get_object(state.autoscroll);
+    if (autoscroll != NULL) {
+        state.bounds[0][0] = Fclamp(autoscroll->pos[0], FxZero, Fsub(state.size[0], F_SCREEN_WIDTH));
+        state.bounds[0][1] = Fclamp(autoscroll->pos[1], FxZero, Fsub(state.size[1], F_SCREEN_HEIGHT));
+        state.bounds[1][0] = Fclamp(Fadd(autoscroll->pos[0], F_SCREEN_WIDTH), F_SCREEN_WIDTH, state.size[0]);
+        state.bounds[1][1] = Fclamp(Fadd(autoscroll->pos[1], F_SCREEN_HEIGHT), F_SCREEN_HEIGHT, state.size[1]);
+    }
+
     ObjectID oid = state.live_objects;
     while (object_is_alive(oid)) {
         struct GameObject* object = &(state.objects[oid]);
@@ -1697,6 +1735,21 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     if (player == NULL) {
                         object->flags |= FLG_DESTROY;
                         break;
+                    }
+
+                    if (object->flags & FLG_PLAYER_RESPAWN) {
+                        if (touching_solid((fvec2[2]){
+                                {Fadd(object->pos[0], object->bbox[0][0]), Fadd(object->pos[1], object->bbox[0][1])},
+                                {Fadd(object->pos[0], object->bbox[1][0]), Fadd(object->pos[1], object->bbox[1][1])}
+                            })) {
+                            move_object(
+                                oid, (fvec2){Flerp(state.bounds[0][0], state.bounds[1][0], FxHalf),
+                                             Fadd(object->pos[1], FxOne)}
+                            );
+                            break;
+                        } else {
+                            object->flags &= ~FLG_PLAYER_RESPAWN;
+                        }
                     }
 
                     if (state.sequence.type == SEQ_WIN) {
@@ -1826,7 +1879,34 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
 
                     if (object->values[VAL_PLAYER_GROUND] > 0L)
                         --(object->values[VAL_PLAYER_GROUND]);
-                    displace_object(oid, FfInt(10L), true);
+
+                    if ((object->flags & FLG_PLAYER_ASCEND)) {
+                        move_object(oid, POS_SPEED(object));
+                        if (object->values[VAL_Y_SPEED] >= FxZero)
+                            object->flags &= ~FLG_PLAYER_ASCEND;
+                    } else {
+                        displace_object(oid, FfInt(10L), true);
+
+                        if (object_is_alive(state.autoscroll)) {
+                            if (Fadd(object->pos[0], object->bbox[0][0]) < state.bounds[0][0]) {
+                                move_object(oid, (fvec2){Fsub(state.bounds[0][0], object->bbox[0][0]), object->pos[1]});
+                                object->values[VAL_X_SPEED] = Fmax(object->values[VAL_X_SPEED], FxZero);
+                                object->values[VAL_X_TOUCH] = -1L;
+
+                                if (touching_solid(HITBOX(object)))
+                                    kill_player(object);
+                            }
+                            if (Fadd(object->pos[0], object->bbox[1][0]) > state.bounds[1][0]) {
+                                move_object(oid, (fvec2){Fsub(state.bounds[1][0], object->bbox[1][0]), object->pos[1]});
+                                object->values[VAL_X_SPEED] = Fmin(object->values[VAL_X_SPEED], FxZero);
+                                object->values[VAL_X_TOUCH] = 1L;
+
+                                if (touching_solid(HITBOX(object)))
+                                    kill_player(object);
+                            }
+                        }
+                    }
+
                     if (object->values[VAL_Y_TOUCH] > 0L)
                         object->values[VAL_PLAYER_GROUND] = 2L;
 
@@ -1991,7 +2071,10 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                         // !!! CLIENT-SIDE !!!
                     }
 
-                    if (object->pos[1] > Fadd(player->bounds[1][1], FfInt(64L))) {
+                    if (object->pos[1] >
+                        Fadd(
+                            object_is_alive(state.autoscroll) ? state.bounds[1][1] : player->bounds[1][1], FfInt(64L)
+                        )) {
                         kill_player(object);
                         break;
                     }
@@ -2038,7 +2121,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
 
                     if (object->values[VAL_PLAYER_FRAME] >= 25L) {
                         object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
-                        move_object(oid, (fvec2){object->pos[0], Fadd(object->pos[1], object->values[VAL_Y_SPEED])});
+                        move_object(oid, POS_SPEED(object));
                     }
 
                     switch ((object->values[VAL_PLAYER_FRAME])++) {
@@ -2183,10 +2266,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     );
                     object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00004925);
 
-                    move_object(
-                        oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
-                                     Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
-                    );
+                    move_object(oid, POS_SPEED(object));
 
                     const PlayerID player = get_owner_id((ObjectID)(object->values[VAL_MISSILE_OWNER]));
                     if ((player >= 0L && !in_player_view(object, player, FxZero, true)) ||
@@ -2197,10 +2277,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
 
                 case OBJ_MISSILE_BEETROOT: {
                     object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
-                    move_object(
-                        oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
-                                     Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
-                    );
+                    move_object(oid, POS_SPEED(object));
 
                     if (object->values[VAL_MISSILE_HITS] > 0L) {
                         if (object->values[VAL_MISSILE_HIT] > 0L)
@@ -2382,10 +2459,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     object->values[VAL_BRICK_SHARD_ANGLE] = Fadd(object->values[VAL_BRICK_SHARD_ANGLE], 0x00007098);
 
                     object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
-                    move_object(
-                        oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
-                                     Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
-                    );
+                    move_object(oid, POS_SPEED(object));
 
                     if (!in_any_view(object, FxZero, true))
                         object->flags |= FLG_DESTROY;
@@ -2446,7 +2520,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     }
 
                     if (object->values[VAL_Y_SPEED] < FxZero) {
-                        move_object(oid, (fvec2){object->pos[0], Fadd(object->pos[1], object->values[VAL_Y_SPEED])});
+                        move_object(oid, POS_SPEED(object));
                         object->values[VAL_Y_SPEED] = Fmin(Fadd(object->values[VAL_Y_SPEED], 0x00002AC1), FxZero);
                     }
 
@@ -2576,7 +2650,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                          object->pos[1] >= Fadd(object->values[VAL_GOAL_Y], FfInt(220L))) ||
                         (object->values[VAL_Y_SPEED] < FxZero && object->pos[1] <= object->values[VAL_GOAL_Y]))
                         object->values[VAL_Y_SPEED] = -(object->values[VAL_Y_SPEED]);
-                    move_object(oid, (fvec2){object->pos[0], Fadd(object->pos[1], object->values[VAL_Y_SPEED])});
+                    move_object(oid, POS_SPEED(object));
                     break;
                 }
 
@@ -2584,10 +2658,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     object->values[VAL_GOAL_ANGLE] = Fadd(object->values[VAL_GOAL_ANGLE], 0x00006488);
 
                     object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00003333);
-                    move_object(
-                        oid, (fvec2){Fadd(object->pos[0], object->values[VAL_X_SPEED]),
-                                     Fadd(object->pos[1], object->values[VAL_Y_SPEED])}
-                    );
+                    move_object(oid, POS_SPEED(object));
 
                     if (below_frame(object))
                         object->flags |= FLG_DESTROY;
@@ -2597,6 +2668,23 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                 case OBJ_PSWITCH: {
                     if (object->values[VAL_PSWITCH] > 0L && !(object->flags & FLG_PSWITCH_ONCE))
                         --(object->values[VAL_PSWITCH]);
+                    break;
+                }
+
+                case OBJ_AUTOSCROLL: {
+                    if (state.autoscroll != oid && in_any_view(object, FxZero, false)) {
+                        struct GameObject* autoscroll = get_object(state.autoscroll);
+                        if (autoscroll != NULL) {
+                            autoscroll->values[VAL_X_SPEED] = object->values[VAL_X_SPEED];
+                            autoscroll->values[VAL_Y_SPEED] = object->values[VAL_Y_SPEED];
+                            object->flags |= FLG_DESTROY;
+                            break;
+                        } else {
+                            state.autoscroll = oid;
+                        }
+                    }
+                    if (state.autoscroll == oid)
+                        move_object(oid, POS_SPEED(object));
                     break;
                 }
             }
@@ -4068,7 +4156,8 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
 
                 case OBJ_SOLID:
                 case OBJ_SOLID_TOP:
-                case OBJ_SOLID_SLOPE: {
+                case OBJ_SOLID_SLOPE:
+                case OBJ_AUTOSCROLL: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
                     break;
                 }
@@ -4514,6 +4603,12 @@ void destroy_object(ObjectID index) {
                 owner->values[VAL_ROTODISC] = NULLOBJ;
             break;
         }
+
+        case OBJ_AUTOSCROLL: {
+            if (state.autoscroll == index)
+                state.autoscroll = NULLOBJ;
+            break;
+        }
     }
     object->type = OBJ_NULL;
 
@@ -4593,17 +4688,28 @@ void interp_update(float ticfrac) {
         oid = object->previous;
     }
 
-    const struct GamePlayer* player = get_player(local_player);
-    if (player != NULL) {
-        const ObjectID pwid = player->object;
-        if (object_is_alive(pwid)) {
-            const float cx = FtInt(interp[pwid].pos[0]);
-            const float cy = FtInt(interp[pwid].pos[1]);
-            const float bx1 = FtFloat(player->bounds[0][0]) + HALF_SCREEN_WIDTH;
-            const float by1 = FtFloat(player->bounds[0][1]) + HALF_SCREEN_HEIGHT;
-            const float bx2 = FtFloat(player->bounds[1][0]) - HALF_SCREEN_WIDTH;
-            const float by2 = FtFloat(player->bounds[1][1]) - HALF_SCREEN_HEIGHT;
-            move_camera(SDL_clamp(cx, bx1, bx2), SDL_clamp(cy, by1, by2));
+    const ObjectID asid = state.autoscroll;
+    if (object_is_alive(asid)) {
+        const float cx = FtInt(interp[asid].pos[0]);
+        const float cy = FtInt(interp[asid].pos[1]);
+        const float bx1 = FtFloat(state.bounds[0][0]) + HALF_SCREEN_WIDTH;
+        const float by1 = FtFloat(state.bounds[0][1]) + HALF_SCREEN_HEIGHT;
+        const float bx2 = FtFloat(state.bounds[1][0]) - HALF_SCREEN_WIDTH;
+        const float by2 = FtFloat(state.bounds[1][1]) - HALF_SCREEN_HEIGHT;
+        move_camera(SDL_clamp(cx, bx1, bx2), SDL_clamp(cy, by1, by2));
+    } else {
+        const struct GamePlayer* player = get_player(local_player);
+        if (player != NULL) {
+            const ObjectID pwid = player->object;
+            if (object_is_alive(pwid)) {
+                const float cx = FtInt(interp[pwid].pos[0]);
+                const float cy = FtInt(interp[pwid].pos[1]);
+                const float bx1 = FtFloat(player->bounds[0][0]) + HALF_SCREEN_WIDTH;
+                const float by1 = FtFloat(player->bounds[0][1]) + HALF_SCREEN_HEIGHT;
+                const float bx2 = FtFloat(player->bounds[1][0]) - HALF_SCREEN_WIDTH;
+                const float by2 = FtFloat(player->bounds[1][1]) - HALF_SCREEN_HEIGHT;
+                move_camera(SDL_clamp(cx, bx1, bx2), SDL_clamp(cy, by1, by2));
+            }
         }
     }
 }
