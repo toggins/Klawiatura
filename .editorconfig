@@ -7,7 +7,7 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 indent_style = space
 
-[*.{md,json,vsh,fsh,lua}]
+[*.{md,json,vsh,fsh,lua,c,h}]
 indent_size = 4
 
 [{CMakeLists.txt,*.cmake}]
