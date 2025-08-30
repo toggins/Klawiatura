@@ -1,1 +1,0 @@
-function BackdropDef() : Def() constructor {}
