@@ -16,10 +16,7 @@
 static const char *server_ip = NULL, *lobby_id = NULL;
 
 static void send_data(GekkoNetAddress* gn_addr, const char* data, int len) {
-    int peer = *(int*)gn_addr->data;
-    if (!NutPunch_PeerAlive(peer))
-        return;
-    NutPunch_Send(peer, data, len);
+    NutPunch_Send(*(int*)gn_addr->data, data, len);
 }
 
 static GekkoNetResult** receive_data(int* pCount) {
@@ -95,7 +92,7 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
                 if (size == sizeof(GameFlags))
                     *_start_flags = *pflags;
 
-                if (*_num_players && NutPunch_PeerCount() + 1 >= *_num_players) {
+                if (*_num_players && NutPunch_PeerCount() >= *_num_players) {
                     INFO("%d player start!\n", *_num_players);
                     return;
                 }
@@ -119,25 +116,30 @@ PlayerID net_fill(GekkoSession* session) {
         return 0;
     }
 
-    PlayerID counter = 0;
+    int counter = 0, local = MAX_PLAYERS;
     static int indices[MAX_PLAYERS] = {0};
     static GekkoNetAddress addrs[MAX_PLAYERS] = {0};
 
-    gekko_add_actor(session, LocalPlayer, NULL);
     for (int i = 0; i < NUTPUNCH_MAX_PLAYERS; i++) {
         if (!NutPunch_PeerAlive(i))
             continue;
 
-        indices[counter] = i;
-        addrs[counter].data = &indices[counter];
-        addrs[counter].size = sizeof(*indices);
-        gekko_add_actor(session, RemotePlayer, &addrs[counter]);
+        if (NutPunch_LocalPeer() == i) {
+            local = counter;
+            gekko_add_actor(session, LocalPlayer, NULL);
+            INFO("You are player %d", local + 1);
+        } else {
+            indices[counter] = i;
+            addrs[counter].data = indices + counter;
+            addrs[counter].size = sizeof(*indices);
+            gekko_add_actor(session, RemotePlayer, addrs + counter);
+        }
 
         if (++counter == count)
             break;
     }
 
-    return 0;
+    return (PlayerID)local;
 }
 
 void net_teardown() {
