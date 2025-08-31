@@ -69,7 +69,7 @@ jobs:
         if: ${{ !matrix.cfg.vstools_arch }}
         run: |
           rm -rf Klawiatura; mkdir -p Klawiatura
-          cp -r build/Klawiatura build/fmodL.so.14 build/data UNLICENSE README.md Klawiatura
+          cp -r build/Klawiatura build/libfmodL.so.14 build/data UNLICENSE README.md Klawiatura
           zip -r $OUTFILE Klawiatura/
       - name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} build for ${{ matrix.cfg.os-name }}
         uses: softprops/action-gh-release@v2
