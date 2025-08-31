@@ -76,7 +76,7 @@ set(NUTPUNCH_BUILD_SERVER OFF CACHE INTERNAL "")
 FetchContent_Declare(
     nutpunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG 4fe41fb7b62789dd0a4a3493c3b19b38e994244a)
+    GIT_TAG 8c4c0210551afb0de96cf36b85a3831f04e508f9)
 
 # yyjson (0.12.0)
 FetchContent_Declare(
