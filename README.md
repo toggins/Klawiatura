@@ -11,9 +11,6 @@ Mario Forever with rollback netcode.
 
 ## Multiplayer
 
-> [!NOTE]
-> Klawiatura uses [NutPunch](https://github.com/Schwungus/nutpunch), which relies heavily on Winsock. A cross-platform solution will be implemented later on.
-
 The main kicker of this project. Networking is purely peer-to-peer. By specifying 2+ players with the `-players` command, the game will automatically connect to a matchmaking server and wait for players with a matching lobby ID. You can change your lobby ID with `-lobby`, and specify a custom [nutpuncher](https://github.com/Schwungus/nutpunch) instance with `-ip`.
 
 > [!WARNING]
