@@ -5,6 +5,7 @@
 
 static struct GameState state = {0};
 static PlayerID local_player = -1L;
+static PlayerID view_player = -1L;
 
 static struct InterpObject interp[MAX_OBJECTS] = {0};
 
@@ -54,9 +55,21 @@ static ObjectID nearest_player(fvec2 pos) {
 
 static ObjectID respawn_player(PlayerID pid) {
     struct GamePlayer* player = get_player(pid);
-    if (player == NULL || !(player->active) || player->lives <= 0L || state.clock == 0L ||
-        state.sequence.type != SEQ_NONE)
+    if (player == NULL || !(player->active) || state.clock == 0L || state.sequence.type != SEQ_NONE)
         return NULLOBJ;
+
+    if (player->lives <= 0L) {
+        if (view_player == pid)
+            for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
+                struct GamePlayer* survivor = &(state.players[i]);
+                if (survivor->active && (survivor->lives > 0L || object_is_alive(survivor->object))) {
+                    view_player = i;
+                    break;
+                }
+            }
+
+        return NULLOBJ;
+    }
 
     kill_object(player->object);
     player->object = NULLOBJ;
@@ -555,7 +568,7 @@ static void win_player(struct GameObject* pawn) {
         return;
     state.sequence.type = SEQ_WIN;
     state.sequence.time = 1L;
-    const PlayerID pid = state.sequence.activator = (PlayerID)(pawn->values[VAL_PLAYER_INDEX]);
+    const PlayerID pid = view_player = state.sequence.activator = (PlayerID)(pawn->values[VAL_PLAYER_INDEX]);
 
     for (size_t i = 0; i < MAX_PLAYERS; i++) {
         struct GamePlayer* player = &(state.players[i]);
@@ -1457,7 +1470,7 @@ static Bool below_frame(struct GameObject* object) {
    ====== */
 
 void start_state(PlayerID num_players, PlayerID local, const char* level, GameFlags flags) {
-    local_player = local;
+    local_player = view_player = local;
 
     SDL_memset(&state, 0, sizeof(state));
     clear_tiles();
@@ -3288,7 +3301,7 @@ void draw_state() {
                 }
 
                 case OBJ_POINTS: {
-                    if (object->values[VAL_POINTS_PLAYER] != local_player)
+                    if (object->values[VAL_POINTS_PLAYER] != view_player)
                         break;
 
                     const char* tex;
@@ -3905,7 +3918,7 @@ void draw_state() {
 }
 
 void draw_state_hud() {
-    const struct GamePlayer* player = get_player(local_player);
+    const struct GamePlayer* player = get_player(view_player);
     if (player != NULL) {
         static char str[16];
         SDL_snprintf(str, sizeof(str), "MARIO * %u", player->lives);
@@ -3940,6 +3953,8 @@ void draw_state_hud() {
 
     if (state.sequence.type == SEQ_LOSE && state.sequence.time > 0L)
         draw_text(FNT_HUD, FA_CENTER, (state.clock == 0) ? "TIME UP" : "GAME OVER", (float[3]){320, 224, 0});
+    else if (view_player != local_player)
+        draw_text(FNT_HUD, FA_CENTER, "Spectating", (float[3]){320, 64, 0});
 }
 
 void load_object(GameObjectType type) {
@@ -5051,7 +5066,7 @@ void interp_update(float ticfrac) {
         const float by2 = FtFloat(state.bounds[1][1]) - HALF_SCREEN_HEIGHT;
         move_camera(SDL_clamp(cx, bx1, bx2), SDL_clamp(cy, by1, by2));
     } else {
-        const struct GamePlayer* player = get_player(local_player);
+        const struct GamePlayer* player = get_player(view_player);
         if (player != NULL) {
             const ObjectID pwid = player->object;
             if (object_is_alive(pwid)) {
