@@ -39,6 +39,9 @@ jobs:
           ref: master
       - name: Install Python deps
         run: ${{ matrix.cfg.python || 'py' }} -m pip install jinja2
+      - name: Install Linux deps
+        if: ${{ !matrix.cfg.vstools_arch }}
+        run: apt-get update && apt-get install --yes libgl1-mesa-dev
       - name: Build for ${{ matrix.cfg.os-name }} (Windose)
         if: ${{ matrix.cfg.vstools_arch }}
         shell: cmd
