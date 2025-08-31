@@ -2,8 +2,8 @@ name: Build and release binaries
 
 on:
   push:
-    branches: ["master"]
-    tags: ["stable"]
+    branches: [master]
+    tags: [stable]
 
 jobs:
   release:
