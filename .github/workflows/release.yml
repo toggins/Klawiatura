@@ -41,7 +41,10 @@ jobs:
         run: py -m pip install jinja2
       - name: Install Linux deps
         if: ${{ !matrix.cfg.vstools_arch }}
-        run: sudo apt-get update && sudo apt-get install --yes libgl1-mesa-dev python3-jinja2
+        run: |
+          sudo apt-get update && sudo apt-get install --yes \
+            libgl1-mesa-dev python3-jinja2 \
+            libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev
       - name: Build for ${{ matrix.cfg.os-name }} (Windose)
         if: ${{ matrix.cfg.vstools_arch }}
         shell: cmd
