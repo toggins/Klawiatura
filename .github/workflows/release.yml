@@ -6,7 +6,7 @@ on:
     tags: [stable]
 
 jobs:
-  release:
+  release-win:
     name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} binaries for ${{ matrix.cfg.os-name }}
     runs-on: ${{ matrix.cfg.runner-os }}
     permissions:
@@ -22,6 +22,9 @@ jobs:
             runner-os: windows-2022
             vstools_arch: amd64
             vsproj_arch: x64
+          - os-name: Linux
+            runner-os: ubuntu-24.04
+            python: python3
     env:
       OUTFILE: Klawiatura-${{ matrix.cfg.os-name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}.zip
     steps:
@@ -35,21 +38,34 @@ jobs:
           path: external/fmod
           ref: master
       - name: Install Python deps
-        run: py -m pip install jinja2
-      - name: Build for ${{ matrix.cfg.os-name }}
+        run: ${{ matrix.cfg.python || 'py' }} -m pip install jinja2
+      - name: Build for ${{ matrix.cfg.os-name }} (Windose)
+        if: ${{ matrix.cfg.vstools_arch }}
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ matrix.cfg.vstools_arch }}
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 17 2022" -A ${{ matrix.cfg.vsproj_arch }}
           cmake --build build --config Release --target ALL_BUILD
-      - name: Bundle
+      - name: Build for ${{ matrix.cfg.os-name }} (Linux)
+        if: ${{ !matrix.cfg.vstools_arch }}
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G Ninja -A
+          cmake --build build --config Release --target ALL_BUILD
+      - name: Bundle (Windose)
+        if: ${{ matrix.cfg.vstools_arch }}
         run: |
           New-Item -Force -Path 'Klawiatura' -ItemType 'Directory'
           Copy-Item -Recurse -Destination 'Klawiatura' -Path `
             @('build/Release/Klawiatura.exe', 'build/Release/fmodL.dll', 'build/Release/data', `
               'UNLICENSE', 'README.md')
-          7z a $env:OUTFILE Klawiatura\
-      - name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} for ${{ matrix.cfg.os-name }}
+          7z a $env:OUTFILE Klawiatura
+      - name: Bundle (Linux)
+        if: ${{ !matrix.cfg.vstools_arch }}
+        run: |
+          mkdir -p Klawiatura
+          cp -r build/Klawiatura build/fmodL.so.14 build/data UNLICENSE README.md Klawiatura
+          zip -r $OUTFILE Klawiatura/
+      - name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} build for ${{ matrix.cfg.os-name }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
