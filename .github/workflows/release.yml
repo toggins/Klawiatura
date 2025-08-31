@@ -12,7 +12,6 @@ jobs:
     permissions:
       contents: write
     strategy:
-      fail-fast: false
       matrix:
         cfg:
           - os-name: WinXP
