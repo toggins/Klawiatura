@@ -8,22 +8,30 @@ on:
 jobs:
   release-win:
     name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} binaries for ${{ matrix.cfg.os-name }}
-    runs-on: ${{ matrix.cfg.runner-os }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     strategy:
       matrix:
         cfg:
           - os-name: WinXP
-            runner-os: windows-2022
-            vstools_arch: x86
-            vsproj_arch: Win32
+            cc: i686-w64-mingw32-gcc
+            cxx: i686-w64-mingw32-g++
+            exe_suffix: .exe
+            lib_prefix: ""
+            fmod_dll_suffix: .dll
+            mingw_bits: 32
           - os-name: Win64
-            runner-os: windows-2022
-            vstools_arch: amd64
-            vsproj_arch: x64
+            cc: x86_64-w64-mingw32-gcc
+            cxx: x86_64-w64-mingw32-g++
+            exe_suffix: .exe
+            lib_prefix: ""
+            fmod_dll_suffix: .dll
+            mingw_bits: 64
           - os-name: Linux
-            runner-os: ubuntu-24.04
+            exe_suffix: ""
+            lib_prefix: lib
+            fmod_dll_suffix: .so.14
     env:
       OUTFILE: Klawiatura-${{ matrix.cfg.os-name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}.zip
     steps:
@@ -36,40 +44,40 @@ jobs:
           token: ${{ secrets.FMOD_TOKEN }}
           path: external/fmod
           ref: master
-      - name: Install Windows deps
-        if: ${{ matrix.cfg.vstools_arch }}
-        run: py -m pip install jinja2
-      - name: Install Linux deps
-        if: ${{ !matrix.cfg.vstools_arch }}
+      - name: Install deps
         run: |
           sudo apt-get update && sudo apt-get install --yes \
             libgl1-mesa-dev python3-jinja2 \
             libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev
-      - name: Build for ${{ matrix.cfg.os-name }} (Windose)
-        if: ${{ matrix.cfg.vstools_arch }}
-        shell: cmd
+      - name: Install MinGW
+        if: matrix.cfg.mingw_bits == 32 || matrix.cfg.mingw_bits == 64
+        uses: egor-tensin/setup-mingw@v2.2.0
+        with:
+          platform: ${{ matrix.cfg.mingw_bits == 32 && 'x86' || 'x64' }}
+          cc: 0
+      - name: Configure for MinGW
+        if: matrix.cfg.mingw_bits == 32 || matrix.cfg.mingw_bits == 64
         run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ matrix.cfg.vstools_arch }}
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 17 2022" -A ${{ matrix.cfg.vsproj_arch }}
-          cmake --build build --config Release --target ALL_BUILD
-      - name: Build for ${{ matrix.cfg.os-name }} (Linux)
-        if: ${{ !matrix.cfg.vstools_arch }}
-        run: |
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
-          cmake --build build --config Release --target all
-      - name: Bundle (Windose)
-        if: ${{ matrix.cfg.vstools_arch }}
-        run: |
-          New-Item -Force -Path 'Klawiatura' -ItemType 'Directory'
-          Copy-Item -Recurse -Destination 'Klawiatura' -Path `
-            @('build/Release/Klawiatura.exe', 'build/Release/fmodL.dll', 'build/Release/data', `
-              'UNLICENSE', 'README.md')
-          7z a $env:OUTFILE Klawiatura
-      - name: Bundle (Linux)
-        if: ${{ !matrix.cfg.vstools_arch }}
+          cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
+            -D CMAKE_C_COMPILER=${{ matrix.cfg.cc }} \
+            -D CMAKE_CXX_COMPILER=${{ matrix.cfg.cxx }} \
+            -D CMAKE_SYSTEM_NAME=Windows \
+            -D CMAKE_FIND_ROOT_PATH=/usr/${{ matrix.cfg.bits == 32 && 'i686' || 'x86_64' }}-w64-mingw32 \
+            -D CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
+            -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+            -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
+      - name: Configure for Linux
+        if: matrix.cfg.mingw_bits != 32 && matrix.cfg.mingw_bits != 64
+        run: cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release --target all
+      - name: Bundle
         run: |
           rm -rf Klawiatura; mkdir -p Klawiatura
-          cp -r build/Klawiatura build/libfmodL.so.14 build/data UNLICENSE README.md Klawiatura
+          cp -rt Klawiatura \
+            build/Klawiatura${{ matrix.cfg.exe_suffix }} \
+            build/${{ matrix.cfg.lib_prefix }}fmodL${{ matrix.cfg.fmod_dll_suffix }} \
+            build/data UNLICENSE README.md
           zip -r $OUTFILE Klawiatura/
       - name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} build for ${{ matrix.cfg.os-name }}
         uses: softprops/action-gh-release@v2
