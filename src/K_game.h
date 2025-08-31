@@ -5,7 +5,7 @@
 
 #include "K_audio.h"
 #include "K_math.h"
-#include "K_video.h" // IWYU pragma: keep
+#include "K_video.h"
 
 #define TICKRATE 50L
 
@@ -245,6 +245,10 @@ enum ObjectValues {
     VAL_PSWITCH = VAL_START,
 
     VAL_WHEEL_FRAME = VAL_START,
+
+    VAL_THWOMP_Y = VAL_START,
+    VAL_THWOMP_STATE,
+    VAL_THWOMP_FRAME,
 };
 typedef uint8_t ObjectValues;
 
@@ -284,6 +288,9 @@ enum ObjectFlags {
     FLG_PSWITCH_ONCE = 1 << 5,
 
     FLG_SCROLL_TANKS = 1 << 5,
+
+    FLG_THWOMP_START = 1 << 5,
+    FLG_THWOMP_LAUGH = 1 << 6,
 };
 typedef uint32_t ObjectFlags;
 
@@ -392,6 +399,7 @@ struct GameState {
 
 struct SaveState {
     struct GameState game;
+    struct VideoState video;
     struct SoundState audio;
 };
 

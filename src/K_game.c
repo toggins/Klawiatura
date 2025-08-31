@@ -29,6 +29,29 @@ static struct GamePlayer* get_player(PlayerID pid) {
     return (pid < 0L || pid >= MAX_PLAYERS) ? NULL : &(state.players[pid]);
 }
 
+static ObjectID nearest_player(fvec2 pos) {
+    ObjectID nearest = NULLOBJ;
+    fix16_t distance = FxZero;
+
+    for (size_t i = 0; i < MAX_PLAYERS; i++) {
+        struct GamePlayer* player = &(state.players[i]);
+        if (!(player->active))
+            continue;
+
+        struct GameObject* pawn = get_object(player->object);
+        if (pawn == NULL)
+            continue;
+
+        const fix16_t ndist = Fsqrt(Fadd(Fsqr(Fsub(pawn->pos[0], pos[0])), Fsqr(Fsub(pawn->pos[1], pos[1]))));
+        if (nearest == NULLOBJ || ndist < distance) {
+            nearest = player->object;
+            distance = ndist;
+        }
+    }
+
+    return nearest;
+}
+
 static ObjectID respawn_player(PlayerID pid) {
     struct GamePlayer* player = get_player(pid);
     if (player == NULL || !(player->active) || player->lives <= 0L || state.clock == 0L ||
@@ -973,6 +996,30 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
 
             play_sound_at_object(self, "TOGGLE");
             play_track(TS_SWITCH, "PSWITCH", true);
+            break;
+        }
+
+        case OBJ_THWOMP: {
+            struct GameObject* other = &(state.objects[other_id]);
+            switch (other->type) {
+                default:
+                    break;
+
+                case OBJ_PLAYER: {
+                    if (hit_player(other)) {
+                        self->values[VAL_THWOMP_FRAME] = FxZero;
+                        self->flags |= FLG_THWOMP_LAUGH;
+                        play_sound_at_object(self, "THWOMP");
+                    }
+                    break;
+                }
+
+                case OBJ_MISSILE_FIREBALL: {
+                    play_sound_at_object(other, "BUMP");
+                    other->flags |= FLG_DESTROY;
+                    break;
+                }
+            }
             break;
         }
     }
@@ -2289,6 +2336,8 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     displace_object(oid, FfInt(10L), false);
                     if (object->values[VAL_X_TOUCH] != 0L)
                         object->flags |= FLG_DESTROY;
+                    else
+                        bump_object(oid);
                     if (object->flags & FLG_DESTROY) {
                         create_object(OBJ_EXPLODE, object->pos);
                         break;
@@ -2752,6 +2801,75 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                             object->values[VAL_WHEEL_FRAME],
                             (autoscroll->values[VAL_X_SPEED] > FxZero) ? FxHalf : -FxHalf
                         );
+                    break;
+                }
+
+                case OBJ_THWOMP: {
+                    if (!(object->flags & FLG_THWOMP_START)) {
+                        object->values[VAL_THWOMP_Y] = object->pos[1];
+                        object->flags |= FLG_THWOMP_START;
+                    }
+
+                    if (object->flags & FLG_THWOMP_LAUGH) {
+                        object->values[VAL_THWOMP_FRAME] = Fadd(object->values[VAL_THWOMP_FRAME], 0x000028F6);
+                        if (object->values[VAL_THWOMP_FRAME] >= FfInt(15L)) {
+                            object->values[VAL_THWOMP_FRAME] = FxZero;
+                            object->flags &= ~FLG_THWOMP_LAUGH;
+                        }
+                    } else if (object->values[VAL_THWOMP_FRAME] > FxZero) {
+                        object->values[VAL_THWOMP_FRAME] = Fadd(object->values[VAL_THWOMP_FRAME], FxOne);
+                        if (object->values[VAL_THWOMP_FRAME] >= FfInt(7L))
+                            object->values[VAL_THWOMP_FRAME] = FxZero;
+                    }
+
+                    if ((state.time % 5) == 0) {
+                        const int32_t blink = random() % 20L;
+                        if (blink == 5L && object->values[VAL_THWOMP_FRAME] <= FxZero)
+                            object->values[VAL_THWOMP_FRAME] = Fadd(object->values[VAL_THWOMP_FRAME], FxOne);
+                    }
+
+                    switch (object->values[VAL_THWOMP_STATE]) {
+                        default: {
+                            ++(object->values[VAL_THWOMP_STATE]);
+                            break;
+                        }
+
+                        case 0: {
+                            const ObjectID nid = nearest_player(object->pos);
+                            struct GameObject* nearest = get_object(nid);
+                            if (nearest != NULL && object->pos[0] < Fadd(nearest->pos[0], FfInt(100L)) &&
+                                object->pos[0] > Fsub(nearest->pos[0], FfInt(100L)) &&
+                                in_player_view(object, get_owner_id(nid), FfInt(64L), false)) {
+                                ++(object->values[VAL_THWOMP_STATE]);
+                            }
+                            break;
+                        }
+
+                        case 1: {
+                            object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], FxOne);
+                            displace_object(oid, FxZero, false);
+                            if (object->values[VAL_Y_TOUCH] > 0L) {
+                                create_object(OBJ_EXPLODE, POS_ADD(object, FfInt(-17L), FfInt(34L)));
+                                create_object(OBJ_EXPLODE, POS_ADD(object, FfInt(17L), FfInt(34L)));
+                                ++(object->values[VAL_THWOMP_STATE]);
+                                quake_at((float[2]){FtFloat(object->pos[0]), FtFloat(object->pos[1])}, 10);
+                                play_sound_at_object(object, "HURT");
+                            }
+                            break;
+                        }
+
+                        case 101: {
+                            move_object(oid, POS_ADD(object, FxZero, -FxOne));
+                            if (object->pos[1] < object->values[VAL_THWOMP_Y]) {
+                                move_object(oid, (fvec2){object->pos[0], object->values[VAL_THWOMP_Y]});
+                                object->values[VAL_THWOMP_STATE] = 0L;
+                            }
+                            break;
+                        }
+                    }
+
+                    if (below_frame(object))
+                        object->flags |= FLG_DESTROY;
                     break;
                 }
             }
@@ -3707,6 +3825,45 @@ void draw_state() {
                     draw_object(oid, tex, 0, WHITE);
                     break;
                 }
+
+                case OBJ_THWOMP: {
+                    const char* tex;
+                    if (object->flags & FLG_THWOMP_LAUGH)
+                        switch (FtInt(object->values[VAL_THWOMP_FRAME]) % 3) {
+                            default:
+                                tex = "E_THWMPF";
+                                break;
+                            case 1:
+                                tex = "E_THWMPG";
+                                break;
+                            case 2:
+                                tex = "E_THWMPH";
+                                break;
+                        }
+                    else
+                        switch (FtInt(object->values[VAL_THWOMP_FRAME]) % 7) {
+                            default:
+                                tex = "E_THWMPA";
+                                break;
+                            case 1:
+                                tex = "E_THWMPB";
+                                break;
+                            case 2:
+                            case 6:
+                                tex = "E_THWMPC";
+                                break;
+                            case 3:
+                            case 5:
+                                tex = "E_THWMPD";
+                                break;
+                            case 4:
+                                tex = "E_THWMPE";
+                                break;
+                        }
+
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
             }
 
         oid = object->previous;
@@ -4272,6 +4429,23 @@ void load_object(GameObjectType type) {
             load_texture("T_WHELRC");
             break;
         }
+
+        case OBJ_THWOMP: {
+            load_texture("E_THWMPA");
+            load_texture("E_THWMPB");
+            load_texture("E_THWMPC");
+            load_texture("E_THWMPD");
+            load_texture("E_THWMPE");
+            load_texture("E_THWMPF");
+            load_texture("E_THWMPG");
+            load_texture("E_THWMPH");
+
+            load_sound("HURT");
+            load_sound("THWOMP");
+
+            load_object(OBJ_EXPLODE);
+            break;
+        }
     }
 }
 
@@ -4604,6 +4778,14 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                     object->depth = FxOne;
                     break;
                 }
+
+                case OBJ_THWOMP: {
+                    object->bbox[0][0] = FfInt(-27L);
+                    object->bbox[0][1] = FfInt(-33L);
+                    object->bbox[1][0] = FfInt(26L);
+                    object->bbox[1][1] = FfInt(35L);
+                    break;
+                }
             }
 
             state.next_object = (ObjectID)((index + 1L) % MAX_OBJECTS);
@@ -4855,8 +5037,14 @@ void interp_update(float ticfrac) {
 
     const ObjectID asid = state.autoscroll;
     if (object_is_alive(asid)) {
-        const float cx = FtInt(interp[asid].pos[0]);
-        const float cy = FtInt(interp[asid].pos[1]);
+        float cx = FtInt(interp[asid].pos[0]);
+        float cy = FtInt(interp[asid].pos[1]);
+        const float quake = get_quake();
+        if (quake > 0) {
+            cx += (SDL_randf() - SDL_randf()) * quake;
+            cy += (SDL_randf() - SDL_randf()) * quake;
+        }
+
         const float bx1 = FtFloat(state.bounds[0][0]) + HALF_SCREEN_WIDTH;
         const float by1 = FtFloat(state.bounds[0][1]) + HALF_SCREEN_HEIGHT;
         const float bx2 = FtFloat(state.bounds[1][0]) - HALF_SCREEN_WIDTH;
@@ -4867,8 +5055,14 @@ void interp_update(float ticfrac) {
         if (player != NULL) {
             const ObjectID pwid = player->object;
             if (object_is_alive(pwid)) {
-                const float cx = FtInt(interp[pwid].pos[0]);
-                const float cy = FtInt(interp[pwid].pos[1]);
+                float cx = FtInt(interp[pwid].pos[0]);
+                float cy = FtInt(interp[pwid].pos[1]);
+                const float quake = get_quake();
+                if (quake > 0) {
+                    cx += (SDL_randf() - SDL_randf()) * quake;
+                    cy += (SDL_randf() - SDL_randf()) * quake;
+                }
+
                 const float bx1 = FtFloat(player->bounds[0][0]) + HALF_SCREEN_WIDTH;
                 const float by1 = FtFloat(player->bounds[0][1]) + HALF_SCREEN_HEIGHT;
                 const float bx2 = FtFloat(player->bounds[1][0]) - HALF_SCREEN_WIDTH;

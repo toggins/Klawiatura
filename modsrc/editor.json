@@ -580,6 +580,18 @@
                     "texture": "I_COINA"
                 }
             ]
+        ],
+
+        [
+            "Enemies",
+            [
+                {
+                    "def": "Thwomp",
+                    "type": "object",
+                    "index": 63,
+                    "texture": "E_THWMPA"
+                }
+            ]
         ]
     ]
 }

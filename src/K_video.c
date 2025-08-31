@@ -309,6 +309,8 @@ static struct VertexBatch batch = {0};
 static StTinyMap* tiles = NULL;
 static struct TileBatch* valid_tiles = NULL;
 
+static struct VideoState state = {0};
+
 void video_init(bool bypass_shader) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -557,6 +559,29 @@ void video_teardown() {
 
     SDL_GL_DestroyContext(gpu);
     SDL_DestroyWindow(window);
+}
+
+void save_video_state(struct VideoState* to) {
+    SDL_memcpy(to, &state, sizeof(state));
+}
+
+void load_video_state(const struct VideoState* from) {
+    SDL_memcpy(&state, from, sizeof(state));
+}
+
+void tick_video_state() {
+    if (state.quake > 0.0f) {
+        state.quake -= 1.0f;
+    }
+}
+
+void quake_at(float pos[2], float amount) {
+    const float dist = glm_vec2_distance(camera, pos) / (float)SCREEN_HEIGHT;
+    state.quake += amount / SDL_max(dist, 1.0f);
+}
+
+float get_quake() {
+    return state.quake;
 }
 
 void move_camera(float x, float y) {

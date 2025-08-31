@@ -201,6 +201,7 @@ int main(int argc, char** argv) {
                         case SaveEvent: {
                             static struct SaveState save;
                             save_state(&(save.game));
+                            save_video_state(&(save.video));
                             save_audio_state(&(save.audio));
 
                             *(event->data.save.state_len) = sizeof(save);
@@ -212,6 +213,7 @@ int main(int argc, char** argv) {
                         case LoadEvent: {
                             const struct SaveState* load = (struct SaveState*)(event->data.load.state);
                             load_state(&(load->game));
+                            load_video_state(&(load->video));
                             load_audio_state(&(load->audio));
                             break;
                         }
@@ -220,6 +222,7 @@ int main(int argc, char** argv) {
                             for (size_t j = 0; j < num_players; j++)
                                 inputs[j] = ((GameInput*)(event->data.adv.inputs))[j];
                             tick_state(inputs);
+                            tick_video_state();
                             tick_audio_state();
                             break;
                         }

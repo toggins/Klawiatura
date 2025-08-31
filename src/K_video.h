@@ -99,10 +99,20 @@ struct TileBatch {
     struct Vertex* vertices;
 };
 
+struct VideoState {
+    float quake;
+};
+
 void video_init(bool);
 void video_update(const char*);
 void video_teardown();
 
+void save_video_state(struct VideoState*);
+void load_video_state(const struct VideoState*);
+void tick_video_state();
+
+void quake_at(float[2], float);
+float get_quake();
 void move_camera(float, float);
 
 void load_texture(const char*);
