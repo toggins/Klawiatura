@@ -142,6 +142,17 @@ PlayerID net_fill(GekkoSession* session) {
     return (PlayerID)local;
 }
 
+void net_update(GekkoSession* session) {
+    NutPunch_Update();
+    for (int i = 0; i < NUTPUNCH_MAX_PLAYERS; i++)
+        if (!NutPunch_PeerAlive(i)) {
+            GekkoNetAddress addr = {0};
+            addr.data = &i;
+            addr.size = sizeof(i);
+            gekko_remove_actor(session, addr);
+        }
+}
+
 void net_teardown() {
     NutPunch_Cleanup();
 }

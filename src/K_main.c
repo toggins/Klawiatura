@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
     uint64_t last_time = SDL_GetTicks();
     float ticks = 0;
 
-    while (true) {
+    for (;;) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
         last_time = current_time;
 
         gekko_network_poll(session);
-        NutPunch_Update();
+        net_update(session);
 
         if (ticks >= frame_time) {
             interp_start();
@@ -133,6 +133,8 @@ int main(int argc, char** argv) {
             while (ticks >= frame_time) {
                 GameInput input = GI_NONE;
                 const bool* keyboard = SDL_GetKeyboardState(NULL);
+                if (keyboard[SDL_SCANCODE_ESCAPE])
+                    goto teardown;
                 if (keyboard[SDL_SCANCODE_UP])
                     input |= GI_UP;
                 if (keyboard[SDL_SCANCODE_LEFT])
@@ -241,6 +243,7 @@ int main(int argc, char** argv) {
     }
 
 teardown:
+    NutPunch_Disconnect();
     gekko_destroy(session);
     session = NULL;
 
@@ -249,15 +252,13 @@ teardown:
         play_sound("DCONNECT");
         SDL_Event event;
 
-        bool running = true;
-        while (running) {
+        for (;;) {
             while (SDL_PollEvent(&event)) {
                 switch (event.type) {
                     default:
                         break;
                     case SDL_EVENT_QUIT:
-                        running = false;
-                        break;
+                        goto quit_fr;
                 }
             }
 
@@ -266,6 +267,7 @@ teardown:
         }
     }
 
+quit_fr:
     net_teardown();
     video_teardown();
     audio_teardown();

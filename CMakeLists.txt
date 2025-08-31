@@ -76,7 +76,7 @@ set(NUTPUNCH_BUILD_SERVER OFF CACHE INTERNAL "")
 FetchContent_Declare(
     nutpunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG 4f2e9c723952b3dd318554b8d1b35dd6f428ec60)
+    GIT_TAG 6d824a527675e29c47d7372c865121f442349c60)
 
 # yyjson (0.12.0)
 FetchContent_Declare(
@@ -88,8 +88,8 @@ FetchContent_Declare(
 set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 FetchContent_Declare(
     GekkoNet
-    GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG cc7318f8088ce2561f3adcb055f3d09a2e919f76)
+    GIT_REPOSITORY https://github.com/Schwungus/GekkoNet.git
+    GIT_TAG 4242ecb8daa66281517f26ae928f304032e3418e)
 
 FetchContent_MakeAvailable(SDL3 SDL3_image glad cglm S_fixed S_tructures nutpunch yyjson GekkoNet)
 
