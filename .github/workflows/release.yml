@@ -68,7 +68,7 @@ jobs:
       - name: Bundle (Linux)
         if: ${{ !matrix.cfg.vstools_arch }}
         run: |
-          mkdir -p Klawiatura
+          rm -rf Klawiatura; mkdir -p Klawiatura
           cp -r build/Klawiatura build/fmodL.so.14 build/data UNLICENSE README.md Klawiatura
           zip -r $OUTFILE Klawiatura/
       - name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} build for ${{ matrix.cfg.os-name }}
