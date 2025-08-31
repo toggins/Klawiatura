@@ -24,7 +24,6 @@ jobs:
             vsproj_arch: x64
           - os-name: Linux
             runner-os: ubuntu-24.04
-            python: python3
     env:
       OUTFILE: Klawiatura-${{ matrix.cfg.os-name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}.zip
     steps:
@@ -37,11 +36,12 @@ jobs:
           token: ${{ secrets.FMOD_TOKEN }}
           path: external/fmod
           ref: master
-      - name: Install Python deps
-        run: ${{ matrix.cfg.python || 'py' }} -m pip install jinja2
+      - name: Install Windows deps
+        if: ${{ matrix.cfg.vstools_arch }}
+        run: py -m pip install jinja2
       - name: Install Linux deps
         if: ${{ !matrix.cfg.vstools_arch }}
-        run: apt-get update && apt-get install --yes libgl1-mesa-dev
+        run: sudo apt-get update && sudo apt-get install --yes libgl1-mesa-dev python3-jinja2
       - name: Build for ${{ matrix.cfg.os-name }} (Windose)
         if: ${{ matrix.cfg.vstools_arch }}
         shell: cmd
