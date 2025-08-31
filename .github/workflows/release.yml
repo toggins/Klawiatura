@@ -3,7 +3,7 @@ name: Build and release binaries
 on:
   push:
     branches: ["master"]
-    tags: ["stable", "dev"]
+    tags: ["stable"]
 
 jobs:
   release:
@@ -50,14 +50,8 @@ jobs:
             @('build/Release/Klawiatura.exe', 'build/Release/fmodL.dll', 'build/Release/data', `
               'UNLICENSE', 'README.md')
           7z a $env:OUTFILE Klawiatura\
-      - name: Release ${{ github.ref_name }} for ${{ matrix.cfg.os-name }}
+      - name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} for ${{ matrix.cfg.os-name }}
         uses: softprops/action-gh-release@v2
-        if: github.ref_name != 'master'
         with:
-          files: ${{ env.OUTFILE }}
-      - name: Release dev for ${{ matrix.cfg.os-name }}
-        uses: softprops/action-gh-release@v2
-        if: github.ref_name == 'master'
-        with:
-          tag_name: dev
+          tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
           files: ${{ env.OUTFILE }}
