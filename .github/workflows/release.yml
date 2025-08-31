@@ -15,15 +15,11 @@ jobs:
       matrix:
         cfg:
           - os-name: WinXP
-            cc: i686-w64-mingw32-gcc
-            cxx: i686-w64-mingw32-g++
             exe_suffix: .exe
             lib_prefix: ""
             fmod_dll_suffix: .dll
             mingw_bits: 32
           - os-name: Win64
-            cc: x86_64-w64-mingw32-gcc
-            cxx: x86_64-w64-mingw32-g++
             exe_suffix: .exe
             lib_prefix: ""
             fmod_dll_suffix: .dll
@@ -34,6 +30,7 @@ jobs:
             fmod_dll_suffix: .so.14
     env:
       OUTFILE: Klawiatura-${{ matrix.cfg.os-name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}.zip
+      MINGW_ARCH: ${{ matrix.cfg.bits == 32 && 'i686' || 'x86_64' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,10 +56,11 @@ jobs:
         if: matrix.cfg.mingw_bits == 32 || matrix.cfg.mingw_bits == 64
         run: |
           cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
-            -D CMAKE_C_COMPILER=${{ matrix.cfg.cc }} \
-            -D CMAKE_CXX_COMPILER=${{ matrix.cfg.cxx }} \
+            -D CMAKE_C_COMPILER=${MINGW_ARCH}-w64-mingw32-gcc \
+            -D CMAKE_CXX_COMPILER=${MINGW_ARCH}-w64-mingw32-g++ \
+            -D CMAKE_RC_COMPILER=${MINGW_ARCH}-w64-mingw32-windres \
             -D CMAKE_SYSTEM_NAME=Windows \
-            -D CMAKE_FIND_ROOT_PATH=/usr/${{ matrix.cfg.bits == 32 && 'i686' || 'x86_64' }}-w64-mingw32 \
+            -D CMAKE_FIND_ROOT_PATH=/usr/${MINGW_ARCH}-w64-mingw32 \
             -D CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
             -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
             -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
