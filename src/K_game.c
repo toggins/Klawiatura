@@ -118,6 +118,10 @@ static ObjectID respawn_player(PlayerID pid) {
         if (spawn->type == OBJ_AUTOSCROLL)
             pawn->flags |= FLG_PLAYER_RESPAWN;
     }
+
+    if (local_player == pid)
+        view_player = pid;
+
     return player->object;
 }
 
@@ -566,9 +570,13 @@ static void displace_object(ObjectID did, fix16_t climb, Bool unstuck) {
 static void win_player(struct GameObject* pawn) {
     if (state.sequence.type == SEQ_WIN)
         return;
+
+    const PlayerID pid = (PlayerID)(pawn->values[VAL_PLAYER_INDEX]);
+    view_player = pid;
+
     state.sequence.type = SEQ_WIN;
     state.sequence.time = 1L;
-    const PlayerID pid = view_player = state.sequence.activator = (PlayerID)(pawn->values[VAL_PLAYER_INDEX]);
+    state.sequence.activator = pid;
 
     for (size_t i = 0; i < MAX_PLAYERS; i++) {
         struct GamePlayer* player = &(state.players[i]);
@@ -1719,12 +1727,14 @@ uint32_t check_state() {
     return checksum;
 }
 
-void save_state(struct GameState* to) {
-    SDL_memcpy(to, &state, sizeof(struct GameState));
+void save_state(struct SaveState* to) {
+    to->view_player = view_player;
+    SDL_memcpy(&(to->game), &state, sizeof(struct GameState));
 }
 
-void load_state(const struct GameState* from) {
-    SDL_memcpy(&state, from, sizeof(struct GameState));
+void load_state(const struct SaveState* from) {
+    view_player = from->view_player;
+    SDL_memcpy(&state, &(from->game), sizeof(struct GameState));
 }
 
 void dump_state() {

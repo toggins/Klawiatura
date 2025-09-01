@@ -202,7 +202,7 @@ int main(int argc, char** argv) {
 
                         case SaveEvent: {
                             static struct SaveState save;
-                            save_state(&(save.game));
+                            save_state(&save);
                             save_video_state(&(save.video));
                             save_audio_state(&(save.audio));
 
@@ -214,7 +214,7 @@ int main(int argc, char** argv) {
 
                         case LoadEvent: {
                             const struct SaveState* load = (struct SaveState*)(event->data.load.state);
-                            load_state(&(load->game));
+                            load_state(load);
                             load_video_state(&(load->video));
                             load_audio_state(&(load->audio));
                             break;

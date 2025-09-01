@@ -398,6 +398,7 @@ struct GameState {
 };
 
 struct SaveState {
+    PlayerID view_player;
     struct GameState game;
     struct VideoState video;
     struct SoundState audio;
@@ -410,8 +411,8 @@ struct InterpObject {
 };
 
 void start_state(PlayerID, PlayerID, const char*, GameFlags);
-void save_state(struct GameState*);
-void load_state(const struct GameState*);
+void save_state(struct SaveState*);
+void load_state(const struct SaveState*);
 uint32_t check_state();
 void dump_state();
 void tick_state(GameInput[MAX_PLAYERS]);
