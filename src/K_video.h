@@ -126,7 +126,7 @@ void submit_batch();
 void batch_vertex(GLfloat, GLfloat, GLfloat, GLubyte, GLubyte, GLubyte, GLubyte, GLfloat, GLfloat);
 void clear_tiles();
 void add_gradient(const char*, const GLfloat[2][2], GLfloat, const GLubyte[4][4]);
-void add_backdrop(const char*, const GLfloat[3], const GLubyte[4]);
+void add_backdrop(const char*, const GLfloat[3], const GLfloat[2], const GLubyte[4]);
 void draw_sprite(const char*, const float[3], const bool[2], GLfloat, const GLubyte[4]);
 void draw_text(enum FontIndices, enum FontAlignment, const char*, const float[3]);
 void draw_rectangle(const char*, const float[2][2], float, const GLubyte[4]);

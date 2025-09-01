@@ -84,6 +84,32 @@
                 ],
 
                 [
+                    "Pipes",
+                    [
+                        {
+                            "def": "Pipe Gray V T",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PIP3VA"
+                        },
+
+                        {
+                            "def": "Pipe Gray V M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PIP3VB"
+                        },
+
+                        {
+                            "def": "Pipe Gray V B",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PIP3VC"
+                        }
+                    ]
+                ],
+
+                [
                     "Tanks",
                     [
                         {
@@ -206,6 +232,68 @@
                             "index": 80,
                             "z": 20,
                             "texture": "T_WHELRA"
+                        }
+                    ]
+                ],
+
+                [
+                    "Bill Blasters",
+
+                    [
+                        {
+                            "def": "Bill Blaster",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTA"
+                        },
+
+                        {
+                            "def": "Bill Blaster Tall",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTB"
+                        },
+
+                        {
+                            "def": "Bill Blaster Tall 2",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTC"
+                        },
+
+                        {
+                            "def": "Bill Blaster Tower",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTD"
+                        },
+
+                        {
+                            "def": "Bill Blaster Tower 2",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTE"
+                        },
+
+                        {
+                            "def": "Bill Blaster Tower 3",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTF"
+                        },
+
+                        {
+                            "def": "Bill Blaster Tower 4",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTG"
+                        },
+
+                        {
+                            "def": "Bill Blaster Down",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTH"
                         }
                     ]
                 ]
@@ -585,6 +673,44 @@
         [
             "Enemies",
             [
+                {
+                    "def": "Roto-Disc",
+                    "type": "object",
+                    "index": 61,
+                    "z": 19,
+                    "texture": "E_RDBALL",
+
+                    "values": [
+                        {
+                            "name": "Length",
+                            "index": 6,
+                            "default": 9830400,
+                            "fixed": true
+                        },
+
+                        {
+                            "name": "Angle",
+                            "index": 7,
+                            "default": 0,
+                            "fixed": true
+                        },
+
+                        {
+                            "name": "Speed",
+                            "index": 8,
+                            "default": 1144,
+                            "fixed": true
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Flower?",
+                            "bit": 6
+                        }
+                    ]
+                },
+
                 {
                     "def": "Thwomp",
                     "type": "object",

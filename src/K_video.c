@@ -835,14 +835,14 @@ void add_gradient(const char* index, const GLfloat rect[2][2], GLfloat z, const 
     tile_vertex(tilemap, rect[0][0], rect[1][1], z, color[2][0], color[2][1], color[2][2], color[2][3], 0, 1);
 }
 
-void add_backdrop(const char* index, const GLfloat pos[3], const GLubyte color[4]) {
+void add_backdrop(const char* index, const GLfloat pos[3], const GLfloat scale[2], const GLubyte color[4]) {
     struct TileBatch* tilemap = load_tile(index);
     const struct Texture* texture = get_texture(index);
 
-    const GLfloat x1 = pos[0] - texture->offset[0];
-    const GLfloat y1 = pos[1] - texture->offset[1];
-    const GLfloat x2 = x1 + (GLfloat)texture->size[0];
-    const GLfloat y2 = y1 + (GLfloat)texture->size[1];
+    const GLfloat x1 = pos[0] - (texture->offset[0] * scale[0]);
+    const GLfloat y1 = pos[1] - (texture->offset[1] * scale[1]);
+    const GLfloat x2 = x1 + ((GLfloat)texture->size[0] * scale[0]);
+    const GLfloat y2 = y1 + ((GLfloat)texture->size[1] * scale[1]);
 
     tile_vertex(tilemap, x1, y2, pos[2], color[0], color[1], color[2], color[3], 0, 1);
     tile_vertex(tilemap, x1, y1, pos[2], color[0], color[1], color[2], color[3], 0, 0);

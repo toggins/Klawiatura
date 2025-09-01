@@ -1644,6 +1644,7 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
                 };
                 buf += sizeof(GLfloat[3]);
 
+                GLfloat scale[2] = {*((GLfloat*)buf), *((GLfloat*)(buf + sizeof(GLfloat)))};
                 buf += sizeof(GLfloat[2]); // Scale
 
                 GLubyte color[4] = {
@@ -1652,7 +1653,7 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
                 };
                 buf += sizeof(GLubyte[4]);
 
-                add_backdrop(texture, pos, color);
+                add_backdrop(texture, pos, scale, color);
                 break;
             }
 
