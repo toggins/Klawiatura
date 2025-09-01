@@ -264,6 +264,10 @@ teardown:
 
             video_update(errmsg);
             audio_update();
+
+            const bool* keyboard = SDL_GetKeyboardState(NULL);
+            if (keyboard[SDL_SCANCODE_ESCAPE])
+                goto quit_fr;
         }
     }
 
