@@ -179,7 +179,7 @@ static Bool touching_solid(const fvec2 rect[2]) {
             ObjectID oid = state.blockmap[bx + (by * MAX_BLOCKS)];
             while (object_is_alive(oid)) {
                 const struct GameObject* other = &(state.objects[oid]);
-                if (is_solid(oid, false, true)) {
+                if (is_solid(oid, false, true) && other->type != OBJ_SOLID_SLOPE) {
                     const fix16_t ox1 = Fadd(other->pos[0], other->bbox[0][0]);
                     const fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
                     const fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
