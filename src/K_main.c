@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
     char level[NUTPUNCH_FIELD_DATA_MAX + 1] = {0};
     SDL_memcpy(level, "TEST", SDL_strlen("TEST"));
     PlayerID num_players = 1;
-    char* server_ip = "95.163.233.200"; // Public NutPunch server
+    char* server_ip = "194.87.232.108"; // Public NutPunch server
     char* lobby_id = "Klawiatura";
     GameFlags start_flags = 0;
     for (size_t i = 0; i < argc; i++) {
