@@ -514,7 +514,8 @@ static void displace_object(ObjectID did, fix16_t climb, Bool unstuck) {
                     continue;
 
                 const struct GameObject* object = &(state.objects[oid]);
-                if (object->type == OBJ_SOLID_SLOPE)
+                if (object->type == OBJ_SOLID_SLOPE &&
+                    ((object->flags & FLG_Y_FLIP) || displacee->pos[1] < Fadd(object->pos[1], object->bbox[1][1])))
                     continue;
 
                 y = Fmax(y, Fsub(Fadd(object->pos[1], object->bbox[1][1]), displacee->bbox[0][1]));
@@ -529,7 +530,7 @@ static void displace_object(ObjectID did, fix16_t climb, Bool unstuck) {
                     continue;
 
                 const struct GameObject* object = &(state.objects[oid]);
-                if (object->type == OBJ_SOLID_SLOPE) {
+                if (object->type == OBJ_SOLID_SLOPE && !(object->flags & FLG_Y_FLIP)) {
                     const Bool side = (object->flags & FLG_X_FLIP) == FLG_X_FLIP;
                     const fix16_t slope = Flerp(
                         Fadd(object->pos[1], object->bbox[!side][1]), Fadd(object->pos[1], object->bbox[side][1]),
