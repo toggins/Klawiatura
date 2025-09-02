@@ -27,26 +27,13 @@
 
 int main(int argc, char** argv) {
     bool bypass_shader = false;
-    char level[NUTPUNCH_FIELD_DATA_MAX + 1] = {0};
-    SDL_memcpy(level, "TEST", SDL_strlen("TEST"));
-    PlayerID num_players = 1;
     char* server_ip = "194.87.232.108"; // Public NutPunch server
-    char* lobby_id = "Klawiatura";
     GameFlags start_flags = 0;
     for (size_t i = 0; i < argc; i++) {
         if (SDL_strcmp(argv[i], "-bypass_shader") == 0) {
             bypass_shader = true;
-        } else if (SDL_strcmp(argv[i], "-level") == 0) {
-            size_t str_len = SDL_strlen(argv[++i]), len = SDL_min(str_len, sizeof(level) - 1);
-            SDL_memcpy(level, argv[i], len);
-        } else if (SDL_strcmp(argv[i], "-players") == 0) {
-            num_players = (PlayerID)SDL_strtol(argv[++i], NULL, 0);
-            if (num_players < 1 || num_players > MAX_PLAYERS)
-                FATAL("Player amount must be between 1 and %li", MAX_PLAYERS);
         } else if (SDL_strcmp(argv[i], "-ip") == 0) {
             server_ip = argv[++i];
-        } else if (SDL_strcmp(argv[i], "-lobby") == 0) {
-            lobby_id = argv[++i];
         } else if (SDL_strcmp(argv[i], "-kevin") == 0) {
             start_flags |= GF_KEVIN;
         }
@@ -61,7 +48,12 @@ int main(int argc, char** argv) {
     if (!gekko_create(&session))
         FATAL("gekko_create fail");
 
-    GekkoNetAdapter* adapter = net_init(server_ip, lobby_id);
+    char level[NUTPUNCH_FIELD_DATA_MAX + 1] = {0};
+    SDL_memcpy(level, "TEST", SDL_strlen("TEST"));
+    PlayerID num_players = 1;
+
+    load_font(FNT_HUD);
+    GekkoNetAdapter* adapter = net_init(server_ip);
     net_wait(&num_players, level, &start_flags);
     if ((num_players <= 0 || num_players > MAX_PLAYERS))
         FATAL("Don't think I didn't see you trying to set invalid player indices!! I'll kick your ass!!");
@@ -69,7 +61,6 @@ int main(int argc, char** argv) {
         load_sound("CONNECT");
         play_sound("CONNECT");
         load_sound("DCONNECT");
-        load_font(FNT_HUD);
     }
 
     if (start_flags & GF_KEVIN) {
