@@ -656,6 +656,38 @@
                             "index": 11,
                             "z": 1,
                             "texture": "I_SHROOM"
+                        },
+
+                        {
+                            "def": "Fire Flower",
+                            "type": "object",
+                            "index": 14,
+                            "z": 1,
+                            "texture": "I_FLWRA"
+                        },
+
+                        {
+                            "def": "Beetroot",
+                            "type": "object",
+                            "index": 15,
+                            "z": 1,
+                            "texture": "I_BEETA"
+                        },
+
+                        {
+                            "def": "Green Lui",
+                            "type": "object",
+                            "index": 16,
+                            "z": 1,
+                            "texture": "I_LUIA"
+                        },
+
+                        {
+                            "def": "Hammer Suit",
+                            "type": "object",
+                            "index": 17,
+                            "z": 1,
+                            "texture": "I_HAMMER"
                         }
                     ]
                 ],

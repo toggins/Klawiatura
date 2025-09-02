@@ -679,6 +679,65 @@ static Bool hit_player(struct GameObject* pawn) {
     return true;
 }
 
+static struct GameObject* kill_enemy(struct GameObject* enemy, Bool kick) {
+    if (enemy->type == OBJ_PIRANHA_PLANT || enemy->type == OBJ_ROTODISC) {
+        enemy->flags |= FLG_DESTROY;
+        return NULL;
+    }
+
+    struct GameObject* dead = get_object(create_object(OBJ_DEAD, enemy->pos));
+    if (dead != NULL) {
+        dead->values[VAL_DEAD_TYPE] = enemy->type;
+        dead->flags |= (enemy->flags & FLG_X_FLIP);
+
+        if (kick) {
+            int32_t rnd = FfInt(random() % 5L);
+            fix16_t dir = Fadd(0x00012D98, Fmul(rnd, 0x00003244));
+            dead->values[VAL_X_SPEED] = Fmul(Fcos(dir), FfInt(3L));
+            dead->values[VAL_Y_SPEED] = Fmul(Fsin(dir), FfInt(-3L));
+
+            play_sound_at_object(enemy, "KICK");
+        }
+    }
+
+    enemy->flags |= FLG_DESTROY;
+    return dead;
+}
+
+static void player_starman(struct GameObject* pawn, struct GameObject* enemy) {
+    int32_t points;
+    switch (pawn->values[VAL_PLAYER_STARMAN_COMBO]++) {
+        case 0:
+            points = 100L;
+            break;
+        case 1:
+            points = 200L;
+            break;
+        case 2:
+            points = 500L;
+            break;
+        case 3:
+            points = 1000L;
+            break;
+        case 4:
+            points = 2000L;
+            break;
+        case 5:
+            points = 5000L;
+            break;
+
+        default: {
+            points = -1L;
+            pawn->values[VAL_PLAYER_STARMAN_COMBO] = 0;
+            break;
+        }
+    }
+    give_points(enemy, (PlayerID)(pawn->values[VAL_PLAYER_INDEX]), points);
+
+    create_object(OBJ_EXPLODE, enemy->pos);
+    kill_enemy(enemy, true);
+}
+
 static Bool bump_check(ObjectID self_id, ObjectID other_id) {
     struct GameObject* self = &(state.objects[self_id]);
     switch (self->type) {
@@ -1028,6 +1087,11 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
                     break;
 
                 case OBJ_PLAYER: {
+                    if (other->values[VAL_PLAYER_STARMAN] > 0L) {
+                        player_starman(other, self);
+                        break;
+                    }
+
                     if (hit_player(other)) {
                         self->values[VAL_THWOMP_FRAME] = FxZero;
                         self->flags |= FLG_THWOMP_LAUGH;
@@ -1039,6 +1103,15 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
                 case OBJ_MISSILE_FIREBALL: {
                     play_sound_at_object(other, "BUMP");
                     other->flags |= FLG_DESTROY;
+                    break;
+                }
+
+                case OBJ_MISSILE_HAMMER: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        give_points(self, pid, 1000L);
+                        kill_enemy(self, true);
+                    }
                     break;
                 }
             }
@@ -2386,6 +2459,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00004925);
 
                     move_object(oid, POS_SPEED(object));
+                    bump_object(oid);
 
                     const PlayerID player = get_owner_id((ObjectID)(object->values[VAL_MISSILE_OWNER]));
                     if ((player >= 0L && !in_player_view(object, player, FxZero, true)) ||
@@ -2446,6 +2520,21 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                                     if (Fsub(object->pos[1], object->values[VAL_Y_SPEED]) <=
                                         Fadd(bumped->pos[1], bumped->bbox[0][1]))
                                         hit = 1L;
+                                }
+                            } else {
+                                struct GameObject* bumped = &(state.objects[bid]);
+                                switch (bumped->type) {
+                                    default:
+                                        break;
+
+                                    case OBJ_THWOMP: {
+                                        if (object->values[VAL_MISSILE_HIT] > 0L) {
+                                            ++(object->values[VAL_MISSILE_HIT]);
+                                        } else {
+                                            hit = 1L;
+                                        }
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -2895,6 +2984,17 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
 
                     if (below_frame(object))
                         object->flags |= FLG_DESTROY;
+                    break;
+                }
+
+                case OBJ_DEAD: {
+                    if (below_frame(object)) {
+                        object->flags |= FLG_DESTROY;
+                        break;
+                    }
+
+                    move_object(oid, POS_SPEED(object));
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x0000199A);
                     break;
                 }
             }
@@ -3889,6 +3989,21 @@ void draw_state() {
                     draw_object(oid, tex, 0, WHITE);
                     break;
                 }
+
+                case OBJ_DEAD: {
+                    const char* tex;
+                    switch (object->values[VAL_DEAD_TYPE]) {
+                        default:
+                            tex = "";
+                            break;
+                        case OBJ_THWOMP:
+                            tex = "E_THWMPA";
+                            break;
+                    }
+
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
             }
 
         oid = object->previous;
@@ -4081,6 +4196,7 @@ void load_object(GameObjectType type) {
             load_sound("STARMAN");
             load_sound("SWIM");
             load_sound("RESPAWN");
+            load_sound("KICK");
 
             load_track("STARMAN");
 
@@ -4091,6 +4207,7 @@ void load_object(GameObjectType type) {
             load_object(OBJ_MISSILE_BEETROOT);
             load_object(OBJ_MISSILE_HAMMER);
             load_object(OBJ_BUBBLE);
+            load_object(OBJ_EXPLODE);
             break;
         }
 
@@ -4811,6 +4928,13 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                     object->bbox[0][1] = FfInt(-33L);
                     object->bbox[1][0] = FfInt(26L);
                     object->bbox[1][1] = FfInt(35L);
+                    break;
+                }
+
+                case OBJ_DEAD: {
+                    object->bbox[0][0] = object->bbox[0][1] = FfInt(-64L);
+                    object->bbox[1][0] = object->bbox[1][1] = FfInt(64L);
+                    object->flags |= FLG_Y_FLIP;
                     break;
                 }
             }
