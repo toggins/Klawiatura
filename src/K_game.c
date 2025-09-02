@@ -156,6 +156,7 @@ static Bool is_solid(ObjectID oid, Bool ignore_full, Bool ignore_top) {
         case OBJ_WHEEL_LEFT:
         case OBJ_WHEEL:
         case OBJ_WHEEL_RIGHT:
+        case OBJ_SPIKE_CANNON:
             return !ignore_full;
         case OBJ_SOLID_TOP:
             return !ignore_top;
@@ -680,12 +681,29 @@ static Bool hit_player(struct GameObject* pawn) {
 }
 
 static struct GameObject* kill_enemy(struct GameObject* enemy, Bool kick) {
-    if (enemy->type == OBJ_PIRANHA_PLANT || enemy->type == OBJ_ROTODISC) {
-        enemy->flags |= FLG_DESTROY;
-        return NULL;
+    switch (enemy->type) {
+        default:
+            break;
+
+        case OBJ_PIRANHA_PLANT:
+        case OBJ_ROTODISC: {
+            enemy->flags |= FLG_DESTROY;
+            return NULL;
+        }
+
+        case OBJ_BULLET_BILL: {
+            enemy->values[VAL_X_SPEED] = Fmul(enemy->values[VAL_X_SPEED], 0x0000B13B);
+            enemy->values[VAL_Y_SPEED] = Fmax(enemy->values[VAL_Y_SPEED], FxZero);
+            enemy->flags |= FLG_BULLET_DEAD;
+
+            if (kick)
+                play_sound_at_object(enemy, "KICK");
+
+            return enemy;
+        }
     }
 
-    struct GameObject* dead = get_object(create_object(OBJ_DEAD, enemy->pos));
+    struct GameObject* dead = get_object(create_object(OBJ_DEAD, POS_ADD(enemy, FxZero, FfInt(-32L))));
     if (dead != NULL) {
         dead->values[VAL_DEAD_TYPE] = enemy->type;
         dead->flags |= (enemy->flags & FLG_X_FLIP);
@@ -978,7 +996,8 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
             break;
         }
 
-        case OBJ_ROTODISC: {
+        case OBJ_ROTODISC:
+        case OBJ_SPIKE_BALL: {
             struct GameObject* other = &(state.objects[other_id]);
             if (other->type != OBJ_PLAYER)
                 break;
@@ -1117,6 +1136,108 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
             }
             break;
         }
+
+        case OBJ_BULLET_BILL: {
+            if (self->flags & FLG_BULLET_DEAD)
+                break;
+
+            struct GameObject* other = &(state.objects[other_id]);
+            switch (other->type) {
+                default:
+                    break;
+
+                case OBJ_PLAYER: {
+                    if (other->values[VAL_PLAYER_STARMAN] > 0L) {
+                        player_starman(other, self);
+                        break;
+                    }
+
+                    if (other->pos[1] < self->pos[1] &&
+                        (other->values[VAL_Y_SPEED] >= FxZero || (other->flags & FLG_PLAYER_STOMP))) {
+                        const PlayerID pid = get_owner_id(other_id);
+                        const struct GamePlayer* player = get_player(pid);
+
+                        other->values[VAL_Y_SPEED] = Fmin(
+                            other->values[VAL_Y_SPEED],
+                            FfInt((player != NULL && (player->input & GI_JUMP)) ? -13L : -8L)
+                        );
+                        other->flags |= FLG_PLAYER_STOMP;
+
+                        play_sound_at_object(self, "STOMP");
+                        give_points(self, pid, 100L);
+                        kill_enemy(self, false);
+                    } else {
+                        hit_player(other);
+                    }
+                    break;
+                }
+
+                case OBJ_MISSILE_FIREBALL: {
+                    play_sound_at_object(other, "BUMP");
+                    other->flags |= FLG_DESTROY;
+                    break;
+                }
+
+                case OBJ_MISSILE_HAMMER: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        give_points(self, pid, 100L);
+                        kill_enemy(self, true);
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+
+        case OBJ_PARAKOOPA: {
+            struct GameObject* other = &(state.objects[other_id]);
+            switch (other->type) {
+                default:
+                    break;
+
+                case OBJ_PLAYER: {
+                    if (other->values[VAL_PLAYER_STARMAN] > 0L) {
+                        player_starman(other, self);
+                        break;
+                    }
+
+                    if (other->pos[1] < Fsub(self->pos[1], FfInt(16L)) &&
+                        (other->values[VAL_Y_SPEED] >= FxZero || (other->flags & FLG_PLAYER_STOMP))) {
+                        const PlayerID pid = get_owner_id(other_id);
+                        const struct GamePlayer* player = get_player(pid);
+
+                        other->values[VAL_Y_SPEED] = Fmin(
+                            other->values[VAL_Y_SPEED],
+                            FfInt((player != NULL && (player->input & GI_JUMP)) ? -13L : -8L)
+                        );
+                        other->flags |= FLG_PLAYER_STOMP;
+
+                        play_sound_at_object(self, "STOMP");
+                        give_points(self, pid, 100L);
+                        struct GameObject* koopa = get_object(create_object(OBJ_KOOPA, self->pos));
+                        if (koopa != NULL)
+                            koopa->flags |= (self->flags & FLG_KOOPA_RED);
+
+                        self->flags |= FLG_DESTROY;
+                    } else {
+                        hit_player(other);
+                    }
+                    break;
+                }
+
+                case OBJ_MISSILE_FIREBALL:
+                case OBJ_MISSILE_HAMMER: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        give_points(self, pid, 100L);
+                        kill_enemy(self, true);
+                    }
+                    break;
+                }
+            }
+            break;
+        }
     }
 
     return true;
@@ -1151,7 +1272,8 @@ static void bump_object(ObjectID bid) {
                     const fix16_t oy1 = Fadd(other->pos[1], other->bbox[0][1]);
                     const fix16_t ox2 = Fadd(other->pos[0], other->bbox[1][0]);
                     const fix16_t oy2 = Fadd(other->pos[1], other->bbox[1][1]);
-                    if (x1 < ox2 && x2 > ox1 && y1 < oy2 && y2 > oy1 && !bump_check(oid, bid))
+                    if (x1 < ox2 && x2 > ox1 && y1 < oy2 && y2 > oy1 &&
+                        (!bump_check(oid, bid) || (object->flags & FLG_DESTROY)))
                         return;
                 }
                 oid = next;
@@ -2298,6 +2420,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     }
 
                     bump_object(oid);
+                    object->flags &= ~FLG_PLAYER_STOMP;
                     break;
                 }
 
@@ -2527,12 +2650,28 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                                     default:
                                         break;
 
+                                    case OBJ_BUZZY_BEETLE:
+                                    case OBJ_BUZZY_SHELL:
                                     case OBJ_THWOMP: {
-                                        if (object->values[VAL_MISSILE_HIT] > 0L) {
+                                        if (object->values[VAL_MISSILE_HIT] > 0L)
                                             ++(object->values[VAL_MISSILE_HIT]);
-                                        } else {
+                                        else
                                             hit = 1L;
-                                        }
+                                        break;
+                                    }
+
+                                    case OBJ_GOOMBA:
+                                    case OBJ_KOOPA:
+                                    case OBJ_KOOPA_SHELL:
+                                    case OBJ_PARAKOOPA:
+                                    case OBJ_SPINY:
+                                    case OBJ_PIRANHA_PLANT:
+                                    case OBJ_BULLET_BILL: {
+                                        give_points(
+                                            bumped, get_owner_id((ObjectID)(object->values[VAL_MISSILE_OWNER])), 100L
+                                        );
+                                        kill_enemy(bumped, true);
+                                        hit = 2L;
                                         break;
                                     }
                                 }
@@ -2953,7 +3092,8 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                             struct GameObject* nearest = get_object(nid);
                             if (nearest != NULL && object->pos[0] < Fadd(nearest->pos[0], FfInt(100L)) &&
                                 object->pos[0] > Fsub(nearest->pos[0], FfInt(100L)) &&
-                                in_player_view(object, get_owner_id(nid), FfInt(64L), false)) {
+                                (state.size[1] <= FfInt(480L) ||
+                                 in_player_view(object, get_owner_id(nid), FfInt(64L), false))) {
                                 ++(object->values[VAL_THWOMP_STATE]);
                             }
                             break;
@@ -2994,7 +3134,132 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     }
 
                     move_object(oid, POS_SPEED(object));
-                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x0000199A);
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00003333);
+                    break;
+                }
+
+                case OBJ_BILL_BLASTER: {
+                    if ((state.time % 10) == 0)
+                        object->flags &= ~FLG_BLASTER_BLOCKED;
+
+                    struct GameObject* nearest = get_object(nearest_player(POS_ADD(object, FfInt(16L), FfInt(16L))));
+                    if (nearest != NULL && nearest->pos[0] > Fsub(object->pos[0], FfInt(64L)) &&
+                        nearest->pos[0] < Fadd(object->pos[0], FfInt(96L)))
+                        object->flags |= FLG_BLASTER_BLOCKED;
+
+                    if (!(object->flags & FLG_BLASTER_BLOCKED) && in_any_view(object, FxZero, false))
+                        ++(object->values[VAL_BLASTER_TIME]);
+
+                    if (object->values[VAL_BLASTER_TIME] > 25L) {
+                        Bool flip = (nearest == NULL || nearest->pos[0] < Fadd(object->pos[0], FfInt(16L)));
+                        struct GameObject* bullet = get_object(
+                            create_object(OBJ_BULLET_BILL, POS_ADD(object, flip ? FxZero : FfInt(32L), FfInt(16L)))
+                        );
+                        if (bullet != NULL) {
+                            bullet->values[VAL_X_SPEED] = (state.flags & GF_FUNNY) ? 0x00068000 : 0x00034000;
+                            if (flip) {
+                                bullet->values[VAL_X_SPEED] = Fmul(bullet->values[VAL_X_SPEED], -FxOne);
+                                bullet->flags |= FLG_X_FLIP;
+                            }
+
+                            create_object(OBJ_EXPLODE, bullet->pos);
+                            play_sound_at_object(bullet, "BANG1");
+                        }
+
+                        object->values[VAL_BLASTER_TIME] = (-50L - (random() % 150L));
+                    }
+                    break;
+                }
+
+                case OBJ_BULLET_BILL: {
+                    move_object(oid, POS_SPEED(object));
+
+                    if (object->flags & FLG_BULLET_DEAD) {
+                        object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00006666);
+                        if (!in_any_view(object, FxZero, false))
+                            object->flags |= FLG_DESTROY;
+                    } else if (!in_any_view(object, FfInt(224L), false)) {
+                        object->flags |= FLG_DESTROY;
+                    }
+                    break;
+                }
+
+                case OBJ_SPIKE_CANNON: {
+                    if ((state.time % ((state.flags & GF_FUNNY) ? 20L : 50L)) == 0L &&
+                        in_any_view(object, FxZero, false))
+                        ++(object->values[VAL_SPIKE_BALL_TIME]);
+
+                    if (object->values[VAL_SPIKE_BALL_TIME] >= 2L) {
+                        struct GameObject* ball =
+                            get_object(create_object(OBJ_SPIKE_BALL, POS_ADD(object, FfInt(32L), FfInt(22L))));
+                        if (ball != NULL) {
+                            ball->values[VAL_X_SPEED] = FfInt(-2L + (random() % 5L));
+                            if (!(object->flags & FLG_Y_FLIP))
+                                ball->values[VAL_Y_SPEED] = FfInt(-7L - (random() % 5L));
+
+                            create_object(OBJ_EXPLODE, ball->pos);
+                            play_sound_at_object(ball, "BANG2");
+                        }
+
+                        object->values[VAL_SPIKE_BALL_TIME] = 0L;
+                    }
+                    break;
+                }
+
+                case OBJ_SPIKE_BALL: {
+                    if (below_frame(object)) {
+                        object->flags |= FLG_DESTROY;
+                        break;
+                    }
+
+                    move_object(oid, POS_SPEED(object));
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00003333);
+                    object->values[VAL_SPIKE_BALL_ANGLE] =
+                        Fadd(object->values[VAL_SPIKE_BALL_ANGLE], Frad(FfInt(120L)));
+
+                    const ObjectID eid = create_object(OBJ_SPIKE_BALL_EFFECT, object->pos);
+                    struct GameObject* effect = get_object(eid);
+                    if (effect != NULL) {
+                        interp[eid].from[0] = interp[oid].pos[0];
+                        interp[eid].from[1] = interp[oid].pos[1];
+                    }
+
+                    break;
+                }
+
+                case OBJ_SPIKE_BALL_EFFECT: {
+                    object->depth = Fadd(object->depth, 0x00000FFF);
+
+                    object->values[VAL_SPIKE_BALL_ANGLE] =
+                        Fadd(object->values[VAL_SPIKE_BALL_ANGLE], Frad(FfInt(120L)));
+                    object->values[VAL_SPIKE_BALL_ALPHA] = Fsub(object->values[VAL_SPIKE_BALL_ALPHA], FfInt(5L));
+                    if (object->values[VAL_SPIKE_BALL_ALPHA] <= FxZero)
+                        object->flags |= FLG_DESTROY;
+                    break;
+                }
+
+                case OBJ_PARAKOOPA: {
+                    if (!(object->flags & FLG_PARAKOOPA_START)) {
+                        object->values[VAL_PARAKOOPA_Y] = object->pos[1];
+                        object->values[VAL_PARAKOOPA_ANGLE] = Frad(FfInt(random() % 360L));
+                        object->flags |= FLG_PARAKOOPA_START;
+                    }
+
+                    move_object(
+                        oid, (fvec2){object->pos[0], Fadd(
+                                                         object->values[VAL_PARAKOOPA_Y],
+                                                         Fmul(FfInt(50L), Fcos(object->values[VAL_PARAKOOPA_ANGLE]))
+                                                     )}
+                    );
+                    object->values[VAL_PARAKOOPA_ANGLE] = Fadd(object->values[VAL_PARAKOOPA_ANGLE], Frad(FfInt(2L)));
+
+                    struct GameObject* nearest = get_object(nearest_player(object->pos));
+                    if (nearest != NULL) {
+                        if (nearest->pos[0] < object->pos[0])
+                            object->flags |= FLG_X_FLIP;
+                        else
+                            object->flags &= ~FLG_X_FLIP;
+                    }
                     break;
                 }
             }
@@ -3996,8 +4261,51 @@ void draw_state() {
                         default:
                             tex = "";
                             break;
+                        case OBJ_KOOPA:
+                        case OBJ_KOOPA_SHELL:
+                        case OBJ_PARAKOOPA:
+                            tex = (object->flags & FLG_KOOPA_RED) ? "E_KOOPRC" : "E_KOOPAC";
+                            break;
                         case OBJ_THWOMP:
                             tex = "E_THWMPA";
+                            break;
+                    }
+
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_BULLET_BILL: {
+                    draw_object(oid, "E_BULLET", 0, WHITE);
+                    break;
+                }
+
+                case OBJ_SPIKE_CANNON: {
+                    draw_object(oid, "E_SBCANN", 0, WHITE);
+                    break;
+                }
+
+                case OBJ_SPIKE_BALL: {
+                    draw_object(oid, "R_SBALL", FtFloat(object->values[VAL_SPIKE_BALL_ANGLE]), WHITE);
+                    break;
+                }
+
+                case OBJ_SPIKE_BALL_EFFECT: {
+                    draw_object(
+                        oid, "R_SBALL", FtFloat(object->values[VAL_SPIKE_BALL_ANGLE]),
+                        ALPHA(FtInt(object->values[VAL_SPIKE_BALL_ALPHA]))
+                    );
+                    break;
+                }
+
+                case OBJ_PARAKOOPA: {
+                    const char* tex;
+                    switch ((int)((float)(state.time) / 6.5f) % 2) {
+                        default:
+                            tex = "E_PKOOPA";
+                            break;
+                        case 1:
+                            tex = "E_PKOOPB";
                             break;
                     }
 
@@ -4588,6 +4896,103 @@ void load_object(GameObjectType type) {
             load_sound("THWOMP");
 
             load_object(OBJ_EXPLODE);
+            load_object(OBJ_DEAD);
+            load_object(OBJ_POINTS);
+            break;
+        }
+
+        case OBJ_BILL_BLASTER: {
+            load_sound("BANG1");
+
+            load_object(OBJ_BULLET_BILL);
+            load_object(OBJ_EXPLODE);
+            break;
+        }
+
+        case OBJ_BULLET_BILL: {
+            load_texture("E_BULLET");
+
+            load_sound("STOMP");
+            load_sound("KICK");
+
+            load_object(OBJ_POINTS);
+            break;
+        }
+
+        case OBJ_KOOPA: {
+            load_texture("E_KOOPAA");
+            load_texture("E_KOOPAB");
+            load_texture("E_KOOPAC");
+
+            load_texture("E_KOOPRA");
+            load_texture("E_KOOPRB");
+            load_texture("E_KOOPRC");
+
+            load_sound("STOMP");
+            load_sound("KICK");
+
+            load_object(OBJ_KOOPA_SHELL);
+            load_object(OBJ_DEAD);
+            load_object(OBJ_POINTS);
+            break;
+        }
+
+        case OBJ_KOOPA_SHELL: {
+            load_texture("E_KOOPAC");
+            load_texture("E_KOOPAD");
+            load_texture("E_KOOPAE");
+            load_texture("E_KOOPAF");
+
+            load_texture("E_KOOPRC");
+            load_texture("E_KOOPRD");
+            load_texture("E_KOOPRE");
+            load_texture("E_KOOPRF");
+
+            load_sound("STOMP");
+            load_sound("KICK");
+
+            load_object(OBJ_DEAD);
+            load_object(OBJ_POINTS);
+            break;
+        }
+
+        case OBJ_PARAKOOPA: {
+            load_texture("E_PKOOPA");
+            load_texture("E_PKOOPB");
+            load_texture("E_KOOPAC");
+
+            // load_texture("E_PKOORA");
+            // load_texture("E_PKOORB");
+            load_texture("E_KOOPRC");
+
+            load_sound("STOMP");
+            load_sound("KICK");
+
+            load_object(OBJ_KOOPA);
+            load_object(OBJ_DEAD);
+            load_object(OBJ_POINTS);
+            break;
+        }
+
+        case OBJ_SPIKE_CANNON: {
+            load_texture("E_SBCANN");
+
+            load_sound("BANG2");
+
+            load_object(OBJ_SPIKE_BALL);
+            load_object(OBJ_EXPLODE);
+            break;
+        }
+
+        case OBJ_SPIKE_BALL: {
+            load_texture("R_SBALL");
+
+            load_object(OBJ_SPIKE_BALL_EFFECT);
+            break;
+        }
+
+        case OBJ_SPIKE_BALL_EFFECT: {
+            load_texture("R_SBALL");
             break;
         }
     }
@@ -4640,7 +5045,8 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                 case OBJ_AUTOSCROLL:
                 case OBJ_WHEEL_LEFT:
                 case OBJ_WHEEL:
-                case OBJ_WHEEL_RIGHT: {
+                case OBJ_WHEEL_RIGHT:
+                case OBJ_BILL_BLASTER: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
                     break;
                 }
@@ -4935,6 +5341,39 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                     object->bbox[0][0] = object->bbox[0][1] = FfInt(-64L);
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(64L);
                     object->flags |= FLG_Y_FLIP;
+                    break;
+                }
+
+                case OBJ_BULLET_BILL: {
+                    object->bbox[0][0] = FfInt(-16L);
+                    object->bbox[0][1] = FfInt(-13L);
+                    object->bbox[1][0] = FfInt(16L);
+                    object->bbox[1][1] = FfInt(15L);
+                    break;
+                }
+
+                case OBJ_SPIKE_CANNON: {
+                    object->bbox[0][1] = FfInt(22L);
+                    object->bbox[1][0] = object->bbox[1][1] = FfInt(64L);
+                    break;
+                }
+
+                case OBJ_SPIKE_BALL: {
+                    object->bbox[0][0] = object->bbox[0][1] = FfInt(-20L);
+                    object->bbox[1][0] = object->bbox[1][1] = FfInt(20L);
+                    break;
+                }
+
+                case OBJ_SPIKE_BALL_EFFECT: {
+                    object->values[VAL_SPIKE_BALL_ALPHA] = FfInt(255L);
+                    break;
+                }
+
+                case OBJ_PARAKOOPA: {
+                    object->bbox[0][0] = FfInt(-15L);
+                    object->bbox[0][1] = FfInt(-31L);
+                    object->bbox[1][0] = FfInt(15L);
+                    object->bbox[1][1] = FxOne;
                     break;
                 }
             }

@@ -499,10 +499,26 @@
                     "index": 31,
                     "z": 1,
                     "texture": "M_CHECKA",
+
                     "flags": [
                         {
                             "name": "Flip?",
                             "bit": 2
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Bro Layer",
+                    "type": "object",
+                    "index": 53,
+                    "z": 1,
+                    "texture": "M_SOLIDT",
+
+                    "flags": [
+                        {
+                            "name": "Descend?",
+                            "bit": 5
                         }
                     ]
                 },
@@ -706,6 +722,101 @@
             "Enemies",
             [
                 {
+                    "def": "Koopa",
+                    "type": "object",
+                    "index": 40,
+                    "texture": "E_KOOPAA",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2,
+                            "default": true
+                        },
+
+                        {
+                            "name": "Red?",
+                            "bit": 5
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Parakoopa",
+                    "type": "object",
+                    "index": 42,
+                    "texture": "E_PKOOPA",
+
+                    "flags": [
+                        {
+                            "name": "Red?",
+                            "bit": 5
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Spiny",
+                    "type": "object",
+                    "index": 45,
+                    "texture": "E_SPINYA",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2,
+                            "default": true
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Piranha Plant",
+                    "type": "object",
+                    "index": 48,
+                    "texture": "E_PIRANA",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 3
+                        },
+
+                        {
+                            "name": "Fire?",
+                            "bit": 5
+                        },
+
+                        {
+                            "name": "Red?",
+                            "bit": 6
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Bro",
+                    "type": "object",
+                    "index": 49,
+                    "texture": "E_BROA",
+
+                    "values": [
+                        {
+                            "name": "Type",
+                            "index": 5,
+                            "default": 0
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Bullet Bill",
+                    "type": "object",
+                    "index": 54,
+                    "texture": "T_BLASTA"
+                },
+
+                {
                     "def": "Roto-Disc",
                     "type": "object",
                     "index": 61,
@@ -748,6 +859,21 @@
                     "type": "object",
                     "index": 63,
                     "texture": "E_THWMPA"
+                },
+
+                {
+                    "def": "Spike Cannon",
+                    "type": "object",
+                    "index": 81,
+                    "z": 20,
+                    "texture": "E_SBCANN",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 3
+                        }
+                    ]
                 }
             ]
         ]

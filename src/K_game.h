@@ -153,6 +153,9 @@ enum GameObjectType {
     OBJ_WHEEL_LEFT,
     OBJ_WHEEL,
     OBJ_WHEEL_RIGHT,
+    OBJ_SPIKE_CANNON,
+    OBJ_SPIKE_BALL,
+    OBJ_SPIKE_BALL_EFFECT,
 
     OBJ_SIZE,
 };
@@ -252,6 +255,21 @@ enum ObjectValues {
     VAL_THWOMP_FRAME,
 
     VAL_DEAD_TYPE = VAL_START,
+
+    VAL_BLASTER_TIME = VAL_START,
+
+    VAL_ENEMY_START = VAL_START,
+    VAL_ENEMY_TURN = VAL_ENEMY_START,
+
+    VAL_PARAKOOPA_Y = VAL_START,
+    VAL_PARAKOOPA_ANGLE,
+
+    VAL_SHELL_OWNER = VAL_START,
+    VAL_SHELL_HIT,
+
+    VAL_SPIKE_BALL_TIME = VAL_START,
+    VAL_SPIKE_BALL_ANGLE,
+    VAL_SPIKE_BALL_ALPHA,
 };
 typedef uint8_t ObjectValues;
 
@@ -268,6 +286,7 @@ enum ObjectFlags {
     FLG_PLAYER_ASCEND = 1 << 8,
     FLG_PLAYER_DESCEND = 1 << 9,
     FLG_PLAYER_RESPAWN = 1 << 10,
+    FLG_PLAYER_STOMP = 1 << 11,
 
     FLG_PLAYER_DEAD_LAST = 1 << 5,
 
@@ -294,6 +313,13 @@ enum ObjectFlags {
 
     FLG_THWOMP_START = 1 << 5,
     FLG_THWOMP_LAUGH = 1 << 6,
+
+    FLG_BLASTER_BLOCKED = 1 << 5,
+
+    FLG_BULLET_DEAD = 1 << 5,
+
+    FLG_KOOPA_RED = 1 << 5,
+    FLG_PARAKOOPA_START = 1 << 6,
 };
 typedef uint32_t ObjectFlags;
 
