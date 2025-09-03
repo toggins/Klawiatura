@@ -73,6 +73,7 @@ FetchContent_Declare(
 # NutPunch
 set(NUTPUNCH_BUILD_TESTS OFF CACHE INTERNAL "")
 set(NUTPUNCH_BUILD_SERVER OFF CACHE INTERNAL "")
+set(NUTPUNCH_BUILD_LOBBYIST OFF CACHE INTERNAL "")
 FetchContent_Declare(
     nutpunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
