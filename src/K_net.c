@@ -88,9 +88,9 @@ static enum NetMenu menu_from[NM_SIZE] = {NM_MAIN};
 static int option[NM_SIZE] = {0};
 static bool menu_running = true;
 
-PlayerID* num_players = NULL; // moved this into a global for use below...
-char* level = NULL;
-GameFlags* start_flags = NULL;
+static PlayerID* num_players = NULL; // moved this into a global for use below...
+static char* level = NULL;
+static GameFlags* start_flags = NULL;
 
 static void set_menu(enum NetMenu value) {
     menu_from[menu] = menu;
