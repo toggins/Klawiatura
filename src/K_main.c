@@ -26,6 +26,19 @@
 #include "K_video.h"
 
 int main(int argc, char** argv) {
+    INFO("==========[KLAWIATURA]==========");
+    INFO("      MARIO FOREVER ONLINE      ");
+    INFO("================================");
+    INFO("");
+    INFO("         ! DISCLAIMER !         ");
+    INFO("   This is a free, open-source  ");
+    INFO("project not created for any sort");
+    INFO("           of profit.           ");
+    INFO(" All assets belong to Nintendo. ");
+    INFO("We do not condone any commercial");
+    INFO("      use of this project.      ");
+    INFO("");
+
     bool bypass_shader = false;
     char* server_ip = "194.87.232.108"; // Public NutPunch server
     char level[NUTPUNCH_FIELD_DATA_MAX + 1] = "TEST";
