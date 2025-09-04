@@ -1226,7 +1226,16 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
                     break;
                 }
 
-                case OBJ_MISSILE_FIREBALL:
+                case OBJ_MISSILE_FIREBALL: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        give_points(self, pid, 100L);
+                        kill_enemy(self, true);
+                    }
+                    other->flags |= FLG_DESTROY;
+                    break;
+                }
+
                 case OBJ_MISSILE_HAMMER: {
                     const PlayerID pid = get_owner_id(other_id);
                     if (pid != -1L) {
