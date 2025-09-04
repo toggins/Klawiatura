@@ -50,6 +50,7 @@ GekkoNetAdapter* net_init(const char* _server_ip) {
     return &adapter;
 }
 
+static const char* lobby_id = NULL;
 static const char* MAGIC_KEY = "KLAWIATURA";
 static const uint8_t MAGIC_VALUE = 127;
 
@@ -72,7 +73,7 @@ static const char* random_lobby_id() {
 }
 
 static void host_lobby(PlayerID num_players, const char* level, GameFlags flags) {
-    const char* lobby_id = random_lobby_id();
+    lobby_id = random_lobby_id();
     NutPunch_SetServerAddr(server_ip);
     if (NutPunch_Join(lobby_id))
         INFO("Waiting in lobby \"%s\"... (FLAG: %d)", lobby_id, flags);
@@ -84,57 +85,218 @@ static void host_lobby(PlayerID num_players, const char* level, GameFlags flags)
 
 void net_wait(PlayerID* num_players, char* level, GameFlags* start_flags) {
     *num_players = 0;
-    int selected_row = 0, ticks = 0;
-    refresh_lobby_list();
 
     static enum NetMenus {
         NM_MAIN,
         NM_SINGLE,
         NM_MULTI,
-        NM_LOBBIES,
+        NM_HOST,
+        NM_JOIN,
         NM_LOBBY,
         NM_SIZE,
     } menu = NM_MAIN;
-    static int option[NM_SIZE] = {0};
+
+    static enum NetMenus menu_from[NM_SIZE] = {NM_MAIN};
+
+    static size_t num_options[NM_SIZE] = {
+        [NM_MAIN] = 3, [NM_SINGLE] = 3, [NM_MULTI] = 2, [NM_HOST] = 4, [NM_JOIN] = 0, [NM_LOBBY] = 0,
+    };
+
+    static size_t option[NM_SIZE] = {0};
+
+    load_sound("SWITCH");
+    load_sound("SELECT");
 
     for (;;) {
+        const char** lobbies = NULL;
+        if (menu == NM_JOIN) {
+            lobbies = NutPunch_LobbyList((int*)(&(num_options[NM_JOIN])));
+            if (option[NM_JOIN] > num_options[NM_JOIN])
+                num_options[NM_JOIN] = SDL_max(0, num_options[NM_JOIN] - 1);
+        }
+
         SDL_Event event;
-        while (SDL_PollEvent(&event))
-            if (event.type == SDL_EVENT_QUIT)
-                goto quit;
-        video_update(NULL);
-        audio_update();
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                default:
+                    break;
 
-        const bool* kbd = SDL_GetKeyboardState(NULL);
-        if (kbd[SDL_SCANCODE_ESCAPE])
-            goto quit;
+                case SDL_EVENT_QUIT:
+                    goto quit;
 
-        if (kbd[SDL_SCANCODE_W])
-            selected_row--;
-        if (kbd[SDL_SCANCODE_S])
-            selected_row++;
+                case SDL_EVENT_KEY_DOWN: {
+                    switch (event.key.scancode) {
+                        default:
+                            break;
 
-        int lobby_count = 0;
-        const char** lobbies = NutPunch_LobbyList(&lobby_count);
-        if (selected_row >= lobby_count)
-            selected_row = lobby_count - 1;
-        if (selected_row < 0)
-            selected_row = 0;
+                        case SDL_SCANCODE_UP: {
+                            if (num_options[menu] <= 0)
+                                break;
 
-        if (kbd[SDL_SCANCODE_R] || kbd[SDL_SCANCODE_F5])
-            refresh_lobby_list();
-        if ((kbd[SDL_SCANCODE_Z] || kbd[SDL_SCANCODE_RETURN]) && selected_row < lobby_count) {
-            NutPunch_SetServerAddr(server_ip);
-            NutPunch_Join(lobbies[selected_row]);
-        }
+                            if (option[menu] <= 0)
+                                option[menu] = num_options[menu] - 1;
+                            else
+                                --(option[menu]);
 
-        if (kbd[SDL_SCANCODE_1]) {
-            *num_players = 1;
-            return;
-        }
-        if (!*num_players && (kbd[SDL_SCANCODE_2] || kbd[SDL_SCANCODE_3] || kbd[SDL_SCANCODE_4])) {
-            *num_players = (PlayerID)(2 * kbd[SDL_SCANCODE_2] + 3 * kbd[SDL_SCANCODE_3] + 4 * kbd[SDL_SCANCODE_4]);
-            host_lobby(*num_players, level, *start_flags);
+                            play_ui_sound("SWITCH");
+                            break;
+                        }
+
+                        case SDL_SCANCODE_DOWN: {
+                            if (num_options[menu] <= 0)
+                                break;
+
+                            option[menu] = (option[menu] + 1) % num_options[menu];
+                            play_ui_sound("SWITCH");
+                            break;
+                        }
+
+                        case SDL_SCANCODE_Z: {
+                            switch (menu) {
+                                default:
+                                    break;
+
+                                case NM_MAIN: {
+                                    switch (option[menu]) {
+                                        default:
+                                            break;
+
+                                        case 0: {
+                                            menu_from[NM_SINGLE] = menu;
+                                            menu = NM_SINGLE;
+                                            break;
+                                        }
+
+                                        case 1: {
+                                            menu_from[NM_MULTI] = menu;
+                                            menu = NM_MULTI;
+                                            break;
+                                        }
+
+                                        case 2:
+                                            goto quit;
+                                    }
+
+                                    play_ui_sound("SELECT");
+                                    break;
+                                }
+
+                                case NM_SINGLE: {
+                                    switch (option[menu]) {
+                                        default:
+                                            break;
+
+                                        case 1: {
+                                            if (*start_flags & GF_KEVIN)
+                                                *start_flags &= ~GF_KEVIN;
+                                            else
+                                                *start_flags |= GF_KEVIN;
+
+                                            play_ui_sound("SELECT");
+                                            break;
+                                        }
+
+                                        case 2: {
+                                            *num_players = 1;
+                                            play_ui_sound("SELECT");
+                                            return;
+                                        }
+                                    }
+
+                                    break;
+                                }
+
+                                case NM_MULTI: {
+                                    switch (option[menu]) {
+                                        default:
+                                            break;
+
+                                        case 0: {
+                                            if (*num_players <= 1)
+                                                *num_players = 2;
+
+                                            menu_from[NM_HOST] = menu;
+                                            menu = NM_HOST;
+                                            break;
+                                        }
+
+                                        case 1: {
+                                            menu_from[NM_JOIN] = menu;
+                                            menu = NM_JOIN;
+                                            refresh_lobby_list();
+                                            break;
+                                        }
+                                    }
+
+                                    play_ui_sound("SELECT");
+                                    break;
+                                }
+
+                                case NM_HOST: {
+                                    switch (option[menu]) {
+                                        default:
+                                            break;
+
+                                        case 0: {
+                                            ++(*num_players);
+                                            if (*num_players > MAX_PLAYERS)
+                                                *num_players = 2;
+                                            break;
+                                        }
+
+                                        case 2: {
+                                            if (*start_flags & GF_KEVIN)
+                                                *start_flags &= ~GF_KEVIN;
+                                            else
+                                                *start_flags |= GF_KEVIN;
+                                            break;
+                                        }
+
+                                        case 3: {
+                                            host_lobby(*num_players, level, *start_flags);
+                                            menu_from[NM_LOBBY] = menu;
+                                            menu = NM_LOBBY;
+                                            break;
+                                        }
+                                    }
+
+                                    play_ui_sound("SELECT");
+                                    break;
+                                }
+
+                                case NM_JOIN: {
+                                    if (lobbies == NULL || num_options[menu] <= 0)
+                                        break;
+
+                                    lobby_id = lobbies[option[menu]];
+                                    NutPunch_SetServerAddr(server_ip);
+                                    NutPunch_Join(lobby_id);
+                                    menu_from[NM_LOBBY] = menu;
+                                    menu = NM_LOBBY;
+
+                                    play_ui_sound("SELECT");
+                                    break;
+                                }
+                            }
+
+                            break;
+                        }
+
+                        case SDL_SCANCODE_ESCAPE: {
+                            if (menu == NM_LOBBY)
+                                NutPunch_Disconnect();
+
+                            if (menu_from[menu] != menu) {
+                                menu = menu_from[menu];
+                                play_ui_sound("SELECT");
+                            }
+
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
         }
 
         switch (NutPunch_Update()) {
@@ -162,6 +324,7 @@ void net_wait(PlayerID* num_players, char* level, GameFlags* start_flags) {
                     INFO("%d player start!\n", *num_players);
                     return;
                 }
+
                 break;
             }
 
@@ -169,23 +332,77 @@ void net_wait(PlayerID* num_players, char* level, GameFlags* start_flags) {
                 break;
         }
 
-        for (int i = 0; i < lobby_count; i++) {
-            const float lh = 32.f;
-            const float x = 12.f, y = 10.f + lh * (float)i;
-            draw_rectangle(
-                "", (float[2][2]){x, y, x + 300.f, y + lh}, 0.f,
-                selected_row == i ? RGBA(255, 255, 255, 255) : RGBA(127, 127, 127, 255)
-            );
-            draw_text(FNT_MAIN, FA_LEFT, lobbies[i], (float[3]){x, y, 0.f});
+        static char fmt[32];
+        switch (menu) {
+            default:
+                break;
+
+            case NM_MAIN: {
+                draw_text(FNT_MAIN, FA_LEFT, "Singleplayer", (float[3]){40, 16, 0});
+                draw_text(FNT_MAIN, FA_LEFT, "Multiplayer", (float[3]){40, 41, 0});
+                draw_text(FNT_MAIN, FA_LEFT, "Exit", (float[3]){40, 66, 0});
+                draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
+                break;
+            }
+
+            case NM_SINGLE: {
+                SDL_snprintf(fmt, sizeof(fmt), "Level: %s", level);
+                draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){40, 16, 0});
+
+                SDL_snprintf(fmt, sizeof(fmt), "Kevin: %s", (*start_flags & GF_KEVIN) ? "ON" : "OFF");
+                draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){40, 41, 0});
+
+                draw_text(FNT_MAIN, FA_LEFT, "Play!", (float[3]){40, 66, 0});
+                draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
+                break;
+            }
+
+            case NM_MULTI: {
+                draw_text(FNT_MAIN, FA_LEFT, "Host Lobby", (float[3]){40, 16, 0});
+                draw_text(FNT_MAIN, FA_LEFT, "Find Lobby", (float[3]){40, 41, 0});
+                draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
+                break;
+            }
+
+            case NM_HOST: {
+                SDL_snprintf(fmt, sizeof(fmt), "Players: %i", *num_players);
+                draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){40, 16, 0});
+
+                draw_text(FNT_MAIN, FA_LEFT, "Level: TEST", (float[3]){40, 41, 0});
+
+                draw_text(
+                    FNT_MAIN, FA_LEFT, (*start_flags & GF_KEVIN) ? "Kevin: ON" : "Kevin: OFF", (float[3]){40, 66, 0}
+                );
+
+                draw_text(FNT_MAIN, FA_LEFT, "Host!", (float[3]){40, 91, 0});
+                draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
+                break;
+            }
+
+            case NM_JOIN: {
+                if (lobbies != NULL && num_options[NM_JOIN] > 0) {
+                    for (size_t i = 0; i < num_options[NM_JOIN]; i++)
+                        draw_text(FNT_MAIN, FA_LEFT, lobbies[i], (float[3]){40, 16 + ((float)i * 25), 0});
+                    draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
+                } else {
+                    draw_text(FNT_MAIN, FA_LEFT, "No lobbies found", (float[3]){16, 16, 0});
+                }
+                break;
+            }
+
+            case NM_LOBBY: {
+                if (lobby_id != NULL)
+                    draw_text(FNT_MAIN, FA_LEFT, lobby_id, (float[3]){16, 16, 0});
+
+                draw_text(FNT_MAIN, FA_LEFT, "Waiting for players", (float[3]){16, 41, 0});
+                break;
+            }
         }
+
+        video_update(NULL);
+        audio_update();
 
         SDL_Delay(1000 / TICKRATE);
-
-        ticks += 1;
-        if (!*num_players && (ticks * TICKRATE) >= 10000) {
-            refresh_lobby_list();
-            ticks = 0;
-        }
     }
 
 quit:
