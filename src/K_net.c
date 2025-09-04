@@ -358,7 +358,7 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
 
         for (int i = 0; i < num_options(); i++)
             draw_text(FNT_MAIN, FA_LEFT, MENUS[menu][i].display, (float[3]){40, (float)(16 + 25 * i), 0});
-        if (menu != NM_JOIN && menu != NM_LOBBY)
+        if (menu != NM_LOBBY && num_options() > 1)
             draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
 
         video_update(NULL);
