@@ -101,7 +101,8 @@ struct MenuOption {
     char display[MENU_DISPLAY_SIZE];
     void (*handle)();
 };
-static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS];
+
+static void noop() {}
 
 static void go_single() {
     set_menu(NM_SINGLE);
@@ -126,8 +127,6 @@ static void fucking_exit() {
     exit(EXIT_SUCCESS);
 }
 
-static void noop() {}
-
 static void toggle_pcount() {
     ++(*num_players);
     if (*num_players > MAX_PLAYERS)
@@ -146,7 +145,7 @@ static void play_single() {
     menu_running = false;
 }
 
-static void play_multi() {
+static void host_multi() {
     set_menu(NM_LOBBY);
 
     lobby_id = random_lobby_id();
@@ -190,7 +189,7 @@ static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS] = {
             {"Players: FMT", toggle_pcount},
             {"Level: FMT", noop},
             {"Kevin: FMT", toggle_kevin},
-            {"Host!", play_multi},
+            {"Host!", host_multi},
         },
     [NM_LOBBY] =
         {
