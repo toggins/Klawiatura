@@ -774,6 +774,7 @@
                     "def": "Piranha Plant",
                     "type": "object",
                     "index": 48,
+                    "z": 21,
                     "texture": "E_PIRANA",
 
                     "flags": [
@@ -802,9 +803,9 @@
 
                     "values": [
                         {
-                            "name": "Type",
+                            "name": "Missile",
                             "index": 5,
-                            "default": 0
+                            "default": 24
                         }
                     ]
                 },

@@ -158,6 +158,7 @@ enum GameObjectType {
     OBJ_SPIKE_CANNON,
     OBJ_SPIKE_BALL,
     OBJ_SPIKE_BALL_EFFECT,
+    OBJ_PIRANHA_FIRE,
 
     OBJ_SIZE,
 };
@@ -254,10 +255,17 @@ enum ObjectValues {
     VAL_SHELL_OWNER = VAL_START,
     VAL_SHELL_HIT,
     VAL_SHELL_COMBO,
+    VAL_SHELL_FRAME,
+
+    VAL_PIRANHA_MOVE = VAL_START,
+    VAL_PIRANHA_WAIT,
+    VAL_PIRANHA_FIRE,
 
     VAL_SPIKE_BALL_TIME = VAL_START,
     VAL_SPIKE_BALL_ANGLE,
     VAL_SPIKE_BALL_ALPHA,
+
+    VAL_BRO_MISSILE = VAL_START,
 };
 typedef uint8_t ObjectValues;
 
@@ -310,8 +318,17 @@ enum ObjectFlags {
 
     FLG_KOOPA_RED = 1 << 6,
     FLG_PARAKOOPA_START = 1 << 7,
+    FLG_SHELL_ACTIVE = 1 << 7,
 
     FLG_SPINY_GRAY = 1 << 6,
+
+    FLG_PIRANHA_FIRE = 1 << 5,
+    FLG_PIRANHA_RED = 1 << 6,
+    FLG_PIRANHA_START = 1 << 7,
+    FLG_PIRANHA_BLOCKED = 1 << 8,
+    FLG_PIRANHA_OUT = 1 << 9,
+    FLG_PIRANHA_IN = 1 << 10,
+    FLG_PIRANHA_FIRED = 1 << 11,
 };
 typedef uint32_t ObjectFlags;
 
