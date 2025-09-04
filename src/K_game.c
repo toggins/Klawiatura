@@ -1077,28 +1077,30 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
 
         case OBJ_PSWITCH: {
             struct GameObject* other = &(state.objects[other_id]);
-            if (other->type != OBJ_PLAYER || other->values[VAL_Y_SPEED] <= FxZero ||
-                other->pos[1] > Fadd(self->pos[1], FfInt(20L)) || self->values[VAL_PSWITCH] > 0L)
+            if (other->type != OBJ_PLAYER || self->values[VAL_PSWITCH] > 0L)
                 break;
 
-            other->values[VAL_Y_SPEED] = -FxOne;
-            self->values[VAL_PSWITCH] = state.pswitch = 600L;
+            if (other->pos[1] < Fadd(self->pos[1], FfInt(16L)) &&
+                (other->values[VAL_Y_SPEED] >= FxZero || (other->flags & FLG_PLAYER_STOMP))) {
+                other->values[VAL_Y_SPEED] = -FxOne;
+                self->values[VAL_PSWITCH] = state.pswitch = 600L;
 
-            ObjectID oid = state.live_objects;
-            while (object_is_alive(oid)) {
-                struct GameObject* object = &(state.objects[oid]);
-                if (object->type == OBJ_COIN) {
-                    create_object(OBJ_PSWITCH_BRICK, object->pos);
-                    object->flags |= FLG_DESTROY;
-                } else if (object->type == OBJ_BRICK_BLOCK) {
-                    create_object(OBJ_PSWITCH_COIN, object->pos);
-                    object->flags |= FLG_DESTROY;
+                ObjectID oid = state.live_objects;
+                while (object_is_alive(oid)) {
+                    struct GameObject* object = &(state.objects[oid]);
+                    if (object->type == OBJ_COIN) {
+                        create_object(OBJ_PSWITCH_BRICK, object->pos);
+                        object->flags |= FLG_DESTROY;
+                    } else if (object->type == OBJ_BRICK_BLOCK) {
+                        create_object(OBJ_PSWITCH_COIN, object->pos);
+                        object->flags |= FLG_DESTROY;
+                    }
+                    oid = object->previous;
                 }
-                oid = object->previous;
-            }
 
-            play_sound_at_object(self, "TOGGLE");
-            play_track(TS_SWITCH, "PSWITCH", true);
+                play_sound_at_object(self, "TOGGLE");
+                play_track(TS_SWITCH, "PSWITCH", true);
+            }
             break;
         }
 
