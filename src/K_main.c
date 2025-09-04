@@ -28,12 +28,18 @@
 int main(int argc, char** argv) {
     bool bypass_shader = false;
     char* server_ip = "194.87.232.108"; // Public NutPunch server
+    char level[NUTPUNCH_FIELD_DATA_MAX + 1] = "TEST";
+    bool quickstart = false;
     GameFlags start_flags = 0;
+
     for (size_t i = 0; i < argc; i++) {
         if (SDL_strcmp(argv[i], "-bypass_shader") == 0) {
             bypass_shader = true;
         } else if (SDL_strcmp(argv[i], "-ip") == 0) {
             server_ip = argv[++i];
+        } else if (SDL_strcmp(argv[i], "-level") == 0) {
+            SDL_strlcpy(level, argv[++i], sizeof(level));
+            quickstart = true;
         } else if (SDL_strcmp(argv[i], "-kevin") == 0) {
             start_flags |= GF_KEVIN;
         }
@@ -48,14 +54,13 @@ int main(int argc, char** argv) {
     if (!gekko_create(&session))
         FATAL("gekko_create fail");
 
-    char level[NUTPUNCH_FIELD_DATA_MAX + 1] = {0};
-    SDL_memcpy(level, "TEST", SDL_strlen("TEST"));
     PlayerID num_players = 1;
 
     GekkoNetAdapter* adapter = net_init(server_ip);
 
     load_font(FNT_MAIN);
-    net_wait(&num_players, level, &start_flags);
+    if (!quickstart)
+        net_wait(&num_players, level, &start_flags);
 
     if ((num_players <= 0 || num_players > MAX_PLAYERS))
         FATAL("Don't think I didn't see you trying to set invalid player indices!! I'll kick your ass!!");
