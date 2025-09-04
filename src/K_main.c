@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     INFO("");
 
     bool bypass_shader = false;
-    char* server_ip = "194.87.232.108"; // Public NutPunch server
+    char* server_ip = NUTPUNCH_DEFAULT_SERVER;
     char level[NUTPUNCH_FIELD_DATA_MAX + 1] = "TEST";
     bool quickstart = false;
     GameFlags start_flags = 0;
