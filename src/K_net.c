@@ -147,20 +147,16 @@ static bool toggle_kevin() {
         *start_flags &= ~GF_KEVIN;
     else
         *start_flags |= GF_KEVIN;
-
-    play_ui_sound("SELECT");
     return true;
 }
 
 static bool play_single() {
     *num_players = 1;
-    play_ui_sound("SELECT");
     menu_running = false;
     return true;
 }
 
 static bool play_multi() {
-    play_ui_sound("SELECT");
     set_menu(NM_LOBBY);
 
     lobby_id = random_lobby_id();
