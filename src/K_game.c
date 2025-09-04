@@ -4389,7 +4389,7 @@ void draw_state_hud() {
     if (state.sequence.type == SEQ_LOSE && state.sequence.time > 0L)
         draw_text(FNT_HUD, FA_CENTER, (state.clock == 0) ? "TIME UP" : "GAME OVER", (float[3]){320, 224, 0});
     else if (view_player != local_player)
-        draw_text(FNT_HUD, FA_CENTER, "Spectating", (float[3]){320, 64, 0});
+        draw_text(FNT_MAIN, FA_CENTER, "Spectating", (float[3]){320, 64, 0});
 }
 
 void load_object(GameObjectType type) {

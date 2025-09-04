@@ -52,9 +52,11 @@ int main(int argc, char** argv) {
     SDL_memcpy(level, "TEST", SDL_strlen("TEST"));
     PlayerID num_players = 1;
 
-    load_font(FNT_HUD);
     GekkoNetAdapter* adapter = net_init(server_ip);
+
+    load_font(FNT_MAIN);
     net_wait(&num_players, level, &start_flags);
+
     if ((num_players <= 0 || num_players > MAX_PLAYERS))
         FATAL("Don't think I didn't see you trying to set invalid player indices!! I'll kick your ass!!");
     if (num_players > 1) {

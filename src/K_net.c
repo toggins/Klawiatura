@@ -65,9 +65,9 @@ static void refresh_lobby_list() {
 }
 
 static const char* random_lobby_id() {
-    static uint8_t id[NUTPUNCH_ID_MAX + 1] = {0}, low = 'a', high = 'z';
+    static uint8_t id[NUTPUNCH_ID_MAX + 1] = {0}, low = 'A', high = 'Z';
     for (int i = 0; i < 8; i++)
-        id[i] = low + (rand() % (high - low + 1));
+        id[i] = low + SDL_rand(high - low + 1);
     return (const char*)id;
 }
 
@@ -86,6 +86,16 @@ void net_wait(PlayerID* num_players, char* level, GameFlags* start_flags) {
     *num_players = 0;
     int selected_row = 0, ticks = 0;
     refresh_lobby_list();
+
+    static enum NetMenus {
+        NM_MAIN,
+        NM_SINGLE,
+        NM_MULTI,
+        NM_LOBBIES,
+        NM_LOBBY,
+        NM_SIZE,
+    } menu = NM_MAIN;
+    static int option[NM_SIZE] = {0};
 
     for (;;) {
         SDL_Event event;
@@ -166,7 +176,7 @@ void net_wait(PlayerID* num_players, char* level, GameFlags* start_flags) {
                 "", (float[2][2]){x, y, x + 300.f, y + lh}, 0.f,
                 selected_row == i ? RGBA(255, 255, 255, 255) : RGBA(127, 127, 127, 255)
             );
-            draw_text(FNT_HUD, FA_LEFT, lobbies[i], (float[3]){x, y, 0.f});
+            draw_text(FNT_MAIN, FA_LEFT, lobbies[i], (float[3]){x, y, 0.f});
         }
 
         SDL_Delay(1000 / TICKRATE);
