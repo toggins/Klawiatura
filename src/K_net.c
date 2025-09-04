@@ -280,6 +280,28 @@ static void display_lobbies() {
     }
 }
 
+static bool is_ip_address(const char* str) {
+    int count;
+
+    char* sep = SDL_strchr(str, '.');
+    while (sep != NULL) {
+        ++count;
+        sep = SDL_strchr(sep + 1, '.');
+    }
+
+    if (count < 3) { // Might be IPv6 then
+        count = 0;
+
+        char* sep = SDL_strchr(str, ':');
+        while (sep != NULL) {
+            ++count;
+            sep = SDL_strchr(sep + 1, ':');
+        }
+    }
+
+    return count >= 3;
+}
+
 void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
     num_players = _num_players;
     level = _level;
@@ -361,7 +383,8 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
             draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
         if (menu == NM_JOIN) {
             SDL_snprintf(fmt, sizeof(fmt), "Server: %s", server_ip);
-            draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){0, SCREEN_HEIGHT - string_height(FNT_MAIN, fmt), 0});
+            if (!is_ip_address(fmt))
+                draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){0, SCREEN_HEIGHT - string_height(FNT_MAIN, fmt), 0});
         }
 
         video_update(NULL);
