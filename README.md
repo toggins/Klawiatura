@@ -18,12 +18,12 @@ The main kicker of this project. Networking is purely peer-to-peer. By specifyin
 
 ## Launch options
 
-You can adjust the game's settings per session with these launch options:
+You can adjust Klawiatura with these launch options:
 
-- `-bypass_shader`: Bypass shader support checking for debugging with RenderDoc. Also required under WSL apparently.
-- `-players <amount>`: Amount of players to assign to the session. (Default: `1`)
-- `-ip <ip>`: IP address of the [nutpuncher](https://github.com/Schwungus/nutpunch) server. (Default: [the public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance))
-- `-lobby <id>`: The lobby to join after connecting to the server. (Default: `Klawiatura`)
+- `-bypass_shader`: Skip OpenGL extension checking. Useful when running under RenderDoc or WSL.
+- `-ip <ip>`: IP address of the [NutPuncher](https://github.com/Schwungus/nutpunch) server. (Default: [the public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance))
+- `-level <name>`: Name of the level file to load. This command will quickstart the level in singleplayer.
+- `-kevin`: Awakens Kevin.
 
 You can add these options to a desktop shortcut:
 
@@ -39,7 +39,7 @@ Here's how it should look:
 Or you can just use a batch file with the following contents:
 
 ```bat
-start cmd /c ./Klawiatura.exe -players 2 -lobby Gaming ^& pause
+start cmd /c ./Klawiatura.exe <your launch options here> ^& pause
 ```
 
 ## Building from Sources
@@ -62,7 +62,7 @@ Linux.
 
 ### Compiling
 
-Once you have the tools and libraries ready, executing the build is easy as cake:
+Once you have the tools and libraries ready, executing the build is simple:
 
 ```bat
 cmake -S . -B build -D CMAKE_BUILD_TYPE=Release
@@ -77,7 +77,7 @@ Listing some of the things we learned the hard way that you should consider:
 
 1. MSVC Debug builds require Debug versions of the Visual C++ libraries to run outside the machine that built the binary. If you really need to test Klawiatura on an external machine with debug information present, pass `RelWithDebInfo` to `--config` and for `CMAKE_BUILD_TYPE`.
 2. The correct "all" target for Visual Studio projects is `ALL_BUILD`, as opposed to `all` in every other CMake generator.
-3. Either way, you'll need to build the "all" target in order to get `build/data` generated from [`modsrc`](/modsrc).
+3. Either way, you'll need to build the `all` target in order to get `build/data` generated from [`modsrc`](/modsrc).
 
 ## Attribution
 
