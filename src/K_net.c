@@ -93,7 +93,7 @@ static char* level = NULL;
 static GameFlags* start_flags = NULL;
 
 static void set_menu(enum NetMenu value) {
-    menu_from[menu] = menu;
+    menu_from[value] = menu;
     menu = value;
 }
 
@@ -169,8 +169,8 @@ static void fucking_join() {
 static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS] = {
     [NM_MAIN] =
         {
-            {"Single", go_single},
-            {"Multi", go_multi},
+            {"Singleplayer", go_single},
+            {"Multiplayer", go_multi},
             {"Exit", fucking_exit},
         },
     [NM_SINGLE] =
@@ -193,7 +193,7 @@ static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS] = {
         },
     [NM_LOBBY] =
         {
-            {"LOBBY ID", noop},
+            {"Lobby: FMT", noop},
             {"Waiting for players", noop},
         },
     [NM_JOIN] = {},
@@ -209,7 +209,7 @@ static int num_options() {
 static void handle_menu_input(SDL_Scancode key) {
     switch (key) {
         case SDL_SCANCODE_UP: {
-            if (num_options() <= 0)
+            if (menu == NM_LOBBY || num_options() <= 1)
                 break;
 
             if (option[menu] <= 0)
@@ -222,7 +222,7 @@ static void handle_menu_input(SDL_Scancode key) {
         }
 
         case SDL_SCANCODE_DOWN: {
-            if (num_options() <= 0)
+            if (menu == NM_LOBBY || num_options() <= 1)
                 break;
             option[menu] = (option[menu] + 1) % num_options();
             play_ui_sound("SWITCH");
@@ -306,7 +306,7 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
         }
 
         if (lobby_id != NULL)
-            SDL_strlcpy(MENUS[NM_LOBBY][0].display, lobby_id, MENU_DISPLAY_SIZE);
+            SDL_snprintf(MENUS[NM_LOBBY][0].display, MENU_DISPLAY_SIZE, "Lobby: %s", lobby_id);
 
         switch (NutPunch_Update()) {
             case NP_Status_Error:
@@ -359,6 +359,10 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
             draw_text(FNT_MAIN, FA_LEFT, MENUS[menu][i].display, (float[3]){40, (float)(16 + 25 * i), 0});
         if (menu != NM_LOBBY && num_options() > 1)
             draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
+        if (menu == NM_JOIN) {
+            SDL_snprintf(fmt, sizeof(fmt), "Server: %s", server_ip);
+            draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){0, SCREEN_HEIGHT - string_height(FNT_MAIN, fmt), 0});
+        }
 
         video_update(NULL);
         audio_update();

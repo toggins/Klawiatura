@@ -1472,7 +1472,7 @@ void draw_sprite(const char* index, const GLfloat pos[3], const bool flip[2], GL
     batch_vertex(p3[0], p3[1], z, color[0], color[1], color[2], color[3], u1, v2);
 }
 
-static GLfloat string_width(enum FontIndices index, const char* str) {
+GLfloat string_width(enum FontIndices index, const char* str) {
     struct Font* font = &(fonts[index]);
     GLfloat width = 0;
 
@@ -1502,6 +1502,18 @@ static GLfloat string_width(enum FontIndices index, const char* str) {
     }
 
     return width;
+}
+
+GLfloat string_height(enum FontIndices index, const char* str) {
+    struct Font* font = &(fonts[index]);
+
+    size_t bytes = SDL_strlen(str);
+    GLfloat height = (bytes > 0) ? font->line_height : 0;
+    while (bytes > 0)
+        if (SDL_StepUTF8(&str, &bytes) == '\n')
+            height += font->line_height;
+
+    return height;
 }
 
 void draw_text(enum FontIndices index, enum FontAlignment align, const char* str, const float pos[3]) {
