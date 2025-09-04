@@ -10,6 +10,8 @@
 #define TICKRATE 50L
 
 #define MAX_PLAYERS 4L
+#define MAX_MISSILES 2L
+#define MAX_SINK 6L
 #define KEVIN_DELAY TICKRATE
 
 #define MAX_OBJECTS 1000L
@@ -122,14 +124,14 @@ enum GameObjectType {
     OBJ_SPIKE,
     OBJ_PIRANHA_PLANT,
     OBJ_BRO,
-    OBJ_BRO_HAMMER,
-    OBJ_BRO_FIREBALL,
-    OBJ_BRO_SILVER_HAMMER,
+    OBJ_BRO_HAMMER,   // UNUSED
+    OBJ_BRO_FIREBALL, // UNUSED
+    OBJ_MISSILE_SILVER_HAMMER,
     OBJ_BRO_LAYER,
     OBJ_BILL_BLASTER,
     OBJ_BULLET_BILL,
     OBJ_CHEEP_CHEEP,
-    OBJ_CHEEP_CHEEP_GREEN,
+    OBJ_CHEEP_CHEEP_GREEN, // UNUSED
     OBJ_CHEEP_CHEEP_BLUE,
     OBJ_CHEEP_CHEEP_SPIKY,
     OBJ_BLOOPER,
@@ -180,21 +182,6 @@ enum ObjectValues {
     VAL_PLAYER_STARMAN,
     VAL_PLAYER_STARMAN_COMBO,
     VAL_PLAYER_FIRE,
-    VAL_PLAYER_MISSILE_START,
-    VAL_PLAYER_MISSILE1 = VAL_PLAYER_MISSILE_START,
-    VAL_PLAYER_MISSILE2,
-    VAL_PLAYER_MISSILE_END,
-    VAL_PLAYER_BEETROOT_START = VAL_PLAYER_MISSILE_END,
-    VAL_PLAYER_BEETROOT1 = VAL_PLAYER_BEETROOT_START,
-    VAL_PLAYER_BEETROOT2,
-    VAL_PLAYER_BEETROOT3,
-    VAL_PLAYER_BEETROOT4,
-    VAL_PLAYER_BEETROOT5,
-    VAL_PLAYER_BEETROOT6,
-    VAL_PLAYER_BEETROOT_END,
-    VAL_PLAYER_KEVIN,
-    VAL_PLAYER_KEVIN_X,
-    VAL_PLAYER_KEVIN_Y,
 
     VAL_PLAYER_EFFECT_POWER = VAL_START,
     VAL_PLAYER_EFFECT_FRAME,
@@ -266,6 +253,7 @@ enum ObjectValues {
 
     VAL_SHELL_OWNER = VAL_START,
     VAL_SHELL_HIT,
+    VAL_SHELL_COMBO,
 
     VAL_SPIKE_BALL_TIME = VAL_START,
     VAL_SPIKE_BALL_ANGLE,
@@ -318,8 +306,12 @@ enum ObjectFlags {
 
     FLG_BULLET_DEAD = 1 << 5,
 
-    FLG_KOOPA_RED = 1 << 5,
-    FLG_PARAKOOPA_START = 1 << 6,
+    FLG_ENEMY_ACTIVE = 1 << 5,
+
+    FLG_KOOPA_RED = 1 << 6,
+    FLG_PARAKOOPA_START = 1 << 7,
+
+    FLG_SPINY_GRAY = 1 << 6,
 };
 typedef uint32_t ObjectFlags;
 
@@ -378,8 +370,14 @@ struct GameState {
         uint32_t score;
         int32_t power;
 
+        ObjectID missiles[MAX_MISSILES];
+        ObjectID sink[MAX_SINK];
+
         struct Kevin {
             ObjectID object;
+            int8_t delay;
+            fvec2 pos;
+
             struct KevinFrame {
                 fvec2 pos;
                 Bool flipped;

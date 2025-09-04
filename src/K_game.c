@@ -108,8 +108,9 @@ static ObjectID respawn_player(PlayerID pid) {
     struct GameObject* pawn = get_object(player->object);
     if (pawn != NULL) {
         pawn->values[VAL_PLAYER_INDEX] = (fix16_t)pid;
-        pawn->values[VAL_PLAYER_KEVIN_X] = pawn->pos[0];
-        pawn->values[VAL_PLAYER_KEVIN_Y] = pawn->pos[1];
+        player->kevin.delay = 0L;
+        player->kevin.pos[0] = pawn->pos[0];
+        player->kevin.pos[1] = pawn->pos[1];
 
         pawn->flags |= (spawn->flags & (FLG_X_FLIP | FLG_PLAYER_ASCEND | FLG_PLAYER_DESCEND));
         if (pawn->flags & FLG_PLAYER_ASCEND)
@@ -595,25 +596,27 @@ static void win_player(struct GameObject* pawn) {
         player->kevin.object = NULLOBJ;
     }
 
-    for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++) {
-        struct GameObject* missile = get_object((ObjectID)(pawn->values[i]));
-        if (missile != NULL) {
-            int32_t points;
-            switch (missile->type) {
-                default:
-                    points = 100L;
-                    break;
-                case OBJ_MISSILE_BEETROOT:
-                    points = 200L;
-                    break;
-                case OBJ_MISSILE_HAMMER:
-                    points = 500L;
-                    break;
+    struct GamePlayer* player = get_player(pid);
+    if (player != NULL)
+        for (size_t i = 0; i < MAX_MISSILES; i++) {
+            struct GameObject* missile = get_object(player->missiles[i]);
+            if (missile != NULL) {
+                int32_t points;
+                switch (missile->type) {
+                    default:
+                        points = 100L;
+                        break;
+                    case OBJ_MISSILE_BEETROOT:
+                        points = 200L;
+                        break;
+                    case OBJ_MISSILE_HAMMER:
+                        points = 500L;
+                        break;
+                }
+                give_points(missile, pid, points);
+                missile->flags |= FLG_DESTROY;
             }
-            give_points(missile, pid, points);
-            missile->flags |= FLG_DESTROY;
         }
-    }
 
     state.pswitch = 0L;
     pawn->values[VAL_PLAYER_FLASH] = pawn->values[VAL_PLAYER_STARMAN] = 0L;
@@ -1915,6 +1918,10 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
         player->active = i < num_players;
 
         player->object = NULLOBJ;
+        for (size_t j = 0; j < MAX_MISSILES; j++)
+            player->missiles[j] = NULLOBJ;
+        for (size_t j = 0; j < MAX_SINK; j++)
+            player->sink[j] = NULLOBJ;
         player->kevin.object = NULLOBJ;
         if (player->active) {
             player->lives = 4L;
@@ -2287,8 +2294,8 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                         case POW_HAMMER: {
                             if ((player->input & GI_FIRE) && !(player->last_input & GI_FIRE) &&
                                 !(object->flags & FLG_PLAYER_DUCK))
-                                for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
-                                    if (!object_is_alive((ObjectID)(object->values[i]))) {
+                                for (size_t i = 0; i < MAX_MISSILES; i++)
+                                    if (!object_is_alive(player->missiles[i])) {
                                         GameObjectType mtype;
                                         switch (player->power) {
                                             default:
@@ -2301,9 +2308,8 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
 
                                             case POW_BEETROOT: {
                                                 int32_t beetroots = 0L;
-                                                for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END;
-                                                     i++)
-                                                    if (object_is_alive((ObjectID)(object->values[i])))
+                                                for (size_t j = 0; j < MAX_SINK; j++)
+                                                    if (object_is_alive(player->sink[i]))
                                                         ++beetroots;
                                                 mtype = (beetroots >= 6L) ? OBJ_NULL : OBJ_MISSILE_BEETROOT;
                                                 break;
@@ -2321,9 +2327,9 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                                                 Fsub(object->pos[1], FfInt(29L))
                                             }
                                         );
-                                        if (object_is_alive(mid)) {
-                                            object->values[i] = mid;
-                                            struct GameObject* missile = &(state.objects[mid]);
+                                        struct GameObject* missile = get_object(mid);
+                                        if (missile != NULL) {
+                                            player->missiles[i] = mid;
                                             missile->values[VAL_MISSILE_OWNER] = oid;
                                             switch (mtype) {
                                                 default:
@@ -2401,17 +2407,16 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     }
 
                     if ((state.flags & GF_KEVIN) && state.sequence.type == SEQ_NONE &&
-                        ((object->values[VAL_PLAYER_KEVIN] <= 0L &&
+                        ((player->kevin.delay <= 0L &&
                           Fabs(Fadd(
-                              Fsub(object->pos[0], object->values[VAL_PLAYER_KEVIN_X]),
-                              Fsub(object->pos[1], object->values[VAL_PLAYER_KEVIN_Y])
+                              Fsub(object->pos[0], player->kevin.pos[0]), Fsub(object->pos[1], player->kevin.pos[1])
                           )) > FxOne) ||
-                         object->values[VAL_PLAYER_KEVIN] > 0L)) {
+                         player->kevin.delay > 0L)) {
                         struct Kevin* kevin = &(player->kevin);
                         SDL_memmove(kevin->frames, kevin->frames + 1L, (KEVIN_DELAY - 1L) * sizeof(struct KevinFrame));
 
-                        if (object->values[VAL_PLAYER_KEVIN] < KEVIN_DELAY)
-                            if (++(object->values[VAL_PLAYER_KEVIN]) >= KEVIN_DELAY) {
+                        if (player->kevin.delay < KEVIN_DELAY)
+                            if (++(player->kevin.delay) >= KEVIN_DELAY) {
                                 struct GameObject* kpawn =
                                     get_object(kevin->object = create_object(OBJ_KEVIN, kevin->frames[0].pos));
                                 if (kpawn != NULL) {
@@ -2705,12 +2710,15 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                             struct GameObject* pawn =
                                 get_object((ObjectID)(state.objects[sid].values[VAL_MISSILE_OWNER] =
                                                           object->values[VAL_MISSILE_OWNER]));
-                            if (pawn != NULL)
-                                for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END; i++)
-                                    if (!object_is_alive((ObjectID)(pawn->values[i]))) {
-                                        pawn->values[i] = sid;
-                                        break;
-                                    }
+                            if (pawn != NULL) {
+                                struct GamePlayer* player = get_owner((ObjectID)(object->values[VAL_MISSILE_OWNER]));
+                                if (player != NULL)
+                                    for (size_t i = 0; i < MAX_SINK; i++)
+                                        if (!object_is_alive((ObjectID)(player->sink[i]))) {
+                                            player->sink[i] = sid;
+                                            break;
+                                        }
+                            }
                         }
 
                         object->flags |= FLG_DESTROY;
@@ -5083,10 +5091,6 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                     object->bbox[1][1] = FxOne;
 
                     object->values[VAL_PLAYER_INDEX] = -1L;
-                    for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
-                        object->values[i] = NULLOBJ;
-                    for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END; i++)
-                        object->values[i] = NULLOBJ;
                     break;
                 }
 
@@ -5378,7 +5382,13 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                     break;
                 }
 
-                case OBJ_PARAKOOPA: {
+                case OBJ_GOOMBA:
+                case OBJ_KOOPA:
+                case OBJ_KOOPA_SHELL:
+                case OBJ_PARAKOOPA:
+                case OBJ_BUZZY_BEETLE:
+                case OBJ_BUZZY_SHELL:
+                case OBJ_SPINY: {
                     object->bbox[0][0] = FfInt(-15L);
                     object->bbox[0][1] = FfInt(-31L);
                     object->bbox[1][0] = FfInt(15L);
@@ -5486,15 +5496,15 @@ void destroy_object(ObjectID index) {
             if (player != NULL && player->object == index)
                 player->object = NULLOBJ;
 
-            for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++) {
-                struct GameObject* missile = get_object((ObjectID)(object->values[i]));
-                if (missile != NULL)
+            for (size_t i = 0; i < MAX_MISSILES; i++) {
+                struct GameObject* missile = get_object(player->missiles[i]);
+                if (missile != NULL && missile->values[VAL_MISSILE_OWNER] == index)
                     missile->values[VAL_MISSILE_OWNER] = NULLOBJ;
             }
 
-            for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END; i++) {
-                struct GameObject* beetroot = get_object((ObjectID)(object->values[i]));
-                if (beetroot != NULL)
+            for (size_t i = 0; i < MAX_SINK; i++) {
+                struct GameObject* beetroot = get_object(player->sink[i]);
+                if (beetroot != NULL && beetroot->values[VAL_MISSILE_OWNER] == index)
                     beetroot->values[VAL_MISSILE_OWNER] = NULLOBJ;
             }
 
@@ -5511,22 +5521,22 @@ void destroy_object(ObjectID index) {
         case OBJ_MISSILE_FIREBALL:
         case OBJ_MISSILE_BEETROOT:
         case OBJ_MISSILE_HAMMER: {
-            struct GameObject* owner = get_object((ObjectID)(object->values[VAL_MISSILE_OWNER]));
-            if (owner != NULL && owner->type == OBJ_PLAYER)
-                for (size_t i = VAL_PLAYER_MISSILE_START; i < VAL_PLAYER_MISSILE_END; i++)
-                    if (owner->values[i] == index) {
-                        owner->values[i] = NULLOBJ;
+            struct GamePlayer* player = get_owner((ObjectID)(object->values[VAL_MISSILE_OWNER]));
+            if (player != NULL)
+                for (size_t i = 0; i < MAX_MISSILES; i++)
+                    if (player->missiles[i] == index) {
+                        player->missiles[i] = NULLOBJ;
                         break;
                     }
             break;
         }
 
         case OBJ_MISSILE_BEETROOT_SINK: {
-            struct GameObject* owner = get_object((ObjectID)(object->values[VAL_MISSILE_OWNER]));
-            if (owner != NULL && owner->type == OBJ_PLAYER)
-                for (size_t i = VAL_PLAYER_BEETROOT_START; i < VAL_PLAYER_BEETROOT_END; i++)
-                    if (owner->values[i] == index) {
-                        owner->values[i] = NULLOBJ;
+            struct GamePlayer* player = get_owner((ObjectID)(object->values[VAL_MISSILE_OWNER]));
+            if (player != NULL)
+                for (size_t i = 0; i < MAX_SINK; i++)
+                    if (player->sink[i] == index) {
+                        player->sink[i] = NULLOBJ;
                         break;
                     }
             break;
