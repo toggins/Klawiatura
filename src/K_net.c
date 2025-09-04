@@ -381,10 +381,9 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
             draw_text(FNT_MAIN, FA_LEFT, MENUS[menu][i].display, (float[3]){40, (float)(16 + 25 * i), 0});
         if (menu != NM_LOBBY && num_options() > 1)
             draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
-        if (menu == NM_JOIN) {
+        if (menu == NM_JOIN && !is_ip_address(server_ip)) {
             SDL_snprintf(fmt, sizeof(fmt), "Server: %s", server_ip);
-            if (!is_ip_address(server_ip))
-                draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){0, SCREEN_HEIGHT - string_height(FNT_MAIN, fmt), 0});
+            draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){0, SCREEN_HEIGHT - string_height(FNT_MAIN, fmt), 0});
         }
 
         video_update(NULL);
