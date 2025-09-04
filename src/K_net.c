@@ -99,64 +99,54 @@ static void set_menu(enum NetMenu value) {
 
 struct MenuOption {
     char display[MENU_DISPLAY_SIZE];
-    bool (*handle)();
+    void (*handle)();
 };
 static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS];
 
-static bool go_single() {
+static void go_single() {
     set_menu(NM_SINGLE);
-    return true;
 }
 
-static bool go_multi() {
+static void go_multi() {
     set_menu(NM_MULTI);
-    return true;
 }
 
-static bool go_host() {
+static void go_host() {
     *num_players = 2;
     set_menu(NM_HOST);
-    return true;
 }
 
-static bool go_join() {
+static void go_join() {
     set_menu(NM_JOIN);
     refresh_lobby_list();
-    return true;
 }
 
-static bool fucking_exit() {
+static void fucking_exit() {
     net_teardown();
     exit(EXIT_SUCCESS);
-    return true;
 }
 
-static bool noop() {
-    return false;
-}
+static void noop() {}
 
-static bool toggle_pcount() {
+static void toggle_pcount() {
     ++(*num_players);
     if (*num_players > MAX_PLAYERS)
         *num_players = 2;
-    return true;
 }
 
-static bool toggle_kevin() {
+static void toggle_kevin() {
     if (*start_flags & GF_KEVIN)
         *start_flags &= ~GF_KEVIN;
     else
         *start_flags |= GF_KEVIN;
-    return true;
 }
 
-static bool play_single() {
+static void play_single() {
     *num_players = 1;
     menu_running = false;
-    return true;
 }
 
-static bool play_multi() {
+static void play_multi() {
     set_menu(NM_LOBBY);
 
     lobby_id = random_lobby_id();
@@ -168,16 +158,13 @@ static bool play_multi() {
     NutPunch_Set("PLAYERS", sizeof(PlayerID), num_players);
     NutPunch_Set("LEVEL", (int)SDL_strnlen(level, NUTPUNCH_FIELD_DATA_MAX - 1), level);
     NutPunch_Set("FLAGS", sizeof(GameFlags), start_flags);
-
-    return true;
 }
 
-static bool fucking_join() {
+static void fucking_join() {
     int len = 0;
     lobby_id = NutPunch_LobbyList(&len)[option[menu]];
     NutPunch_SetServerAddr(server_ip);
     NutPunch_Join(lobby_id);
-    return true;
 }
 
 static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS] = {
@@ -245,8 +232,10 @@ void handle_menu_input(SDL_Scancode key) {
 
         case SDL_SCANCODE_Z: {
             struct MenuOption* opt = &MENUS[menu][option[menu]];
-            if (opt->handle())
+            if (opt->handle != noop) {
                 play_ui_sound("SELECT");
+                opt->handle();
+            }
             break;
         }
 
