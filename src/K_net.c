@@ -82,7 +82,7 @@ static enum NetMenu {
 } menu = NM_MAIN;
 
 #define MENU_MAX_OPTIONS (16)
-#define MENU_DISPLAY_SIZE (64)
+#define MENU_DISPLAY_SIZE (SDL_max(64, NUTPUNCH_ID_MAX + 1))
 
 static enum NetMenu menu_from[NM_SIZE] = {NM_MAIN};
 static int option[NM_SIZE] = {0};
@@ -200,14 +200,14 @@ static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS] = {
     [NM_JOIN] = {},
 };
 
-int num_options() {
+static int num_options() {
     for (int i = 0; i < MENU_MAX_OPTIONS; i++)
         if (MENUS[menu][i].handle == NULL)
             return i;
     return MENU_MAX_OPTIONS;
 }
 
-void handle_menu_input(SDL_Scancode key) {
+static void handle_menu_input(SDL_Scancode key) {
     switch (key) {
         case SDL_SCANCODE_UP: {
             if (num_options() <= 0)
@@ -255,6 +255,32 @@ void handle_menu_input(SDL_Scancode key) {
     }
 }
 
+static void display_lobbies() {
+    int count = 0, i = 0;
+    const char** lobbies = NutPunch_LobbyList(&count);
+    if (count > MENU_MAX_OPTIONS)
+        count = MENU_MAX_OPTIONS;
+    for (; i < count; i++) {
+        struct MenuOption* option = MENUS[NM_JOIN] + i;
+        SDL_strlcpy(option->display, lobbies[i], MENU_DISPLAY_SIZE);
+        option->handle = fucking_join;
+    }
+    if (!count) {
+        struct MenuOption* option = MENUS[NM_JOIN] + i;
+        SDL_strlcpy(option->display, "No lobbies found", MENU_DISPLAY_SIZE);
+        option->handle = noop;
+        i = 1;
+    }
+    for (; i < MENU_MAX_OPTIONS; i++)
+        SDL_memset(&MENUS[NM_JOIN][i], 0, MENU_DISPLAY_SIZE);
+
+    static int ticks_since_refresh = 0;
+    if (menu == NM_JOIN && ticks_since_refresh++ >= 5 * TICKRATE) {
+        refresh_lobby_list();
+        ticks_since_refresh = 0;
+    }
+}
+
 void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
     num_players = _num_players;
     level = _level;
@@ -266,27 +292,6 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
 
     menu_running = true;
     while (menu_running) {
-        const char** lobbies = NULL;
-        if (menu == NM_JOIN) {
-            int count = 0, i = 0;
-            lobbies = NutPunch_LobbyList(&count);
-            if (count > MENU_MAX_OPTIONS)
-                count = MENU_MAX_OPTIONS;
-            for (; i < count; i++) {
-                struct MenuOption* option = MENUS[NM_JOIN] + i;
-                SDL_strlcpy(option->display, lobbies[i], MENU_DISPLAY_SIZE);
-                option->handle = fucking_join;
-            }
-            if (!count) {
-                struct MenuOption* option = MENUS[NM_JOIN] + i;
-                SDL_strlcpy(option->display, "No lobbies found", MENU_DISPLAY_SIZE);
-                option->handle = noop;
-                i = 1;
-            }
-            for (; i < MENU_MAX_OPTIONS; i++)
-                SDL_memset(&MENUS[NM_JOIN][i], 0, sizeof(MENUS[NM_JOIN][i]));
-        }
-
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -300,19 +305,6 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
                     break;
             }
         }
-
-        static char fmt[MENU_DISPLAY_SIZE] = {0};
-
-        SDL_snprintf(fmt, sizeof(fmt), "Players: %d", *num_players);
-        SDL_memcpy(MENUS[NM_HOST][0].display, fmt, sizeof(fmt));
-
-        SDL_snprintf(fmt, sizeof(fmt), "Level: %s", level);
-        SDL_memcpy(MENUS[NM_SINGLE][0].display, fmt, sizeof(fmt));
-        SDL_memcpy(MENUS[NM_HOST][1].display, fmt, sizeof(fmt));
-
-        SDL_snprintf(fmt, sizeof(fmt), "Kevin: %s", *start_flags & GF_KEVIN ? "ON" : "OFF");
-        SDL_memcpy(MENUS[NM_SINGLE][1].display, fmt, sizeof(fmt));
-        SDL_memcpy(MENUS[NM_HOST][2].display, fmt, sizeof(fmt));
 
         if (lobby_id != NULL)
             SDL_strlcpy(MENUS[NM_LOBBY][0].display, lobby_id, MENU_DISPLAY_SIZE);
@@ -349,6 +341,20 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
             default:
                 break;
         }
+
+        static char fmt[MENU_DISPLAY_SIZE] = {0};
+        display_lobbies();
+
+        SDL_snprintf(fmt, sizeof(fmt), "Players: %d", *num_players);
+        SDL_memcpy(MENUS[NM_HOST][0].display, fmt, sizeof(fmt));
+
+        SDL_snprintf(fmt, sizeof(fmt), "Level: %s", level);
+        SDL_memcpy(MENUS[NM_SINGLE][0].display, fmt, sizeof(fmt));
+        SDL_memcpy(MENUS[NM_HOST][1].display, fmt, sizeof(fmt));
+
+        SDL_snprintf(fmt, sizeof(fmt), "Kevin: %s", *start_flags & GF_KEVIN ? "ON" : "OFF");
+        SDL_memcpy(MENUS[NM_SINGLE][1].display, fmt, sizeof(fmt));
+        SDL_memcpy(MENUS[NM_HOST][2].display, fmt, sizeof(fmt));
 
         for (int i = 0; i < num_options(); i++)
             draw_text(FNT_MAIN, FA_LEFT, MENUS[menu][i].display, (float[3]){40, (float)(16 + 25 * i), 0});
