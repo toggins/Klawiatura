@@ -281,7 +281,7 @@ static void display_lobbies() {
 }
 
 static bool is_ip_address(const char* str) {
-    int count;
+    int count = 0;
 
     char* sep = SDL_strchr(str, '.');
     while (sep != NULL) {
@@ -383,7 +383,7 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
             draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
         if (menu == NM_JOIN) {
             SDL_snprintf(fmt, sizeof(fmt), "Server: %s", server_ip);
-            if (!is_ip_address(fmt))
+            if (!is_ip_address(server_ip))
                 draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){0, SCREEN_HEIGHT - string_height(FNT_MAIN, fmt), 0});
         }
 
