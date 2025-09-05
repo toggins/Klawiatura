@@ -12,6 +12,7 @@
 #include "K_game.h"
 #include "K_log.h"
 #include "K_net.h"
+#include "K_file.h"
 
 static void send_data(GekkoNetAddress* gn_addr, const char* data, int len) {
     NutPunch_Send(*(int*)gn_addr->data, data, len);
@@ -148,11 +149,23 @@ static void toggle_kevin() {
 }
 
 static void play_single() {
+    if (find_file(file_pattern("data/levels/%s.kla", level), NULL) == NULL) {
+        load_sound("BUMP");
+        play_sound("BUMP");
+        return;
+    }
+
     *num_players = 1;
     menu_running = false;
 }
 
 static void host_multi() {
+    if (find_file(file_pattern("data/levels/%s.kla", level), NULL) == NULL) {
+        load_sound("BUMP");
+        play_sound("BUMP");
+        return;
+    }
+
     set_menu(NM_LOBBY);
 
     lobby_id = random_lobby_id();
