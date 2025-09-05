@@ -514,6 +514,8 @@
                     "index": 53,
                     "z": 1,
                     "texture": "M_SOLIDT",
+                    "stretch": true,
+                    "max_stretch": [256, 256],
 
                     "flags": [
                         {

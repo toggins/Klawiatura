@@ -266,6 +266,16 @@ enum ObjectValues {
     VAL_SPIKE_BALL_ALPHA,
 
     VAL_BRO_MISSILE = VAL_START,
+    VAL_BRO_MOVE,
+    VAL_BRO_TEMP2,
+    VAL_BRO_TEMP3,
+    VAL_BRO_TEMP4,
+    VAL_BRO_TEMP5,
+    VAL_BRO_JUMP_STATE,
+    VAL_BRO_JUMP,
+    VAL_BRO_DOWN,
+    VAL_BRO_THROW_STATE,
+    VAL_BRO_THROW,
 };
 typedef uint8_t ObjectValues;
 
@@ -329,6 +339,17 @@ enum ObjectFlags {
     FLG_PIRANHA_OUT = 1 << 9,
     FLG_PIRANHA_IN = 1 << 10,
     FLG_PIRANHA_FIRED = 1 << 11,
+
+    FLG_BRO_ACTIVE = 1 << 5,
+    FLG_BRO_TEMP10 = 1 << 6,
+    FLG_BRO_TEMP11 = 1 << 7,
+    FLG_BRO_JUMP = 1 << 8,
+    FLG_BRO_TEMP30 = 1 << 9,
+    FLG_BRO_TEMP31 = 1 << 10,
+    FLG_BRO_BOTTOM = 1 << 11,
+    FLG_BRO_TOP = 1 << 12,
+
+    FLG_BRO_LAYER_TOP = 1 << 5,
 };
 typedef uint32_t ObjectFlags;
 
@@ -381,6 +402,7 @@ struct GameState {
         GameInput input, last_input;
 
         ObjectID object;
+        fvec2 pos;
         fvec2 bounds[2];
 
         uint8_t lives, coins;
