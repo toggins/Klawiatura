@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
     video_init(bypass_shader);
     audio_init();
 
-    if (play_intro)
+    if (play_intro && !quickstart)
         show_intro();
 
     GekkoSession* session = NULL;
