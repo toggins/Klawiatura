@@ -102,6 +102,9 @@ struct MenuOption {
     void (*handle)();
 };
 
+static bool typing_level = false;
+static char cache_level[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
+
 static void noop() {}
 
 static void go_single() {
@@ -131,6 +134,10 @@ static void toggle_pcount() {
     ++(*num_players);
     if (*num_players > MAX_PLAYERS)
         *num_players = 2;
+}
+
+static void type_level() {
+    typing_level = true;
 }
 
 static void toggle_kevin() {
@@ -175,7 +182,7 @@ static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS] = {
         },
     [NM_SINGLE] =
         {
-            {"Level: FMT", noop},
+            {"Level: FMT", type_level},
             {"Kevin: FMT", toggle_kevin},
             {"Play!", play_single},
         },
@@ -187,7 +194,7 @@ static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS] = {
     [NM_HOST] =
         {
             {"Players: FMT", toggle_pcount},
-            {"Level: FMT", noop},
+            {"Level: FMT", type_level},
             {"Kevin: FMT", toggle_kevin},
             {"Host!", host_multi},
         },
@@ -209,7 +216,7 @@ static int num_options() {
 static void handle_menu_input(SDL_Scancode key) {
     switch (key) {
         case SDL_SCANCODE_UP: {
-            if (menu == NM_LOBBY || num_options() <= 1)
+            if (typing_level || menu == NM_LOBBY || num_options() <= 1)
                 break;
 
             if (option[menu] <= 0)
@@ -222,7 +229,7 @@ static void handle_menu_input(SDL_Scancode key) {
         }
 
         case SDL_SCANCODE_DOWN: {
-            if (menu == NM_LOBBY || num_options() <= 1)
+            if (typing_level || menu == NM_LOBBY || num_options() <= 1)
                 break;
             option[menu] = (option[menu] + 1) % num_options();
             play_ui_sound("SWITCH");
@@ -230,6 +237,9 @@ static void handle_menu_input(SDL_Scancode key) {
         }
 
         case SDL_SCANCODE_Z: {
+            if (typing_level)
+                break;
+
             struct MenuOption* opt = &MENUS[menu][option[menu]];
             if (opt->handle != noop) {
                 play_ui_sound("SELECT");
@@ -239,6 +249,13 @@ static void handle_menu_input(SDL_Scancode key) {
         }
 
         case SDL_SCANCODE_ESCAPE: {
+            if (typing_level) {
+                SDL_strlcpy(level, cache_level, sizeof(cache_level));
+                typing_level = false;
+                play_ui_sound("SELECT");
+                break;
+            }
+
             if (menu == NM_LOBBY)
                 NutPunch_Disconnect();
 
@@ -246,11 +263,32 @@ static void handle_menu_input(SDL_Scancode key) {
                 menu = menu_from[menu];
                 play_ui_sound("SELECT");
             }
-
             break;
         }
-        default:
+
+        case SDL_SCANCODE_RETURN: {
+            if (typing_level) {
+                SDL_strlcpy(cache_level, level, sizeof(cache_level));
+                typing_level = false;
+                play_ui_sound("SELECT");
+            }
             break;
+        }
+
+        case SDL_SCANCODE_BACKSPACE: {
+            if (typing_level && SDL_strlen(level) > 0)
+                level[SDL_strlen(level) - 1] = '\0';
+            break;
+        }
+
+        default: {
+            if (typing_level && SDL_strlen(level) < (sizeof(cache_level) - 1)) {
+                const char* gross = SDL_GetKeyName(SDL_GetKeyFromScancode(key, SDL_KMOD_NONE, false));
+                if (SDL_strlen(gross) == 1)
+                    SDL_strlcat(level, gross, sizeof(cache_level));
+            }
+            break;
+        }
     }
 }
 
@@ -305,6 +343,7 @@ static bool is_ip_address(const char* str) {
 void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
     num_players = _num_players;
     level = _level;
+    SDL_strlcpy(cache_level, _level, sizeof(cache_level));
     start_flags = _start_flags;
     *num_players = 0;
 
@@ -369,7 +408,7 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
         SDL_snprintf(fmt, sizeof(fmt), "Players: %d", *num_players);
         SDL_memcpy(MENUS[NM_HOST][0].display, fmt, sizeof(fmt));
 
-        SDL_snprintf(fmt, sizeof(fmt), "Level: %s", level);
+        SDL_snprintf(fmt, sizeof(fmt), "Level: %s%s", level, (typing_level && (SDL_GetTicks() % 800) < 500) ? "_" : "");
         SDL_memcpy(MENUS[NM_SINGLE][0].display, fmt, sizeof(fmt));
         SDL_memcpy(MENUS[NM_HOST][1].display, fmt, sizeof(fmt));
 
