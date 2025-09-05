@@ -167,10 +167,15 @@ static void host_multi() {
 }
 
 static void fucking_join() {
+    if (lobby_id != NULL)
+        return;
+
     int len = 0;
     lobby_id = NutPunch_LobbyList(&len)[option[menu]];
     NutPunch_SetServerAddr(server_ip);
     NutPunch_Join(lobby_id);
+
+    set_menu(NM_LOBBY);
 }
 
 static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS] = {
@@ -256,8 +261,10 @@ static void handle_menu_input(SDL_Scancode key) {
                 break;
             }
 
-            if (menu == NM_LOBBY)
+            if (menu == NM_LOBBY) {
                 NutPunch_Disconnect();
+                lobby_id = NULL;
+            }
 
             if (menu_from[menu] != menu) {
                 menu = menu_from[menu];
