@@ -4189,6 +4189,39 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     move_object(oid, POS_SPEED(object));
                     break;
                 }
+
+                case OBJ_CLOUD_FACE: {
+                    if (object->values[VAL_PROP_FRAME] > FxZero) {
+                        if (object->flags & FLG_PROP_EXTRA) {
+                            object->values[VAL_PROP_FRAME] = Fadd(object->values[VAL_PROP_FRAME], 0x00000A3D);
+                            if (object->values[VAL_PROP_FRAME] > FfInt(2L))
+                                object->values[VAL_PROP_FRAME] = FxZero;
+                        } else {
+                            object->values[VAL_PROP_FRAME] = Fadd(object->values[VAL_PROP_FRAME], FxOne);
+                            if (object->values[VAL_PROP_FRAME] > FfInt(14L))
+                                object->values[VAL_PROP_FRAME] = FxZero;
+                        }
+                    }
+
+                    if ((state.time % 5L) == 0L && object->values[VAL_PROP_FRAME] <= FxZero)
+                        switch (random() % 20L) {
+                            default:
+                                break;
+
+                            case 10L: {
+                                object->values[VAL_PROP_FRAME] = FxOne;
+                                object->flags &= ~FLG_PROP_EXTRA;
+                                break;
+                            }
+
+                            case 15L: {
+                                object->values[VAL_PROP_FRAME] = FxOne;
+                                object->flags |= FLG_PROP_EXTRA;
+                                break;
+                            }
+                        }
+                    break;
+                }
             }
 
         const ObjectID next = object->previous;
@@ -5400,6 +5433,59 @@ void draw_state() {
                     draw_object(oid, tex, 0, WHITE);
                     break;
                 }
+
+                case OBJ_CLOUD_FACE: {
+                    const char* tex;
+                    const uint8_t frame = FtInt(object->values[VAL_PROP_FRAME]);
+
+                    if (frame <= 0) {
+                        tex = "S_CFACEA";
+                    } else if (object->flags & FLG_PROP_EXTRA) {
+                        tex = "S_CFACEJ";
+                    } else
+                        switch (frame) {
+                            default:
+                                tex = "S_CFACEB";
+                                break;
+
+                            case 2:
+                            case 14:
+                                tex = "S_CFACEC";
+                                break;
+
+                            case 3:
+                            case 13:
+                                tex = "S_CFACED";
+                                break;
+
+                            case 4:
+                            case 12:
+                                tex = "S_CFACEE";
+                                break;
+
+                            case 5:
+                            case 11:
+                                tex = "S_CFACEF";
+                                break;
+
+                            case 6:
+                            case 10:
+                                tex = "S_CFACEG";
+                                break;
+
+                            case 7:
+                            case 9:
+                                tex = "S_CFACEH";
+                                break;
+
+                            case 8:
+                                tex = "S_CFACEI";
+                                break;
+                        }
+
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
             }
 
         oid = object->previous;
@@ -6136,6 +6222,20 @@ void load_object(GameObjectType type) {
             load_object(OBJ_MISSILE_SILVER_HAMMER);
             load_object(OBJ_DEAD);
             load_object(OBJ_POINTS);
+            break;
+        }
+
+        case OBJ_CLOUD_FACE: {
+            load_texture("S_CFACEA");
+            load_texture("S_CFACEB");
+            load_texture("S_CFACEC");
+            load_texture("S_CFACED");
+            load_texture("S_CFACEE");
+            load_texture("S_CFACEF");
+            load_texture("S_CFACEG");
+            load_texture("S_CFACEH");
+            load_texture("S_CFACEI");
+            load_texture("S_CFACEJ");
             break;
         }
     }

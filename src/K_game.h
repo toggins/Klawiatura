@@ -288,6 +288,8 @@ enum ObjectFlags {
     FLG_Y_FLIP = 1 << 3,
     FLG_CARRIED = 1 << 4,
 
+    FLG_PROP_EXTRA = 1 << 5,
+
     FLG_PLAYER_DUCK = 1 << 5,
     FLG_PLAYER_JUMP = 1 << 6,
     FLG_PLAYER_SWIM = 1 << 7,

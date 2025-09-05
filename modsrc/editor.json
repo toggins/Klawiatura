@@ -356,6 +356,14 @@
                         },
 
                         {
+                            "def": "Giant Cloud Face",
+                            "type": "object",
+                            "z": 51,
+                            "index": 50,
+                            "texture": "S_CFACEA"
+                        },
+
+                        {
                             "def": "Hill",
                             "type": "backdrop",
                             "z": 51,
@@ -424,6 +432,34 @@
                             "type": "object",
                             "index": 76,
                             "texture": "S_BUSHSA",
+                            "z": 25
+                        },
+
+                        {
+                            "def": "Tree Small",
+                            "type": "backdrop",
+                            "texture": "S_TREEA",
+                            "z": 25
+                        },
+
+                        {
+                            "def": "Tree",
+                            "type": "backdrop",
+                            "texture": "S_TREEB",
+                            "z": 25
+                        },
+
+                        {
+                            "def": "Tree Back",
+                            "type": "backdrop",
+                            "texture": "S_TREEBG",
+                            "z": 26
+                        },
+
+                        {
+                            "def": "Tree Minix",
+                            "type": "backdrop",
+                            "texture": "S_TREEM",
                             "z": 25
                         }
                     ]
