@@ -33,12 +33,12 @@ static struct Font fonts[FNT_SIZE] = {
 
     [FNT_MAIN] = {
         .tname = "F_MAIN",
-        .spacing = -1,
+        .spacing = -2,
         .line_height = 24,
         .glyphs = {
             [' '] =
                 {
-                    .size = {7, 24},
+                    .size = {8, 24},
                     .uvs = {0},
                 },
             ['!'] =
