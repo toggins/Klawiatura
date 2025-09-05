@@ -6,6 +6,9 @@
     "clangd.enableCodeCompletion": true,
     "cmake.generator": "Ninja",
     "cmake.exportCompileCommandsFile": true,
+    "cmake.debugConfig": {
+        "args": ["-skip_intro"]
+    },
     "clangd.arguments": ["--header-insertion=never"],
     "[c]": {
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"

@@ -17,12 +17,17 @@
 
 #define RGBA(r, g, b, a)                                                                                               \
     (GLubyte[4]) {                                                                                                     \
-        r, g, b, a                                                                                                     \
+        (r), (g), (b), (a)                                                                                             \
     }
 
 #define ALPHA(a)                                                                                                       \
     (GLubyte[4]) {                                                                                                     \
-        255, 255, 255, a                                                                                               \
+        255, 255, 255, (a)                                                                                             \
+    }
+
+#define XYZ(x, y, z)                                                                                                   \
+    (GLfloat[3]) {                                                                                                     \
+        (x), (y), (z)                                                                                                  \
     }
 
 enum VertexAttributes {

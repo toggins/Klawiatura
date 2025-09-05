@@ -25,6 +25,8 @@
 #include "K_net.h"
 #include "K_video.h"
 
+static void show_intro(), show_error_screen(const char*);
+
 int main(int argc, char** argv) {
     INFO("==========[KLAWIATURA]==========");
     INFO("      MARIO FOREVER ONLINE      ");
@@ -39,7 +41,7 @@ int main(int argc, char** argv) {
     INFO("      use of this project.      ");
     INFO("");
 
-    bool bypass_shader = false;
+    bool bypass_shader = false, play_intro = true;
     char* server_ip = NUTPUNCH_DEFAULT_SERVER;
     char level[NUTPUNCH_FIELD_DATA_MAX + 1] = "TEST";
     bool quickstart = false;
@@ -55,6 +57,8 @@ int main(int argc, char** argv) {
             quickstart = true;
         } else if (SDL_strcmp(argv[i], "-kevin") == 0) {
             start_flags |= GF_KEVIN;
+        } else if (!SDL_strcmp(argv[i], "-skip_intro")) {
+            play_intro = false;
         }
     }
 
@@ -62,6 +66,9 @@ int main(int argc, char** argv) {
         FATAL("SDL_Init fail: %s", SDL_GetError());
     video_init(bypass_shader);
     audio_init();
+
+    if (play_intro)
+        show_intro();
 
     GekkoSession* session = NULL;
     if (!gekko_create(&session))
@@ -137,114 +144,112 @@ int main(int argc, char** argv) {
 
         gekko_network_poll(session);
         net_update(session);
+        if (ticks <= frame_time)
+            continue;
 
-        if (ticks >= frame_time) {
-            interp_start();
+        interp_start();
+        while (ticks >= frame_time) {
+            GameInput input = GI_NONE;
+            const bool* keyboard = SDL_GetKeyboardState(NULL);
+            if (keyboard[SDL_SCANCODE_ESCAPE])
+                goto teardown;
+            if (keyboard[SDL_SCANCODE_UP])
+                input |= GI_UP;
+            if (keyboard[SDL_SCANCODE_LEFT])
+                input |= GI_LEFT;
+            if (keyboard[SDL_SCANCODE_DOWN])
+                input |= GI_DOWN;
+            if (keyboard[SDL_SCANCODE_RIGHT])
+                input |= GI_RIGHT;
+            if (keyboard[SDL_SCANCODE_Z])
+                input |= GI_JUMP;
+            if (keyboard[SDL_SCANCODE_X])
+                input |= (GI_RUN | GI_FIRE);
+            gekko_add_local_input(session, local_player, &input);
 
-            while (ticks >= frame_time) {
-                GameInput input = GI_NONE;
-                const bool* keyboard = SDL_GetKeyboardState(NULL);
-                if (keyboard[SDL_SCANCODE_ESCAPE])
-                    goto teardown;
-                if (keyboard[SDL_SCANCODE_UP])
-                    input |= GI_UP;
-                if (keyboard[SDL_SCANCODE_LEFT])
-                    input |= GI_LEFT;
-                if (keyboard[SDL_SCANCODE_DOWN])
-                    input |= GI_DOWN;
-                if (keyboard[SDL_SCANCODE_RIGHT])
-                    input |= GI_RIGHT;
-                if (keyboard[SDL_SCANCODE_Z])
-                    input |= GI_JUMP;
-                if (keyboard[SDL_SCANCODE_X])
-                    input |= (GI_RUN | GI_FIRE);
-                gekko_add_local_input(session, local_player, &input);
+            int count = 0;
+            GekkoSessionEvent** events = gekko_session_events(session, &count);
+            for (int i = 0; i < count; i++) {
+                GekkoSessionEvent* event = events[i];
+                switch (event->type) {
+                    default:
+                        break;
 
-                int count = 0;
-                GekkoSessionEvent** events = gekko_session_events(session, &count);
-                for (int i = 0; i < count; i++) {
-                    GekkoSessionEvent* event = events[i];
-                    switch (event->type) {
-                        default:
-                            break;
+                    case DesyncDetected: {
+                        dump_state();
+                        struct Desynced desync = event->data.desynced;
+                        INFO(
+                            "OOPS: Out of sync with player %d (tick %d, l %u != r %u)", desync.remote_handle,
+                            desync.frame, desync.local_checksum, desync.remote_checksum
+                        );
+                        SDL_snprintf(
+                            errmsg, sizeof(errmsg),
+                            "Failed to sync with player %d.\nThe game has now stopped and dumped its state.",
+                            desync.remote_handle
+                        );
+                        success = false;
+                        goto teardown;
+                    }
 
-                        case DesyncDetected: {
-                            dump_state();
-                            struct Desynced desync = event->data.desynced;
-                            INFO(
-                                "OOPS: Out of sync with player %d (tick %d, l %u != r %u)", desync.remote_handle,
-                                desync.frame, desync.local_checksum, desync.remote_checksum
-                            );
-                            SDL_snprintf(
-                                errmsg, sizeof(errmsg),
-                                "Failed to sync with player %d.\nThe game has now stopped and dumped its state.",
-                                desync.remote_handle
-                            );
-                            success = false;
-                            goto teardown;
-                        }
+                    case PlayerConnected: {
+                        struct Connected connect = event->data.connected;
+                        INFO("Player %i connected", connect.handle);
+                        break;
+                    }
 
-                        case PlayerConnected: {
-                            struct Connected connect = event->data.connected;
-                            INFO("Player %i connected", connect.handle);
-                            break;
-                        }
-
-                        case PlayerDisconnected: {
-                            struct Disconnected disconnect = event->data.disconnected;
-                            INFO("OOPS: Player %i disconnected", disconnect.handle);
-                            SDL_snprintf(
-                                errmsg, sizeof(errmsg), "Lost connection to player %i.\nThe game has now stopped.",
-                                disconnect.handle
-                            );
-                            success = false;
-                            goto teardown;
-                        }
+                    case PlayerDisconnected: {
+                        struct Disconnected disconnect = event->data.disconnected;
+                        INFO("OOPS: Player %i disconnected", disconnect.handle);
+                        SDL_snprintf(
+                            errmsg, sizeof(errmsg), "Lost connection to player %i.\nThe game has now stopped.",
+                            disconnect.handle
+                        );
+                        success = false;
+                        goto teardown;
                     }
                 }
-
-                count = 0;
-                GekkoGameEvent** updates = gekko_update_session(session, &count);
-                for (int i = 0; i < count; i++) {
-                    GekkoGameEvent* event = updates[i];
-                    switch (event->type) {
-                        default:
-                            break;
-
-                        case SaveEvent: {
-                            static struct SaveState save;
-                            save_state(&save);
-                            save_video_state(&(save.video));
-                            save_audio_state(&(save.audio));
-
-                            *(event->data.save.state_len) = sizeof(save);
-                            *(event->data.save.checksum) = check_state();
-                            SDL_memcpy(event->data.save.state, &save, sizeof(save));
-                            break;
-                        }
-
-                        case LoadEvent: {
-                            const struct SaveState* load = (struct SaveState*)(event->data.load.state);
-                            load_state(load);
-                            load_video_state(&(load->video));
-                            load_audio_state(&(load->audio));
-                            break;
-                        }
-
-                        case AdvanceEvent: {
-                            for (size_t j = 0; j < num_players; j++)
-                                inputs[j] = ((GameInput*)(event->data.adv.inputs))[j];
-                            tick_state(inputs);
-                            tick_video_state();
-                            tick_audio_state();
-                            break;
-                        }
-                    }
-                }
-
-                ticks -= frame_time;
             }
 
+            count = 0;
+            GekkoGameEvent** updates = gekko_update_session(session, &count);
+            for (int i = 0; i < count; i++) {
+                GekkoGameEvent* event = updates[i];
+                switch (event->type) {
+                    default:
+                        break;
+
+                    case SaveEvent: {
+                        static struct SaveState save;
+                        save_state(&save);
+                        save_video_state(&(save.video));
+                        save_audio_state(&(save.audio));
+
+                        *(event->data.save.state_len) = sizeof(save);
+                        *(event->data.save.checksum) = check_state();
+                        SDL_memcpy(event->data.save.state, &save, sizeof(save));
+                        break;
+                    }
+
+                    case LoadEvent: {
+                        const struct SaveState* load = (struct SaveState*)(event->data.load.state);
+                        load_state(load);
+                        load_video_state(&(load->video));
+                        load_audio_state(&(load->audio));
+                        break;
+                    }
+
+                    case AdvanceEvent: {
+                        for (size_t j = 0; j < num_players; j++)
+                            inputs[j] = ((GameInput*)(event->data.adv.inputs))[j];
+                        tick_state(inputs);
+                        tick_video_state();
+                        tick_audio_state();
+                        break;
+                    }
+                }
+            }
+
+            ticks -= frame_time;
             interp_end();
         }
 
@@ -258,35 +263,72 @@ teardown:
     gekko_destroy(session);
     session = NULL;
 
-    if (!success) {
-        stop_all_sounds();
-        play_sound("DCONNECT");
-        SDL_Event event;
+    if (!success)
+        show_error_screen(errmsg);
 
-        for (;;) {
-            while (SDL_PollEvent(&event)) {
-                switch (event.type) {
-                    default:
-                        break;
-                    case SDL_EVENT_QUIT:
-                        goto quit_fr;
-                }
-            }
-
-            video_update(errmsg);
-            audio_update();
-
-            const bool* keyboard = SDL_GetKeyboardState(NULL);
-            if (keyboard[SDL_SCANCODE_ESCAPE])
-                goto quit_fr;
-        }
-    }
-
-quit_fr:
     net_teardown();
     video_teardown();
     audio_teardown();
     SDL_Quit();
 
     return EXIT_SUCCESS;
+}
+
+static void show_error_screen(const char* errmsg) {
+    stop_all_sounds();
+    play_sound("DCONNECT");
+
+    for (;;) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                default:
+                    break;
+                case SDL_EVENT_QUIT:
+                    return;
+            }
+        }
+
+        video_update(errmsg);
+        audio_update();
+
+        if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_ESCAPE])
+            return;
+        SDL_Delay(1000 / TICKRATE);
+    }
+}
+
+static void show_intro() {
+    load_texture("Q_DISCL");
+    float duration = 3.f, rem = duration, trans = duration / 5.f;
+
+    for (;;) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                default:
+                    break;
+                case SDL_EVENT_QUIT:
+                    return;
+            }
+        }
+
+        float alpha = 1.0f;
+        if (rem >= duration - trans)
+            alpha = (duration - rem) / trans;
+        else if (rem <= trans)
+            alpha = rem / trans;
+        rem -= 1.0f / TICKRATE;
+
+        draw_sprite("Q_DISCL", XYZ(0.f, 0.f, 0.f), (bool[]){false, false}, 0.f, ALPHA((GLubyte)(255.f * alpha)));
+        video_update(NULL);
+        audio_update();
+
+        const bool* kbd = SDL_GetKeyboardState(NULL);
+        if (kbd[SDL_SCANCODE_ESCAPE] || kbd[SDL_SCANCODE_Z])
+            return;
+        if (rem < 0.f)
+            return;
+        SDL_Delay(1000 / TICKRATE);
+    }
 }
