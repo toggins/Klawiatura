@@ -58,11 +58,11 @@ static ObjectID respawn_player(PlayerID pid) {
     if (player == NULL || !(player->active) || state.clock == 0L || state.sequence.type != SEQ_NONE)
         return NULLOBJ;
 
-    if (player->lives <= 0L) {
+    if (player->lives < 0L) {
         if (view_player == pid)
             for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
                 struct GamePlayer* survivor = &(state.players[i]);
-                if (survivor->active && (survivor->lives > 0L || object_is_alive(survivor->object))) {
+                if (survivor->active && survivor->lives >= 0L) {
                     view_player = i;
                     break;
                 }
@@ -134,7 +134,8 @@ static void give_points(struct GameObject* item, PlayerID pid, int32_t points) {
         return;
 
     if (points < 0L) {
-        player->lives -= points;
+        const int32_t gimme = (int32_t)(player->lives) - points;
+        player->lives = SDL_min(gimme, 100L);
         if (pid == local_player)
             play_sound("1UP");
     } else
@@ -643,6 +644,7 @@ static void kill_player(struct GameObject* pawn) {
         struct GamePlayer* player =
             get_player((PlayerID)(dead->values[VAL_PLAYER_INDEX] = pawn->values[VAL_PLAYER_INDEX]));
         if (player != NULL) {
+            --(player->lives);
             player->power = POW_SMALL;
 
             struct GameObject* kpawn = get_object(player->kevin.object);
@@ -655,11 +657,13 @@ static void kill_player(struct GameObject* pawn) {
 
         Bool all_dead = true;
         if (state.sequence.type == SEQ_NONE && state.clock != 0L)
-            for (size_t i = 0; i < MAX_PLAYERS; i++)
-                if (state.players[i].lives > 0L) {
+            for (size_t i = 0; i < MAX_PLAYERS; i++) {
+                struct GamePlayer* survivor = &(state.players[i]);
+                if (survivor->active && survivor->lives >= 0L) {
                     all_dead = false;
                     break;
                 }
+            }
         if (all_dead) {
             state.sequence.type = SEQ_LOSE;
             state.sequence.time = 0L;
@@ -2984,7 +2988,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                                 if (state.flags & GF_HARDCORE)
                                     play_sound("HARDCORE");
                             } else {
-                                play_sound_at_object(object, (player->lives > 0L) ? "LOSE" : "DEAD");
+                                play_sound_at_object(object, (player->lives >= 0L) ? "LOSE" : "DEAD");
                             }
                             break;
                         }
@@ -2999,7 +3003,6 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                             if (pawn != NULL) {
                                 play_sound_at_object(pawn, "RESPAWN");
                                 pawn->values[VAL_PLAYER_FLASH] = 100L;
-                                --(player->lives);
                                 object->flags |= FLG_DESTROY;
                             }
                             break;
@@ -5433,7 +5436,7 @@ void draw_state_hud() {
     const struct GamePlayer* player = get_player(view_player);
     if (player != NULL) {
         static char str[16];
-        SDL_snprintf(str, sizeof(str), "MARIO * %u", player->lives);
+        SDL_snprintf(str, sizeof(str), "MARIO * %u", SDL_max(player->lives, 0));
         draw_text(FNT_HUD, FA_LEFT, str, (float[3]){32, 16, 0});
 
         SDL_snprintf(str, sizeof(str), "%u", player->score);

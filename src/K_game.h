@@ -405,9 +405,10 @@ struct GameState {
         fvec2 pos;
         fvec2 bounds[2];
 
-        uint8_t lives, coins;
+        int8_t lives;
+        uint8_t coins;
         uint32_t score;
-        int32_t power;
+        PlayerPowers power;
 
         ObjectID missiles[MAX_MISSILES];
         ObjectID sink[MAX_SINK];
