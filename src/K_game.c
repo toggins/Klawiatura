@@ -714,6 +714,8 @@ static struct GameObject* kill_enemy(struct GameObject* enemy, Bool kick) {
 
         case OBJ_PIRANHA_PLANT:
         case OBJ_ROTODISC: {
+            if (kick)
+                play_sound_at_object(enemy, "KICK");
             enemy->flags |= FLG_DESTROY;
             return NULL;
         }
@@ -804,7 +806,7 @@ static void player_starman(struct GameObject* pawn, struct GameObject* enemy) {
 static void shell_attack(struct GameObject* shell, struct GameObject* enemy) {
     const PlayerID pid = get_owner_id((ObjectID)(shell->values[VAL_SHELL_OWNER]));
 
-    if ((enemy->type == OBJ_KOOPA_SHELL || enemy->type == OBJ_BUZZY_SHELL)) {
+    if ((enemy->type == OBJ_KOOPA_SHELL || enemy->type == OBJ_BUZZY_SHELL) && (enemy->flags & FLG_SHELL_ACTIVE)) {
         give_points(shell, pid, 100L);
         kill_enemy(shell, true);
         give_points(enemy, pid, 100L);
@@ -1349,7 +1351,7 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
                         give_points(self, pid, 100L);
                         struct GameObject* koopa = get_object(create_object(OBJ_KOOPA, self->pos));
                         if (koopa != NULL)
-                            koopa->flags |= (self->flags & (FLG_X_FLIP | FLG_KOOPA_RED));
+                            koopa->flags |= ((self->flags & (FLG_X_FLIP | FLG_KOOPA_RED)) | FLG_KOOPA_MAYDAY);
 
                         self->flags |= FLG_DESTROY;
                     } else {
@@ -1403,6 +1405,9 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
                     break;
 
                 case OBJ_PLAYER: {
+                    if (self->flags & FLG_KOOPA_MAYDAY)
+                        break;
+
                     if (other->values[VAL_PLAYER_STARMAN] > 0L) {
                         player_starman(other, self);
                         break;
@@ -3784,6 +3789,8 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     const fix16_t spd = object->values[VAL_X_SPEED];
                     object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00004A3D);
                     displace_object(oid, FfInt(10L), false);
+
+                    object->flags &= ~FLG_KOOPA_MAYDAY;
                     bump_object(oid);
 
                     if (object->values[VAL_ENEMY_TURN] > 0L)
@@ -3816,7 +3823,6 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
 
                     if (below_frame(object))
                         object->flags |= FLG_DESTROY;
-
                     break;
                 }
 

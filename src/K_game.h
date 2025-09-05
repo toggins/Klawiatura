@@ -327,6 +327,7 @@ enum ObjectFlags {
     FLG_ENEMY_ACTIVE = 1 << 5,
 
     FLG_KOOPA_RED = 1 << 6,
+    FLG_KOOPA_MAYDAY = 1 << 7,
     FLG_PARAKOOPA_START = 1 << 7,
     FLG_SHELL_ACTIVE = 1 << 7,
 
