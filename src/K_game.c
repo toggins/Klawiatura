@@ -2388,7 +2388,7 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
                 break;
             }
 
-            case 3: {
+            case 3: { // Object
                 GameObjectType type = *((GameObjectType*)buf);
                 buf += sizeof(GameObjectType);
 
@@ -2422,6 +2422,8 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
                 object->flags |= *((ObjectFlags*)buf);
                 buf += sizeof(ObjectFlags);
 
+                if (object->type == OBJ_HIDDEN_BLOCK && (state.flags & GF_REPLAY))
+                    object->flags |= FLG_DESTROY;
                 break;
             }
         }

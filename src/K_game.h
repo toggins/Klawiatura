@@ -62,6 +62,8 @@ enum GameFlags {
     GF_FUNNY = 1 << 6,
     GF_LOST = 1 << 7,
     GF_KEVIN = 1 << 8,
+    GF_AMBUSH = 1 << 9,
+    GF_REPLAY = 1 << 10,
 };
 typedef uint16_t GameFlags;
 
@@ -124,7 +126,7 @@ enum GameObjectType {
     OBJ_SPIKE,
     OBJ_PIRANHA_PLANT,
     OBJ_BRO,
-    OBJ_BRO_HAMMER,   // UNUSED
+    OBJ_CLOUD_FACE,
     OBJ_BRO_FIREBALL, // UNUSED
     OBJ_MISSILE_SILVER_HAMMER,
     OBJ_BRO_LAYER,
