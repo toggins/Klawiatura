@@ -145,114 +145,116 @@ int main(int argc, char** argv) {
         gekko_network_poll(session);
         net_update(session);
 
-        if (ticks >= frame_time) {
-            interp_start();
-            while (ticks >= frame_time) {
-                GameInput input = GI_NONE;
-                const bool* keyboard = SDL_GetKeyboardState(NULL);
-                if (keyboard[SDL_SCANCODE_ESCAPE])
-                    goto teardown;
-                if (keyboard[SDL_SCANCODE_UP])
-                    input |= GI_UP;
-                if (keyboard[SDL_SCANCODE_LEFT])
-                    input |= GI_LEFT;
-                if (keyboard[SDL_SCANCODE_DOWN])
-                    input |= GI_DOWN;
-                if (keyboard[SDL_SCANCODE_RIGHT])
-                    input |= GI_RIGHT;
-                if (keyboard[SDL_SCANCODE_Z])
-                    input |= GI_JUMP;
-                if (keyboard[SDL_SCANCODE_X])
-                    input |= (GI_RUN | GI_FIRE);
-                gekko_add_local_input(session, local_player, &input);
+        if (ticks < frame_time)
+            goto skip_interp;
 
-                int count = 0;
-                GekkoSessionEvent** events = gekko_session_events(session, &count);
-                for (int i = 0; i < count; i++) {
-                    GekkoSessionEvent* event = events[i];
-                    switch (event->type) {
-                        default:
-                            break;
+        interp_start();
+        while (ticks >= frame_time) {
+            GameInput input = GI_NONE;
+            const bool* keyboard = SDL_GetKeyboardState(NULL);
+            if (keyboard[SDL_SCANCODE_ESCAPE])
+                goto teardown;
+            if (keyboard[SDL_SCANCODE_UP])
+                input |= GI_UP;
+            if (keyboard[SDL_SCANCODE_LEFT])
+                input |= GI_LEFT;
+            if (keyboard[SDL_SCANCODE_DOWN])
+                input |= GI_DOWN;
+            if (keyboard[SDL_SCANCODE_RIGHT])
+                input |= GI_RIGHT;
+            if (keyboard[SDL_SCANCODE_Z])
+                input |= GI_JUMP;
+            if (keyboard[SDL_SCANCODE_X])
+                input |= (GI_RUN | GI_FIRE);
+            gekko_add_local_input(session, local_player, &input);
 
-                        case DesyncDetected: {
-                            dump_state();
-                            struct Desynced desync = event->data.desynced;
-                            INFO(
-                                "OOPS: Out of sync with player %d (tick %d, l %u != r %u)", desync.remote_handle,
-                                desync.frame, desync.local_checksum, desync.remote_checksum
-                            );
-                            SDL_snprintf(
-                                errmsg, sizeof(errmsg),
-                                "Failed to sync with player %d.\nThe game has now stopped and dumped its state.",
-                                desync.remote_handle
-                            );
-                            success = false;
-                            goto teardown;
-                        }
+            int count = 0;
+            GekkoSessionEvent** events = gekko_session_events(session, &count);
+            for (int i = 0; i < count; i++) {
+                GekkoSessionEvent* event = events[i];
+                switch (event->type) {
+                    default:
+                        break;
 
-                        case PlayerConnected: {
-                            struct Connected connect = event->data.connected;
-                            INFO("Player %i connected", connect.handle);
-                            break;
-                        }
+                    case DesyncDetected: {
+                        dump_state();
+                        struct Desynced desync = event->data.desynced;
+                        INFO(
+                            "OOPS: Out of sync with player %d (tick %d, l %u != r %u)", desync.remote_handle,
+                            desync.frame, desync.local_checksum, desync.remote_checksum
+                        );
+                        SDL_snprintf(
+                            errmsg, sizeof(errmsg),
+                            "Failed to sync with player %d.\nThe game has now stopped and dumped its state.",
+                            desync.remote_handle
+                        );
+                        success = false;
+                        goto teardown;
+                    }
 
-                        case PlayerDisconnected: {
-                            struct Disconnected disconnect = event->data.disconnected;
-                            INFO("OOPS: Player %i disconnected", disconnect.handle);
-                            SDL_snprintf(
-                                errmsg, sizeof(errmsg), "Lost connection to player %i.\nThe game has now stopped.",
-                                disconnect.handle
-                            );
-                            success = false;
-                            goto teardown;
-                        }
+                    case PlayerConnected: {
+                        struct Connected connect = event->data.connected;
+                        INFO("Player %i connected", connect.handle);
+                        break;
+                    }
+
+                    case PlayerDisconnected: {
+                        struct Disconnected disconnect = event->data.disconnected;
+                        INFO("OOPS: Player %i disconnected", disconnect.handle);
+                        SDL_snprintf(
+                            errmsg, sizeof(errmsg), "Lost connection to player %i.\nThe game has now stopped.",
+                            disconnect.handle
+                        );
+                        success = false;
+                        goto teardown;
                     }
                 }
-
-                count = 0;
-                GekkoGameEvent** updates = gekko_update_session(session, &count);
-                for (int i = 0; i < count; i++) {
-                    GekkoGameEvent* event = updates[i];
-                    switch (event->type) {
-                        default:
-                            break;
-
-                        case SaveEvent: {
-                            static struct SaveState save;
-                            save_state(&save);
-                            save_video_state(&(save.video));
-                            save_audio_state(&(save.audio));
-
-                            *(event->data.save.state_len) = sizeof(save);
-                            *(event->data.save.checksum) = check_state();
-                            SDL_memcpy(event->data.save.state, &save, sizeof(save));
-                            break;
-                        }
-
-                        case LoadEvent: {
-                            const struct SaveState* load = (struct SaveState*)(event->data.load.state);
-                            load_state(load);
-                            load_video_state(&(load->video));
-                            load_audio_state(&(load->audio));
-                            break;
-                        }
-
-                        case AdvanceEvent: {
-                            for (size_t j = 0; j < num_players; j++)
-                                inputs[j] = ((GameInput*)(event->data.adv.inputs))[j];
-                            tick_state(inputs);
-                            tick_video_state();
-                            tick_audio_state();
-                            break;
-                        }
-                    }
-                }
-
-                ticks -= frame_time;
             }
-            interp_end();
-        }
 
+            count = 0;
+            GekkoGameEvent** updates = gekko_update_session(session, &count);
+            for (int i = 0; i < count; i++) {
+                GekkoGameEvent* event = updates[i];
+                switch (event->type) {
+                    default:
+                        break;
+
+                    case SaveEvent: {
+                        static struct SaveState save;
+                        save_state(&save);
+                        save_video_state(&(save.video));
+                        save_audio_state(&(save.audio));
+
+                        *(event->data.save.state_len) = sizeof(save);
+                        *(event->data.save.checksum) = check_state();
+                        SDL_memcpy(event->data.save.state, &save, sizeof(save));
+                        break;
+                    }
+
+                    case LoadEvent: {
+                        const struct SaveState* load = (struct SaveState*)(event->data.load.state);
+                        load_state(load);
+                        load_video_state(&(load->video));
+                        load_audio_state(&(load->audio));
+                        break;
+                    }
+
+                    case AdvanceEvent: {
+                        for (size_t j = 0; j < num_players; j++)
+                            inputs[j] = ((GameInput*)(event->data.adv.inputs))[j];
+                        tick_state(inputs);
+                        tick_video_state();
+                        tick_audio_state();
+                        break;
+                    }
+                }
+            }
+
+            ticks -= frame_time;
+        }
+        interp_end();
+
+    skip_interp:
         interp_update(ticks);
         video_update(NULL);
         audio_update();
