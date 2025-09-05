@@ -206,7 +206,7 @@ static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS] = {
     [NM_LOBBY] =
         {
             {"Lobby: FMT", noop},
-            {"Waiting for players", noop},
+            {"Waiting for players (FMT)", noop},
         },
     [NM_JOIN] = {},
 };
@@ -376,6 +376,7 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
         if (lobby_id != NULL)
             SDL_snprintf(MENUS[NM_LOBBY][0].display, MENU_DISPLAY_SIZE, "Lobby: %s", lobby_id);
 
+        bool starting = false;
         switch (NutPunch_Update()) {
             case NP_Status_Error:
                 FATAL("NutPunch_Query fail: %s", NutPunch_GetLastError());
@@ -399,7 +400,7 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
 
                 if (*num_players && NutPunch_PeerCount() >= *num_players) {
                     INFO("%d player start!\n", *num_players);
-                    return;
+                    starting = true;
                 }
 
                 break;
@@ -423,6 +424,12 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
         SDL_memcpy(MENUS[NM_SINGLE][1].display, fmt, sizeof(fmt));
         SDL_memcpy(MENUS[NM_HOST][2].display, fmt, sizeof(fmt));
 
+        SDL_snprintf(
+            fmt, sizeof(fmt), "%s (%i/%i)", starting ? "Ready!" : "Waiting for players", NutPunch_PeerCount(),
+            *num_players
+        );
+        SDL_memcpy(MENUS[NM_LOBBY][1].display, fmt, sizeof(fmt));
+
         for (int i = 0; i < num_options(); i++)
             draw_text(FNT_MAIN, FA_LEFT, MENUS[menu][i].display, (float[3]){40, (float)(16 + 25 * i), 0});
         if (menu != NM_LOBBY && num_options() > 1)
@@ -435,6 +442,8 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
         video_update(NULL);
         audio_update();
 
+        if (starting)
+            return;
         SDL_Delay(1000 / TICKRATE);
     }
 }
