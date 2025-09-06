@@ -264,6 +264,19 @@ void stop_all_sounds() {
     FMOD_ChannelGroup_Stop(music_group);
 }
 
+void play_ui_track(const char* index, bool loop) {
+    const struct Track* mus = get_track(index);
+    if (mus == NULL) {
+        INFO("Unknown track \"%s\"", index);
+        return;
+    }
+
+    FMOD_CHANNEL* channel = NULL;
+    FMOD_System_PlaySound(speaker, mus->stream, music_group, true, &channel);
+    FMOD_Channel_SetMode(channel, (loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
+    FMOD_Channel_SetPaused(channel, false);
+}
+
 void play_track(enum TrackSlots slot, const char* index, bool loop) {
     const struct Track* mus = get_track(index);
     if (mus == NULL) {
@@ -311,4 +324,8 @@ void stop_track(enum TrackSlots slot) {
             }
         state.top_track = i;
     }
+}
+
+void stop_all_tracks() {
+    FMOD_ChannelGroup_Stop(music_group);
 }

@@ -52,6 +52,7 @@ static char cache_level[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
 GekkoNetAdapter* net_init(const char* ip, PlayerID* pcount, char* init_level, GameFlags* flags) {
     SDL_memcpy(server_ip, ip, SDL_strnlen(ip, sizeof(server_ip)));
     level = init_level;
+    SDL_strlcpy(cache_level, init_level, sizeof(cache_level));
     num_players = pcount;
     start_flags = flags;
 
@@ -149,22 +150,24 @@ static void toggle_kevin() {
         *start_flags &= ~GF_KEVIN;
     else
         *start_flags |= GF_KEVIN;
+
+    stop_all_tracks();
+    play_ui_track((*start_flags & GF_KEVIN) ? "PREDATOR" : "TITLE", true);
 }
 
 static void play_single() {
     if (find_file(file_pattern("data/levels/%s.kla", level), NULL) == NULL) {
-        load_sound("BUMP");
         play_sound("BUMP");
         return;
     }
 
+    play_sound("ENTER");
     *num_players = 1;
     menu_running = 0;
 }
 
 static void host_multi() {
     if (find_file(file_pattern("data/levels/%s.kla", level), NULL) == NULL) {
-        load_sound("BUMP");
         play_sound("BUMP");
         return;
     }
@@ -366,8 +369,14 @@ static bool is_ip_address(const char* str) {
 bool net_wait() {
     *num_players = 0;
 
+    load_texture("Q_MAIN");
     load_sound("SWITCH");
     load_sound("SELECT");
+    load_sound("BUMP");
+    load_sound("ENTER");
+    load_track("TITLE");
+    load_track("PREDATOR");
+    play_ui_track((*start_flags & GF_KEVIN) ? "PREDATOR" : "TITLE", true);
 
     menu_running = 1;
     while (menu_running > 0) {
@@ -441,25 +450,29 @@ bool net_wait() {
         );
         SDL_memcpy(MENUS[NM_LOBBY][1].display, fmt, sizeof(fmt));
 
-        const float z = -1000.f;
-        draw_rectangle("", (float[2][2]){0.f, 0.f, 1024.f, 1024.f}, z - 1.f, BLACK); // TODO: get a REAL background
+        video_update_custom_start();
+        draw_rectangle("Q_MAIN", (float[2][2]){{0, 0}, {SCREEN_WIDTH, SCREEN_HEIGHT}}, 1, WHITE);
         for (int i = 0; i < num_options(); i++)
-            draw_text(FNT_MAIN, FA_LEFT, MENUS[menu][i].display, (float[3]){40, (float)(16 + 25 * i), z});
+            draw_text(FNT_MAIN, FA_LEFT, MENUS[menu][i].display, (float[3]){40, (float)(16 + 25 * i), 0});
         if (menu != NM_LOBBY && num_options() > 1)
-            draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), z});
+            draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
         if (menu == NM_JOIN && !is_ip_address(server_ip)) {
             SDL_snprintf(fmt, sizeof(fmt), "Server: %s", server_ip);
-            draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){0, SCREEN_HEIGHT - string_height(FNT_MAIN, fmt), z});
+            draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){0, SCREEN_HEIGHT - string_height(FNT_MAIN, fmt), 0});
         }
+        video_update_custom_end();
 
-        video_update(NULL);
         audio_update();
 
-        if (starting)
+        if (starting) {
+            stop_all_tracks();
+            set_menu(NM_MULTI);
             return true;
+        }
         SDL_Delay(1000 / TICKRATE);
     }
 
+    stop_all_tracks();
     return menu_running >= 0;
 }
 

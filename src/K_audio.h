@@ -66,5 +66,7 @@ void play_sound(const char*);
 void play_sound_at(const char*, float, float);
 void stop_all_sounds();
 
+void play_ui_track(const char*, bool);
 void play_track(enum TrackSlots, const char*, bool);
 void stop_track(enum TrackSlots);
+void stop_all_tracks();

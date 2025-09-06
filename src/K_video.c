@@ -1042,17 +1042,7 @@ void video_init(bool bypass_shader) {
 }
 
 void video_update(const char* errmsg) {
-    draw_time = SDL_GetTicks();
-
-    glEnable(GL_DEPTH_TEST);
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glm_ortho(
-        camera[0] - HALF_SCREEN_WIDTH, camera[0] + HALF_SCREEN_WIDTH, camera[1] + HALF_SCREEN_HEIGHT,
-        camera[1] - HALF_SCREEN_HEIGHT, -1000, 1000, mvp
-    );
-    glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)mvp);
+    video_update_custom_start();
 
     struct TileBatch* tilemap = valid_tiles;
     if (tilemap != NULL) {
@@ -1089,8 +1079,25 @@ void video_update(const char* errmsg) {
         draw_text(FNT_MAIN, FA_LEFT, errmsg, (float[3]){16, 16, 0});
     }
 
-    submit_batch();
+    video_update_custom_end();
+}
 
+void video_update_custom_start() {
+    draw_time = SDL_GetTicks();
+
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glm_ortho(
+        camera[0] - HALF_SCREEN_WIDTH, camera[0] + HALF_SCREEN_WIDTH, camera[1] + HALF_SCREEN_HEIGHT,
+        camera[1] - HALF_SCREEN_HEIGHT, -1000, 1000, mvp
+    );
+    glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)mvp);
+}
+
+void video_update_custom_end() {
+    submit_batch();
     SDL_GL_SwapWindow(window);
 }
 
