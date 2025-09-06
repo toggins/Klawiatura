@@ -322,7 +322,7 @@ void stop_track(enum TrackSlots slot) {
     }
 
     if (state.top_track == slot && slot > 0) {
-        enum TrackSlots i = slot - 1;
+        int i = slot - 1;
         while (i >= 0) {
             if (music_channels[i] != NULL) {
                 FMOD_Channel_SetVolume(music_channels[i], 1);
