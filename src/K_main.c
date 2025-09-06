@@ -25,80 +25,37 @@
 #include "K_net.h"
 #include "K_video.h"
 
-static void show_intro(), show_error_screen(const char*);
+static bool bypass_shader = false, play_intro = true;
+static char* server_ip = NUTPUNCH_DEFAULT_SERVER;
+static char level[NUTPUNCH_FIELD_DATA_MAX + 1] = "TEST";
+static bool quickstart = false;
+static GameFlags start_flags = 0;
 
-int main(int argc, char** argv) {
-    INFO("==========[KLAWIATURA]==========");
-    INFO("      MARIO FOREVER ONLINE      ");
-    INFO("================================");
-    INFO("                                ");
-    INFO("         ! DISCLAIMER !         ");
-    INFO("   This is a free, open-source  ");
-    INFO("project not created for any sort");
-    INFO("           of profit.           ");
-    INFO(" All assets belong to Nintendo. ");
-    INFO("We do not condone any commercial");
-    INFO("      use of this project.      ");
-    INFO("                                ");
-
-    bool bypass_shader = false, play_intro = true;
-    char* server_ip = NUTPUNCH_DEFAULT_SERVER;
-    char level[NUTPUNCH_FIELD_DATA_MAX + 1] = "TEST";
-    bool quickstart = false;
-    GameFlags start_flags = 0;
-
+static void parse_args(int argc, char* argv[]) {
     for (size_t i = 0; i < argc; i++) {
-        if (SDL_strcmp(argv[i], "-bypass_shader") == 0) {
+        if (SDL_strcmp(argv[i], "-bypass_shader") == 0)
             bypass_shader = true;
-        } else if (SDL_strcmp(argv[i], "-ip") == 0) {
+        else if (SDL_strcmp(argv[i], "-ip") == 0)
             server_ip = argv[++i];
-        } else if (SDL_strcmp(argv[i], "-level") == 0) {
+        else if (SDL_strcmp(argv[i], "-level") == 0) {
             SDL_strlcpy(level, argv[++i], sizeof(level));
             quickstart = true;
-        } else if (SDL_strcmp(argv[i], "-kevin") == 0) {
+        } else if (SDL_strcmp(argv[i], "-kevin") == 0)
             start_flags |= GF_KEVIN;
-        } else if (!SDL_strcmp(argv[i], "-skip_intro")) {
+        else if (!SDL_strcmp(argv[i], "-skip_intro"))
             play_intro = false;
-        }
     }
+}
 
-    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
-        FATAL("SDL_Init fail: %s", SDL_GetError());
-    video_init(bypass_shader);
-    audio_init();
+static void show_intro(), show_error_screen(const char*);
 
-    if (play_intro && !quickstart)
-        show_intro();
+static GekkoSession* session = NULL;
+static PlayerID num_players = 1, local_player = 0;
+static GekkoNetAdapter* adapter = NULL;
+static GekkoConfig config = {0};
+static GameInput inputs[MAX_PLAYERS] = {GI_NONE};
 
-    GekkoSession* session = NULL;
-    if (!gekko_create(&session))
-        FATAL("gekko_create fail");
-
-    PlayerID num_players = 1;
-
-    GekkoNetAdapter* adapter = net_init(server_ip);
-
-    load_font(FNT_MAIN);
-    if (!quickstart)
-        net_wait(&num_players, level, &start_flags);
-
-    if ((num_players <= 0 || num_players > MAX_PLAYERS))
-        FATAL("Don't think I didn't see you trying to set invalid player indices!! I'll kick your ass!!");
-    if (num_players > 1) {
-        load_sound("CONNECT");
-        play_sound("CONNECT");
-        load_sound("DCONNECT");
-    }
-
-    if (start_flags & GF_KEVIN) {
-        load_sound("KEVINON");
-        play_sound("KEVINON");
-        INFO("\n==================================");
-        INFO("Kevin Mode activated. Good luck...");
-        INFO("==================================\n");
-    }
-
-    GekkoConfig config = {0};
+static void start_gekko() {
     config.num_players = num_players;
     config.max_spectators = 0;
     config.input_prediction_window = 8;
@@ -107,16 +64,16 @@ int main(int argc, char** argv) {
     config.desync_detection = true;
     gekko_start(session, &config);
     gekko_net_adapter_set(session, adapter);
-    PlayerID local_player = net_fill(session);
+    local_player = net_fill(session);
     if (num_players > 1)
         gekko_set_local_delay(session, local_player, 2);
 
-    GameInput inputs[MAX_PLAYERS] = {GI_NONE};
+    SDL_memset(inputs, GI_NONE, sizeof(inputs));
     start_state(num_players, local_player, level, start_flags);
+}
 
-    bool success = true;
-    char errmsg[1024] = "No errors detected.";
-
+static char errmsg[1024] = "No errors detected.";
+static bool mainloop() {
     uint64_t last_time = SDL_GetTicks();
     float ticks = 0;
 
@@ -131,7 +88,7 @@ int main(int argc, char** argv) {
                     last_time = SDL_GetTicks();
                     break;
                 case SDL_EVENT_QUIT:
-                    goto teardown;
+                    return true;
             }
         }
 
@@ -153,7 +110,7 @@ int main(int argc, char** argv) {
             GameInput input = GI_NONE;
             const bool* keyboard = SDL_GetKeyboardState(NULL);
             if (keyboard[SDL_SCANCODE_ESCAPE])
-                goto teardown;
+                return true;
             if (keyboard[SDL_SCANCODE_UP])
                 input |= GI_UP;
             if (keyboard[SDL_SCANCODE_LEFT])
@@ -188,8 +145,7 @@ int main(int argc, char** argv) {
                             "Failed to sync with player %d.\nThe game has now stopped and dumped its state.",
                             desync.remote_handle
                         );
-                        success = false;
-                        goto teardown;
+                        return false;
                     }
 
                     case PlayerConnected: {
@@ -205,8 +161,7 @@ int main(int argc, char** argv) {
                             errmsg, sizeof(errmsg), "Lost connection to player %i.\nThe game has now stopped.",
                             disconnect.handle
                         );
-                        success = false;
-                        goto teardown;
+                        return false;
                     }
                 }
             }
@@ -259,8 +214,58 @@ int main(int argc, char** argv) {
         video_update(NULL);
         audio_update();
     }
+}
 
-teardown:
+int main(int argc, char* argv[]) {
+    INFO("==========[KLAWIATURA]==========");
+    INFO("      MARIO FOREVER ONLINE      ");
+    INFO("================================");
+    INFO("                                ");
+    INFO("         ! DISCLAIMER !         ");
+    INFO("   This is a free, open-source  ");
+    INFO("project not created for any sort");
+    INFO("           of profit.           ");
+    INFO(" All assets belong to Nintendo. ");
+    INFO("We do not condone any commercial");
+    INFO("      use of this project.      ");
+    INFO("                                ");
+    parse_args(argc, argv);
+
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
+        FATAL("SDL_Init fail: %s", SDL_GetError());
+    video_init(bypass_shader);
+    audio_init();
+
+    if (play_intro && !quickstart)
+        show_intro();
+
+    if (!gekko_create(&session))
+        FATAL("gekko_create fail");
+    adapter = net_init(server_ip);
+
+    load_font(FNT_MAIN);
+    if (!quickstart)
+        net_wait(&num_players, level, &start_flags);
+
+    if ((num_players <= 0 || num_players > MAX_PLAYERS))
+        FATAL("Don't think I didn't see you trying to set invalid player indices!! I'll kick your ass!!");
+    if (num_players > 1) {
+        load_sound("CONNECT");
+        play_sound("CONNECT");
+        load_sound("DCONNECT");
+    }
+
+    if (start_flags & GF_KEVIN) {
+        load_sound("KEVINON");
+        play_sound("KEVINON");
+        INFO("\n==================================");
+        INFO("Kevin Mode activated. Good luck...");
+        INFO("==================================\n");
+    }
+
+    start_gekko();
+    bool success = mainloop();
+
     NutPunch_Disconnect();
     gekko_destroy(session);
     session = NULL;
