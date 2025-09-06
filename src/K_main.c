@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     INFO("==========[KLAWIATURA]==========");
     INFO("      MARIO FOREVER ONLINE      ");
     INFO("================================");
-    INFO("");
+    INFO("                                ");
     INFO("         ! DISCLAIMER !         ");
     INFO("   This is a free, open-source  ");
     INFO("project not created for any sort");
@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
     INFO(" All assets belong to Nintendo. ");
     INFO("We do not condone any commercial");
     INFO("      use of this project.      ");
-    INFO("");
+    INFO("                                ");
 
     bool bypass_shader = false, play_intro = true;
     char* server_ip = NUTPUNCH_DEFAULT_SERVER;
