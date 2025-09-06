@@ -1525,6 +1525,13 @@ GLfloat string_height(enum FontIndices index, const char* str) {
 }
 
 void draw_text(enum FontIndices index, enum FontAlignment align, const char* str, const float pos[3]) {
+    draw_text_ext(index, align, str, pos, 1, WHITE);
+}
+
+void draw_text_ext(
+    enum FontIndices index, enum FontAlignment align, const char* str, const float pos[3], float scale,
+    const GLubyte color[4]
+) {
     const struct Font* font = &(fonts[index]);
 
     const struct Texture* texture = font->texture;
@@ -1540,10 +1547,10 @@ void draw_text(enum FontIndices index, enum FontAlignment align, const char* str
         default:
             break;
         case FA_CENTER:
-            sx -= string_width(index, str) * 0.5f;
+            sx -= string_width(index, str) * 0.5f * scale;
             break;
         case FA_RIGHT:
-            sx -= string_width(index, str);
+            sx -= string_width(index, str) * scale;
             break;
     }
 
@@ -1557,7 +1564,7 @@ void draw_text(enum FontIndices index, enum FontAlignment align, const char* str
             continue;
         if (gid == '\n') {
             cx = sx;
-            cy += font->line_height;
+            cy += font->line_height * scale;
             continue;
         }
         if (SDL_isspace((int)gid))
@@ -1569,18 +1576,18 @@ void draw_text(enum FontIndices index, enum FontAlignment align, const char* str
         const struct Glyph* glyph = &(font->glyphs[gid]);
         const GLfloat x1 = cx;
         const GLfloat y1 = cy;
-        const GLfloat x2 = x1 + glyph->size[0];
-        const GLfloat y2 = y1 + glyph->size[1];
-        batch_vertex(x1, y2, pos[2], 255, 255, 255, 255, glyph->uvs[0], glyph->uvs[3]);
-        batch_vertex(x1, y1, pos[2], 255, 255, 255, 255, glyph->uvs[0], glyph->uvs[1]);
-        batch_vertex(x2, y1, pos[2], 255, 255, 255, 255, glyph->uvs[2], glyph->uvs[1]);
-        batch_vertex(x2, y1, pos[2], 255, 255, 255, 255, glyph->uvs[2], glyph->uvs[1]);
-        batch_vertex(x2, y2, pos[2], 255, 255, 255, 255, glyph->uvs[2], glyph->uvs[3]);
-        batch_vertex(x1, y2, pos[2], 255, 255, 255, 255, glyph->uvs[0], glyph->uvs[3]);
+        const GLfloat x2 = x1 + (glyph->size[0] * scale);
+        const GLfloat y2 = y1 + (glyph->size[1] * scale);
+        batch_vertex(x1, y2, pos[2], color[0], color[1], color[2], color[3], glyph->uvs[0], glyph->uvs[3]);
+        batch_vertex(x1, y1, pos[2], color[0], color[1], color[2], color[3], glyph->uvs[0], glyph->uvs[1]);
+        batch_vertex(x2, y1, pos[2], color[0], color[1], color[2], color[3], glyph->uvs[2], glyph->uvs[1]);
+        batch_vertex(x2, y1, pos[2], color[0], color[1], color[2], color[3], glyph->uvs[2], glyph->uvs[1]);
+        batch_vertex(x2, y2, pos[2], color[0], color[1], color[2], color[3], glyph->uvs[2], glyph->uvs[3]);
+        batch_vertex(x1, y2, pos[2], color[0], color[1], color[2], color[3], glyph->uvs[0], glyph->uvs[3]);
 
-        cx += glyph->size[0];
+        cx += glyph->size[0] * scale;
         if (bytes > 0)
-            cx += font->spacing;
+            cx += font->spacing * scale;
     }
 }
 

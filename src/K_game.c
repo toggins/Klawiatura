@@ -1,3 +1,5 @@
+#include <nutpunch.h>
+
 #include "K_game.h"
 #include "K_audio.h"
 #include "K_log.h"
@@ -4378,10 +4380,11 @@ void draw_state() {
                     if (object->values[VAL_PLAYER_FLASH] > 0L && (state.time % 2))
                         break;
 
+                    const bool local = object->values[VAL_PLAYER_INDEX] == local_player;
                     const struct GamePlayer* player = get_player((PlayerID)(object->values[VAL_PLAYER_INDEX]));
                     const char* tex =
                         get_player_texture(player == NULL ? POW_SMALL : player->power, get_player_frame(object));
-                    const GLubyte a = (object->values[VAL_PLAYER_INDEX] != local_player) ? 190 : 255;
+                    const GLubyte a = local ? 255 : 190;
                     draw_object(oid, tex, 0, ALPHA(a));
 
                     if (object->values[VAL_PLAYER_STARMAN] > 0L) {
@@ -4424,6 +4427,21 @@ void draw_state() {
                         draw_object(oid, tex, 0, RGBA(r, g, b, a));
                         set_batch_logic(GL_COPY);
                         set_batch_stencil(0);
+                    }
+
+                    if (!local && NutPunch_PeerAlive(object->values[VAL_PLAYER_INDEX])) {
+                        int size;
+                        const char* name;
+                        name = NutPunch_PeerGet(object->values[VAL_PLAYER_INDEX], "NAME", &size);
+                        if (size <= 0 || size > NUTPUNCH_FIELD_DATA_MAX)
+                            break;
+
+                        draw_text_ext(
+                            FNT_MAIN, FA_CENTER, name,
+                            (float[3]){FtInt(interp[oid].pos[0]),
+                                       FtInt(Fadd(interp[oid].pos[1], object->bbox[0][1])) - 32, -1000},
+                            0.75f, ALPHA(160)
+                        );
                     }
                     break;
                 }

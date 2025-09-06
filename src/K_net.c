@@ -45,12 +45,22 @@ static char server_ip[512] = {0};
 static PlayerID* num_players = NULL; // moved this into a global for use below...
 static GameFlags* start_flags = NULL;
 
-static bool typing_level = false;
+static enum TypeScopes {
+    TYPE_NONE = -1,
+    TYPE_NAME = 0,
+    TYPE_SKIN = 1,
+    TYPE_LEVEL = 2,
+} typing = TYPE_NONE;
+
 static char* level = NULL;
 static char cache_level[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
+static char* name = NULL;
+static char cache_name[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
 
-GekkoNetAdapter* net_init(const char* ip, PlayerID* pcount, char* init_level, GameFlags* flags) {
-    SDL_memcpy(server_ip, ip, SDL_strnlen(ip, sizeof(server_ip)));
+GekkoNetAdapter* net_init(const char* ip, char* init_name, PlayerID* pcount, char* init_level, GameFlags* flags) {
+    SDL_strlcpy(server_ip, ip, sizeof(server_ip));
+    name = init_name;
+    SDL_strlcpy(cache_name, init_name, sizeof(cache_name));
     level = init_level;
     SDL_strlcpy(cache_level, init_level, sizeof(cache_level));
     num_players = pcount;
@@ -106,6 +116,28 @@ static void set_menu(enum NetMenu value) {
     menu = value;
 }
 
+static char* current_input() {
+    switch (typing) {
+        default:
+            return NULL;
+        case TYPE_NAME:
+            return name;
+        case TYPE_LEVEL:
+            return level;
+    }
+}
+
+static char* current_cache_input() {
+    switch (typing) {
+        default:
+            return NULL;
+        case TYPE_NAME:
+            return cache_name;
+        case TYPE_LEVEL:
+            return cache_level;
+    }
+}
+
 struct MenuOption {
     char display[MENU_DISPLAY_SIZE];
     void (*handle)();
@@ -135,6 +167,10 @@ static void fucking_exit() {
     menu_running = -1;
 }
 
+static void type_name() {
+    typing = TYPE_NAME;
+}
+
 static void toggle_pcount() {
     ++(*num_players);
     if (*num_players > MAX_PLAYERS)
@@ -142,7 +178,7 @@ static void toggle_pcount() {
 }
 
 static void type_level() {
-    typing_level = true;
+    typing = TYPE_LEVEL;
 }
 
 static void toggle_kevin() {
@@ -203,6 +239,7 @@ static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS] = {
             {"Singleplayer", go_single},
             {"Multiplayer", go_multi},
             {"Exit", fucking_exit},
+            {"Name: FMT", type_name},
         },
     [NM_SINGLE] =
         {
@@ -240,7 +277,7 @@ static int num_options() {
 static void handle_menu_input(SDL_Scancode key) {
     switch (key) {
         case SDL_SCANCODE_UP: {
-            if (typing_level || menu == NM_LOBBY || num_options() <= 1)
+            if (typing != TYPE_NONE || menu == NM_LOBBY || num_options() <= 1)
                 break;
 
             if (option[menu] <= 0)
@@ -253,29 +290,19 @@ static void handle_menu_input(SDL_Scancode key) {
         }
 
         case SDL_SCANCODE_DOWN: {
-            if (typing_level || menu == NM_LOBBY || num_options() <= 1)
+            if (typing != TYPE_NONE || menu == NM_LOBBY || num_options() <= 1)
                 break;
             option[menu] = (option[menu] + 1) % num_options();
             play_ui_sound("SWITCH");
             break;
         }
 
-        case SDL_SCANCODE_Z: {
-            if (typing_level)
-                break;
-
-            struct MenuOption* opt = &MENUS[menu][option[menu]];
-            if (opt->handle != noop) {
-                play_ui_sound("SELECT");
-                opt->handle();
-            }
-            break;
-        }
-
         case SDL_SCANCODE_ESCAPE: {
-            if (typing_level) {
-                SDL_strlcpy(level, cache_level, sizeof(cache_level));
-                typing_level = false;
+            if (typing != TYPE_NONE) {
+                char *input = current_input(), *cache_input = current_cache_input();
+                SDL_strlcpy(input, cache_input, NUTPUNCH_FIELD_DATA_MAX + 1);
+                typing = -1;
+
                 play_ui_sound("SELECT");
                 break;
             }
@@ -293,25 +320,46 @@ static void handle_menu_input(SDL_Scancode key) {
         }
 
         case SDL_SCANCODE_RETURN: {
-            if (typing_level) {
-                SDL_strlcpy(cache_level, level, sizeof(cache_level));
-                typing_level = false;
-                play_ui_sound("SELECT");
-            }
+            if (typing == TYPE_NONE)
+                break;
+
+            char *input = current_input(), *cache_input = current_cache_input();
+            SDL_strlcpy(cache_input, input, NUTPUNCH_FIELD_DATA_MAX + 1);
+            typing = -1;
+
+            play_ui_sound("SELECT");
             break;
         }
 
         case SDL_SCANCODE_BACKSPACE: {
-            if (typing_level && SDL_strlen(level) > 0)
-                level[SDL_strlen(level) - 1] = '\0';
+            if (typing == TYPE_NONE)
+                break;
+
+            char* input = current_input();
+            if (SDL_strlen(input) > 0)
+                input[SDL_strlen(input) - 1] = '\0';
             break;
         }
 
+        case SDL_SCANCODE_Z: {
+            if (typing == TYPE_NONE) {
+                struct MenuOption* opt = &MENUS[menu][option[menu]];
+                if (opt->handle != noop) {
+                    play_ui_sound("SELECT");
+                    opt->handle();
+                }
+                break;
+            }
+        }
         default: {
-            if (typing_level && SDL_strlen(level) < sizeof(cache_level) - 1) {
+            if (typing == TYPE_NONE)
+                break;
+
+            char *input = current_input(), *cache_input = current_cache_input();
+            if (SDL_strlen(input) < NUTPUNCH_FIELD_DATA_MAX) {
                 const char* gross = SDL_GetKeyName(SDL_GetKeyFromScancode(key, SDL_KMOD_NONE, false));
                 if (SDL_strlen(gross) == 1)
-                    SDL_strlcat(level, gross, sizeof(cache_level));
+                    SDL_strlcat(input, gross, NUTPUNCH_FIELD_DATA_MAX);
             }
             break;
         }
@@ -366,6 +414,10 @@ static bool is_ip_address(const char* str) {
     return count >= 3;
 }
 
+static const char* add_caret(enum TypeScopes scope) {
+    return (typing == scope && (SDL_GetTicks() % 800) < 500) ? "_" : "";
+}
+
 bool net_wait() {
     *num_players = 0;
 
@@ -404,6 +456,8 @@ bool net_wait() {
                 return false;
 
             case NP_Status_Online: {
+                NutPunch_PeerSet("NAME", (int)SDL_strnlen(name, NUTPUNCH_FIELD_DATA_MAX - 1), name);
+
                 int size;
 
                 PlayerID* pplayers = NutPunch_LobbyGet("PLAYERS", &size);
@@ -436,7 +490,10 @@ bool net_wait() {
         SDL_snprintf(fmt, sizeof(fmt), "Players: %d", *num_players);
         SDL_memcpy(MENUS[NM_HOST][0].display, fmt, sizeof(fmt));
 
-        SDL_snprintf(fmt, sizeof(fmt), "Level: %s%s", level, (typing_level && (SDL_GetTicks() % 800) < 500) ? "_" : "");
+        SDL_snprintf(fmt, sizeof(fmt), "Name: %s%s", name, add_caret(TYPE_NAME));
+        SDL_memcpy(MENUS[NM_MAIN][3].display, fmt, sizeof(fmt));
+
+        SDL_snprintf(fmt, sizeof(fmt), "Level: %s%s", level, add_caret(TYPE_LEVEL));
         SDL_memcpy(MENUS[NM_SINGLE][0].display, fmt, sizeof(fmt));
         SDL_memcpy(MENUS[NM_HOST][1].display, fmt, sizeof(fmt));
 
@@ -454,8 +511,23 @@ bool net_wait() {
         draw_rectangle("Q_MAIN", (float[2][2]){{0, 0}, {SCREEN_WIDTH, SCREEN_HEIGHT}}, 1, WHITE);
         for (int i = 0; i < num_options(); i++)
             draw_text(FNT_MAIN, FA_LEFT, MENUS[menu][i].display, (float[3]){40, (float)(16 + 25 * i), 0});
-        if (menu != NM_LOBBY && num_options() > 1)
+
+        if (menu != NM_LOBBY)
             draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
+        else {
+            float ny = 128;
+            for (int i = 0; i < NUTPUNCH_MAX_PLAYERS; i++) {
+                if (!NutPunch_PeerAlive(i))
+                    continue;
+
+                int size;
+                const char* name = NutPunch_PeerGet(i, "NAME", &size);
+                SDL_snprintf(fmt, sizeof(fmt), "%i. %s", i, (size && size <= NUTPUNCH_FIELD_DATA_MAX) ? name : "?");
+                draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){40, ny, 0});
+                ny += 25;
+            }
+        }
+
         if (menu == NM_JOIN && !is_ip_address(server_ip)) {
             SDL_snprintf(fmt, sizeof(fmt), "Server: %s", server_ip);
             draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){0, SCREEN_HEIGHT - string_height(FNT_MAIN, fmt), 0});
@@ -467,6 +539,7 @@ bool net_wait() {
         if (starting) {
             stop_all_tracks();
             menu = NM_MULTI;
+            lobby_id = NULL;
             return true;
         }
         SDL_Delay(1000 / TICKRATE);
