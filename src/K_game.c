@@ -6,6 +6,7 @@
 static struct GameState state = {0};
 static PlayerID local_player = -1L;
 static PlayerID view_player = -1L;
+static bool in_game = false;
 
 static struct InterpObject interp[MAX_OBJECTS] = {0};
 
@@ -2209,24 +2210,10 @@ static Bool below_frame(struct GameObject* object) {
    ====== */
 
 void start_state(PlayerID num_players, PlayerID local, const char* level, GameFlags flags) {
-    local_player = view_player = local;
-
     nuke_state();
-    clear_tiles();
-    state.live_objects = NULLOBJ;
-    for (uint32_t i = 0L; i < BLOCKMAP_SIZE; i++)
-        state.blockmap[i] = NULLOBJ;
-
-    state.size[0] = state.bounds[1][0] = F_SCREEN_WIDTH;
-    state.size[1] = state.bounds[1][1] = F_SCREEN_HEIGHT;
-
-    state.spawn = state.checkpoint = state.autoscroll = NULLOBJ;
-    state.water = FfInt(32767L);
-
+    in_game = true;
+    local_player = view_player = local;
     state.flags |= flags;
-    state.clock = -1L;
-
-    state.sequence.activator = -1L;
 
     //
     //
@@ -2459,7 +2446,24 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
 
 void nuke_state() {
     SDL_memset(&state, 0, sizeof(state));
+    clear_tiles();
+
+    state.live_objects = NULLOBJ;
+    for (uint32_t i = 0L; i < BLOCKMAP_SIZE; i++)
+        state.blockmap[i] = NULLOBJ;
+
+    state.size[0] = state.bounds[1][0] = F_SCREEN_WIDTH;
+    state.size[1] = state.bounds[1][1] = F_SCREEN_HEIGHT;
+
+    state.spawn = state.checkpoint = state.autoscroll = NULLOBJ;
+    state.water = FfInt(32767L);
+
+    state.clock = -1L;
+
+    state.sequence.activator = -1L;
+
     move_camera(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT);
+    in_game = false;
 }
 
 uint32_t check_state() {
@@ -4305,6 +4309,9 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
 }
 
 void draw_state() {
+    if (!in_game)
+        return;
+
     ObjectID oid = state.live_objects;
     while (object_is_alive(oid)) {
         const struct GameObject* object = &(state.objects[oid]);
@@ -5532,6 +5539,9 @@ void draw_state() {
 }
 
 void draw_state_hud() {
+    if (!in_game)
+        return;
+
     const struct GamePlayer* player = get_player(view_player);
     if (player != NULL) {
         static char str[16];

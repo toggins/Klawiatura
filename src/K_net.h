@@ -8,5 +8,5 @@
 GekkoNetAdapter* net_init(const char* ip, PlayerID* pcount, char* level, GameFlags* flags);
 void net_teardown();
 void net_update(GekkoSession* session);
-void net_wait();
+bool net_wait();
 PlayerID net_fill(GekkoSession*);

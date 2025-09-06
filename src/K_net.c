@@ -46,11 +46,12 @@ static PlayerID* num_players = NULL; // moved this into a global for use below..
 static GameFlags* start_flags = NULL;
 
 static bool typing_level = false;
-static char level[NUTPUNCH_FIELD_DATA_MAX + 1] = {0}, cache_level[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
+static char* level = NULL;
+static char cache_level[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
 
 GekkoNetAdapter* net_init(const char* ip, PlayerID* pcount, char* init_level, GameFlags* flags) {
     SDL_memcpy(server_ip, ip, SDL_strnlen(ip, sizeof(server_ip)));
-    SDL_strlcpy(level, init_level, sizeof(level));
+    level = init_level;
     num_players = pcount;
     start_flags = flags;
 
@@ -97,7 +98,7 @@ static enum NetMenu {
 
 static enum NetMenu menu_from[NM_SIZE] = {NM_MAIN};
 static int option[NM_SIZE] = {0};
-static bool menu_running = true;
+static int menu_running = 1;
 
 static void set_menu(enum NetMenu value) {
     menu_from[value] = menu;
@@ -130,8 +131,7 @@ static void go_join() {
 }
 
 static void fucking_exit() {
-    net_teardown();
-    exit(EXIT_SUCCESS);
+    menu_running = -1;
 }
 
 static void toggle_pcount() {
@@ -159,7 +159,7 @@ static void play_single() {
     }
 
     *num_players = 1;
-    menu_running = false;
+    menu_running = 0;
 }
 
 static void host_multi() {
@@ -363,20 +363,19 @@ static bool is_ip_address(const char* str) {
     return count >= 3;
 }
 
-void net_wait() {
+bool net_wait() {
     *num_players = 0;
 
     load_sound("SWITCH");
     load_sound("SELECT");
 
-    menu_running = true;
-    while (menu_running) {
+    menu_running = 1;
+    while (menu_running > 0) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
                 case SDL_EVENT_QUIT:
-                    fucking_exit();
-                    break;
+                    return false;
                 case SDL_EVENT_KEY_DOWN:
                     handle_menu_input(event.key.scancode);
                     break;
@@ -393,7 +392,7 @@ void net_wait() {
             case NP_Status_Error:
                 FATAL("NutPunch_Query fail: %s", NutPunch_GetLastError());
                 *num_players = 0;
-                return;
+                return false;
 
             case NP_Status_Online: {
                 int size;
@@ -457,9 +456,11 @@ void net_wait() {
         audio_update();
 
         if (starting)
-            return;
+            return true;
         SDL_Delay(1000 / TICKRATE);
     }
+
+    return menu_running >= 0;
 }
 
 PlayerID net_fill(GekkoSession* session) {

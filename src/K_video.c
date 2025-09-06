@@ -1278,8 +1278,9 @@ void submit_batch() {
 }
 
 void clear_tiles() {
-    while (valid_tiles != NULL)
-        StMapNuke(tiles, StStrKey((valid_tiles->texture == NULL) ? "" : valid_tiles->texture->name));
+    FreeTinyMap(tiles);
+    tiles = NewTinyMap();
+    valid_tiles = NULL;
 }
 
 static void nuke_tiles(void* ptr) {

@@ -250,8 +250,12 @@ int main(int argc, char* argv[]) {
 
         if (!gekko_create(&session))
             FATAL("gekko_create fail");
-        if (!quickstart)
-            net_wait();
+        if (!quickstart && !net_wait()) {
+            NutPunch_Disconnect();
+            gekko_destroy(session);
+            session = NULL;
+            break;
+        }
 
         if ((num_players <= 0 || num_players > MAX_PLAYERS))
             FATAL("Don't think I didn't see you trying to set invalid player indices!! I'll kick your ass!!");
@@ -271,6 +275,8 @@ int main(int argc, char* argv[]) {
         NutPunch_Disconnect();
         gekko_destroy(session);
         session = NULL;
+
+        stop_all_sounds();
 
         if (!success)
             show_error_screen(errmsg);
