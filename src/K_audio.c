@@ -52,6 +52,11 @@ void audio_teardown() {
     FMOD_System_Release(speaker);
 }
 
+void start_audio_state() {
+    SDL_memset(&state, 0, sizeof(state));
+    SDL_memset(&music_channels, 0, sizeof(music_channels));
+}
+
 void save_audio_state(struct SoundState* to) {
     SDL_memcpy(to, &state, sizeof(struct SoundState));
 }

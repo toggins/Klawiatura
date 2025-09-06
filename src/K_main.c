@@ -72,6 +72,7 @@ static void start_gekko() {
         gekko_set_local_delay(session, local_player, 2);
 
     SDL_memset(inputs, GI_NONE, sizeof(inputs));
+    start_audio_state();
     start_state(num_players, local_player, level, start_flags);
 }
 

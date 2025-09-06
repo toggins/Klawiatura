@@ -383,7 +383,7 @@ static void display_lobbies() {
         i = 1;
     }
     for (; i < MENU_MAX_OPTIONS; i++)
-        SDL_memset(&MENUS[NM_JOIN][i], 0, MENU_DISPLAY_SIZE);
+        SDL_memset(&MENUS[NM_JOIN][i].display, 0, MENU_DISPLAY_SIZE);
 
     static int ticks_since_refresh = 0;
     if (menu == NM_JOIN && ticks_since_refresh++ >= 5 * TICKRATE) {

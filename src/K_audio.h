@@ -50,6 +50,7 @@ void audio_init();
 void audio_update();
 void audio_teardown();
 
+void start_audio_state();
 void save_audio_state(struct SoundState*);
 void load_audio_state(const struct SoundState*);
 void tick_audio_state();
