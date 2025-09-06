@@ -466,7 +466,7 @@ bool net_wait() {
 
         if (starting) {
             stop_all_tracks();
-            set_menu(NM_MULTI);
+            menu = NM_MULTI;
             return true;
         }
         SDL_Delay(1000 / TICKRATE);
