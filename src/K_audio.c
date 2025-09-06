@@ -67,7 +67,8 @@ void load_audio_state(const struct SoundState* from) {
         struct TrackObject* cur_track = &(state.tracks[i]);
         if (cur_track->index != load_track->index || cur_track->loop != load_track->loop) {
             stop_track(i);
-            if (load_track->index == NULL || (!(load_track->loop) && load_track->offset >= load_track->index->length))
+            if (load_track->index == NULL ||
+                (!(load_track->loop) && load_track->index != NULL && load_track->offset >= load_track->index->length))
                 continue;
 
             FMOD_System_PlaySound(speaker, load_track->index->stream, music_group, true, &(music_channels[i]));
@@ -322,12 +323,14 @@ void stop_track(enum TrackSlots slot) {
 
     if (state.top_track == slot && slot > 0) {
         enum TrackSlots i = slot - 1;
-        for (; i >= 0; i--)
+        while (i >= 0) {
             if (music_channels[i] != NULL) {
                 FMOD_Channel_SetVolume(music_channels[i], 1);
+                state.top_track = i;
                 break;
             }
-        state.top_track = i;
+            --i;
+        }
     }
 }
 
