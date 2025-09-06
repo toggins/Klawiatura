@@ -280,6 +280,8 @@ int main(int argc, char* argv[]) {
 
         if (!success)
             show_error_screen(errmsg);
+        if (quickstart)
+            break;
     }
 
     net_teardown();
