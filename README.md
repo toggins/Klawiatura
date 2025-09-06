@@ -17,7 +17,7 @@ Mario Forever with rollback netcode.
 > [!WARNING]
 > Multiplayer with 3+ players is not guaranteed to be stable. It's possible to get a desync error & crash if packets get dropped.
 
-The main kicker of this project. Networking is purely peer-to-peer. By specifying 2+ players with the `-players` command, the game will automatically connect to a matchmaking server and wait for players with a matching lobby ID. You can change your lobby ID with `-lobby`, and specify a custom [nutpuncher](https://github.com/Schwungus/nutpunch) instance for matchmaking with `-ip`.
+The main kicker of this project. Networking is purely peer-to-peer. You can host and find lobbies through the public NutPunch server. Lobbies will automatically start the game once the player count is fulfilled. For custom servers, host a [NutPuncher](https://github.com/Schwungus/nutpunch) server and connect to it using `-ip`.
 
 ## Launch options
 
