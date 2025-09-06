@@ -11,6 +11,9 @@ Mario Forever with rollback netcode.
 
 ## Multiplayer
 
+> [!IMPORTANT]
+> In order for peer-to-peer networking to work properly, you need to turn off every VPN and DPI circumvention tool (i.e. Cloudflare WARP, zapret) on your machine. Otherwise, lobbies won't display other players.
+
 > [!WARNING]
 > Multiplayer with 3+ players is not guaranteed to be stable. It's possible to get a desync error & crash if packets get dropped.
 
