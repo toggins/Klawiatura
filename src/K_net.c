@@ -42,8 +42,18 @@ static GekkoNetResult** receive_data(int* pCount) {
 }
 
 static char server_ip[512] = {0};
-GekkoNetAdapter* net_init(const char* _server_ip) {
-    SDL_memcpy(server_ip, _server_ip, SDL_strnlen(_server_ip, sizeof(server_ip)));
+static PlayerID* num_players = NULL; // moved this into a global for use below...
+static GameFlags* start_flags = NULL;
+
+static bool typing_level = false;
+static char level[NUTPUNCH_FIELD_DATA_MAX + 1] = {0}, cache_level[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
+
+GekkoNetAdapter* net_init(const char* ip, PlayerID* pcount, char* init_level, GameFlags* flags) {
+    SDL_memcpy(server_ip, ip, SDL_strnlen(ip, sizeof(server_ip)));
+    SDL_strlcpy(level, init_level, sizeof(level));
+    num_players = pcount;
+    start_flags = flags;
+
     static GekkoNetAdapter adapter = {0};
     adapter.send_data = send_data;
     adapter.receive_data = receive_data;
@@ -89,10 +99,6 @@ static enum NetMenu menu_from[NM_SIZE] = {NM_MAIN};
 static int option[NM_SIZE] = {0};
 static bool menu_running = true;
 
-static PlayerID* num_players = NULL; // moved this into a global for use below...
-static char* level = NULL;
-static GameFlags* start_flags = NULL;
-
 static void set_menu(enum NetMenu value) {
     menu_from[value] = menu;
     menu = value;
@@ -102,9 +108,6 @@ struct MenuOption {
     char display[MENU_DISPLAY_SIZE];
     void (*handle)();
 };
-
-static bool typing_level = false;
-static char cache_level[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
 
 static void noop() {}
 
@@ -302,7 +305,7 @@ static void handle_menu_input(SDL_Scancode key) {
         }
 
         default: {
-            if (typing_level && SDL_strlen(level) < (sizeof(cache_level) - 1)) {
+            if (typing_level && SDL_strlen(level) < sizeof(cache_level) - 1) {
                 const char* gross = SDL_GetKeyName(SDL_GetKeyFromScancode(key, SDL_KMOD_NONE, false));
                 if (SDL_strlen(gross) == 1)
                     SDL_strlcat(level, gross, sizeof(cache_level));
@@ -360,11 +363,7 @@ static bool is_ip_address(const char* str) {
     return count >= 3;
 }
 
-void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
-    num_players = _num_players;
-    level = _level;
-    SDL_strlcpy(cache_level, _level, sizeof(cache_level));
-    start_flags = _start_flags;
+void net_wait() {
     *num_players = 0;
 
     load_sound("SWITCH");
@@ -443,13 +442,15 @@ void net_wait(PlayerID* _num_players, char* _level, GameFlags* _start_flags) {
         );
         SDL_memcpy(MENUS[NM_LOBBY][1].display, fmt, sizeof(fmt));
 
+        const float z = -1000.f;
+        draw_rectangle("", (float[2][2]){0.f, 0.f, 1024.f, 1024.f}, z - 1.f, BLACK); // TODO: get a REAL background
         for (int i = 0; i < num_options(); i++)
-            draw_text(FNT_MAIN, FA_LEFT, MENUS[menu][i].display, (float[3]){40, (float)(16 + 25 * i), 0});
+            draw_text(FNT_MAIN, FA_LEFT, MENUS[menu][i].display, (float[3]){40, (float)(16 + 25 * i), z});
         if (menu != NM_LOBBY && num_options() > 1)
-            draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), 0});
+            draw_text(FNT_MAIN, FA_LEFT, ">", (float[3]){16, 16 + ((float)(option[menu]) * 25), z});
         if (menu == NM_JOIN && !is_ip_address(server_ip)) {
             SDL_snprintf(fmt, sizeof(fmt), "Server: %s", server_ip);
-            draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){0, SCREEN_HEIGHT - string_height(FNT_MAIN, fmt), 0});
+            draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){0, SCREEN_HEIGHT - string_height(FNT_MAIN, fmt), z});
         }
 
         video_update(NULL);

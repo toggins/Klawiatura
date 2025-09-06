@@ -73,7 +73,7 @@ static void start_gekko() {
 }
 
 static char errmsg[1024] = "No errors detected.";
-static bool mainloop() {
+static bool game_loop() {
     uint64_t last_time = SDL_GetTicks();
     float ticks = 0;
 
@@ -235,43 +235,46 @@ int main(int argc, char* argv[]) {
         FATAL("SDL_Init fail: %s", SDL_GetError());
     video_init(bypass_shader);
     audio_init();
+    adapter = net_init(server_ip, &num_players, level, &start_flags);
 
     if (play_intro && !quickstart)
         show_intro();
 
-    if (!gekko_create(&session))
-        FATAL("gekko_create fail");
-    adapter = net_init(server_ip);
-
+    load_sound("CONNECT");
+    load_sound("DCONNECT");
+    load_sound("KEVINON");
     load_font(FNT_MAIN);
-    if (!quickstart)
-        net_wait(&num_players, level, &start_flags);
 
-    if ((num_players <= 0 || num_players > MAX_PLAYERS))
-        FATAL("Don't think I didn't see you trying to set invalid player indices!! I'll kick your ass!!");
-    if (num_players > 1) {
-        load_sound("CONNECT");
-        play_sound("CONNECT");
-        load_sound("DCONNECT");
+    for (;;) {
+        nuke_state();
+
+        if (!gekko_create(&session))
+            FATAL("gekko_create fail");
+        if (!quickstart)
+            net_wait();
+
+        if ((num_players <= 0 || num_players > MAX_PLAYERS))
+            FATAL("Don't think I didn't see you trying to set invalid player indices!! I'll kick your ass!!");
+        if (num_players > 1)
+            play_sound("CONNECT");
+
+        if (start_flags & GF_KEVIN) {
+            play_sound("KEVINON");
+            INFO("\n==================================");
+            INFO("Kevin Mode activated. Good luck...");
+            INFO("==================================\n");
+        }
+
+        start_gekko();
+        bool success = game_loop();
+
+        NutPunch_Disconnect();
+        gekko_destroy(session);
+        session = NULL;
+
+        if (!success)
+            show_error_screen(errmsg);
     }
-
-    if (start_flags & GF_KEVIN) {
-        load_sound("KEVINON");
-        play_sound("KEVINON");
-        INFO("\n==================================");
-        INFO("Kevin Mode activated. Good luck...");
-        INFO("==================================\n");
-    }
-
-    start_gekko();
-    bool success = mainloop();
-
-    NutPunch_Disconnect();
-    gekko_destroy(session);
-    session = NULL;
-
-    if (!success)
-        show_error_screen(errmsg);
 
     net_teardown();
     video_teardown();

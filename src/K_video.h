@@ -6,19 +6,19 @@
 
 #include "K_memory.h" // IWYU pragma: keep
 
-#ifdef RGB
-#undef RGB
-#endif
-#define RGB(r, g, b) (GLubyte[4]){r, g, b, 255}
-
-#define WHITE RGB(255, 255, 255)
-#define GRAY RGB(128, 128, 128)
-#define BLACK RGB(0, 0, 0, 255)
-
 #define RGBA(r, g, b, a)                                                                                               \
     (GLubyte[4]) {                                                                                                     \
         (r), (g), (b), (a)                                                                                             \
     }
+
+#ifdef RGB
+#undef RGB
+#endif
+#define RGB(r, g, b) RGBA(r, g, b, 255)
+
+#define WHITE RGB(255, 255, 255)
+#define GRAY RGB(128, 128, 128)
+#define BLACK RGB(0, 0, 0)
 
 #define ALPHA(a)                                                                                                       \
     (GLubyte[4]) {                                                                                                     \

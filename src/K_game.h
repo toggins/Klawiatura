@@ -483,6 +483,7 @@ struct InterpObject {
 };
 
 void start_state(PlayerID, PlayerID, const char*, GameFlags);
+void nuke_state();
 void save_state(struct SaveState*);
 void load_state(const struct SaveState*);
 uint32_t check_state();

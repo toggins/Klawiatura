@@ -2211,7 +2211,7 @@ static Bool below_frame(struct GameObject* object) {
 void start_state(PlayerID num_players, PlayerID local, const char* level, GameFlags flags) {
     local_player = view_player = local;
 
-    SDL_memset(&state, 0, sizeof(state));
+    nuke_state();
     clear_tiles();
     state.live_objects = NULLOBJ;
     for (uint32_t i = 0L; i < BLOCKMAP_SIZE; i++)
@@ -2455,6 +2455,11 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
     }
 
     play_track(TS_LEVEL, track, true);
+}
+
+void nuke_state() {
+    SDL_memset(&state, 0, sizeof(state));
+    move_camera(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT);
 }
 
 uint32_t check_state() {
