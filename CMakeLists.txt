@@ -77,7 +77,7 @@ set(NUTPUNCH_BUILD_LOBBYIST OFF CACHE INTERNAL "")
 FetchContent_Declare(
     nutpunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG a25d9b7bf1dba36130512c5a7eb560622eab9873)
+    GIT_TAG b8b76627d295420cc830de2c60da0a3da6525632)
 
 # yyjson (0.12.0)
 FetchContent_Declare(

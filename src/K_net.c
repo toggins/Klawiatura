@@ -179,10 +179,10 @@ static void host_multi() {
     if (NutPunch_Join(lobby_id))
         INFO("Waiting in lobby \"%s\"... (FLAG: %d)", lobby_id, *start_flags);
 
-    NutPunch_Set(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
-    NutPunch_Set("PLAYERS", sizeof(PlayerID), num_players);
-    NutPunch_Set("LEVEL", (int)SDL_strnlen(level, NUTPUNCH_FIELD_DATA_MAX - 1), level);
-    NutPunch_Set("FLAGS", sizeof(GameFlags), start_flags);
+    NutPunch_LobbySet(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
+    NutPunch_LobbySet("PLAYERS", sizeof(PlayerID), num_players);
+    NutPunch_LobbySet("LEVEL", (int)SDL_strnlen(level, NUTPUNCH_FIELD_DATA_MAX - 1), level);
+    NutPunch_LobbySet("FLAGS", sizeof(GameFlags), start_flags);
 }
 
 static void fucking_join() {
@@ -406,15 +406,15 @@ bool net_wait() {
             case NP_Status_Online: {
                 int size;
 
-                PlayerID* pplayers = NutPunch_Get("PLAYERS", &size);
+                PlayerID* pplayers = NutPunch_LobbyGet("PLAYERS", &size);
                 if (size == sizeof(PlayerID) && *pplayers)
                     *num_players = *pplayers;
 
-                char* plevel = NutPunch_Get("LEVEL", &size);
+                char* plevel = NutPunch_LobbyGet("LEVEL", &size);
                 if (size && size <= NUTPUNCH_FIELD_DATA_MAX)
                     SDL_memcpy(level, plevel, size);
 
-                GameFlags* pflags = NutPunch_Get("FLAGS", &size);
+                GameFlags* pflags = NutPunch_LobbyGet("FLAGS", &size);
                 if (size == sizeof(GameFlags))
                     *start_flags = *pflags;
 
