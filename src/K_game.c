@@ -3926,8 +3926,8 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                 case OBJ_PIRANHA_PLANT: {
                     if (!(object->flags & FLG_PIRANHA_START)) {
                         if (object->flags & FLG_Y_FLIP) {
-                            object->bbox[0][1] = FxZero;
-                            object->bbox[1][1] = FfInt(46L);
+                            object->bbox[0][1] = -FxOne;
+                            object->bbox[1][1] = FfInt(45L);
                             move_object(oid, POS_ADD(object, FxZero, FfInt(-60L)));
                         } else {
                             move_object(oid, POS_ADD(object, FxZero, FfInt(60L)));
@@ -6738,8 +6738,9 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
 
                 case OBJ_PIRANHA_PLANT: {
                     object->bbox[0][0] = FfInt(-15L);
-                    object->bbox[0][1] = FfInt(-46L);
+                    object->bbox[0][1] = FfInt(-45L);
                     object->bbox[1][0] = FfInt(15L);
+                    object->bbox[1][1] = FxOne;
 
                     object->flags |= FLG_PIRANHA_FIRED;
                     break;
