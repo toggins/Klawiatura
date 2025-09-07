@@ -1,4 +1,4 @@
-<!-- markdownlint-disable MD033 MD045 -->
+<!-- markdownlint-disable MD028 MD033 MD045 -->
 
 # Klawiatura
 
