@@ -87,6 +87,27 @@
                     "Pipes",
                     [
                         {
+                            "def": "Pipe V T",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PIP1VA"
+                        },
+
+                        {
+                            "def": "Pipe V M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PIP1VB"
+                        },
+
+                        {
+                            "def": "Pipe V B",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PIP1VC"
+                        },
+
+                        {
                             "def": "Pipe Gray V T",
                             "type": "backdrop",
                             "z": 20,
@@ -318,6 +339,7 @@
                                 [242, 253, 252, 255]
                             ]
                         },
+
                         {
                             "def": "Fog Gradient",
                             "type": "gradient",
@@ -330,6 +352,7 @@
                                 [219, 0, 19, 109]
                             ]
                         },
+
                         {
                             "def": "Front Gradient",
                             "type": "gradient",
@@ -341,6 +364,33 @@
                                 [219, 0, 19, 109],
                                 [219, 0, 19, 109]
                             ]
+                        },
+
+                        {
+                            "def": "Static Clouds 1",
+                            "type": "gradient",
+                            "z": -50,
+                            "stretch": true,
+                            "max_stretch": [65535, 28],
+                            "texture": "B_CLOUDB"
+                        },
+
+                        {
+                            "def": "Static Clouds 2",
+                            "type": "gradient",
+                            "z": 75,
+                            "stretch": true,
+                            "max_stretch": [65535, 28],
+                            "texture": "B_CLOUDB"
+                        },
+
+                        {
+                            "def": "Static Clouds 3",
+                            "type": "gradient",
+                            "z": 100,
+                            "stretch": true,
+                            "max_stretch": [65535, 28],
+                            "texture": "B_CLOUDB"
                         }
                     ]
                 ],
@@ -439,14 +489,14 @@
                             "def": "Tree Small",
                             "type": "backdrop",
                             "texture": "S_TREEA",
-                            "z": 25
+                            "z": 26
                         },
 
                         {
                             "def": "Tree",
                             "type": "backdrop",
                             "texture": "S_TREEB",
-                            "z": 25
+                            "z": 26
                         },
 
                         {
@@ -460,6 +510,27 @@
                             "def": "Tree Minix",
                             "type": "backdrop",
                             "texture": "S_TREEM",
+                            "z": 26
+                        },
+
+                        {
+                            "def": "Fence L",
+                            "type": "backdrop",
+                            "texture": "S_FENCEA",
+                            "z": 25
+                        },
+
+                        {
+                            "def": "Fence M",
+                            "type": "backdrop",
+                            "texture": "S_FENCEB",
+                            "z": 25
+                        },
+
+                        {
+                            "def": "Fence R",
+                            "type": "backdrop",
+                            "texture": "S_FENCEC",
                             "z": 25
                         }
                     ]
