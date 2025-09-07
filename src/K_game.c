@@ -46,7 +46,9 @@ static ObjectID nearest_player(fvec2 pos) {
         if (pawn == NULL)
             continue;
 
-        const fix16_t ndist = Fsqrt(Fadd(Fsqr(Fsub(pawn->pos[0], pos[0])), Fsqr(Fsub(pawn->pos[1], pos[1]))));
+        fix16_t dx = Fabs(Fsub(pawn->pos[0], pos[0]));
+        fix16_t dy = Fabs(Fsub(pawn->pos[1], pos[1]));
+        fix16_t ndist = Fsub(Fadd(dx, dy), Fhalf(Fmin(dx, dy)));
         if (nearest == NULLOBJ || ndist < distance) {
             nearest = player->object;
             distance = ndist;
