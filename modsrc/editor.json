@@ -670,22 +670,26 @@
                     "values": [
                         {
                             "name": "Bound X1",
-                            "index": 5
+                            "index": 5,
+                            "default": 0
                         },
 
                         {
                             "name": "Bound Y1",
-                            "index": 6
+                            "index": 6,
+                            "default": 0
                         },
 
                         {
                             "name": "Bound X2",
-                            "index": 7
+                            "index": 7,
+                            "default": 0
                         },
 
                         {
                             "name": "Bound Y2",
-                            "index": 8
+                            "index": 8,
+                            "default": 0
                         }
                     ],
 
@@ -705,38 +709,51 @@
 
                     "values": [
                         {
-                            "name": "Angle",
-                            "index": 5
+                            "name": "Direction",
+                            "index": 5,
+                            "default": 3
                         },
 
                         {
-                            "name": "Warp X",
-                            "index": 6
+                            "name": "Out Direction",
+                            "index": 12,
+                            "default": 3
                         },
 
                         {
-                            "name": "Warp Y",
-                            "index": 7
+                            "name": "Out X",
+                            "index": 6,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Out Y",
+                            "index": 7,
+                            "default": 0
                         },
 
                         {
                             "name": "Bound X1",
-                            "index": 8
+                            "index": 8,
+                            "default": 0
                         },
 
                         {
                             "name": "Bound Y1",
-                            "index": 9
+                            "index": 9,
+                            "default": 0
                         },
 
                         {
                             "name": "Bound X2",
-                            "index": 10
+                            "index": 10,
+                            "default": 0
                         },
 
                         {
                             "name": "Bound Y2",
-                            "index": 11
+                            "index": 11,
+                            "default": 0
                         }
                     ],
 
@@ -914,6 +931,7 @@
                             "index": 27,
                             "z": 20,
                             "texture": "I_BLOCKC",
+
                             "values": [
                                 {
                                     "name": "Object Index",
@@ -921,6 +939,7 @@
                                     "default": 10
                                 }
                             ],
+
                             "flags": [
                                 {
                                     "name": "Appear Once?",
@@ -935,6 +954,30 @@
                             "index": 28,
                             "z": 20,
                             "texture": "I_BRICKA",
+
+                            "flags": [
+                                {
+                                    "name": "Gray?",
+                                    "bit": 6
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Coin Block",
+                            "type": "object",
+                            "index": 30,
+                            "z": 20,
+                            "texture": "I_BRICKA",
+
+                            "values": [
+                                {
+                                    "name": "Object Index",
+                                    "index": 7,
+                                    "default": 10
+                                }
+                            ],
+
                             "flags": [
                                 {
                                     "name": "Gray?",
