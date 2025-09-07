@@ -434,6 +434,7 @@ struct GameState {
 
     GameFlags flags;
 
+    char world[8], next[8];
     fvec2 size;
     fvec2 bounds[2];
 

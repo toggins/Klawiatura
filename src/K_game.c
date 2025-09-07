@@ -2263,8 +2263,12 @@ void start_state(PlayerID num_players, PlayerID local, const char* level, GameFl
     INFO("Level: %s (%s)", level, level_name);
     buf += sizeof(char[32]);
 
-    buf += sizeof(char[8]); // HUD Texture
-    buf += sizeof(char[8]); // Next Level
+    SDL_memcpy(state.world, buf, sizeof(char[8]));
+    load_texture(state.world);
+    buf += sizeof(char[8]);
+
+    SDL_memcpy(state.next, buf, sizeof(char[8]));
+    buf += sizeof(char[8]);
 
     char track[9];
     SDL_memcpy(track, buf, sizeof(char[8]));
@@ -5568,6 +5572,8 @@ void draw_state_hud() {
 
         SDL_snprintf(str, sizeof(str), "%u", player->score);
         draw_text(FNT_HUD, FA_RIGHT, str, (float[3]){149, 34, 0});
+
+        draw_sprite(state.world, (float[3]){432, 16, 0}, (bool[2]){false}, 0, WHITE);
 
         const char* tex;
         switch ((int)((float)(state.time) / 6.25f) % 4) {
