@@ -62,14 +62,21 @@ static ObjectID respawn_player(PlayerID pid) {
         return NULLOBJ;
 
     if (player->lives < 0L) {
+        // !!! CLIENT-SIDE !!!
         if (view_player == pid)
             for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
                 struct GamePlayer* survivor = &(state.players[i]);
                 if (survivor->active && survivor->lives >= 0L) {
+                    if (survivor->bounds[0][0] == player->bounds[0][0] &&
+                        survivor->bounds[0][1] == player->bounds[0][1] &&
+                        survivor->bounds[1][0] == player->bounds[1][0] &&
+                        survivor->bounds[1][1] == player->bounds[1][1])
+                        lerp_camera(500);
                     view_player = i;
                     break;
                 }
             }
+        // !!! CLIENT-SIDE !!!
 
         return NULLOBJ;
     }
@@ -416,6 +423,27 @@ static void displace_object(ObjectID did, fix16_t climb, Bool unstuck) {
     struct GameObject* displacee = get_object(did);
     if (displacee == NULL)
         return;
+
+    if (unstuck && touching_solid((fvec2[2]){{Fadd(displacee->pos[0], displacee->bbox[0][0]),
+                                              Fadd(displacee->pos[1], displacee->bbox[0][1])},
+                                             {Fadd(displacee->pos[0], displacee->bbox[1][0]),
+                                              Fsub(Fadd(displacee->pos[1], displacee->bbox[1][1]), FxOne)}})) {
+        fix16_t shift = (displacee->flags & FLG_X_FLIP) ? FxOne : -FxOne;
+        if ((displacee->flags & FLG_X_FLIP)) {
+            if (touching_solid(HITBOX_RIGHT(displacee)) && !touching_solid(HITBOX_LEFT(displacee)))
+                shift = -shift;
+        } else {
+            if (touching_solid(HITBOX_LEFT(displacee)) && !touching_solid(HITBOX_RIGHT(displacee)))
+                shift = -shift;
+        }
+
+        move_object(did, POS_ADD(displacee, shift, FxZero));
+        displacee->values[VAL_X_SPEED] = FxZero;
+        displacee->values[VAL_Y_SPEED] = FxZero;
+        displacee->values[VAL_X_TOUCH] = (shift >= FxZero) ? -1L : 1L;
+        displacee->values[VAL_Y_TOUCH] = 1L;
+        return;
+    }
 
     displacee->values[VAL_X_TOUCH] = 0L;
     displacee->values[VAL_Y_TOUCH] = 0L;
@@ -1774,6 +1802,36 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
                     }
                     break;
                 }
+            }
+            break;
+        }
+
+        case OBJ_BOUNDS: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type != OBJ_PLAYER)
+                break;
+
+            const PlayerID pid = (PlayerID)(other->values[VAL_PLAYER_INDEX]);
+            struct GamePlayer* player = get_player(pid);
+            if (player == NULL)
+                break;
+            if (self->values[VAL_BOUNDS_X1] == self->values[VAL_BOUNDS_X2] ||
+                self->values[VAL_BOUNDS_Y1] == self->values[VAL_BOUNDS_Y2])
+                break;
+            if (player->bounds[0][0] != self->values[VAL_BOUNDS_X1] ||
+                player->bounds[0][1] != self->values[VAL_BOUNDS_Y1] ||
+                player->bounds[1][0] != self->values[VAL_BOUNDS_X2] ||
+                player->bounds[1][1] != self->values[VAL_BOUNDS_Y2]) {
+                player->bounds[0][0] = self->values[VAL_BOUNDS_X1];
+                player->bounds[0][1] = self->values[VAL_BOUNDS_Y1];
+                player->bounds[1][0] = self->values[VAL_BOUNDS_X2];
+                player->bounds[1][1] = self->values[VAL_BOUNDS_Y2];
+                // !!! CLIENT-SIDE !!!
+                if (view_player == pid) {
+                    lerp_camera(500);
+                    play_sound("WARP");
+                }
+                // !!! CLIENT-SIDE !!!
             }
             break;
         }
@@ -6277,6 +6335,11 @@ void load_object(GameObjectType type) {
             load_texture("S_CFACEJ");
             break;
         }
+
+        case OBJ_BOUNDS: {
+            load_sound("WARP");
+            break;
+        }
     }
 }
 
@@ -6329,7 +6392,8 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                 case OBJ_WHEEL:
                 case OBJ_WHEEL_RIGHT:
                 case OBJ_BILL_BLASTER:
-                case OBJ_BRO_LAYER: {
+                case OBJ_BRO_LAYER:
+                case OBJ_BOUNDS: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
                     break;
                 }

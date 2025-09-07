@@ -106,6 +106,8 @@ struct TileBatch {
 
 struct VideoState {
     float quake;
+    float lerp[2];
+    uint64_t lerp_time[2];
 };
 
 void video_init(bool);
@@ -121,6 +123,7 @@ void tick_video_state();
 void quake_at(float[2], float);
 float get_quake();
 void move_camera(float, float);
+void lerp_camera(uint64_t);
 
 void load_texture(const char*);
 const struct Texture* get_texture(const char*);

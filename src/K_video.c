@@ -1039,6 +1039,8 @@ void video_init(bool bypass_shader) {
 
     textures = NewTinyMap();
     tiles = NewTinyMap();
+
+    draw_time = SDL_GetTicks();
 }
 
 void video_update(const char* errmsg, const char* chat) {
@@ -1091,9 +1093,14 @@ void video_update_custom_start() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    vec2 cam;
+    if (state.lerp_time[0] < state.lerp_time[1])
+        glm_vec2_lerp(state.lerp, camera, (float)(state.lerp_time[0]) / (float)(state.lerp_time[1]), cam);
+    else
+        glm_vec2_copy(camera, cam);
     glm_ortho(
-        camera[0] - HALF_SCREEN_WIDTH, camera[0] + HALF_SCREEN_WIDTH, camera[1] + HALF_SCREEN_HEIGHT,
-        camera[1] - HALF_SCREEN_HEIGHT, -1000, 1000, mvp
+        cam[0] - HALF_SCREEN_WIDTH, cam[0] + HALF_SCREEN_WIDTH, cam[1] + HALF_SCREEN_HEIGHT,
+        cam[1] - HALF_SCREEN_HEIGHT, -1000, 1000, mvp
     );
     glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)mvp);
 }
@@ -1128,6 +1135,8 @@ void tick_video_state() {
     if (state.quake > 0.0f) {
         state.quake -= 1.0f;
     }
+    if (state.lerp_time[0] < state.lerp_time[1])
+        state.lerp_time[0] += 20;
 }
 
 void quake_at(float pos[2], float amount) {
@@ -1143,6 +1152,12 @@ void move_camera(float x, float y) {
     camera[0] = x;
     camera[1] = y;
     move_ears(x, y);
+}
+
+void lerp_camera(uint64_t ticks) {
+    glm_vec2_copy(camera, state.lerp);
+    state.lerp_time[0] = 0;
+    state.lerp_time[1] = ticks;
 }
 
 static void nuke_texture(void* ptr) {

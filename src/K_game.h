@@ -41,6 +41,16 @@
     ((fvec2[2]){{Fadd((object)->pos[0], (object)->bbox[0][0]), Fadd((object)->pos[1], (object)->bbox[0][1])},          \
                 {Fadd((object)->pos[0], (object)->bbox[1][0]), Fadd((object)->pos[1], (object)->bbox[1][1])}})
 
+#define HITBOX_LEFT(object)                                                                                            \
+    ((fvec2[2]){{Fadd((object)->pos[0], (object)->bbox[0][0]), Fadd((object)->pos[1], (object)->bbox[0][1])},          \
+                {Fadd(Fadd((object)->pos[0], (object)->bbox[0][0]), FxOne),                                            \
+                 Fadd((object)->pos[1], (object)->bbox[1][1])}})
+
+#define HITBOX_RIGHT(object)                                                                                           \
+    ((fvec2[2]){{Fsub(Fadd((object)->pos[0], (object)->bbox[1][0]), FxOne),                                            \
+                 Fadd((object)->pos[1], (object)->bbox[0][1])},                                                        \
+                {Fadd((object)->pos[0], (object)->bbox[1][0]), Fadd((object)->pos[1], (object)->bbox[1][1])}})
+
 #define HITBOX_ADD(object, x, y)                                                                                       \
     ((fvec2[2]){{Fadd(Fadd((object)->pos[0], (object)->bbox[0][0]), (x)),                                              \
                  Fadd(Fadd((object)->pos[1], (object)->bbox[0][1]), (y))},                                             \
@@ -127,13 +137,13 @@ enum GameObjectType {
     OBJ_PIRANHA_PLANT,
     OBJ_BRO,
     OBJ_CLOUD_FACE,
-    OBJ_BRO_FIREBALL, // UNUSED
+    OBJ_WARP,
     OBJ_MISSILE_SILVER_HAMMER,
     OBJ_BRO_LAYER,
     OBJ_BILL_BLASTER,
     OBJ_BULLET_BILL,
     OBJ_CHEEP_CHEEP,
-    OBJ_CHEEP_CHEEP_GREEN, // UNUSED
+    OBJ_BOUNDS,
     OBJ_CHEEP_CHEEP_BLUE,
     OBJ_CHEEP_CHEEP_SPIKY,
     OBJ_BLOOPER,
@@ -278,6 +288,21 @@ enum ObjectValues {
     VAL_BRO_DOWN,
     VAL_BRO_THROW_STATE,
     VAL_BRO_THROW,
+
+    VAL_WARP_ANGLE = VAL_START,
+    VAL_WARP_X,
+    VAL_WARP_Y,
+    VAL_WARP_BOUNDS_X1,
+    VAL_WARP_BOUNDS_Y1,
+    VAL_WARP_BOUNDS_X2,
+    VAL_WARP_BOUNDS_Y2,
+    VAL_WARP_STR1,
+    VAL_WARP_STR2,
+
+    VAL_BOUNDS_X1 = VAL_START,
+    VAL_BOUNDS_Y1,
+    VAL_BOUNDS_X2,
+    VAL_BOUNDS_Y2,
 };
 typedef uint8_t ObjectValues;
 
@@ -355,6 +380,9 @@ enum ObjectFlags {
     FLG_BRO_TOP = 1 << 12,
 
     FLG_BRO_LAYER_TOP = 1 << 5,
+
+    FLG_WARP_GOAL = 1 << 5,
+    FLG_WARP_SECRET = 1 << 6,
 };
 typedef uint32_t ObjectFlags;
 
