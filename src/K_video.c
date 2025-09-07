@@ -1041,7 +1041,7 @@ void video_init(bool bypass_shader) {
     tiles = NewTinyMap();
 }
 
-void video_update(const char* errmsg) {
+void video_update(const char* errmsg, const char* chat) {
     video_update_custom_start();
 
     struct TileBatch* tilemap = valid_tiles;
@@ -1074,6 +1074,8 @@ void video_update(const char* errmsg) {
 
     if (errmsg == NULL) {
         draw_state_hud();
+        if (chat != NULL)
+            draw_text(FNT_MAIN, FA_LEFT, chat, (float[3]){32, SCREEN_HEIGHT - 50, 0});
     } else {
         draw_rectangle("", (float[2][2]){{0, 0}, {SCREEN_WIDTH, SCREEN_HEIGHT}}, 0, RGBA(0, 0, 0, 128));
         draw_text(FNT_MAIN, FA_LEFT, errmsg, (float[3]){16, 16, 0});
@@ -1381,12 +1383,15 @@ static void tile_vertex(
 
 void add_gradient(const char* index, const GLfloat rect[2][2], GLfloat z, const GLubyte color[4][4]) {
     struct TileBatch* tilemap = load_tile(index);
-    tile_vertex(tilemap, rect[0][0], rect[1][1], z, color[2][0], color[2][1], color[2][2], color[2][3], 0, 1);
+    const struct Texture* texture = tilemap->texture;
+    const GLfloat u = (texture != NULL) ? ((rect[1][0] - rect[0][0]) / (GLfloat)(texture->size[0])) : 1;
+    const GLfloat v = (texture != NULL) ? ((rect[1][1] - rect[0][1]) / (GLfloat)(texture->size[1])) : 1;
+    tile_vertex(tilemap, rect[0][0], rect[1][1], z, color[2][0], color[2][1], color[2][2], color[2][3], 0, v);
     tile_vertex(tilemap, rect[0][0], rect[0][1], z, color[0][0], color[0][1], color[0][2], color[0][3], 0, 0);
-    tile_vertex(tilemap, rect[1][0], rect[0][1], z, color[1][0], color[1][1], color[1][2], color[1][3], 1, 0);
-    tile_vertex(tilemap, rect[1][0], rect[0][1], z, color[1][0], color[1][1], color[1][2], color[1][3], 1, 0);
-    tile_vertex(tilemap, rect[1][0], rect[1][1], z, color[3][0], color[3][1], color[3][2], color[3][3], 1, 1);
-    tile_vertex(tilemap, rect[0][0], rect[1][1], z, color[2][0], color[2][1], color[2][2], color[2][3], 0, 1);
+    tile_vertex(tilemap, rect[1][0], rect[0][1], z, color[1][0], color[1][1], color[1][2], color[1][3], u, 0);
+    tile_vertex(tilemap, rect[1][0], rect[0][1], z, color[1][0], color[1][1], color[1][2], color[1][3], u, 0);
+    tile_vertex(tilemap, rect[1][0], rect[1][1], z, color[3][0], color[3][1], color[3][2], color[3][3], u, v);
+    tile_vertex(tilemap, rect[0][0], rect[1][1], z, color[2][0], color[2][1], color[2][2], color[2][3], 0, v);
 }
 
 void add_backdrop(const char* index, const GLfloat pos[3], const GLfloat scale[2], const GLubyte color[4]) {

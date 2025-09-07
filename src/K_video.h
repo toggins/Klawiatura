@@ -109,7 +109,7 @@ struct VideoState {
 };
 
 void video_init(bool);
-void video_update(const char*);
+void video_update(const char* errmsg, const char* chat);
 void video_update_custom_start();
 void video_update_custom_end();
 void video_teardown();

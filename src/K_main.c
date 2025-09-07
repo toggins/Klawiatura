@@ -101,7 +101,7 @@ static bool game_loop() {
                     return true;
                 case SDL_EVENT_KEY_DOWN:
                     SDL_Scancode key = event.key.scancode;
-                    if (key == SDL_SCANCODE_T && !typing) {
+                    if (key == SDL_SCANCODE_T && !typing && num_players > 1) {
                         SDL_memset(our_chat, 0, sizeof(our_chat));
                         typing = true;
                         break;
@@ -272,12 +272,8 @@ static bool game_loop() {
         interp_end();
 
     skip_interp:
-        const float lh = 32.f, x = 16.f;
-        if (typing)
-            draw_text(FNT_HUD, FA_LEFT, our_chat, (float[3]){x, SCREEN_HEIGHT - lh, 0.f});
-
         interp_update(ticks);
-        video_update(NULL);
+        video_update(NULL, typing ? our_chat : NULL);
         audio_update();
     }
 }
@@ -373,7 +369,7 @@ static void show_error_screen(const char* errmsg) {
             }
         }
 
-        video_update(errmsg);
+        video_update(errmsg, NULL);
         audio_update();
 
         if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_ESCAPE])
@@ -404,8 +400,9 @@ static void show_intro() {
             alpha = rem / trans;
         rem -= 1.0f / TICKRATE;
 
+        video_update_custom_start();
         draw_sprite("Q_DISCL", XYZ(0.f, 0.f, 0.f), (bool[]){false, false}, 0.f, ALPHA((GLubyte)(255.f * alpha)));
-        video_update(NULL);
+        video_update_custom_end();
         audio_update();
 
         const bool* kbd = SDL_GetKeyboardState(NULL);
