@@ -14,6 +14,10 @@
 #include "K_net.h"
 #include "K_file.h"
 
+static void display_chat_msg(const char* msg) {
+    NP_Log("%s", msg); // TODO TODOT DOTODO
+}
+
 static void send_data(GekkoNetAddress* gn_addr, const char* data, int len) {
     NutPunch_Send(*(int*)gn_addr->data, data, len);
 }
@@ -25,6 +29,11 @@ static GekkoNetResult** receive_data(int* pCount) {
 
     while (NutPunch_HasNext()) {
         int size = sizeof(data), peer = NutPunch_NextPacket(data, &size);
+        if (size == CHAT_MSG_SIZE) {
+            display_chat_msg(data);
+            continue;
+        }
+
         GekkoNetResult* res = SDL_malloc(sizeof(GekkoNetResult));
 
         res->addr.size = sizeof(peer);
