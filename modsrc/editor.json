@@ -401,14 +401,14 @@
                         {
                             "def": "Giant Cloud",
                             "type": "backdrop",
-                            "z": 52,
+                            "z": 57,
                             "texture": "B_CLOUDS"
                         },
 
                         {
                             "def": "Giant Cloud Face",
                             "type": "object",
-                            "z": 51,
+                            "z": 56,
                             "index": 50,
                             "texture": "S_CFACEA"
                         },
@@ -416,14 +416,14 @@
                         {
                             "def": "Hill",
                             "type": "backdrop",
-                            "z": 51,
+                            "z": 54,
                             "texture": "B_HILLA"
                         },
 
                         {
                             "def": "Hill Minix",
                             "type": "backdrop",
-                            "z": 51,
+                            "z": 54,
                             "texture": "B_HILLB"
                         },
 
@@ -435,9 +435,36 @@
                         },
 
                         {
+                            "def": "Static Trees 1",
+                            "type": "gradient",
+                            "z": 51,
+                            "stretch": true,
+                            "max_stretch": [65535, 83],
+                            "texture": "B_FORESB"
+                        },
+
+                        {
+                            "def": "Static Trees 2",
+                            "type": "gradient",
+                            "z": 52,
+                            "stretch": true,
+                            "max_stretch": [65535, 83],
+                            "texture": "B_FORESB"
+                        },
+
+                        {
+                            "def": "Static Trees 3",
+                            "type": "gradient",
+                            "z": 53,
+                            "stretch": true,
+                            "max_stretch": [65535, 83],
+                            "texture": "B_FORESB"
+                        },
+
+                        {
                             "def": "Hills",
                             "type": "backdrop",
-                            "z": 51,
+                            "z": 55,
                             "texture": "B_HILLS"
                         },
 
@@ -453,6 +480,39 @@
                 [
                     "Props",
                     [
+                        [
+                            "Signs",
+                            [
+                                {
+                                    "def": "Sign Up",
+                                    "type": "backdrop",
+                                    "texture": "S_UP",
+                                    "z": 25
+                                },
+
+                                {
+                                    "def": "Sign Left",
+                                    "type": "backdrop",
+                                    "texture": "S_LEFT",
+                                    "z": 25
+                                },
+
+                                {
+                                    "def": "Sign Down",
+                                    "type": "backdrop",
+                                    "texture": "S_DOWN",
+                                    "z": 25
+                                },
+
+                                {
+                                    "def": "Sign Right",
+                                    "type": "backdrop",
+                                    "texture": "S_RIGHT",
+                                    "z": 25
+                                }
+                            ]
+                        ],
+
                         {
                             "def": "Cloud",
                             "type": "object",
@@ -607,10 +667,123 @@
                     "z": 1,
                     "texture": "M_CHECKA",
 
+                    "values": [
+                        {
+                            "name": "Bound X1",
+                            "index": 5
+                        },
+
+                        {
+                            "name": "Bound Y1",
+                            "index": 6
+                        },
+
+                        {
+                            "name": "Bound X2",
+                            "index": 7
+                        },
+
+                        {
+                            "name": "Bound Y2",
+                            "index": 8
+                        }
+                    ],
+
                     "flags": [
                         {
                             "name": "Flip?",
                             "bit": 2
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Warp",
+                    "type": "object",
+                    "index": 51,
+                    "texture": "M_WARP",
+
+                    "values": [
+                        {
+                            "name": "Angle",
+                            "index": 5
+                        },
+
+                        {
+                            "name": "Warp X",
+                            "index": 6
+                        },
+
+                        {
+                            "name": "Warp Y",
+                            "index": 7
+                        },
+
+                        {
+                            "name": "Bound X1",
+                            "index": 8
+                        },
+
+                        {
+                            "name": "Bound Y1",
+                            "index": 9
+                        },
+
+                        {
+                            "name": "Bound X2",
+                            "index": 10
+                        },
+
+                        {
+                            "name": "Bound Y2",
+                            "index": 11
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Goal?",
+                            "bit": 5
+                        },
+
+                        {
+                            "name": "Secret?",
+                            "bit": 6
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Bounds",
+                    "type": "object",
+                    "index": 57,
+                    "texture": "M_SOLIDT",
+                    "stretch": true,
+                    "max_stretch": [256, 256],
+
+                    "values": [
+                        {
+                            "name": "Bound X1",
+                            "index": 5,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound Y1",
+                            "index": 6,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound X2",
+                            "index": 7,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound Y2",
+                            "index": 8,
+                            "default": 0
                         }
                     ]
                 },
@@ -784,6 +957,14 @@
                         },
 
                         {
+                            "def": "Mushroom 1UP",
+                            "type": "object",
+                            "index": 12,
+                            "z": 1,
+                            "texture": "I_1UP"
+                        },
+
+                        {
                             "def": "Fire Flower",
                             "type": "object",
                             "index": 14,
@@ -830,6 +1011,21 @@
         [
             "Enemies",
             [
+                {
+                    "def": "Goomba",
+                    "type": "object",
+                    "index": 38,
+                    "texture": "E_GOOMBA",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2,
+                            "default": true
+                        }
+                    ]
+                },
+
                 {
                     "def": "Koopa",
                     "type": "object",
