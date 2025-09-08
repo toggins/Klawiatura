@@ -320,12 +320,14 @@ static void handle_menu_input(SDL_Scancode key) {
             if (menu == NM_LOBBY) {
                 NutPunch_Disconnect();
                 lobby_id = NULL;
-            }
+            } else if (menu == NM_MAIN)
+                fucking_exit();
 
             if (menu_from[menu] != menu) {
                 menu = menu_from[menu];
                 play_ui_sound("SELECT");
             }
+
             break;
         }
 
