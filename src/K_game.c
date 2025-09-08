@@ -4139,7 +4139,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                 case OBJ_KOOPA_SHELL:
                 case OBJ_BUZZY_SHELL: {
                     if (object->flags & FLG_SHELL_ACTIVE)
-                        object->values[VAL_SHELL_FRAME] = Fadd(object->values[VAL_SHELL_FRAME], 0x000035C3);
+                        object->values[VAL_SHELL_FRAME] = Fadd(object->values[VAL_SHELL_FRAME], 0x00008A3D);
                     if (object->values[VAL_SHELL_HIT] > 0L)
                         --(object->values[VAL_SHELL_HIT]);
 
