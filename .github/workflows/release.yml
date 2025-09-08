@@ -6,7 +6,7 @@ on:
     tags: [stable]
 
 jobs:
-  release-win:
+  release:
     name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} binaries for ${{ matrix.cfg.os-name }}
     runs-on: ubuntu-24.04
     permissions:
@@ -52,6 +52,20 @@ jobs:
         with:
           platform: ${{ matrix.cfg.mingw_bits == 32 && 'x86' || 'x64' }}
           cc: 0
+      - name: Cache dependency sources
+        uses: actions/cache@v4
+        with:
+          path: build/_deps/*-src
+          key: cmake-deps-src-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: cmake-deps-src-
+      - name: Cache dependency build objects
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/_deps/*-build
+            build/_deps/*-subbuild
+          key: cmake-deps-obj-${{ matrix.cfg.os-name }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: cmake-deps-obj-${{ matrix.cfg.os-name }}-
       - name: Configure for MinGW
         if: matrix.cfg.mingw_bits == 32 || matrix.cfg.mingw_bits == 64
         run: |
