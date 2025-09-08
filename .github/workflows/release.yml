@@ -9,7 +9,6 @@ jobs:
   release:
     name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} binaries for ${{ matrix.cfg.os-name }}
     runs-on: ubuntu-24.04
-    container: { image: ghcr.io/schwungus/builder }
     permissions:
       contents: write
     strategy:
@@ -42,6 +41,17 @@ jobs:
           token: ${{ secrets.FMOD_TOKEN }}
           path: external/fmod
           ref: master
+      - name: Install deps
+        run: |
+          sudo apt-get update && sudo apt-get install --yes \
+            libgl1-mesa-dev python3-jinja2 \
+            libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev
+      - name: Install MinGW
+        if: matrix.cfg.mingw_bits == 32 || matrix.cfg.mingw_bits == 64
+        uses: egor-tensin/setup-mingw@v2.2.0
+        with:
+          platform: ${{ matrix.cfg.mingw_bits == 32 && 'x86' || 'x64' }}
+          cc: 0
       - name: Cache dependency sources
         uses: actions/cache@v4
         with:
