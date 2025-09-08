@@ -401,7 +401,7 @@ static void show_intro() {
         rem -= 1.0f / TICKRATE;
 
         video_update_custom_start();
-        draw_sprite("Q_DISCL", XYZ(0.f, 0.f, 0.f), (bool[]){false, false}, 0.f, ALPHA((GLubyte)(255.f * alpha)));
+        draw_sprite("Q_DISCL", XYZ(320.f, 240.f, 0.f), (bool[]){false, false}, 0.f, ALPHA((GLubyte)(255.f * alpha)));
         video_update_custom_end();
         audio_update();
 
