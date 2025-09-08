@@ -234,11 +234,12 @@ static void fucking_join() {
     if (lobby_id != NULL)
         return;
 
-    int len = 0;
-    lobby_id = NutPunch_LobbyList(&len)[option[menu]];
+    lobby_id = NutPunch_GetLobby(option[menu]);
+    if (lobby_id == NULL)
+        return;
+
     NutPunch_SetServerAddr(server_ip);
     NutPunch_Join(lobby_id);
-
     set_menu(NM_LOBBY);
 }
 
@@ -376,13 +377,12 @@ static void handle_menu_input(SDL_Scancode key) {
 }
 
 static void display_lobbies() {
-    int count = 0, i = 0;
-    const char** lobbies = NutPunch_LobbyList(&count);
+    int count = NutPunch_LobbyCount(), i = 0;
     if (count > MENU_MAX_OPTIONS)
         count = MENU_MAX_OPTIONS;
     for (; i < count; i++) {
         struct MenuOption* option = MENUS[NM_JOIN] + i;
-        SDL_strlcpy(option->display, lobbies[i], MENU_DISPLAY_SIZE);
+        SDL_strlcpy(option->display, NutPunch_GetLobby(i), MENU_DISPLAY_SIZE);
         option->handle = fucking_join;
     }
     if (!count) {
