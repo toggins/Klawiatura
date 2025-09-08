@@ -11,7 +11,7 @@ set(BUILD_SHARED_LIBS OFF)
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
-# SDL3 (3.2.20)
+# SDL3 (3.2.22)
 set(SDL_SHARED OFF CACHE INTERNAL "")
 set(SDL_STATIC ON CACHE INTERNAL "")
 set(SDL_TEST_LIBRARY OFF CACHE INTERNAL "")
@@ -22,7 +22,7 @@ set(SDL_CAMERA OFF CACHE INTERNAL "")
 FetchContent_Declare(
     SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG release-3.2.20)
+    GIT_TAG release-3.2.22)
 
 # SDL_image (3.2.4)
 set(SDLIMAGE_AVIF OFF CACHE INTERNAL "")
@@ -93,6 +93,7 @@ FetchContent_Declare(
     GIT_TAG 4242ecb8daa66281517f26ae928f304032e3418e)
 
 FetchContent_MakeAvailable(SDL3 SDL3_image glad cglm S_fixed S_tructures nutpunch yyjson GekkoNet)
+glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
 
 set(LIBS
     SDL3::SDL3-static SDL3_image::SDL3_image-static
@@ -100,7 +101,6 @@ set(LIBS
     cglm fmod  GekkoNet
     S_fixed S_tructures nutpunch
     yyjson)
-glad_add_library(glad_gl_core_33 STATIC API gl:core=3.3)
 
 # Build
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
