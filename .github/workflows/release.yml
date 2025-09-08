@@ -9,7 +9,7 @@ jobs:
   release:
     name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} binaries for ${{ matrix.cfg.os-name }}
     runs-on: ubuntu-24.04
-    container: { image: ghcr.io/Schwungus/builder }
+    container: { image: ghcr.io/schwungus/builder }
     permissions:
       contents: write
     strategy:
