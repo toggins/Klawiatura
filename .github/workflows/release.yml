@@ -8,7 +8,8 @@ on:
 jobs:
   release:
     name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} binaries for ${{ matrix.cfg.os-name }}
-    runs-on: ghcr.io/Schwungus/builder
+    runs-on: ubuntu-24.04
+    container: { image: ghcr.io/Schwungus/builder }
     permissions:
       contents: write
     strategy:
