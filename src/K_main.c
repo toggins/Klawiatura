@@ -81,7 +81,7 @@ static char errmsg[1024] = "No errors detected.", our_chat[CHAT_MSG_SIZE] = {0};
 static bool typing = false;
 
 static bool game_loop() {
-    uint64_t last_time = SDL_GetTicks();
+    uint64_t last_time = SDL_GetPerformanceCounter();
     float ticks = 0;
     typing = false;
 
@@ -95,7 +95,7 @@ static bool game_loop() {
                     break;
                 case SDL_EVENT_WINDOW_MOVED:
                 case SDL_EVENT_WINDOW_RESIZED:
-                    last_time = SDL_GetTicks();
+                    last_time = SDL_GetPerformanceCounter();
                     break;
                 case SDL_EVENT_QUIT:
                     return true;
@@ -150,20 +150,20 @@ static bool game_loop() {
             skip_input = true;
 
         const float ahead = gekko_frames_ahead(session);
-        const float frame_time = 1.0f / ((float)TICKRATE - SDL_clamp(ahead, 0.0f, 2.0f));
 
-        const uint64_t current_time = SDL_GetTicks();
-        ticks += (float)(current_time - last_time) / 1000.0f;
+        const uint64_t current_time = SDL_GetPerformanceCounter();
+        ticks += ((float)(current_time - last_time) / (float)SDL_GetPerformanceFrequency()) *
+                 ((float)TICKRATE - SDL_clamp(ahead, 0.0f, 2.0f));
         last_time = current_time;
 
         gekko_network_poll(session);
         net_update(session);
 
-        if (ticks < frame_time)
+        if (ticks < 1)
             goto skip_interp;
 
         interp_start();
-        while (ticks >= frame_time) {
+        while (ticks >= 1) {
             GameInput input = GI_NONE;
             const bool* keyboard = SDL_GetKeyboardState(NULL);
             if (skip_input)
@@ -267,7 +267,7 @@ static bool game_loop() {
                 }
             }
 
-            ticks -= frame_time;
+            ticks -= 1;
         }
         interp_end();
 
