@@ -77,12 +77,10 @@ static void start_gekko() {
 }
 
 static char errmsg[1024] = "No errors detected.", our_chat[CHAT_MSG_SIZE] = {0};
-;
 static bool typing = false;
 
 static bool game_loop() {
-    uint64_t last_time = SDL_GetTicks();
-    float ticks = 0;
+    float last_update = ((float)SDL_GetTicks()) / 1000.0f, simulate_for = 0.f;
     typing = false;
 
     for (;;) {
@@ -91,14 +89,12 @@ static bool game_loop() {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
-                default:
-                    break;
-                case SDL_EVENT_WINDOW_MOVED:
-                case SDL_EVENT_WINDOW_RESIZED:
-                    last_time = SDL_GetTicks();
-                    break;
                 case SDL_EVENT_QUIT:
                     return true;
+                case SDL_EVENT_WINDOW_RESIZED:
+                case SDL_EVENT_WINDOW_MOVED:
+                    last_update = ((float)SDL_GetTicks()) / 1000.0f;
+                    break;
                 case SDL_EVENT_KEY_DOWN:
                     SDL_Scancode key = event.key.scancode;
                     if (key == SDL_SCANCODE_T && !typing && num_players > 1) {
@@ -144,26 +140,25 @@ static bool game_loop() {
                     good:
                         break;
                     }
+                default:
+                    break;
             }
         }
-        if (typing)
-            skip_input = true;
+        skip_input |= typing;
 
-        const float ahead = gekko_frames_ahead(session);
-        const float frame_time = 1.0f / ((float)TICKRATE - SDL_clamp(ahead, 0.0f, 2.0f));
-
-        const uint64_t current_time = SDL_GetTicks();
-        ticks += (float)(current_time - last_time) / 1000.0f;
-        last_time = current_time;
+        const float ahead = gekko_frames_ahead(session), frame_time = 1.f / TICKRATE;
+        const float now = ((float)SDL_GetTicks()) / 1000.f;
+        simulate_for += (now - last_update) + (SDL_clamp(ahead, 0.f, 2.f) / TICKRATE);
+        last_update = now;
 
         gekko_network_poll(session);
         net_update(session);
 
-        if (ticks < frame_time)
+        if (simulate_for < frame_time)
             goto skip_interp;
 
         interp_start();
-        while (ticks >= frame_time) {
+        while (simulate_for >= frame_time) {
             GameInput input = GI_NONE;
             const bool* keyboard = SDL_GetKeyboardState(NULL);
             if (skip_input)
@@ -192,9 +187,6 @@ static bool game_loop() {
             for (int i = 0; i < count; i++) {
                 GekkoSessionEvent* event = events[i];
                 switch (event->type) {
-                    default:
-                        break;
-
                     case DesyncDetected: {
                         dump_state();
                         struct Desynced desync = event->data.desynced;
@@ -225,6 +217,9 @@ static bool game_loop() {
                         );
                         return false;
                     }
+
+                    default:
+                        break;
                 }
             }
 
@@ -267,12 +262,12 @@ static bool game_loop() {
                 }
             }
 
-            ticks -= frame_time;
+            simulate_for -= frame_time;
         }
         interp_end();
 
     skip_interp:
-        interp_update(ticks);
+        interp_update(simulate_for / frame_time);
         video_update(NULL, typing ? our_chat : NULL);
         audio_update();
     }
