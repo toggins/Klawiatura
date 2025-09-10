@@ -98,6 +98,7 @@ struct VertexBatch {
 struct TileBatch {
     struct TileBatch* next;
     const struct Texture* texture;
+    bool translucent;
 
     GLuint vao, vbo;
     size_t vertex_count, vertex_capacity;

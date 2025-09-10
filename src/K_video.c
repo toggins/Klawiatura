@@ -1051,6 +1051,7 @@ void video_update(const char* errmsg, const char* chat) {
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
         glUniform1f(uniforms.alpha_test, 0.5f);
         while (tilemap != NULL) {
+            glDepthMask(tilemap->translucent ? GL_FALSE : GL_TRUE);
             glBindVertexArray(tilemap->vao);
             glBindBuffer(GL_ARRAY_BUFFER, tilemap->vbo);
             glBufferSubData(
@@ -1087,6 +1088,7 @@ void video_update(const char* errmsg, const char* chat) {
 }
 
 void video_update_custom_start() {
+    const uint64_t last_draw_time = draw_time;
     draw_time = SDL_GetTicks();
 
     glEnable(GL_DEPTH_TEST);
@@ -1094,9 +1096,10 @@ void video_update_custom_start() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     vec2 cam;
-    if (state.lerp_time[0] < state.lerp_time[1])
+    if (state.lerp_time[0] < state.lerp_time[1]) {
+        state.lerp_time[0] += draw_time - last_draw_time;
         glm_vec2_lerp(state.lerp, camera, (float)(state.lerp_time[0]) / (float)(state.lerp_time[1]), cam);
-    else
+    } else
         glm_vec2_copy(camera, cam);
     glm_ortho(
         cam[0] - HALF_SCREEN_WIDTH, cam[0] + HALF_SCREEN_WIDTH, cam[1] + HALF_SCREEN_HEIGHT,
@@ -1132,11 +1135,8 @@ void load_video_state(const struct VideoState* from) {
 }
 
 void tick_video_state() {
-    if (state.quake > 0.0f) {
+    if (state.quake > 0.0f)
         state.quake -= 1.0f;
-    }
-    if (state.lerp_time[0] < state.lerp_time[1])
-        state.lerp_time[0] += 20;
 }
 
 void quake_at(float pos[2], float amount) {
@@ -1331,6 +1331,7 @@ static struct TileBatch* load_tile(const char* index) {
     struct TileBatch new = {0};
     new.next = valid_tiles;
     new.texture = texture;
+    new.translucent = false;
 
     glGenVertexArrays(1, &(new.vao));
     glBindVertexArray(new.vao);
@@ -1401,12 +1402,16 @@ void add_gradient(const char* index, const GLfloat rect[2][2], GLfloat z, const 
     const struct Texture* texture = tilemap->texture;
     const GLfloat u = (texture != NULL) ? ((rect[1][0] - rect[0][0]) / (GLfloat)(texture->size[0])) : 1;
     const GLfloat v = (texture != NULL) ? ((rect[1][1] - rect[0][1]) / (GLfloat)(texture->size[1])) : 1;
+
     tile_vertex(tilemap, rect[0][0], rect[1][1], z, color[2][0], color[2][1], color[2][2], color[2][3], 0, v);
     tile_vertex(tilemap, rect[0][0], rect[0][1], z, color[0][0], color[0][1], color[0][2], color[0][3], 0, 0);
     tile_vertex(tilemap, rect[1][0], rect[0][1], z, color[1][0], color[1][1], color[1][2], color[1][3], u, 0);
     tile_vertex(tilemap, rect[1][0], rect[0][1], z, color[1][0], color[1][1], color[1][2], color[1][3], u, 0);
     tile_vertex(tilemap, rect[1][0], rect[1][1], z, color[3][0], color[3][1], color[3][2], color[3][3], u, v);
     tile_vertex(tilemap, rect[0][0], rect[1][1], z, color[2][0], color[2][1], color[2][2], color[2][3], 0, v);
+
+    if (color[0][3] < 255 || color[1][3] < 255 || color[2][3] < 255 || color[3][3] < 255)
+        tilemap->translucent = true;
 }
 
 void add_backdrop(const char* index, const GLfloat pos[3], const GLfloat scale[2], const GLubyte color[4]) {
@@ -1424,6 +1429,9 @@ void add_backdrop(const char* index, const GLfloat pos[3], const GLfloat scale[2
     tile_vertex(tilemap, x2, y1, pos[2], color[0], color[1], color[2], color[3], 1, 0);
     tile_vertex(tilemap, x2, y2, pos[2], color[0], color[1], color[2], color[3], 1, 1);
     tile_vertex(tilemap, x1, y2, pos[2], color[0], color[1], color[2], color[3], 0, 1);
+
+    if (color[3] < 255)
+        tilemap->translucent = true;
 }
 
 void batch_vertex(GLfloat x, GLfloat y, GLfloat z, GLubyte r, GLubyte g, GLubyte b, GLubyte a, GLfloat u, GLfloat v) {
