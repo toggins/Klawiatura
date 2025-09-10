@@ -84,6 +84,32 @@
                 ],
 
                 [
+                    "Platforms",
+                    [
+                        {
+                            "def": "Platform Tile",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PLATFA"
+                        },
+
+                        {
+                            "def": "Platform Tile Purple",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PLATFB"
+                        },
+
+                        {
+                            "def": "Platform Tile Gray",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PLATFC"
+                        }
+                    ]
+                ],
+
+                [
                     "Pipes",
                     [
                         {
@@ -662,6 +688,20 @@
                             "type": "backdrop",
                             "texture": "S_FENCEC",
                             "z": 25
+                        },
+
+                        {
+                            "def": "Support L",
+                            "type": "backdrop",
+                            "texture": "S_SUPPTL",
+                            "z": 22
+                        },
+
+                        {
+                            "def": "Support R",
+                            "type": "backdrop",
+                            "texture": "S_SUPPTR",
+                            "z": 22
                         }
                     ]
                 ]
@@ -767,6 +807,40 @@
                         {
                             "name": "Flip?",
                             "bit": 2
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Platform",
+                    "type": "object",
+                    "index": 85,
+                    "z": 19,
+                    "texture": "M_PLTFRM",
+
+                    "values": [
+                        {
+                            "name": "Skin",
+                            "index": 5,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Speed",
+                            "index": 0,
+                            "default": 0
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Fall?",
+                            "bit": 7
+                        },
+
+                        {
+                            "name": "Descend?",
+                            "bit": 8
                         }
                     ]
                 },
