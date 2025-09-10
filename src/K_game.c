@@ -2375,7 +2375,8 @@ void start_state(const struct GameContext* ctx) {
     nuke_state();
     in_game = true;
 
-    SDL_memcpy(&context, ctx, sizeof(struct GameContext));
+    if (ctx != NULL)
+        SDL_memcpy(&context, ctx, sizeof(struct GameContext));
     local_player = view_player = context.local_player;
     state.flags |= context.flags;
     state.checkpoint = context.checkpoint;
@@ -4806,17 +4807,13 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
             context.players[0].power = state.players[0].power;
 
             start_audio_state();
-            start_state(&context);
+            start_state(NULL);
             return;
         }
 
         if ((state.flags & GF_END) && state.next[0] != '\0') {
-            static char gross[9] = {'\0'};
-            SDL_strlcpy(gross, state.next, sizeof(gross));
-
-            struct GameContext ctx = {0};
-            context.level = gross;
-            context.flags |= (state.flags & GF_KEVIN);
+            SDL_memcpy(context.level, state.next, sizeof(state.next));
+            context.flags &= ~GF_REPLAY;
             context.checkpoint = NULLOBJ;
             context.players[0].lives = state.players[0].lives;
             context.players[0].coins = state.players[0].coins;
@@ -4824,7 +4821,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
             context.players[0].power = state.players[0].power;
 
             start_audio_state();
-            start_state(&context);
+            start_state(NULL);
         }
     }
     // !!! CLIENT-SIDE !!!

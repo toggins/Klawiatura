@@ -76,7 +76,7 @@ static void start_gekko() {
     struct GameContext ctx = {0};
     ctx.num_players = num_players;
     ctx.local_player = local_player;
-    ctx.level = level;
+    SDL_memcpy(ctx.level, level, sizeof(ctx.level));
 
     ctx.flags = start_flags;
     if (num_players <= 1)

@@ -468,7 +468,7 @@ enum GameInput {
 typedef uint8_t GameInput;
 
 struct GameContext {
-    const char* level;
+    char level[9];
     GameFlags flags;
 
     PlayerID num_players;
