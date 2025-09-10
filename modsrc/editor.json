@@ -131,6 +131,46 @@
                 ],
 
                 [
+                    "Castle",
+                    [
+                        {
+                            "def": "Castle Brick",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BRICKA"
+                        },
+
+                        {
+                            "def": "Castle Brick 2",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BRICKB"
+                        },
+
+                        {
+                            "def": "Castle Brick Small",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BRICKC"
+                        },
+
+                        {
+                            "def": "Castle Brick Lava L",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BRICKD"
+                        },
+
+                        {
+                            "def": "Castle Brick Lava R",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BRICKE"
+                        }
+                    ]
+                ],
+
+                [
                     "Tanks",
                     [
                         {
@@ -269,6 +309,20 @@
                         },
 
                         {
+                            "def": "Bill Blaster 2",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTI"
+                        },
+
+                        {
+                            "def": "Bill Blaster 3",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTJ"
+                        },
+
+                        {
                             "def": "Bill Blaster Tall",
                             "type": "backdrop",
                             "z": 20,
@@ -391,6 +445,15 @@
                             "stretch": true,
                             "max_stretch": [65535, 28],
                             "texture": "B_CLOUDB"
+                        },
+
+                        {
+                            "def": "Castle BG",
+                            "type": "gradient",
+                            "z": 190,
+                            "stretch": true,
+                            "max_stretch": [65535, 480],
+                            "texture": "B_CASTLA"
                         }
                     ]
                 ],
@@ -508,6 +571,13 @@
                                     "def": "Sign Right",
                                     "type": "backdrop",
                                     "texture": "S_RIGHT",
+                                    "z": 25
+                                },
+
+                                {
+                                    "def": "Hardcore 1-4",
+                                    "type": "backdrop",
+                                    "texture": "S_HARD14",
                                     "z": 25
                                 }
                             ]
@@ -1114,6 +1184,12 @@
                             "name": "Flip?",
                             "bit": 2,
                             "default": true
+                        },
+
+                        {
+                            "name": "Gray?",
+                            "bit": 6,
+                            "default": false
                         }
                     ]
                 },
@@ -1162,7 +1238,7 @@
                     "def": "Bullet Bill",
                     "type": "object",
                     "index": 54,
-                    "texture": "T_BLASTA"
+                    "texture": "M_SOLIDT"
                 },
 
                 {
@@ -1204,6 +1280,20 @@
                 },
 
                 {
+                    "def": "Cheep Cheep Blue",
+                    "type": "object",
+                    "index": 58,
+                    "texture": "E_CHEEBA"
+                },
+
+                {
+                    "def": "Cheep Cheep Spiky",
+                    "type": "object",
+                    "index": 59,
+                    "texture": "E_CHEESA"
+                },
+
+                {
                     "def": "Thwomp",
                     "type": "object",
                     "index": 63,
@@ -1223,6 +1313,35 @@
                             "bit": 3
                         }
                     ]
+                },
+
+                {
+                    "def": "Lava",
+                    "type": "object",
+                    "index": 66,
+                    "z": 20,
+                    "texture": "E_LAVAA"
+                },
+
+                {
+                    "def": "Podoboo",
+                    "type": "object",
+                    "index": 67,
+                    "texture": "M_SOLIDT"
+                },
+
+                {
+                    "def": "Podoboo Volcano",
+                    "type": "object",
+                    "index": 88,
+                    "texture": "M_SOLIDT"
+                },
+
+                {
+                    "def": "Bowser",
+                    "type": "object",
+                    "index": 89,
+                    "texture": "E_BOWSRA"
                 }
             ]
         ]
