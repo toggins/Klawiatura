@@ -74,6 +74,8 @@ enum GameFlags {
     GF_KEVIN = 1 << 8,
     GF_AMBUSH = 1 << 9,
     GF_REPLAY = 1 << 10,
+    GF_SINGLE = 1 << 11,
+    GF_RESTART = 1 << 12,
 };
 typedef uint16_t GameFlags;
 
@@ -202,6 +204,7 @@ enum ObjectValues {
     VAL_PLAYER_FIRE,
     VAL_PLAYER_WARP,
     VAL_PLAYER_WARP_STATE,
+    VAL_PLAYER_PLATFORM,
 
     VAL_PLAYER_EFFECT_POWER = VAL_START,
     VAL_PLAYER_EFFECT_FRAME,
@@ -315,6 +318,10 @@ enum ObjectValues {
     VAL_BOUNDS_Y2,
 
     VAL_PLATFORM_TYPE = VAL_START,
+    VAL_PLATFORM_X,
+    VAL_PLATFORM_Y,
+    VAL_PLATFORM_RESPAWN,
+    VAL_PLATFORM_FRAME,
 };
 typedef uint8_t ObjectValues;
 
@@ -400,6 +407,10 @@ enum ObjectFlags {
     FLG_PLATFORM_CARRYING = 1 << 6,
     FLG_PLATFORM_FALL = 1 << 7,
     FLG_PLATFORM_DOWN = 1 << 8,
+    FLG_PLATFORM_FALLING = 1 << 9,
+    FLG_PLATFORM_MOVED = 1 << 10,
+
+    FLG_PLATFORM_TURN_ADD = 1 << 5,
 };
 typedef uint32_t ObjectFlags;
 
@@ -455,6 +466,22 @@ enum GameInput {
     GI_FIRE = 1 << 6,
 };
 typedef uint8_t GameInput;
+
+struct GameContext {
+    const char* level;
+    GameFlags flags;
+
+    PlayerID num_players;
+    PlayerID local_player;
+    struct PlayerContext {
+        int8_t lives;
+        uint8_t coins;
+        uint32_t score;
+        PlayerPowers power;
+    } players[MAX_PLAYERS];
+
+    ObjectID checkpoint;
+};
 
 struct GameState {
     struct GamePlayer {
@@ -538,7 +565,7 @@ struct InterpObject {
     fvec2 pos;
 };
 
-void start_state(PlayerID, PlayerID, const char*, GameFlags);
+void start_state(const struct GameContext*);
 void nuke_state();
 void save_state(struct SaveState*);
 void load_state(const struct SaveState*);
@@ -554,6 +581,7 @@ Bool object_is_alive(ObjectID);
 struct GameObject* get_object(ObjectID);
 ObjectID create_object(GameObjectType, const fvec2);
 void move_object(ObjectID, const fvec2);
+void displace_object(ObjectID, fix16_t, Bool);
 
 struct BlockList {
     ObjectID objects[MAX_OBJECTS];

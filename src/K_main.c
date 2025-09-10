@@ -72,8 +72,22 @@ static void start_gekko() {
         gekko_set_local_delay(session, local_player, 2);
 
     SDL_memset(inputs, GI_NONE, sizeof(inputs));
+
+    struct GameContext ctx = {0};
+    ctx.num_players = num_players;
+    ctx.local_player = local_player;
+    ctx.level = level;
+
+    ctx.flags = start_flags;
+    if (num_players <= 1)
+        ctx.flags |= GF_SINGLE;
+    for (size_t i = 0; i < num_players; i++)
+        ctx.players[i].lives = -1;
+
+    ctx.checkpoint = NULLOBJ;
+
     start_audio_state();
-    start_state(num_players, local_player, level, start_flags);
+    start_state(&ctx);
 }
 
 static char errmsg[1024] = "No errors detected.", our_chat[CHAT_MSG_SIZE] = {0};
