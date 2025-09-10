@@ -747,7 +747,8 @@ static struct GameObject* kill_enemy(struct GameObject* enemy, Bool kick) {
             break;
 
         case OBJ_PIRANHA_PLANT:
-        case OBJ_ROTODISC: {
+        case OBJ_ROTODISC:
+        case OBJ_PODOBOO: {
             if (kick)
                 play_sound_at_object(enemy, "KICK");
             enemy->flags |= FLG_DESTROY;
@@ -774,15 +775,16 @@ static struct GameObject* kill_enemy(struct GameObject* enemy, Bool kick) {
         switch (enemy->type) {
             default:
                 break;
-
             case OBJ_KOOPA:
             case OBJ_KOOPA_SHELL:
                 dead->flags |= (enemy->flags & FLG_KOOPA_RED);
                 break;
-
             case OBJ_SPINY:
                 dead->flags |= (enemy->flags & FLG_SPINY_GRAY);
                 break;
+                // case OBJ_CHEEP_CHEEP:
+                //     dead->flags |= (enemy->flags & FLG_CHEEP_GREEN);
+                //     break;
         }
 
         if (kick) {
@@ -1387,8 +1389,10 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
                         play_sound_at_object(self, "STOMP");
                         give_points(self, pid, 100L);
                         struct GameObject* koopa = get_object(create_object(OBJ_KOOPA, self->pos));
-                        if (koopa != NULL)
-                            koopa->flags |= ((self->flags & (FLG_X_FLIP | FLG_KOOPA_RED)) | FLG_KOOPA_MAYDAY);
+                        if (koopa != NULL) {
+                            koopa->values[VAL_KOOPA_MAYDAY] = 2L;
+                            koopa->flags |= (self->flags & (FLG_X_FLIP | FLG_KOOPA_RED));
+                        }
 
                         self->flags |= FLG_DESTROY;
                     } else {
@@ -1442,7 +1446,7 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
                     break;
 
                 case OBJ_PLAYER: {
-                    if (self->flags & FLG_KOOPA_MAYDAY)
+                    if (self->values[VAL_KOOPA_MAYDAY] > 0L)
                         break;
 
                     if (other->values[VAL_PLAYER_STARMAN] > 0L) {
@@ -3778,8 +3782,8 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                 }
 
                 case OBJ_WATER_SPLASH: {
-                    object->values[VAL_WATER_SPLASH_FRAME] += 7L;
-                    if (object->values[VAL_WATER_SPLASH_FRAME] >= 150)
+                    object->values[VAL_SPLASH_FRAME] += 7L;
+                    if (object->values[VAL_SPLASH_FRAME] >= 150)
                         object->flags |= FLG_DESTROY;
                     break;
                 }
@@ -4100,7 +4104,8 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00004A3D);
                     displace_object(oid, FfInt(10L), false);
 
-                    object->flags &= ~FLG_KOOPA_MAYDAY;
+                    if (object->values[VAL_KOOPA_MAYDAY] > 0L)
+                        --(object->values[VAL_KOOPA_MAYDAY]);
                     bump_object(oid);
 
                     if (object->values[VAL_ENEMY_TURN] > 0L)
@@ -4271,8 +4276,10 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
 
                 case OBJ_SPINY: {
                     if (!(object->flags & FLG_ENEMY_ACTIVE) && in_any_view(object, FxZero, false)) {
-                        object->values[VAL_X_SPEED] =
-                            FfInt(((object->flags & FLG_X_FLIP) ? -1L : 1L) * ((state.flags & GF_HARDCORE) ? 2L : 1L));
+                        object->values[VAL_X_SPEED] = FfInt(
+                            ((object->flags & FLG_X_FLIP) ? -1L : 1L) *
+                            (((state.flags & GF_HARDCORE) && !(object->flags & FLG_SPINY_GRAY)) ? 2L : 1L)
+                        );
                         object->flags |= FLG_ENEMY_ACTIVE;
                     }
 
@@ -5315,7 +5322,7 @@ void draw_state() {
 
                 case OBJ_WATER_SPLASH: {
                     const char* tex;
-                    switch (object->values[VAL_WATER_SPLASH_FRAME] / 10) {
+                    switch (object->values[VAL_SPLASH_FRAME] / 10) {
                         default:
                             tex = "X_SPLSHA";
                             break;
@@ -5569,6 +5576,15 @@ void draw_state() {
                             break;
                         case OBJ_BRO:
                             tex = "E_BROA";
+                            break;
+                        case OBJ_GOOMBA:
+                            tex = "E_GOOMBA";
+                            break;
+                        case OBJ_CHEEP_CHEEP_BLUE:
+                            tex = "E_CHEEBA";
+                            break;
+                        case OBJ_CHEEP_CHEEP_SPIKY:
+                            tex = "E_CHEESA";
                             break;
                     }
 
@@ -6589,6 +6605,60 @@ void load_object(GameObjectType type) {
 
         case OBJ_BOUNDS: {
             load_sound("WARP");
+            break;
+        }
+
+        case OBJ_GOOMBA: {
+            load_texture("E_GOOMBA");
+            load_texture("E_GOOMBB");
+
+            load_sound("STOMP");
+            load_sound("KICK");
+
+            load_object(OBJ_GOOMBA_FLAT);
+            load_object(OBJ_DEAD);
+            load_object(OBJ_POINTS);
+            break;
+        }
+
+        case OBJ_GOOMBA_FLAT: {
+            load_texture("E_GOOMBC");
+            break;
+        }
+
+        case OBJ_LAVA: {
+            load_texture("E_LAVAA");
+            load_texture("E_LAVAB");
+            load_texture("E_LAVAC");
+            load_texture("E_LAVAD");
+            load_texture("E_LAVAE");
+            load_texture("E_LAVAF");
+            load_texture("E_LAVAG");
+            load_texture("E_LAVAH");
+            break;
+        }
+
+        case OBJ_LAVA_SPLASH: {
+            load_texture("X_LSPLSA");
+            load_texture("X_LSPLSB");
+            load_texture("X_LSPLSC");
+            load_texture("X_LSPLSD");
+            load_texture("X_LSPLSE");
+            load_texture("X_LSPLSF");
+            load_texture("X_LSPLSG");
+            load_texture("X_LSPLSH");
+            load_texture("X_LSPLSI");
+            load_texture("X_LSPLSJ");
+            load_texture("X_LSPLSK");
+            break;
+        }
+
+        case OBJ_PODOBOO: {
+            load_texture("E_PODOBA");
+            load_texture("E_PODOBB");
+            load_texture("E_PODOBC");
+
+            load_object(OBJ_LAVA_SPLASH);
             break;
         }
     }

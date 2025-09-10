@@ -171,6 +171,11 @@ enum GameObjectType {
     OBJ_SPIKE_BALL,
     OBJ_SPIKE_BALL_EFFECT,
     OBJ_PIRANHA_FIRE,
+    OBJ_PLATFORM,
+    OBJ_PLATFORM_TURN,
+    OBJ_LAVA_SPLASH,
+    OBJ_PODOBOO_VOLCANO,
+    OBJ_BOWSER,
 
     OBJ_SIZE,
 };
@@ -241,7 +246,7 @@ enum ObjectValues {
     VAL_CHECKPOINT_BOUNDS_X2,
     VAL_CHECKPOINT_BOUNDS_Y2,
 
-    VAL_WATER_SPLASH_FRAME = VAL_START,
+    VAL_SPLASH_FRAME = VAL_START,
 
     VAL_BUBBLE_FRAME = VAL_START,
 
@@ -260,8 +265,10 @@ enum ObjectValues {
 
     VAL_BLASTER_TIME = VAL_START,
 
-    VAL_ENEMY_START = VAL_START,
-    VAL_ENEMY_TURN = VAL_ENEMY_START,
+    VAL_ENEMY_TURN = VAL_START,
+    VAL_ENEMY_START,
+
+    VAL_KOOPA_MAYDAY = VAL_ENEMY_START,
 
     VAL_PARAKOOPA_Y = VAL_START,
     VAL_PARAKOOPA_ANGLE,
@@ -306,6 +313,8 @@ enum ObjectValues {
     VAL_BOUNDS_Y1,
     VAL_BOUNDS_X2,
     VAL_BOUNDS_Y2,
+
+    VAL_PLATFORM_TYPE = VAL_START,
 };
 typedef uint8_t ObjectValues;
 
@@ -360,7 +369,6 @@ enum ObjectFlags {
     FLG_ENEMY_ACTIVE = 1 << 5,
 
     FLG_KOOPA_RED = 1 << 6,
-    FLG_KOOPA_MAYDAY = 1 << 7,
     FLG_PARAKOOPA_START = 1 << 7,
     FLG_SHELL_ACTIVE = 1 << 7,
 
@@ -387,6 +395,11 @@ enum ObjectFlags {
 
     FLG_WARP_GOAL = 1 << 5,
     FLG_WARP_SECRET = 1 << 6,
+
+    FLG_PLATFORM_START = 1 << 5,
+    FLG_PLATFORM_CARRYING = 1 << 6,
+    FLG_PLATFORM_FALL = 1 << 7,
+    FLG_PLATFORM_DOWN = 1 << 8,
 };
 typedef uint32_t ObjectFlags;
 
@@ -420,6 +433,16 @@ enum PlayerFrames {
     PF_GROW4,
 };
 typedef uint8_t PlayerFrames;
+
+enum PlatformTypes {
+    PLAT_NORMAL,
+    PLAT_SMALL,
+    PLAT_CLOUD,
+    PLAT_CASTLE,
+    PLAT_CASTLE_LONG,
+    PLAT_CASTLE_BUTTONS,
+};
+typedef uint8_t PlatformTypes;
 
 enum GameInput {
     GI_NONE = 0,
