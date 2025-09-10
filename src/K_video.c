@@ -1187,47 +1187,13 @@ void load_texture(const char* index) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
 
-    GLint format;
-    switch (surface->format) {
-        default: {
-            SDL_Surface* temp = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
-            if (temp == NULL)
-                FATAL("Texture \"%s\" conversion fail: %s", index, SDL_GetError());
-            SDL_DestroySurface(surface);
-            surface = temp;
+    SDL_Surface* temp = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
+    if (temp == NULL)
+        FATAL("Texture \"%s\" conversion fail: %s", index, SDL_GetError());
+    SDL_DestroySurface(surface);
+    surface = temp;
 
-            format = GL_RGBA8;
-            break;
-        }
-
-        case SDL_PIXELFORMAT_RGB24:
-            format = GL_RGB8;
-            break;
-        case SDL_PIXELFORMAT_RGB48:
-            format = GL_RGB16;
-            break;
-        case SDL_PIXELFORMAT_RGB48_FLOAT:
-            format = GL_RGB16F;
-            break;
-        case SDL_PIXELFORMAT_RGB96_FLOAT:
-            format = GL_RGB32F;
-            break;
-
-        case SDL_PIXELFORMAT_RGBA32:
-            format = GL_RGBA8;
-            break;
-        case SDL_PIXELFORMAT_RGBA64:
-            format = GL_RGBA16;
-            break;
-        case SDL_PIXELFORMAT_RGBA64_FLOAT:
-            format = GL_RGBA16F;
-            break;
-        case SDL_PIXELFORMAT_RGBA128_FLOAT:
-            format = GL_RGBA32F;
-            break;
-    }
-
-    glTexImage2D(GL_TEXTURE_2D, 0, format, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
     SDL_DestroySurface(surface);
 
     file = find_file(file_pattern("data/textures/%s.json", index), NULL);
