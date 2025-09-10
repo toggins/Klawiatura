@@ -1066,6 +1066,7 @@ void video_update(const char* errmsg, const char* chat) {
             tilemap = tilemap->next;
         }
     }
+    glDepthMask(GL_TRUE);
 
     draw_state();
     submit_batch();
