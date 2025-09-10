@@ -761,9 +761,13 @@ static struct GameObject* kill_enemy(struct GameObject* enemy, Bool kick) {
         default:
             break;
 
-        case OBJ_PIRANHA_PLANT:
-        case OBJ_ROTODISC:
         case OBJ_PODOBOO: {
+            struct GameObject* owner = get_object((ObjectID)(enemy->values[VAL_PODOBOO_PARENT]));
+            if (owner != NULL)
+                owner->flags |= FLG_DESTROY;
+        }
+        case OBJ_PIRANHA_PLANT:
+        case OBJ_ROTODISC: {
             if (kick)
                 play_sound_at_object(enemy, "KICK");
             enemy->flags |= FLG_DESTROY;
@@ -1374,6 +1378,96 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
                     }
                     break;
                 }
+
+                case OBJ_KOOPA_SHELL:
+                case OBJ_BUZZY_SHELL: {
+                    if (other->flags & FLG_SHELL_ACTIVE)
+                        shell_attack(other, self);
+                    break;
+                }
+            }
+            break;
+        }
+
+        case OBJ_GOOMBA: {
+            struct GameObject* other = &(state.objects[other_id]);
+            switch (other->type) {
+                default:
+                    break;
+
+                case OBJ_PLAYER: {
+                    if (other->values[VAL_PLAYER_STARMAN] > 0L) {
+                        player_starman(other, self);
+                        break;
+                    }
+
+                    if (other->pos[1] < Fsub(self->pos[1], FfInt(16L)) &&
+                        (other->values[VAL_Y_SPEED] >= FxZero || (other->flags & FLG_PLAYER_STOMP))) {
+                        const PlayerID pid = get_owner_id(other_id);
+                        const struct GamePlayer* player = get_player(pid);
+
+                        other->values[VAL_Y_SPEED] = Fmin(
+                            other->values[VAL_Y_SPEED],
+                            FfInt((player != NULL && (player->input & GI_JUMP)) ? -13L : -8L)
+                        );
+                        other->flags |= FLG_PLAYER_STOMP;
+
+                        play_sound_at_object(self, "STOMP");
+                        give_points(self, pid, 100L);
+                        create_object(OBJ_GOOMBA_FLAT, self->pos);
+
+                        self->flags |= FLG_DESTROY;
+                    } else {
+                        hit_player(other);
+                    }
+                    break;
+                }
+
+                case OBJ_MISSILE_FIREBALL: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        give_points(self, pid, 100L);
+                        kill_enemy(self, true);
+                        other->flags |= FLG_DESTROY;
+                    }
+                    break;
+                }
+
+                case OBJ_MISSILE_HAMMER: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        give_points(self, pid, 100L);
+                        kill_enemy(self, true);
+                    }
+                    break;
+                }
+
+                case OBJ_GOOMBA:
+                case OBJ_KOOPA:
+                case OBJ_BUZZY_BEETLE:
+                case OBJ_SPINY: {
+                    turn_enemy(self);
+                    turn_enemy(other);
+                    break;
+                }
+
+                case OBJ_KOOPA_SHELL:
+                case OBJ_BUZZY_SHELL: {
+                    if (other->flags & FLG_SHELL_ACTIVE)
+                        shell_attack(other, self);
+                    else
+                        turn_enemy(self);
+                    break;
+                }
+
+                case OBJ_BLOCK_BUMP: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        give_points(self, pid, 100L);
+                        kill_enemy(self, true);
+                    }
+                    break;
+                }
             }
             break;
         }
@@ -1571,9 +1665,6 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
                 }
 
                 case OBJ_MISSILE_HAMMER: {
-                    if (self->flags & FLG_SPINY_GRAY)
-                        break;
-
                     const PlayerID pid = get_owner_id(other_id);
                     if (pid != -1L) {
                         give_points(self, pid, 100L);
@@ -1916,6 +2007,180 @@ static Bool bump_check(ObjectID self_id, ObjectID other_id) {
                 other->flags &= ~FLG_PLAYER_WARP_OUT;
                 play_sound_at_object(other, "WARP");
             }
+            break;
+        }
+
+        case OBJ_BOWSER: {
+            struct GameObject* other = &(state.objects[other_id]);
+            if (other->type != OBJ_PLAYER)
+                break;
+
+            struct GamePlayer* player = get_owner(other_id);
+            if (player != NULL)
+                player->lives = 0L;
+            kill_player(other);
+
+            break;
+        }
+
+        case OBJ_LAVA: {
+            struct GameObject* other = &(state.objects[other_id]);
+            switch (other->type) {
+                default:
+                    break;
+
+                case OBJ_PLAYER:
+                    kill_player(other);
+                    break;
+
+                case OBJ_PODOBOO: {
+                    if (other->values[VAL_Y_SPEED] >= FxZero) {
+                        create_object(OBJ_LAVA_SPLASH, POS_ADD(other, FxZero, FfInt(15L)));
+                        other->flags |= FLG_DESTROY;
+                    }
+                    break;
+                }
+            }
+
+            break;
+        }
+
+        case OBJ_PODOBOO: {
+            struct GameObject* other = &(state.objects[other_id]);
+            switch (other->type) {
+                default:
+                    break;
+
+                case OBJ_PLAYER: {
+                    if (other->values[VAL_PLAYER_STARMAN] > 0L)
+                        player_starman(other, self);
+                    else
+                        hit_player(other);
+                    break;
+                }
+
+                case OBJ_MISSILE_FIREBALL: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        play_sound_at_object(other, "BUMP");
+                        other->flags |= FLG_DESTROY;
+                    }
+                    break;
+                }
+
+                case OBJ_MISSILE_HAMMER: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        give_points(self, pid, 500L);
+                        kill_enemy(self, true);
+                    }
+                    break;
+                }
+
+                case OBJ_KOOPA_SHELL:
+                case OBJ_BUZZY_SHELL: {
+                    if (other->flags & FLG_SHELL_ACTIVE)
+                        shell_attack(other, self);
+                    break;
+                }
+            }
+            break;
+        }
+
+        case OBJ_CHEEP_CHEEP_BLUE: {
+            struct GameObject* other = &(state.objects[other_id]);
+            switch (other->type) {
+                default:
+                    break;
+
+                case OBJ_PLAYER: {
+                    if (other->values[VAL_PLAYER_STARMAN] > 0L)
+                        player_starman(other, self);
+                    else
+                        hit_player(other);
+                    break;
+                }
+
+                case OBJ_MISSILE_FIREBALL: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        play_sound_at_object(other, "BUMP");
+                        other->flags |= FLG_DESTROY;
+                    }
+                    break;
+                }
+
+                case OBJ_MISSILE_HAMMER: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        give_points(self, pid, 200L);
+                        kill_enemy(self, true);
+                    }
+                    break;
+                }
+
+                case OBJ_GOOMBA:
+                case OBJ_KOOPA:
+                case OBJ_BUZZY_BEETLE:
+                case OBJ_SPINY:
+                case OBJ_CHEEP_CHEEP_BLUE: {
+                    turn_enemy(self);
+                    turn_enemy(other);
+                    break;
+                }
+
+                case OBJ_KOOPA_SHELL:
+                case OBJ_BUZZY_SHELL: {
+                    if (other->flags & FLG_SHELL_ACTIVE)
+                        shell_attack(other, self);
+                    else
+                        turn_enemy(self);
+                    break;
+                }
+            }
+            break;
+        }
+
+        case OBJ_CHEEP_CHEEP_SPIKY: {
+            struct GameObject* other = &(state.objects[other_id]);
+            switch (other->type) {
+                default:
+                    break;
+
+                case OBJ_PLAYER: {
+                    if (other->values[VAL_PLAYER_STARMAN] > 0L)
+                        player_starman(other, self);
+                    else
+                        hit_player(other);
+                    break;
+                }
+
+                case OBJ_MISSILE_FIREBALL: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        play_sound_at_object(other, "BUMP");
+                        other->flags |= FLG_DESTROY;
+                    }
+                    break;
+                }
+
+                case OBJ_MISSILE_HAMMER: {
+                    const PlayerID pid = get_owner_id(other_id);
+                    if (pid != -1L) {
+                        give_points(self, pid, 200L);
+                        kill_enemy(self, true);
+                    }
+                    break;
+                }
+
+                case OBJ_KOOPA_SHELL:
+                case OBJ_BUZZY_SHELL: {
+                    if (other->flags & FLG_SHELL_ACTIVE)
+                        shell_attack(other, self);
+                    break;
+                }
+            }
+
             break;
         }
     }
@@ -4134,6 +4399,43 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     break;
                 }
 
+                case OBJ_GOOMBA: {
+                    if (!(object->flags & FLG_ENEMY_ACTIVE) && in_any_view(object, FxZero, false)) {
+                        object->values[VAL_X_SPEED] = FfInt((object->flags & FLG_X_FLIP) ? -1L : 1L);
+                        object->flags |= FLG_ENEMY_ACTIVE;
+                    }
+
+                    const fix16_t spd = object->values[VAL_X_SPEED];
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00004A3D);
+                    displace_object(oid, FfInt(10L), false);
+                    bump_object(oid);
+
+                    if (object->values[VAL_ENEMY_TURN] > 0L)
+                        --(object->values[VAL_ENEMY_TURN]);
+
+                    if (object->values[VAL_X_TOUCH] != 0L) {
+                        object->values[VAL_X_SPEED] = object->values[VAL_X_TOUCH] * -Fabs(spd);
+                        if (object->values[VAL_X_SPEED] < FxZero)
+                            object->flags |= FLG_X_FLIP;
+                        if (object->values[VAL_X_SPEED] > FxZero)
+                            object->flags &= ~FLG_X_FLIP;
+                    }
+
+                    if (below_frame(object))
+                        object->flags |= FLG_DESTROY;
+                    break;
+                }
+
+                case OBJ_GOOMBA_FLAT: {
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], FxHalf);
+                    displace_object(oid, FxZero, false);
+
+                    ++(object->values[VAL_GOOMBA_FLAT]);
+                    if (object->values[VAL_GOOMBA_FLAT] > 200L || below_frame(object))
+                        object->flags |= FLG_DESTROY;
+                    break;
+                }
+
                 case OBJ_PARAKOOPA: {
                     if (!(object->flags & FLG_PARAKOOPA_START)) {
                         object->values[VAL_PARAKOOPA_Y] = object->pos[1];
@@ -4693,6 +4995,145 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                         }
                     }
 
+                    break;
+                }
+
+                case OBJ_BOWSER: {
+                    struct GameObject* nearest = get_object(nearest_player(object->pos));
+                    if (nearest != NULL) {
+                        if (nearest->pos[0] < object->pos[0])
+                            object->flags |= FLG_X_FLIP;
+                        if (nearest->pos[0] > object->pos[0])
+                            object->flags &= ~FLG_X_FLIP;
+
+                        struct GameObject* autoscroll = get_object(state.autoscroll);
+                        if (autoscroll == NULL && nearest->pos[0] > Fsub(state.size[0], FfInt(952L))) {
+                            const ObjectID aid = create_object(
+                                OBJ_AUTOSCROLL, (fvec2){Fsub(nearest->pos[0], F_HALF_SCREEN_WIDTH), FxZero}
+                            );
+                            struct GameObject* autoscroll = get_object(aid);
+                            if (autoscroll != NULL) {
+                                autoscroll->values[VAL_X_SPEED] = FxOne;
+                                play_track(TS_LEVEL, "RBOWSER", true);
+                            }
+                        }
+                    }
+
+                    break;
+                }
+
+                case OBJ_PODOBOO_VOLCANO: {
+                    if ((state.time % 300L) == 0L && object->values[VAL_PODOBOO_TIME] == 0L)
+                        object->values[VAL_PODOBOO_TIME] = 8L;
+
+                    if ((state.time % 15) == 0L && object->values[VAL_PODOBOO_TIME] > 0L &&
+                        in_any_view(object, FfInt(224L), false)) {
+                        struct GameObject* podoboo =
+                            get_object(create_object(OBJ_PODOBOO, POS_ADD(object, FfInt(16L), FxZero)));
+                        if (podoboo != NULL) {
+                            fix16_t rand = random() % 5L;
+                            rand -= random() % 5L;
+
+                            podoboo->values[VAL_X_SPEED] = FfInt(rand);
+                            podoboo->values[VAL_Y_SPEED] = FfInt(-11L);
+                            play_sound_at_object(podoboo, "FIRE");
+                        }
+
+                        --(object->values[VAL_PODOBOO_TIME]);
+                    }
+                    break;
+                }
+
+                case OBJ_PODOBOO: {
+                    if (below_frame(object)) {
+                        object->flags |= FLG_DESTROY;
+                        break;
+                    }
+
+                    bump_object(oid);
+
+                    object->values[VAL_Y_SPEED] = Fadd(object->values[VAL_Y_SPEED], 0x00003333);
+                    if (object->values[VAL_Y_SPEED] >= FxZero)
+                        object->flags |= FLG_Y_FLIP;
+
+                    move_object(oid, POS_SPEED(object));
+                    break;
+                }
+
+                case OBJ_LAVA_SPLASH: {
+                    object->values[VAL_SPLASH_FRAME] += 49L;
+                    if (object->values[VAL_SPLASH_FRAME] >= 1100)
+                        object->flags |= FLG_DESTROY;
+                    break;
+                }
+
+                case OBJ_CHEEP_CHEEP_BLUE: {
+                    if (!(object->flags & FLG_ENEMY_ACTIVE) && in_any_view(object, FxZero, false)) {
+                        object->values[VAL_X_SPEED] = FfInt((object->flags & FLG_X_FLIP) ? -1L : 1L);
+                        object->flags |= FLG_ENEMY_ACTIVE;
+                    }
+
+                    const fix16_t spd = object->values[VAL_X_SPEED];
+                    displace_object(oid, FfInt(10L), false);
+                    bump_object(oid);
+
+                    if (object->values[VAL_ENEMY_TURN] > 0L)
+                        --(object->values[VAL_ENEMY_TURN]);
+
+                    if (object->values[VAL_X_TOUCH] != 0L) {
+                        object->values[VAL_X_SPEED] = object->values[VAL_X_TOUCH] * -Fabs(spd);
+                        if (object->values[VAL_X_SPEED] < FxZero)
+                            object->flags |= FLG_X_FLIP;
+                        if (object->values[VAL_X_SPEED] > FxZero)
+                            object->flags &= ~FLG_X_FLIP;
+                    }
+
+                    break;
+                }
+
+                case OBJ_CHEEP_CHEEP_SPIKY: {
+                    fix16_t dir = FxZero;
+                    fix16_t spd = FxZero;
+
+                    if (!(object->flags & FLG_ENEMY_ACTIVE)) {
+                        spd = -FxOne;
+                        if (in_any_view(object, FxZero, false))
+                            object->flags |= FLG_ENEMY_ACTIVE;
+                    } else if (in_any_view(object, FfInt(224L), false)) {
+                        if ((state.time % 50L) == 0L) {
+                            struct GameObject* nearest = get_object(nearest_player(object->pos));
+                            if (nearest != NULL) {
+                                dir = Fatan2(
+                                    Fsub(Fsub(nearest->pos[1], FfInt(14L)), object->pos[1]),
+                                    Fsub(nearest->pos[0], object->pos[0])
+                                );
+                                spd = 0x00014000;
+                            }
+                        }
+                    } else
+                        object->flags &= ~FLG_ENEMY_ACTIVE;
+
+                    if (object->pos[1] < state.water) {
+                        dir = Fsub(0x00028D74, Fmul(FfInt(random() % 7L), 0x00003244));
+                        spd = 0x00014000;
+                    }
+
+                    if (spd < FxZero) {
+                        object->values[VAL_X_SPEED] = object->values[VAL_Y_SPEED] = FxZero;
+                    } else if (spd > FxZero) {
+                        object->values[VAL_X_SPEED] = Fmul(Fcos(dir), spd);
+                        object->values[VAL_Y_SPEED] = Fmul(Fsin(dir), spd);
+
+                        if (object->values[VAL_X_SPEED] < FxZero)
+                            object->flags |= FLG_X_FLIP;
+                        if (object->values[VAL_X_SPEED] > FxZero)
+                            object->flags &= ~FLG_X_FLIP;
+                    }
+
+                    move_object(oid, POS_SPEED(object));
+
+                    if (below_frame(object))
+                        object->flags |= FLG_DESTROY;
                     break;
                 }
             }
@@ -6092,6 +6533,155 @@ void draw_state() {
                     }
 
                     draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_BOWSER: {
+                    draw_object(oid, "E_BOMZH", 0, WHITE);
+                    break;
+                }
+
+                case OBJ_LAVA: {
+                    const char* tex;
+                    switch ((int)((float)state.time / 9.090909090909091f) % 8) {
+                        default:
+                            tex = "E_LAVAA";
+                            break;
+                        case 1:
+                            tex = "E_LAVAB";
+                            break;
+                        case 2:
+                            tex = "E_LAVAC";
+                            break;
+                        case 3:
+                            tex = "E_LAVAD";
+                            break;
+                        case 4:
+                            tex = "E_LAVAE";
+                            break;
+                        case 5:
+                            tex = "E_LAVAF";
+                            break;
+                        case 6:
+                            tex = "E_LAVAG";
+                            break;
+                        case 7:
+                            tex = "E_LAVAH";
+                            break;
+                    }
+
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_LAVA_SPLASH: {
+                    const char* tex;
+                    switch (object->values[VAL_SPLASH_FRAME] / 100) {
+                        default:
+                            tex = "X_LSPLSA";
+                            break;
+                        case 1:
+                            tex = "X_LSPLSB";
+                            break;
+                        case 2:
+                            tex = "X_LSPLSC";
+                            break;
+                        case 3:
+                            tex = "X_LSPLSD";
+                            break;
+                        case 4:
+                            tex = "X_LSPLSE";
+                            break;
+                        case 5:
+                            tex = "X_LSPLSF";
+                            break;
+                        case 6:
+                            tex = "X_LSPLSG";
+                            break;
+                        case 7:
+                            tex = "X_LSPLSH";
+                            break;
+                        case 8:
+                            tex = "X_LSPLSI";
+                            break;
+                        case 9:
+                            tex = "X_LSPLSJ";
+                            break;
+                        case 10:
+                            tex = "X_LSPLSK";
+                            break;
+                    }
+
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_PODOBOO: {
+                    const char* tex;
+                    switch ((int)((float)state.time / 1.666666666666667f) % 3) {
+                        default:
+                            tex = "E_PODOBA";
+                            break;
+                        case 1:
+                            tex = "E_PODOBB";
+                            break;
+                        case 2:
+                            tex = "E_PODOBC";
+                            break;
+                    }
+
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_CHEEP_CHEEP_BLUE: {
+                    const char* tex;
+                    switch ((int)((float)state.time / 11.11111111111111f) % 2) {
+                        default:
+                            tex = "E_CHEEBA";
+                            break;
+                        case 1:
+                            tex = "E_CHEEBB";
+                            break;
+                    }
+
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_CHEEP_CHEEP_SPIKY: {
+                    const char* tex;
+                    switch ((int)((float)state.time / 6.25f) % 2) {
+                        default:
+                            tex = "E_CHEESA";
+                            break;
+                        case 1:
+                            tex = "E_CHEESB";
+                            break;
+                    }
+
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_GOOMBA: {
+                    const char* tex;
+                    switch ((int)((float)state.time / 9.090909090909091f) % 2) {
+                        default:
+                            tex = "E_GOOMBA";
+                            break;
+                        case 1:
+                            tex = "E_GOOMBB";
+                            break;
+                    }
+
+                    draw_object(oid, tex, 0, WHITE);
+                    break;
+                }
+
+                case OBJ_GOOMBA_FLAT: {
+                    draw_object(oid, "E_GOOMBC", 0, WHITE);
+                    break;
                 }
             }
 
@@ -6300,6 +6890,7 @@ void load_object(GameObjectType type) {
             load_object(OBJ_MISSILE_FIREBALL);
             load_object(OBJ_MISSILE_BEETROOT);
             load_object(OBJ_MISSILE_HAMMER);
+            load_object(OBJ_WATER_SPLASH);
             load_object(OBJ_BUBBLE);
             load_object(OBJ_EXPLODE);
             break;
@@ -6915,6 +7506,7 @@ void load_object(GameObjectType type) {
             load_texture("E_PODOBB");
             load_texture("E_PODOBC");
 
+            load_object(OBJ_POINTS);
             load_object(OBJ_LAVA_SPLASH);
             break;
         }
@@ -6929,6 +7521,50 @@ void load_object(GameObjectType type) {
             load_texture("M_PCASTA");
             load_texture("M_PCASTB");
             load_texture("M_PCASTC");
+            break;
+        }
+
+        case OBJ_BOWSER: {
+            load_texture("E_BOMZH");
+
+            load_track("RBOWSER");
+
+            load_object(OBJ_AUTOSCROLL);
+            break;
+        }
+
+        case OBJ_PODOBOO_SPAWNER: {
+            load_object(OBJ_PODOBOO);
+            break;
+        }
+
+        case OBJ_PODOBOO_VOLCANO: {
+            load_sound("FIRE");
+
+            load_object(OBJ_PODOBOO);
+            break;
+        }
+
+        case OBJ_CHEEP_CHEEP_BLUE: {
+            load_texture("E_CHEEBA");
+            load_texture("E_CHEEBB");
+
+            load_sound("STOMP");
+            load_sound("KICK");
+
+            load_object(OBJ_POINTS);
+            load_object(OBJ_DEAD);
+            break;
+        }
+
+        case OBJ_CHEEP_CHEEP_SPIKY: {
+            load_texture("E_CHEESA");
+            load_texture("E_CHEESB");
+
+            load_sound("KICK");
+
+            load_object(OBJ_POINTS);
+            load_object(OBJ_DEAD);
             break;
         }
     }
@@ -6985,7 +7621,9 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                 case OBJ_WHEEL_RIGHT:
                 case OBJ_BILL_BLASTER:
                 case OBJ_BRO_LAYER:
-                case OBJ_BOUNDS: {
+                case OBJ_BOUNDS:
+                case OBJ_LAVA:
+                case OBJ_PODOBOO_VOLCANO: {
                     object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
                     break;
                 }
@@ -7321,9 +7959,19 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                 case OBJ_KOOPA:
                 case OBJ_PARAKOOPA:
                 case OBJ_BUZZY_BEETLE:
-                case OBJ_SPINY: {
+                case OBJ_SPINY:
+                case OBJ_CHEEP_CHEEP_BLUE:
+                case OBJ_CHEEP_CHEEP_SPIKY: {
                     object->bbox[0][0] = FfInt(-15L);
                     object->bbox[0][1] = FfInt(-31L);
+                    object->bbox[1][0] = FfInt(15L);
+                    object->bbox[1][1] = FxOne;
+                    break;
+                }
+
+                case OBJ_GOOMBA_FLAT: {
+                    object->bbox[0][0] = FfInt(-15L);
+                    object->bbox[0][1] = FfInt(-16L);
                     object->bbox[1][0] = FfInt(15L);
                     object->bbox[1][1] = FxOne;
                     break;
@@ -7369,6 +8017,31 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                     object->bbox[0][0] = FfInt(-8L);
                     object->bbox[0][1] = FfInt(-16L);
                     object->bbox[1][0] = FfInt(8L);
+                    break;
+                }
+
+                case OBJ_BOWSER: {
+                    object->bbox[0][0] = FfInt(-60L);
+                    object->bbox[0][1] = FfInt(-217L);
+                    object->bbox[1][0] = FfInt(60L);
+                    object->bbox[1][1] = FxOne;
+                    break;
+                }
+
+                case OBJ_PODOBOO_SPAWNER: {
+                    object->bbox[1][0] = object->bbox[1][1] = FfInt(32L);
+
+                    object->values[VAL_PODOBOO_CHILD] = NULLOBJ;
+                    break;
+                }
+
+                case OBJ_PODOBOO: {
+                    object->bbox[0][0] = FfInt(-13L);
+                    object->bbox[0][1] = FfInt(-16L);
+                    object->bbox[1][0] = FfInt(13L);
+                    object->bbox[1][1] = FfInt(16L);
+
+                    object->values[VAL_PODOBOO_PARENT] = NULLOBJ;
                     break;
                 }
             }
@@ -7539,6 +8212,13 @@ void destroy_object(ObjectID index) {
         case OBJ_AUTOSCROLL: {
             if (state.autoscroll == index)
                 state.autoscroll = NULLOBJ;
+            break;
+        }
+
+        case OBJ_PODOBOO: {
+            struct GameObject* owner = get_object((ObjectID)(object->values[VAL_PODOBOO_PARENT]));
+            if (owner != NULL && owner->type == OBJ_PODOBOO_SPAWNER)
+                owner->values[VAL_PODOBOO_CHILD] = NULLOBJ;
             break;
         }
     }

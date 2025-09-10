@@ -1357,14 +1357,30 @@
                     "def": "Cheep Cheep Blue",
                     "type": "object",
                     "index": 58,
-                    "texture": "E_CHEEBA"
+                    "texture": "E_CHEEBA",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2,
+                            "default": true
+                        }
+                    ]
                 },
 
                 {
                     "def": "Cheep Cheep Spiky",
                     "type": "object",
                     "index": 59,
-                    "texture": "E_CHEESA"
+                    "texture": "E_CHEESA",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2,
+                            "default": true
+                        }
+                    ]
                 },
 
                 {
@@ -1395,6 +1411,14 @@
                     "index": 66,
                     "z": 20,
                     "texture": "E_LAVAA"
+                },
+
+                {
+                    "def": "Lava Body",
+                    "type": "backdrop",
+                    "z": 20,
+                    "texture": "T_LAVA",
+                    "stretch": true
                 },
 
                 {
