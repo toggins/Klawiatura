@@ -29,6 +29,7 @@ static bool bypass_shader = false, play_intro = true;
 static char* server_ip = NUTPUNCH_DEFAULT_SERVER;
 static char name[NUTPUNCH_FIELD_DATA_MAX + 1] = "PLAYER";
 static char level[NUTPUNCH_FIELD_DATA_MAX + 1] = "TEST";
+static char skin[NUTPUNCH_FIELD_DATA_MAX + 1] = "";
 static bool quickstart = false;
 static GameFlags start_flags = 0;
 
@@ -40,6 +41,8 @@ static void parse_args(int argc, char* argv[]) {
             server_ip = argv[++i];
         else if (SDL_strcmp(argv[i], "-name") == 0)
             SDL_strlcpy(name, argv[++i], sizeof(name));
+        else if (SDL_strcmp(argv[i], "-skin") == 0)
+            SDL_strlcpy(skin, argv[++i], sizeof(skin));
         else if (SDL_strcmp(argv[i], "-level") == 0) {
             SDL_strlcpy(level, argv[++i], sizeof(level));
             quickstart = true;
@@ -311,7 +314,7 @@ int main(int argc, char* argv[]) {
         FATAL("SDL_Init fail: %s", SDL_GetError());
     video_init(bypass_shader);
     audio_init();
-    adapter = net_init(server_ip, name, &num_players, level, &start_flags);
+    adapter = net_init(server_ip, name, skin, &num_players, level, &start_flags);
 
     if (play_intro && !quickstart)
         show_intro();

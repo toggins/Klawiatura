@@ -62,16 +62,16 @@ static enum TypeScopes {
 } typing = TYPE_NONE;
 
 static char* level = NULL;
-static char cache_level[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
 static char* name = NULL;
-static char cache_name[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
+static char* skin = NULL;
+static char cache_input[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
 
-GekkoNetAdapter* net_init(const char* ip, char* init_name, PlayerID* pcount, char* init_level, GameFlags* flags) {
+GekkoNetAdapter*
+net_init(const char* ip, char* init_name, char* init_skin, PlayerID* pcount, char* init_level, GameFlags* flags) {
     SDL_strlcpy(server_ip, ip, sizeof(server_ip));
     name = init_name;
-    SDL_strlcpy(cache_name, init_name, sizeof(cache_name));
     level = init_level;
-    SDL_strlcpy(cache_level, init_level, sizeof(cache_level));
+    skin = init_skin;
     num_players = pcount;
     start_flags = flags;
 
@@ -133,17 +133,8 @@ static char* current_input() {
             return name;
         case TYPE_LEVEL:
             return level;
-    }
-}
-
-static char* current_cache_input() {
-    switch (typing) {
-        default:
-            return NULL;
-        case TYPE_NAME:
-            return cache_name;
-        case TYPE_LEVEL:
-            return cache_level;
+        case TYPE_SKIN:
+            return skin;
     }
 }
 
@@ -177,7 +168,13 @@ static void fucking_exit() {
 }
 
 static void type_name() {
+    SDL_strlcpy(cache_input, name, sizeof(cache_input));
     typing = TYPE_NAME;
+}
+
+static void type_skin() {
+    SDL_strlcpy(cache_input, skin, sizeof(cache_input));
+    typing = TYPE_SKIN;
 }
 
 static void toggle_pcount() {
@@ -187,6 +184,7 @@ static void toggle_pcount() {
 }
 
 static void type_level() {
+    SDL_strlcpy(cache_input, level, sizeof(cache_input));
     typing = TYPE_LEVEL;
 }
 
@@ -222,7 +220,7 @@ static void host_multi() {
     lobby_id = random_lobby_id();
     NutPunch_SetServerAddr(server_ip);
     if (NutPunch_Join(lobby_id))
-        INFO("Waiting in lobby \"%s\"... (FLAG: %d)", lobby_id, *start_flags);
+        INFO("Waiting in lobby \"%s\"...", lobby_id);
 
     NutPunch_LobbySet(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
     NutPunch_LobbySet("PLAYERS", sizeof(PlayerID), num_players);
@@ -250,6 +248,7 @@ static struct MenuOption MENUS[NM_SIZE][MENU_MAX_OPTIONS] = {
             {"Multiplayer", go_multi},
             {"Exit", fucking_exit},
             {"Name: FMT", type_name},
+            {"Skin: FMT", type_skin},
         },
     [NM_SINGLE] =
         {
@@ -309,7 +308,7 @@ static void handle_menu_input(SDL_Scancode key) {
 
         case SDL_SCANCODE_ESCAPE: {
             if (typing != TYPE_NONE) {
-                char *input = current_input(), *cache_input = current_cache_input();
+                char* input = current_input();
                 SDL_strlcpy(input, cache_input, NUTPUNCH_FIELD_DATA_MAX + 1);
                 typing = -1;
 
@@ -335,10 +334,7 @@ static void handle_menu_input(SDL_Scancode key) {
             if (typing == TYPE_NONE)
                 break;
 
-            char *input = current_input(), *cache_input = current_cache_input();
-            SDL_strlcpy(cache_input, input, NUTPUNCH_FIELD_DATA_MAX + 1);
             typing = -1;
-
             play_ui_sound("SELECT");
             break;
         }
@@ -367,7 +363,7 @@ static void handle_menu_input(SDL_Scancode key) {
             if (typing == TYPE_NONE)
                 break;
 
-            char *input = current_input(), *cache_input = current_cache_input();
+            char* input = current_input();
             if (SDL_strlen(input) < NUTPUNCH_FIELD_DATA_MAX) {
                 const char* gross = SDL_GetKeyName(SDL_GetKeyFromScancode(key, SDL_KMOD_NONE, false));
                 if (SDL_strlen(gross) == 1)
@@ -468,6 +464,7 @@ bool net_wait() {
 
             case NP_Status_Online: {
                 NutPunch_PeerSet("NAME", (int)SDL_strnlen(name, NUTPUNCH_FIELD_DATA_MAX - 1), name);
+                NutPunch_PeerSet("SKIN", (int)SDL_strnlen(skin, NUTPUNCH_FIELD_DATA_MAX - 1), skin); // TODO: Use CRC32
 
                 int size;
 
@@ -503,6 +500,9 @@ bool net_wait() {
 
         SDL_snprintf(fmt, sizeof(fmt), "Name: %s%s", name, add_caret(TYPE_NAME));
         SDL_memcpy(MENUS[NM_MAIN][3].display, fmt, sizeof(fmt));
+
+        SDL_snprintf(fmt, sizeof(fmt), "Skin: %s%s", skin, add_caret(TYPE_SKIN));
+        SDL_memcpy(MENUS[NM_MAIN][4].display, fmt, sizeof(fmt));
 
         SDL_snprintf(fmt, sizeof(fmt), "Level: %s%s", level, add_caret(TYPE_LEVEL));
         SDL_memcpy(MENUS[NM_SINGLE][0].display, fmt, sizeof(fmt));
