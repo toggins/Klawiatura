@@ -578,6 +578,11 @@ PlayerID net_fill(GekkoSession* session) {
         if (!NutPunch_PeerAlive(i))
             continue;
 
+        int size;
+        const char* sname = NutPunch_PeerGet(i, "SKIN", &size);
+        if (size > 0 && size <= NUTPUNCH_FIELD_DATA_MAX)
+            load_skin(sname);
+
         if (NutPunch_LocalPeer() == i) {
             local = counter;
             gekko_add_actor(session, LocalPlayer, NULL);
