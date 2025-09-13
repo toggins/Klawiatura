@@ -2563,13 +2563,14 @@ static void draw_player(
     const struct GamePlayer* player = get_player(pid);
 
     const struct Skin* skin = NULL;
-    if (NutPunch_PeerAlive(pid)) {
+    if (state.flags & GF_SINGLE)
+        skin = get_skin(local_skin);
+    else if (NutPunch_PeerAlive(pid)) {
         int size;
         const char* sname = NutPunch_PeerGet(pid, "SKIN", &size);
         if (size > 0 && size <= NUTPUNCH_FIELD_DATA_MAX)
             skin = get_skin(sname);
-    } else if (state.flags & GF_SINGLE)
-        skin = get_skin(local_skin);
+    }
 
     const char* tname = NULL;
     GLubyte tint[4] = {color[0], color[1], color[2], color[3]};
@@ -7888,6 +7889,7 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                     object->bbox[1][1] = FxOne;
 
                     object->values[VAL_PLAYER_INDEX] = -1L;
+                    object->values[VAL_PLAYER_GROUND] = 2L;
                     object->values[VAL_PLAYER_WARP] = NULLOBJ;
                     object->values[VAL_PLAYER_PLATFORM] = NULLOBJ;
                     break;
