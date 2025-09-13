@@ -76,6 +76,11 @@ struct Font {
     } glyphs[256];
 };
 
+struct Skin {
+    char name[sizeof(StTinyKey)];
+    GLuint texture;
+};
+
 struct Vertex {
     GLfloat position[3];
     GLubyte color[4];
@@ -131,6 +136,10 @@ const struct Texture* get_texture(const char*);
 
 void load_font(enum FontIndices);
 
+void load_skin(const char*);
+const struct Skin* get_skin(const char*);
+
+void set_batch_texture(GLuint);
 void set_batch_stencil(GLfloat);
 void set_batch_logic(GLenum);
 void submit_batch();
@@ -145,3 +154,4 @@ void draw_text(enum FontIndices, enum FontAlignment, const char*, const float[3]
 void draw_text_ext(enum FontIndices, enum FontAlignment, const char*, const float[3], float, const GLubyte[4]);
 void draw_rectangle(const char*, const float[2][2], float, const GLubyte[4]);
 void draw_ellipse(const float[2][2], float, const GLubyte[4]);
+void draw_raw_quad(GLuint, const GLfloat[2][2], GLfloat, const GLubyte[4], const GLfloat[2][2]);

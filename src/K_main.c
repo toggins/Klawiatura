@@ -80,6 +80,7 @@ static void start_gekko() {
     ctx.num_players = num_players;
     ctx.local_player = local_player;
     SDL_memcpy(ctx.level, level, sizeof(ctx.level));
+    SDL_memcpy(ctx.skin, skin, sizeof(ctx.skin));
 
     ctx.flags = start_flags;
     if (num_players <= 1)

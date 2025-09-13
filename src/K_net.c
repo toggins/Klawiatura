@@ -334,6 +334,8 @@ static void handle_menu_input(SDL_Scancode key) {
             if (typing == TYPE_NONE)
                 break;
 
+            if (typing == TYPE_SKIN)
+                load_skin(skin);
             typing = -1;
             play_ui_sound("SELECT");
             break;
@@ -463,8 +465,8 @@ bool net_wait() {
                 return false;
 
             case NP_Status_Online: {
-                NutPunch_PeerSet("NAME", (int)SDL_strnlen(name, NUTPUNCH_FIELD_DATA_MAX - 1), name);
-                NutPunch_PeerSet("SKIN", (int)SDL_strnlen(skin, NUTPUNCH_FIELD_DATA_MAX - 1), skin); // TODO: Use CRC32
+                NutPunch_PeerSet("NAME", (int)SDL_strnlen(name, NUTPUNCH_FIELD_DATA_MAX), name);
+                NutPunch_PeerSet("SKIN", (int)SDL_strnlen(skin, NUTPUNCH_FIELD_DATA_MAX), skin); // TODO: Use CRC32
 
                 int size;
 
@@ -480,10 +482,8 @@ bool net_wait() {
                 if (size == sizeof(GameFlags))
                     *start_flags = *pflags;
 
-                if (*num_players && NutPunch_PeerCount() >= *num_players) {
-                    INFO("%d player start!\n", *num_players);
+                if (*num_players && NutPunch_PeerCount() >= *num_players)
                     starting = true;
-                }
 
                 break;
             }
@@ -548,6 +548,7 @@ bool net_wait() {
         audio_update();
 
         if (starting) {
+            INFO("%d player start!\n", *num_players);
             stop_all_tracks();
             menu = NM_MULTI;
             lobby_id = NULL;

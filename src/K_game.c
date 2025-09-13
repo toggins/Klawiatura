@@ -1,5 +1,3 @@
-#include <nutpunch.h>
-
 #include "K_game.h"
 #include "K_audio.h"
 #include "K_log.h"
@@ -12,6 +10,7 @@ static PlayerID view_player = -1L;
 static bool in_game = false;
 
 static struct InterpObject interp[MAX_OBJECTS] = {0};
+static char local_skin[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
 
 /* ====
 
@@ -230,6 +229,9 @@ static PlayerID get_owner_id(ObjectID oid) {
 
         case OBJ_KEVIN:
             return (PlayerID)(object->values[VAL_KEVIN_PLAYER]);
+
+        case OBJ_PLAYER_EFFECT:
+            return (PlayerID)(object->values[VAL_PLAYER_EFFECT_INDEX]);
 
         case OBJ_MISSILE_FIREBALL:
         case OBJ_MISSILE_BEETROOT:
@@ -2318,6 +2320,9 @@ static PlayerFrames get_player_frame(const struct GameObject* object) {
 }
 
 static const char* get_player_texture(PlayerPowers power, PlayerFrames frame) {
+    if (frame == PF_DEAD)
+        return "P_DEAD";
+
     switch (power) {
         default:
         case POW_SMALL: {
@@ -2551,6 +2556,235 @@ static const char* get_player_texture(PlayerPowers power, PlayerFrames frame) {
     }
 }
 
+static void draw_player(
+    PlayerID pid, PlayerPowers power, PlayerFrames frame, const float pos[3], const bool flip[2], GLubyte color[4]
+) {
+    const bool local = pid == local_player;
+    const struct GamePlayer* player = get_player(pid);
+
+    const struct Skin* skin = NULL;
+    if (NutPunch_PeerAlive(pid)) {
+        int size;
+        const char* sname = NutPunch_PeerGet(pid, "SKIN", &size);
+        if (size > 0 && size <= NUTPUNCH_FIELD_DATA_MAX)
+            skin = get_skin(sname);
+    } else if (state.flags & GF_SINGLE)
+        skin = get_skin(local_skin);
+
+    const char* tname = NULL;
+    GLubyte tint[4] = {color[0], color[1], color[2], color[3]};
+    tint[3] = (GLubyte)((float)(tint[3]) * (local ? 1 : 0.75f));
+
+    if (skin == NULL) {
+        tname = get_player_texture(power, frame);
+        draw_sprite(tname, pos, flip, 0, tint);
+        return;
+    }
+
+    GLuint tex = skin->texture;
+    GLfloat uv[2][2] = {0};
+    if (frame == PF_DEAD) {
+        uv[1][0] = 48.f / 528.f;
+        uv[1][1] = 48.f / 112.f;
+    } else if (power == POW_SMALL) {
+        uv[0][1] = 0.f / 112.f;
+        uv[1][1] = 48.f / 112.f;
+
+        switch (frame) {
+            case PF_GROW1: {
+                uv[0][0] = 144.f / 528.f;
+                uv[0][1] = 48.f / 112.f;
+                uv[1][0] = 192.f / 528.f;
+                uv[1][1] = 112.f / 112.f;
+                break;
+            }
+
+            case PF_GROW2: {
+                uv[0][0] = 0.f / 528.f;
+                uv[0][1] = 48.f / 112.f;
+                uv[1][0] = 48.f / 528.f;
+                uv[1][1] = 112.f / 112.f;
+                break;
+            }
+
+            default: {
+                uv[0][0] = 48.f / 528.f;
+                uv[1][0] = 96.f / 528.f;
+                break;
+            }
+
+            case PF_WALK1: {
+                uv[0][0] = 96.f / 528.f;
+                uv[1][0] = 144.f / 528.f;
+                break;
+            }
+
+            case PF_WALK2: {
+                uv[0][0] = 144.f / 528.f;
+                uv[1][0] = 192.f / 528.f;
+                break;
+            }
+
+            case PF_JUMP:
+            case PF_FALL: {
+                uv[0][0] = 192.f / 528.f;
+                uv[1][0] = 240.f / 528.f;
+                break;
+            }
+
+            case PF_SWIM1:
+            case PF_SWIM4: {
+                uv[0][0] = 336.f / 528.f;
+                uv[1][0] = 384.f / 528.f;
+                break;
+            }
+
+            case PF_SWIM2: {
+                uv[0][0] = 384.f / 528.f;
+                uv[1][0] = 432.f / 528.f;
+                break;
+            }
+
+            case PF_SWIM3: {
+                uv[0][0] = 432.f / 528.f;
+                uv[1][0] = 480.f / 528.f;
+                break;
+            }
+
+            case PF_SWIM5: {
+                uv[0][0] = 480.f / 528.f;
+                uv[1][0] = 528.f / 528.f;
+                break;
+            }
+        }
+    } else {
+        switch (power) {
+            default:
+                break;
+
+            case POW_FIRE: {
+                tint[1] /= 2;
+                tint[2] /= 2;
+                break;
+            }
+
+            case POW_BEETROOT:
+                tint[1] /= 2;
+                break;
+
+            case POW_LUI: {
+                tint[0] /= 2;
+                tint[2] /= 2;
+                break;
+            }
+
+            case POW_HAMMER: {
+                tint[0] = (GLubyte)((float)(tint[0]) * 0.75f);
+                tint[1] = (GLubyte)((float)(tint[1]) * 0.75f);
+                tint[2] = (GLubyte)((float)(tint[2]) * 0.75f);
+                break;
+            }
+        }
+
+        uv[0][1] = 48.f / 112.f;
+        uv[1][1] = 112.f / 112.f;
+
+        switch (frame) {
+            case PF_GROW1: {
+                uv[0][0] = 48.f / 528.f;
+                uv[0][1] = 0.f / 112.f;
+                uv[1][0] = 96.f / 528.f;
+                uv[1][1] = 48.f / 112.f;
+                break;
+            }
+
+            case PF_GROW2: {
+                uv[0][0] = 0.f / 528.f;
+                uv[1][0] = 48.f / 528.f;
+                break;
+            }
+
+            default: {
+                uv[0][0] = 48.f / 528.f;
+                uv[1][0] = 96.f / 528.f;
+                break;
+            }
+
+            case PF_WALK1: {
+                uv[0][0] = 96.f / 528.f;
+                uv[1][0] = 144.f / 528.f;
+                break;
+            }
+
+            case PF_GROW3:
+            case PF_GROW4:
+            case PF_WALK2: {
+                uv[0][0] = 144.f / 528.f;
+                uv[1][0] = 192.f / 528.f;
+                break;
+            }
+
+            case PF_JUMP:
+            case PF_FALL: {
+                uv[0][0] = 192.f / 528.f;
+                uv[1][0] = 240.f / 528.f;
+                break;
+            }
+
+            case PF_DUCK: {
+                uv[0][0] = 240.f / 528.f;
+                uv[1][0] = 288.f / 528.f;
+                break;
+            }
+
+            case PF_FIRE: {
+                uv[0][0] = 288.f / 528.f;
+                uv[1][0] = 336.f / 528.f;
+                break;
+            }
+
+            case PF_SWIM1:
+            case PF_SWIM4: {
+                uv[0][0] = 336.f / 528.f;
+                uv[1][0] = 384.f / 528.f;
+                break;
+            }
+
+            case PF_SWIM2: {
+                uv[0][0] = 384.f / 528.f;
+                uv[1][0] = 432.f / 528.f;
+                break;
+            }
+
+            case PF_SWIM3: {
+                uv[0][0] = 432.f / 528.f;
+                uv[1][0] = 480.f / 528.f;
+                break;
+            }
+
+            case PF_SWIM5: {
+                uv[0][0] = 480.f / 528.f;
+                uv[1][0] = 528.f / 528.f;
+                break;
+            }
+        }
+    }
+
+    if (flip[0]) {
+        const GLfloat u = uv[0][0];
+        uv[0][0] = uv[1][0];
+        uv[1][0] = u;
+    }
+
+    draw_raw_quad(
+        tex,
+        (float[2][2]){{pos[0] - 24,
+                       pos[1] - ((power == POW_SMALL && frame != PF_GROW1 && frame != PF_GROW2) ? 47.f : 63.f)},
+                      {pos[0] + 24, pos[1] + 1}},
+        pos[2], tint, uv
+    );
+}
+
 static Bool in_any_view(struct GameObject* object, fix16_t padding, Bool ignore_top) {
     const fix16_t sx1 = Fadd(object->pos[0], object->bbox[0][0]);
     const fix16_t sy1 = Fadd(object->pos[1], object->bbox[0][1]);
@@ -2642,7 +2876,10 @@ void start_state(const struct GameContext* ctx) {
 
     if (ctx != NULL)
         SDL_memcpy(&context, ctx, sizeof(struct GameContext));
+
     local_player = view_player = context.local_player;
+    SDL_strlcpy(local_skin, context.skin, sizeof(local_skin));
+
     state.flags |= context.flags;
     state.checkpoint = context.checkpoint;
 
@@ -3625,10 +3862,6 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
                     else
                         object->flags &= ~FLG_X_FLIP;
 
-                    object->values[VAL_KEVIN_X_JITTER] = random() % 5L;
-                    object->values[VAL_KEVIN_X_JITTER] -= random() % 5L;
-                    object->values[VAL_KEVIN_Y_JITTER] = random() % 5L;
-                    object->values[VAL_KEVIN_Y_JITTER] -= random() % 5L;
                     break;
                 }
 
@@ -5338,12 +5571,15 @@ void draw_state() {
                     if (object->values[VAL_PLAYER_FLASH] > 0L && (state.time % 2))
                         break;
 
-                    const bool local = object->values[VAL_PLAYER_INDEX] == local_player;
-                    const struct GamePlayer* player = get_player((PlayerID)(object->values[VAL_PLAYER_INDEX]));
-                    const char* tex =
-                        get_player_texture(player == NULL ? POW_SMALL : player->power, get_player_frame(object));
-                    const GLubyte a = local ? 255 : 190;
-                    draw_object(oid, tex, 0, ALPHA(a));
+                    const PlayerID pid = (PlayerID)(object->values[VAL_PLAYER_INDEX]);
+                    const struct GamePlayer* player = get_player(pid);
+                    if (player == NULL)
+                        break;
+                    const PlayerFrames frame = get_player_frame(object);
+
+                    float pos[3] = {FtInt(interp[oid].pos[0]), FtInt(interp[oid].pos[1]), FtFloat(object->depth)};
+                    const bool flip[2] = {object->flags & FLG_X_FLIP, object->flags & FLG_Y_FLIP};
+                    draw_player(pid, player->power, frame, pos, flip, WHITE);
 
                     if (object->values[VAL_PLAYER_STARMAN] > 0L) {
                         GLubyte r, g, b;
@@ -5382,60 +5618,58 @@ void draw_state() {
 
                         set_batch_stencil(1);
                         set_batch_logic(GL_XOR);
-                        draw_object(oid, tex, 0, RGBA(r, g, b, a));
+                        draw_player(pid, player->power, frame, pos, flip, RGB(r, g, b));
                         set_batch_logic(GL_COPY);
                         set_batch_stencil(0);
                     }
 
-                    if (!local && NutPunch_PeerAlive(object->values[VAL_PLAYER_INDEX])) {
+                    if (local_player != pid && NutPunch_PeerAlive(pid)) {
                         int size;
-                        const char* name;
-                        name = NutPunch_PeerGet(object->values[VAL_PLAYER_INDEX], "NAME", &size);
+                        const char* name = NutPunch_PeerGet(pid, "NAME", &size);
                         if (size <= 0 || size > NUTPUNCH_FIELD_DATA_MAX)
                             break;
 
-                        draw_text_ext(
-                            FNT_MAIN, FA_CENTER, name,
-                            (float[3]){FtInt(interp[oid].pos[0]),
-                                       FtInt(Fadd(interp[oid].pos[1], object->bbox[0][1])) - 32, -1000},
-                            0.75f, ALPHA(160)
-                        );
+                        pos[1] += FtFloat(object->bbox[0][1]) - 32;
+                        pos[2] = -1000;
+                        draw_text_ext(FNT_MAIN, FA_CENTER, name, pos, 0.75f, ALPHA(160));
                     }
+
                     break;
                 }
 
                 case OBJ_PLAYER_DEAD: {
-                    draw_object(oid, "P_DEAD", 0, ALPHA(object->values[VAL_PLAYER_INDEX] != local_player ? 190 : 255));
+                    draw_player(
+                        (PlayerID)(object->values[VAL_PLAYER_INDEX]), POW_SMALL, PF_DEAD,
+                        (float[3]){FtInt(interp[oid].pos[0]), FtInt(interp[oid].pos[1]), FtFloat(object->depth)},
+                        (bool[2]){false}, WHITE
+                    );
                     break;
                 }
 
                 case OBJ_KEVIN: {
-                    const struct GamePlayer* player = get_player((PlayerID)(object->values[VAL_KEVIN_PLAYER]));
+                    const PlayerID pid = (PlayerID)(object->values[VAL_KEVIN_PLAYER]);
+                    const struct GamePlayer* player = get_player(pid);
                     if (player == NULL)
                         break;
-
                     const struct KevinFrame* kframe = &(player->kevin.frames[0]);
-                    const char* tex = get_player_texture(kframe->power, kframe->frame);
-                    const GLubyte a = (object->values[VAL_KEVIN_PLAYER] != local_player) ? 160 : 210;
 
-                    const struct InterpObject* smooth = &(interp[oid]);
-                    float pos[3] = {FtInt(smooth->pos[0]), FtInt(smooth->pos[1]), FtFloat(object->depth)};
-                    bool flip[2] = {object->flags & FLG_X_FLIP, false};
+                    float pos[3] = {FtInt(interp[oid].pos[0]), FtInt(interp[oid].pos[1]), FtFloat(object->depth)};
+                    bool flip[2] = {object->flags & FLG_X_FLIP, object->flags & FLG_Y_FLIP};
 
-                    draw_sprite(tex, pos, flip, 0, RGBA(80, 80, 80, a));
-                    pos[0] += (float)(object->values[VAL_KEVIN_X_JITTER]);
-                    pos[1] += (float)(object->values[VAL_KEVIN_Y_JITTER]);
-                    draw_sprite(tex, pos, flip, 0, RGBA(80, 80, 80, a * 0.75f));
+                    draw_player(pid, kframe->power, kframe->frame, pos, flip, RGB(80, 80, 80));
+                    pos[0] += (float)(SDL_rand(6) - SDL_rand(6));
+                    pos[1] += (float)(SDL_rand(6) - SDL_rand(6));
+                    draw_player(pid, kframe->power, kframe->frame, pos, flip, RGBA(80, 80, 80, 191));
                     break;
                 }
 
                 case OBJ_PLAYER_EFFECT: {
-                    draw_object(
-                        oid,
-                        get_player_texture(
-                            object->values[VAL_PLAYER_EFFECT_POWER], object->values[VAL_PLAYER_EFFECT_FRAME]
-                        ),
-                        0, ALPHA(FtInt(object->values[VAL_PLAYER_EFFECT_ALPHA]))
+                    const float pos[3] = {FtInt(interp[oid].pos[0]), FtInt(interp[oid].pos[1]), FtFloat(object->depth)};
+                    const bool flip[2] = {object->flags & FLG_X_FLIP, object->flags & FLG_Y_FLIP};
+                    draw_player(
+                        (PlayerID)(object->values[VAL_PLAYER_EFFECT_INDEX]), object->values[VAL_PLAYER_EFFECT_POWER],
+                        object->values[VAL_PLAYER_EFFECT_FRAME], pos, flip,
+                        ALPHA(FtInt(object->values[VAL_PLAYER_EFFECT_ALPHA]))
                     );
                     break;
                 }
@@ -7676,6 +7910,7 @@ ObjectID create_object(GameObjectType type, const fvec2 pos) {
                 }
 
                 case OBJ_PLAYER_EFFECT: {
+                    object->values[VAL_PLAYER_EFFECT_INDEX] = -1L;
                     object->values[VAL_PLAYER_EFFECT_POWER] = POW_SMALL;
                     object->values[VAL_PLAYER_EFFECT_FRAME] = PF_IDLE;
                     object->values[VAL_PLAYER_EFFECT_ALPHA] = FfInt(255L);

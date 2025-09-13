@@ -3,6 +3,8 @@
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_stdinc.h>
 
+#include <nutpunch.h>
+
 #include "K_audio.h"
 #include "K_math.h"
 #include "K_video.h"
@@ -206,13 +208,12 @@ enum ObjectValues {
     VAL_PLAYER_WARP_STATE,
     VAL_PLAYER_PLATFORM,
 
-    VAL_PLAYER_EFFECT_POWER = VAL_START,
+    VAL_PLAYER_EFFECT_INDEX = VAL_START,
+    VAL_PLAYER_EFFECT_POWER,
     VAL_PLAYER_EFFECT_FRAME,
     VAL_PLAYER_EFFECT_ALPHA,
 
     VAL_KEVIN_PLAYER = VAL_START,
-    VAL_KEVIN_X_JITTER,
-    VAL_KEVIN_Y_JITTER,
 
     VAL_LUI_BOUNCE = VAL_START,
 
@@ -448,6 +449,7 @@ enum PlayerFrames {
     PF_GROW2,
     PF_GROW3,
     PF_GROW4,
+    PF_DEAD,
 };
 typedef uint8_t PlayerFrames;
 
@@ -485,6 +487,7 @@ struct GameContext {
         uint32_t score;
         PlayerPowers power;
     } players[MAX_PLAYERS];
+    char skin[NUTPUNCH_FIELD_DATA_MAX + 1];
 
     ObjectID checkpoint;
 };

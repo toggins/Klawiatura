@@ -848,6 +848,8 @@ static struct Font fonts[FNT_SIZE] = {
     },
 };
 
+static StTinyMap* skins = NULL;
+
 static vec2 camera = {HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT};
 static mat4 mvp = GLM_MAT4_IDENTITY_INIT;
 static struct VertexBatch batch = {0};
@@ -1039,6 +1041,7 @@ void video_init(bool bypass_shader) {
 
     textures = NewTinyMap();
     tiles = NewTinyMap();
+    skins = NewTinyMap();
 
     draw_time = SDL_GetTicks();
 }
@@ -1118,10 +1121,13 @@ void video_teardown() {
     glDeleteVertexArrays(1, &(batch.vao));
     glDeleteBuffers(1, &(batch.vbo));
     FreeTinyMap(tiles);
+
     glDeleteTextures(1, &blank_texture);
     FreeTinyMap(textures);
-    glDeleteProgram(shader);
+    FreeTinyMap(skins);
+
     SDL_free(batch.vertices);
+    glDeleteProgram(shader);
 
     SDL_GL_DestroyContext(gpu);
     SDL_DestroyWindow(window);
@@ -1224,6 +1230,67 @@ void load_font(enum FontIndices index) {
         return;
     load_texture(fonts[index].tname);
     fonts[index].texture = get_texture(fonts[index].tname);
+}
+
+static void nuke_skin(void* ptr) {
+    glDeleteTextures(1, &(((struct Texture*)ptr)->texture));
+}
+
+void load_skin(const char* index) {
+    if (index[0] == '\0' || get_skin(index) != NULL)
+        return;
+
+    struct Skin skin = {0};
+
+    const char* file = find_file(file_pattern("data/skins/%s.*", index), ".json");
+    if (file == NULL) {
+        INFO("Skin \"%s\" not found", index);
+        return;
+    }
+
+    SDL_Surface* surface = IMG_Load(file);
+    if (surface == NULL) {
+        INFO("Skin \"%s\" fail: %s", index, SDL_GetError());
+        return;
+    }
+    if (surface->w != 528 || surface->h != 112) {
+        INFO("Skin \"%s\" is not 528x112 px", index);
+        SDL_DestroySurface(surface);
+        return;
+    }
+
+    SDL_strlcpy(skin.name, index, sizeof(skin.name));
+    glGenTextures(1, &(skin.texture));
+    glBindTexture(GL_TEXTURE_2D, skin.texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
+
+    SDL_Surface* temp = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
+    if (temp == NULL) {
+        INFO("Skin \"%s\" conversion fail: %s", index, SDL_GetError());
+        SDL_DestroySurface(surface);
+        return;
+    }
+    SDL_DestroySurface(surface);
+    surface = temp;
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
+    SDL_DestroySurface(surface);
+
+    const StTinyKey key = StStrKey(index);
+    StMapPut(skins, key, &skin, sizeof(skin));
+    StMapFind(skins, key)->cleanup = nuke_skin;
+}
+
+const struct Skin* get_skin(const char* index) {
+    return (struct Skin*)StMapGet(skins, StStrKey(index));
+}
+
+void set_batch_texture(GLuint tex) {
+    if (batch.texture != tex) {
+        submit_batch();
+        batch.texture = tex;
+    }
 }
 
 void set_batch_stencil(GLfloat stencil) {
@@ -1435,11 +1502,7 @@ void draw_sprite(const char* index, const GLfloat pos[3], const bool flip[2], GL
     const struct Texture* texture = get_texture(index);
     if (texture == NULL)
         return;
-
-    if (batch.texture != texture->texture) {
-        submit_batch();
-        batch.texture = texture->texture;
-    }
+    set_batch_texture(texture->texture);
 
     const GLfloat x1 = -(flip[0] ? ((GLfloat)(texture->size[0]) - (texture->offset[0])) : (texture->offset[0]));
     const GLfloat y1 = -(flip[1] ? ((GLfloat)(texture->size[1]) - (texture->offset[1])) : (texture->offset[1]));
@@ -1532,10 +1595,7 @@ void draw_text_ext(
     const struct Texture* texture = font->texture;
     if (texture == NULL)
         FATAL("Invalid font texture \"%s\"", font->tname);
-    if (batch.texture != texture->texture) {
-        submit_batch();
-        batch.texture = texture->texture;
-    }
+    set_batch_texture(texture->texture);
 
     GLfloat sx = pos[0];
     switch (align) {
@@ -1586,14 +1646,11 @@ void draw_text_ext(
     }
 }
 
-void draw_rectangle(const char* index, const float rect[2][2], float z, const GLubyte color[4]) {
+void draw_rectangle(const char* index, const GLfloat rect[2][2], GLfloat z, const GLubyte color[4]) {
     const struct Texture* texture = get_texture(index);
 
     GLuint tex = (texture == NULL) ? blank_texture : texture->texture;
-    if (batch.texture != tex) {
-        submit_batch();
-        batch.texture = tex;
-    }
+    set_batch_texture(tex);
 
     GLfloat u, v;
     if (texture == NULL) {
@@ -1611,11 +1668,8 @@ void draw_rectangle(const char* index, const float rect[2][2], float z, const GL
     batch_vertex(rect[0][0], rect[1][1], z, color[0], color[1], color[2], color[3], 0, v);
 }
 
-void draw_ellipse(const float rect[2][2], float z, const GLubyte color[4]) {
-    if (batch.texture != blank_texture) {
-        submit_batch();
-        batch.texture = blank_texture;
-    }
+void draw_ellipse(const GLfloat rect[2][2], GLfloat z, const GLubyte color[4]) {
+    set_batch_texture(blank_texture);
 
     const GLfloat x = glm_lerp(rect[0][0], rect[1][0], 0.5f);
     const GLfloat y = glm_lerp(rect[0][1], rect[1][1], 0.5f);
@@ -1630,4 +1684,14 @@ void draw_ellipse(const float rect[2][2], float z, const GLubyte color[4]) {
         batch_vertex(x + SDL_cosf(dir1) * nx, y - SDL_sinf(dir1) * ny, z, color[0], color[1], color[2], color[3], 0, 0);
         batch_vertex(x + SDL_cosf(dir2) * nx, y - SDL_sinf(dir2) * ny, z, color[0], color[1], color[2], color[3], 0, 0);
     }
+}
+
+void draw_raw_quad(GLuint tex, const GLfloat rect[2][2], GLfloat z, const GLubyte color[4], const GLfloat uv[2][2]) {
+    set_batch_texture(tex);
+    batch_vertex(rect[0][0], rect[1][1], z, color[0], color[1], color[2], color[3], uv[0][0], uv[1][1]);
+    batch_vertex(rect[0][0], rect[0][1], z, color[0], color[1], color[2], color[3], uv[0][0], uv[0][1]);
+    batch_vertex(rect[1][0], rect[0][1], z, color[0], color[1], color[2], color[3], uv[1][0], uv[0][1]);
+    batch_vertex(rect[1][0], rect[0][1], z, color[0], color[1], color[2], color[3], uv[1][0], uv[0][1]);
+    batch_vertex(rect[1][0], rect[1][1], z, color[0], color[1], color[2], color[3], uv[1][0], uv[1][1]);
+    batch_vertex(rect[0][0], rect[1][1], z, color[0], color[1], color[2], color[3], uv[0][0], uv[1][1]);
 }
