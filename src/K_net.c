@@ -64,7 +64,7 @@ static enum TypeScopes {
 static char* level = NULL;
 static char* name = NULL;
 static char* skin = NULL;
-static char cache_input[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
+static char cache_input[NUTPUNCH_FIELD_DATA_MAX] = {'\0'};
 
 GekkoNetAdapter*
 net_init(const char* ip, char* init_name, char* init_skin, PlayerID* pcount, char* init_level, GameFlags* flags) {
@@ -200,18 +200,18 @@ static void toggle_kevin() {
 
 static void play_single() {
     if (find_file(file_pattern("data/levels/%s.kla", level), NULL) == NULL) {
-        play_sound("BUMP");
+        play_ui_sound("BUMP");
         return;
     }
 
-    play_sound("ENTER");
+    play_ui_sound("ENTER");
     *num_players = 1;
     menu_running = 0;
 }
 
 static void host_multi() {
     if (find_file(file_pattern("data/levels/%s.kla", level), NULL) == NULL) {
-        play_sound("BUMP");
+        play_ui_sound("BUMP");
         return;
     }
 
@@ -309,7 +309,7 @@ static void handle_menu_input(SDL_Scancode key) {
         case SDL_SCANCODE_ESCAPE: {
             if (typing != TYPE_NONE) {
                 char* input = current_input();
-                SDL_strlcpy(input, cache_input, NUTPUNCH_FIELD_DATA_MAX + 1);
+                SDL_strlcpy(input, cache_input, NUTPUNCH_FIELD_DATA_MAX);
                 typing = -1;
 
                 play_ui_sound("SELECT");
@@ -465,8 +465,8 @@ bool net_wait() {
                 return false;
 
             case NP_Status_Online: {
-                NutPunch_PeerSet("NAME", (int)SDL_strnlen(name, NUTPUNCH_FIELD_DATA_MAX), name);
-                NutPunch_PeerSet("SKIN", (int)SDL_strnlen(skin, NUTPUNCH_FIELD_DATA_MAX), skin); // TODO: Use CRC32
+                NutPunch_PeerSet("NAME", (int)SDL_strnlen(name, NUTPUNCH_FIELD_DATA_MAX - 1), name);
+                NutPunch_PeerSet("SKIN", (int)SDL_strnlen(skin, NUTPUNCH_FIELD_DATA_MAX - 1), skin); // TODO: Use CRC32
 
                 int size;
 
@@ -475,15 +475,27 @@ bool net_wait() {
                     *num_players = *pplayers;
 
                 char* plevel = NutPunch_LobbyGet("LEVEL", &size);
-                if (size && size <= NUTPUNCH_FIELD_DATA_MAX)
+                if (size > 0 && size <= NUTPUNCH_FIELD_DATA_MAX)
                     SDL_memcpy(level, plevel, size);
 
                 GameFlags* pflags = NutPunch_LobbyGet("FLAGS", &size);
                 if (size == sizeof(GameFlags))
                     *start_flags = *pflags;
 
-                if (*num_players && NutPunch_PeerCount() >= *num_players)
+                if (*num_players && NutPunch_PeerCount() >= *num_players) {
+                    // Identify all players before starting
                     starting = true;
+                    for (int i = 0; i < NUTPUNCH_MAX_PLAYERS; i++) {
+                        if (!NutPunch_PeerAlive(i))
+                            continue;
+
+                        char* pname = NutPunch_PeerGet(i, "NAME", &size);
+                        if (size <= 0 || size > NUTPUNCH_FIELD_DATA_MAX) {
+                            starting = false;
+                            break;
+                        }
+                    }
+                }
 
                 break;
             }
@@ -533,7 +545,7 @@ bool net_wait() {
 
                 int size;
                 const char* name = NutPunch_PeerGet(i, "NAME", &size);
-                SDL_snprintf(fmt, sizeof(fmt), "%i. %s", i, (size && size <= NUTPUNCH_FIELD_DATA_MAX) ? name : "?");
+                SDL_snprintf(fmt, sizeof(fmt), "%i. %s", i, (size > 0 && size <= NUTPUNCH_FIELD_DATA_MAX) ? name : "?");
                 draw_text(FNT_MAIN, FA_LEFT, fmt, (float[3]){40, ny, 0});
                 ny += 25;
             }

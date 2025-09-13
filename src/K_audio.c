@@ -7,6 +7,7 @@
 
 static FMOD_SYSTEM* speaker = NULL;
 static FMOD_CHANNELGROUP* state_group = NULL;
+static FMOD_CHANNELGROUP* sound_group = NULL;
 static FMOD_CHANNELGROUP* music_group = NULL;
 
 static struct SoundState state = {0};
@@ -32,7 +33,9 @@ void audio_init() {
         buildnumber
     );
 
+    FMOD_System_CreateChannelGroup(speaker, "sound", &sound_group);
     FMOD_System_CreateChannelGroup(speaker, "state", &state_group);
+    FMOD_ChannelGroup_AddGroup(sound_group, state_group, true, NULL);
     FMOD_System_CreateChannelGroup(speaker, "music", &music_group);
     FMOD_ChannelGroup_SetVolume(music_group, 0.5f);
 
@@ -48,11 +51,14 @@ void audio_teardown() {
     FreeTinyMap(sounds);
     FreeTinyMap(tracks);
     FMOD_ChannelGroup_Release(state_group);
+    FMOD_ChannelGroup_Release(sound_group);
     FMOD_ChannelGroup_Release(music_group);
     FMOD_System_Release(speaker);
 }
 
 void start_audio_state() {
+    FMOD_ChannelGroup_Stop(state_group);
+    FMOD_ChannelGroup_Stop(music_group);
     SDL_memset(&state, 0, sizeof(state));
     SDL_memset(&music_channels, 0, sizeof(music_channels));
 }
@@ -219,7 +225,7 @@ void play_ui_sound(const char* index) {
         return;
     }
 
-    FMOD_System_PlaySound(speaker, snd->sound, NULL, false, NULL);
+    FMOD_System_PlaySound(speaker, snd->sound, sound_group, false, NULL);
 }
 
 void play_sound(const char* index) {

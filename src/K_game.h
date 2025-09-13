@@ -476,7 +476,7 @@ enum GameInput {
 typedef uint8_t GameInput;
 
 struct GameContext {
-    char level[9];
+    char level[NUTPUNCH_FIELD_DATA_MAX];
     GameFlags flags;
 
     PlayerID num_players;
@@ -487,7 +487,7 @@ struct GameContext {
         uint32_t score;
         PlayerPowers power;
     } players[MAX_PLAYERS];
-    char skin[NUTPUNCH_FIELD_DATA_MAX + 1];
+    char skin[NUTPUNCH_FIELD_DATA_MAX];
 
     ObjectID checkpoint;
 };

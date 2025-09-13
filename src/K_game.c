@@ -10,7 +10,7 @@ static PlayerID view_player = -1L;
 static bool in_game = false;
 
 static struct InterpObject interp[MAX_OBJECTS] = {0};
-static char local_skin[NUTPUNCH_FIELD_DATA_MAX + 1] = {'\0'};
+static char local_skin[NUTPUNCH_FIELD_DATA_MAX] = {'\0'};
 
 /* ====
 

@@ -27,9 +27,9 @@
 
 static bool bypass_shader = false, play_intro = true;
 static char* server_ip = NUTPUNCH_DEFAULT_SERVER;
-static char name[NUTPUNCH_FIELD_DATA_MAX + 1] = "PLAYER";
-static char level[NUTPUNCH_FIELD_DATA_MAX + 1] = "TEST";
-static char skin[NUTPUNCH_FIELD_DATA_MAX + 1] = "";
+static char name[NUTPUNCH_FIELD_DATA_MAX] = "PLAYER";
+static char level[NUTPUNCH_FIELD_DATA_MAX] = "TEST";
+static char skin[NUTPUNCH_FIELD_DATA_MAX] = "";
 static bool quickstart = false;
 static GameFlags start_flags = 0;
 
@@ -53,7 +53,8 @@ static void parse_args(int argc, char* argv[]) {
     }
 }
 
-static void show_intro(), show_error_screen(const char*);
+static bool show_intro();
+static void show_error_screen(const char*);
 
 static GekkoSession* session = NULL;
 static PlayerID num_players = 1, local_player = 0;
@@ -321,8 +322,8 @@ int main(int argc, char* argv[]) {
     audio_init();
     adapter = net_init(server_ip, name, skin, &num_players, level, &start_flags);
 
-    if (play_intro && !quickstart)
-        show_intro();
+    if (play_intro && !quickstart && !show_intro())
+        goto nukage;
 
     load_sound("CONNECT");
     load_sound("DCONNECT");
@@ -344,10 +345,10 @@ int main(int argc, char* argv[]) {
         if ((num_players <= 0 || num_players > MAX_PLAYERS))
             FATAL("Don't think I didn't see you trying to set invalid player indices!! I'll kick your ass!!");
         if (num_players > 1)
-            play_sound("CONNECT");
+            play_ui_sound("CONNECT");
 
         if (start_flags & GF_KEVIN) {
-            play_sound("KEVINON");
+            play_ui_sound("KEVINON");
             INFO("\n==================================");
             INFO("Kevin Mode activated. Good luck...");
             INFO("==================================\n");
@@ -368,6 +369,7 @@ int main(int argc, char* argv[]) {
             break;
     }
 
+nukage:
     net_teardown();
     video_teardown();
     audio_teardown();
@@ -378,7 +380,7 @@ int main(int argc, char* argv[]) {
 
 static void show_error_screen(const char* errmsg) {
     stop_all_sounds();
-    play_sound("DCONNECT");
+    play_ui_sound("DCONNECT");
 
     for (;;) {
         SDL_Event event;
@@ -400,7 +402,7 @@ static void show_error_screen(const char* errmsg) {
     }
 }
 
-static void show_intro() {
+static bool show_intro() {
     load_texture("Q_DISCL");
     float duration = 3.f, rem = duration, trans = duration / 5.f;
 
@@ -411,7 +413,7 @@ static void show_intro() {
                 default:
                     break;
                 case SDL_EVENT_QUIT:
-                    return;
+                    return false;
             }
         }
 
@@ -423,15 +425,15 @@ static void show_intro() {
         rem -= 1.0f / TICKRATE;
 
         video_update_custom_start();
-        draw_sprite("Q_DISCL", XYZ(320.f, 240.f, 0.f), (bool[]){false, false}, 0.f, ALPHA((GLubyte)(255.f * alpha)));
+        draw_sprite("Q_DISCL", XYZ(320.f, 240.f, 0.f), (bool[2]){false, false}, 0.f, ALPHA((GLubyte)(255.f * alpha)));
         video_update_custom_end();
         audio_update();
 
         const bool* kbd = SDL_GetKeyboardState(NULL);
         if (kbd[SDL_SCANCODE_ESCAPE] || kbd[SDL_SCANCODE_Z])
-            return;
+            return true;
         if (rem < 0.f)
-            return;
+            return true;
         SDL_Delay(1000 / TICKRATE);
     }
 }
