@@ -580,7 +580,7 @@ void save_state(struct SaveState*);
 void load_state(const struct SaveState*);
 uint32_t check_state();
 void dump_state();
-void tick_state(GameInput[MAX_PLAYERS]);
+Bool tick_state(GameInput[MAX_PLAYERS]);
 void draw_state();
 void draw_state_hud();
 

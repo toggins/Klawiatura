@@ -3236,7 +3236,7 @@ void dump_state() {
     // TODO: Dump blockmap
 }
 
-void tick_state(GameInput inputs[MAX_PLAYERS]) {
+Bool tick_state(GameInput inputs[MAX_PLAYERS]) {
     for (size_t i = 0; i < MAX_PLAYERS; i++) {
         struct GamePlayer* player = &(state.players[i]);
         player->last_input = player->input;
@@ -5482,7 +5482,7 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
 
             start_audio_state();
             start_state(NULL);
-            return;
+            return true;
         }
 
         if ((state.flags & GF_END) && state.next[0] != '\0') {
@@ -5496,9 +5496,12 @@ void tick_state(GameInput inputs[MAX_PLAYERS]) {
 
             start_audio_state();
             start_state(NULL);
+            return true;
         }
     }
     // !!! CLIENT-SIDE !!!
+
+    return false;
 }
 
 void draw_state() {

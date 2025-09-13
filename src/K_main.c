@@ -101,6 +101,7 @@ static bool typing = false;
 static bool game_loop() {
     uint64_t last_time = SDL_GetPerformanceCounter();
     float ticks = 0;
+    bool wait = false;
     typing = false;
 
     for (;;) {
@@ -170,8 +171,11 @@ static bool game_loop() {
         const float ahead = gekko_frames_ahead(session);
 
         const uint64_t current_time = SDL_GetPerformanceCounter();
-        ticks += ((float)(current_time - last_time) / (float)SDL_GetPerformanceFrequency()) *
-                 ((float)TICKRATE - SDL_clamp(ahead, 0.0f, 2.0f));
+        if (wait)
+            wait = false;
+        else
+            ticks += ((float)(current_time - last_time) / (float)SDL_GetPerformanceFrequency()) *
+                     ((float)TICKRATE - SDL_clamp(ahead, 0.0f, 2.0f));
         last_time = current_time;
 
         gekko_network_poll(session);
@@ -277,7 +281,7 @@ static bool game_loop() {
                     case AdvanceEvent: {
                         for (size_t j = 0; j < num_players; j++)
                             inputs[j] = ((GameInput*)(event->data.adv.inputs))[j];
-                        tick_state(inputs);
+                        wait = (tick_state(inputs) || wait);
                         tick_video_state();
                         tick_audio_state();
                         break;
