@@ -79,8 +79,7 @@ The resulting binaries should now reside in `build` or `build/Release`, dependin
 Listing some of the things we learned the hard way that you should consider:
 
 1. MSVC Debug builds require Debug versions of the Visual C++ libraries to run outside the machine that built the binary. If you really need to test Klawiatura on an external machine with debug information present, pass `RelWithDebInfo` to `--config` and for `CMAKE_BUILD_TYPE`.
-2. The correct "all" target for Visual Studio projects is `ALL_BUILD`, as opposed to `all` in every other CMake generator.
-3. Either way, you'll need to build the `all` target in order to get `build/data` generated from [`modsrc`](/modsrc).
+2. The correct "all" target for Visual Studio projects is `ALL_BUILD`, as opposed to `all` in every other CMake generator. Either way, you'll need to build _that_ in order to get `build/data` generated from [`modsrc`](/modsrc).
 
 ## Attribution
 
