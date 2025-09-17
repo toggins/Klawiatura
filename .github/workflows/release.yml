@@ -33,9 +33,9 @@ jobs:
       MINGW_ARCH: ${{ matrix.cfg.bits == 32 && 'i686' || 'x86_64' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Source fmod legally
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: toggins/fmod
           token: ${{ secrets.FMOD_TOKEN }}
