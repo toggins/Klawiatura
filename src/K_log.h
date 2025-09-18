@@ -4,18 +4,18 @@
 
 #define INFO SDL_Log
 
-#define WARN(fmt, ...)                                                                                                 \
+#define WARN(...)                                                                                                      \
     do {                                                                                                               \
-        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, fmt, __VA_ARGS__);                                                   \
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__);                                                        \
     } while (0)
 
-#define WTF(fmt, ...)                                                                                                  \
+#define WTF(...)                                                                                                       \
     do {                                                                                                               \
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, fmt, __VA_ARGS__);                                                  \
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__);                                                       \
     } while (0)
 
-#define FATAL(fmt, ...)                                                                                                \
+#define FATAL(...)                                                                                                     \
     do {                                                                                                               \
-        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, fmt, __VA_ARGS__);                                               \
+        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__);                                                    \
         exit(1);                                                                                                       \
     } while (0)

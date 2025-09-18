@@ -2,7 +2,7 @@
 
 #include <S_fixed.h>
 
-#include "K_net.h"
+#include "K_net.h" // IWYU pragma: keep
 
 #define TICKRATE 50
 
@@ -620,7 +620,7 @@ struct GameActorInfo {
 };
 
 struct GameInstance {
-    GameNetwork* net;
+    GekkoSession* net;
     struct GameContext context;
     struct SaveState state;
 };
