@@ -1,31 +1,44 @@
 #pragma once
 
-#include <SDL3/SDL_render.h>
-#include <SDL3/SDL_stdinc.h>
+#include <S_fixed.h>
 
-#include <nutpunch.h>
+#include "K_net.h"
 
-#include "K_audio.h"
-#include "K_math.h"
-#include "K_video.h"
+#define TICKRATE 50
 
-#define TICKRATE 50L
+#define MAX_PLAYERS 4
+#define MAX_MISSILES 2
+#define MAX_SINK 6
+#define KEVIN_DELAY 50
 
-#define MAX_PLAYERS 4L
-#define MAX_MISSILES 2L
-#define MAX_SINK 6L
-#define KEVIN_DELAY TICKRATE
+#define MAX_ACTORS 1000
+#define NULLACT ((ActorID)(-1))
 
-#define MAX_OBJECTS 1000L
-#define MAX_VALUES 32L
-#define NULLOBJ ((ObjectID)(-1L))
+#define MAX_VALUES 32
 
-#define MAX_BLOCKS 128L
-#define BLOCKMAP_SIZE (MAX_BLOCKS * MAX_BLOCKS)
-#define BLOCK_SIZE ((fix16_t)0x01000000)
+typedef fix16_t ActorValue;
+typedef uint32_t ActorFlag;
 
-#define SCREEN_WIDTH 640L
-#define SCREEN_HEIGHT 480L
+#define BASE_VALUES                                                                                                    \
+    ActorValue x_speed;                                                                                                \
+    ActorValue y_speed;                                                                                                \
+    ActorValue x_touch;                                                                                                \
+    ActorValue y_touch;                                                                                                \
+    ActorValue sprout;
+
+#define BASE_FLAGS                                                                                                     \
+    ActorFlag visible : 1;                                                                                             \
+    ActorFlag destroy : 1;                                                                                             \
+    ActorFlag flip_x : 1;                                                                                              \
+    ActorFlag flip_y : 1;                                                                                              \
+    ActorFlag freeze : 1;
+
+#define MAX_CELLS 128
+#define GRID_SIZE (MAX_CELLS * MAX_CELLS)
+#define CELL_SIZE ((fix16_t)(0x01000000))
+
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
 #define HALF_SCREEN_WIDTH (SCREEN_WIDTH >> 1)
 #define HALF_SCREEN_HEIGHT (SCREEN_HEIGHT >> 1)
 #define F_SCREEN_WIDTH FfInt(SCREEN_WIDTH)
@@ -33,36 +46,20 @@
 #define F_HALF_SCREEN_WIDTH Fhalf(F_SCREEN_WIDTH)
 #define F_HALF_SCREEN_HEIGHT Fhalf(F_SCREEN_HEIGHT)
 
-#define POS_SPEED(object)                                                                                              \
-    ((fvec2){Fadd((object)->pos[0], (object)->values[VAL_X_SPEED]),                                                    \
-             Fadd((object)->pos[1], (object)->values[VAL_Y_SPEED])})
-
-#define POS_ADD(object, x, y) ((fvec2){Fadd((object)->pos[0], (x)), Fadd((object)->pos[1], (y))})
-
-#define HITBOX(object)                                                                                                 \
-    ((fvec2[2]){{Fadd((object)->pos[0], (object)->bbox[0][0]), Fadd((object)->pos[1], (object)->bbox[0][1])},          \
-                {Fadd((object)->pos[0], (object)->bbox[1][0]), Fadd((object)->pos[1], (object)->bbox[1][1])}})
-
-#define HITBOX_LEFT(object)                                                                                            \
-    ((fvec2[2]){{Fadd((object)->pos[0], (object)->bbox[0][0]), Fadd((object)->pos[1], (object)->bbox[0][1])},          \
-                {Fadd(Fadd((object)->pos[0], (object)->bbox[0][0]), FxOne),                                            \
-                 Fadd((object)->pos[1], (object)->bbox[1][1])}})
-
-#define HITBOX_RIGHT(object)                                                                                           \
-    ((fvec2[2]){{Fsub(Fadd((object)->pos[0], (object)->bbox[1][0]), FxOne),                                            \
-                 Fadd((object)->pos[1], (object)->bbox[0][1])},                                                        \
-                {Fadd((object)->pos[0], (object)->bbox[1][0]), Fadd((object)->pos[1], (object)->bbox[1][1])}})
-
-#define HITBOX_ADD(object, x, y)                                                                                       \
-    ((fvec2[2]){{Fadd(Fadd((object)->pos[0], (object)->bbox[0][0]), (x)),                                              \
-                 Fadd(Fadd((object)->pos[1], (object)->bbox[0][1]), (y))},                                             \
-                {Fadd(Fadd((object)->pos[0], (object)->bbox[1][0]), (x)),                                              \
-                 Fadd(Fadd((object)->pos[1], (object)->bbox[1][1]), (y))}})
-
 typedef uint8_t Bool;
-
 typedef int8_t PlayerID;
-typedef int16_t ObjectID;
+typedef int16_t ActorID;
+
+enum GameInput {
+    GI_UP = 1 << 0,
+    GI_LEFT = 1 << 1,
+    GI_DOWN = 1 << 2,
+    GI_RIGHT = 1 << 3,
+    GI_JUMP = 1 << 4,
+    GI_RUN = 1 << 5,
+    GI_FIRE = 1 << 6,
+};
+typedef uint16_t GameInput;
 
 enum GameFlags {
     GF_HURRY = 1 << 0,
@@ -81,345 +78,109 @@ enum GameFlags {
 };
 typedef uint16_t GameFlags;
 
-enum GameSequenceType {
+enum GameSequenceTypes {
     SEQ_NONE,
     SEQ_LOSE,
     SEQ_WIN,
 };
-typedef uint8_t GameSequenceType;
+typedef uint8_t GameSequenceTypes;
 
-enum GameObjectType {
-    OBJ_NULL,
+enum GameActorTypes {
+    ACT_NULL,
 
-    OBJ_SOLID,
-    OBJ_SOLID_TOP,
-    OBJ_SOLID_SLOPE,
-    OBJ_PLAYER_SPAWN,
-    OBJ_PLAYER,
-    OBJ_PLAYER_EFFECT,
-    OBJ_PLAYER_DEAD,
-    OBJ_KEVIN,
-    OBJ_COIN,
-    OBJ_COIN_POP,
-    OBJ_MUSHROOM,
-    OBJ_MUSHROOM_1UP,
-    OBJ_MUSHROOM_POISON,
-    OBJ_FIRE_FLOWER,
-    OBJ_BEETROOT,
-    OBJ_LUI,
-    OBJ_HAMMER_SUIT,
-    OBJ_STARMAN,
-    OBJ_POINTS,
-    OBJ_EXPLODE,
-    OBJ_MISSILE_FIREBALL,
-    OBJ_MISSILE_BEETROOT,
-    OBJ_MISSILE_BEETROOT_SINK,
-    OBJ_MISSILE_HAMMER,
-    OBJ_BLOCK_BUMP,
-    OBJ_ITEM_BLOCK,
-    OBJ_HIDDEN_BLOCK,
-    OBJ_BRICK_BLOCK,
-    OBJ_BRICK_SHARD,
-    OBJ_BRICK_BLOCK_COIN,
-    OBJ_CHECKPOINT,
-    OBJ_GOAL_BAR,
-    OBJ_GOAL_BAR_FLY,
-    OBJ_GOAL_MARK,
-    OBJ_WATER_SPLASH,
-    OBJ_BUBBLE,
-    OBJ_DEAD,
-    OBJ_GOOMBA,
-    OBJ_GOOMBA_FLAT,
-    OBJ_KOOPA,
-    OBJ_KOOPA_SHELL,
-    OBJ_PARAKOOPA,
-    OBJ_BUZZY_BEETLE,
-    OBJ_BUZZY_SHELL,
-    OBJ_SPINY,
-    OBJ_LAKITU,
-    OBJ_SPIKE,
-    OBJ_PIRANHA_PLANT,
-    OBJ_BRO,
-    OBJ_CLOUD_FACE,
-    OBJ_WARP,
-    OBJ_MISSILE_SILVER_HAMMER,
-    OBJ_BRO_LAYER,
-    OBJ_BILL_BLASTER,
-    OBJ_BULLET_BILL,
-    OBJ_CHEEP_CHEEP,
-    OBJ_BOUNDS,
-    OBJ_CHEEP_CHEEP_BLUE,
-    OBJ_CHEEP_CHEEP_SPIKY,
-    OBJ_BLOOPER,
-    OBJ_ROTODISC_BALL,
-    OBJ_ROTODISC,
-    OBJ_THWOMP,
-    OBJ_BOO,
-    OBJ_DRY_BONES,
-    OBJ_LAVA,
-    OBJ_PODOBOO_SPAWNER,
-    OBJ_PODOBOO,
-    OBJ_SPRING,
-    OBJ_PSWITCH,
-    OBJ_PSWITCH_COIN,
-    OBJ_PSWITCH_BRICK,
-    OBJ_CLOUD,
-    OBJ_CLOUD_DARK,
-    OBJ_BUSH,
-    OBJ_BUSH_SNOW,
-    OBJ_AUTOSCROLL,
-    OBJ_WHEEL_LEFT,
-    OBJ_WHEEL,
-    OBJ_WHEEL_RIGHT,
-    OBJ_SPIKE_CANNON,
-    OBJ_SPIKE_BALL,
-    OBJ_SPIKE_BALL_EFFECT,
-    OBJ_PIRANHA_FIRE,
-    OBJ_PLATFORM,
-    OBJ_PLATFORM_TURN,
-    OBJ_LAVA_SPLASH,
-    OBJ_PODOBOO_VOLCANO,
-    OBJ_BOWSER,
+    ACT_SOLID,
+    ACT_SOLID_TOP,
+    ACT_SOLID_SLOPE,
+    ACT_PLAYER_SPAWN,
+    ACT_PLAYER,
+    ACT_PLAYER_EFFECT,
+    ACT_PLAYER_DEAD,
+    ACT_KEVIN,
+    ACT_COIN,
+    ACT_COIN_POP,
+    ACT_MUSHROOM,
+    ACT_MUSHROOM_1UP,
+    ACT_MUSHROOM_POISON,
+    ACT_FIRE_FLOWER,
+    ACT_BEETROOT,
+    ACT_LUI,
+    ACT_HAMMER_SUIT,
+    ACT_STARMAN,
+    ACT_POINTS,
+    ACT_EXPLODE,
+    ACT_MISSILE_FIREBALL,
+    ACT_MISSILE_BEETROOT,
+    ACT_MISSILE_BEETROOT_SINK,
+    ACT_MISSILE_HAMMER,
+    ACT_BLOCK_BUMP,
+    ACT_ITEM_BLOCK,
+    ACT_HIDDEN_BLOCK,
+    ACT_BRICK_BLOCK,
+    ACT_BRICK_SHARD,
+    ACT_BRICK_BLOCK_COIN,
+    ACT_CHECKPOINT,
+    ACT_GOAL_BAR,
+    ACT_GOAL_BAR_FLY,
+    ACT_GOAL_MARK,
+    ACT_WATER_SPLASH,
+    ACT_BUBBLE,
+    ACT_DEAD,
+    ACT_GOOMBA,
+    ACT_GOOMBA_FLAT,
+    ACT_KOOPA,
+    ACT_KOOPA_SHELL,
+    ACT_PARAKOOPA,
+    ACT_BUZZY_BEETLE,
+    ACT_BUZZY_SHELL,
+    ACT_SPINY,
+    ACT_LAKITU,
+    ACT_SPIKE,
+    ACT_PIRANHA_PLANT,
+    ACT_BRO,
+    ACT_CLOUD_FACE,
+    ACT_WARP,
+    ACT_MISSILE_SILVER_HAMMER,
+    ACT_BRO_LAYER,
+    ACT_BILL_BLASTER,
+    ACT_BULLET_BILL,
+    ACT_CHEEP_CHEEP,
+    ACT_BOUNDS,
+    ACT_CHEEP_CHEEP_BLUE,
+    ACT_CHEEP_CHEEP_SPIKY,
+    ACT_BLOOPER,
+    ACT_ROTODISC_BALL,
+    ACT_ROTODISC,
+    ACT_THWOMP,
+    ACT_BOO,
+    ACT_DRY_BONES,
+    ACT_LAVA,
+    ACT_PODOBOO_SPAWNER,
+    ACT_PODOBOO,
+    ACT_SPRING,
+    ACT_PSWITCH,
+    ACT_PSWITCH_COIN,
+    ACT_PSWITCH_BRICK,
+    ACT_CLOUD,
+    ACT_CLOUD_DARK,
+    ACT_BUSH,
+    ACT_BUSH_SNOW,
+    ACT_AUTOSCROLL,
+    ACT_WHEEL_LEFT,
+    ACT_WHEEL,
+    ACT_WHEEL_RIGHT,
+    ACT_SPIKE_CANNON,
+    ACT_SPIKE_BALL,
+    ACT_SPIKE_BALL_EFFECT,
+    ACT_PIRANHA_FIRE,
+    ACT_PLATFORM,
+    ACT_PLATFORM_TURN,
+    ACT_LAVA_SPLASH,
+    ACT_PODOBOO_VOLCANO,
+    ACT_BOWSER,
 
-    OBJ_SIZE,
+    ACT_SIZE,
 };
-typedef uint16_t GameObjectType;
-
-enum ObjectValues {
-    VAL_X_SPEED,
-    VAL_Y_SPEED,
-    VAL_X_TOUCH,
-    VAL_Y_TOUCH,
-    VAL_SPROUT,
-    VAL_START,
-
-    VAL_PROP_FRAME = VAL_START,
-
-    VAL_PLAYER_INDEX = VAL_START,
-    VAL_PLAYER_FRAME,
-    VAL_PLAYER_GROUND,
-    VAL_PLAYER_SPRING,
-    VAL_PLAYER_POWER,
-    VAL_PLAYER_FLASH,
-    VAL_PLAYER_STARMAN,
-    VAL_PLAYER_STARMAN_COMBO,
-    VAL_PLAYER_FIRE,
-    VAL_PLAYER_WARP,
-    VAL_PLAYER_WARP_STATE,
-    VAL_PLAYER_PLATFORM,
-
-    VAL_PLAYER_EFFECT_INDEX = VAL_START,
-    VAL_PLAYER_EFFECT_POWER,
-    VAL_PLAYER_EFFECT_FRAME,
-    VAL_PLAYER_EFFECT_ALPHA,
-
-    VAL_KEVIN_PLAYER = VAL_START,
-
-    VAL_LUI_BOUNCE = VAL_START,
-
-    VAL_MISSILE_OWNER = VAL_START,
-    VAL_MISSILE_ANGLE,
-    VAL_MISSILE_HITS,
-    VAL_MISSILE_HIT,
-    VAL_MISSILE_BUBBLE,
-
-    VAL_POINTS = VAL_START,
-    VAL_POINTS_PLAYER,
-    VAL_POINTS_TIME,
-
-    VAL_EXPLODE_FRAME = VAL_START,
-
-    VAL_BLOCK_BUMP = VAL_START,
-    VAL_BLOCK_BUMP_OWNER,
-    VAL_BLOCK_ITEM,
-    VAL_BLOCK_TIME,
-
-    VAL_BRICK_SHARD_ANGLE = VAL_START,
-
-    VAL_COIN_POP_OWNER = VAL_START,
-    VAL_COIN_POP_FRAME,
-
-    VAL_ROTODISC = VAL_START,
-    VAL_ROTODISC_OWNER = VAL_START,
-    VAL_ROTODISC_LENGTH,
-    VAL_ROTODISC_ANGLE,
-    VAL_ROTODISC_SPEED,
-
-    VAL_CHECKPOINT_BOUNDS_X1 = VAL_START,
-    VAL_CHECKPOINT_BOUNDS_Y1,
-    VAL_CHECKPOINT_BOUNDS_X2,
-    VAL_CHECKPOINT_BOUNDS_Y2,
-
-    VAL_SPLASH_FRAME = VAL_START,
-
-    VAL_BUBBLE_FRAME = VAL_START,
-
-    VAL_GOAL_Y = VAL_START,
-    VAL_GOAL_ANGLE,
-
-    VAL_PSWITCH = VAL_START,
-
-    VAL_WHEEL_FRAME = VAL_START,
-
-    VAL_THWOMP_Y = VAL_START,
-    VAL_THWOMP_STATE,
-    VAL_THWOMP_FRAME,
-
-    VAL_DEAD_TYPE = VAL_START,
-
-    VAL_BLASTER_TIME = VAL_START,
-
-    VAL_ENEMY_TURN = VAL_START,
-    VAL_ENEMY_START,
-
-    VAL_GOOMBA_FLAT = VAL_START,
-
-    VAL_KOOPA_MAYDAY = VAL_ENEMY_START,
-
-    VAL_PARAKOOPA_Y = VAL_START,
-    VAL_PARAKOOPA_ANGLE,
-
-    VAL_SHELL_OWNER = VAL_START,
-    VAL_SHELL_HIT,
-    VAL_SHELL_COMBO,
-    VAL_SHELL_FRAME,
-
-    VAL_PIRANHA_MOVE = VAL_START,
-    VAL_PIRANHA_WAIT,
-    VAL_PIRANHA_FIRE,
-
-    VAL_SPIKE_BALL_TIME = VAL_START,
-    VAL_SPIKE_BALL_ANGLE,
-    VAL_SPIKE_BALL_ALPHA,
-
-    VAL_BRO_MISSILE = VAL_START,
-    VAL_BRO_MOVE,
-    VAL_BRO_TEMP2,
-    VAL_BRO_TEMP3,
-    VAL_BRO_TEMP4,
-    VAL_BRO_TEMP5,
-    VAL_BRO_JUMP_STATE,
-    VAL_BRO_JUMP,
-    VAL_BRO_DOWN,
-    VAL_BRO_THROW_STATE,
-    VAL_BRO_THROW,
-
-    VAL_WARP_ANGLE = VAL_START,
-    VAL_WARP_X,
-    VAL_WARP_Y,
-    VAL_WARP_BOUNDS_X1,
-    VAL_WARP_BOUNDS_Y1,
-    VAL_WARP_BOUNDS_X2,
-    VAL_WARP_BOUNDS_Y2,
-    VAL_WARP_ANGLE_OUT,
-    VAL_WARP_STR1,
-    VAL_WARP_STR2,
-
-    VAL_BOUNDS_X1 = VAL_START,
-    VAL_BOUNDS_Y1,
-    VAL_BOUNDS_X2,
-    VAL_BOUNDS_Y2,
-
-    VAL_PLATFORM_TYPE = VAL_START,
-    VAL_PLATFORM_X,
-    VAL_PLATFORM_Y,
-    VAL_PLATFORM_RESPAWN,
-    VAL_PLATFORM_FRAME,
-
-    VAL_PODOBOO_CHILD = VAL_START,
-    VAL_PODOBOO_PARENT,
-    VAL_PODOBOO_TIME,
-};
-typedef uint8_t ObjectValues;
-
-enum ObjectFlags {
-    FLG_VISIBLE = 1 << 0,
-    FLG_DESTROY = 1 << 1,
-    FLG_X_FLIP = 1 << 2,
-    FLG_Y_FLIP = 1 << 3,
-    FLG_CARRIED = 1 << 4,
-
-    FLG_PROP_EXTRA = 1 << 5,
-
-    FLG_PLAYER_DUCK = 1 << 5,
-    FLG_PLAYER_JUMP = 1 << 6,
-    FLG_PLAYER_SWIM = 1 << 7,
-    FLG_PLAYER_ASCEND = 1 << 8,
-    FLG_PLAYER_DESCEND = 1 << 9,
-    FLG_PLAYER_RESPAWN = 1 << 10,
-    FLG_PLAYER_STOMP = 1 << 11,
-    FLG_PLAYER_WARP_OUT = 1 << 12,
-
-    FLG_PLAYER_DEAD_LAST = 1 << 5,
-
-    FLG_POWERUP_FULL = 1 << 5,
-
-    FLG_BLOCK_EMPTY = 1 << 5,
-    FLG_BLOCK_GRAY = 1 << 6,
-    FLG_BLOCK_ONCE = 1 << 7,
-
-    FLG_COIN_POP_START = 1 << 5,
-    FLG_COIN_POP_SPARK = 1 << 6,
-
-    FLG_ROTODISC_START = 1 << 5,
-    FLG_ROTODISC_FLOWER = 1 << 6,
-    FLG_ROTODISC_FLOWER2 = 1 << 7,
-
-    FLG_BUBBLE_POP = 1 << 5,
-
-    FLG_GOAL_START = 1 << 5,
-
-    FLG_PSWITCH_ONCE = 1 << 5,
-
-    FLG_SCROLL_TANKS = 1 << 5,
-
-    FLG_THWOMP_START = 1 << 5,
-    FLG_THWOMP_LAUGH = 1 << 6,
-
-    FLG_BLASTER_BLOCKED = 1 << 5,
-
-    FLG_BULLET_DEAD = 1 << 5,
-
-    FLG_ENEMY_ACTIVE = 1 << 5,
-
-    FLG_KOOPA_RED = 1 << 6,
-    FLG_PARAKOOPA_START = 1 << 7,
-    FLG_SHELL_ACTIVE = 1 << 7,
-
-    FLG_SPINY_GRAY = 1 << 6,
-
-    FLG_PIRANHA_FIRE = 1 << 5,
-    FLG_PIRANHA_RED = 1 << 6,
-    FLG_PIRANHA_START = 1 << 7,
-    FLG_PIRANHA_BLOCKED = 1 << 8,
-    FLG_PIRANHA_OUT = 1 << 9,
-    FLG_PIRANHA_IN = 1 << 10,
-    FLG_PIRANHA_FIRED = 1 << 11,
-
-    FLG_BRO_ACTIVE = 1 << 5,
-    FLG_BRO_TEMP10 = 1 << 6,
-    FLG_BRO_TEMP11 = 1 << 7,
-    FLG_BRO_JUMP = 1 << 8,
-    FLG_BRO_TEMP30 = 1 << 9,
-    FLG_BRO_TEMP31 = 1 << 10,
-    FLG_BRO_BOTTOM = 1 << 11,
-    FLG_BRO_TOP = 1 << 12,
-
-    FLG_BRO_LAYER_TOP = 1 << 5,
-
-    FLG_WARP_GOAL = 1 << 5,
-    FLG_WARP_SECRET = 1 << 6,
-
-    FLG_PLATFORM_START = 1 << 5,
-    FLG_PLATFORM_CARRYING = 1 << 6,
-    FLG_PLATFORM_FALL = 1 << 7,
-    FLG_PLATFORM_DOWN = 1 << 8,
-    FLG_PLATFORM_FALLING = 1 << 9,
-    FLG_PLATFORM_MOVED = 1 << 10,
-
-    FLG_PLATFORM_TURN_ADD = 1 << 5,
-};
-typedef uint32_t ObjectFlags;
+typedef uint16_t GameActorTypes;
 
 enum PlayerPowers {
     POW_SMALL,
@@ -463,150 +224,408 @@ enum PlatformTypes {
 };
 typedef uint8_t PlatformTypes;
 
-enum GameInput {
-    GI_NONE = 0,
-    GI_UP = 1 << 0,
-    GI_LEFT = 1 << 1,
-    GI_DOWN = 1 << 2,
-    GI_RIGHT = 1 << 3,
-    GI_JUMP = 1 << 4,
-    GI_RUN = 1 << 5,
-    GI_FIRE = 1 << 6,
+struct GameContext {};
+
+struct GamePlayer {
+    Bool active;
+    GameInput input, last_input;
+
+    ActorID actor;
+    fix16_t pos[2], bounds[2];
+
+    int8_t lives;
+    uint8_t coins;
+    uint32_t score;
+    PlayerPowers power;
+
+    ActorID missiles[MAX_MISSILES], sink[MAX_SINK];
+
+    struct Kevin {
+        ActorID object;
+        int8_t delay;
+        fix16_t pos[2];
+
+        struct KevinFrame {
+            fix16_t pos[2];
+            Bool flip;
+            PlayerPowers power;
+            PlayerFrames frame;
+        } frames[KEVIN_DELAY];
+    } kevin;
 };
-typedef uint8_t GameInput;
 
-struct GameContext {
-    char level[NUTPUNCH_FIELD_DATA_MAX];
-    GameFlags flags;
+struct GameSequence {
+    GameSequenceTypes type;
+    PlayerID activator;
+    uint16_t time;
+};
 
-    PlayerID num_players;
-    PlayerID local_player;
-    struct PlayerContext {
-        int8_t lives;
-        uint8_t coins;
-        uint32_t score;
-        PlayerPowers power;
-    } players[MAX_PLAYERS];
-    char skin[NUTPUNCH_FIELD_DATA_MAX];
+struct GameActor {
+    GameActorTypes type;
+    ActorID previous, next;
 
-    ObjectID checkpoint;
+    int32_t cell;
+    ActorID previous_cell, next_cell;
+
+    fix16_t pos[2], box[2][2];
+    fix16_t depth;
+
+    union GameActorValues {
+        ActorValue raw[MAX_VALUES];
+
+        struct BaseActorValues {
+            BASE_VALUES;
+        } base;
+
+        struct PropActorValues {
+            BASE_VALUES;
+            ActorValue frame;
+            ActorValue angle;
+            ActorValue alpha;
+        } prop, effect;
+
+        struct PlayerActorValues {
+            BASE_VALUES;
+            ActorValue player;
+            ActorValue frame;
+            ActorValue ground;
+            ActorValue spring;
+            ActorValue power;
+            ActorValue flash;
+            ActorValue star, star_combo;
+            ActorValue fire;
+            ActorValue warp, warp_state;
+            ActorValue platform;
+        } player;
+
+        struct PlayerEffectActorValues {
+            BASE_VALUES;
+            ActorValue player;
+            ActorValue power;
+            ActorValue frame;
+            ActorValue alpha;
+        } player_effect;
+
+        struct KevinActorValues {
+            BASE_VALUES;
+            ActorValue player;
+        } kevin;
+
+        struct MissileActorValues {
+            BASE_VALUES;
+            ActorValue owner;
+            ActorValue angle;
+            ActorValue hits, hit;
+            ActorValue bubble;
+            ActorValue alpha;
+        } missile;
+
+        struct PointsActorValues {
+            BASE_VALUES;
+            ActorValue points;
+            ActorValue player;
+            ActorValue time;
+        } points;
+
+        struct BlockActorValues {
+            BASE_VALUES;
+            ActorValue bump;
+            ActorValue owner;
+            ActorValue item;
+            ActorValue time;
+        } block;
+
+        struct CoinActorValues {
+            BASE_VALUES;
+            ActorValue owner;
+            ActorValue frame;
+        } coin;
+
+        struct RotodiscActorValues {
+            BASE_VALUES;
+            ActorValue child, parent;
+            ActorValue length;
+            ActorValue angle;
+            ActorValue speed;
+        } rotodisc;
+
+        struct BoundsActorValues {
+            BASE_VALUES;
+            ActorValue bounds_x1, bounds_y1;
+            ActorValue bounds_x2, bounds_y2;
+        } bounds, checkpoint;
+
+        struct GoalActorValues {
+            BASE_VALUES;
+            ActorValue y;
+            ActorValue angle;
+        } goal;
+
+        struct TimeActorValues {
+            BASE_VALUES;
+            ActorValue time;
+        } pswitch, cannon;
+
+        struct ThwompActorValues {
+            BASE_VALUES;
+            ActorValue x, y;
+            ActorValue state;
+            ActorValue frame;
+        } thwomp;
+
+        struct DeadActorValues {
+            BASE_VALUES;
+            ActorValue type;
+        } dead;
+
+        struct EnemyActorValues {
+            BASE_VALUES;
+            ActorValue turn;
+            ActorValue mayday;
+            ActorValue flat;
+        } enemy;
+
+        struct ParakoopaActorValues {
+            BASE_VALUES;
+            ActorValue x, y;
+            ActorValue angle;
+        } parakoopa;
+
+        struct ShellActorValues {
+            BASE_VALUES;
+            ActorValue owner;
+            ActorValue hit;
+            ActorValue combo;
+            ActorValue frame;
+        } shell;
+
+        struct PiranhaActorValues {
+            BASE_VALUES;
+            ActorValue move;
+            ActorValue wait;
+            ActorValue fire;
+        } piranha;
+
+        struct BroActorValues {
+            BASE_VALUES;
+            ActorValue missile;
+            ActorValue move;
+            ActorValue unk2, unk3, unk4, unk5;
+            ActorValue jump_state, jump;
+            ActorValue down;
+            ActorValue throw_state, throw;
+        } bro;
+
+        struct WarpActorValues {
+            BASE_VALUES;
+            ActorValue angle;
+            ActorValue x, y;
+            ActorValue bounds_x1, bounds_y1;
+            ActorValue bounds_x2, bounds_y2;
+            ActorValue angle_out;
+            ActorValue str1, str2;
+        } warp;
+
+        struct PlatformActorValues {
+            BASE_VALUES;
+            ActorValue type;
+            ActorValue x, y;
+            ActorValue respawn;
+            ActorValue frame;
+        } platform;
+
+        struct PodobooActorValues {
+            BASE_VALUES;
+            ActorValue child, parent;
+            ActorValue spawn;
+        } podoboo;
+    } values;
+
+    union GameActorFlags {
+        ActorFlag raw;
+
+        struct BaseActorFlags {
+            BASE_FLAGS;
+        } base;
+
+        struct PropActorFlags {
+            BASE_FLAGS;
+            ActorFlag extra : 1;
+        } prop;
+
+        struct PlayerActorFlags {
+            BASE_FLAGS;
+            ActorFlag duck : 1;
+            ActorFlag jump : 1;
+            ActorFlag swim : 1;
+            ActorFlag ascend : 1;
+            ActorFlag descend : 1;
+            ActorFlag respawn : 1;
+            ActorFlag stomp : 1;
+            ActorFlag warp_out : 1;
+            ActorFlag dead : 1;
+        } player;
+
+        struct PowerupActorFlags {
+            BASE_FLAGS;
+            ActorFlag full : 1;
+        } powerup;
+
+        struct BlockActorFlags {
+            BASE_FLAGS;
+            ActorFlag empty : 1;
+            ActorFlag gray : 1;
+            ActorFlag once : 1;
+        } block;
+
+        struct CoinActorFlags {
+            BASE_FLAGS;
+            ActorFlag start : 1;
+            ActorFlag spark : 1;
+        } coin;
+
+        struct RotodiscActorFlags {
+            BASE_FLAGS;
+            ActorFlag start : 1;
+            ActorFlag flower : 1;
+            ActorFlag flower2 : 1;
+        } rotodisc;
+
+        struct GoalActorFlags {
+            BASE_FLAGS;
+            ActorFlag start : 1;
+        } goal;
+
+        struct PSwitchActorFlags {
+            BASE_FLAGS;
+            ActorFlag once : 1;
+        } pswitch;
+
+        struct ScrollActorFlags {
+            BASE_FLAGS;
+            ActorFlag tanks : 1;
+        } scroll;
+
+        struct ThwompActorFlags {
+            BASE_FLAGS;
+            ActorFlag start : 1;
+            ActorFlag laugh : 1;
+        } thwomp;
+
+        struct BlasterActorFlags {
+            BASE_FLAGS;
+            ActorFlag blocked : 1;
+        } blaster;
+
+        struct BulletActorFlags {
+            BASE_FLAGS;
+            ActorFlag dead : 1;
+        } bullet;
+
+        struct EnemyActorFlags {
+            BASE_FLAGS;
+            ActorFlag special : 1;
+            ActorFlag active : 1;
+        } enemy;
+
+        struct PiranhaActorFlags {
+            BASE_FLAGS;
+            ActorFlag fire : 1;
+            ActorFlag red : 1;
+            ActorFlag start : 1;
+            ActorFlag blocked : 1;
+            ActorFlag out : 1;
+            ActorFlag in : 1;
+            ActorFlag fired : 1;
+        } piranha;
+
+        struct BroActorFlags {
+            BASE_FLAGS;
+            ActorFlag active : 1;
+            ActorFlag unk10 : 1;
+            ActorFlag unk11 : 1;
+            ActorFlag jump : 1;
+            ActorFlag unk30 : 1;
+            ActorFlag unk31 : 1;
+            ActorFlag bottom : 1;
+            ActorFlag top : 1;
+        } bro;
+
+        struct BroLayerActorFlags {
+            BASE_FLAGS;
+            ActorFlag top : 1;
+        } bro_layer;
+
+        struct WarpActorFlags {
+            BASE_FLAGS;
+            ActorFlag goal : 1;
+            ActorFlag secret : 1;
+        } warp;
+
+        struct PlatformActorFlags {
+            BASE_FLAGS;
+            ActorFlag start : 1;
+            ActorFlag carrying : 1;
+            ActorFlag fall : 1;
+            ActorFlag down : 1;
+            ActorFlag falling : 1;
+            ActorFlag moved : 1;
+        } platform;
+
+        struct PlatformTurnActorFlags {
+            BASE_FLAGS;
+            ActorFlag add : 1;
+        } platform_turn;
+    } flags;
 };
 
 struct GameState {
-    struct GamePlayer {
-        Bool active;
-        GameInput input, last_input;
-
-        ObjectID object;
-        fvec2 pos;
-        fvec2 bounds[2];
-
-        int8_t lives;
-        uint8_t coins;
-        uint32_t score;
-        PlayerPowers power;
-
-        ObjectID missiles[MAX_MISSILES];
-        ObjectID sink[MAX_SINK];
-
-        struct Kevin {
-            ObjectID object;
-            int8_t delay;
-            fvec2 pos;
-
-            struct KevinFrame {
-                fvec2 pos;
-                Bool flipped;
-                PlayerPowers power;
-                PlayerFrames frame;
-            } frames[KEVIN_DELAY];
-        } kevin;
-    } players[MAX_PLAYERS];
+    struct GamePlayer players[MAX_PLAYERS];
 
     GameFlags flags;
+    struct GameSequence sequence;
 
     char world[8], next[8];
-    fvec2 size;
-    fvec2 bounds[2];
+    fix16_t size[2];
+    fix16_t bounds[2][2];
 
     uint64_t time;
     uint32_t seed;
 
     int32_t clock;
-    ObjectID spawn, checkpoint, autoscroll;
+    ActorID spawn, checkpoint, autoscroll;
     fix16_t water, hazard;
     uint16_t pswitch;
 
-    struct GameSequence {
-        GameSequenceType type;
-        uint16_t time;
-        PlayerID activator;
-    } sequence;
-
-    struct GameObject {
-        GameObjectType type;
-        ObjectID previous, next;
-
-        int32_t block;
-        ObjectID previous_block, next_block;
-
-        fvec2 pos, bbox[2];
-        fix16_t depth;
-
-        fix16_t values[MAX_VALUES];
-        uint32_t flags;
-    } objects[MAX_OBJECTS];
-    ObjectID live_objects, next_object;
-
-    ObjectID blockmap[BLOCKMAP_SIZE];
+    struct GameActor actors[MAX_ACTORS];
+    ActorID live_actors, next_actor;
 };
+
+struct VideoState {};
+
+struct AudioState {};
 
 struct SaveState {
-    PlayerID view_player;
     struct GameState game;
     struct VideoState video;
-    struct SoundState audio;
+    struct AudioState audio;
 };
 
-struct InterpObject {
-    GameObjectType type;
-    fvec2 from, to;
-    fvec2 pos;
+struct GameActorInfo {
+    void (*load)();
+    void (*create)(struct GameState*, const ActorID, struct GameActor*);
+    void (*tick)(struct GameState*, const ActorID, struct GameActor*);
+    void (*draw)(const struct GameState*, const ActorID, const struct GameActor*);
+    void (*destroy)(struct GameState*, const ActorID, struct GameActor*);
 };
 
-void start_state(const struct GameContext*);
-void nuke_state();
-void save_state(struct SaveState*);
-void load_state(const struct SaveState*);
-uint32_t check_state();
-void dump_state();
-Bool tick_state(GameInput[MAX_PLAYERS]);
-void draw_state();
-void draw_state_hud();
-
-void load_object(GameObjectType);
-
-Bool object_is_alive(ObjectID);
-struct GameObject* get_object(ObjectID);
-ObjectID create_object(GameObjectType, const fvec2);
-void move_object(ObjectID, const fvec2);
-void displace_object(ObjectID, fix16_t, Bool);
-
-struct BlockList {
-    ObjectID objects[MAX_OBJECTS];
-    size_t num_objects;
+struct GameInstance {
+    GameNetwork* net;
+    struct GameContext context;
+    struct SaveState state;
 };
 
-void list_block_at(struct BlockList*, const fvec2[2]);
-
-void kill_object(ObjectID);
-void destroy_object(ObjectID);
-void draw_object(ObjectID, const char*, GLfloat, const GLubyte[4]);
-void play_sound_at_object(struct GameObject*, const char*);
-
-int32_t random();
-
-void interp_start();
-void interp_end();
-void interp_update(float);
-void skip_interp(ObjectID);
+struct GameInstance* create_game_instance();
+void update_game_instance();
+void draw_game_instance();
+void destroy_game_instance();
