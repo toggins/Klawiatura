@@ -1120,13 +1120,14 @@ void video_update_custom_end() {
 void video_teardown() {
     glDeleteVertexArrays(1, &(batch.vao));
     glDeleteBuffers(1, &(batch.vbo));
+    SDL_free(batch.vertices);
+
     FreeTinyMap(tiles);
 
     glDeleteTextures(1, &blank_texture);
     FreeTinyMap(textures);
     FreeTinyMap(skins);
 
-    SDL_free(batch.vertices);
     glDeleteProgram(shader);
 
     SDL_GL_DestroyContext(gpu);
