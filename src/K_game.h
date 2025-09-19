@@ -262,13 +262,7 @@ enum BaseActorValues {
 #define FLAG_ON(actor, flag) ((actor)->flags |= (flag))
 #define FLAG_OFF(actor, flag) ((actor)->flags &= ~(flag))
 
-#define TOGGLE_FLAG(actor, flag)                                                                                       \
-    do {                                                                                                               \
-        if (ANY_FLAG(actor, flag))                                                                                     \
-            FLAG_OFF(actor, flag);                                                                                     \
-        else                                                                                                           \
-            FLAG_ON(actor, flag);                                                                                      \
-    } while (0)
+#define TOGGLE_FLAG(actor, flag) (ANY_FLAG(actor, flag) ? FLAG_OFF(actor, flag) : FLAG_ON(actor, flag))
 
 #define CUSTOM_FLAG(idx) (1 << (5 + (idx)))
 enum BaseActorFlags {
