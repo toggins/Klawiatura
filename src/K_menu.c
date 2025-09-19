@@ -1,1 +1,1 @@
-#include "K_menu.h"
+#include "K_menu.h" // IWYU pragma: keep

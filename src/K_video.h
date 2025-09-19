@@ -102,6 +102,12 @@ typedef struct Surface {
 	GLuint size[2];
 } Surface;
 
+typedef struct {
+	void* temp;
+} VideoState;
+
+extern VideoState video_state;
+
 void video_init(bool);
 void video_teardown();
 

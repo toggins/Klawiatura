@@ -2,7 +2,9 @@
 
 #include <S_fixed.h>
 
+#include "K_audio.h"
 #include "K_net.h" // IWYU pragma: keep
+#include "K_video.h"
 
 #define TICKRATE 50
 
@@ -320,12 +322,6 @@ typedef struct {
 } GameState;
 
 typedef struct {
-} VideoState;
-
-typedef struct {
-} AudioState;
-
-typedef struct {
 	GameState game;
 	VideoState video;
 	AudioState audio;
@@ -333,31 +329,27 @@ typedef struct {
 
 typedef struct {
 	void (*load)();
-	void (*create)(GameState*, GameActor*);
-	void (*tick)(GameState*, GameActor*);
-	void (*draw)(const GameState*, const GameActor*);
-	void (*destroy)(GameState*, GameActor*);
+	void (*create)(GameActor*);
+	void (*tick)(GameActor*);
+	void (*draw)(const GameActor*);
+	void (*destroy)(GameActor*);
 } GameActorTable;
 
-typedef struct {
-	GekkoSession* net;
-	GameContext context;
-	SaveState state;
-} GameInstance;
+extern GameState game_state;
 
-GameInstance* create_game_instance();
-void update_game_instance();
-void draw_game_instance();
-void destroy_game_instance();
+void start_game_state();
+void update_game_state();
+void draw_game_state();
+void end_game_state();
 
 // Players
-GamePlayer* get_player(GameState*, PlayerID);
+GamePlayer* get_player(PlayerID);
 
 // Actors
-GameActor* get_actor(GameState*, ActorID);
+GameActor* get_actor(ActorID);
 
 // Math
-int32_t rng(GameState*, int32_t);
+int32_t rng(int32_t);
 
 fix16_t point_distance(const fvec2, const fvec2);
 fix16_t point_angle(const fvec2, const fvec2);

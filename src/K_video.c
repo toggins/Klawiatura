@@ -19,6 +19,8 @@ static StTinyMap* textures = NULL;
 static VertexBatch batch = {0};
 static Surface* current_surface = NULL;
 
+VideoState video_state = {0};
+
 static const GLchar *const vertex_source =
 #include "embeds/vertex.glsl"
 	, *const fragment_source =

@@ -8,16 +8,18 @@ static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_PLAYER] = &TAB_PLAYER,
 };
 
+GameState game_state = {0};
+
 // =======
 // PLAYERS
 // =======
 
 // Gets a player from PlayerID.
-GamePlayer* get_player(GameState* gs, PlayerID id) {
+GamePlayer* get_player(PlayerID id) {
 	if (id < 0 || id >= MAX_PLAYERS)
 		return NULL;
 
-	GamePlayer* player = &(gs->players[id]);
+	GamePlayer* player = &(game_state.players[id]);
 	return (player->id == NULLPLAY) ? NULL : player;
 }
 
@@ -26,11 +28,11 @@ GamePlayer* get_player(GameState* gs, PlayerID id) {
 // ======
 
 // Gets an actor from ActorID.
-GameActor* get_actor(GameState* gs, ActorID id) {
+GameActor* get_actor(ActorID id) {
 	if (id < 0 || id >= MAX_ACTORS)
 		return NULL;
 
-	GameActor* actor = &(gs->actors[id]);
+	GameActor* actor = &(game_state.actors[id]);
 	return (actor->id == NULLACT) ? NULL : actor;
 }
 
@@ -39,10 +41,10 @@ GameActor* get_actor(GameState* gs, ActorID id) {
 // ====
 
 // Returns an exclusive random number.
-int32_t rng(GameState* gs, int32_t x) {
+int32_t rng(int32_t x) {
 	// https://rosettacode.org/wiki/Linear_congruential_generator
-	gs->seed = (gs->seed * 1103515245 + 12345) & 2147483647;
-	return gs->seed % x;
+	game_state.seed = (game_state.seed * 1103515245 + 12345) & 2147483647;
+	return game_state.seed % x;
 }
 
 // Approximate distance between two points.
