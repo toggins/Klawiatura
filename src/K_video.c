@@ -20,9 +20,9 @@ static VertexBatch batch = {0};
 static Surface* current_surface = NULL;
 
 static const GLchar *const vertex_source =
-#include "vertex.glsl.raw"
+#include "embeds/vertex.glsl"
 	, *const fragment_source =
-#include "fragment.glsl.raw"
+#include "embeds/fragment.glsl"
 	;
 
 void video_init(bool bypass_shader) {

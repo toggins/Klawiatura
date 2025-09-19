@@ -115,11 +115,11 @@ if(MSVC AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo) # you're sus my guy...
 endif()
 
 # Thanks: <https://stackoverflow.com/a/47801116>
-target_include_directories(Klawiatura PRIVATE ${CMAKE_BINARY_DIR}/embeds)
+target_include_directories(Klawiatura PRIVATE ${CMAKE_BINARY_DIR}/nested)
 function(embed_file FILENAME)
     file(READ ${CMAKE_SOURCE_DIR}/src/${FILENAME} CONTENT)
     set(CONTENT "R\"(${CONTENT})\"")
-    file(WRITE ${CMAKE_BINARY_DIR}/embeds/${FILENAME}.raw "${CONTENT}")
+    file(WRITE ${CMAKE_BINARY_DIR}/nested/embeds/${FILENAME} "${CONTENT}")
 endfunction()
 
 embed_file(vertex.glsl)
