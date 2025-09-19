@@ -227,12 +227,12 @@ typedef struct {
 
     uint32_t score;
 
-    struct Kevin {
+    struct {
         int8_t delay;
         ActorID object;
         fix16_t pos[2];
 
-        struct KevinFrame {
+        struct {
             Bool flip;
             PlayerPower power;
             PlayerFrame frame;
