@@ -114,7 +114,7 @@ if(MSVC AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo) # you're sus my guy...
     target_compile_options(GekkoNet PRIVATE /fsanitize=address)
 endif()
 
-# Thanks: <https://stackoverflow.com/a/47801116>
+# Thanks <https://stackoverflow.com/a/47801116>
 target_include_directories(Klawiatura PRIVATE ${CMAKE_BINARY_DIR}/nested)
 function(embed_file FILENAME)
     file(READ ${CMAKE_SOURCE_DIR}/src/${FILENAME} CONTENT)
