@@ -5,33 +5,36 @@
 // if you really need to use these structs outside the .c file, you're gonna have to put em in a header file next to
 // this one
 
-struct PlayerActorValues {
-    EXTENDS_VALUES;
-    ActorValue player;
-    ActorValue frame;
-    ActorValue ground;
-    ActorValue spring;
-    ActorValue power;
-    ActorValue flash;
-    ActorValue star, star_combo;
-    ActorValue fire;
-    ActorValue warp, warp_state;
-    ActorValue platform;
+enum PlayerActorValues {
+    VAL_PLAYER_INDEX = VAL_CUSTOM,
+    VAL_PLAYER_FRAME,
+    VAL_PLAYER_GROUND,
+    VAL_PLAYER_SPRING,
+    VAL_PLAYER_POWER,
+    VAL_PLAYER_FLASH,
+    VAL_PLAYER_STARMAN,
+    VAL_PLAYER_STARMAN_COMBO,
+    VAL_PLAYER_FIRE,
+    VAL_PLAYER_WARP,
+    VAL_PLAYER_WARP_STATE,
+    VAL_PLAYER_PLATFORM,
 };
 
-struct PlayerActorFlags {
-    EXTENDS_FLAGS;
-    ActorFlag duck : 1, jump : 1, swim : 1;
-    ActorFlag ascend : 1, descend : 1;
-    ActorFlag respawn : 1;
-    ActorFlag stomp : 1;
-    ActorFlag warp_out : 1;
-    ActorFlag dead : 1;
+enum PlayerActorFlags {
+    FLG_PLAYER_DUCK = CUSTOM_FLAG(0),
+    FLG_PLAYER_JUMP = CUSTOM_FLAG(1),
+    FLG_PLAYER_SWIM = CUSTOM_FLAG(2),
+    FLG_PLAYER_ASCEND = CUSTOM_FLAG(3),
+    FLG_PLAYER_DESCEND = CUSTOM_FLAG(4),
+    FLG_PLAYER_RESPAWN = CUSTOM_FLAG(5),
+    FLG_PLAYER_STOMP = CUSTOM_FLAG(6),
+    FLG_PLAYER_WARP_OUT = CUSTOM_FLAG(7),
+    FLG_PLAYER_DEAD = CUSTOM_FLAG(8),
 };
 
 static void tick(struct GameState* gs, const ActorID id, struct GameActor* actor) {
-    ACTOR_FLAGS(Player, actor)->dead = true;
-    BASE_FLAGS(actor)->flip_x = !BASE_FLAGS(actor)->flip_x;
+    FLAG_ON(actor, FLG_PLAYER_DEAD);
+    TOGGLE_FLAG(actor, FLG_X_FLIP);
 }
 
 // don't forget to include it inside K_game.c

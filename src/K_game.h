@@ -246,25 +246,39 @@ struct GameSequence {
     uint16_t time;
 };
 
-#define EXTENDS_VALUES struct BaseActorValues __base
-struct BaseActorValues {
-    ActorValue x_speed, y_speed;
-    ActorValue x_touch, y_touch;
-    ActorValue sprout;
+enum BaseActorValues {
+    VAL_X_SPEED,
+    VAL_Y_SPEED,
+    VAL_X_TOUCH,
+    VAL_Y_TOUCH,
+    VAL_SPROUT,
+    VAL_CUSTOM
 };
 
-#define EXTENDS_FLAGS ActorFlag __base : 5
-struct BaseActorFlags {
-    ActorFlag visible : 1, destroy : 1;
-    ActorFlag flip_x : 1, flip_y : 1;
-    ActorFlag freeze : 1;
+#define CUSTOM_FLAG(idx) (1 << (5 + (idx)))
+
+#define ANY_FLAG(actor, flag) (((actor)->flags & (flag)) > 0)
+#define ALL_FLAG(actor, flag) (((actor)->flags & (flag)) == (flag))
+
+#define FLAG_ON(actor, flag) (actor)->flags |= (flag)
+#define FLAG_OFF(actor, flag) (actor)->flags &= ~(flag)
+
+#define TOGGLE_FLAG(actor, flag)                                                                                       \
+    do {                                                                                                               \
+        if (ANY_FLAG(actor, flag))                                                                                     \
+            FLAG_OFF(actor, flag);                                                                                     \
+        else                                                                                                           \
+            FLAG_ON(actor, flag);                                                                                      \
+    } while (0)
+
+enum BaseActorFlags {
+    FLG_VISIBLE = 1 << 0,
+    FLG_DESTROY = 1 << 1,
+    FLG_X_FLIP = 1 << 2,
+    FLG_Y_FLIP = 1 << 3,
+    FLG_FREEZE = 1 << 4,
+    FLG_CUSTOM = CUSTOM_FLAG(0),
 };
-
-#define ACTOR_VALUES(T, actor) ((struct T##ActorValues*)(&(actor)->values))
-#define BASE_VALUES(actor) ACTOR_VALUES(Base, (actor))
-
-#define ACTOR_FLAGS(T, actor) ((struct T##ActorFlags*)(&(actor)->flags))
-#define BASE_FLAGS(actor) ACTOR_FLAGS(Base, (actor))
 
 struct GameActor {
     GameActorType type;
