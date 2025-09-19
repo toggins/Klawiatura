@@ -1,9 +1,9 @@
 #include "K_game.h"
 
-const struct GameActorInfo K_NULL = {0};
-extern const struct GameActorInfo K_PLAYER;
+const GameActorTable TAB_NULL = {0};
+extern const GameActorTable TAB_PLAYER;
 
-static const struct GameActorInfo* ACTORS[ACT_SIZE] = {
-    [ACT_NULL] = &K_NULL,
-    [ACT_PLAYER] = &K_PLAYER,
+static const GameActorTable* const ACTORS[ACT_SIZE] = {
+    [ACT_NULL] = &TAB_NULL,
+    [ACT_PLAYER] = &TAB_PLAYER,
 };

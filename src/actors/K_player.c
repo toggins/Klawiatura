@@ -5,7 +5,7 @@
 // if you really need to use these structs outside the .c file, you're gonna have to put em in a header file next to
 // this one
 
-enum PlayerActorValues {
+enum {
     VAL_PLAYER_INDEX = VAL_CUSTOM,
     VAL_PLAYER_FRAME,
     VAL_PLAYER_GROUND,
@@ -20,7 +20,7 @@ enum PlayerActorValues {
     VAL_PLAYER_PLATFORM,
 };
 
-enum PlayerActorFlags {
+enum {
     FLG_PLAYER_DUCK = CUSTOM_FLAG(0),
     FLG_PLAYER_JUMP = CUSTOM_FLAG(1),
     FLG_PLAYER_SWIM = CUSTOM_FLAG(2),
@@ -32,10 +32,10 @@ enum PlayerActorFlags {
     FLG_PLAYER_DEAD = CUSTOM_FLAG(8),
 };
 
-static void tick(struct GameState* gs, const ActorID id, struct GameActor* actor) {
+static void tick(GameState* gs, GameActor* actor) {
     FLAG_ON(actor, FLG_PLAYER_DEAD);
     TOGGLE_FLAG(actor, FLG_X_FLIP);
 }
 
 // don't forget to include it inside K_game.c
-const struct GameActorInfo K_PLAYER = {NULL, NULL, tick, NULL, NULL};
+const GameActorTable TAB_PLAYER = {NULL, NULL, tick, NULL, NULL};

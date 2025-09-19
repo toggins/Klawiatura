@@ -210,9 +210,10 @@ enum {
     PLAT_CASTLE_BUTTONS,
 };
 
-struct GameContext {};
+typedef struct {
+} GameContext;
 
-struct GamePlayer {
+typedef struct {
     Bool active;
     GameInput input, last_input;
 
@@ -238,13 +239,13 @@ struct GamePlayer {
             PlayerFrame frame;
         } frames[KEVIN_DELAY];
     } kevin;
-};
+} GamePlayer;
 
-struct GameSequence {
+typedef struct {
     GameSequenceType type;
     PlayerID activator;
     uint16_t time;
-};
+} GameSequence;
 
 enum BaseActorValues {
     VAL_X_SPEED,
@@ -255,13 +256,11 @@ enum BaseActorValues {
     VAL_CUSTOM
 };
 
-#define CUSTOM_FLAG(idx) (1 << (5 + (idx)))
-
-#define ANY_FLAG(actor, flag) (((actor)->flags & (flag)) > 0)
+#define ANY_FLAG(actor, flag) (((actor)->flags & (flag)) != 0)
 #define ALL_FLAG(actor, flag) (((actor)->flags & (flag)) == (flag))
 
-#define FLAG_ON(actor, flag) (actor)->flags |= (flag)
-#define FLAG_OFF(actor, flag) (actor)->flags &= ~(flag)
+#define FLAG_ON(actor, flag) ((actor)->flags |= (flag))
+#define FLAG_OFF(actor, flag) ((actor)->flags &= ~(flag))
 
 #define TOGGLE_FLAG(actor, flag)                                                                                       \
     do {                                                                                                               \
@@ -271,6 +270,7 @@ enum BaseActorValues {
             FLAG_ON(actor, flag);                                                                                      \
     } while (0)
 
+#define CUSTOM_FLAG(idx) (1 << (5 + (idx)))
 enum BaseActorFlags {
     FLG_VISIBLE = 1 << 0,
     FLG_DESTROY = 1 << 1,
@@ -280,7 +280,7 @@ enum BaseActorFlags {
     FLG_CUSTOM = CUSTOM_FLAG(0),
 };
 
-struct GameActor {
+typedef struct {
     GameActorType type;
     ActorID previous, next;
 
@@ -292,13 +292,14 @@ struct GameActor {
 
     ActorValue values[MAX_VALUES];
     ActorFlag flags;
-};
+    ActorID id;
+} GameActor;
 
-struct GameState {
-    struct GamePlayer players[MAX_PLAYERS];
+typedef struct {
+    GamePlayer players[MAX_PLAYERS];
 
     GameFlag flags;
-    struct GameSequence sequence;
+    GameSequence sequence;
 
     char world[8], next[8];
     fix16_t size[2];
@@ -312,35 +313,37 @@ struct GameState {
     fix16_t water, hazard;
     uint16_t pswitch;
 
-    struct GameActor actors[MAX_ACTORS];
+    GameActor actors[MAX_ACTORS];
     ActorID live_actors, next_actor;
-};
+} GameState;
 
-struct VideoState {};
+typedef struct {
+} VideoState;
 
-struct AudioState {};
+typedef struct {
+} AudioState;
 
-struct SaveState {
-    struct GameState game;
-    struct VideoState video;
-    struct AudioState audio;
-};
+typedef struct {
+    GameState game;
+    VideoState video;
+    AudioState audio;
+} SaveState;
 
-struct GameActorInfo {
+typedef struct {
     void (*load)();
-    void (*create)(struct GameState*, const ActorID, struct GameActor*);
-    void (*tick)(struct GameState*, const ActorID, struct GameActor*);
-    void (*draw)(const struct GameState*, const ActorID, const struct GameActor*);
-    void (*destroy)(struct GameState*, const ActorID, struct GameActor*);
-};
+    void (*create)(GameState*, GameActor*);
+    void (*tick)(GameState*, GameActor*);
+    void (*draw)(const GameState*, const GameActor*);
+    void (*destroy)(GameState*, GameActor*);
+} GameActorTable;
 
-struct GameInstance {
+typedef struct {
     GekkoSession* net;
-    struct GameContext context;
-    struct SaveState state;
-};
+    GameContext context;
+    SaveState state;
+} GameInstance;
 
-struct GameInstance* create_game_instance();
+GameInstance* create_game_instance();
 void update_game_instance();
 void draw_game_instance();
 void destroy_game_instance();
