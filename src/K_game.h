@@ -227,20 +227,21 @@ typedef struct {
 
 	ActorID actor;
 	ActorID missiles[MAX_MISSILES], sink[MAX_SINK];
-	fix16_t pos[2], bounds[2];
+	fvec2 pos;
+	frect bounds;
 
 	uint32_t score;
 
 	struct {
 		int8_t delay;
 		ActorID object;
-		fix16_t pos[2];
+		fvec2 start;
 
 		struct {
 			Bool flip;
 			PlayerPower power;
 			PlayerFrame frame;
-			fix16_t pos[2];
+			fvec2 pos;
 		} frames[KEVIN_DELAY];
 	} kevin;
 } GamePlayer;
@@ -286,7 +287,8 @@ typedef struct {
 	ActorID previous_cell, next_cell;
 	int32_t cell;
 
-	fix16_t pos[2], box[2][2];
+	fvec2 pos;
+	frect box;
 	fix16_t depth;
 
 	ActorFlag flags;
@@ -302,7 +304,9 @@ typedef struct {
 	ActorID spawn, checkpoint, autoscroll;
 	uint16_t pswitch;
 
-	fix16_t size[2], bounds[2][2];
+	fvec2 size;
+	frect bounds;
+
 	fix16_t water, hazard;
 	int32_t clock;
 
