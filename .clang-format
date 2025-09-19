@@ -1,7 +1,12 @@
 ColumnLimit: 120
-IndentWidth: 4
-UseTab: Never
-BreakBeforeBraces: Attach
+IndentWidth: 8
+ContinuationIndentWidth: 8
+UseTab: AlignWithSpaces
+AlignArrayOfStructures: Left
+BreakBeforeBinaryOperators: All
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterControlStatement: MultiLine
 DerivePointerAlignment: false
 PointerAlignment: Left
 AllowShortBlocksOnASingleLine: Empty
@@ -11,6 +16,7 @@ AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterReturnType: None
+AccessModifierOffset: -8
 IndentCaseLabels: true
-AlignAfterOpenBracket: BlockIndent
-SortIncludes: Never
+AlignAfterOpenBracket: DontAlign
+SortIncludes: CaseSensitive
