@@ -19,20 +19,6 @@
 typedef fix16_t ActorValue;
 typedef uint32_t ActorFlag;
 
-#define BASE_VALUES                                                                                                    \
-    ActorValue x_speed;                                                                                                \
-    ActorValue y_speed;                                                                                                \
-    ActorValue x_touch;                                                                                                \
-    ActorValue y_touch;                                                                                                \
-    ActorValue sprout;
-
-#define BASE_FLAGS                                                                                                     \
-    ActorFlag visible : 1;                                                                                             \
-    ActorFlag destroy : 1;                                                                                             \
-    ActorFlag flip_x : 1;                                                                                              \
-    ActorFlag flip_y : 1;                                                                                              \
-    ActorFlag freeze : 1;
-
 #define MAX_CELLS 128
 #define GRID_SIZE (MAX_CELLS * MAX_CELLS)
 #define CELL_SIZE ((fix16_t)(0x01000000))
@@ -50,7 +36,8 @@ typedef uint8_t Bool;
 typedef int8_t PlayerID;
 typedef int16_t ActorID;
 
-enum GameInput {
+typedef uint16_t GameInput;
+enum {
     GI_UP = 1 << 0,
     GI_LEFT = 1 << 1,
     GI_DOWN = 1 << 2,
@@ -59,9 +46,9 @@ enum GameInput {
     GI_RUN = 1 << 5,
     GI_FIRE = 1 << 6,
 };
-typedef uint16_t GameInput;
 
-enum GameFlags {
+typedef uint16_t GameFlag;
+enum {
     GF_HURRY = 1 << 0,
     GF_END = 1 << 1,
     GF_SCROLL = 1 << 2,
@@ -76,16 +63,16 @@ enum GameFlags {
     GF_SINGLE = 1 << 11,
     GF_RESTART = 1 << 12,
 };
-typedef uint16_t GameFlags;
 
-enum GameSequenceTypes {
+typedef uint8_t GameSequenceType;
+enum {
     SEQ_NONE,
     SEQ_LOSE,
     SEQ_WIN,
 };
-typedef uint8_t GameSequenceTypes;
 
-enum GameActorTypes {
+typedef uint16_t GameActorType;
+enum {
     ACT_NULL,
 
     ACT_SOLID,
@@ -180,9 +167,9 @@ enum GameActorTypes {
 
     ACT_SIZE,
 };
-typedef uint16_t GameActorTypes;
 
-enum PlayerPowers {
+typedef uint8_t PlayerPower;
+enum {
     POW_SMALL,
     POW_BIG,
     POW_FIRE,
@@ -190,9 +177,9 @@ enum PlayerPowers {
     POW_LUI,
     POW_HAMMER,
 };
-typedef uint8_t PlayerPowers;
 
-enum PlayerFrames {
+typedef uint8_t PlayerFrame;
+enum {
     PF_IDLE,
     PF_WALK1,
     PF_WALK2,
@@ -212,9 +199,9 @@ enum PlayerFrames {
     PF_GROW4,
     PF_DEAD,
 };
-typedef uint8_t PlayerFrames;
 
-enum PlatformTypes {
+typedef uint8_t PlatformType;
+enum {
     PLAT_NORMAL,
     PLAT_SMALL,
     PLAT_CLOUD,
@@ -222,7 +209,6 @@ enum PlatformTypes {
     PLAT_CASTLE_LONG,
     PLAT_CASTLE_BUTTONS,
 };
-typedef uint8_t PlatformTypes;
 
 struct GameContext {};
 
@@ -236,7 +222,7 @@ struct GamePlayer {
     int8_t lives;
     uint8_t coins;
     uint32_t score;
-    PlayerPowers power;
+    PlayerPower power;
 
     ActorID missiles[MAX_MISSILES], sink[MAX_SINK];
 
@@ -248,20 +234,40 @@ struct GamePlayer {
         struct KevinFrame {
             fix16_t pos[2];
             Bool flip;
-            PlayerPowers power;
-            PlayerFrames frame;
+            PlayerPower power;
+            PlayerFrame frame;
         } frames[KEVIN_DELAY];
     } kevin;
 };
 
 struct GameSequence {
-    GameSequenceTypes type;
+    GameSequenceType type;
     PlayerID activator;
     uint16_t time;
 };
 
+#define EXTENDS_VALUES struct BaseActorValues __base
+struct BaseActorValues {
+    ActorValue x_speed, y_speed;
+    ActorValue x_touch, y_touch;
+    ActorValue sprout;
+};
+
+#define EXTENDS_FLAGS ActorFlag __base : 5
+struct BaseActorFlags {
+    ActorFlag visible : 1, destroy : 1;
+    ActorFlag flip_x : 1, flip_y : 1;
+    ActorFlag freeze : 1;
+};
+
+#define ACTOR_VALUES(T, actor) ((struct T##ActorValues*)(&(actor)->values))
+#define BASE_VALUES(actor) ACTOR_VALUES(Base, (actor))
+
+#define ACTOR_FLAGS(T, actor) ((struct T##ActorFlags*)(&(actor)->flags))
+#define BASE_FLAGS(actor) ACTOR_FLAGS(Base, (actor))
+
 struct GameActor {
-    GameActorTypes type;
+    GameActorType type;
     ActorID previous, next;
 
     int32_t cell;
@@ -270,319 +276,14 @@ struct GameActor {
     fix16_t pos[2], box[2][2];
     fix16_t depth;
 
-    union GameActorValues {
-        ActorValue raw[MAX_VALUES];
-
-        struct BaseActorValues {
-            BASE_VALUES;
-        } base;
-
-        struct PropActorValues {
-            BASE_VALUES;
-            ActorValue frame;
-            ActorValue angle;
-            ActorValue alpha;
-        } prop, effect;
-
-        struct PlayerActorValues {
-            BASE_VALUES;
-            ActorValue player;
-            ActorValue frame;
-            ActorValue ground;
-            ActorValue spring;
-            ActorValue power;
-            ActorValue flash;
-            ActorValue star, star_combo;
-            ActorValue fire;
-            ActorValue warp, warp_state;
-            ActorValue platform;
-        } player;
-
-        struct PlayerEffectActorValues {
-            BASE_VALUES;
-            ActorValue player;
-            ActorValue power;
-            ActorValue frame;
-            ActorValue alpha;
-        } player_effect;
-
-        struct KevinActorValues {
-            BASE_VALUES;
-            ActorValue player;
-        } kevin;
-
-        struct MissileActorValues {
-            BASE_VALUES;
-            ActorValue owner;
-            ActorValue angle;
-            ActorValue hits, hit;
-            ActorValue bubble;
-            ActorValue alpha;
-        } missile;
-
-        struct PointsActorValues {
-            BASE_VALUES;
-            ActorValue points;
-            ActorValue player;
-            ActorValue time;
-        } points;
-
-        struct BlockActorValues {
-            BASE_VALUES;
-            ActorValue bump;
-            ActorValue owner;
-            ActorValue item;
-            ActorValue time;
-        } block;
-
-        struct CoinActorValues {
-            BASE_VALUES;
-            ActorValue owner;
-            ActorValue frame;
-        } coin;
-
-        struct RotodiscActorValues {
-            BASE_VALUES;
-            ActorValue child, parent;
-            ActorValue length;
-            ActorValue angle;
-            ActorValue speed;
-        } rotodisc;
-
-        struct BoundsActorValues {
-            BASE_VALUES;
-            ActorValue bounds_x1, bounds_y1;
-            ActorValue bounds_x2, bounds_y2;
-        } bounds, checkpoint;
-
-        struct GoalActorValues {
-            BASE_VALUES;
-            ActorValue y;
-            ActorValue angle;
-        } goal;
-
-        struct TimeActorValues {
-            BASE_VALUES;
-            ActorValue time;
-        } pswitch, cannon;
-
-        struct ThwompActorValues {
-            BASE_VALUES;
-            ActorValue x, y;
-            ActorValue state;
-            ActorValue frame;
-        } thwomp;
-
-        struct DeadActorValues {
-            BASE_VALUES;
-            ActorValue type;
-        } dead;
-
-        struct EnemyActorValues {
-            BASE_VALUES;
-            ActorValue turn;
-            ActorValue mayday;
-            ActorValue flat;
-        } enemy;
-
-        struct ParakoopaActorValues {
-            BASE_VALUES;
-            ActorValue x, y;
-            ActorValue angle;
-        } parakoopa;
-
-        struct ShellActorValues {
-            BASE_VALUES;
-            ActorValue owner;
-            ActorValue hit;
-            ActorValue combo;
-            ActorValue frame;
-        } shell;
-
-        struct PiranhaActorValues {
-            BASE_VALUES;
-            ActorValue move;
-            ActorValue wait;
-            ActorValue fire;
-        } piranha;
-
-        struct BroActorValues {
-            BASE_VALUES;
-            ActorValue missile;
-            ActorValue move;
-            ActorValue unk2, unk3, unk4, unk5;
-            ActorValue jump_state, jump;
-            ActorValue down;
-            ActorValue throw_state, throw;
-        } bro;
-
-        struct WarpActorValues {
-            BASE_VALUES;
-            ActorValue angle;
-            ActorValue x, y;
-            ActorValue bounds_x1, bounds_y1;
-            ActorValue bounds_x2, bounds_y2;
-            ActorValue angle_out;
-            ActorValue str1, str2;
-        } warp;
-
-        struct PlatformActorValues {
-            BASE_VALUES;
-            ActorValue type;
-            ActorValue x, y;
-            ActorValue respawn;
-            ActorValue frame;
-        } platform;
-
-        struct PodobooActorValues {
-            BASE_VALUES;
-            ActorValue child, parent;
-            ActorValue spawn;
-        } podoboo;
-    } values;
-
-    union GameActorFlags {
-        ActorFlag raw;
-
-        struct BaseActorFlags {
-            BASE_FLAGS;
-        } base;
-
-        struct PropActorFlags {
-            BASE_FLAGS;
-            ActorFlag extra : 1;
-        } prop;
-
-        struct PlayerActorFlags {
-            BASE_FLAGS;
-            ActorFlag duck : 1;
-            ActorFlag jump : 1;
-            ActorFlag swim : 1;
-            ActorFlag ascend : 1;
-            ActorFlag descend : 1;
-            ActorFlag respawn : 1;
-            ActorFlag stomp : 1;
-            ActorFlag warp_out : 1;
-            ActorFlag dead : 1;
-        } player;
-
-        struct PowerupActorFlags {
-            BASE_FLAGS;
-            ActorFlag full : 1;
-        } powerup;
-
-        struct BlockActorFlags {
-            BASE_FLAGS;
-            ActorFlag empty : 1;
-            ActorFlag gray : 1;
-            ActorFlag once : 1;
-        } block;
-
-        struct CoinActorFlags {
-            BASE_FLAGS;
-            ActorFlag start : 1;
-            ActorFlag spark : 1;
-        } coin;
-
-        struct RotodiscActorFlags {
-            BASE_FLAGS;
-            ActorFlag start : 1;
-            ActorFlag flower : 1;
-            ActorFlag flower2 : 1;
-        } rotodisc;
-
-        struct GoalActorFlags {
-            BASE_FLAGS;
-            ActorFlag start : 1;
-        } goal;
-
-        struct PSwitchActorFlags {
-            BASE_FLAGS;
-            ActorFlag once : 1;
-        } pswitch;
-
-        struct ScrollActorFlags {
-            BASE_FLAGS;
-            ActorFlag tanks : 1;
-        } scroll;
-
-        struct ThwompActorFlags {
-            BASE_FLAGS;
-            ActorFlag start : 1;
-            ActorFlag laugh : 1;
-        } thwomp;
-
-        struct BlasterActorFlags {
-            BASE_FLAGS;
-            ActorFlag blocked : 1;
-        } blaster;
-
-        struct BulletActorFlags {
-            BASE_FLAGS;
-            ActorFlag dead : 1;
-        } bullet;
-
-        struct EnemyActorFlags {
-            BASE_FLAGS;
-            ActorFlag special : 1;
-            ActorFlag active : 1;
-        } enemy;
-
-        struct PiranhaActorFlags {
-            BASE_FLAGS;
-            ActorFlag fire : 1;
-            ActorFlag red : 1;
-            ActorFlag start : 1;
-            ActorFlag blocked : 1;
-            ActorFlag out : 1;
-            ActorFlag in : 1;
-            ActorFlag fired : 1;
-        } piranha;
-
-        struct BroActorFlags {
-            BASE_FLAGS;
-            ActorFlag active : 1;
-            ActorFlag unk10 : 1;
-            ActorFlag unk11 : 1;
-            ActorFlag jump : 1;
-            ActorFlag unk30 : 1;
-            ActorFlag unk31 : 1;
-            ActorFlag bottom : 1;
-            ActorFlag top : 1;
-        } bro;
-
-        struct BroLayerActorFlags {
-            BASE_FLAGS;
-            ActorFlag top : 1;
-        } bro_layer;
-
-        struct WarpActorFlags {
-            BASE_FLAGS;
-            ActorFlag goal : 1;
-            ActorFlag secret : 1;
-        } warp;
-
-        struct PlatformActorFlags {
-            BASE_FLAGS;
-            ActorFlag start : 1;
-            ActorFlag carrying : 1;
-            ActorFlag fall : 1;
-            ActorFlag down : 1;
-            ActorFlag falling : 1;
-            ActorFlag moved : 1;
-        } platform;
-
-        struct PlatformTurnActorFlags {
-            BASE_FLAGS;
-            ActorFlag add : 1;
-        } platform_turn;
-    } flags;
+    ActorValue values[MAX_VALUES];
+    ActorFlag flags;
 };
 
 struct GameState {
     struct GamePlayer players[MAX_PLAYERS];
 
-    GameFlags flags;
+    GameFlag flags;
     struct GameSequence sequence;
 
     char world[8], next[8];
