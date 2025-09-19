@@ -1,3 +1,6 @@
+#include <SDL3_image/SDL_image.h>
+
+#include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
 
@@ -21,6 +24,11 @@ static StTinyMap* textures = NULL;
 
 static VertexBatch batch = {0};
 static Surface* current_surface = NULL;
+
+static mat4 model_matrix = GLM_MAT4_IDENTITY;
+static mat4 view_matrix = GLM_MAT4_IDENTITY;
+static mat4 projection_matrix = GLM_MAT4_IDENTITY;
+static mat4 mvp_matrix = GLM_MAT4_IDENTITY;
 
 VideoState video_state = {0};
 
@@ -163,12 +171,17 @@ void video_init(bool bypass_shader) {
 	uniforms.alpha_test = glGetUniformLocation(shader, "u_alpha_test");
 	uniforms.stencil = glGetUniformLocation(shader, "u_stencil");
 
-	glEnable(GL_BLEND);
+	glEnable(GL_BLEND | GL_CULL_FACE);
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	glUseProgram(shader);
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(uniforms.texture, 0);
 	glDepthFunc(GL_LEQUAL);
+	glCullFace(GL_BACK);
+
+	glm_ortho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, -16000, 16000, projection_matrix);
+	glm_mat4_mul(view_matrix, model_matrix, mvp_matrix);
+	glm_mat4_mul(projection_matrix, mvp_matrix, mvp_matrix);
 
 	textures = NewTinyMap();
 }
@@ -187,16 +200,249 @@ void video_teardown() {
 	SDL_DestroyWindow(window);
 }
 
-// Start of video loop.
-void video_start() {
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+// End of rendering step.
+void submit_video() {
+	submit_batch();
+	SDL_GL_SwapWindow(window);
 }
 
-// End of video loop.
-void video_end() {
-	SDL_GL_SwapWindow(window);
+// =====
+// BASIC
+// =====
+
+void clear_color(GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
+	glClearColor(r, g, b, a);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void clear_depth(GLfloat depth) {
+	glClearDepthf(depth);
+	glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+// ========
+// TEXTURES
+// ========
+
+static void nuke_texture(void* ptr) {
+	Texture* texture = ptr;
+	SDL_free(texture->name);
+	glDeleteTextures(1, &texture->texture);
+}
+
+void load_texture(const char* name) {
+	if (name == NULL || get_texture(name) != NULL)
+		return;
+
+	Texture texture = {0};
+
+	const char* file = find_file(file_pattern("data/textures/%s.*", name), ".json");
+	if (file == NULL)
+		FATAL("Texture \"%s\" not found", name);
+	SDL_Surface* surface = IMG_Load(file);
+	if (surface == NULL)
+		FATAL("Texture \"%s\" fail: %s", name, SDL_GetError());
+
+	texture.name = SDL_strdup(name);
+	texture.size[0] = surface->w;
+	texture.size[1] = surface->h;
+
+	glGenTextures(1, &(texture.texture));
+	glBindTexture(GL_TEXTURE_2D, texture.texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+	SDL_Surface* temp = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
+	if (temp == NULL)
+		FATAL("Texture \"%s\" conversion fail: %s", name, SDL_GetError());
+	SDL_DestroySurface(surface);
+	surface = temp;
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
+	SDL_DestroySurface(surface);
+
+	file = find_file(file_pattern("data/textures/%s.json", name), NULL);
+	if (file != NULL) {
+		yyjson_doc* json = yyjson_read_file(
+			file, YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS, NULL, NULL);
+		if (json != NULL) {
+			yyjson_val* root = yyjson_doc_get_root(json);
+			if (yyjson_is_obj(root)) {
+				texture.offset[0] = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "x_offset"));
+				texture.offset[1] = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "y_offset"));
+			}
+			yyjson_doc_free(json);
+		}
+	}
+
+	StMapPut(textures, long_key(name), &texture, sizeof(texture))->cleanup = nuke_texture;
+}
+
+const Texture* get_texture(const char* name) {
+	return (name == NULL) ? NULL : StMapGet(textures, long_key(name));
+}
+
+// =====
+// BATCH
+// =====
+
+void set_batch_texture(GLuint tex) {
+	if (batch.texture != tex) {
+		submit_batch();
+		batch.texture = tex;
+	}
+}
+
+void batch_vertex(const GLfloat pos[3], const GLubyte color[4], const GLfloat uv[2]) {
+	if (batch.vertex_count >= batch.vertex_capacity) {
+		submit_batch();
+
+		const size_t new_size = batch.vertex_capacity * 2;
+		if (new_size < batch.vertex_capacity)
+			FATAL("Capacity overflow in vertex batch");
+		batch.vertices = SDL_realloc(batch.vertices, new_size * sizeof(Vertex));
+		if (batch.vertices == NULL)
+			FATAL("Out of memory for vertex batch");
+
+		batch.vertex_capacity = new_size;
+
+		glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
+		glBufferData(
+			GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_capacity), NULL, GL_DYNAMIC_DRAW);
+	}
+
+	batch.vertices[batch.vertex_count++]
+		= (Vertex){pos[0], pos[1], pos[2], (GLubyte)(batch.color[0] * (GLfloat)color[0]),
+			(GLubyte)(batch.color[1] * (GLfloat)color[1]), (GLubyte)(batch.color[2] * (GLfloat)color[2]),
+			(GLubyte)(batch.color[3] * (GLfloat)color[2]), uv[0], uv[1]};
+}
+
+void batch_sprite(
+	const char* name, const GLfloat pos[3], const GLboolean flip[2], GLfloat angle, const GLubyte color[4]) {
+	const Texture* texture = get_texture(name);
+	if (texture == NULL)
+		return;
+
+	set_batch_texture(texture->texture);
+
+	// Position
+	const GLfloat x1 = -(flip[0] ? ((GLfloat)(texture->size[0]) - (texture->offset[0])) : (texture->offset[0]));
+	const GLfloat y1 = -(flip[1] ? ((GLfloat)(texture->size[1]) - (texture->offset[1])) : (texture->offset[1]));
+	const GLfloat x2 = x1 + (GLfloat)texture->size[0];
+	const GLfloat y2 = y1 + (GLfloat)texture->size[1];
+	const GLfloat z = pos[2];
+
+	vec2 p1 = {x1, y1};
+	vec2 p2 = {x2, y1};
+	vec2 p3 = {x1, y2};
+	vec2 p4 = {x2, y2};
+	if (angle != 0) {
+		glm_vec2_rotate(p1, angle, p1);
+		glm_vec2_rotate(p2, angle, p2);
+		glm_vec2_rotate(p3, angle, p3);
+		glm_vec2_rotate(p4, angle, p4);
+	}
+	glm_vec2_add((GLfloat*)pos, p1, p1);
+	glm_vec2_add((GLfloat*)pos, p2, p2);
+	glm_vec2_add((GLfloat*)pos, p3, p3);
+	glm_vec2_add((GLfloat*)pos, p4, p4);
+
+	// UVs
+	const GLfloat u1 = flip[0];
+	const GLfloat v1 = flip[1];
+	const GLfloat u2 = (GLfloat)(!flip[0]);
+	const GLfloat v2 = (GLfloat)(!flip[1]);
+
+	// Vertices
+	batch_vertex(XYZ(p3[0], p3[1], z), color, UV(u1, v2));
+	batch_vertex(XYZ(p1[0], p1[1], z), color, UV(u1, v1));
+	batch_vertex(XYZ(p2[0], p2[1], z), color, UV(u2, v1));
+	batch_vertex(XYZ(p2[0], p2[1], z), color, UV(u2, v1));
+	batch_vertex(XYZ(p4[0], p4[1], z), color, UV(u2, v2));
+	batch_vertex(XYZ(p3[0], p3[1], z), color, UV(u1, v2));
+}
+
+void batch_surface(Surface* surface, const GLfloat pos[3], const GLubyte color[4]) {
+	if (surface == NULL)
+		return;
+	if (surface->active)
+		FATAL("Drawing an active surface?");
+	if (surface->texture[SURF_COLOR] == 0)
+		return;
+
+	set_batch_texture(surface->texture[SURF_COLOR]);
+
+	// Position
+	const GLfloat x1 = pos[0];
+	const GLfloat y1 = pos[1];
+	const GLfloat x2 = x1 + (GLfloat)surface->size[0];
+	const GLfloat y2 = y1 + (GLfloat)surface->size[1];
+	const GLfloat z = pos[2];
+
+	// Vertices
+	batch_vertex(XYZ(x1, y2, z), color, UV(0, 1));
+	batch_vertex(XYZ(x1, y1, z), color, UV(0, 0));
+	batch_vertex(XYZ(x2, y1, z), color, UV(1, 0));
+	batch_vertex(XYZ(x2, y1, z), color, UV(1, 0));
+	batch_vertex(XYZ(x2, y2, z), color, UV(1, 1));
+	batch_vertex(XYZ(x1, y2, z), color, UV(0, 1));
+}
+
+void submit_batch() {
+	if (batch.vertex_count <= 0)
+		return;
+
+	glBindVertexArray(batch.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_count), batch.vertices);
+
+	// Apply texture
+	glBindTexture(GL_TEXTURE_2D, batch.texture);
+	const GLint filter = batch.filter ? GL_LINEAR : GL_NEAREST;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+	glUniform1f(uniforms.alpha_test, batch.alpha_test);
+	glUniform1f(uniforms.stencil, batch.stencil);
+	glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)(*get_mvp_matrix()));
+
+	// Apply blend mode
+	glBlendFuncSeparate(batch.blend_src[0], batch.blend_dest[0], batch.blend_src[1], batch.blend_dest[1]);
+	glLogicOp(batch.logic);
+
+	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)batch.vertex_count);
+	batch.vertex_count = 0;
+}
+
+// ========
+// MATRICES
+// ========
+
+const mat4* get_mvp_matrix() {
+	return (current_surface == NULL) ? &mvp_matrix : &current_surface->mvp_matrix;
+}
+
+void set_model_matrix(mat4 matrix) {
+	glm_mat4_copy(matrix, (current_surface == NULL) ? model_matrix : current_surface->model_matrix);
+}
+
+void set_view_matrix(mat4 matrix) {
+	glm_mat4_copy(matrix, (current_surface == NULL) ? view_matrix : current_surface->view_matrix);
+}
+
+void set_projection_matrix(mat4 matrix) {
+	glm_mat4_copy(matrix, (current_surface == NULL) ? projection_matrix : current_surface->projection_matrix);
+}
+
+void apply_matrices() {
+	if (current_surface != NULL) {
+		glm_mat4_mul(current_surface->view_matrix, current_surface->model_matrix, current_surface->mvp_matrix);
+		glm_mat4_mul(
+			current_surface->projection_matrix, current_surface->mvp_matrix, current_surface->mvp_matrix);
+	} else {
+		glm_mat4_mul(view_matrix, model_matrix, mvp_matrix);
+		glm_mat4_mul(projection_matrix, mvp_matrix, mvp_matrix);
+	}
 }
 
 // ========
@@ -212,8 +458,9 @@ Surface* create_surface(GLuint width, GLuint height, bool color, bool depth) {
 
 	glm_mat4_identity(surface->model_matrix);
 	glm_mat4_identity(surface->view_matrix);
-	glm_mat4_identity(surface->projection_matrix);
-	glm_mat4_identity(surface->mvp_matrix);
+	glm_ortho(0, (float)width, 0, (float)height, -16000, 16000, surface->projection_matrix);
+	glm_mat4_mul(surface->view_matrix, surface->model_matrix, surface->mvp_matrix);
+	glm_mat4_mul(surface->projection_matrix, surface->mvp_matrix, surface->mvp_matrix);
 
 	surface->enabled[SURF_COLOR] = color;
 	surface->enabled[SURF_DEPTH] = depth;
@@ -234,37 +481,41 @@ void check_surface(Surface* surface) {
 	if (surface->fbo == 0)
 		glGenFramebuffers(1, &surface->fbo);
 
-	if (surface->enabled[SURF_COLOR] && surface->texture[SURF_COLOR] == 0) {
-		glGenTextures(1, &surface->texture[SURF_COLOR]);
+	if (surface->enabled[SURF_COLOR]) {
+		if (surface->texture[SURF_COLOR] == 0) {
+			glGenTextures(1, &surface->texture[SURF_COLOR]);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
-		glBindTexture(GL_TEXTURE_2D, surface->texture[SURF_COLOR]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)(surface->size[0]), (GLsizei)(surface->size[1]), 0,
-			GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+			glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
+			glBindTexture(GL_TEXTURE_2D, surface->texture[SURF_COLOR]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)(surface->size[0]),
+				(GLsizei)(surface->size[1]), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
-		glFramebufferTexture2D(
-			GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, surface->texture[SURF_COLOR], 0);
+			glFramebufferTexture2D(
+				GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, surface->texture[SURF_COLOR], 0);
+		}
 	} else if (surface->texture[SURF_COLOR] != 0) {
 		glDeleteTextures(1, &surface->texture[SURF_COLOR]);
 		surface->texture[SURF_COLOR] = 0;
 	}
 
-	if (surface->enabled[SURF_DEPTH] && surface->texture[SURF_DEPTH] == 0) {
-		glGenTextures(1, &surface->texture[SURF_DEPTH]);
+	if (surface->enabled[SURF_DEPTH]) {
+		if (surface->texture[SURF_DEPTH] == 0) {
+			glGenTextures(1, &surface->texture[SURF_DEPTH]);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
-		glBindTexture(GL_TEXTURE_2D, surface->texture[SURF_DEPTH]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, (GLsizei)(surface->size[0]),
-			(GLsizei)(surface->size[1]), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+			glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
+			glBindTexture(GL_TEXTURE_2D, surface->texture[SURF_DEPTH]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, (GLsizei)(surface->size[0]),
+				(GLsizei)(surface->size[1]), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
-		glFramebufferTexture2D(
-			GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, surface->texture[SURF_DEPTH], 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D,
+				surface->texture[SURF_DEPTH], 0);
+		}
 	} else if (surface->texture[SURF_DEPTH] != 0) {
 		glDeleteTextures(1, &surface->texture[SURF_DEPTH]);
 		surface->texture[SURF_DEPTH] = 0;
@@ -273,8 +524,6 @@ void check_surface(Surface* surface) {
 
 // Nukes the surface's framebuffer.
 void dispose_surface(Surface* surface) {
-	if (current_surface == surface)
-		pop_surface();
 	if (surface->active)
 		FATAL("Disposing an active surface?");
 
@@ -294,5 +543,75 @@ void dispose_surface(Surface* surface) {
 	}
 }
 
-void push_surface(Surface* surface) {}
-void pop_surface() {}
+// Resizes a surface.
+void resize_surface(Surface* surface, GLuint width, GLuint height) {
+	if (surface->active)
+		FATAL("Resizing an active surface?");
+	if (surface->size[0] == width && surface->size[1] == height)
+		return;
+
+	dispose_surface(surface);
+	surface->size[0] = width;
+	surface->size[1] = height;
+}
+
+// Pushes an INACTIVE surface onto the stack.
+void push_surface(Surface* surface) {
+	if (surface == NULL)
+		FATAL("Pushing a null surface?");
+	if (current_surface == surface)
+		FATAL("Pushing the current surface?");
+
+	submit_batch();
+
+	if (surface != NULL) {
+		if (surface->active)
+			FATAL("Pushing an active surface?");
+		surface->active = true;
+		surface->previous = current_surface;
+
+		check_surface(surface);
+		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
+		glViewport(0, 0, (GLsizei)(surface->size[0]), (GLsizei)(surface->size[1]));
+
+		if (surface->enabled[SURF_DEPTH])
+			glEnable(GL_DEPTH_TEST);
+		else
+			glDisable(GL_DEPTH_TEST);
+	} else {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	current_surface = surface;
+}
+
+// Pops an ACTIVE surface off the stack.
+void pop_surface() {
+	if (current_surface == NULL)
+		FATAL("Popping a null surface?");
+
+	submit_batch();
+
+	Surface* surface = current_surface->previous;
+	current_surface->active = false;
+	current_surface->previous = NULL;
+
+	if (surface != NULL) {
+		check_surface(surface);
+		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
+		glViewport(0, 0, (GLsizei)(surface->size[0]), (GLsizei)(surface->size[1]));
+
+		if (surface->enabled[SURF_DEPTH])
+			glEnable(GL_DEPTH_TEST);
+		else
+			glDisable(GL_DEPTH_TEST);
+	} else {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	current_surface = surface;
+}

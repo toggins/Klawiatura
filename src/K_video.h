@@ -26,6 +26,11 @@
 
 #define XYZ(x, y, z) ((GLfloat[3]){(x), (y), (z)})
 
+#define FLIP(x, y) ((GLboolean[2]){(x), (y)})
+#define NO_FLIP FLIP(false, false)
+
+#define UV(u, v) ((GLfloat[2]){(u), (v)})
+
 enum VertexAttributes {
 	VATT_POSITION,
 	VATT_COLOR,
@@ -46,7 +51,7 @@ typedef struct {
 } Uniforms;
 
 typedef struct {
-	char name[sizeof(StTinyKey)];
+	char* name;
 	GLuint texture;
 	GLuint size[2];
 	GLfloat offset[2];
@@ -55,7 +60,7 @@ typedef struct {
 typedef struct {
 	GLuint vao, vbo;
 	size_t vertex_count, vertex_capacity;
-	struct Vertex* vertices;
+	Vertex* vertices;
 
 	GLfloat color[4], stencil;
 	GLuint texture;
@@ -72,7 +77,7 @@ typedef struct TileBatch {
 
 	GLuint vao, vbo;
 	size_t vertex_count, vertex_capacity;
-	struct Vertex* vertices;
+	Vertex* vertices;
 } TileBatch;
 
 enum SurfaceAttributes {
@@ -101,9 +106,36 @@ extern VideoState video_state;
 void video_init(bool);
 void video_teardown();
 
-void video_start();
-void video_end();
+void submit_video();
 
+// Basic
+void clear_color(GLfloat, GLfloat, GLfloat, GLfloat);
+void clear_depth(GLfloat);
+
+// Textures
+void load_texture(const char*);
+const Texture* get_texture(const char*);
+
+// Batch
+void set_batch_texture(GLuint);
+void set_batch_stencil(GLfloat);
+void set_batch_logic(GLenum);
+void batch_vertex(const GLfloat[3], const GLubyte[4], const GLfloat[2]);
+void batch_sprite(const char*, const GLfloat[3], const GLboolean[2], GLfloat, const GLubyte[4]);
+void batch_surface(Surface*, const GLfloat[3], const GLubyte[4]);
+void batch_rectangle(const char*, const GLfloat[2][2], GLfloat, const GLubyte[4]);
+void batch_ellipse(const GLfloat[2][2], GLfloat, const GLubyte[4]);
+void submit_batch();
+
+// Matrices
+const mat4* get_mvp_matrix();
+
+void set_model_matrix(mat4);
+void set_view_matrix(mat4);
+void set_projection_matrix(mat4);
+void apply_matrices();
+
+// Surfaces
 Surface* create_surface(GLuint, GLuint, bool, bool);
 void destroy_surface(Surface*);
 void check_surface(Surface*);
