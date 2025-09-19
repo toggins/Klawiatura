@@ -17,7 +17,6 @@ static GLuint blank_texture = 0;
 static StTinyMap* textures = NULL;
 
 static struct VertexBatch batch = {0};
-static struct Surface main_surface = {0};
 static struct Surface* current_surface = NULL;
 
 void video_init(bool bypass_shader) {
@@ -220,12 +219,116 @@ void video_teardown() {
     SDL_DestroyWindow(window);
 }
 
+// Start of video loop.
 void video_start() {
     glEnable(GL_DEPTH_TEST);
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+// End of video loop.
 void video_end() {
     SDL_GL_SwapWindow(window);
 }
+
+// ========
+// SURFACES
+// ========
+
+// Makes a surface.
+struct Surface* create_surface(GLuint width, GLuint height, bool color, bool depth) {
+    struct Surface* surface = SDL_malloc(sizeof(*surface));
+    if (surface == NULL)
+        FATAL("create_surface fail");
+    SDL_memset(surface, 0, sizeof(*surface));
+
+    glm_mat4_identity(surface->model_matrix);
+    glm_mat4_identity(surface->view_matrix);
+    glm_mat4_identity(surface->projection_matrix);
+    glm_mat4_identity(surface->mvp_matrix);
+
+    surface->enabled[SURF_COLOR] = color;
+    surface->enabled[SURF_DEPTH] = depth;
+    surface->size[0] = SDL_max(width, 1);
+    surface->size[1] = SDL_max(height, 1);
+
+    return surface;
+}
+
+// Nukes the surface.
+void destroy_surface(struct Surface* surface) {
+    dispose_surface(surface);
+    SDL_free(surface);
+}
+
+// Checks the surface and adjusts its framebuffer.
+void check_surface(struct Surface* surface) {
+    if (surface->fbo == 0)
+        glGenFramebuffers(1, &surface->fbo);
+
+    if (surface->enabled[SURF_COLOR] && surface->texture[SURF_COLOR] == 0) {
+        glGenTextures(1, &(surface->texture[SURF_COLOR]));
+
+        glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
+        glBindTexture(GL_TEXTURE_2D, surface->texture[SURF_COLOR]);
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)(surface->size[0]), (GLsizei)(surface->size[1]), 0, GL_RGBA,
+            GL_UNSIGNED_BYTE, NULL
+        );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, surface->texture[SURF_COLOR], 0);
+    } else if (surface->texture[SURF_COLOR] != 0) {
+        glDeleteTextures(1, &surface->texture[SURF_COLOR]);
+        surface->texture[SURF_COLOR] = 0;
+    }
+
+    if (surface->enabled[SURF_DEPTH] && surface->texture[SURF_DEPTH] == 0) {
+        glGenTextures(1, &(surface->texture[SURF_DEPTH]));
+
+        glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
+        glBindTexture(GL_TEXTURE_2D, surface->texture[SURF_DEPTH]);
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, (GLsizei)(surface->size[0]), (GLsizei)(surface->size[1]), 0,
+            GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL
+        );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+        glFramebufferTexture2D(
+            GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, surface->texture[SURF_DEPTH], 0
+        );
+    } else if (surface->texture[SURF_DEPTH] != 0) {
+        glDeleteTextures(1, &(surface->texture[SURF_DEPTH]));
+        surface->texture[SURF_DEPTH] = 0;
+    }
+}
+
+// Nukes the surface's framebuffer.
+void dispose_surface(struct Surface* surface) {
+    if (current_surface == surface)
+        pop_surface();
+    if (surface->active)
+        FATAL("Disposing an active surface?");
+
+    if (surface->fbo != 0) {
+        glDeleteFramebuffers(1, &surface->fbo);
+        surface->fbo = 0;
+    }
+
+    if (surface->texture[SURF_COLOR] != 0) {
+        glDeleteTextures(1, &(surface->texture[SURF_COLOR]));
+        surface->texture[SURF_COLOR] = 0;
+    }
+
+    if (surface->texture[SURF_DEPTH] != 0) {
+        glDeleteTextures(1, &(surface->texture[SURF_DEPTH]));
+        surface->texture[SURF_DEPTH] = 0;
+    }
+}
+
+void push_surface(struct Surface* surface) {}
+void pop_surface() {}

@@ -84,14 +84,20 @@ struct TileBatch {
     struct Vertex* vertices;
 };
 
+enum SurfaceAttributes {
+    SURF_COLOR,
+    SURF_DEPTH,
+    SURF_SIZE,
+};
+
 struct Surface {
     bool active;
     struct Surface* previous;
 
     mat4 model_matrix, view_matrix, projection_matrix, mvp_matrix;
 
-    bool enabled[2];
-    GLuint fbo, texture[2];
+    bool enabled[SURF_SIZE];
+    GLuint fbo, texture[SURF_SIZE];
     GLuint size[2];
 };
 
@@ -100,3 +106,11 @@ void video_teardown();
 
 void video_start();
 void video_end();
+
+struct Surface* create_surface(GLuint, GLuint, bool, bool);
+void destroy_surface(struct Surface*);
+void check_surface(struct Surface*);
+void dispose_surface(struct Surface*);
+void resize_surface(struct Surface*, GLuint, GLuint);
+void push_surface(struct Surface*);
+void pop_surface();
