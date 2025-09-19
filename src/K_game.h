@@ -269,14 +269,13 @@ enum BaseActorValues {
 
 #define TOGGLE_FLAG(actor, flag) (ANY_FLAG(actor, flag) ? FLAG_OFF(actor, flag) : FLAG_ON(actor, flag))
 
-#define CUSTOM_FLAG(idx) (1 << (5 + (idx)))
 enum BaseActorFlags {
 	FLG_VISIBLE = 1 << 0,
 	FLG_DESTROY = 1 << 1,
 	FLG_X_FLIP = 1 << 2,
 	FLG_Y_FLIP = 1 << 3,
 	FLG_FREEZE = 1 << 4,
-	FLG_CUSTOM = CUSTOM_FLAG(0),
+#define CUSTOM_FLAG(idx) (1 << (5 + (idx)))
 };
 
 typedef struct {
