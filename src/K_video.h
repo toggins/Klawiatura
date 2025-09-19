@@ -1,8 +1,9 @@
 #pragma once
 
+#include <glad/gl.h>
+
 #include <SDL3/SDL_opengl.h>
 #include <SDL3/SDL_video.h>
-#include <glad/gl.h>
 
 #define CGLM_ALL_UNALIGNED
 #define CGLM_FORCE_DEPTH_ZERO_TO_ONE
