@@ -3,5 +3,3 @@
 #include <SDL3/SDL_stdinc.h>
 #include <gekkonet.h>
 #include <nutpunch.h>
-
-extern GekkoSession* net_state;

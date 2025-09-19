@@ -6,5 +6,3 @@
 #define NutPunch_Free SDL_free
 
 #include "K_net.h" // IWYU pragma: keep
-
-GekkoSession* net_state = NULL;

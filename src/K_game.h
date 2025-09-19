@@ -16,6 +16,7 @@
 
 #define MAX_ACTORS 1000
 #define NULLACT ((ActorID)(-1))
+#define NULLCELL ((int32_t)(-1))
 
 typedef fix16_t fvec2[2];
 typedef fvec2 frect[2];
@@ -333,8 +334,10 @@ typedef struct {
 	void (*tick)(GameActor*);
 	void (*draw)(const GameActor*);
 	void (*destroy)(GameActor*);
+	void (*collide)(GameActor*, GameActor*);
 } GameActorTable;
 
+extern GekkoSession* game_session;
 extern GameState game_state;
 
 void start_game_state();
@@ -346,7 +349,18 @@ void end_game_state();
 GamePlayer* get_player(PlayerID);
 
 // Actors
+void load_actor(GameActorType);
+GameActor* create_actor(GameActorType, const fvec2);
+
 GameActor* get_actor(ActorID);
+void move_actor(GameActor*, const fvec2);
+
+typedef struct {
+	GameActor* actors[MAX_ACTORS];
+	ActorID num_actors;
+} CellList;
+
+void list_cell_at(CellList*, const frect);
 
 // Math
 int32_t rng(int32_t);
