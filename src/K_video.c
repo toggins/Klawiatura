@@ -19,9 +19,9 @@ static StTinyMap* textures = NULL;
 static VertexBatch batch = {0};
 static Surface* current_surface = NULL;
 
-static const GLchar *const vertex_code =
+static const GLchar *const vertex_source =
 #include "vertex.glsl.raw"
-	, *const fragment_code =
+	, *const fragment_source =
 #include "fragment.glsl.raw"
 	;
 
@@ -113,7 +113,7 @@ void video_init(bool bypass_shader) {
 	batch.filter = false;
 
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_code, NULL);
+	glShaderSource(vertex_shader, 1, &vertex_source, NULL);
 	glCompileShader(vertex_shader);
 
 	GLint success;
@@ -125,7 +125,7 @@ void video_init(bool bypass_shader) {
 	}
 
 	GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_code, NULL);
+	glShaderSource(fragment_shader, 1, &fragment_source, NULL);
 	glCompileShader(fragment_shader);
 
 	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
