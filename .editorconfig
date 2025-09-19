@@ -7,7 +7,7 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 indent_style = space
 
-[*.{c,cpp,h}]
+[*.{c,cpp,h,glsl}]
 indent_size = 8
 indent_style = tab
 

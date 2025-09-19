@@ -19,6 +19,12 @@ static StTinyMap* textures = NULL;
 static VertexBatch batch = {0};
 static Surface* current_surface = NULL;
 
+static const GLchar *const vertex_code =
+#include "vertex.glsl.raw"
+	, *const fragment_code =
+#include "fragment.glsl.raw"
+	;
+
 void video_init(bool bypass_shader) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -45,9 +51,9 @@ void video_init(bool bypass_shader) {
 		FATAL("Unsupported OpenGL version\nAt least OpenGL 3.3 with framebuffer and shader support is "
 		      "required.");
 
-	if (bypass_shader) {
+	if (bypass_shader)
 		INFO("! Bypassing shader support");
-	} else {
+	else {
 		CHECK_GL_EXTENSION(GLAD_GL_ARB_shader_objects);
 		CHECK_GL_EXTENSION(GLAD_GL_ARB_vertex_shader);
 		CHECK_GL_EXTENSION(GLAD_GL_ARB_fragment_shader);
@@ -106,25 +112,8 @@ void video_init(bool bypass_shader) {
 
 	batch.filter = false;
 
-	// Shader
-	static const GLchar* vertex_source = "#version 330 core\n"
-					     "layout (location = 0) in vec3 i_position;\n"
-					     "layout (location = 1) in vec4 i_color;\n"
-					     "layout (location = 2) in vec2 i_uv;\n"
-					     "\n"
-					     "out vec4 v_color;\n"
-					     "out vec2 v_uv;\n"
-					     "\n"
-					     "uniform mat4 u_mvp;\n"
-					     "\n"
-					     "void main() {\n"
-					     "   gl_Position = u_mvp * vec4(i_position, 1.0);\n"
-					     "   v_color = i_color;\n"
-					     "   v_uv = i_uv;\n"
-					     "}\n";
-
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_source, NULL);
+	glShaderSource(vertex_shader, 1, &vertex_code, NULL);
 	glCompileShader(vertex_shader);
 
 	GLint success;
@@ -135,31 +124,8 @@ void video_init(bool bypass_shader) {
 		FATAL("Vertex shader fail: %s", error);
 	}
 
-	static const GLchar* fragment_source = "#version 330 core\n"
-					       "\n"
-					       "out vec4 o_color;\n"
-					       "\n"
-					       "in vec4 v_color;\n"
-					       "in vec2 v_uv;\n"
-					       "\n"
-					       "uniform sampler2D u_texture;\n"
-					       "uniform float u_alpha_test;\n"
-					       "uniform float u_stencil;\n"
-					       "\n"
-					       "void main() {\n"
-					       "   vec4 sample = texture(u_texture, v_uv);\n"
-					       "   if (u_alpha_test > 0.0) {\n"
-					       "       if (sample.a < u_alpha_test)\n"
-					       "           discard;\n"
-					       "       sample.a = 1.0;\n"
-					       "   }\n"
-					       "\n"
-					       "   o_color.rgb = v_color.rgb * mix(sample.rgb, vec3(1.0), u_stencil);\n"
-					       "   o_color.a = v_color.a * sample.a;\n"
-					       "}\n";
-
 	GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_source, NULL);
+	glShaderSource(fragment_shader, 1, &fragment_code, NULL);
 	glCompileShader(fragment_shader);
 
 	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
