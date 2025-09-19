@@ -1,7 +1,7 @@
 #include "K_memory.h"
 
 // https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
-static const StTinyKey FNV_OFFSET = 0x811c9dc5, FNV_PRIME = 0x01000193;
+static const StTinyKey FNV_OFFSET = 0xcbf29ce484222325, FNV_PRIME = 0x00000100000001b3;
 StTinyKey long_key(const char* str) {
     StTinyKey key = FNV_OFFSET;
     for (const char* c = str; *c; c++) {
