@@ -12,29 +12,19 @@
 
 #include "K_memory.h" // IWYU pragma: keep
 
-#define RGBA(r, g, b, a)                                                                                               \
-	(GLubyte[4]) {                                                                                                 \
-		(r), (g), (b), (a)                                                                                     \
-	}
-
 #ifdef RGB
 #undef RGB
 #endif
+
+#define RGBA(r, g, b, a) ((GLubyte[4]){(r), (g), (b), (a)})
 #define RGB(r, g, b) RGBA(r, g, b, 255)
+#define ALPHA(a) RGBA(255, 255, 255, a)
 
 #define WHITE RGB(255, 255, 255)
 #define GRAY RGB(128, 128, 128)
 #define BLACK RGB(0, 0, 0)
 
-#define ALPHA(a)                                                                                                       \
-	(GLubyte[4]) {                                                                                                 \
-		255, 255, 255, (a)                                                                                     \
-	}
-
-#define XYZ(x, y, z)                                                                                                   \
-	(GLfloat[3]) {                                                                                                 \
-		(x), (y), (z)                                                                                          \
-	}
+#define XYZ(x, y, z) ((GLfloat[3]){(x), (y), (z)})
 
 enum VertexAttributes {
 	VATT_POSITION,
