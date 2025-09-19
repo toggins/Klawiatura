@@ -41,27 +41,27 @@ enum VertexAttributes {
     VATT_UV,
 };
 
-struct Vertex {
+typedef struct {
     GLfloat position[3];
     GLubyte color[4];
     GLfloat uv[2];
-};
+} Vertex;
 
-struct Uniforms {
+typedef struct {
     GLint mvp;
     GLint texture;
     GLint alpha_test;
     GLint stencil;
-};
+} Uniforms;
 
-struct Texture {
+typedef struct {
     char name[sizeof(StTinyKey)];
     GLuint texture;
     GLuint size[2];
     GLfloat offset[2];
-};
+} Texture;
 
-struct VertexBatch {
+typedef struct {
     GLuint vao, vbo;
     size_t vertex_count, vertex_capacity;
     struct Vertex* vertices;
@@ -72,9 +72,9 @@ struct VertexBatch {
     GLenum blend_src[2], blend_dest[2];
     GLenum logic;
     bool filter;
-};
+} VertexBatch;
 
-struct TileBatch {
+typedef struct TileBatch {
     struct TileBatch* next;
     const struct Texture* texture;
     bool translucent;
@@ -82,7 +82,7 @@ struct TileBatch {
     GLuint vao, vbo;
     size_t vertex_count, vertex_capacity;
     struct Vertex* vertices;
-};
+} TileBatch;
 
 enum SurfaceAttributes {
     SURF_COLOR,
@@ -90,7 +90,7 @@ enum SurfaceAttributes {
     SURF_SIZE,
 };
 
-struct Surface {
+typedef struct Surface {
     bool active;
     struct Surface* previous;
 
@@ -99,7 +99,7 @@ struct Surface {
     bool enabled[SURF_SIZE];
     GLuint fbo, texture[SURF_SIZE];
     GLuint size[2];
-};
+} Surface;
 
 void video_init(bool);
 void video_teardown();
@@ -107,10 +107,10 @@ void video_teardown();
 void video_start();
 void video_end();
 
-struct Surface* create_surface(GLuint, GLuint, bool, bool);
-void destroy_surface(struct Surface*);
-void check_surface(struct Surface*);
-void dispose_surface(struct Surface*);
-void resize_surface(struct Surface*, GLuint, GLuint);
-void push_surface(struct Surface*);
+Surface* create_surface(GLuint, GLuint, bool, bool);
+void destroy_surface(Surface*);
+void check_surface(Surface*);
+void dispose_surface(Surface*);
+void resize_surface(Surface*, GLuint, GLuint);
+void push_surface(Surface*);
 void pop_surface();

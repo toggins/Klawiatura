@@ -11,13 +11,13 @@ static SDL_Window* window = NULL;
 static SDL_GLContext gpu = NULL;
 
 static GLuint shader = 0;
-static struct Uniforms uniforms = {-1};
+static Uniforms uniforms = {-1};
 
 static GLuint blank_texture = 0;
 static StTinyMap* textures = NULL;
 
-static struct VertexBatch batch = {0};
-static struct Surface* current_surface = NULL;
+static VertexBatch batch = {0};
+static Surface* current_surface = NULL;
 
 void video_init(bool bypass_shader) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -76,26 +76,22 @@ void video_init(bool bypass_shader) {
 
     batch.vertex_count = 0;
     batch.vertex_capacity = 3;
-    batch.vertices = SDL_malloc(batch.vertex_capacity * sizeof(struct Vertex));
+    batch.vertices = SDL_malloc(batch.vertex_capacity * sizeof(Vertex));
     if (batch.vertices == NULL)
         FATAL("batch.vertices fail");
 
     glGenBuffers(1, &(batch.vbo));
     glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(struct Vertex) * batch.vertex_capacity), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_capacity), NULL, GL_DYNAMIC_DRAW);
 
     glEnableVertexAttribArray(VATT_POSITION);
-    glVertexAttribPointer(
-        VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, position)
-    );
+    glVertexAttribPointer(VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 
     glEnableVertexAttribArray(VATT_COLOR);
-    glVertexAttribPointer(
-        VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, color)
-    );
+    glVertexAttribPointer(VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 
     glEnableVertexAttribArray(VATT_UV);
-    glVertexAttribPointer(VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), (void*)offsetof(struct Vertex, uv));
+    glVertexAttribPointer(VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
     batch.color[0] = batch.color[1] = batch.color[2] = batch.color[3] = 1;
     batch.stencil = 0;
@@ -236,8 +232,8 @@ void video_end() {
 // ========
 
 // Makes a surface.
-struct Surface* create_surface(GLuint width, GLuint height, bool color, bool depth) {
-    struct Surface* surface = SDL_malloc(sizeof(*surface));
+Surface* create_surface(GLuint width, GLuint height, bool color, bool depth) {
+    Surface* surface = SDL_malloc(sizeof(*surface));
     if (surface == NULL)
         FATAL("create_surface fail");
     SDL_memset(surface, 0, sizeof(*surface));
@@ -256,13 +252,13 @@ struct Surface* create_surface(GLuint width, GLuint height, bool color, bool dep
 }
 
 // Nukes the surface.
-void destroy_surface(struct Surface* surface) {
+void destroy_surface(Surface* surface) {
     dispose_surface(surface);
     SDL_free(surface);
 }
 
 // Checks the surface and adjusts its framebuffer.
-void check_surface(struct Surface* surface) {
+void check_surface(Surface* surface) {
     if (surface->fbo == 0)
         glGenFramebuffers(1, &surface->fbo);
 
@@ -308,7 +304,7 @@ void check_surface(struct Surface* surface) {
 }
 
 // Nukes the surface's framebuffer.
-void dispose_surface(struct Surface* surface) {
+void dispose_surface(Surface* surface) {
     if (current_surface == surface)
         pop_surface();
     if (surface->active)
@@ -330,5 +326,5 @@ void dispose_surface(struct Surface* surface) {
     }
 }
 
-void push_surface(struct Surface* surface) {}
+void push_surface(Surface* surface) {}
 void pop_surface() {}
