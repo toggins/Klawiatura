@@ -10,9 +10,13 @@
 #define MAX_MISSILES 2
 #define MAX_SINK 6
 #define KEVIN_DELAY 50
+#define NULLPLAY ((PlayerID)(-1))
 
 #define MAX_ACTORS 1000
 #define NULLACT ((ActorID)(-1))
+
+typedef fix16_t fvec2[2];
+typedef fvec2 frect[2];
 
 #define MAX_VALUES 32
 
@@ -302,7 +306,7 @@ typedef struct {
     fix16_t water, hazard;
     int32_t clock;
 
-    uint32_t seed;
+    int32_t seed;
     uint64_t time;
 
     ActorID live_actors, next_actor;
@@ -342,3 +346,15 @@ GameInstance* create_game_instance();
 void update_game_instance();
 void draw_game_instance();
 void destroy_game_instance();
+
+// Players
+GamePlayer* get_player(GameState*, PlayerID);
+
+// Actors
+GameActor* get_actor(GameState*, ActorID);
+
+// Math
+int32_t rng(GameState*, int32_t);
+
+fix16_t point_distance(const fvec2, const fvec2);
+fix16_t point_angle(const fvec2, const fvec2);
