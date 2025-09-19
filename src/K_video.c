@@ -74,7 +74,7 @@ void video_init(bool bypass_shader) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, WHITE);
 
 	// Vertex batch
-	glGenVertexArrays(1, &(batch.vao));
+	glGenVertexArrays(1, &batch.vao);
 	glBindVertexArray(batch.vao);
 	glEnableVertexArrayAttrib(batch.vao, VATT_POSITION);
 	glVertexArrayAttribFormat(batch.vao, VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3);
@@ -89,7 +89,7 @@ void video_init(bool bypass_shader) {
 	if (batch.vertices == NULL)
 		FATAL("batch.vertices fail");
 
-	glGenBuffers(1, &(batch.vbo));
+	glGenBuffers(1, &batch.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
 	glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_capacity), NULL, GL_DYNAMIC_DRAW);
 
@@ -171,8 +171,8 @@ void video_init(bool bypass_shader) {
 }
 
 void video_teardown() {
-	glDeleteVertexArrays(1, &(batch.vao));
-	glDeleteBuffers(1, &(batch.vbo));
+	glDeleteVertexArrays(1, &batch.vao);
+	glDeleteBuffers(1, &batch.vbo);
 	SDL_free(batch.vertices);
 
 	glDeleteTextures(1, &blank_texture);
@@ -232,7 +232,7 @@ void check_surface(Surface* surface) {
 		glGenFramebuffers(1, &surface->fbo);
 
 	if (surface->enabled[SURF_COLOR] && surface->texture[SURF_COLOR] == 0) {
-		glGenTextures(1, &(surface->texture[SURF_COLOR]));
+		glGenTextures(1, &surface->texture[SURF_COLOR]);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
 		glBindTexture(GL_TEXTURE_2D, surface->texture[SURF_COLOR]);
@@ -250,7 +250,7 @@ void check_surface(Surface* surface) {
 	}
 
 	if (surface->enabled[SURF_DEPTH] && surface->texture[SURF_DEPTH] == 0) {
-		glGenTextures(1, &(surface->texture[SURF_DEPTH]));
+		glGenTextures(1, &surface->texture[SURF_DEPTH]);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
 		glBindTexture(GL_TEXTURE_2D, surface->texture[SURF_DEPTH]);
@@ -263,7 +263,7 @@ void check_surface(Surface* surface) {
 		glFramebufferTexture2D(
 			GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, surface->texture[SURF_DEPTH], 0);
 	} else if (surface->texture[SURF_DEPTH] != 0) {
-		glDeleteTextures(1, &(surface->texture[SURF_DEPTH]));
+		glDeleteTextures(1, &surface->texture[SURF_DEPTH]);
 		surface->texture[SURF_DEPTH] = 0;
 	}
 }
@@ -281,12 +281,12 @@ void dispose_surface(Surface* surface) {
 	}
 
 	if (surface->texture[SURF_COLOR] != 0) {
-		glDeleteTextures(1, &(surface->texture[SURF_COLOR]));
+		glDeleteTextures(1, &surface->texture[SURF_COLOR]);
 		surface->texture[SURF_COLOR] = 0;
 	}
 
 	if (surface->texture[SURF_DEPTH] != 0) {
-		glDeleteTextures(1, &(surface->texture[SURF_DEPTH]));
+		glDeleteTextures(1, &surface->texture[SURF_DEPTH]);
 		surface->texture[SURF_DEPTH] = 0;
 	}
 }

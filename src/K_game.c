@@ -19,7 +19,7 @@ GamePlayer* get_player(PlayerID id) {
 	if (id < 0 || id >= MAX_PLAYERS)
 		return NULL;
 
-	GamePlayer* player = &(game_state.players[id]);
+	GamePlayer* player = &game_state.players[id];
 	return (player->id == NULLPLAY) ? NULL : player;
 }
 
@@ -32,7 +32,7 @@ GameActor* get_actor(ActorID id) {
 	if (id < 0 || id >= MAX_ACTORS)
 		return NULL;
 
-	GameActor* actor = &(game_state.actors[id]);
+	GameActor* actor = &game_state.actors[id];
 	return (actor->id == NULLACT) ? NULL : actor;
 }
 
