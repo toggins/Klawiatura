@@ -36,7 +36,7 @@ typedef uint8_t Bool;
 typedef int8_t PlayerID;
 typedef int16_t ActorID;
 
-typedef uint16_t GameInput;
+typedef uint8_t GameInput;
 enum {
     GI_UP = 1 << 0,
     GI_LEFT = 1 << 1,
@@ -214,29 +214,29 @@ typedef struct {
 } GameContext;
 
 typedef struct {
-    Bool active;
+    PlayerID id;
     GameInput input, last_input;
-
-    ActorID actor;
-    fix16_t pos[2], bounds[2];
 
     int8_t lives;
     uint8_t coins;
-    uint32_t score;
     PlayerPower power;
 
+    ActorID actor;
     ActorID missiles[MAX_MISSILES], sink[MAX_SINK];
+    fix16_t pos[2], bounds[2];
+
+    uint32_t score;
 
     struct Kevin {
-        ActorID object;
         int8_t delay;
+        ActorID object;
         fix16_t pos[2];
 
         struct KevinFrame {
-            fix16_t pos[2];
             Bool flip;
             PlayerPower power;
             PlayerFrame frame;
+            fix16_t pos[2];
         } frames[KEVIN_DELAY];
     } kevin;
 } GamePlayer;
@@ -281,40 +281,41 @@ enum BaseActorFlags {
 };
 
 typedef struct {
+    ActorID id;
     GameActorType type;
     ActorID previous, next;
 
-    int32_t cell;
     ActorID previous_cell, next_cell;
+    int32_t cell;
 
     fix16_t pos[2], box[2][2];
     fix16_t depth;
 
-    ActorValue values[MAX_VALUES];
     ActorFlag flags;
-    ActorID id;
+    ActorValue values[MAX_VALUES];
 } GameActor;
 
 typedef struct {
-    GamePlayer players[MAX_PLAYERS];
-
     GameFlag flags;
     GameSequence sequence;
 
-    char world[8], next[8];
-    fix16_t size[2];
-    fix16_t bounds[2][2];
+    GamePlayer players[MAX_PLAYERS];
 
-    uint64_t time;
-    uint32_t seed;
-
-    int32_t clock;
     ActorID spawn, checkpoint, autoscroll;
-    fix16_t water, hazard;
     uint16_t pswitch;
 
-    GameActor actors[MAX_ACTORS];
+    fix16_t size[2], bounds[2][2];
+    fix16_t water, hazard;
+    int32_t clock;
+
+    uint32_t seed;
+    uint64_t time;
+
     ActorID live_actors, next_actor;
+    GameActor actors[MAX_ACTORS];
+    ActorID grid[GRID_SIZE];
+
+    char world[256], next[256];
 } GameState;
 
 typedef struct {
