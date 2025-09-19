@@ -4,8 +4,11 @@
 #include "K_video.h"
 
 #define CHECK_GL_EXTENSION(ext)                                                                                        \
-	if (!(ext))                                                                                                    \
-		FATAL("Missing OpenGL extension: " #ext "\nAt least OpenGL 3.3 with shader support is required.");
+	do {                                                                                                           \
+		if ((ext))                                                                                             \
+			break;                                                                                         \
+		FATAL("Missing OpenGL extension: " #ext "\nAt least OpenGL 3.3 with shader support is required.");     \
+	} while (0)
 
 static SDL_Window* window = NULL;
 static SDL_GLContext gpu = NULL;
