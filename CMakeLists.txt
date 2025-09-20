@@ -126,6 +126,9 @@ target_compile_definitions(Klawiatura PUBLIC -D_POSIX_C_SOURCE=200112L)
 if(MSVC AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo) # you're sus my guy...
     target_compile_options(GekkoNet PRIVATE /fsanitize=address)
 endif()
+if(WIN32)
+    target_link_options(Klawiatura PRIVATE $<IF:$<BOOL:${MSVC}>,/SUBSYSTEM:WINDOWS,-mwindows>)
+endif()
 
 set(RUNTIME_DLLS $<TARGET_RUNTIME_DLLS:Klawiatura>)
 if(LINUX)
@@ -141,10 +144,9 @@ add_custom_target(KlawiaturaPost ALL
 add_dependencies(KlawiaturaPost Klawiatura)
 
 install(TARGETS Klawiatura RUNTIME DESTINATION .) # TODO: exclude lib/ and include/ somehow
+install(FILES README.md UNLICENSE src/console.bat ${RUNTIME_DLLS} DESTINATION .)
 install(DIRECTORY modsrc/ DESTINATION data)
-install(FILES README.md UNLICENSE DESTINATION .)
 install(DIRECTORY .github/assets DESTINATION .github) # has all the README .pngs
-install(FILES ${RUNTIME_DLLS} DESTINATION .)
 
 set(CPACK_GENERATOR ZIP)
 set(CPACK_COMPONENTS_GROUPING ALL_COMPONENTS_IN_ONE)
