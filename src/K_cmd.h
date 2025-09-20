@@ -15,5 +15,4 @@ typedef struct {
 	void (*handler)(IterArg);
 } CmdArg;
 
-extern CmdArg CMDLINE[];
 void handle_cmdline(int, char*[]);

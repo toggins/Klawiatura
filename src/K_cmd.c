@@ -2,6 +2,7 @@
 
 #include "K_cmd.h"
 
+extern CmdArg CMDLINE[];
 static int g_argc, g_argi = 1;
 static char** g_argv;
 
