@@ -2,7 +2,8 @@
 
 #include <SDL3/SDL_log.h>
 #include <SDL3/SDL_stdinc.h>
-// ^ required for `exit(1)` below
+#include <stdlib.h> // IWYU pragma: keep
+// ^ required for `exit(1)` below. DO NOT TOUCH YOU FUCKER
 
 #define LOG_WITH(fn, ...) fn(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 
