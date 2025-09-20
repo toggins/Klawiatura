@@ -38,11 +38,10 @@ void start_game_state() {
 // PLAYERS
 // =======
 
-// Gets a player from PlayerID.
+/// Fetch a player by its `PlayerID`.
 GamePlayer* get_player(PlayerID id) {
 	if (id < 0 || id >= MAX_PLAYERS)
 		return NULL;
-
 	GamePlayer* player = &game_state.players[id];
 	return (player->id == NULLPLAY) ? NULL : player;
 }
@@ -51,18 +50,15 @@ GamePlayer* get_player(PlayerID id) {
 // ACTORS
 // ======
 
-// Loads an actor.
+/// Load an actor.
 void load_actor(GameActorType type) {
-	if (type <= ACT_NULL || type >= ACT_SIZE) {
+	if (type <= ACT_NULL || type >= ACT_SIZE)
 		INFO("Loading invalid actor %u", type);
-		return;
-	}
-
-	if (ACTORS[type]->load != NULL)
+	else if (ACTORS[type]->load != NULL)
 		ACTORS[type]->load();
 }
 
-// Creates an actor.
+/// Create an actor.
 GameActor* create_actor(GameActorType type, const fvec2 pos) {
 	if (type <= ACT_NULL || type >= ACT_SIZE) {
 		WARN("Creating invalid actor %u", type);
@@ -103,7 +99,7 @@ GameActor* create_actor(GameActorType type, const fvec2 pos) {
 	return NULL;
 }
 
-// Nukes an actor. (INTERNAL)
+/// (INTERNAL) Nuke an actor.
 static void destroy_actor(GameActor* actor) {
 	if (actor == NULL)
 		return;
@@ -146,22 +142,20 @@ static void destroy_actor(GameActor* actor) {
 		neighbor->previous = actor->previous;
 }
 
-// Gets an actor from ActorID.
+/// Fetch an actor by its `ActorID`.
 GameActor* get_actor(ActorID id) {
 	if (id < 0 || id >= MAX_ACTORS)
 		return NULL;
-
 	GameActor* actor = &game_state.actors[id];
 	return (actor->id == NULLACT) ? NULL : actor;
 }
 
-// Moves an actor and returns whether or not it actually moved.
+/// Move an actor and determine whether or not it actually moved.
 void move_actor(GameActor* actor, const fvec2 pos) {
 	if (actor == NULL)
 		return;
 
 	actor->pos = pos;
-
 	int32_t cx = actor->pos.x / CELL_SIZE, cy = actor->pos.y / CELL_SIZE;
 	cx = SDL_clamp(cx, 0, MAX_CELLS - 1), cy = SDL_clamp(cy, 0, MAX_CELLS - 1);
 
@@ -193,7 +187,7 @@ void move_actor(GameActor* actor, const fvec2 pos) {
 	game_state.grid[cell] = actor->id;
 }
 
-// Retrieves a list of actors overlapping a rectangle.
+/// Retrieve a list of actors overlapping a rectangle.
 void list_cell_at(CellList* list, const frect rect) {
 	list->num_actors = 0;
 
