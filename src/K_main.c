@@ -28,6 +28,7 @@ CmdArg CMDLINE[] = {
 	{"-K", "-kevin",         CMD_FLAG(kevin)        },
 	{"-a", "-ip",            cmd_ip                 },
 	{"-l", "-level",         cmd_level              },
+	{NULL, NULL,             NULL                   },
 };
 
 int main(int argc, char* argv[]) {
