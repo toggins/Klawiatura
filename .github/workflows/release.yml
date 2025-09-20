@@ -78,7 +78,7 @@ jobs:
       - name: Configure
         run: |
           cmake -G Ninja -S . -B build \
-            ${{ (matrix.cfg.mingw_bits == 32 || matrix.cfg.mingw_bits == 64) && env.MINGW_SHIT }} \
+            ${{ (matrix.cfg.mingw_bits == 32 || matrix.cfg.mingw_bits == 64) && env.MINGW_SHIT || '' }} \
             -D CMAKE_BUILD_TYPE=Release -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
       - name: Build
         run: cmake --build build --target Klawiatura
