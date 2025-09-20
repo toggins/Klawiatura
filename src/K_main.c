@@ -21,10 +21,12 @@
 
 static void cmd_ip(IterArg), cmd_level(IterArg);
 MAKE_FLAG(bypass_shader);
+MAKE_FLAG(skip_intro);
 MAKE_FLAG(kevin);
 
 CmdArg CMDLINE[] = {
 	{"-s", "-bypass_shader", CMD_FLAG(bypass_shader)},
+	{"-i", "-skip_intro",    CMD_FLAG(skip_intro)   },
 	{"-K", "-kevin",         CMD_FLAG(kevin)        },
 	{"-a", "-ip",            cmd_ip                 },
 	{"-l", "-level",         cmd_level              },
@@ -44,7 +46,11 @@ int main(int argc, char* argv[]) {
 	INFO("We do not condone any commercial");
 	INFO("      use of this project.      ");
 	INFO("                                ");
+
 	handle_cmdline(argc, argv);
+
+	if (skip_intro)
+		INFO("BYE INTRO!!!");
 
 	if (kevin)
 		INFO("HI KEVIN!!!");
@@ -53,8 +59,8 @@ int main(int argc, char* argv[]) {
 		FATAL("SDL_Init fail: %s", SDL_GetError());
 	video_init(bypass_shader);
 
-	load_texture("Q_DISCL");
-	load_texture("E_BOMZH");
+	load_texture("ui/disclaimer");
+	load_texture("enemies/bomzh");
 
 	Surface* dummy = create_surface(128, 128, true, true);
 
@@ -75,12 +81,12 @@ int main(int argc, char* argv[]) {
 		push_surface(dummy);
 		clear_color(1, 0, 0, 1);
 		clear_depth(1);
-		batch_sprite("E_BOMZH", XYZ(32, 192, 0), NO_FLIP, 0, WHITE);
-		batch_sprite("E_BOMZH", XYZ(128, 256, 64), NO_FLIP, 0, WHITE);
+		batch_sprite("enemies/bomzh", XYZ(32, 192, 0), NO_FLIP, 0, WHITE);
+		batch_sprite("enemies/bomzh", XYZ(128, 256, 64), NO_FLIP, 0, WHITE);
 		pop_surface();
 		batch_surface(dummy, XYZ(32, 32, -16), WHITE);
 
-		batch_sprite("Q_DISCL", XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, 0), NO_FLIP, 0, WHITE);
+		batch_sprite("ui/disclaimer", XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, 0), NO_FLIP, 0, WHITE);
 
 		submit_video();
 	}
