@@ -5,6 +5,10 @@ on:
     branches: [master]
     tags: [stable, cpack-test]
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   release:
     name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} binaries for ${{ matrix.os.name }}
