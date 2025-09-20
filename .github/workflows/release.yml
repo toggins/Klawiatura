@@ -31,6 +31,15 @@ jobs:
     env:
       OUTNAME: Klawiatura-${{ matrix.cfg.os-name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
       MINGW_ARCH: ${{ matrix.cfg.bits == 32 && 'i686' || 'x86_64' }}
+      MINGW_SHIT: >-
+        -D CMAKE_C_COMPILER=${MINGW_ARCH}-w64-mingw32-gcc
+        -D CMAKE_CXX_COMPILER=${MINGW_ARCH}-w64-mingw32-g++
+        -D CMAKE_RC_COMPILER=${MINGW_ARCH}-w64-mingw32-windres
+        -D CMAKE_SYSTEM_NAME=Windows
+        -D CMAKE_FIND_ROOT_PATH=/usr/${MINGW_ARCH}-w64-mingw32
+        -D CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER
+        -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY
+        -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -66,21 +75,11 @@ jobs:
             build/_deps/*-subbuild
           key: cmake-deps-obj-${{ matrix.cfg.os-name }}-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: cmake-deps-obj-${{ matrix.cfg.os-name }}-
-      - name: Configure for MinGW
-        if: matrix.cfg.mingw_bits == 32 || matrix.cfg.mingw_bits == 64
+      - name: Configure
         run: |
-          cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release -D CPACK_ARCHIVE_FILE_NAME=${{ env.OUTNAME }} \
-            -D CMAKE_C_COMPILER=${MINGW_ARCH}-w64-mingw32-gcc \
-            -D CMAKE_CXX_COMPILER=${MINGW_ARCH}-w64-mingw32-g++ \
-            -D CMAKE_RC_COMPILER=${MINGW_ARCH}-w64-mingw32-windres \
-            -D CMAKE_SYSTEM_NAME=Windows \
-            -D CMAKE_FIND_ROOT_PATH=/usr/${MINGW_ARCH}-w64-mingw32 \
-            -D CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
-            -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
-            -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
-      - name: Configure for Linux
-        if: matrix.cfg.mingw_bits != 32 && matrix.cfg.mingw_bits != 64
-        run: cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release -D CPACK_ARCHIVE_FILE_NAME=${{ env.OUTNAME }}
+          cmake -G Ninja -S . -B build \
+            ${{ (matrix.cfg.mingw_bits == 32 || matrix.cfg.mingw_bits == 64) && env.MINGW_SHIT }} \
+            -D CMAKE_BUILD_TYPE=Release -D CPACK_ARCHIVE_FILE_NAME=${{ env.OUTNAME }}
       - name: Build
         run: cmake --build build --target Klawiatura
       - name: Package
