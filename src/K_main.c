@@ -15,25 +15,13 @@
 #define S_TRUCTURES_IMPLEMENTATION
 #include <S_tructures.h>
 
+#include "K_cmd.h"
 #include "K_game.h"
 #include "K_video.h"
 
-typedef const char*(IterArg)();
-static void handle_cmdline(int, char*[]);
-
-#define CMD_SET_FLAG(ident) cmd_set_##ident
-#define MAKE_FLAG(ident)                                                                                               \
-	static bool ident = false;                                                                                     \
-	static void CMD_SET_FLAG(ident)(IterArg _) {                                                                   \
-		(ident) = true;                                                                                        \
-	}
-
 MAKE_FLAG(bypass_shader);
 
-static struct Cmd {
-	const char *shortform, *longform;
-	void (*handler)(IterArg);
-} CMDLINE[] = {
+CmdArg CMDLINE[] = {
 	{"-s", "-bypass_shader", CMD_SET_FLAG(bypass_shader)},
 };
 
@@ -94,35 +82,4 @@ int main(int argc, char* argv[]) {
 	SDL_Quit();
 
 	return 0;
-}
-
-static int g_argc, g_argi = 1;
-static char** g_argv;
-
-static const char* g_iter_args() {
-	return ++g_argi < g_argc ? g_argv[g_argi] : NULL;
-}
-
-static void handle_cmdline_fr() {
-	while (g_argi < g_argc) {
-		for (int j = 0; j < sizeof(CMDLINE) / sizeof(*CMDLINE); j++) {
-			const struct Cmd* cmd = &CMDLINE[j];
-			if ((cmd->shortform != NULL && !strcmp(g_argv[g_argi], cmd->shortform))
-				|| (cmd->longform != NULL && !strcmp(g_argv[g_argi], cmd->longform)))
-			{
-				g_argi++;
-				cmd->handler(g_iter_args);
-				goto next;
-			}
-		}
-		g_argi++;
-	next:
-		continue;
-	}
-}
-
-static void handle_cmdline(int argc, char* argv[]) {
-	g_argc = argc;
-	g_argv = argv;
-	handle_cmdline_fr(); // separate fn to cull argc & argv out of scope
 }
