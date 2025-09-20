@@ -38,4 +38,4 @@ static void tick(GameActor* actor) {
 }
 
 // don't forget to include it inside K_game.c
-const GameActorTable TAB_PLAYER = {SOL_NONE, NULL, NULL, tick, NULL, NULL, NULL, NULL, NULL, NULL};
+const GameActorTable TAB_PLAYER = {SOL_NONE, .tick = tick};
