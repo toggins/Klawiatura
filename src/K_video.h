@@ -10,8 +10,6 @@
 #define CGLM_FORCE_LEFT_HANDED
 #include <cglm/cglm.h> // IWYU pragma: keep
 
-#include "K_memory.h" // IWYU pragma: keep
-
 #ifdef RGB
 #undef RGB
 #endif
