@@ -122,7 +122,7 @@ embed_txt(fragment.glsl)
 add_executable(Klawiatura ${SOURCES} ${HEADERS} ${CMAKE_SOURCE_DIR}/src/Klawiatura.rc)
 target_include_directories(Klawiatura PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/nested)
 target_link_libraries(Klawiatura PRIVATE ${LIBS})
-target_compile_definitions(Klawiatura PUBLIC -D_POSIX_C_SOURCE=200112L)
+target_compile_definitions(Klawiatura PUBLIC _POSIX_C_SOURCE=200112L _WIN32_WINNT=0x0501 WINVER=0x0501)
 if(MSVC AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo) # you're sus my guy...
     target_compile_options(GekkoNet PRIVATE /fsanitize=address)
 endif()
