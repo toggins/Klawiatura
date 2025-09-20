@@ -69,7 +69,7 @@ jobs:
       - name: Configure for MinGW
         if: matrix.cfg.mingw_bits == 32 || matrix.cfg.mingw_bits == 64
         run: |
-          cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
+          cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release -D CPACK_ARCHIVE_FILE_NAME=${{ env.OUTNAME }} \
             -D CMAKE_C_COMPILER=${MINGW_ARCH}-w64-mingw32-gcc \
             -D CMAKE_CXX_COMPILER=${MINGW_ARCH}-w64-mingw32-g++ \
             -D CMAKE_RC_COMPILER=${MINGW_ARCH}-w64-mingw32-windres \
@@ -80,11 +80,11 @@ jobs:
             -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
       - name: Configure for Linux
         if: matrix.cfg.mingw_bits != 32 && matrix.cfg.mingw_bits != 64
-        run: cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release
+        run: cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release -D CPACK_ARCHIVE_FILE_NAME=${{ env.OUTNAME }}
       - name: Build
         run: cmake --build build --target Klawiatura
       - name: Package
-        run: cmake --build build --target package -D CPACK_ARCHIVE_FILE_NAME=${{ env.OUTNAME }}
+        run: cmake --build build --target package
       - name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} build for ${{ matrix.cfg.os-name }}
         uses: softprops/action-gh-release@v2
         with:
