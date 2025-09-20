@@ -1,5 +1,4 @@
-#include <stdbool.h>
-
+#include <SDL3/SDL_stdinc.h>
 #include <S_fixed.h>
 
 typedef fix16_t fixed;

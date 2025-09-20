@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdbool.h>
+#include <SDL3/SDL_stdinc.h>
 
 #define CMD_SET_FLAG(ident) cmd_set_##ident
 #define MAKE_FLAG(ident)                                                                                               \

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL_log.h>
-#include <stdlib.h> // IWYU pragma: keep
+#include <SDL3/SDL_stdinc.h>
 // ^ required for `exit(1)` below
 
 #define LOG_WITH(fn, ...) fn(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
