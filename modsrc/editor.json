@@ -1,0 +1,1447 @@
+{
+    "defs": [
+        [
+            "Tiles",
+            [
+                [
+                    "Grass",
+                    [
+                        {
+                            "def": "Grass TL",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_GRASSA"
+                        },
+
+                        {
+                            "def": "Grass T",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_GRASSB"
+                        },
+
+                        {
+                            "def": "Grass TR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_GRASSC"
+                        },
+
+                        {
+                            "def": "Grass ML",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_GRASSD"
+                        },
+
+                        {
+                            "def": "Grass M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_GRASSE"
+                        },
+
+                        {
+                            "def": "Grass MR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_GRASSF"
+                        },
+
+                        {
+                            "def": "Grass BL",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_GRASSG"
+                        },
+
+                        {
+                            "def": "Grass B",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_GRASSH"
+                        },
+
+                        {
+                            "def": "Grass BR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_GRASSI"
+                        }
+                    ]
+                ],
+
+                [
+                    "Blocks",
+                    [
+                        {
+                            "def": "Block",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLOCKA"
+                        }
+                    ]
+                ],
+
+                [
+                    "Platforms",
+                    [
+                        {
+                            "def": "Platform Tile",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PLATFA"
+                        },
+
+                        {
+                            "def": "Platform Tile Purple",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PLATFB"
+                        },
+
+                        {
+                            "def": "Platform Tile Gray",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PLATFC"
+                        }
+                    ]
+                ],
+
+                [
+                    "Pipes",
+                    [
+                        {
+                            "def": "Pipe V T",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PIP1VA"
+                        },
+
+                        {
+                            "def": "Pipe V M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PIP1VB"
+                        },
+
+                        {
+                            "def": "Pipe V B",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PIP1VC"
+                        },
+
+                        {
+                            "def": "Pipe Gray V T",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PIP3VA"
+                        },
+
+                        {
+                            "def": "Pipe Gray V M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PIP3VB"
+                        },
+
+                        {
+                            "def": "Pipe Gray V B",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_PIP3VC"
+                        }
+                    ]
+                ],
+
+                [
+                    "Castle",
+                    [
+                        {
+                            "def": "Castle Brick",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BRICKA"
+                        },
+
+                        {
+                            "def": "Castle Brick 2",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BRICKB"
+                        },
+
+                        {
+                            "def": "Castle Brick Small",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BRICKC"
+                        },
+
+                        {
+                            "def": "Castle Brick Lava L",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BRICKD"
+                        },
+
+                        {
+                            "def": "Castle Brick Lava R",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BRICKE"
+                        }
+                    ]
+                ],
+
+                [
+                    "Tanks",
+                    [
+                        {
+                            "def": "Tank Block L",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKA"
+                        },
+
+                        {
+                            "def": "Tank Block M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKB"
+                        },
+
+                        {
+                            "def": "Tank Block R",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKC"
+                        },
+
+                        {
+                            "def": "Tank Block",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKD"
+                        },
+
+                        {
+                            "def": "Tank Block Dirty",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKE"
+                        },
+
+                        {
+                            "def": "Tank Block Screws",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKF"
+                        },
+
+                        {
+                            "def": "Tank Block Bolts",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKG"
+                        },
+
+                        {
+                            "def": "Tank Slope L",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKH"
+                        },
+
+                        {
+                            "def": "Tank Slope R",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKI"
+                        },
+
+                        {
+                            "def": "Tank Support M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKJ"
+                        },
+
+                        {
+                            "def": "Tank Support T",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKK"
+                        },
+
+                        {
+                            "def": "Tank Support Back",
+                            "type": "backdrop",
+                            "z": 23,
+                            "texture": "T_TANKL"
+                        },
+
+                        {
+                            "def": "Tank Lid",
+                            "type": "backdrop",
+                            "z": 22,
+                            "texture": "T_TANKM"
+                        },
+
+                        {
+                            "def": "Tank Chains",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_TANKN"
+                        },
+
+                        {
+                            "def": "Wheel L",
+                            "type": "object",
+                            "index": 78,
+                            "z": 20,
+                            "texture": "T_WHELLA"
+                        },
+
+                        {
+                            "def": "Wheel M",
+                            "type": "object",
+                            "index": 79,
+                            "z": 20,
+                            "texture": "T_WHEELA"
+                        },
+
+                        {
+                            "def": "Wheel R",
+                            "type": "object",
+                            "index": 80,
+                            "z": 20,
+                            "texture": "T_WHELRA"
+                        }
+                    ]
+                ],
+
+                [
+                    "Bill Blasters",
+
+                    [
+                        {
+                            "def": "Bill Blaster",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTA"
+                        },
+
+                        {
+                            "def": "Bill Blaster 2",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTI"
+                        },
+
+                        {
+                            "def": "Bill Blaster 3",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTJ"
+                        },
+
+                        {
+                            "def": "Bill Blaster Tall",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTB"
+                        },
+
+                        {
+                            "def": "Bill Blaster Tall 2",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTC"
+                        },
+
+                        {
+                            "def": "Bill Blaster Tower",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTD"
+                        },
+
+                        {
+                            "def": "Bill Blaster Tower 2",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTE"
+                        },
+
+                        {
+                            "def": "Bill Blaster Tower 3",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTF"
+                        },
+
+                        {
+                            "def": "Bill Blaster Tower 4",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTG"
+                        },
+
+                        {
+                            "def": "Bill Blaster Down",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "T_BLASTH"
+                        }
+                    ]
+                ]
+            ]
+        ],
+
+        [
+            "Scenery",
+            [
+                [
+                    "Parallax",
+                    [
+                        {
+                            "def": "Back Gradient",
+                            "type": "gradient",
+                            "z": 200,
+                            "stretch": true,
+                            "colors": [
+                                [0, 111, 223, 255],
+                                [0, 111, 223, 255],
+                                [242, 253, 252, 255],
+                                [242, 253, 252, 255]
+                            ]
+                        },
+
+                        {
+                            "def": "Fog Gradient",
+                            "type": "gradient",
+                            "z": 180,
+                            "stretch": true,
+                            "colors": [
+                                [8, 0, 0, 109],
+                                [8, 0, 0, 109],
+                                [219, 0, 19, 109],
+                                [219, 0, 19, 109]
+                            ]
+                        },
+
+                        {
+                            "def": "Front Gradient",
+                            "type": "gradient",
+                            "z": -100,
+                            "stretch": true,
+                            "colors": [
+                                [8, 0, 0, 0],
+                                [8, 0, 0, 0],
+                                [219, 0, 19, 109],
+                                [219, 0, 19, 109]
+                            ]
+                        },
+
+                        {
+                            "def": "Static Clouds 1",
+                            "type": "gradient",
+                            "z": -50,
+                            "stretch": true,
+                            "max_stretch": [65535, 28],
+                            "texture": "B_CLOUDB"
+                        },
+
+                        {
+                            "def": "Static Clouds 2",
+                            "type": "gradient",
+                            "z": 75,
+                            "stretch": true,
+                            "max_stretch": [65535, 28],
+                            "texture": "B_CLOUDB"
+                        },
+
+                        {
+                            "def": "Static Clouds 3",
+                            "type": "gradient",
+                            "z": 100,
+                            "stretch": true,
+                            "max_stretch": [65535, 28],
+                            "texture": "B_CLOUDB"
+                        },
+
+                        {
+                            "def": "Castle BG",
+                            "type": "gradient",
+                            "z": 190,
+                            "stretch": true,
+                            "max_stretch": [65535, 480],
+                            "texture": "B_CASTLA"
+                        }
+                    ]
+                ],
+
+                [
+                    "Background",
+                    [
+                        {
+                            "def": "Giant Cloud",
+                            "type": "backdrop",
+                            "z": 57,
+                            "texture": "B_CLOUDS"
+                        },
+
+                        {
+                            "def": "Giant Cloud Face",
+                            "type": "object",
+                            "z": 56,
+                            "index": 50,
+                            "texture": "S_CFACEA"
+                        },
+
+                        {
+                            "def": "Hill",
+                            "type": "backdrop",
+                            "z": 54,
+                            "texture": "B_HILLA"
+                        },
+
+                        {
+                            "def": "Hill Minix",
+                            "type": "backdrop",
+                            "z": 54,
+                            "texture": "B_HILLB"
+                        },
+
+                        {
+                            "def": "Forest",
+                            "type": "backdrop",
+                            "z": 50,
+                            "texture": "B_FOREST"
+                        },
+
+                        {
+                            "def": "Static Trees 1",
+                            "type": "gradient",
+                            "z": 51,
+                            "stretch": true,
+                            "max_stretch": [65535, 83],
+                            "texture": "B_FORESB"
+                        },
+
+                        {
+                            "def": "Static Trees 2",
+                            "type": "gradient",
+                            "z": 52,
+                            "stretch": true,
+                            "max_stretch": [65535, 83],
+                            "texture": "B_FORESB"
+                        },
+
+                        {
+                            "def": "Static Trees 3",
+                            "type": "gradient",
+                            "z": 53,
+                            "stretch": true,
+                            "max_stretch": [65535, 83],
+                            "texture": "B_FORESB"
+                        },
+
+                        {
+                            "def": "Hills",
+                            "type": "backdrop",
+                            "z": 55,
+                            "texture": "B_HILLS"
+                        },
+
+                        {
+                            "def": "Pyramid",
+                            "type": "backdrop",
+                            "z": 50,
+                            "texture": "B_PYRAM"
+                        }
+                    ]
+                ],
+
+                [
+                    "Props",
+                    [
+                        [
+                            "Signs",
+                            [
+                                {
+                                    "def": "Sign Up",
+                                    "type": "backdrop",
+                                    "texture": "S_UP",
+                                    "z": 25
+                                },
+
+                                {
+                                    "def": "Sign Left",
+                                    "type": "backdrop",
+                                    "texture": "S_LEFT",
+                                    "z": 25
+                                },
+
+                                {
+                                    "def": "Sign Down",
+                                    "type": "backdrop",
+                                    "texture": "S_DOWN",
+                                    "z": 25
+                                },
+
+                                {
+                                    "def": "Sign Right",
+                                    "type": "backdrop",
+                                    "texture": "S_RIGHT",
+                                    "z": 25
+                                },
+
+                                {
+                                    "def": "Hardcore 1-4",
+                                    "type": "backdrop",
+                                    "texture": "S_HARD14",
+                                    "z": 25
+                                }
+                            ]
+                        ],
+
+                        {
+                            "def": "Cloud",
+                            "type": "object",
+                            "index": 73,
+                            "texture": "S_CLOUDA",
+                            "z": 26
+                        },
+
+                        {
+                            "def": "Cloud Dark",
+                            "type": "object",
+                            "index": 74,
+                            "texture": "S_CLODDA",
+                            "z": 26
+                        },
+
+                        {
+                            "def": "Bush",
+                            "type": "object",
+                            "index": 75,
+                            "texture": "S_BUSHA",
+                            "z": 25
+                        },
+
+                        {
+                            "def": "Bush Snow",
+                            "type": "object",
+                            "index": 76,
+                            "texture": "S_BUSHSA",
+                            "z": 25
+                        },
+
+                        {
+                            "def": "Tree Small",
+                            "type": "backdrop",
+                            "texture": "S_TREEA",
+                            "z": 26
+                        },
+
+                        {
+                            "def": "Tree",
+                            "type": "backdrop",
+                            "texture": "S_TREEB",
+                            "z": 26
+                        },
+
+                        {
+                            "def": "Tree Back",
+                            "type": "backdrop",
+                            "texture": "S_TREEBG",
+                            "z": 26
+                        },
+
+                        {
+                            "def": "Tree Minix",
+                            "type": "backdrop",
+                            "texture": "S_TREEM",
+                            "z": 26
+                        },
+
+                        {
+                            "def": "Fence L",
+                            "type": "backdrop",
+                            "texture": "S_FENCEA",
+                            "z": 25
+                        },
+
+                        {
+                            "def": "Fence M",
+                            "type": "backdrop",
+                            "texture": "S_FENCEB",
+                            "z": 25
+                        },
+
+                        {
+                            "def": "Fence R",
+                            "type": "backdrop",
+                            "texture": "S_FENCEC",
+                            "z": 25
+                        },
+
+                        {
+                            "def": "Support L",
+                            "type": "backdrop",
+                            "texture": "S_SUPPTL",
+                            "z": 22
+                        },
+
+                        {
+                            "def": "Support R",
+                            "type": "backdrop",
+                            "texture": "S_SUPPTR",
+                            "z": 22
+                        }
+                    ]
+                ]
+            ]
+        ],
+
+        [
+            "Markers",
+            [
+                {
+                    "def": "Solid",
+                    "type": "object",
+                    "index": 1,
+                    "texture": "M_SOLID",
+                    "stretch": true,
+                    "max_stretch": [256, 256]
+                },
+
+                {
+                    "def": "Solid Top",
+                    "type": "object",
+                    "index": 2,
+                    "texture": "M_SOLIDT",
+                    "stretch": true,
+                    "max_stretch": [256, 256]
+                },
+
+                {
+                    "def": "Solid Slope",
+                    "type": "object",
+                    "index": 3,
+                    "texture": "M_SLOPE",
+                    "stretch": true,
+                    "max_stretch": [256, 256],
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Player",
+                    "type": "object",
+                    "index": 4,
+                    "z": -1,
+                    "texture": "M_PLAYER",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2
+                        },
+
+                        {
+                            "name": "Ascend?",
+                            "bit": 8
+                        },
+
+                        {
+                            "name": "Descend?",
+                            "bit": 9
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Checkpoint",
+                    "type": "object",
+                    "index": 31,
+                    "z": 1,
+                    "texture": "M_CHECKA",
+
+                    "values": [
+                        {
+                            "name": "Bound X1",
+                            "index": 5,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound Y1",
+                            "index": 6,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound X2",
+                            "index": 7,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound Y2",
+                            "index": 8,
+                            "default": 0
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Platform",
+                    "type": "object",
+                    "index": 85,
+                    "z": 19,
+                    "texture": "M_PLTFRM",
+
+                    "values": [
+                        {
+                            "name": "Skin",
+                            "index": 5,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Speed",
+                            "index": 0,
+                            "default": 0
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Fall?",
+                            "bit": 7
+                        },
+
+                        {
+                            "name": "Descend?",
+                            "bit": 8
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Warp",
+                    "type": "object",
+                    "index": 51,
+                    "texture": "M_WARP",
+
+                    "values": [
+                        {
+                            "name": "Direction",
+                            "index": 5,
+                            "default": 3
+                        },
+
+                        {
+                            "name": "Out Direction",
+                            "index": 12,
+                            "default": 3
+                        },
+
+                        {
+                            "name": "Out X",
+                            "index": 6,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Out Y",
+                            "index": 7,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound X1",
+                            "index": 8,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound Y1",
+                            "index": 9,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound X2",
+                            "index": 10,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound Y2",
+                            "index": 11,
+                            "default": 0
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Goal?",
+                            "bit": 5
+                        },
+
+                        {
+                            "name": "Secret?",
+                            "bit": 6
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Bounds",
+                    "type": "object",
+                    "index": 57,
+                    "texture": "M_SOLIDT",
+                    "stretch": true,
+                    "max_stretch": [256, 256],
+
+                    "values": [
+                        {
+                            "name": "Bound X1",
+                            "index": 5,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound Y1",
+                            "index": 6,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound X2",
+                            "index": 7,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "Bound Y2",
+                            "index": 8,
+                            "default": 0
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Bro Layer",
+                    "type": "object",
+                    "index": 53,
+                    "z": 1,
+                    "texture": "M_SOLIDT",
+                    "stretch": true,
+                    "max_stretch": [256, 256],
+
+                    "flags": [
+                        {
+                            "name": "Descend?",
+                            "bit": 5
+                        }
+                    ]
+                },
+
+                [
+                    "Goal",
+                    [
+                        {
+                            "def": "Goal",
+                            "type": "backdrop",
+                            "z": 24,
+                            "texture": "M_GOAL"
+                        },
+
+                        {
+                            "def": "Goal Bar",
+                            "type": "object",
+                            "index": 32,
+                            "z": 23,
+                            "texture": "M_GOALBA",
+
+                            "flags": [
+                                {
+                                    "name": "Flip?",
+                                    "bit": 2
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Goal Mark",
+                            "type": "backdrop",
+                            "z": 24,
+                            "texture": "M_GOALM"
+                        },
+
+                        {
+                            "def": "Goal Line",
+                            "type": "object",
+                            "index": 34,
+                            "z": 24,
+                            "texture": "M_GOALM",
+                            "stretch": true,
+                            "max_stretch": [256, 256],
+
+                            "flags": [
+                                {
+                                    "name": "Flip?",
+                                    "bit": 2
+                                }
+                            ]
+                        }
+                    ]
+                ],
+
+                {
+                    "def": "Autoscroll",
+                    "type": "object",
+                    "index": 77,
+                    "texture": "M_SCROLL",
+
+                    "values": [
+                        {
+                            "name": "X Speed",
+                            "index": 0,
+                            "default": 1,
+                            "fixed": true
+                        },
+
+                        {
+                            "name": "Y Speed",
+                            "index": 1,
+                            "fixed": true
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Tanks?",
+                            "bit": 5
+                        }
+                    ]
+                }
+            ]
+        ],
+
+        [
+            "Items",
+            [
+                [
+                    "Blocks",
+                    [
+                        {
+                            "def": "Item Block",
+                            "type": "object",
+                            "index": 26,
+                            "z": 20,
+                            "texture": "I_BLOCKA",
+                            "values": [
+                                {
+                                    "name": "Object Index",
+                                    "index": 7,
+                                    "default": 10
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Hidden Block",
+                            "type": "object",
+                            "index": 27,
+                            "z": 20,
+                            "texture": "I_BLOCKC",
+
+                            "values": [
+                                {
+                                    "name": "Object Index",
+                                    "index": 7,
+                                    "default": 10
+                                }
+                            ],
+
+                            "flags": [
+                                {
+                                    "name": "Appear Once?",
+                                    "bit": 7
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Brick Block",
+                            "type": "object",
+                            "index": 28,
+                            "z": 20,
+                            "texture": "I_BRICKA",
+
+                            "flags": [
+                                {
+                                    "name": "Gray?",
+                                    "bit": 6
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Coin Block",
+                            "type": "object",
+                            "index": 30,
+                            "z": 20,
+                            "texture": "I_BRICKA",
+
+                            "values": [
+                                {
+                                    "name": "Object Index",
+                                    "index": 7,
+                                    "default": 10
+                                }
+                            ],
+
+                            "flags": [
+                                {
+                                    "name": "Gray?",
+                                    "bit": 6
+                                }
+                            ]
+                        }
+                    ]
+                ],
+
+                [
+                    "Powerups",
+                    [
+                        {
+                            "def": "Mushroom",
+                            "type": "object",
+                            "index": 11,
+                            "z": 1,
+                            "texture": "I_SHROOM"
+                        },
+
+                        {
+                            "def": "Mushroom 1UP",
+                            "type": "object",
+                            "index": 12,
+                            "z": 1,
+                            "texture": "I_1UP"
+                        },
+
+                        {
+                            "def": "Fire Flower",
+                            "type": "object",
+                            "index": 14,
+                            "z": 1,
+                            "texture": "I_FLWRA"
+                        },
+
+                        {
+                            "def": "Beetroot",
+                            "type": "object",
+                            "index": 15,
+                            "z": 1,
+                            "texture": "I_BEETA"
+                        },
+
+                        {
+                            "def": "Green Lui",
+                            "type": "object",
+                            "index": 16,
+                            "z": 1,
+                            "texture": "I_LUIA"
+                        },
+
+                        {
+                            "def": "Hammer Suit",
+                            "type": "object",
+                            "index": 17,
+                            "z": 1,
+                            "texture": "I_HAMMER"
+                        }
+                    ]
+                ],
+
+                {
+                    "def": "Coin",
+                    "type": "object",
+                    "index": 9,
+                    "z": 1,
+                    "texture": "I_COINA"
+                }
+            ]
+        ],
+
+        [
+            "Enemies",
+            [
+                {
+                    "def": "Goomba",
+                    "type": "object",
+                    "index": 38,
+                    "texture": "E_GOOMBA",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2,
+                            "default": true
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Koopa",
+                    "type": "object",
+                    "index": 40,
+                    "texture": "E_KOOPAA",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2,
+                            "default": true
+                        },
+
+                        {
+                            "name": "Red?",
+                            "bit": 6
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Parakoopa",
+                    "type": "object",
+                    "index": 42,
+                    "texture": "E_PKOOPA",
+
+                    "flags": [
+                        {
+                            "name": "Red?",
+                            "bit": 6
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Spiny",
+                    "type": "object",
+                    "index": 45,
+                    "texture": "E_SPINYA",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2,
+                            "default": true
+                        },
+
+                        {
+                            "name": "Gray?",
+                            "bit": 6,
+                            "default": false
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Piranha Plant",
+                    "type": "object",
+                    "index": 48,
+                    "z": 21,
+                    "texture": "E_PIRANA",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 3
+                        },
+
+                        {
+                            "name": "Fire?",
+                            "bit": 5
+                        },
+
+                        {
+                            "name": "Red?",
+                            "bit": 6
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Bro",
+                    "type": "object",
+                    "index": 49,
+                    "texture": "E_BROA",
+
+                    "values": [
+                        {
+                            "name": "Missile",
+                            "index": 5,
+                            "default": 24
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Bullet Bill",
+                    "type": "object",
+                    "index": 54,
+                    "texture": "M_SOLIDT"
+                },
+
+                {
+                    "def": "Roto-Disc",
+                    "type": "object",
+                    "index": 61,
+                    "z": 19,
+                    "texture": "E_RDBALL",
+
+                    "values": [
+                        {
+                            "name": "Length",
+                            "index": 6,
+                            "default": 9830400,
+                            "fixed": true
+                        },
+
+                        {
+                            "name": "Angle",
+                            "index": 7,
+                            "default": 0,
+                            "fixed": true
+                        },
+
+                        {
+                            "name": "Speed",
+                            "index": 8,
+                            "default": 1144,
+                            "fixed": true
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Flower?",
+                            "bit": 6
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Cheep Cheep Blue",
+                    "type": "object",
+                    "index": 58,
+                    "texture": "E_CHEEBA",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2,
+                            "default": true
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Cheep Cheep Spiky",
+                    "type": "object",
+                    "index": 59,
+                    "texture": "E_CHEESA",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2,
+                            "default": true
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Thwomp",
+                    "type": "object",
+                    "index": 63,
+                    "texture": "E_THWMPA"
+                },
+
+                {
+                    "def": "Spike Cannon",
+                    "type": "object",
+                    "index": 81,
+                    "z": 20,
+                    "texture": "E_SBCANN",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 3
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Lava",
+                    "type": "object",
+                    "index": 66,
+                    "z": 20,
+                    "texture": "E_LAVAA"
+                },
+
+                {
+                    "def": "Lava Body",
+                    "type": "backdrop",
+                    "z": 20,
+                    "texture": "T_LAVA",
+                    "stretch": true
+                },
+
+                {
+                    "def": "Podoboo",
+                    "type": "object",
+                    "index": 67,
+                    "texture": "M_SOLIDT"
+                },
+
+                {
+                    "def": "Podoboo Volcano",
+                    "type": "object",
+                    "index": 88,
+                    "texture": "M_SOLIDT"
+                },
+
+                {
+                    "def": "Bowser",
+                    "type": "object",
+                    "index": 89,
+                    "texture": "E_BOWSRA"
+                }
+            ]
+        ]
+    ]
+}
