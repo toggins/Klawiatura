@@ -9,7 +9,7 @@ BraceWrapping:
   AfterControlStatement: MultiLine
 DerivePointerAlignment: false
 PointerAlignment: Left
-AllowShortBlocksOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty

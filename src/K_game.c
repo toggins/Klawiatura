@@ -23,8 +23,8 @@ void start_game_state() {
 	for (int32_t i = 0; i < GRID_SIZE; i++)
 		game_state.grid[i] = NULLACT;
 
-	game_state.size[0] = game_state.bounds[1][0] = F_SCREEN_WIDTH;
-	game_state.size[1] = game_state.bounds[1][1] = F_SCREEN_HEIGHT;
+	game_state.size.x = game_state.bounds.end.x = F_SCREEN_WIDTH;
+	game_state.size.y = game_state.bounds.end.y = F_SCREEN_HEIGHT;
 
 	game_state.spawn = game_state.checkpoint = game_state.autoscroll = NULLACT;
 	game_state.water = FfInt(32767);
@@ -160,13 +160,10 @@ void move_actor(GameActor* actor, const fvec2 pos) {
 	if (actor == NULL)
 		return;
 
-	actor->pos[0] = pos[0];
-	actor->pos[1] = pos[1];
+	actor->pos = pos;
 
-	int32_t cx = actor->pos[0] / CELL_SIZE;
-	int32_t cy = actor->pos[1] / CELL_SIZE;
-	cx = SDL_clamp(cx, 0, MAX_CELLS - 1);
-	cy = SDL_clamp(cy, 0, MAX_CELLS - 1);
+	int32_t cx = actor->pos.x / CELL_SIZE, cy = actor->pos.y / CELL_SIZE;
+	cx = SDL_clamp(cx, 0, MAX_CELLS - 1), cy = SDL_clamp(cy, 0, MAX_CELLS - 1);
 
 	const int32_t cell = (cy * MAX_CELLS) + cx;
 	if (cell == actor->cell)
@@ -200,10 +197,10 @@ void move_actor(GameActor* actor, const fvec2 pos) {
 void list_cell_at(CellList* list, const frect rect) {
 	list->num_actors = 0;
 
-	int32_t cx1 = Fsub(rect[0][0], CELL_SIZE) / CELL_SIZE;
-	int32_t cy1 = Fsub(rect[0][1], CELL_SIZE) / CELL_SIZE;
-	int32_t cx2 = Fadd(rect[1][0], CELL_SIZE) / CELL_SIZE;
-	int32_t cy2 = Fadd(rect[1][1], CELL_SIZE) / CELL_SIZE;
+	int32_t cx1 = Fsub(rect.start.x, CELL_SIZE) / CELL_SIZE;
+	int32_t cy1 = Fsub(rect.start.y, CELL_SIZE) / CELL_SIZE;
+	int32_t cx2 = Fadd(rect.end.x, CELL_SIZE) / CELL_SIZE;
+	int32_t cy2 = Fadd(rect.end.y, CELL_SIZE) / CELL_SIZE;
 	cx1 = SDL_clamp(cx1, 0, MAX_CELLS - 1);
 	cy1 = SDL_clamp(cy1, 0, MAX_CELLS - 1);
 	cx2 = SDL_clamp(cx2, 0, MAX_CELLS - 1);
@@ -213,16 +210,14 @@ void list_cell_at(CellList* list, const frect rect) {
 		for (int32_t cx = cx1; cx <= cx2; cx++) {
 			GameActor* actor = get_actor(game_state.grid[cx + (cy * MAX_CELLS)]);
 			while (actor != NULL) {
-				if (!ANY_FLAG(actor, FLG_DESTROY)) {
-					const fix16_t ax1 = Fadd(actor->pos[0], actor->box[0][0]);
-					const fix16_t ay1 = Fadd(actor->pos[1], actor->box[0][1]);
-					const fix16_t ax2 = Fadd(actor->pos[0], actor->box[1][0]);
-					const fix16_t ay2 = Fadd(actor->pos[1], actor->box[1][1]);
-
-					if (rect[0][0] < ax2 && rect[1][0] > ax1 && rect[0][1] < ay2
-						&& rect[1][1] > ay1)
-						list->actors[list->num_actors++] = actor;
-				}
+				if (ANY_FLAG(actor, FLG_DESTROY))
+					goto next;
+				frect abox;
+				abox.start = Vadd(actor->pos, actor->box.start);
+				abox.end = Vadd(actor->pos, actor->box.end);
+				if (Rcollide(rect, abox))
+					list->actors[list->num_actors++] = actor;
+			next:
 				actor = get_actor(actor->previous_cell);
 			}
 		}
@@ -232,22 +227,9 @@ void list_cell_at(CellList* list, const frect rect) {
 // MATH
 // ====
 
-// Returns an exclusive random number.
+/// Produce an exclusive random number.
 int32_t rng(int32_t x) {
 	// https://rosettacode.org/wiki/Linear_congruential_generator
 	game_state.seed = (game_state.seed * 1103515245 + 12345) & 2147483647;
 	return game_state.seed % x;
-}
-
-// Approximate distance between two points.
-// Pythagorean theorem is useless in fixed point math due to overflows.
-fix16_t point_distance(const fvec2 a, const fvec2 b) {
-	const fix16_t dx = Fabs(Fsub(b[0], a[0]));
-	const fix16_t dy = Fabs(Fsub(b[1], a[1]));
-	return Fsub(Fadd(dx, dy), Fhalf(Fmin(dx, dy)));
-}
-
-// Radian angle between two points.
-fix16_t point_angle(const fvec2 a, const fvec2 b) {
-	return Fatan2(Fsub(b[1], a[1]), Fsub(b[0], a[0]));
 }

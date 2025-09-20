@@ -1,8 +1,7 @@
 #pragma once
 
-#include <S_fixed.h>
-
 #include "K_audio.h"
+#include "K_math.h"
 #include "K_net.h" // IWYU pragma: keep
 #include "K_video.h"
 
@@ -17,9 +16,6 @@
 #define MAX_ACTORS 1000
 #define NULLACT ((ActorID)(-1))
 #define NULLCELL ((int32_t)(-1))
-
-typedef fix16_t fvec2[2];
-typedef fvec2 frect[2];
 
 #define MAX_VALUES 32
 
@@ -346,9 +342,11 @@ void draw_game_state();
 void end_game_state();
 
 // Players
+
 GamePlayer* get_player(PlayerID);
 
 // Actors
+
 void load_actor(GameActorType);
 GameActor* create_actor(GameActorType, const fvec2);
 
@@ -363,7 +361,5 @@ typedef struct {
 void list_cell_at(CellList*, const frect);
 
 // Math
-int32_t rng(int32_t);
 
-fix16_t point_distance(const fvec2, const fvec2);
-fix16_t point_angle(const fvec2, const fvec2);
+int32_t rng(int32_t);
