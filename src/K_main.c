@@ -24,10 +24,10 @@ MAKE_FLAG(bypass_shader);
 MAKE_FLAG(kevin);
 
 CmdArg CMDLINE[] = {
-	{"-s", "-bypass_shader", CMD_SET_FLAG(bypass_shader)},
-	{"-K", "-kevin",         CMD_SET_FLAG(kevin)        },
-	{"-a", "-ip",            cmd_ip                     },
-	{"-l", "-level",         cmd_level                  },
+	{"-s", "-bypass_shader", CMD_FLAG(bypass_shader)},
+	{"-K", "-kevin",         CMD_FLAG(kevin)        },
+	{"-a", "-ip",            cmd_ip                 },
+	{"-l", "-level",         cmd_level              },
 };
 
 int main(int argc, char* argv[]) {

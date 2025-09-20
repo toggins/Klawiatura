@@ -2,10 +2,10 @@
 
 #include <SDL3/SDL_stdinc.h>
 
-#define CMD_SET_FLAG(ident) cmd_set_##ident
+#define CMD_FLAG(ident) cmd_set_##ident
 #define MAKE_FLAG(ident)                                                                                               \
 	static bool ident = false;                                                                                     \
-	static void CMD_SET_FLAG(ident)(IterArg _) {                                                                   \
+	static void CMD_FLAG(ident)(IterArg _) {                                                                       \
 		(ident) = true;                                                                                        \
 	}
 
