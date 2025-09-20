@@ -191,10 +191,10 @@ void move_actor(GameActor* actor, const fvec2 pos) {
 void list_cell_at(CellList* list, const frect rect) {
 	list->num_actors = 0;
 
-	int32_t cx1 = Fsub(rect.start.x, CELL_SIZE) / CELL_SIZE;
-	int32_t cy1 = Fsub(rect.start.y, CELL_SIZE) / CELL_SIZE;
-	int32_t cx2 = Fadd(rect.end.x, CELL_SIZE) / CELL_SIZE;
-	int32_t cy2 = Fadd(rect.end.y, CELL_SIZE) / CELL_SIZE;
+	int32_t cx1 = (rect.start.x - CELL_SIZE) / CELL_SIZE;
+	int32_t cy1 = (rect.start.y - CELL_SIZE) / CELL_SIZE;
+	int32_t cx2 = (rect.end.x + CELL_SIZE) / CELL_SIZE;
+	int32_t cy2 = (rect.end.y + CELL_SIZE) / CELL_SIZE;
 	cx1 = SDL_clamp(cx1, 0, MAX_CELLS - 1);
 	cy1 = SDL_clamp(cy1, 0, MAX_CELLS - 1);
 	cx2 = SDL_clamp(cx2, 0, MAX_CELLS - 1);

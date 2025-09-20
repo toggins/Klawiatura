@@ -19,12 +19,12 @@
 
 #define MAX_VALUES 32
 
-typedef fix16_t ActorValue;
+typedef fixed ActorValue;
 typedef uint32_t ActorFlag;
 
 #define MAX_CELLS 128
 #define GRID_SIZE (MAX_CELLS * MAX_CELLS)
-#define CELL_SIZE ((fix16_t)(0x01000000))
+#define CELL_SIZE ((fixed)(0x01000000))
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
@@ -287,7 +287,7 @@ typedef struct {
 
 	fvec2 pos;
 	frect box;
-	fix16_t depth;
+	fixed depth;
 
 	ActorFlag flags;
 	ActorValue values[MAX_VALUES];
@@ -305,7 +305,7 @@ typedef struct {
 	fvec2 size;
 	frect bounds;
 
-	fix16_t water, hazard;
+	fixed water, hazard;
 	int32_t clock;
 
 	int32_t seed;
