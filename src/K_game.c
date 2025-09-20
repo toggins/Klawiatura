@@ -1,6 +1,24 @@
 #include "K_game.h"
 #include "K_log.h"
 
+#define ACTOR_TYPE_CALL(type, fn)                                                                                      \
+	do {                                                                                                           \
+		if (ACTORS[(type)]->fn != NULL)                                                                        \
+			ACTORS[(type)]->fn();                                                                          \
+	} while (0)
+
+#define ACTOR_CALL(act, fn)                                                                                            \
+	do {                                                                                                           \
+		if (ACTORS[(act)->type]->fn != NULL)                                                                   \
+			ACTORS[(act)->type]->fn((act));                                                                \
+	} while (0)
+
+#define ACTOR_CALL_DUO(act, fn, act2)                                                                                  \
+	do {                                                                                                           \
+		if (ACTORS[(act)->type]->fn != NULL)                                                                   \
+			ACTORS[(act)->type]->fn((act), (act2));                                                        \
+	} while (0)
+
 const GameActorTable TAB_NULL = {0};
 extern const GameActorTable TAB_PLAYER;
 
@@ -54,8 +72,8 @@ GamePlayer* get_player(PlayerID id) {
 void load_actor(GameActorType type) {
 	if (type <= ACT_NULL || type >= ACT_SIZE)
 		INFO("Loading invalid actor %u", type);
-	else if (ACTORS[type]->load != NULL)
-		ACTORS[type]->load();
+	else
+		ACTOR_TYPE_CALL(type, load);
 }
 
 /// Create an actor.
@@ -87,8 +105,7 @@ GameActor* create_actor(GameActorType type, const fvec2 pos) {
 			move_actor(actor, pos);
 
 			FLAG_ON(actor, FLG_VISIBLE);
-			if (ACTORS[type]->create != NULL)
-				ACTORS[type]->create(actor);
+			ACTOR_CALL(actor, create);
 
 			game_state.next_actor = (ActorID)((index + 1) % MAX_ACTORS);
 			return actor;
@@ -103,10 +120,12 @@ GameActor* create_actor(GameActorType type, const fvec2 pos) {
 static void destroy_actor(GameActor* actor) {
 	if (actor == NULL)
 		return;
-	// Assume for now that the actor being destroyed always has a valid type.
 
-	if (ACTORS[actor->type]->destroy != NULL)
-		ACTORS[actor->type]->destroy(actor);
+	const GameActorType type = actor->type;
+	if (type <= ACT_NULL || type >= ACT_SIZE)
+		WARN("Destroying invalid actor %u", type);
+	else
+		ACTOR_CALL(actor, cleanup);
 
 	actor->id = NULLACT;
 	actor->type = ACT_NULL;

@@ -203,6 +203,13 @@ enum {
 	PF_DEAD,
 };
 
+typedef uint8_t SolidType;
+enum {
+	SOL_NONE,
+	SOL_FULL,
+	SOL_TOP,
+};
+
 typedef uint8_t PlatformType;
 enum {
 	PLAT_NORMAL,
@@ -325,12 +332,16 @@ typedef struct {
 } SaveState;
 
 typedef struct {
-	void (*load)();
-	void (*create)(GameActor*);
-	void (*tick)(GameActor*);
-	void (*draw)(const GameActor*);
-	void (*destroy)(GameActor*);
-	void (*collide)(GameActor*, GameActor*);
+	SolidType solid;                           /// Considered (not or partially) solid by displacees.
+	void (*load)();                            /// Assets to load on start/creation.
+	void (*create)(GameActor*);                ///
+	void (*tick)(GameActor*);                  ///
+	void (*draw)(const GameActor*);            ///
+	void (*cleanup)(GameActor*);               ///
+	void (*collide)(GameActor*, GameActor*);   /// Callback function for `collide_object()`.
+	void (*displace)(GameActor*, GameActor*);  /// Callback function for `displace_object()`. wip
+	void (*on_top)(GameActor*, GameActor*);    /// Callback function for when the displacee is above the object.
+	void (*on_bottom)(GameActor*, GameActor*); /// Callback function for when the displacee is below the object.
 } GameActorTable;
 
 extern GekkoSession* game_session;
