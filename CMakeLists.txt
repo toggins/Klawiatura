@@ -131,7 +131,7 @@ endif()
 set(RUNTIME_DLLS $<TARGET_RUNTIME_DLLS:Klawiatura>)
 if(LINUX)
     target_link_options(Klawiatura PRIVATE -Wl,-rpath,./)
-    set(RUNTIME_DLLS "$<TARGET_PROPERTY:fmod,IMPORTED_LOCATION> ${RUNTIME_DLLS}")
+    set(RUNTIME_DLLS "$<LIST:APPEND,${RUNTIME_DLLS},$<TARGET_PROPERTY:fmod,IMPORTED_LOCATION>>")
 endif()
 
 add_custom_target(KlawiaturaPost ALL
