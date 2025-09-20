@@ -7,7 +7,6 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 set(BUILD_SHARED_LIBS OFF)
 
-# Libraries
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
@@ -53,9 +52,6 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/recp/cglm.git
     GIT_TAG v0.9.6)
 
-# FMOD Core API (2.03.08)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
-
 # S_fixed
 set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
 FetchContent_Declare(
@@ -92,6 +88,9 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/Schwungus/GekkoNet.git
     GIT_TAG 4242ecb8daa66281517f26ae928f304032e3418e)
 
+# FMOD Core API (2.03.08)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
+
 FetchContent_MakeAvailable(SDL3 SDL3_image glad cglm S_fixed S_tructures nutpunch yyjson GekkoNet)
 glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
 
@@ -106,34 +105,33 @@ set(LIBS
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
 file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/src/*.h)
 
+# Thanks <https://stackoverflow.com/a/47801116>
+function(embed_txt FILENAME)
+    file(READ ${CMAKE_SOURCE_DIR}/src/${FILENAME} CONTENT)
+    file(WRITE ${CMAKE_BINARY_DIR}/nested/embeds/${FILENAME} "R\"(${CONTENT})\"")
+endfunction()
+
+embed_txt(vertex.glsl)
+embed_txt(fragment.glsl)
+
 add_executable(Klawiatura ${SOURCES} ${HEADERS} ${CMAKE_SOURCE_DIR}/src/Klawiatura.rc)
-target_include_directories(Klawiatura PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_include_directories(Klawiatura PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/nested)
 target_link_libraries(Klawiatura PRIVATE ${LIBS})
 target_compile_definitions(Klawiatura PUBLIC -D_POSIX_C_SOURCE=200112L)
 if(MSVC AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo) # you're sus my guy...
     target_compile_options(GekkoNet PRIVATE /fsanitize=address)
 endif()
 
-# Thanks <https://stackoverflow.com/a/47801116>
-target_include_directories(Klawiatura PRIVATE ${CMAKE_BINARY_DIR}/nested)
-function(embed_file FILENAME)
-    file(READ ${CMAKE_SOURCE_DIR}/src/${FILENAME} CONTENT)
-    set(CONTENT "R\"(${CONTENT})\"")
-    file(WRITE ${CMAKE_BINARY_DIR}/nested/embeds/${FILENAME} "${CONTENT}")
-endfunction()
-
-embed_file(vertex.glsl)
-embed_file(fragment.glsl)
+set(RUNTIME_DLLS $<TARGET_RUNTIME_DLLS:Klawiatura>)
+if(LINUX)
+    target_link_options(Klawiatura PRIVATE -Wl,-rpath,./)
+    get_target_property(FMOD_DLL fmod IMPORTED_LOCATION)
+    list(APPEND RUNTIME_DLLS ${FMOD_DLL})
+endif()
 
 add_custom_target(KlawiaturaPost ALL
-    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:Klawiatura> $<TARGET_RUNTIME_DLLS:Klawiatura>
+    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:Klawiatura> ${RUNTIME_DLLS}
     COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE_DIR:Klawiatura>/data
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/modsrc $<TARGET_FILE_DIR:Klawiatura>/data
     COMMAND_EXPAND_LISTS)
-if(LINUX)
-    get_target_property(FMOD_DLL fmod IMPORTED_LOCATION)
-    add_custom_target(KlawiaturaPostLinux ALL COMMAND ${CMAKE_COMMAND} -E copy ${FMOD_DLL} $<TARGET_FILE_DIR:Klawiatura>)
-    add_dependencies(KlawiaturaPostLinux Klawiatura)
-    set_target_properties(Klawiatura PROPERTIES LINK_FLAGS "-Wl,-rpath,./")
-endif()
 add_dependencies(KlawiaturaPost Klawiatura)
