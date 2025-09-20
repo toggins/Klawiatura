@@ -19,10 +19,15 @@
 #include "K_game.h"
 #include "K_video.h"
 
+static void cmd_ip(IterArg), cmd_level(IterArg);
 MAKE_FLAG(bypass_shader);
+MAKE_FLAG(kevin);
 
 CmdArg CMDLINE[] = {
 	{"-s", "-bypass_shader", CMD_SET_FLAG(bypass_shader)},
+	{"-K", "-kevin",         CMD_SET_FLAG(kevin)        },
+	{"-a", "-ip",            cmd_ip                     },
+	{"-l", "-level",         cmd_level                  },
 };
 
 int main(int argc, char* argv[]) {
@@ -39,6 +44,9 @@ int main(int argc, char* argv[]) {
 	INFO("      use of this project.      ");
 	INFO("                                ");
 	handle_cmdline(argc, argv);
+
+	if (kevin)
+		INFO("HI KEVIN!!!");
 
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
 		FATAL("SDL_Init fail: %s", SDL_GetError());
@@ -82,4 +90,17 @@ int main(int argc, char* argv[]) {
 	SDL_Quit();
 
 	return 0;
+}
+
+static void cmd_ip(IterArg next) {
+	const char* ip = next();
+	if (ip != NULL)
+		NutPunch_SetServerAddr(ip);
+}
+
+static void cmd_level(IterArg next) {
+	const char* level = next();
+	if (level != NULL) {
+		// TODO: set level...
+	}
 }

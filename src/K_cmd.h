@@ -9,7 +9,7 @@
 		(ident) = true;                                                                                        \
 	}
 
-typedef const char*(IterArg)();
+typedef const char* (*IterArg)();
 typedef struct {
 	const char *shortform, *longform;
 	void (*handler)(IterArg);
