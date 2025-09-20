@@ -1,6 +1,7 @@
 #include <SDL3/SDL.h>
 
 #include "K_cmd.h"
+#include "K_log.h"
 
 extern CmdArg CMDLINE[];
 static int g_argc, g_argi = 1;
@@ -22,7 +23,10 @@ static void handle_cmdline_fr() {
 				goto next;
 			};
 		}
+
+		WARN("Unrecognized command-line option: '%s'", g_argv[g_argi]);
 		g_argi++;
+
 	next:
 		continue;
 	}
