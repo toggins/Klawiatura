@@ -3,7 +3,7 @@ name: Build and release binaries
 on:
   push:
     branches: [master]
-    tags: [stable]
+    tags: [stable, cpack-test]
 
 jobs:
   release:
@@ -29,7 +29,7 @@ jobs:
             lib_prefix: lib
             fmod_dll_suffix: .so.14
     env:
-      OUTFILE: Klawiatura-${{ matrix.cfg.os-name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}.zip
+      OUTNAME: Klawiatura-${{ matrix.cfg.os-name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
       MINGW_ARCH: ${{ matrix.cfg.bits == 32 && 'i686' || 'x86_64' }}
     steps:
       - name: Checkout
@@ -82,17 +82,11 @@ jobs:
         if: matrix.cfg.mingw_bits != 32 && matrix.cfg.mingw_bits != 64
         run: cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release
       - name: Build
-        run: cmake --build build --config Release --target all
-      - name: Bundle
-        run: |
-          rm -rf Klawiatura; mkdir -p Klawiatura
-          cp -rt Klawiatura \
-            build/Klawiatura${{ matrix.cfg.exe_suffix }} \
-            build/${{ matrix.cfg.lib_prefix }}fmodL${{ matrix.cfg.fmod_dll_suffix }} \
-            build/data UNLICENSE README.md
-          zip -r $OUTFILE Klawiatura/
+        run: cmake --build build --target Klawiatura
+      - name: Package
+        run: cmake --build build --target package -D CPACK_ARCHIVE_FILE_NAME=${{ env.OUTNAME }}
       - name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} build for ${{ matrix.cfg.os-name }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
-          files: ${{ env.OUTFILE }}
+          files: build/${{ env.OUTNAME }}.zip

@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.27.0 FATAL_ERROR)
 
-project(Klawiatura VERSION 0.1.0 LANGUAGES C CXX)
+project(Klawiatura VERSION 0.1.0
+    DESCRIPTION "Mario Forever Online"
+    LANGUAGES C CXX)
+
+set(CPACK_PACKAGE_VENDOR toggins)
+set(CPACK_PACKAGE_DESCRIPTION "TODO: write")
+set(CPACK_GENERATOR ZIP)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -125,8 +131,7 @@ endif()
 set(RUNTIME_DLLS $<TARGET_RUNTIME_DLLS:Klawiatura>)
 if(LINUX)
     target_link_options(Klawiatura PRIVATE -Wl,-rpath,./)
-    get_target_property(FMOD_DLL fmod IMPORTED_LOCATION)
-    list(APPEND RUNTIME_DLLS ${FMOD_DLL})
+    set(RUNTIME_DLLS "$<TARGET_PROPERTY:fmod,IMPORTED_LOCATION> ${RUNTIME_DLLS}")
 endif()
 
 add_custom_target(KlawiaturaPost ALL
@@ -135,3 +140,12 @@ add_custom_target(KlawiaturaPost ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/modsrc $<TARGET_FILE_DIR:Klawiatura>/data
     COMMAND_EXPAND_LISTS)
 add_dependencies(KlawiaturaPost Klawiatura)
+
+install(TARGETS Klawiatura RUNTIME DESTINATION .) # TODO: exclude lib/ and include/ somehow
+install(DIRECTORY modsrc/ DESTINATION data)
+install(FILES README.md UNLICENSE DESTINATION .)
+install(DIRECTORY .github/assets DESTINATION .github) # has all the README .pngs
+install(FILES ${RUNTIME_DLLS} DESTINATION .)
+
+set(CPACK_COMPONENTS_GROUPING ALL_COMPONENTS_IN_ONE)
+include(CPack)
