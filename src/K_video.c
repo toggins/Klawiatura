@@ -64,16 +64,18 @@ void video_init(bool bypass_shader) {
 		FATAL("Unsupported OpenGL version\nAt least OpenGL 3.3 with framebuffer and shader support is "
 		      "required.");
 
-	if (bypass_shader)
-		INFO("! Bypassing shader support");
-	else {
-		CHECK_GL_EXTENSION(GLAD_GL_ARB_shader_objects);
-		CHECK_GL_EXTENSION(GLAD_GL_ARB_vertex_shader);
-		CHECK_GL_EXTENSION(GLAD_GL_ARB_fragment_shader);
-		CHECK_GL_EXTENSION(GLAD_GL_ARB_vertex_program);
-		CHECK_GL_EXTENSION(GLAD_GL_ARB_fragment_program);
+	if (bypass_shader) {
+		INFO("! Bypassing shader support checks");
+		goto bypass;
 	}
 
+	CHECK_GL_EXTENSION(GLAD_GL_ARB_shader_objects);
+	CHECK_GL_EXTENSION(GLAD_GL_ARB_vertex_shader);
+	CHECK_GL_EXTENSION(GLAD_GL_ARB_fragment_shader);
+	CHECK_GL_EXTENSION(GLAD_GL_ARB_vertex_program);
+	CHECK_GL_EXTENSION(GLAD_GL_ARB_fragment_program);
+
+bypass:
 	INFO("OpenGL vendor: %s", glGetString(GL_VENDOR));
 	INFO("OpenGL version: %s", glGetString(GL_VERSION));
 	INFO("OpenGL renderer: %s", glGetString(GL_RENDERER));
