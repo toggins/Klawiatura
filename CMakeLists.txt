@@ -113,7 +113,9 @@ file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/src/*.h)
 # Thanks <https://stackoverflow.com/a/47801116>
 function(embed_txt FILENAME)
     file(READ ${CMAKE_SOURCE_DIR}/src/${FILENAME} CONTENT)
-    file(WRITE ${CMAKE_BINARY_DIR}/nested/embeds/${FILENAME} "R\"(${CONTENT})\"")
+    string(REPLACE . _ VARNAME ${FILENAME})
+    file(WRITE ${CMAKE_BINARY_DIR}/nested/embeds/${FILENAME}
+        "const char* const ${VARNAME} = R\"(${CONTENT})\";")
 endfunction()
 
 embed_txt(vertex.glsl)

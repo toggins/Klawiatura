@@ -33,13 +33,10 @@ static mat4 view_matrix = GLM_MAT4_IDENTITY;
 static mat4 projection_matrix = GLM_MAT4_IDENTITY;
 static mat4 mvp_matrix = GLM_MAT4_IDENTITY;
 
-VideoState video_state = {0};
-
-static const GLchar *const vertex_source =
-#include "embeds/vertex.glsl"
-	, *const fragment_source =
 #include "embeds/fragment.glsl"
-	;
+#include "embeds/vertex.glsl"
+
+VideoState video_state = {0};
 
 void video_init(bool bypass_shader) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -129,7 +126,7 @@ void video_init(bool bypass_shader) {
 	batch.filter = false;
 
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_source, NULL);
+	glShaderSource(vertex_shader, 1, &vertex_glsl, NULL);
 	glCompileShader(vertex_shader);
 
 	GLint success;
@@ -141,7 +138,7 @@ void video_init(bool bypass_shader) {
 	}
 
 	GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_source, NULL);
+	glShaderSource(fragment_shader, 1, &fragment_glsl, NULL);
 	glCompileShader(fragment_shader);
 
 	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
