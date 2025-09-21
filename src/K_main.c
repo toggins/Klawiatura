@@ -81,13 +81,10 @@ int main(int argc, char* argv[]) {
 				case SDL_EVENT_QUIT:
 					running = false;
 					break;
-
-				case SDL_EVENT_KEY_DOWN: {
+				case SDL_EVENT_KEY_DOWN:
 					if (event.key.scancode == SDL_SCANCODE_ESCAPE)
 						running = false;
 					break;
-				}
-
 				default:
 					break;
 			}
