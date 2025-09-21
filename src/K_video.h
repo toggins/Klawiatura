@@ -121,10 +121,8 @@ void load_texture(const char*);
 const Texture* get_texture(const char*);
 
 // Batch
-void set_batch_texture(GLuint);
 void set_batch_stencil(GLfloat);
 void set_batch_logic(GLenum);
-void batch_vertex(const GLfloat[3], const GLubyte[4], const GLfloat[2]);
 void batch_sprite(const char*, const GLfloat[3], const GLboolean[2], GLfloat, const GLubyte[4]);
 void batch_surface(Surface*, const GLfloat[3], const GLubyte[4]);
 void batch_rectangle(const char*, const GLfloat[2][2], GLfloat, const GLubyte[4]);

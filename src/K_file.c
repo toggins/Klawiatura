@@ -21,6 +21,7 @@ void file_teardown() {
 	SDL_free(user_path);
 }
 
+/// Helper function for assembling file paths and patterns.
 const char* file_pattern(const char* fmt, ...) {
 	static char pattern_helper[256];
 
@@ -58,10 +59,16 @@ static const char* find_file(const char* base, const char* filename, const char*
 	return success ? result : NULL;
 }
 
+/// Finds the first matching "data" file (game assets).
+///
+/// If not `NULL`, `ignore_ext` will skip any result with the matching file extension.
 const char* find_data_file(const char* filename, const char* ignore_ext) {
 	return find_file(data_path, filename, ignore_ext);
 }
 
+/// Finds the first matching "user" file (config, skins).
+///
+/// If not `NULL`, `ignore_ext` will skip any result with the matching file extension.
 const char* find_user_file(const char* filename, const char* ignore_ext) {
 	return find_file(user_path, filename, ignore_ext);
 }

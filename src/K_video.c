@@ -203,7 +203,6 @@ void video_teardown() {
 	SDL_DestroyWindow(window);
 }
 
-// Start of rendering step.
 void start_drawing() {
 	const float scalew = (float)screen_width / (float)SCREEN_WIDTH;
 	const float scaleh = (float)screen_height / (float)SCREEN_HEIGHT;
@@ -220,7 +219,6 @@ void start_drawing() {
 	glViewport(0, 0, screen_width, screen_height);
 }
 
-// End of rendering step.
 void stop_drawing() {
 	submit_batch();
 	SDL_GL_SwapWindow(window);
@@ -251,11 +249,13 @@ void set_vsync(bool vsync) {
 // BASIC
 // =====
 
+/// Clears the current render target's color buffer.
 void clear_color(GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
+/// Clears the current render target's depth buffer.
 void clear_depth(GLfloat depth) {
 	glClearDepthf(depth);
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -328,14 +328,14 @@ const Texture* get_texture(const char* name) {
 // BATCH
 // =====
 
-void set_batch_texture(GLuint tex) {
+static void set_batch_texture(GLuint tex) {
 	if (batch.texture != tex) {
 		submit_batch();
 		batch.texture = tex;
 	}
 }
 
-void batch_vertex(const GLfloat pos[3], const GLubyte color[4], const GLfloat uv[2]) {
+static void batch_vertex(const GLfloat pos[3], const GLubyte color[4], const GLfloat uv[2]) {
 	if (batch.vertex_count >= batch.vertex_capacity) {
 		submit_batch();
 
@@ -359,6 +359,7 @@ void batch_vertex(const GLfloat pos[3], const GLubyte color[4], const GLfloat uv
 			(GLubyte)(batch.color[3] * (GLfloat)color[2]), uv[0], uv[1]};
 }
 
+/// Adds a texture as a sprite to the vertex batch.
 void batch_sprite(
 	const char* name, const GLfloat pos[3], const GLboolean flip[2], GLfloat angle, const GLubyte color[4]) {
 	const Texture* texture = get_texture(name);
@@ -404,6 +405,7 @@ void batch_sprite(
 	batch_vertex(XYZ(p3[0], p3[1], z), color, UV(u1, v2));
 }
 
+/// Adds a surface to the vertex batch.
 void batch_surface(Surface* surface, const GLfloat pos[3], const GLubyte color[4]) {
 	if (surface == NULL)
 		return;
@@ -430,6 +432,7 @@ void batch_surface(Surface* surface, const GLfloat pos[3], const GLubyte color[4
 	batch_vertex(XYZ(x1, y2, z), color, UV(0, 1));
 }
 
+/// Dumps the vertex batch on your screen.
 void submit_batch() {
 	if (batch.vertex_count <= 0)
 		return;
@@ -490,7 +493,6 @@ void apply_matrices() {
 // SURFACES
 // ========
 
-// Makes a surface.
 Surface* create_surface(GLuint width, GLuint height, bool color, bool depth) {
 	Surface* surface = SDL_malloc(sizeof(*surface));
 	if (surface == NULL)
@@ -511,13 +513,13 @@ Surface* create_surface(GLuint width, GLuint height, bool color, bool depth) {
 	return surface;
 }
 
-// Nukes the surface.
+/// Nukes the surface.
 void destroy_surface(Surface* surface) {
 	dispose_surface(surface);
 	SDL_free(surface);
 }
 
-// Checks the surface and adjusts its framebuffer.
+/// Checks the surface for a valid framebuffer.
 void check_surface(Surface* surface) {
 	if (surface->fbo == 0)
 		glGenFramebuffers(1, &surface->fbo);
@@ -563,7 +565,7 @@ void check_surface(Surface* surface) {
 	}
 }
 
-// Nukes the surface's framebuffer.
+/// Nukes the surface's framebuffer.
 void dispose_surface(Surface* surface) {
 	if (surface->active)
 		FATAL("Disposing an active surface?");
@@ -584,7 +586,6 @@ void dispose_surface(Surface* surface) {
 	}
 }
 
-// Resizes a surface.
 void resize_surface(Surface* surface, GLuint width, GLuint height) {
 	if (surface->active)
 		FATAL("Resizing an active surface?");
@@ -596,7 +597,7 @@ void resize_surface(Surface* surface, GLuint width, GLuint height) {
 	surface->size[1] = height;
 }
 
-// Pushes an INACTIVE surface onto the stack.
+/// Pushes an INACTIVE surface onto the stack.
 void push_surface(Surface* surface) {
 	if (surface == NULL)
 		FATAL("Pushing a null surface?");
@@ -628,7 +629,7 @@ void push_surface(Surface* surface) {
 	current_surface = surface;
 }
 
-// Pops an ACTIVE surface off the stack.
+/// Pops an ACTIVE surface off the stack.
 void pop_surface() {
 	if (current_surface == NULL)
 		FATAL("Popping a null surface?");
