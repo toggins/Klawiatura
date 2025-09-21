@@ -21,23 +21,22 @@
 #include "K_game.h" // IWYU pragma: keep for now
 #include "K_video.h"
 
-static void cmd_data(IterArg), cmd_config(IterArg), cmd_ip(IterArg), cmd_level(IterArg);
+static void cmd_ip(IterArg);
+MAKE_OPTION(data_path, NULL);
+MAKE_OPTION(config_path, NULL);
+MAKE_OPTION(level, NULL);
 MAKE_FLAG(bypass_shader);
 MAKE_FLAG(skip_intro);
 MAKE_FLAG(kevin);
 
-const char* data_path = NULL;
-const char* config_path = NULL;
-const char* level = "test";
-
 CmdArg CMDLINE[] = {
 	{"-s", "-bypass_shader", CMD_FLAG(bypass_shader)},
 	{"-i", "-skip_intro",    CMD_FLAG(skip_intro)   },
-	{"-d", "-data",          cmd_data               },
-	{"-c", "-config",        cmd_config             },
+	{"-d", "-data",          CMD_FLAG(data_path)    },
+	{"-c", "-config",        CMD_FLAG(config_path)  },
 	{"-K", "-kevin",         CMD_FLAG(kevin)        },
 	{"-a", "-ip",            cmd_ip                 },
-	{"-l", "-level",         cmd_level              },
+	{"-l", "-level",         CMD_FLAG(level)        },
 	{NULL, NULL,             NULL                   },
 };
 
@@ -119,26 +118,6 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
-static void cmd_data(IterArg next) {
-	const char* dat = next();
-	if (dat != NULL)
-		data_path = dat;
-}
-
-static void cmd_config(IterArg next) {
-	const char* cfg = next();
-	if (cfg != NULL)
-		config_path = cfg;
-}
-
 static void cmd_ip(IterArg next) {
-	const char* ip = next();
-	if (ip != NULL)
-		NutPunch_SetServerAddr(ip);
-}
-
-static void cmd_level(IterArg next) {
-	const char* lvl = next();
-	if (lvl != NULL)
-		level = lvl;
+	NutPunch_SetServerAddr(next());
 }
