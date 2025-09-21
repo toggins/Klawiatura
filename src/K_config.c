@@ -1,7 +1,33 @@
+#include <yyjson.h>
+
 #include "K_config.h"
 #include "K_file.h"
 #include "K_log.h"
 #include "K_video.h"
+
+typedef struct {
+	const char* name;
+	void (*h_bool)(bool), (*h_int)(int);
+} ConfigOption;
+
+static int cfg_width = 0, cfg_height = 0;
+static void set_width(int width) {
+	cfg_width = width;
+	if (cfg_height)
+		set_resolution(cfg_width, cfg_height);
+}
+static void set_height(int height) {
+	cfg_height = height;
+	if (cfg_width)
+		set_resolution(cfg_width, cfg_height);
+}
+
+static const ConfigOption OPTIONS[] = {
+	{"width",      .h_int = set_width      },
+	{"height",     .h_int = set_height     },
+	{"fullscreen", .h_bool = set_fullscreen},
+	{"vsync",      .h_bool = set_vsync     },
+};
 
 static const char* config_path = NULL;
 
@@ -14,6 +40,34 @@ void config_init(const char* path) {
 }
 
 void config_teardown() {}
+
+#define HANDLE(fn, conversion)                                                                                         \
+	do {                                                                                                           \
+		if ((fn) != NULL) {                                                                                    \
+			(fn)(conversion(value));                                                                       \
+			break;                                                                                         \
+		}                                                                                                      \
+	} while (0)
+static void parse_config(yyjson_val* obj) {
+	yyjson_obj_iter iter = {0};
+	yyjson_obj_iter_init(obj, &iter);
+
+	yyjson_val* vkey = NULL;
+	while (NULL != (vkey = yyjson_obj_iter_next(&iter))) {
+		if (!yyjson_is_str(vkey))
+			continue;
+		yyjson_val* value = yyjson_obj_iter_get_val(vkey);
+		const char* key = yyjson_get_str(vkey);
+		for (int i = 0; i < sizeof(OPTIONS) / sizeof(*OPTIONS); i++) {
+			const ConfigOption* opt = &OPTIONS[i];
+			if (SDL_strcmp(key, opt->name))
+				continue;
+			HANDLE(opt->h_bool, yyjson_get_bool);
+			HANDLE(opt->h_int, yyjson_get_int);
+		}
+	}
+}
+#undef HANDLE
 
 void load_config() {
 	const char* config_file = config_path == NULL ? find_user_file("config.json", NULL) : config_path;
@@ -31,11 +85,9 @@ void load_config() {
 	}
 
 	yyjson_val* root = yyjson_doc_get_root(json);
-	if (yyjson_is_obj(root)) {
-		set_resolution(
-			yyjson_get_int(yyjson_obj_get(root, "width")), yyjson_get_int(yyjson_obj_get(root, "height")));
-		set_fullscreen(yyjson_get_bool(yyjson_obj_get(root, "fullscreen")));
-		set_vsync(yyjson_get_bool(yyjson_obj_get(root, "vsync")));
-	}
+	if (yyjson_is_obj(root))
+		parse_config(root);
+	else
+		WARN("Config loading skipped, has to be a key-value mapping");
 	yyjson_doc_free(json);
 }
