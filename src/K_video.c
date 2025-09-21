@@ -304,8 +304,7 @@ void load_texture(const char* name) {
 
 	file = find_data_file(file_pattern("data/textures/%s.json", name), NULL);
 	if (file != NULL) {
-		yyjson_doc* json = yyjson_read_file(
-			file, YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS, NULL, NULL);
+		yyjson_doc* json = yyjson_read_file(file, JSON_READ_FLAGS, NULL, NULL);
 		if (json != NULL) {
 			yyjson_val* root = yyjson_doc_get_root(json);
 			if (yyjson_is_obj(root)) {

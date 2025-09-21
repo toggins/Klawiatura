@@ -2,6 +2,8 @@
 
 #include <yyjson.h>
 
+#define JSON_READ_FLAGS (YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS)
+
 void file_init(const char*);
 void file_teardown();
 

@@ -1,5 +1,3 @@
-#include <yyjson.h>
-
 #include "K_config.h"
 #include "K_file.h"
 #include "K_log.h"
@@ -77,8 +75,7 @@ void load_config() {
 	}
 
 	yyjson_read_err error;
-	yyjson_doc* json = yyjson_read_file(
-		config_file, YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS, NULL, &error);
+	yyjson_doc* json = yyjson_read_file(config_file, JSON_READ_FLAGS, NULL, &error);
 	if (json == NULL) {
 		WTF("Failed to load config: %s", error.msg);
 		return;
@@ -88,6 +85,6 @@ void load_config() {
 	if (yyjson_is_obj(root))
 		parse_config(root);
 	else
-		WARN("Config loading skipped, has to be a key-value mapping");
+		WARN("Config loading skipped, has to be a key-value mapping (got %s)", yyjson_get_type_desc(root));
 	yyjson_doc_free(json);
 }
