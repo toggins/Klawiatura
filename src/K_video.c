@@ -16,6 +16,9 @@
 static SDL_Window* window = NULL;
 static SDL_GLContext gpu = NULL;
 
+static int screen_width = SCREEN_WIDTH;
+static int screen_height = SCREEN_HEIGHT;
+
 static GLuint shader = 0;
 static Uniforms uniforms = {-1};
 
@@ -200,10 +203,48 @@ void video_teardown() {
 	SDL_DestroyWindow(window);
 }
 
+// Start of rendering step.
+void start_drawing() {
+	const float scalew = (float)screen_width / (float)SCREEN_WIDTH;
+	const float scaleh = (float)screen_height / (float)SCREEN_HEIGHT;
+	const float scale = SDL_min(scalew, scaleh);
+
+	const float left = (((float)screen_width - (SCREEN_WIDTH * scale)) / -2.f) / scale;
+	const float top = (((float)screen_height - (SCREEN_HEIGHT * scale)) / -2.f) / scale;
+	const float right = left + ((float)screen_width / scale);
+	const float bottom = top + ((float)screen_height / scale);
+
+	glm_ortho(left, right, bottom, top, -16000, 16000, projection_matrix);
+	glm_mat4_mul(view_matrix, model_matrix, mvp_matrix);
+	glm_mat4_mul(projection_matrix, mvp_matrix, mvp_matrix);
+	glViewport(0, 0, screen_width, screen_height);
+}
+
 // End of rendering step.
-void submit_video() {
+void stop_drawing() {
 	submit_batch();
 	SDL_GL_SwapWindow(window);
+}
+
+// =======
+// DISPLAY
+// =======
+
+void set_resolution(int width, int height) {
+	SDL_SetWindowSize(window, width <= 0 ? SCREEN_WIDTH : width, height <= 0 ? SCREEN_HEIGHT : height);
+	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+	SDL_SyncWindow(window);
+	SDL_GetWindowSizeInPixels(window, &screen_width, &screen_height);
+}
+
+void set_fullscreen(bool fullscreen) {
+	SDL_SetWindowFullscreen(window, fullscreen);
+	SDL_SyncWindow(window);
+	SDL_GetWindowSizeInPixels(window, &screen_width, &screen_height);
+}
+
+void set_vsync(bool vsync) {
+	SDL_GL_SetSwapInterval(vsync);
 }
 
 // =====
@@ -236,7 +277,7 @@ void load_texture(const char* name) {
 
 	Texture texture = {0};
 
-	const char* file = find_file(file_pattern("data/textures/%s.*", name), ".json");
+	const char* file = find_data_file(file_pattern("data/textures/%s.*", name), ".json");
 	if (file == NULL)
 		FATAL("Texture \"%s\" not found", name);
 	SDL_Surface* surface = IMG_Load(file);
@@ -262,7 +303,7 @@ void load_texture(const char* name) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
 	SDL_DestroySurface(surface);
 
-	file = find_file(file_pattern("data/textures/%s.json", name), NULL);
+	file = find_data_file(file_pattern("data/textures/%s.json", name), NULL);
 	if (file != NULL) {
 		yyjson_doc* json = yyjson_read_file(
 			file, YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS, NULL, NULL);
@@ -609,7 +650,7 @@ void pop_surface() {
 			glDisable(GL_DEPTH_TEST);
 	} else {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		glViewport(0, 0, screen_width, screen_height);
 		glDisable(GL_DEPTH_TEST);
 	}
 

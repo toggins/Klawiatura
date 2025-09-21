@@ -104,7 +104,13 @@ extern VideoState video_state;
 void video_init(bool);
 void video_teardown();
 
-void submit_video();
+void start_drawing();
+void stop_drawing();
+
+// Display
+void set_resolution(int, int);
+void set_fullscreen(bool);
+void set_vsync(bool);
 
 // Basic
 void clear_color(GLfloat, GLfloat, GLfloat, GLfloat);

@@ -16,17 +16,25 @@
 #include <S_tructures.h>
 
 #include "K_cmd.h"
-#include "K_game.h"
+#include "K_config.h"
+#include "K_file.h"
+#include "K_game.h" // IWYU pragma: keep for now
 #include "K_video.h"
 
-static void cmd_ip(IterArg), cmd_level(IterArg);
+static void cmd_data(IterArg), cmd_config(IterArg), cmd_ip(IterArg), cmd_level(IterArg);
 MAKE_FLAG(bypass_shader);
 MAKE_FLAG(skip_intro);
 MAKE_FLAG(kevin);
 
+const char* data_path = NULL;
+const char* config_path = NULL;
+const char* level = "test";
+
 CmdArg CMDLINE[] = {
 	{"-s", "-bypass_shader", CMD_FLAG(bypass_shader)},
 	{"-i", "-skip_intro",    CMD_FLAG(skip_intro)   },
+	{"-d", "-data",          cmd_data               },
+	{"-c", "-config",        cmd_config             },
 	{"-K", "-kevin",         CMD_FLAG(kevin)        },
 	{"-a", "-ip",            cmd_ip                 },
 	{"-l", "-level",         cmd_level              },
@@ -57,9 +65,11 @@ int main(int argc, char* argv[]) {
 
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
 		FATAL("SDL_Init fail: %s", SDL_GetError());
+	file_init(data_path);
 	video_init(bypass_shader);
+	config_init(config_path);
 
-	load_texture("ui/disclaimer");
+	load_texture("ui/background");
 	load_texture("enemies/bomzh");
 
 	Surface* dummy = create_surface(128, 128, true, true);
@@ -72,11 +82,21 @@ int main(int argc, char* argv[]) {
 				case SDL_EVENT_QUIT:
 					running = false;
 					break;
+
+				case SDL_EVENT_KEY_DOWN: {
+					if (event.key.scancode == SDL_SCANCODE_ESCAPE)
+						running = false;
+					break;
+				}
+
 				default:
 					break;
 			}
 
+		start_drawing();
+
 		clear_color(0, 0, 0, 1);
+		batch_sprite("ui/background", XYZ(0, 0, 0), NO_FLIP, 0, WHITE);
 
 		push_surface(dummy);
 		clear_color(1, 0, 0, 1);
@@ -84,18 +104,31 @@ int main(int argc, char* argv[]) {
 		batch_sprite("enemies/bomzh", XYZ(32, 192, 0), NO_FLIP, 0, WHITE);
 		batch_sprite("enemies/bomzh", XYZ(128, 256, 64), NO_FLIP, 0, WHITE);
 		pop_surface();
-		batch_surface(dummy, XYZ(32, 32, -16), WHITE);
+		batch_surface(dummy, XYZ(32, 32, 32), WHITE);
 
-		batch_sprite("ui/disclaimer", XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, 0), NO_FLIP, 0, WHITE);
-
-		submit_video();
+		stop_drawing();
 	}
 
 	destroy_surface(dummy);
+
+	config_teardown();
 	video_teardown();
+	file_teardown();
 	SDL_Quit();
 
 	return 0;
+}
+
+static void cmd_data(IterArg next) {
+	const char* dat = next();
+	if (dat != NULL)
+		data_path = dat;
+}
+
+static void cmd_config(IterArg next) {
+	const char* cfg = next();
+	if (cfg != NULL)
+		config_path = cfg;
 }
 
 static void cmd_ip(IterArg next) {
@@ -105,8 +138,7 @@ static void cmd_ip(IterArg next) {
 }
 
 static void cmd_level(IterArg next) {
-	const char* level = next();
-	if (level != NULL) {
-		// TODO: set level...
-	}
+	const char* lvl = next();
+	if (lvl != NULL)
+		level = lvl;
 }
