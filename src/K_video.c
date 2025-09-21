@@ -38,7 +38,7 @@ static mat4 mvp_matrix = GLM_MAT4_IDENTITY;
 
 VideoState video_state = {0};
 
-void video_init(bool bypass_shader) {
+void video_init(bool force_shader) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -64,8 +64,8 @@ void video_init(bool bypass_shader) {
 		FATAL("Unsupported OpenGL version\nAt least OpenGL 3.3 with framebuffer and shader support is "
 		      "required.");
 
-	if (bypass_shader) {
-		INFO("! Bypassing shader support checks");
+	if (force_shader) {
+		INFO("! Bypassing OpenGL support checks");
 		goto bypass;
 	}
 

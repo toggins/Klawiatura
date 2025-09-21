@@ -20,7 +20,7 @@ The main kicker of this project. Networking is purely peer-to-peer. You can host
 
 You can adjust Klawiatura with these launch options:
 
-- `-bypass_shader`: Skip OpenGL extension checking. Useful when running under RenderDoc or WSL.
+- `-force_shader`: Skip checking supported OpenGL extensions. Useful if running under RenderDoc or WSL, where the checks fail even if the game runs fine otherwise.
 - `-ip <ip>`: IP address of the [NutPuncher](https://github.com/Schwungus/nutpunch) server. (Default: [the public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance))
 - `-level <name>`: Name of the level file to load. This command will quickstart the level in singleplayer.
 - `-kevin`: Awakens Kevin.

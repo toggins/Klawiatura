@@ -25,19 +25,19 @@ static void cmd_ip(IterArg);
 MAKE_OPTION(data_path, NULL);
 MAKE_OPTION(config_path, NULL);
 MAKE_OPTION(level, NULL);
-MAKE_FLAG(bypass_shader);
+MAKE_FLAG(force_shader);
 MAKE_FLAG(skip_intro);
 MAKE_FLAG(kevin);
 
 CmdArg CMDLINE[] = {
-	{"-s", "-bypass_shader", CMD_FLAG(bypass_shader)},
-	{"-i", "-skip_intro",    CMD_FLAG(skip_intro)   },
-	{"-d", "-data",          CMD_FLAG(data_path)    },
-	{"-c", "-config",        CMD_FLAG(config_path)  },
-	{"-K", "-kevin",         CMD_FLAG(kevin)        },
-	{"-a", "-ip",            cmd_ip                 },
-	{"-l", "-level",         CMD_FLAG(level)        },
-	{NULL, NULL,             NULL                   },
+	{"-s", "-force_shader", CMD_FLAG(force_shader)},
+	{"-i", "-skip_intro",   CMD_FLAG(skip_intro)  },
+	{"-d", "-data",         CMD_FLAG(data_path)   },
+	{"-c", "-config",       CMD_FLAG(config_path) },
+	{"-K", "-kevin",        CMD_FLAG(kevin)       },
+	{"-a", "-ip",           cmd_ip                },
+	{"-l", "-level",        CMD_FLAG(level)       },
+	{NULL, NULL,            NULL                  },
 };
 
 int main(int argc, char* argv[]) {
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
 		FATAL("SDL_Init fail: %s", SDL_GetError());
 	file_init(data_path);
-	video_init(bypass_shader);
+	video_init(force_shader);
 	config_init(config_path);
 
 	load_texture("ui/background");
