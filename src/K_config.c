@@ -1,11 +1,12 @@
 #include "K_config.h"
+#include "K_audio.h"
 #include "K_file.h"
 #include "K_log.h"
 #include "K_video.h"
 
 typedef struct {
 	const char* name;
-	void (*h_bool)(bool), (*h_int)(int);
+	void (*h_bool)(bool), (*h_int)(int), (*h_float)(float);
 } ConfigOption;
 
 static int cfg_width = 0, cfg_height = 0;
@@ -21,10 +22,13 @@ static void set_height(int height) {
 }
 
 static const ConfigOption OPTIONS[] = {
-	{"width",      .h_int = set_width      },
-	{"height",     .h_int = set_height     },
-	{"fullscreen", .h_bool = set_fullscreen},
-	{"vsync",      .h_bool = set_vsync     },
+	{"width",        .h_int = set_width         },
+	{"height",       .h_int = set_height        },
+	{"fullscreen",   .h_bool = set_fullscreen   },
+	{"vsync",        .h_bool = set_vsync        },
+	{"volume",       .h_float = set_volume      },
+	{"sound_volume", .h_float = set_sound_volume},
+	{"music_volume", .h_float = set_music_volume},
 };
 
 static const char* config_path = NULL;
@@ -62,6 +66,7 @@ static void parse_config(yyjson_val* obj) {
 				continue;
 			HANDLE(opt->h_bool, yyjson_get_bool);
 			HANDLE(opt->h_int, yyjson_get_int);
+			HANDLE(opt->h_float, yyjson_get_real);
 		}
 	}
 }

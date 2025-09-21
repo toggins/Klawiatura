@@ -56,20 +56,27 @@ int main(int argc, char* argv[]) {
 
 	handle_cmdline(argc, argv);
 
-	if (skip_intro)
-		INFO("BYE INTRO!!!");
-
-	if (kevin)
-		INFO("HI KEVIN!!!");
-
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
 		FATAL("SDL_Init fail: %s", SDL_GetError());
 	file_init(data_path);
 	video_init(force_shader);
+	audio_init();
 	config_init(config_path);
+
+	if (skip_intro)
+		INFO("BYE INTRO!!!");
+
+	if (kevin) {
+		load_sound("kevin_on");
+		play_generic_sound("kevin_on");
+		INFO("HI KEVIN!!!");
+	}
 
 	load_texture("ui/background");
 	load_texture("enemies/bomzh");
+
+	load_track("title");
+	play_generic_track("title", true);
 
 	Surface* dummy = create_surface(128, 128, true, true);
 
@@ -103,11 +110,14 @@ int main(int argc, char* argv[]) {
 		batch_surface(dummy, XYZ(32, 32, 32), WHITE);
 
 		stop_drawing();
+
+		audio_update();
 	}
 
 	destroy_surface(dummy);
 
 	config_teardown();
+	audio_teardown();
 	video_teardown();
 	file_teardown();
 	SDL_Quit();
