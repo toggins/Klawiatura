@@ -311,18 +311,23 @@ void load_texture(const char* name) {
 	SDL_DestroySurface(surface);
 
 	file = find_data_file(file_pattern("data/textures/%s.json", name), NULL);
-	if (file != NULL) {
-		yyjson_doc* json = yyjson_read_file(file, JSON_READ_FLAGS, NULL, NULL);
-		if (json != NULL) {
-			yyjson_val* root = yyjson_doc_get_root(json);
-			if (yyjson_is_obj(root)) {
-				texture.offset[0] = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "x_offset"));
-				texture.offset[1] = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "y_offset"));
-			}
-			yyjson_doc_free(json);
-		}
-	}
+	if (file == NULL)
+		goto eatadick;
 
+	yyjson_doc* json = yyjson_read_file(file, JSON_READ_FLAGS, NULL, NULL);
+	if (json == NULL)
+		goto eatadick;
+
+	yyjson_val* root = yyjson_doc_get_root(json);
+	if (!yyjson_is_obj(root))
+		goto eattwodicks;
+
+	texture.offset[0] = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "x_offset"));
+	texture.offset[1] = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "y_offset"));
+
+eattwodicks:
+	yyjson_doc_free(json);
+eatadick:
 	StMapPut(textures, long_key(name), &texture, sizeof(texture))->cleanup = nuke_texture;
 }
 
