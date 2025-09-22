@@ -78,7 +78,7 @@ static void parse_config(yyjson_val* obj) {
 			HANDLE_OPT(opt->h_float, yyjson_get_real);
 		}
 
-		for (int i = 0; i < KB_COUNT; i++) {
+		for (int i = 0; i < KB_SIZE; i++) {
 			if (BINDS[i].name == NULL)
 				continue;
 			HANDLE_KB("kbd", key, yyjson_get_int);
