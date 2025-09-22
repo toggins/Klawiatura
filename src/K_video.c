@@ -448,27 +448,31 @@ static void set_batch_texture(GLuint tex) {
 }
 
 static void batch_vertex(const GLfloat pos[3], const GLubyte color[4], const GLfloat uv[2]) {
-	if (batch.vertex_count >= batch.vertex_capacity) {
-		submit_batch();
+	if (batch.vertex_count < batch.vertex_capacity)
+		goto just_push;
 
-		const size_t new_size = batch.vertex_capacity * 2;
-		if (new_size < batch.vertex_capacity)
-			FATAL("Capacity overflow in vertex batch");
-		batch.vertices = SDL_realloc(batch.vertices, new_size * sizeof(Vertex));
-		if (batch.vertices == NULL)
-			FATAL("Out of memory for vertex batch");
+	submit_batch();
 
-		batch.vertex_capacity = new_size;
+	const size_t new_size = batch.vertex_capacity * 2;
+	if (new_size < batch.vertex_capacity)
+		FATAL("Capacity overflow in vertex batch");
+	batch.vertices = SDL_realloc(batch.vertices, new_size * sizeof(Vertex));
+	if (batch.vertices == NULL)
+		FATAL("Out of memory for vertex batch");
 
-		glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
-		glBufferData(
-			GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_capacity), NULL, GL_DYNAMIC_DRAW);
-	}
+	batch.vertex_capacity = new_size;
 
-	batch.vertices[batch.vertex_count++]
-		= (Vertex){pos[0], pos[1], pos[2], (GLubyte)(batch.color[0] * (GLfloat)color[0]),
-			(GLubyte)(batch.color[1] * (GLfloat)color[1]), (GLubyte)(batch.color[2] * (GLfloat)color[2]),
-			(GLubyte)(batch.color[3] * (GLfloat)color[2]), uv[0], uv[1]};
+	glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
+	glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_capacity), NULL, GL_DYNAMIC_DRAW);
+
+just_push:
+#define CLR(idx) (GLubyte)(batch.color[idx] * (GLfloat)color[idx])
+	batch.vertices[batch.vertex_count++] = (Vertex){
+		.position = {pos[0], pos[1], pos[2]},
+		.color = {CLR(0), CLR(1), CLR(2), CLR(3)},
+		.uv = {uv[0], uv[1]},
+	};
+#undef CLR
 }
 
 /// Adds a texture as a sprite to the vertex batch.
