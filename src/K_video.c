@@ -763,50 +763,43 @@ void destroy_surface(Surface* surface) {
 	SDL_free(surface);
 }
 
+// FIXME: please rename the `static`s below:
+
+static void shit(Surface* surface, size_t idx) {
+	glGenTextures(1, &surface->texture[idx]);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
+	glBindTexture(GL_TEXTURE_2D, surface->texture[idx]);
+	if (idx == SURF_COLOR)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)(surface->size[0]), (GLsizei)(surface->size[1]), 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	else
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, (GLsizei)(surface->size[0]),
+			(GLsizei)(surface->size[1]), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+	GLenum attachment = idx == SURF_COLOR ? GL_COLOR_ATTACHMENT0 : GL_DEPTH_STENCIL_ATTACHMENT;
+	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, surface->texture[idx], 0);
+}
+
+static void poop(Surface* surface, size_t idx) {
+	if (surface->enabled[idx]) {
+		if (!surface->texture[idx])
+			shit(surface, idx);
+	} else if (surface->texture[idx] != 0) {
+		glDeleteTextures(1, &surface->texture[idx]);
+		surface->texture[idx] = 0;
+	}
+}
+
 /// Checks the surface for a valid framebuffer.
 void check_surface(Surface* surface) {
 	if (surface->fbo == 0)
 		glGenFramebuffers(1, &surface->fbo);
-
-	if (surface->enabled[SURF_COLOR]) {
-		if (surface->texture[SURF_COLOR] == 0) {
-			glGenTextures(1, &surface->texture[SURF_COLOR]);
-
-			glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
-			glBindTexture(GL_TEXTURE_2D, surface->texture[SURF_COLOR]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)(surface->size[0]),
-				(GLsizei)(surface->size[1]), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-
-			glFramebufferTexture2D(
-				GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, surface->texture[SURF_COLOR], 0);
-		}
-	} else if (surface->texture[SURF_COLOR] != 0) {
-		glDeleteTextures(1, &surface->texture[SURF_COLOR]);
-		surface->texture[SURF_COLOR] = 0;
-	}
-
-	if (surface->enabled[SURF_DEPTH]) {
-		if (surface->texture[SURF_DEPTH] == 0) {
-			glGenTextures(1, &surface->texture[SURF_DEPTH]);
-
-			glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
-			glBindTexture(GL_TEXTURE_2D, surface->texture[SURF_DEPTH]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, (GLsizei)(surface->size[0]),
-				(GLsizei)(surface->size[1]), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D,
-				surface->texture[SURF_DEPTH], 0);
-		}
-	} else if (surface->texture[SURF_DEPTH] != 0) {
-		glDeleteTextures(1, &surface->texture[SURF_DEPTH]);
-		surface->texture[SURF_DEPTH] = 0;
-	}
+	poop(surface, SURF_COLOR);
+	poop(surface, SURF_DEPTH);
 }
 
 /// Nukes the surface's framebuffer.
