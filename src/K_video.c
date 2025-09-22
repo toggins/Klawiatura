@@ -852,11 +852,7 @@ void push_surface(Surface* surface) {
 		check_surface(surface);
 		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
 		glViewport(0, 0, (GLsizei)(surface->size[0]), (GLsizei)(surface->size[1]));
-
-		if (surface->enabled[SURF_DEPTH])
-			glEnable(GL_DEPTH_TEST);
-		else
-			glDisable(GL_DEPTH_TEST);
+		(surface->enabled[SURF_DEPTH] ? glEnable : glDisable)(GL_DEPTH_TEST);
 	} else {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -881,11 +877,7 @@ void pop_surface() {
 		check_surface(surface);
 		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
 		glViewport(0, 0, (GLsizei)(surface->size[0]), (GLsizei)(surface->size[1]));
-
-		if (surface->enabled[SURF_DEPTH])
-			glEnable(GL_DEPTH_TEST);
-		else
-			glDisable(GL_DEPTH_TEST);
+		(surface->enabled[SURF_DEPTH] ? glEnable : glDisable)(GL_DEPTH_TEST);
 	} else {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, screen_width, screen_height);
