@@ -843,7 +843,11 @@ void push_surface(Surface* surface) {
 
 	submit_batch();
 
-	if (surface != NULL) {
+	if (surface == NULL) {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		glDisable(GL_DEPTH_TEST);
+	} else {
 		if (surface->active)
 			FATAL("Pushing an active surface?");
 		surface->active = true;
@@ -853,10 +857,6 @@ void push_surface(Surface* surface) {
 		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
 		glViewport(0, 0, (GLsizei)(surface->size[0]), (GLsizei)(surface->size[1]));
 		(surface->enabled[SURF_DEPTH] ? glEnable : glDisable)(GL_DEPTH_TEST);
-	} else {
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-		glDisable(GL_DEPTH_TEST);
 	}
 
 	current_surface = surface;
@@ -873,15 +873,15 @@ void pop_surface() {
 	current_surface->active = false;
 	current_surface->previous = NULL;
 
-	if (surface != NULL) {
+	if (surface == NULL) {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, screen_width, screen_height);
+		glDisable(GL_DEPTH_TEST);
+	} else {
 		check_surface(surface);
 		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
 		glViewport(0, 0, (GLsizei)(surface->size[0]), (GLsizei)(surface->size[1]));
 		(surface->enabled[SURF_DEPTH] ? glEnable : glDisable)(GL_DEPTH_TEST);
-	} else {
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, screen_width, screen_height);
-		glDisable(GL_DEPTH_TEST);
 	}
 
 	current_surface = surface;
