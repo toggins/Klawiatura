@@ -19,6 +19,7 @@
 #include "K_config.h"
 #include "K_file.h"
 #include "K_game.h" // IWYU pragma: keep for now
+#include "K_input.h"
 #include "K_video.h"
 
 static void cmd_ip(IterArg);
@@ -61,6 +62,7 @@ int main(int argc, char* argv[]) {
 	file_init(data_path);
 	video_init(force_shader);
 	audio_init();
+	input_init();
 	config_init(config_path);
 
 	if (skip_intro)
@@ -81,21 +83,25 @@ int main(int argc, char* argv[]) {
 
 	Surface* dummy = create_surface(128, 128, true, true);
 
-	bool running = true;
-	while (running) {
+	for (;;) {
+		input_newframe();
+
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 			switch (event.type) {
 				case SDL_EVENT_QUIT:
-					running = false;
-					break;
+					goto exit;
 				case SDL_EVENT_KEY_DOWN:
-					if (event.key.scancode == SDL_SCANCODE_ESCAPE)
-						running = false;
+					input_keydown(event.key.scancode);
+					break;
+				case SDL_EVENT_KEY_UP:
+					input_keyup(event.key.scancode);
 					break;
 				default:
 					break;
 			}
+		if (kb_pressed(KB_EXIT))
+			goto exit;
 
 		start_drawing();
 
@@ -118,9 +124,11 @@ int main(int argc, char* argv[]) {
 		audio_update();
 	}
 
+exit:
 	destroy_surface(dummy);
 
 	config_teardown();
+	input_teardown();
 	audio_teardown();
 	video_teardown();
 	file_teardown();

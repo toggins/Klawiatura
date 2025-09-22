@@ -1,6 +1,7 @@
 #include "K_config.h"
 #include "K_audio.h"
 #include "K_file.h"
+#include "K_input.h"
 #include "K_log.h"
 #include "K_video.h"
 
@@ -43,13 +44,21 @@ void config_init(const char* path) {
 
 void config_teardown() {}
 
-#define HANDLE(fn, conversion)                                                                                         \
-	do {                                                                                                           \
-		if ((fn) != NULL) {                                                                                    \
-			(fn)(conversion(value));                                                                       \
-			break;                                                                                         \
-		}                                                                                                      \
-	} while (0)
+#define TMPMIN(a, b) ((a) < (b) ? (a) : (b))
+#define TMPCMP(a, b) (SDL_strncmp((a), (b), TMPMIN(SDL_strlen(a), SDL_strlen(b))))
+
+#define HANDLE_OPT(fn, conversion)                                                                                     \
+	if ((fn) != NULL) {                                                                                            \
+		(fn)(conversion(value));                                                                               \
+		goto next_opt;                                                                                         \
+	}
+#define HANDLE_KB(prefix, field, conversion)                                                                           \
+	if (SDL_strlen(name) > SDL_strlen(prefix) + 1 && !SDL_memcmp(name, prefix "_", SDL_strlen(prefix) + 1)         \
+		&& !TMPCMP(name + SDL_strlen(prefix) + 1, BINDS[i].name))                                              \
+	{                                                                                                              \
+		BINDS[i].field = (conversion(value));                                                                  \
+		goto next_opt;                                                                                         \
+	}
 static void parse_config(yyjson_val* obj) {
 	yyjson_obj_iter iter = {0};
 	yyjson_obj_iter_init(obj, &iter);
@@ -59,18 +68,31 @@ static void parse_config(yyjson_val* obj) {
 		if (!yyjson_is_str(vkey))
 			continue;
 		yyjson_val* value = yyjson_obj_iter_get_val(vkey);
-		const char* key = yyjson_get_str(vkey);
+		const char* name = yyjson_get_str(vkey);
 		for (int i = 0; i < sizeof(OPTIONS) / sizeof(*OPTIONS); i++) {
 			const ConfigOption* opt = &OPTIONS[i];
-			if (SDL_strcmp(key, opt->name))
+			if (SDL_strcmp(name, opt->name))
 				continue;
-			HANDLE(opt->h_bool, yyjson_get_bool);
-			HANDLE(opt->h_int, yyjson_get_int);
-			HANDLE(opt->h_float, yyjson_get_real);
+			HANDLE_OPT(opt->h_bool, yyjson_get_bool);
+			HANDLE_OPT(opt->h_int, yyjson_get_int);
+			HANDLE_OPT(opt->h_float, yyjson_get_real);
 		}
+
+		for (int i = 0; i < KB_COUNT; i++) {
+			if (BINDS[i].name == NULL)
+				continue;
+			HANDLE_KB("kbd", key, yyjson_get_int);
+		}
+
+	next_opt:
+		continue;
 	}
 }
-#undef HANDLE
+#undef HANDLE_KB
+#undef HANDLE_OPT
+
+#undef TMPMIN
+#undef TMPCMP
 
 void load_config() {
 	const char* config_file = config_path == NULL ? find_user_file("config.json", NULL) : config_path;
