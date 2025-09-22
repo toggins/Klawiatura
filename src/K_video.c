@@ -559,7 +559,7 @@ static GLfloat string_width(const Font* font, GLfloat size, const char* str) {
 
 	size_t bytes = SDL_strlen(str);
 	while (bytes > 0) {
-		size_t gid = SDL_StepUTF8(&str, &bytes);
+		uint32_t gid = SDL_StepUTF8(&str, &bytes);
 
 		// Special/invalid characters
 		if (gid == '\r')
