@@ -24,6 +24,7 @@ static Uniforms uniforms = {-1};
 
 static GLuint blank_texture = 0;
 static StTinyMap* textures = NULL;
+static StTinyMap* fonts = NULL;
 
 static VertexBatch batch = {0};
 static Surface* current_surface = NULL;
@@ -186,6 +187,7 @@ bypass:
 	glm_mat4_mul(projection_matrix, mvp_matrix, mvp_matrix);
 
 	textures = NewTinyMap();
+	fonts = NewTinyMap();
 }
 
 void video_teardown() {
@@ -195,6 +197,7 @@ void video_teardown() {
 
 	glDeleteTextures(1, &blank_texture);
 	FreeTinyMap(textures);
+	FreeTinyMap(fonts);
 
 	glDeleteProgram(shader);
 
@@ -277,11 +280,16 @@ void load_texture(const char* name) {
 	Texture texture = {0};
 
 	const char* file = find_data_file(file_pattern("data/textures/%s.*", name), ".json");
-	if (file == NULL)
-		FATAL("Texture \"%s\" not found", name);
+	if (file == NULL) {
+		WTF("Texture \"%s\" not found", name);
+		return;
+	}
+
 	SDL_Surface* surface = IMG_Load(file);
-	if (surface == NULL)
-		FATAL("Texture \"%s\" fail: %s", name, SDL_GetError());
+	if (surface == NULL) {
+		WTF("Texture \"%s\" fail: %s", name, SDL_GetError());
+		return;
+	}
 
 	texture.name = SDL_strdup(name);
 	texture.size[0] = surface->w;
@@ -320,6 +328,107 @@ void load_texture(const char* name) {
 
 const Texture* get_texture(const char* name) {
 	return (name == NULL) ? NULL : StMapGet(textures, long_key(name));
+}
+
+// =====
+// FONTS
+// =====
+
+static void nuke_font(void* ptr) {
+	Font* font = ptr;
+	SDL_free(font->name);
+}
+
+void load_font(const char* name) {
+	if (name == NULL || get_font(name) != NULL)
+		return;
+
+	Font font = {0};
+
+	const char* file = find_data_file(file_pattern("data/fonts/%s.*", name), NULL);
+	if (file == NULL) {
+		WTF("Font \"%s\" not found", name);
+		return;
+	}
+
+	yyjson_read_err error;
+	yyjson_doc* json = yyjson_read_file(file, JSON_READ_FLAGS, NULL, &error);
+	if (json == NULL) {
+		WTF("Font \"%s\" fail: %s", name, error.msg);
+		return;
+	}
+
+	yyjson_val* root = yyjson_doc_get_root(json);
+	if (!yyjson_is_obj(root)) {
+		WTF("Font \"%s\" fail, expected object got %s", name, yyjson_get_type_desc(root));
+		yyjson_doc_free(json);
+		return;
+	}
+
+	const char* tname = yyjson_get_str(yyjson_obj_get(root, "texture"));
+	load_texture(tname);
+	font.texture = get_texture(tname);
+	if (font.texture == NULL) {
+		WTF("Font \"%s\" has invalid texture \"%s\"", name, tname);
+		yyjson_doc_free(json);
+		return;
+	}
+
+	font.name = SDL_strdup(name);
+	font.height = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "height"));
+	font.spacing = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "spacing"));
+
+	yyjson_val* glyphmap = yyjson_obj_get(root, "glyphs");
+	if (!yyjson_is_obj(glyphmap))
+		goto eatadick;
+
+	const GLfloat width = (GLfloat)font.texture->size[0];
+	const GLfloat height = (GLfloat)font.texture->size[1];
+
+	size_t i, n;
+	yyjson_val *key, *value;
+	yyjson_obj_foreach(glyphmap, i, n, key, value) {
+		const char* kname = yyjson_get_str(key);
+		if (kname == NULL)
+			continue;
+
+		char gid = kname[0];
+		if (gid < 0 || gid > CHAR_MAX) {
+			WTF("Unsupported or invalid glyph \"%c\" in font \"%s\"", gid, name);
+			continue;
+		}
+
+		if (!yyjson_is_obj(value)) {
+			WTF("Expected font \"%s\" glyph \"%c\" as object, got %s", name, gid,
+				yyjson_get_type_desc(value));
+			continue;
+		}
+
+		Glyph* glyph = &font.glyphs[gid];
+		glyph->width = (GLfloat)yyjson_get_num(yyjson_obj_get(value, "width"));
+
+		yyjson_val* uvs = yyjson_obj_get(value, "uvs");
+		if (uvs == NULL)
+			continue;
+		if (!yyjson_is_arr(uvs)) {
+			WTF("Expected font \"%s\" glyph \"%c\" UVs as array, got %s", name, gid,
+				yyjson_get_type_desc(value));
+			continue;
+		}
+		glyph->uvs[0] = (GLfloat)yyjson_get_num(yyjson_arr_get(uvs, 0)) / width;
+		glyph->uvs[1] = (GLfloat)yyjson_get_num(yyjson_arr_get(uvs, 1)) / height;
+		glyph->uvs[2] = (GLfloat)yyjson_get_num(yyjson_arr_get(uvs, 2)) / width;
+		glyph->uvs[3] = (GLfloat)yyjson_get_num(yyjson_arr_get(uvs, 3)) / height;
+	}
+
+eatadick:
+	yyjson_doc_free(json);
+
+	StMapPut(fonts, long_key(name), &font, sizeof(font))->cleanup = nuke_texture;
+}
+
+const Font* get_font(const char* name) {
+	return (name == NULL) ? NULL : StMapGet(fonts, long_key(name));
 }
 
 // =====
@@ -428,6 +537,134 @@ void batch_surface(Surface* surface, const GLfloat pos[3], const GLubyte color[4
 	batch_vertex(XYZ(x2, y1, z), color, UV(1, 0));
 	batch_vertex(XYZ(x2, y2, z), color, UV(1, 1));
 	batch_vertex(XYZ(x1, y2, z), color, UV(0, 1));
+}
+
+static GLfloat string_width(const Font* font, GLfloat size, const char* str) {
+	if (font == NULL)
+		return 0;
+
+	GLfloat width = 0;
+	GLfloat cx = 0;
+	const GLfloat scale = size / font->height;
+	const GLfloat spacing = font->spacing * scale;
+
+	size_t bytes = SDL_strlen(str);
+	while (bytes > 0) {
+		size_t gid = SDL_StepUTF8(&str, &bytes);
+
+		// Special/invalid characters
+		if (gid == '\r')
+			continue;
+		if (gid == '\n') {
+			cx = 0;
+			continue;
+		}
+		if (SDL_isspace((int)gid))
+			gid = ' ';
+		if (gid <= 0 || gid > CHAR_MAX)
+			continue;
+
+		// Valid glyph
+		cx += font->glyphs[gid].width * scale;
+		if (bytes > 0)
+			cx += spacing;
+
+		width = SDL_max(width, cx);
+	}
+
+	return width;
+}
+
+static GLfloat string_height(const Font* font, GLfloat size, const char* str) {
+	if (font == NULL)
+		return 0;
+
+	size_t bytes = SDL_strlen(str);
+	GLfloat height = (bytes > 0) ? font->height : 0;
+	while (bytes > 0)
+		if (SDL_StepUTF8(&str, &bytes) == '\n')
+			height += font->height;
+
+	return height;
+}
+
+/// Adds a string to the vertex batch.
+void batch_string(const char* name, GLfloat size, const FontAlignment alignment[2], const char* str,
+	const GLfloat pos[3], const GLubyte color[4]) {
+	const Font* font = get_font(name);
+	if (font == NULL || str == NULL)
+		return;
+
+	set_batch_texture(font->texture->texture);
+
+	// Origin
+	GLfloat ox = pos[0];
+	GLfloat oy = pos[1];
+
+	// Horizontal alignment
+	switch (alignment[0]) {
+		case FA_CENTER:
+			ox -= string_width(font, size, str) / 2.f;
+			break;
+		case FA_RIGHT:
+			ox -= string_width(font, size, str);
+			break;
+		default:
+			break;
+	}
+
+	// Vertical alignment
+	switch (alignment[1]) {
+		case FA_MIDDLE:
+			oy -= string_height(font, size, str) / 2.f;
+			break;
+		case FA_BOTTOM:
+			oy -= string_height(font, size, str);
+			break;
+		default:
+			break;
+	}
+
+	GLfloat cx = ox, cy = oy;
+	const GLfloat scale = size / font->height;
+	const GLfloat spacing = font->spacing * scale;
+
+	size_t bytes = SDL_strlen(str);
+	while (bytes > 0) {
+		size_t gid = SDL_StepUTF8(&str, &bytes);
+
+		// Special/invalid characters
+		if (gid == '\r')
+			continue;
+		if (gid == '\n') {
+			cx = ox;
+			cy += size;
+			continue;
+		}
+		if (SDL_isspace((int)gid))
+			gid = ' ';
+		if (gid < 0 || gid > CHAR_MAX)
+			continue;
+
+		// Valid glyph
+		const Glyph* glyph = &font->glyphs[gid];
+		const GLfloat width = glyph->width * scale;
+
+		const GLfloat x1 = cx;
+		const GLfloat y1 = cy;
+		const GLfloat x2 = x1 + width;
+		const GLfloat y2 = y1 + size;
+		batch_vertex(XYZ(x1, y2, pos[2]), color, UV(glyph->uvs[0], glyph->uvs[3]));
+		batch_vertex(XYZ(x1, y1, pos[2]), color, UV(glyph->uvs[0], glyph->uvs[1]));
+		batch_vertex(XYZ(x2, y1, pos[2]), color, UV(glyph->uvs[2], glyph->uvs[1]));
+		batch_vertex(XYZ(x2, y1, pos[2]), color, UV(glyph->uvs[2], glyph->uvs[1]));
+		batch_vertex(XYZ(x2, y2, pos[2]), color, UV(glyph->uvs[2], glyph->uvs[3]));
+		batch_vertex(XYZ(x1, y2, pos[2]), color, UV(glyph->uvs[0], glyph->uvs[3]));
+
+		cx += width;
+		if (bytes > 0)
+			cx += spacing;
+	}
 }
 
 /// Dumps the vertex batch on your screen.

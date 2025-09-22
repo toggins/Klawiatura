@@ -1,5 +1,8 @@
 #pragma once
 
+#include <limits.h>
+// ^ required for `CHAR_MAX` below. DO TOUCH YOU LOVER
+
 #include <glad/gl.h>
 
 #include <SDL3/SDL_opengl.h>
@@ -29,6 +32,9 @@
 
 #define UV(u, v) ((GLfloat[2]){(u), (v)})
 
+#define ALIGN(h, v) ((FontAlignment[2]){(h), (v)})
+#define TOP_LEFT ALIGN(FA_LEFT, FA_TOP)
+
 enum VertexAttributes {
 	VATT_POSITION,
 	VATT_COLOR,
@@ -54,6 +60,20 @@ typedef struct {
 	GLuint size[2];
 	GLfloat offset[2];
 } Texture;
+
+typedef struct {
+	GLfloat width;
+	GLfloat uvs[4];
+} Glyph;
+
+typedef struct {
+	char* name;
+	const Texture* texture;
+
+	GLfloat height;
+	GLfloat spacing;
+	Glyph glyphs[CHAR_MAX + 1];
+} Font;
 
 typedef struct {
 	GLuint vao, vbo;
@@ -120,6 +140,20 @@ void clear_depth(GLfloat);
 void load_texture(const char*);
 const Texture* get_texture(const char*);
 
+// Fonts
+typedef enum {
+	FA_LEFT = -1,
+	FA_CENTER = 0,
+	FA_RIGHT = 1,
+
+	FA_TOP = -1,
+	FA_MIDDLE = 0,
+	FA_BOTTOM = 1,
+} FontAlignment;
+
+void load_font(const char*);
+const Font* get_font(const char*);
+
 // Batch
 void set_batch_stencil(GLfloat);
 void set_batch_logic(GLenum);
@@ -127,6 +161,7 @@ void batch_sprite(const char*, const GLfloat[3], const GLboolean[2], GLfloat, co
 void batch_surface(Surface*, const GLfloat[3], const GLubyte[4]);
 void batch_rectangle(const char*, const GLfloat[2][2], GLfloat, const GLubyte[4]);
 void batch_ellipse(const GLfloat[2][2], GLfloat, const GLubyte[4]);
+void batch_string(const char*, GLfloat, const FontAlignment[2], const char*, const GLfloat[3], const GLubyte[4]);
 void submit_batch();
 
 // Matrices

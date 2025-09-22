@@ -74,6 +74,7 @@ int main(int argc, char* argv[]) {
 
 	load_texture("ui/background");
 	load_texture("enemies/bomzh");
+	load_font("main");
 
 	load_track("title");
 	play_generic_track("title", true);
@@ -108,6 +109,9 @@ int main(int argc, char* argv[]) {
 		batch_sprite("enemies/bomzh", XYZ(128, 256, 64), NO_FLIP, 0, WHITE);
 		pop_surface();
 		batch_surface(dummy, XYZ(32, 32, 32), WHITE);
+
+		batch_string("main", 24, TOP_LEFT, "KLAWIATURA\nGAME SUCKS\n\nI GO TO BED\n\n\n:^)", XYZ(128, 64, -32),
+			WHITE);
 
 		stop_drawing();
 
