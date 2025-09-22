@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
 		pop_surface();
 		batch_surface(dummy, XYZ(32, 32, 32), WHITE);
 
-		batch_string("main", 24, TOP_LEFT, "KLAWIATURA\nGAME SUCKS\n\nI GO TO BED\n\n\n:^)", XYZ(128, 64, -32),
+		batch_string("main", 24, TOP_LEFT, "KLAWIATURA\ngame SUCKS\n\ni go to bed\n\n\n:^)", XYZ(128, 64, -32),
 			WHITE);
 
 		stop_drawing();
