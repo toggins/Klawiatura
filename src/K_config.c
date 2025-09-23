@@ -38,23 +38,19 @@ void config_init(const char* path) {
 	config_path = path;
 	if (config_path != NULL)
 		INFO("Using config \"%s\"", config_path);
-
 	load_config();
 }
 
 void config_teardown() {}
 
-#define TMPMIN(a, b) ((a) < (b) ? (a) : (b))
-#define TMPCMP(a, b) (SDL_strncmp((a), (b), TMPMIN(SDL_strlen(a), SDL_strlen(b))))
-
 #define HANDLE_OPT(fn, conversion)                                                                                     \
-	if ((fn) != NULL) {                                                                                            \
-		(fn)(conversion(value));                                                                               \
+	if (opt->fn != NULL) {                                                                                         \
+		opt->fn(conversion(value));                                                                            \
 		goto next_opt;                                                                                         \
 	}
 #define HANDLE_KB(prefix, field, conversion)                                                                           \
 	if (SDL_strlen(name) > SDL_strlen(prefix) + 1 && !SDL_memcmp(name, prefix "_", SDL_strlen(prefix) + 1)         \
-		&& !TMPCMP(name + SDL_strlen(prefix) + 1, BINDS[i].name))                                              \
+		&& !SDL_strcmp(name + SDL_strlen(prefix) + 1, BINDS[i].name))                                          \
 	{                                                                                                              \
 		BINDS[i].field = (conversion(value));                                                                  \
 		goto next_opt;                                                                                         \
@@ -73,26 +69,21 @@ static void parse_config(yyjson_val* obj) {
 			const ConfigOption* opt = &OPTIONS[i];
 			if (SDL_strcmp(name, opt->name))
 				continue;
-			HANDLE_OPT(opt->h_bool, yyjson_get_bool);
-			HANDLE_OPT(opt->h_int, yyjson_get_int);
-			HANDLE_OPT(opt->h_float, yyjson_get_real);
+			HANDLE_OPT(h_bool, yyjson_get_bool);
+			HANDLE_OPT(h_int, yyjson_get_int);
+			HANDLE_OPT(h_float, yyjson_get_real);
 		}
-
 		for (int i = 0; i < KB_SIZE; i++) {
 			if (BINDS[i].name == NULL)
 				continue;
 			HANDLE_KB("kbd", key, yyjson_get_int);
 		}
-
 	next_opt:
 		continue;
 	}
 }
 #undef HANDLE_KB
 #undef HANDLE_OPT
-
-#undef TMPMIN
-#undef TMPCMP
 
 void load_config() {
 	const char* config_file = config_path == NULL ? find_user_file("config.json", NULL) : config_path;

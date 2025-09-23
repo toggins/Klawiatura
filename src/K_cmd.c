@@ -3,9 +3,9 @@
 #include "K_cmd.h"
 #include "K_log.h"
 
-extern CmdArg CMDLINE[];
-static int g_argc, g_argi = 1;
-static char** g_argv;
+extern CmdArg CMDLINE[]; // in K_main.c
+static int g_argc = 0, g_argi = 1;
+static char** g_argv = NULL;
 
 static const char* g_iter_args() {
 	return g_argi < g_argc ? g_argv[g_argi++] : NULL;
@@ -23,10 +23,7 @@ static void handle_cmdline_fr() {
 				goto next;
 			};
 		}
-
-		WARN("Unrecognized command-line option: '%s'", g_argv[g_argi]);
-		g_argi++;
-
+		WARN("Unrecognized command-line option: '%s'", g_argv[g_argi++]);
 	next:
 		continue;
 	}

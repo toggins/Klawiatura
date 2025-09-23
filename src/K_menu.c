@@ -17,30 +17,29 @@ static void instaquit() {
 }
 
 static Menu MENUS[MEN_SIZE] = {
-	[MEN_NULL] = {NULL},
-	[MEN_INTRO] = {NULL},
-
-	[MEN_MAIN] = {{
+	[MEN_NULL] = {.noreturn = true},
+	[MEN_INTRO] = {.noreturn = true},
+	[MEN_MAIN] = {.noreturn = true},
+};
+static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
+	[MEN_MAIN] = {
 		{"Mario Together", .disabled = true},
 		{},
 		{"Singleplayer", .callback = noop}, // just to hear select.wav
 		{"Multiplayer"},
 		{"Options"},
 		{"Exit", .callback = instaquit},
-	}},
-
-	[MEN_SINGLEPLAYER] = {{
+	},
+	[MEN_SINGLEPLAYER] = {
 		{"Level: FMT"},
 		{"Start!"},
-	}},
-
-	[MEN_MULTIPLAYER] = {{
+	},
+	[MEN_MULTIPLAYER] = {
 		{"Host Lobby"},
 		{"Join Lobby"},
 		{"Find Lobby"},
-	}},
-
-	[MEN_OPTIONS] = {{
+	},
+	[MEN_OPTIONS] = {
 		{"Controls"},
 		{},
 		{"Name: FMT"},
@@ -53,24 +52,20 @@ static Menu MENUS[MEN_SIZE] = {
 		{"Master Volume: FMT"},
 		{"Sound Volume: FMT"},
 		{"Music Volume: FMT"},
-	}},
-
-	[MEN_HOST_LOBBY] = {{
+	},
+	[MEN_HOST_LOBBY] = {
 		{"Players: FMT"},
 		{"Host!"},
-	}},
-
-	[MEN_JOIN_LOBBY] = {{
+	},
+	[MEN_JOIN_LOBBY] = {
 		{"Lobby ID: FMT"},
 		{"Join!"},
-	}},
-
-	[MEN_FIND_LOBBY] = {{}},
-
-	[MEN_LOBBY] = {{
+	},
+	[MEN_FIND_LOBBY] = {},
+	[MEN_LOBBY] = {
 		{"Level: FMT"},
 		{"Start!"},
-	}},
+	},
 };
 
 void start_menu(bool skip_intro) {
@@ -99,20 +94,14 @@ void start_menu(bool skip_intro) {
 	load_track("sf_map");
 	load_track("human_like_predator");
 
-	if (skip_intro) {
-		set_menu(MEN_MAIN, false);
-		play_generic_track("title", true);
-	} else
-		set_menu(MEN_INTRO, false);
+	set_menu(skip_intro ? MEN_MAIN : MEN_INTRO);
 }
 
 void update_menu() {
 	for (new_frame(); got_ticks(); next_tick()) {
 		if (menu == MEN_INTRO) {
-			if (totalticks() >= 150 || kb_pressed(KB_UI_ENTER)) {
-				set_menu(MEN_MAIN, false);
-				play_generic_track("title", true);
-			}
+			if (totalticks() >= 150 || kb_pressed(KB_UI_ENTER))
+				set_menu(MEN_MAIN);
 			continue;
 		}
 
@@ -132,7 +121,7 @@ void update_menu() {
 			else
 				new_option += change;
 
-			Option* option = &MENUS[menu].options[new_option];
+			Option* option = &OPTIONS[menu][new_option];
 			if (option->name != NULL && !option->disabled) {
 				found_option = true;
 				break;
@@ -145,7 +134,7 @@ void update_menu() {
 		}
 
 	try_select:
-		const Option* opt = &MENUS[menu].options[MENUS[menu].option];
+		const Option* opt = &OPTIONS[menu][MENUS[menu].option];
 		if (kb_pressed(KB_UI_ENTER) && opt->callback != NULL && !opt->disabled) {
 			play_generic_sound("select");
 			opt->callback();
@@ -172,7 +161,7 @@ void draw_menu() {
 		XYZ(44 + (SDL_sinf(totalticks() / 5.f) * 4), 24 + (MENUS[menu].cursor * 24), 0), WHITE);
 
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
-		Option* option = &MENUS[menu].options[i];
+		Option* option = &OPTIONS[menu][i];
 
 		const float lx = 0.5f * dt();
 		option->hover = glm_lerp(option->hover, (float)(MENUS[menu].option == i), SDL_min(lx, 1));
@@ -185,17 +174,17 @@ jobwelldone:
 	stop_drawing();
 }
 
-void set_menu(MenuType men, bool allow_return) {
+void set_menu(MenuType men) {
 	if (menu == men || men <= MEN_NULL || men >= MEN_SIZE)
 		return;
 
-	MENUS[men].from = allow_return ? menu : MEN_NULL;
+	MENUS[men].from = MENUS[men].noreturn ? menu : MEN_NULL;
 	menu = men;
 
 	// Go to nearest valid option
 	size_t new_option = MENUS[menu].option;
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
-		Option* option = &MENUS[menu].options[new_option];
+		Option* option = &OPTIONS[menu][new_option];
 		if (option->name != NULL && !option->disabled) {
 			MENUS[menu].option = new_option;
 			MENUS[menu].cursor = (float)new_option;
@@ -204,4 +193,7 @@ void set_menu(MenuType men, bool allow_return) {
 		}
 		new_option = (new_option + 1) % MAX_OPTIONS;
 	}
+
+	if (menu == MEN_MAIN)
+		play_generic_track("title", true);
 }

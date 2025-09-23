@@ -28,7 +28,7 @@ typedef enum {
 } MenuType;
 
 typedef struct {
-	Option options[MAX_OPTIONS];
+	bool noreturn;
 	MenuType from;
 	size_t option;
 	float cursor;
@@ -38,4 +38,4 @@ void start_menu(bool);
 void update_menu();
 void draw_menu();
 
-void set_menu(MenuType, bool);
+void set_menu(MenuType);
