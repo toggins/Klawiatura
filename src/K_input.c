@@ -2,7 +2,7 @@
 
 #include "K_input.h"
 
-static KeybindState kb_now = 0, kb_then = 0;
+static KeybindState kb_now = 0, kb_already_pressed = 0;
 Bindings BINDS[KB_SIZE] = {
 	[KB_UP] = {"Up",       SDL_SCANCODE_UP    },
 	[KB_LEFT] = {"Left",     SDL_SCANCODE_LEFT  },
@@ -22,31 +22,28 @@ Bindings BINDS[KB_SIZE] = {
 
 void input_init() {}
 void input_teardown() {}
-
-void input_newframe() {
-	kb_then = kb_now;
-	kb_now = 0;
-}
-
-#define KB_SET_IF(cond)                                                                                                \
-	for (int i = 0; i < KB_SIZE; i++)                                                                              \
-		kb_now |= (cond) << i;
-#define KB_UNSET_IF(cond)                                                                                              \
-	for (int i = 0; i < KB_SIZE; i++)                                                                              \
-		kb_now &= ~((cond) << i);
+void input_newframe() {}
 
 void input_keydown(SDL_Scancode key) {
-	KB_SET_IF(key == BINDS[i].key);
+	for (int i = 0; i < KB_SIZE; i++)
+		kb_now |= (key == BINDS[i].key) << i;
 }
 void input_keyup(SDL_Scancode key) {
-	// DO JACK SHIT!!!!!!
-	// KB_UNSET_IF(key == BINDS[i].key);
+	for (int i = 0; i < KB_SIZE; i++) {
+		const KeybindState mask = ~((key == BINDS[i].key) << i);
+		kb_now &= mask;
+		kb_already_pressed &= mask;
+	}
 }
 
 #define CHECK_KB(table, kb) (((table) & (1 << (kb))) != 0)
 
 bool kb_pressed(Keybind kb) {
-	return !CHECK_KB(kb_now, kb) && CHECK_KB(kb_then, kb);
+	if (CHECK_KB(kb_now, kb) && !CHECK_KB(kb_already_pressed, kb)) {
+		kb_already_pressed |= 1 << kb;
+		return true;
+	}
+	return false;
 }
 
 bool kb_down(Keybind kb) {
