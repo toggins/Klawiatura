@@ -175,13 +175,14 @@ bypass:
 	uniforms.alpha_test = glGetUniformLocation(shader, "u_alpha_test");
 	uniforms.stencil = glGetUniformLocation(shader, "u_stencil");
 
-	glEnable(GL_BLEND | GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	glUseProgram(shader);
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(uniforms.texture, 0);
 	glDepthFunc(GL_LEQUAL);
-	glCullFace(GL_BACK);
 
 	glm_ortho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, -16000, 16000, projection_matrix);
 	glm_mat4_mul(view_matrix, model_matrix, mvp_matrix);

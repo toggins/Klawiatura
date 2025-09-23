@@ -16,6 +16,7 @@ void main() {
 			discard;
 		sample.a = 1.0;
 	}
+
 	o_color.rgb = v_color.rgb * mix(sample.rgb, vec3(1.0), u_stencil);
 	o_color.a = v_color.a * sample.a;
 }
