@@ -38,4 +38,4 @@ void start_menu(bool);
 void update_menu();
 void draw_menu();
 
-void set_menu(MenuType);
+bool set_menu(MenuType);

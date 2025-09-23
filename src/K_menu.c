@@ -11,6 +11,18 @@ static void noop() {
 	// Do nothing as if something was done. For testing purposes only.
 }
 
+static void goto_singleplayer() {
+	set_menu(MEN_SINGLEPLAYER);
+}
+
+static void goto_multiplayer() {
+	set_menu(MEN_MULTIPLAYER);
+}
+
+static void goto_options() {
+	set_menu(MEN_OPTIONS);
+}
+
 extern bool permadeath;
 static void instaquit() {
 	permadeath = true;
@@ -25,9 +37,9 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_MAIN] = {
 		{"Mario Together", .disabled = true},
 		{},
-		{"Singleplayer", .callback = noop}, // just to hear select.wav
-		{"Multiplayer"},
-		{"Options"},
+		{"Singleplayer", .callback = goto_singleplayer},
+		{"Multiplayer", .callback = goto_multiplayer},
+		{"Options", .callback = goto_options},
 		{"Exit", .callback = instaquit},
 	},
 	[MEN_SINGLEPLAYER] = {
@@ -142,11 +154,16 @@ void update_menu() {
 		}
 
 	try_select:
-		const Option* opt = &OPTIONS[menu][MENUS[menu].option];
-		if (kb_pressed(KB_UI_ENTER) && opt->callback != NULL && !opt->disabled) {
-			play_generic_sound("select");
-			opt->callback();
+		if (kb_pressed(KB_UI_ENTER)) {
+			const Option* opt = &OPTIONS[menu][MENUS[menu].option];
+			if (opt->callback != NULL && !opt->disabled) {
+				play_generic_sound("select");
+				opt->callback();
+			}
 		}
+
+		if (kb_pressed(KB_PAUSE) && set_menu(MENUS[menu].from))
+			play_generic_sound("select");
 	}
 }
 
@@ -182,11 +199,12 @@ jobwelldone:
 	stop_drawing();
 }
 
-void set_menu(MenuType men) {
+bool set_menu(MenuType men) {
 	if (menu == men || men <= MEN_NULL || men >= MEN_SIZE)
-		return;
+		return false;
 
-	MENUS[men].from = MENUS[men].noreturn ? menu : MEN_NULL;
+	if (MENUS[menu].from != men)
+		MENUS[men].from = MENUS[men].noreturn ? MEN_NULL : menu;
 	menu = men;
 
 	// Go to nearest valid option
@@ -202,6 +220,5 @@ void set_menu(MenuType men) {
 		new_option = (new_option + 1) % MAX_OPTIONS;
 	}
 
-	if (menu == MEN_MAIN)
-		play_generic_track("title", true);
+	return true;
 }
