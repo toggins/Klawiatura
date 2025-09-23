@@ -7,13 +7,6 @@
 #include "K_string.h"
 #include "K_video.h"
 
-#define CHECK_GL_EXTENSION(ext)                                                                                        \
-	do {                                                                                                           \
-		if ((ext))                                                                                             \
-			break;                                                                                         \
-		FATAL("Missing OpenGL extension: " #ext "\nAt least OpenGL 3.3 with shader support is required.");     \
-	} while (0)
-
 static SDL_Window* window = NULL;
 static SDL_GLContext gpu = NULL;
 
@@ -35,10 +28,17 @@ static mat4 view_matrix = GLM_MAT4_IDENTITY;
 static mat4 projection_matrix = GLM_MAT4_IDENTITY;
 static mat4 mvp_matrix = GLM_MAT4_IDENTITY;
 
-#include "embeds/fragment.glsl"
-#include "embeds/vertex.glsl"
+#include "embeds/shaders/fragment.glsl"
+#include "embeds/shaders/vertex.glsl"
 
 VideoState video_state = {0};
+
+#define CHECK_GL_EXTENSION(ext)                                                                                        \
+	do {                                                                                                           \
+		if ((ext))                                                                                             \
+			break;                                                                                         \
+		FATAL("Missing OpenGL extension: " #ext "\nAt least OpenGL 3.3 with shader support is required.");     \
+	} while (0)
 
 void video_init(bool force_shader) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -130,7 +130,7 @@ bypass:
 	batch.filter = false;
 
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_glsl, NULL);
+	glShaderSource(vertex_shader, 1, &shaders_vertex_glsl, NULL);
 	glCompileShader(vertex_shader);
 
 	GLint success;
@@ -142,7 +142,7 @@ bypass:
 	}
 
 	GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_glsl, NULL);
+	glShaderSource(fragment_shader, 1, &shaders_fragment_glsl, NULL);
 	glCompileShader(fragment_shader);
 
 	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
@@ -190,6 +190,8 @@ bypass:
 	textures = NewTinyMap();
 	fonts = NewTinyMap();
 }
+
+#undef CHECK_GL_EXTENSION
 
 void video_teardown() {
 	glDeleteVertexArrays(1, &batch.vao);

@@ -108,21 +108,21 @@ set(LIBS
 
 # Build
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
-file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/src/*.h)
+file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/include/*.h)
 
 # Thanks <https://stackoverflow.com/a/47801116>
 function(embed_txt FILENAME)
-    file(READ ${CMAKE_SOURCE_DIR}/src/${FILENAME} CONTENT)
-    string(REPLACE . _ VARNAME ${FILENAME})
+    file(READ ${CMAKE_SOURCE_DIR}/${FILENAME} CONTENT)
+    string(REGEX REPLACE [./] _ VARNAME ${FILENAME})
     file(WRITE ${CMAKE_BINARY_DIR}/nested/embeds/${FILENAME}
         "const char* const ${VARNAME} = R\"(${CONTENT})\";")
 endfunction()
 
-embed_txt(vertex.glsl)
-embed_txt(fragment.glsl)
+embed_txt(shaders/vertex.glsl)
+embed_txt(shaders/fragment.glsl)
 
-add_executable(Klawiatura ${SOURCES} ${HEADERS} ${CMAKE_SOURCE_DIR}/src/Klawiatura.rc)
-target_include_directories(Klawiatura PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/nested)
+add_executable(Klawiatura ${SOURCES} ${HEADERS} ${CMAKE_SOURCE_DIR}/res/Klawiatura.rc)
+target_include_directories(Klawiatura PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/nested)
 target_link_libraries(Klawiatura PRIVATE ${LIBS})
 target_compile_definitions(Klawiatura PUBLIC _POSIX_C_SOURCE=200112L _WIN32_WINNT=0x0501 WINVER=0x0501)
 if(MSVC AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo) # you're sus my guy...
@@ -146,7 +146,7 @@ add_custom_target(KlawiaturaPost ALL
 add_dependencies(KlawiaturaPost Klawiatura)
 
 install(TARGETS Klawiatura RUNTIME DESTINATION .) # TODO: exclude lib/ and include/ somehow
-install(FILES README.md UNLICENSE src/console.bat ${RUNTIME_DLLS} DESTINATION .)
+install(FILES README.md UNLICENSE res/console.bat ${RUNTIME_DLLS} DESTINATION .)
 install(DIRECTORY modsrc/ DESTINATION data)
 install(DIRECTORY .github/assets DESTINATION .github) # has all the README .pngs
 
