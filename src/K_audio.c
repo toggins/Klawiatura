@@ -4,6 +4,7 @@
 #include "K_file.h"
 #include "K_log.h"
 #include "K_memory.h"
+#include "K_string.h"
 
 static FMOD_SYSTEM* speaker = NULL;
 
@@ -109,7 +110,7 @@ void load_sound(const char* name) {
 
 	Sound sound = {0};
 
-	const char* file = find_data_file(file_pattern("data/sounds/%s.*", name), ".json");
+	const char* file = find_data_file(fmt("data/sounds/%s.*", name), ".json");
 	FMOD_SOUND* data = NULL;
 	FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESAMPLE, NULL, &data);
 	if (result != FMOD_OK) {
@@ -140,7 +141,7 @@ void load_track(const char* name) {
 
 	Track track = {0};
 
-	const char* file = find_data_file(file_pattern("data/music/%s.*", name), ".json");
+	const char* file = find_data_file(fmt("data/music/%s.*", name), ".json");
 	FMOD_SOUND* data = NULL;
 	FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESTREAM | FMOD_ACCURATETIME, NULL, &data);
 	if (result != FMOD_OK) {
@@ -152,7 +153,7 @@ void load_track(const char* name) {
 	track.stream = data;
 	FMOD_Sound_GetLength(data, &(track.length), FMOD_TIMEUNIT_MS);
 
-	file = find_data_file(file_pattern("data/music/%s.json", name), NULL);
+	file = find_data_file(fmt("data/music/%s.json", name), NULL);
 	if (file != NULL) {
 		yyjson_doc* json = yyjson_read_file(file, JSON_READ_FLAGS, NULL, NULL);
 		if (json != NULL) {

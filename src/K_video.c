@@ -4,6 +4,7 @@
 #include "K_game.h"
 #include "K_log.h"
 #include "K_memory.h"
+#include "K_string.h"
 #include "K_video.h"
 
 #define CHECK_GL_EXTENSION(ext)                                                                                        \
@@ -279,7 +280,7 @@ void load_texture(const char* name) {
 
 	Texture texture = {0};
 
-	const char* file = find_data_file(file_pattern("data/textures/%s.*", name), ".json");
+	const char* file = find_data_file(fmt("data/textures/%s.*", name), ".json");
 	if (file == NULL) {
 		WTF("Texture \"%s\" not found", name);
 		return;
@@ -310,7 +311,7 @@ void load_texture(const char* name) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
 	SDL_DestroySurface(surface);
 
-	file = find_data_file(file_pattern("data/textures/%s.json", name), NULL);
+	file = find_data_file(fmt("data/textures/%s.json", name), NULL);
 	if (file == NULL)
 		goto eatadick;
 
@@ -350,7 +351,7 @@ void load_font(const char* name) {
 
 	Font font = {0};
 
-	const char* file = find_data_file(file_pattern("data/fonts/%s.*", name), NULL);
+	const char* file = find_data_file(fmt("data/fonts/%s.*", name), NULL);
 	if (file == NULL) {
 		WTF("Font \"%s\" not found", name);
 		return;

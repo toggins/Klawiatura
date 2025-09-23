@@ -21,18 +21,6 @@ void file_teardown() {
 	SDL_free(user_path);
 }
 
-/// Helper function for assembling file paths and patterns.
-const char* file_pattern(const char* fmt, ...) {
-	static char pattern_helper[256];
-
-	va_list args;
-	va_start(args, fmt);
-	SDL_vsnprintf(pattern_helper, sizeof(pattern_helper), fmt, args);
-	va_end(args);
-
-	return pattern_helper;
-}
-
 static const char* find_file(const char* base, const char* filename, const char* ignore_ext) {
 	int count = 0;
 	char** files = SDL_GlobDirectory(base, filename, 0, &count);

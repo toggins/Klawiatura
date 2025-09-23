@@ -20,6 +20,7 @@
 #include "K_file.h"
 #include "K_game.h" // IWYU pragma: keep for now
 #include "K_input.h"
+#include "K_string.h"
 #include "K_video.h"
 
 static void cmd_ip(IterArg);
@@ -119,8 +120,8 @@ int main(int argc, char* argv[]) {
 		batch_string("main", 24, TOP_LEFT, "KLAWIATURA\ngame SUCKS\n\ni go to bed\n\n\n:^)", XYZ(128, 64, -32),
 			WHITE);
 		batch_string("main", 24, TOP_LEFT,
-			file_pattern("%.2f, %.2f", kb_axis(KB_LEFT, KB_RIGHT), kb_axis(KB_UP, KB_DOWN)),
-			XYZ(256, 64, -32), WHITE);
+			fmt("%.2f, %.2f", kb_axis(KB_LEFT, KB_RIGHT), kb_axis(KB_UP, KB_DOWN)), XYZ(256, 64, -32),
+			WHITE);
 
 		stop_drawing();
 
