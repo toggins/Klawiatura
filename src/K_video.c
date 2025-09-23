@@ -444,6 +444,13 @@ const Font* get_font(const char* name) {
 // BATCH
 // =====
 
+void set_batch_alpha_test(GLfloat threshold) {
+	if (batch.alpha_test != threshold) {
+		submit_batch();
+		batch.alpha_test = threshold;
+	}
+}
+
 static void set_batch_texture(GLuint tex) {
 	if (batch.texture != tex) {
 		submit_batch();

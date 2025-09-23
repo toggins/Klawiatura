@@ -112,8 +112,8 @@ void update_menu() {
 			if (totalticks() >= 150 || kb_pressed(KB_UI_ENTER)) {
 				set_menu(MEN_MAIN, false);
 				play_generic_track("title", true);
-			} else
-				continue;
+			}
+			continue;
 		}
 
 		int change = kb_pressed(KB_UI_DOWN) - kb_pressed(KB_UI_UP);
@@ -155,22 +155,28 @@ void update_menu() {
 
 void draw_menu() {
 	start_drawing();
-	clear_color(0, 0, 0, 1);
 
 	if (menu == MEN_INTRO) {
-		batch_sprite("ui/disclaimer", XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, 0), NO_FLIP, 0, ALPHA(128));
+		clear_color(0, 0, 0, 1);
+		set_batch_alpha_test(0);
+		batch_sprite("ui/disclaimer", XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, 0), NO_FLIP, 0, WHITE);
+		set_batch_alpha_test(0.5f);
 		goto jobwelldone;
 	}
 
 	batch_sprite("ui/background", XYZ(0, 0, 0), NO_FLIP, 0, WHITE);
 
-	MENUS[menu].cursor = glm_lerp(MENUS[menu].cursor, (float)MENUS[menu].option, 0.6f * dt());
+	const float lx = 0.6f * dt();
+	MENUS[menu].cursor = glm_lerp(MENUS[menu].cursor, (float)MENUS[menu].option, SDL_min(lx, 1));
 	batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), ">",
 		XYZ(44 + (SDL_sinf(totalticks() / 5.f) * 4), 24 + (MENUS[menu].cursor * 24), 0), WHITE);
 
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		Option* option = &MENUS[menu].options[i];
-		option->hover = glm_lerp(option->hover, (float)(MENUS[menu].option == i), 0.5f * dt());
+
+		const float lx = 0.5f * dt();
+		option->hover = glm_lerp(option->hover, (float)(MENUS[menu].option == i), SDL_min(lx, 1));
+
 		batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), option->name,
 			XYZ(48 + (option->hover * 8), 24 + (i * 24), 0), (option->disabled) ? ALPHA(128) : WHITE);
 	}
@@ -192,6 +198,8 @@ void set_menu(MenuType men, bool allow_return) {
 		Option* option = &MENUS[menu].options[new_option];
 		if (option->name != NULL && !option->disabled) {
 			MENUS[menu].option = new_option;
+			MENUS[menu].cursor = (float)new_option;
+			option->hover = 1;
 			break;
 		}
 		new_option = (new_option + 1) % MAX_OPTIONS;

@@ -155,6 +155,7 @@ void load_font(const char*);
 const Font* get_font(const char*);
 
 // Batch
+void set_batch_alpha_test(GLfloat);
 void set_batch_stencil(GLfloat);
 void set_batch_logic(GLenum);
 void batch_sprite(const char*, const GLfloat[3], const GLboolean[2], GLfloat, const GLubyte[4]);
