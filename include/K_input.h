@@ -22,6 +22,13 @@ typedef enum {
 	KB_UI_RIGHT,
 	KB_UI_ENTER,
 
+	// If you allow rebinding these then that's not Kevin
+	KB_KEVIN_K,
+	KB_KEVIN_E,
+	KB_KEVIN_V,
+	KB_KEVIN_I,
+	KB_KEVIN_N,
+
 	KB_SIZE,
 } Keybind;
 
