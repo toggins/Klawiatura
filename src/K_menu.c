@@ -68,6 +68,11 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	},
 };
 
+static void start_menu_fr() {
+	set_menu(MEN_MAIN);
+	play_generic_track("title", true);
+}
+
 void start_menu(bool skip_intro) {
 	from_scratch();
 
@@ -94,14 +99,17 @@ void start_menu(bool skip_intro) {
 	load_track("sf_map");
 	load_track("human_like_predator");
 
-	set_menu(skip_intro ? MEN_MAIN : MEN_INTRO);
+	if (skip_intro)
+		start_menu_fr();
+	else
+		set_menu(MEN_INTRO);
 }
 
 void update_menu() {
 	for (new_frame(); got_ticks(); next_tick()) {
 		if (menu == MEN_INTRO) {
 			if (totalticks() >= 150 || kb_pressed(KB_UI_ENTER))
-				set_menu(MEN_MAIN);
+				start_menu_fr();
 			continue;
 		}
 
