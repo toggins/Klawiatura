@@ -1,6 +1,7 @@
 #include <SDL3/SDL_timer.h>
 
 #include "K_game.h"
+#include "K_input.h"
 #include "K_state.h"
 
 static uint64_t last_time = 0;
@@ -26,6 +27,7 @@ bool got_ticks() {
 
 void next_tick() {
 	pending_ticks -= 1.f;
+	input_newframe();
 }
 
 float dt() {

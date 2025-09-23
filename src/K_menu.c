@@ -7,6 +7,10 @@
 
 static MenuType menu = MEN_NULL;
 
+static void noop() {
+	// Do nothing as if something was done. For testing purposes only.
+}
+
 extern bool permadeath;
 static void instaquit() {
 	permadeath = true;
@@ -19,7 +23,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_MAIN] = {{
 		{"Mario Together", .disabled = true},
 		{},
-		{"Singleplayer"},
+		{"Singleplayer", .callback = noop}, // just to hear select.wav
 		{"Multiplayer"},
 		{"Options"},
 		{"Exit", .callback = instaquit},
@@ -109,7 +113,7 @@ void update_menu() {
 				set_menu(MEN_MAIN, false);
 				play_generic_track("title", true);
 			} else
-				goto skip_tick;
+				continue;
 		}
 
 		int change = kb_pressed(KB_UI_DOWN) - kb_pressed(KB_UI_UP);
@@ -141,10 +145,11 @@ void update_menu() {
 		}
 
 	try_select:
-		// TODO
-
-	skip_tick:
-		input_newframe();
+		const Option* opt = &MENUS[menu].options[MENUS[menu].option];
+		if (kb_pressed(KB_UI_ENTER) && opt->callback != NULL && !opt->disabled) {
+			play_generic_sound("select");
+			opt->callback();
+		}
 	}
 }
 
