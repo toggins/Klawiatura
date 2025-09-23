@@ -2,7 +2,8 @@
 
 #include "K_input.h"
 
-static KeybindState kb_now = 0, kb_already_pressed = 0;
+static KeybindState kb_then = 0, kb_now = 0;           // Tick-specific
+static KeybindState kb_incoming = 0, kb_repeating = 0; // Event-specific
 Bindings BINDS[KB_SIZE] = {
 	[KB_UP] = {"Up",       SDL_SCANCODE_UP    },
 	[KB_LEFT] = {"Left",     SDL_SCANCODE_LEFT  },
@@ -22,32 +23,41 @@ Bindings BINDS[KB_SIZE] = {
 
 void input_init() {}
 void input_teardown() {}
-void input_newframe() {}
+void input_newframe() {
+	kb_then = kb_now;
+	kb_now &= kb_incoming;
+	kb_repeating = 0;
+}
 
 void input_keydown(SDL_Scancode key) {
-	for (int i = 0; i < KB_SIZE; i++)
-		kb_now |= (key == BINDS[i].key) << i;
+	for (int i = 0; i < KB_SIZE; i++) {
+		const KeybindState mask = (key == BINDS[i].key) << i;
+		kb_incoming |= mask;
+		kb_now |= mask;
+		kb_repeating |= mask;
+	}
 }
 void input_keyup(SDL_Scancode key) {
-	for (int i = 0; i < KB_SIZE; i++) {
-		const KeybindState mask = ~((key == BINDS[i].key) << i);
-		kb_now &= mask;
-		kb_already_pressed &= mask;
-	}
+	for (int i = 0; i < KB_SIZE; i++)
+		kb_incoming &= ~((key == BINDS[i].key) << i);
 }
 
 #define CHECK_KB(table, kb) (((table) & (1 << (kb))) != 0)
 
 bool kb_pressed(Keybind kb) {
-	if (CHECK_KB(kb_now, kb) && !CHECK_KB(kb_already_pressed, kb)) {
-		kb_already_pressed |= 1 << kb;
-		return true;
-	}
-	return false;
+	return CHECK_KB(kb_now, kb) && !CHECK_KB(kb_then, kb);
 }
 
 bool kb_down(Keybind kb) {
 	return CHECK_KB(kb_now, kb);
+}
+
+bool kb_repeated(Keybind kb) {
+	return CHECK_KB(kb_now, kb) && CHECK_KB(kb_repeating, kb);
+}
+
+bool kb_released(Keybind kb) {
+	return !CHECK_KB(kb_now, kb) && CHECK_KB(kb_then, kb);
 }
 
 KeybindValue kb_value(Keybind kb) {

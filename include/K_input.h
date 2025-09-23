@@ -37,6 +37,6 @@ extern Bindings BINDS[KB_SIZE];
 void input_init(), input_teardown(), input_newframe();
 void input_keydown(SDL_Scancode), input_keyup(SDL_Scancode);
 
-bool kb_pressed(Keybind), kb_down(Keybind);
+bool kb_pressed(Keybind), kb_down(Keybind), kb_released(Keybind), kb_repeated(Keybind);
 KeybindValue kb_value(Keybind);
 float kb_axis(Keybind, Keybind);

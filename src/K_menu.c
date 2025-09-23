@@ -116,7 +116,7 @@ void update_menu() {
 			continue;
 		}
 
-		int change = kb_pressed(KB_UI_DOWN) - kb_pressed(KB_UI_UP);
+		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
 		if (!change)
 			goto try_select;
 
