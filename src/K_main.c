@@ -22,7 +22,6 @@
 #include "K_game.h" // IWYU pragma: keep (for now)
 #include "K_input.h"
 #include "K_menu.h"
-#include "K_state.h"
 #include "K_video.h"
 
 static void cmd_ip(IterArg);

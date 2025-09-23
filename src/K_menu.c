@@ -2,7 +2,7 @@
 #include "K_audio.h"
 #include "K_game.h"
 #include "K_input.h"
-#include "K_state.h"
+#include "K_tick.h"
 #include "K_video.h"
 
 static MenuType menu = MEN_NULL;

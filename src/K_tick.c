@@ -2,7 +2,7 @@
 
 #include "K_game.h"
 #include "K_input.h"
-#include "K_state.h"
+#include "K_tick.h"
 
 static uint64_t last_time = 0;
 static float pending_ticks = 0.f, total_ticks = 0.f, delta_time = 0.f;
