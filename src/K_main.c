@@ -15,12 +15,13 @@
 #define S_TRUCTURES_IMPLEMENTATION
 #include <S_tructures.h>
 
+#include "K_audio.h"
 #include "K_cmd.h"
 #include "K_config.h"
 #include "K_file.h"
-#include "K_game.h" // IWYU pragma: keep for now
+#include "K_game.h" // IWYU pragma: keep (for now)
 #include "K_input.h"
-#include "K_string.h"
+#include "K_menu.h"
 #include "K_video.h"
 
 static void cmd_ip(IterArg);
@@ -66,27 +67,9 @@ int main(int argc, char* argv[]) {
 	input_init();
 	config_init(config_path);
 
-	if (skip_intro)
-		INFO("BYE INTRO!!!");
-
-	if (kevin) {
-		load_sound("kevin_on");
-		play_generic_sound("kevin_on");
-		INFO("HI KEVIN!!!");
-	}
-
-	load_texture("ui/background");
-	load_texture("enemies/bomzh");
-	load_font("main");
-
-	load_track("title");
-	play_generic_track("title", true);
-
-	Surface* dummy = create_surface(128, 128, true, true);
+	start_menu(skip_intro);
 
 	for (;;) {
-		input_newframe();
-
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 			switch (event.type) {
@@ -104,33 +87,13 @@ int main(int argc, char* argv[]) {
 		if (kb_pressed(KB_PAUSE))
 			goto exit;
 
-		start_drawing();
-
-		clear_color(0, 0, 0, 1);
-		batch_sprite("ui/background", XYZ(0, 0, 0), NO_FLIP, 0, WHITE);
-
-		push_surface(dummy);
-		clear_color(1, 0, 0, 1);
-		clear_depth(1);
-		batch_sprite("enemies/bomzh", XYZ(32, 192, 0), NO_FLIP, 0, WHITE);
-		batch_sprite("enemies/bomzh", XYZ(128, 256, 64), NO_FLIP, 0, WHITE);
-		pop_surface();
-		batch_surface(dummy, XYZ(32, 32, 32), WHITE);
-
-		batch_string("main", 24, TOP_LEFT, "KLAWIATURA\ngame SUCKS\n\ni go to bed\n\n\n:^)", XYZ(128, 64, -32),
-			WHITE);
-		batch_string("main", 24, TOP_LEFT,
-			fmt("%.2f, %.2f", kb_axis(KB_LEFT, KB_RIGHT), kb_axis(KB_UP, KB_DOWN)), XYZ(256, 64, -32),
-			WHITE);
-
-		stop_drawing();
+		update_menu();
+		draw_menu();
 
 		audio_update();
 	}
 
 exit:
-	destroy_surface(dummy);
-
 	config_teardown();
 	input_teardown();
 	audio_teardown();
