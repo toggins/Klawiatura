@@ -23,6 +23,7 @@ Bindings BINDS[KB_SIZE] = {
 
 void input_init() {}
 void input_teardown() {}
+
 void input_newframe() {
 	kb_then = kb_now;
 	kb_now &= kb_incoming;
