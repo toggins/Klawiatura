@@ -89,8 +89,6 @@ int main(int argc, char* argv[]) {
 				default:
 					break;
 			}
-		if (kb_pressed(KB_PAUSE))
-			goto exit;
 
 		update_menu();
 		draw_menu();
