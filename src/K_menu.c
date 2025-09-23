@@ -11,27 +11,54 @@ static void noop() {
 	// Do nothing as if something was done. For testing purposes only.
 }
 
-static void goto_singleplayer() {
-	set_menu(MEN_SINGLEPLAYER);
-}
-
-static void goto_multiplayer() {
-	set_menu(MEN_MULTIPLAYER);
-}
-
-static void goto_options() {
-	set_menu(MEN_OPTIONS);
-}
+#define SHORTCUT(fname, men)                                                                                           \
+	static void fname() {                                                                                          \
+		set_menu(men);                                                                                         \
+	}
+// Main Menu
+SHORTCUT(goto_singleplayer, MEN_SINGLEPLAYER);
+SHORTCUT(goto_multiplayer, MEN_MULTIPLAYER);
+SHORTCUT(goto_options, MEN_OPTIONS);
 
 extern bool permadeath;
 static void instaquit() {
 	permadeath = true;
 }
 
+// Singleplayer
+// TODO
+
+// Multiplayer
+SHORTCUT(goto_host_lobby, MEN_HOST_LOBBY);
+SHORTCUT(goto_join_lobby, MEN_JOIN_LOBBY);
+SHORTCUT(goto_find_lobby, MEN_FIND_LOBBY);
+
+// Host Lobby
+// TODO
+
+// Join a Lobby
+// TODO
+
+// Find lobbies
+// TODO
+
+// Options
+SHORTCUT(goto_controls, MEN_CONTROLS);
+
+// Controls
+// TODO
+#undef SHORTCUT
+
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {.noreturn = true},
 	[MEN_INTRO] = {.noreturn = true},
-	[MEN_MAIN] = {.noreturn = true},
+	[MEN_MAIN] = {"Mario Together", .noreturn = true},
+	[MEN_SINGLEPLAYER] = {"Singleplayer"},
+	[MEN_MULTIPLAYER] = {"Multiplayer"},
+	[MEN_HOST_LOBBY] = {"Host Lobby"},
+	[MEN_JOIN_LOBBY] = {"Join a Lobby"},
+	[MEN_FIND_LOBBY] = {"Find Lobbies"},
+	[MEN_JOINING_LOBBY] = {"Please wait..."},
 };
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_MAIN] = {
@@ -44,15 +71,16 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	},
 	[MEN_SINGLEPLAYER] = {
 		{"Level: FMT"},
+		{},
 		{"Start!"},
 	},
 	[MEN_MULTIPLAYER] = {
-		{"Host Lobby"},
-		{"Join Lobby"},
-		{"Find Lobby"},
+		{"Host Lobby", .callback = goto_host_lobby},
+		{"Join a Lobby", .callback = goto_join_lobby},
+		{"Find Lobbies", .callback = goto_find_lobby},
 	},
 	[MEN_OPTIONS] = {
-		{"Controls"},
+		{"Change Controls", .callback = goto_controls},
 		{},
 		{"Name: FMT"},
 		{"Skin: FMT"},
@@ -65,17 +93,49 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Sound Volume: FMT"},
 		{"Music Volume: FMT"},
 	},
+	[MEN_CONTROLS] = {
+		{"Up: FMT"},
+		{"Left: FMT"},
+		{"Down: FMT"},
+		{"Right: FMT"},
+		{},
+		{"Jump: FMT"},
+		{"Run: FMT"},
+		{"Fire: FMT"},
+	},
 	[MEN_HOST_LOBBY] = {
+		// FIXME: Add explicit lobby hosting to NutPunch. (if the lobby ID already exists, add a "(1)" to it or something)
+		{"Lobby ID: FMT"},
+
+		// FIXME: Potential features for NutPunch.
+		{"Visibility: FMT", .disabled = true},
+		{"Password: FMT", .disabled = true},
+
+		{},
+
+		// NOTE: You can have peers beyond MAX_PLAYERS, they'll just become spectators.
 		{"Players: FMT"},
+
+		{},
 		{"Host!"},
 	},
 	[MEN_JOIN_LOBBY] = {
+		// FIXME: Add explicit lobby joining to NutPunch.
 		{"Lobby ID: FMT"},
+		{},
 		{"Join!"},
 	},
-	[MEN_FIND_LOBBY] = {},
+	[MEN_FIND_LOBBY] = {
+		{"No lobbies found", .disabled = true},
+		// FIXME: Display lobbies with player counts
+	},
+	[MEN_JOINING_LOBBY] = {
+		{"Joining lobby \"FMT\"", .disabled = true},
+	},
 	[MEN_LOBBY] = {
+		{"Lobby: FMT", .disabled = true},
 		{"Level: FMT"},
+		{},
 		{"Start!"},
 	},
 };
@@ -162,8 +222,20 @@ void update_menu() {
 			}
 		}
 
-		if (kb_pressed(KB_PAUSE) && set_menu(MENUS[menu].from))
-			play_generic_sound("select");
+		if (kb_pressed(KB_PAUSE))
+			switch (menu) {
+				// FIXME: Replace this non-default junk with actual lobby stuff
+				case MEN_JOINING_LOBBY: // Should abort connection and return to previous menu
+				case MEN_LOBBY: // Should disconnect and return to the menu before MEN_JOINING_LOBBY
+					noop();
+					break;
+
+				default: {
+					if (set_menu(MENUS[menu].from))
+						play_generic_sound("select");
+					break;
+				}
+			}
 	}
 }
 
@@ -191,8 +263,9 @@ void draw_menu() {
 		const float lx = 0.5f * dt();
 		option->hover = glm_lerp(option->hover, (float)(MENUS[menu].option == i), SDL_min(lx, 1));
 
-		batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), option->name,
-			XYZ(48 + (option->hover * 8), 24 + (i * 24), 0), (option->disabled) ? ALPHA(128) : WHITE);
+		batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP),
+			option->format != NULL ? option->format() : option->name,
+			XYZ(48 + (option->hover * 8), 24 + (i * 24), 0), option->disabled ? ALPHA(128) : WHITE);
 	}
 
 jobwelldone:

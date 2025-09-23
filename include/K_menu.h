@@ -6,9 +6,9 @@
 
 typedef struct {
 	const char* name;
-	void (*callback)();
 	bool disabled;
-	void (*format)();
+	void (*callback)();
+	const char* (*format)();
 	float hover;
 } Option;
 
@@ -23,12 +23,15 @@ typedef enum {
 	MEN_HOST_LOBBY,
 	MEN_JOIN_LOBBY,
 	MEN_FIND_LOBBY,
+	MEN_JOINING_LOBBY,
 	MEN_LOBBY,
 	MEN_SIZE,
 } MenuType;
 
 typedef struct {
+	const char* name;
 	bool noreturn;
+
 	MenuType from;
 	size_t option;
 	float cursor;
