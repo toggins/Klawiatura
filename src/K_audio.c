@@ -1,10 +1,10 @@
-#include <fmod_errors.h>
-
 #include "K_audio.h"
 #include "K_file.h"
 #include "K_log.h"
 #include "K_memory.h"
 #include "K_string.h"
+
+#include <fmod_errors.h>
 
 static FMOD_SYSTEM* speaker = NULL;
 

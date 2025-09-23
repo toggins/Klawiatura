@@ -1,11 +1,11 @@
-#include <SDL3_image/SDL_image.h>
-
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
 #include "K_memory.h"
 #include "K_string.h"
 #include "K_video.h"
+
+#include <SDL3_image/SDL_image.h>
 
 static SDL_Window* window = NULL;
 static SDL_GLContext gpu = NULL;

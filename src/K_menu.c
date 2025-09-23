@@ -1,7 +1,7 @@
-#include "K_menu.h"
 #include "K_audio.h"
 #include "K_game.h"
 #include "K_input.h"
+#include "K_menu.h"
 #include "K_tick.h"
 #include "K_video.h"
 

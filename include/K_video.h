@@ -4,7 +4,6 @@
 // ^ required for `CHAR_MAX` below. DO TOUCH YOU LOVER
 
 #include <glad/gl.h>
-
 #include <SDL3/SDL_opengl.h>
 #include <SDL3/SDL_video.h>
 

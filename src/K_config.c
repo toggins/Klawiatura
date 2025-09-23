@@ -1,5 +1,5 @@
-#include "K_config.h"
 #include "K_audio.h"
+#include "K_config.h"
 #include "K_file.h"
 #include "K_input.h"
 #include "K_log.h"
