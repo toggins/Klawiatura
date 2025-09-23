@@ -55,6 +55,6 @@ KeybindValue kb_value(Keybind kb) {
 	return CHECK_KB(kb_now, kb) ? KB_VALUE_MAX : 0;
 }
 
-KeybindValue kb_axis(Keybind neg, Keybind pos) {
-	return (KeybindValue)((kb_value(pos) - kb_value(neg)) * KB_VALUE_MAX);
+float kb_axis(Keybind neg, Keybind pos) {
+	return (float)(kb_value(pos) - kb_value(neg)) / (float)KB_VALUE_MAX;
 }

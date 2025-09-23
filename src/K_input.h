@@ -4,7 +4,6 @@
 #include <SDL3/SDL_stdinc.h>
 
 #define KB_VALUE_MAX 32767
-#define KB_NORMALIZE(x) ((float)(x) / (float)KB_VALUE_MAX)
 
 typedef enum {
 	KB_UP,
@@ -40,4 +39,4 @@ void input_keydown(SDL_Scancode), input_keyup(SDL_Scancode);
 
 bool kb_pressed(Keybind), kb_down(Keybind);
 KeybindValue kb_value(Keybind);
-KeybindValue kb_axis(Keybind, Keybind);
+float kb_axis(Keybind, Keybind);
