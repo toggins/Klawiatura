@@ -25,6 +25,7 @@ void input_teardown() {}
 
 void input_newframe() {
 	kb_then = kb_now;
+	kb_now = 0;
 }
 
 #define KB_SET_IF(cond)                                                                                                \
@@ -38,7 +39,8 @@ void input_keydown(SDL_Scancode key) {
 	KB_SET_IF(key == BINDS[i].key);
 }
 void input_keyup(SDL_Scancode key) {
-	KB_UNSET_IF(key == BINDS[i].key);
+	// DO JACK SHIT!!!!!!
+	// KB_UNSET_IF(key == BINDS[i].key);
 }
 
 #define CHECK_KB(table, kb) (((table) & (1 << (kb))) != 0)
