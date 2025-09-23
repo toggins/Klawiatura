@@ -62,6 +62,7 @@ int main(int argc, char* argv[]) {
 
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
 		FATAL("SDL_Init fail: %s", SDL_GetError());
+
 	file_init(data_path);
 	video_init(force_shader);
 	audio_init();
@@ -81,6 +82,9 @@ int main(int argc, char* argv[]) {
 					break;
 				case SDL_EVENT_KEY_UP:
 					input_keyup(event.key.scancode);
+					break;
+				case SDL_EVENT_WINDOW_RESIZED:
+					set_resolution(event.window.data1, event.window.data2);
 					break;
 				default:
 					break;
