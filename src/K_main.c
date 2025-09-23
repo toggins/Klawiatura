@@ -22,6 +22,7 @@
 #include "K_game.h" // IWYU pragma: keep (for now)
 #include "K_input.h"
 #include "K_menu.h"
+#include "K_state.h"
 #include "K_video.h"
 
 static void cmd_ip(IterArg);
@@ -43,6 +44,7 @@ CmdArg CMDLINE[] = {
 	{NULL, NULL,            NULL                  },
 };
 
+bool permadeath = false;
 int main(int argc, char* argv[]) {
 	INFO("==========[KLAWIATURA]==========");
 	INFO("      MARIO FOREVER ONLINE      ");
@@ -69,7 +71,7 @@ int main(int argc, char* argv[]) {
 
 	start_menu(skip_intro);
 
-	for (;;) {
+	while (!permadeath) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 			switch (event.type) {

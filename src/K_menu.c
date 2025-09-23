@@ -1,75 +1,77 @@
-#include <SDL3/SDL_timer.h>
-
+#include "K_menu.h"
 #include "K_audio.h"
 #include "K_game.h"
 #include "K_input.h"
-#include "K_menu.h"
+#include "K_state.h"
 #include "K_video.h"
 
-static uint64_t last_time = 0;
-static float delta_time = 0, ticks = 0, draw_ticks = 0;
-
-static int intro_time = 0;
 static MenuType menu = MEN_NULL;
+
+extern bool permadeath;
+static void instaquit() {
+	permadeath = true;
+}
 
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {NULL},
 	[MEN_INTRO] = {NULL},
 
 	[MEN_MAIN] = {{
-		{"Mario Together", NULL, true},
-		{NULL, NULL},
-		{"Singleplayer", NULL},
-		{"Multiplayer", NULL},
-		{"Options", NULL},
-		{"Exit", NULL},
+		{"Mario Together", .disabled = true},
+		{},
+		{"Singleplayer"},
+		{"Multiplayer"},
+		{"Options"},
+		{"Exit", .callback = instaquit},
 	}},
 
 	[MEN_SINGLEPLAYER] = {{
-		{"Level: FMT", NULL},
-		{"Start!", NULL},
+		{"Level: FMT"},
+		{"Start!"},
 	}},
 
 	[MEN_MULTIPLAYER] = {{
-		{"Host Lobby", NULL},
-		{"Join Lobby", NULL},
-		{"Find Lobby", NULL},
+		{"Host Lobby"},
+		{"Join Lobby"},
+		{"Find Lobby"},
 	}},
 
 	[MEN_OPTIONS] = {{
-		{"Controls", NULL},
-		{NULL, NULL, true},
-		{"Name: FMT", NULL},
-		{"Skin: FMT", NULL},
-		{NULL, NULL, true},
-		{"Scale: FMT", NULL},
-		{"Fullscreen: FMT", NULL},
-		{"Vsync: FMT", NULL},
-		{NULL, NULL, true},
-		{"Master Volume: FMT", NULL},
-		{"Sound Volume: FMT", NULL},
-		{"Music Volume: FMT", NULL},
+		{"Controls"},
+		{},
+		{"Name: FMT"},
+		{"Skin: FMT"},
+		{},
+		{"Scale: FMT"},
+		{"Fullscreen: FMT"},
+		{"Vsync: FMT"},
+		{},
+		{"Master Volume: FMT"},
+		{"Sound Volume: FMT"},
+		{"Music Volume: FMT"},
 	}},
 
 	[MEN_HOST_LOBBY] = {{
-		{"Players: FMT", NULL},
-		{"Host!", NULL},
+		{"Players: FMT"},
+		{"Host!"},
 	}},
 
 	[MEN_JOIN_LOBBY] = {{
-		{"Lobby ID: FMT", NULL},
-		{"Join!", NULL},
+		{"Lobby ID: FMT"},
+		{"Join!"},
 	}},
 
-	[MEN_FIND_LOBBY] = {NULL},
+	[MEN_FIND_LOBBY] = {{}},
 
 	[MEN_LOBBY] = {{
-		{"Level: FMT", NULL},
-		{"Start!", NULL},
+		{"Level: FMT"},
+		{"Start!"},
 	}},
 };
 
 void start_menu(bool skip_intro) {
+	from_scratch();
+
 	load_texture("ui/disclaimer");
 	load_texture("ui/background");
 
@@ -96,25 +98,14 @@ void start_menu(bool skip_intro) {
 	if (skip_intro) {
 		set_menu(MEN_MAIN, false);
 		play_generic_track("title", true);
-	} else {
+	} else
 		set_menu(MEN_INTRO, false);
-	}
-	last_time = SDL_GetPerformanceCounter();
 }
 
 void update_menu() {
-	const uint64_t current_time = SDL_GetPerformanceCounter();
-
-	delta_time = ((float)(current_time - last_time) / (float)SDL_GetPerformanceFrequency()) * (float)TICKRATE;
-	ticks += delta_time;
-	draw_ticks += delta_time;
-
-	last_time = current_time;
-
-	while (ticks >= 1) {
+	for (new_frame(); got_ticks(); next_tick()) {
 		if (menu == MEN_INTRO) {
-			++intro_time;
-			if (intro_time >= 150 || kb_pressed(KB_UI_ENTER)) {
+			if (totalticks() >= 150 || kb_pressed(KB_UI_ENTER)) {
 				set_menu(MEN_MAIN, false);
 				play_generic_track("title", true);
 			} else
@@ -122,7 +113,7 @@ void update_menu() {
 		}
 
 		int change = kb_pressed(KB_UI_DOWN) - kb_pressed(KB_UI_UP);
-		if (change == 0)
+		if (!change)
 			goto try_select;
 
 		size_t old_option = MENUS[menu].option;
@@ -154,7 +145,6 @@ void update_menu() {
 
 	skip_tick:
 		input_newframe();
-		--ticks;
 	}
 }
 
@@ -169,13 +159,13 @@ void draw_menu() {
 
 	batch_sprite("ui/background", XYZ(0, 0, 0), NO_FLIP, 0, WHITE);
 
-	MENUS[menu].cursor = glm_lerp(MENUS[menu].cursor, (float)MENUS[menu].option, 0.6f * delta_time);
+	MENUS[menu].cursor = glm_lerp(MENUS[menu].cursor, (float)MENUS[menu].option, 0.6f * dt());
 	batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), ">",
-		XYZ(44 + (SDL_sinf(draw_ticks / 5.f) * 4), 24 + (MENUS[menu].cursor * 24), 0), WHITE);
+		XYZ(44 + (SDL_sinf(totalticks() / 5.f) * 4), 24 + (MENUS[menu].cursor * 24), 0), WHITE);
 
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		Option* option = &MENUS[menu].options[i];
-		option->hover = glm_lerp(option->hover, (float)(MENUS[menu].option == i), 0.5f * delta_time);
+		option->hover = glm_lerp(option->hover, (float)(MENUS[menu].option == i), 0.5f * dt());
 		batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), option->name,
 			XYZ(48 + (option->hover * 8), 24 + (i * 24), 0), (option->disabled) ? ALPHA(128) : WHITE);
 	}
@@ -192,18 +182,13 @@ void set_menu(MenuType men, bool allow_return) {
 	menu = men;
 
 	// Go to nearest valid option
-	bool found_option = false;
 	size_t new_option = MENUS[menu].option;
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		Option* option = &MENUS[menu].options[new_option];
 		if (option->name != NULL && !option->disabled) {
-			found_option = true;
+			MENUS[menu].option = new_option;
 			break;
 		}
-
 		new_option = (new_option + 1) % MAX_OPTIONS;
 	}
-
-	if (found_option)
-		MENUS[menu].option = new_option;
 }
