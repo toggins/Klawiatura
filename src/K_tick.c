@@ -1,6 +1,5 @@
 #include <SDL3/SDL_timer.h>
 
-#include "K_game.h"
 #include "K_input.h"
 #include "K_tick.h"
 

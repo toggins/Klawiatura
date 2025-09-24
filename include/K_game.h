@@ -5,8 +5,6 @@
 #include "K_net.h" // IWYU pragma: keep
 #include "K_video.h"
 
-#define TICKRATE 50
-
 #define MAX_PLAYERS 4
 #define MAX_MISSILES 2
 #define MAX_SINK 6
