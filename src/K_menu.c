@@ -78,6 +78,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_CONTROLS] = {"Change Controls"},
 };
 
+#define EDIT(var) .edit = (var), .edit_size = sizeof(var)
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_MAIN] = {
 		{"Singleplayer", .enter = MEN_SINGLEPLAYER},
@@ -86,7 +87,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Exit", .callback = instaquit},
 	},
 	[MEN_SINGLEPLAYER] = {
-		{"Level: %s", .format = fmt_level, .edit = CLIENT.game.level, .edit_size = sizeof(CLIENT.game.level)},
+		{"Level: %s", .format = fmt_level, EDIT(CLIENT.game.level)},
 		{},
 		{"Start!"},
 	},
@@ -98,8 +99,8 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_OPTIONS] = {
 		{"Change Controls", .enter = MEN_CONTROLS},
 		{},
-		{"Name: %s", .format = fmt_name, .edit = CLIENT.user.name, .edit_size = sizeof(CLIENT.user.name)},
-		{"Skin: %s", .format = fmt_skin, .edit = CLIENT.user.skin, .edit_size = sizeof(CLIENT.user.skin)},
+		{"Name: %s", .format = fmt_name, EDIT(CLIENT.user.name)},
+		{"Skin: %s", .format = fmt_skin, EDIT(CLIENT.user.skin)},
 		{},
 		{"Scale: %d"},
 		{"Fullscreen: %s"},
@@ -121,7 +122,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	},
 	[MEN_HOST_LOBBY] = {
 		// FIXME: Add explicit lobby hosting to NutPunch. (if the lobby ID already exists, add a "(1)" to it or something)
-		{"Lobby ID: %s", .format = fmt_lobby, .edit = CLIENT.lobby.name, .edit_size = sizeof(CLIENT.lobby.name)},
+		{"Lobby ID: %s", .format = fmt_lobby, EDIT(CLIENT.lobby.name)},
 
 		// FIXME: Potential feature for NutPunch.
 		{"Visibility: %s", .disabled = true, .format = fmt_lobby_public},
@@ -131,7 +132,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	},
 	[MEN_JOIN_LOBBY] = {
 		// FIXME: Add explicit lobby joining to NutPunch.
-		{"Lobby ID: %s", .format = fmt_lobby, .edit = CLIENT.lobby.name, .edit_size = sizeof(CLIENT.lobby.name)},
+		{"Lobby ID: %s", .format = fmt_lobby, EDIT(CLIENT.lobby.name)},
 		{},
 		{"Join!"},
 	},
@@ -146,11 +147,12 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Lobby: %s", .disabled = true, .format = fmt_lobby},
 		{},
 		{"Players: %d", .format = fmt_players, .callback = set_players},
-		{"Level: %s", .format = fmt_level, .edit = CLIENT.game.level, .edit_size = sizeof(CLIENT.game.level)},
+		{"Level: %s", .format = fmt_level, EDIT(CLIENT.game.level)},
 		{},
 		{"Start!"},
 	},
 };
+#undef EDIT
 
 void start_menu(bool skip_intro) {
 	from_scratch();
