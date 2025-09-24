@@ -4,14 +4,6 @@
 
 #define MAX_OPTIONS 16
 
-typedef struct {
-	const char* name;
-	bool disabled;
-	void (*callback)();
-	const char* (*format)();
-	float hover;
-} Option;
-
 typedef enum {
 	MEN_NULL,
 	MEN_INTRO,
@@ -27,6 +19,15 @@ typedef enum {
 	MEN_LOBBY,
 	MEN_SIZE,
 } MenuType;
+
+typedef struct {
+	const char* name;
+	bool disabled;
+	void (*callback)();
+	const char* (*format)();
+	float hover;
+	MenuType enter;
+} Option;
 
 typedef struct {
 	const char* name;

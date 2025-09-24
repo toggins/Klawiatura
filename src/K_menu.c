@@ -11,15 +11,8 @@ static void noop() {
 	// Do nothing as if something was done. For testing purposes only.
 }
 
-#define SHORTCUT(fname, men)                                                                                           \
-	static void fname() {                                                                                          \
-		set_menu(men);                                                                                         \
-	}
-
 // Main Menu
-SHORTCUT(goto_singleplayer, MEN_SINGLEPLAYER);
-SHORTCUT(goto_multiplayer, MEN_MULTIPLAYER);
-SHORTCUT(goto_options, MEN_OPTIONS);
+// TODO
 
 extern bool permadeath;
 static void instaquit() {
@@ -30,9 +23,7 @@ static void instaquit() {
 // TODO
 
 // Multiplayer
-SHORTCUT(goto_host_lobby, MEN_HOST_LOBBY);
-SHORTCUT(goto_join_lobby, MEN_JOIN_LOBBY);
-SHORTCUT(goto_find_lobby, MEN_FIND_LOBBY);
+// TODO
 
 // Host Lobby
 // TODO
@@ -44,11 +35,10 @@ SHORTCUT(goto_find_lobby, MEN_FIND_LOBBY);
 // TODO
 
 // Options
-SHORTCUT(goto_controls, MEN_CONTROLS);
+// TODO
 
 // Controls
 // TODO
-#undef SHORTCUT
 
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {.noreturn = true},
@@ -66,9 +56,9 @@ static Menu MENUS[MEN_SIZE] = {
 
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_MAIN] = {
-		{"Singleplayer", .callback = goto_singleplayer},
-		{"Multiplayer", .callback = goto_multiplayer},
-		{"Options", .callback = goto_options},
+		{"Singleplayer", .enter = MEN_SINGLEPLAYER},
+		{"Multiplayer", .enter = MEN_MULTIPLAYER},
+		{"Options", .enter = MEN_OPTIONS},
 		{"Exit", .callback = instaquit},
 	},
 	[MEN_SINGLEPLAYER] = {
@@ -77,12 +67,12 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Start!"},
 	},
 	[MEN_MULTIPLAYER] = {
-		{"Host Lobby", .callback = goto_host_lobby},
-		{"Join a Lobby", .callback = goto_join_lobby},
-		{"Find Lobbies", .callback = goto_find_lobby},
+		{"Host Lobby", .enter = MEN_HOST_LOBBY},
+		{"Join a Lobby", .enter = MEN_JOIN_LOBBY},
+		{"Find Lobbies", .enter = MEN_FIND_LOBBY},
 	},
 	[MEN_OPTIONS] = {
-		{"Change Controls", .callback = goto_controls},
+		{"Change Controls", .enter = MEN_CONTROLS},
 		{},
 		{"Name: %s"},
 		{"Skin: %s"},
@@ -212,6 +202,10 @@ void update_menu() {
 			if (opt->callback != NULL && !opt->disabled) {
 				play_generic_sound("select");
 				opt->callback();
+			}
+			if (opt->enter != MEN_NULL) {
+				play_generic_sound("select");
+				set_menu(opt->enter);
 			}
 		}
 
