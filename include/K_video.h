@@ -156,15 +156,20 @@ typedef enum {
 void load_font(const char*);
 const Font* get_font(const char*);
 
+// Painting tools
+void move_cursor(const float x, const float y, const float z);
+void set_color(const GLubyte[4]);
+void set_angle(const GLfloat);
+
 // Batch
 void set_batch_alpha_test(GLfloat);
 void set_batch_stencil(GLfloat);
 void set_batch_logic(GLenum);
-void batch_sprite(const char*, const GLfloat[3], const GLboolean[2], GLfloat, const GLubyte[4]);
-void batch_surface(Surface*, const GLfloat[3], const GLubyte[4]);
-void batch_rectangle(const char*, const GLfloat[2][2], GLfloat, const GLubyte[4]);
-void batch_ellipse(const GLfloat[2][2], GLfloat, const GLubyte[4]);
-void batch_string(const char*, GLfloat, const FontAlignment[2], const char*, const GLfloat[3], const GLubyte[4]);
+void batch_sprite(const char*, const GLboolean[2]);
+void batch_surface(Surface*);
+void batch_rectangle(const char*, const GLfloat[2][2]);
+void batch_ellipse(const GLfloat[2][2]);
+void batch_string(const char*, GLfloat, const FontAlignment[2], const char*);
 void submit_batch();
 
 // Matrices
