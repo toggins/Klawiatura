@@ -34,6 +34,11 @@ enum {
 	TRK_SIZE,
 };
 
+typedef uint8_t PlayFlags;
+enum {
+	PLAY_LOOPING = 1 << 0,
+};
+
 void audio_init();
 void audio_update();
 void audio_teardown();
@@ -53,7 +58,7 @@ const Track* get_track(const char*);
 // Generic
 
 void play_generic_sound(const char*);
-void play_generic_track(const char*, bool);
+void play_generic_track(const char*, PlayFlags);
 void stop_generic_sounds();
 void stop_generic_tracks();
 
@@ -61,6 +66,6 @@ void stop_generic_tracks();
 
 void play_state_sound(const char*);
 void play_state_sound_at(const char*, float, float);
-void play_state_track(TrackSlots, const char*, bool);
+void play_state_track(TrackSlots, const char*, PlayFlags);
 void stop_state_sounds();
 void stop_state_tracks();

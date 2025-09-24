@@ -295,7 +295,7 @@ bool set_menu(MenuType next_menu) {
 	if (MENUS[menu].from != next_menu)
 		MENUS[next_menu].from = MENUS[next_menu].noreturn ? MEN_NULL : menu;
 	if ((menu == MEN_NULL || menu == MEN_INTRO) && next_menu == MEN_MAIN)
-		play_generic_track("title", true);
+		play_generic_track("title", PLAY_LOOPING);
 	menu = next_menu;
 
 	// Go to nearest valid option

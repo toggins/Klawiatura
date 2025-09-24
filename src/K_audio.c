@@ -191,7 +191,7 @@ void play_generic_sound(const char* name) {
 	FMOD_System_PlaySound(speaker, sound->sound, generic_sound_group, false, NULL);
 }
 
-void play_generic_track(const char* name, bool loop) {
+void play_generic_track(const char* name, PlayFlags flags) {
 	const Track* track = get_track(name);
 	if (track == NULL) {
 		WARN("Unknown track \"%s\"", name);
@@ -202,7 +202,7 @@ void play_generic_track(const char* name, bool loop) {
 
 	FMOD_CHANNEL* channel = NULL;
 	FMOD_System_PlaySound(speaker, track->stream, generic_music_group, true, &channel);
-	FMOD_Channel_SetMode(channel, (loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
+	FMOD_Channel_SetMode(channel, (flags & PLAY_LOOPING ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
 	FMOD_Channel_SetPaused(channel, false);
 }
 
