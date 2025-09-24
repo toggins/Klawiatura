@@ -42,10 +42,10 @@ CmdArg CMDLINE[] = {
 	{NULL, NULL,            NULL                  },
 };
 
-ClientInfo CLIENT = {
-	{"Player",     ""    },
-        {1,            "test"},
-        {"Klawiatura", true  }
+ClientInfo CLIENT = (ClientInfo){
+	.user = {"Player",     ""    },
+	.game = {1,            "test"},
+	.lobby = {"Klawiatura", true  },
 };
 
 bool quickstart = false;

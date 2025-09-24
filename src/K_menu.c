@@ -9,7 +9,7 @@
 
 extern ClientInfo CLIENT;
 
-static MenuType menu = MEN_NULL;
+static MenuType cur_menu = MEN_NULL;
 
 static void noop() {
 	// Do nothing as if something was done. For testing purposes only.
@@ -185,7 +185,7 @@ void start_menu(bool skip_intro) {
 
 void update_menu() {
 	for (new_frame(); got_ticks(); next_tick()) {
-		if (menu == MEN_INTRO) {
+		if (cur_menu == MEN_INTRO) {
 			if (totalticks() >= 150 || kb_pressed(KB_UI_ENTER))
 				set_menu(MEN_MAIN);
 			continue;
@@ -195,7 +195,7 @@ void update_menu() {
 		if (!change)
 			goto try_select;
 
-		size_t old_option = MENUS[menu].option;
+		size_t old_option = MENUS[cur_menu].option;
 		size_t new_option = old_option;
 
 		for (size_t i = 0; i < MAX_OPTIONS; i++) {
@@ -206,7 +206,7 @@ void update_menu() {
 			else
 				new_option += change;
 
-			Option* option = &OPTIONS[menu][new_option];
+			Option* option = &OPTIONS[cur_menu][new_option];
 			if (option->name != NULL && !option->disabled)
 				goto found_option;
 		}
@@ -214,13 +214,13 @@ void update_menu() {
 
 	found_option:
 		if (old_option != new_option) {
-			MENUS[menu].option = new_option;
+			MENUS[cur_menu].option = new_option;
 			play_generic_sound("switch");
 		}
 
 	try_select:
 		if (kb_pressed(KB_UI_ENTER)) {
-			const Option* opt = &OPTIONS[menu][MENUS[menu].option];
+			const Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
 			if (opt->callback != NULL && !opt->disabled) {
 				play_generic_sound("select");
 				opt->callback();
@@ -239,14 +239,14 @@ void update_menu() {
 		if (!kb_pressed(KB_PAUSE))
 			continue; // de-nesting
 		// TODO: stuff this into a cleanup function or something?
-		switch (menu) {
+		switch (cur_menu) {
 			// FIXME: Replace this non-default junk with actual lobby stuff
 			case MEN_JOINING_LOBBY: // Should abort connection and return to previous menu
 			case MEN_LOBBY:         // Should disconnect and return to the menu before MEN_JOINING_LOBBY
 				noop();
 				break;
 			default:
-				if (set_menu(MENUS[menu].from))
+				if (set_menu(MENUS[cur_menu].from))
 					play_generic_sound("select");
 				break;
 		}
@@ -256,41 +256,41 @@ void update_menu() {
 void draw_menu() {
 	start_drawing();
 
-	if (menu == MEN_INTRO)
+	if (cur_menu == MEN_INTRO)
 		goto draw_intro;
 
 	batch_sprite("ui/background", XYZ(0, 0, 0), NO_FLIP, 0, WHITE);
 
-	Menu* men = &MENUS[menu];
+	Menu* menu = &MENUS[cur_menu];
 	const float menu_y = 60;
 
 	const float lx = 0.6f * dt();
-	men->cursor = glm_lerp(men->cursor, (float)men->option, SDL_min(lx, 1));
-	if (!OPTIONS[menu][men->option].disabled)
+	menu->cursor = glm_lerp(menu->cursor, (float)menu->option, SDL_min(lx, 1));
+	if (!OPTIONS[cur_menu][menu->option].disabled)
 		batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), ">",
-			XYZ(44 + (SDL_sinf(totalticks() / 5.f) * 4), menu_y + (men->cursor * 24), 0), WHITE);
+			XYZ(44 + (SDL_sinf(totalticks() / 5.f) * 4), menu_y + (menu->cursor * 24), 0), WHITE);
 
-	batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), men->name, XYZ(48, 24, 0), RGBA(255, 144, 144, 192));
+	batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), menu->name, XYZ(48, 24, 0), RGBA(255, 144, 144, 192));
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
-		Option* option = &OPTIONS[menu][i];
-		if (option->name == NULL)
+		Option* opt = &OPTIONS[cur_menu][i];
+		if (opt->name == NULL)
 			continue;
 
 		const float lx = 0.5f * dt();
-		option->hover = glm_lerp(option->hover, (float)(men->option == i && !option->disabled), SDL_min(lx, 1));
+		opt->hover = glm_lerp(opt->hover, (float)(menu->option == i && !opt->disabled), SDL_min(lx, 1));
 
-		const char* name = fmt("%s%s", option->format != NULL ? option->format(option->name) : option->name,
-			(option->edit != NULL && typing_what() == option->edit && SDL_fmodf(totalticks(), 30) < 16)
-				? "|"
-				: "");
+		const char *suffix = "", *format = opt->format == NULL ? opt->name : opt->format(opt->name);
+		if (opt->edit != NULL && typing_what() == opt->edit && SDL_fmodf(totalticks(), 30) < 16)
+			suffix = "|";
+		const char* name = fmt("%s%s", format, suffix);
 
-		batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), name,
-			XYZ(48 + (option->hover * 8), menu_y + (i * 24), 0), option->disabled ? ALPHA(128) : WHITE);
+		batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), name, XYZ(48 + (opt->hover * 8), menu_y + (i * 24), 0),
+			opt->disabled ? ALPHA(128) : WHITE);
 	}
 
-	if (men->from != MEN_NULL) {
-		const char* indicator = fmt("[%s] %s", kb_label(KB_PAUSE),
-			(menu == MEN_JOINING_LOBBY || menu == MEN_LOBBY) ? "Disconnect" : "Back");
+	if (menu->from != MEN_NULL) {
+		const char *btn = (cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY) ? "Disconnect" : "Back",
+			   *indicator = fmt("[%s] %s", kb_label(KB_PAUSE), btn);
 		batch_string(
 			"main", 24, ALIGN(FA_LEFT, FA_BOTTOM), indicator, XYZ(48, SCREEN_HEIGHT - 24, 0), ALPHA(128));
 	}
@@ -316,22 +316,22 @@ jobwelldone:
 }
 
 bool set_menu(MenuType next_menu) {
-	if (menu == next_menu || next_menu <= MEN_NULL || next_menu >= MEN_SIZE)
+	if (cur_menu == next_menu || next_menu <= MEN_NULL || next_menu >= MEN_SIZE)
 		return false;
 
-	if (MENUS[menu].from != next_menu)
-		MENUS[next_menu].from = MENUS[next_menu].noreturn ? MEN_NULL : menu;
-	if ((menu == MEN_NULL || menu == MEN_INTRO) && next_menu == MEN_MAIN)
+	if (MENUS[cur_menu].from != next_menu)
+		MENUS[next_menu].from = MENUS[next_menu].noreturn ? MEN_NULL : cur_menu;
+	if ((cur_menu == MEN_NULL || cur_menu == MEN_INTRO) && next_menu == MEN_MAIN)
 		play_generic_track("title", PLAY_LOOPING);
-	menu = next_menu;
+	cur_menu = next_menu;
 
 	// Go to nearest valid option
-	size_t new_option = MENUS[menu].option;
+	size_t new_option = MENUS[cur_menu].option;
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
-		Option* option = &OPTIONS[menu][new_option];
+		Option* option = &OPTIONS[cur_menu][new_option];
 		if (option->name != NULL && !option->disabled) {
-			MENUS[menu].option = new_option;
-			MENUS[menu].cursor = (float)new_option;
+			MENUS[cur_menu].option = new_option;
+			MENUS[cur_menu].cursor = (float)new_option;
 			option->hover = 1;
 			break;
 		}
