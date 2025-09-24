@@ -259,8 +259,8 @@ void draw_menu() {
 	if (cur_menu == MEN_INTRO)
 		goto draw_intro;
 
-	move_cursor(0.f, 0.f, 0.f);
-	set_color(WHITE);
+	batch_cursor(0.f, 0.f, 0.f);
+	batch_color(WHITE);
 	batch_sprite("ui/background", NO_FLIP);
 
 	Menu* menu = &MENUS[cur_menu];
@@ -269,13 +269,13 @@ void draw_menu() {
 	const float lx = 0.6f * dt();
 	menu->cursor = glm_lerp(menu->cursor, (float)menu->option, SDL_min(lx, 1));
 	if (!OPTIONS[cur_menu][menu->option].disabled) {
-		move_cursor(44 + (SDL_sinf(totalticks() / 5.f) * 4), menu_y + (menu->cursor * 24), 0);
-		set_color(WHITE);
+		batch_cursor(44 + (SDL_sinf(totalticks() / 5.f) * 4), menu_y + (menu->cursor * 24), 0);
+		batch_color(WHITE);
 		batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), ">");
 	}
 
-	move_cursor(48, 24, 0);
-	set_color(RGBA(255, 144, 144, 192));
+	batch_cursor(48, 24, 0);
+	batch_color(RGBA(255, 144, 144, 192));
 	batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), menu->name);
 
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
@@ -291,16 +291,16 @@ void draw_menu() {
 			suffix = "|";
 		const char* name = fmt("%s%s", format, suffix);
 
-		move_cursor(48.f + (opt->hover * 8.f), menu_y + ((GLfloat)i * 24.f), 0.f);
-		set_color(opt->disabled ? ALPHA(128) : WHITE);
+		batch_cursor(48.f + (opt->hover * 8.f), menu_y + ((GLfloat)i * 24.f), 0.f);
+		batch_color(opt->disabled ? ALPHA(128) : WHITE);
 		batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), name);
 	}
 
 	if (menu->from != MEN_NULL) {
 		const char *btn = (cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY) ? "Disconnect" : "Back",
 			   *indicator = fmt("[%s] %s", kb_label(KB_PAUSE), btn);
-		move_cursor(48, SCREEN_HEIGHT - 24, 0);
-		set_color(ALPHA(128));
+		batch_cursor(48, SCREEN_HEIGHT - 24, 0);
+		batch_color(ALPHA(128));
 		batch_string("main", 24, ALIGN(FA_LEFT, FA_BOTTOM), indicator);
 	}
 
@@ -316,11 +316,11 @@ draw_intro:
 	if (ticks > 125)
 		a = 1.f - ((ticks - 100.f) / 25.f);
 
-	set_batch_alpha_test(0);
-	move_cursor(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, 0.f);
-	set_color(ALPHA(a * 255));
+	batch_alpha_test(0);
+	batch_cursor(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, 0.f);
+	batch_color(ALPHA(a * 255));
 	batch_sprite("ui/disclaimer", NO_FLIP);
-	set_batch_alpha_test(0.5f);
+	batch_alpha_test(0.5f);
 
 jobwelldone:
 	stop_drawing();

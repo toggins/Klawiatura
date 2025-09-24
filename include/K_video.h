@@ -79,7 +79,9 @@ typedef struct {
 	size_t vertex_count, vertex_capacity;
 	Vertex* vertices;
 
-	GLfloat color[4], stencil;
+	GLfloat cursor[3], angle;
+	GLubyte color[4];
+	GLfloat tint[4], stencil;
 	GLuint texture;
 	GLfloat alpha_test;
 	GLenum blend_src[2], blend_dest[2];
@@ -157,14 +159,14 @@ void load_font(const char*);
 const Font* get_font(const char*);
 
 // Painting tools
-void move_cursor(const float x, const float y, const float z);
-void set_color(const GLubyte[4]);
-void set_angle(const GLfloat);
+void batch_cursor(const GLfloat x, const GLfloat y, const GLfloat z);
+void batch_color(const GLubyte[4]);
+void batch_angle(const GLfloat);
 
 // Batch
-void set_batch_alpha_test(GLfloat);
-void set_batch_stencil(GLfloat);
-void set_batch_logic(GLenum);
+void batch_alpha_test(GLfloat);
+void batch_stencil(GLfloat);
+void batch_logic(GLenum);
 void batch_sprite(const char*, const GLboolean[2]);
 void batch_surface(Surface*);
 void batch_rectangle(const char*, const GLfloat[2][2]);
