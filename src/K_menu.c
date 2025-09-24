@@ -59,11 +59,11 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_JOIN_LOBBY] = {"Join a Lobby"},
 	[MEN_FIND_LOBBY] = {"Find Lobbies"},
 	[MEN_JOINING_LOBBY] = {"Please wait..."},
+	[MEN_OPTIONS] = {"Options"},
+	[MEN_CONTROLS] = {"Change Controls"},
 };
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_MAIN] = {
-		{"Mario Together", .disabled = true},
-		{},
 		{"Singleplayer", .callback = goto_singleplayer},
 		{"Multiplayer", .callback = goto_multiplayer},
 		{"Options", .callback = goto_options},
@@ -244,28 +244,49 @@ void draw_menu() {
 
 	if (menu == MEN_INTRO) {
 		clear_color(0, 0, 0, 1);
+
+		float a = 1.f;
+		const float ticks = totalticks();
+		if (ticks < 25)
+			a = ticks / 25.f;
+		if (ticks > 125)
+			a = 1.f - ((ticks - 100.f) / 25.f);
+
 		set_batch_alpha_test(0);
-		batch_sprite("ui/disclaimer", XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, 0), NO_FLIP, 0, WHITE);
+		batch_sprite(
+			"ui/disclaimer", XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, 0), NO_FLIP, 0, ALPHA(a * 255));
 		set_batch_alpha_test(0.5f);
 		goto jobwelldone;
 	}
 
 	batch_sprite("ui/background", XYZ(0, 0, 0), NO_FLIP, 0, WHITE);
 
-	const float lx = 0.6f * dt();
-	MENUS[menu].cursor = glm_lerp(MENUS[menu].cursor, (float)MENUS[menu].option, SDL_min(lx, 1));
-	batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), ">",
-		XYZ(44 + (SDL_sinf(totalticks() / 5.f) * 4), 24 + (MENUS[menu].cursor * 24), 0), WHITE);
+	Menu* men = &MENUS[menu];
+	const float menu_y = 60;
 
+	const float lx = 0.6f * dt();
+	men->cursor = glm_lerp(men->cursor, (float)men->option, SDL_min(lx, 1));
+	if (!OPTIONS[menu][men->option].disabled)
+		batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), ">",
+			XYZ(44 + (SDL_sinf(totalticks() / 5.f) * 4), menu_y + (men->cursor * 24), 0), WHITE);
+
+	batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), men->name, XYZ(48, 24, 0), RGBA(255, 144, 144, 192));
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		Option* option = &OPTIONS[menu][i];
 
 		const float lx = 0.5f * dt();
-		option->hover = glm_lerp(option->hover, (float)(MENUS[menu].option == i), SDL_min(lx, 1));
+		option->hover = glm_lerp(option->hover, (float)(men->option == i && !option->disabled), SDL_min(lx, 1));
 
 		batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP),
 			option->format != NULL ? option->format() : option->name,
-			XYZ(48 + (option->hover * 8), 24 + (i * 24), 0), option->disabled ? ALPHA(128) : WHITE);
+			XYZ(48 + (option->hover * 8), menu_y + (i * 24), 0), option->disabled ? ALPHA(128) : WHITE);
+	}
+
+	if (men->from != MEN_NULL) {
+		// FIXME: Find a way to display keybinds and replace the hardcoded string here.
+		//        KB_PAUSE isn't supposed to be customizable, but I don't care.
+		batch_string("main", 24, ALIGN(FA_LEFT, FA_BOTTOM), "[Esc] Back", XYZ(48, SCREEN_HEIGHT - 24, 0),
+			ALPHA(128));
 	}
 
 jobwelldone:
