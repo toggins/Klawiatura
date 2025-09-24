@@ -131,6 +131,9 @@ void set_resolution(int, int);
 void set_fullscreen(bool);
 void set_vsync(bool);
 
+bool window_start_typing();
+void window_stop_typing();
+
 // Basic
 void clear_color(GLfloat, GLfloat, GLfloat, GLfloat);
 void clear_depth(GLfloat);

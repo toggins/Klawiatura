@@ -1,9 +1,13 @@
 #include "K_audio.h"
+#include "K_cmd.h"
 #include "K_game.h"
 #include "K_input.h"
 #include "K_menu.h"
+#include "K_string.h"
 #include "K_tick.h"
 #include "K_video.h"
+
+extern ClientInfo CLIENT;
 
 static MenuType menu = MEN_NULL;
 
@@ -11,22 +15,33 @@ static void noop() {
 	// Do nothing as if something was done. For testing purposes only.
 }
 
-// Main Menu
-// TODO
+#define FMT_OPTION(fname, ...)                                                                                         \
+	static const char* fmt_##fname(const char* base) {                                                             \
+		return fmt(base, __VA_ARGS__);                                                                         \
+	}
 
+// Main Menu
 extern bool permadeath;
 static void instaquit() {
 	permadeath = true;
 }
 
 // Singleplayer
-// TODO
+FMT_OPTION(level, CLIENT.game.level);
 
 // Multiplayer
 // TODO
 
 // Host Lobby
-// TODO
+FMT_OPTION(lobby, CLIENT.lobby.name);
+FMT_OPTION(lobby_public, CLIENT.lobby.public ? "Public" : "Private");
+FMT_OPTION(players, CLIENT.game.players);
+
+static void set_players() {
+	++CLIENT.game.players;
+	while (CLIENT.game.players > MAX_PLAYERS)
+		CLIENT.game.players -= MAX_PLAYERS;
+}
 
 // Join a Lobby
 // TODO
@@ -35,10 +50,19 @@ static void instaquit() {
 // TODO
 
 // Options
-// TODO
+FMT_OPTION(name, CLIENT.user.name);
+FMT_OPTION(skin, CLIENT.user.skin);
 
 // Controls
-// TODO
+FMT_OPTION(up, kb_label(KB_UP));
+FMT_OPTION(left, kb_label(KB_LEFT));
+FMT_OPTION(down, kb_label(KB_DOWN));
+FMT_OPTION(right, kb_label(KB_RIGHT));
+FMT_OPTION(jump, kb_label(KB_JUMP));
+FMT_OPTION(fire, kb_label(KB_FIRE));
+FMT_OPTION(run, kb_label(KB_RUN));
+
+#undef FMT_OPTION
 
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {.noreturn = true},
@@ -62,7 +86,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Exit", .callback = instaquit},
 	},
 	[MEN_SINGLEPLAYER] = {
-		{"Level: %s"},
+		{"Level: %s", .format = fmt_level, .edit = CLIENT.game.level, .edit_size = sizeof(CLIENT.game.level)},
 		{},
 		{"Start!"},
 	},
@@ -74,8 +98,8 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_OPTIONS] = {
 		{"Change Controls", .enter = MEN_CONTROLS},
 		{},
-		{"Name: %s"},
-		{"Skin: %s"},
+		{"Name: %s", .format = fmt_name, .edit = CLIENT.user.name, .edit_size = sizeof(CLIENT.user.name)},
+		{"Skin: %s", .format = fmt_skin, .edit = CLIENT.user.skin, .edit_size = sizeof(CLIENT.user.skin)},
 		{},
 		{"Scale: %d"},
 		{"Fullscreen: %s"},
@@ -86,34 +110,28 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Music Volume: %d"},
 	},
 	[MEN_CONTROLS] = {
-		{"Up: %s"},
-		{"Left: %s"},
-		{"Down: %s"},
-		{"Right: %s"},
+		{"Up: %s", .format = fmt_up},
+		{"Left: %s", .format = fmt_left},
+		{"Down: %s", .format = fmt_down},
+		{"Right: %s", .format = fmt_right},
 		{},
-		{"Jump: %s"},
-		{"Run: %s"},
-		{"Fire: %s"},
+		{"Jump: %s", .format = fmt_jump},
+		{"Run: %s", .format = fmt_run},
+		{"Fire: %s", .format = fmt_fire},
 	},
 	[MEN_HOST_LOBBY] = {
 		// FIXME: Add explicit lobby hosting to NutPunch. (if the lobby ID already exists, add a "(1)" to it or something)
-		{"Lobby ID: %s"},
+		{"Lobby ID: %s", .format = fmt_lobby, .edit = CLIENT.lobby.name, .edit_size = sizeof(CLIENT.lobby.name)},
 
-		// FIXME: Potential features for NutPunch.
-		{"Visibility: %s", .disabled = true},
-		{"Password: %s", .disabled = true},
-
-		{},
-
-		// NOTE: You can have peers beyond MAX_PLAYERS, they'll just become spectators.
-		{"Players: %d"},
+		// FIXME: Potential feature for NutPunch.
+		{"Visibility: %s", .disabled = true, .format = fmt_lobby_public},
 
 		{},
 		{"Host!"},
 	},
 	[MEN_JOIN_LOBBY] = {
 		// FIXME: Add explicit lobby joining to NutPunch.
-		{"Lobby ID: %s"},
+		{"Lobby ID: %s", .format = fmt_lobby, .edit = CLIENT.lobby.name, .edit_size = sizeof(CLIENT.lobby.name)},
 		{},
 		{"Join!"},
 	},
@@ -122,11 +140,13 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		// FIXME: Display lobbies with player counts
 	},
 	[MEN_JOINING_LOBBY] = {
-		{"Joining lobby \"FMT\"", .disabled = true},
+		{"Joining lobby \"%s\"", .disabled = true, .format = fmt_lobby},
 	},
 	[MEN_LOBBY] = {
-		{"Lobby: %s", .disabled = true},
-		{"Level: %s"},
+		{"Lobby: %s", .disabled = true, .format = fmt_lobby},
+		{},
+		{"Players: %d", .format = fmt_players, .callback = set_players},
+		{"Level: %s", .format = fmt_level, .edit = CLIENT.game.level, .edit_size = sizeof(CLIENT.game.level)},
 		{},
 		{"Start!"},
 	},
@@ -203,6 +223,11 @@ void update_menu() {
 				play_generic_sound("select");
 				opt->callback();
 			}
+			if (opt->edit != NULL) {
+				play_generic_sound("select");
+				start_typing(opt->edit, opt->edit_size); // FIXME: Play "select" when pressing Enter or
+				                                         //        backspace while typing
+			}
 			if (opt->enter != MEN_NULL) {
 				play_generic_sound("select");
 				set_menu(opt->enter);
@@ -246,20 +271,26 @@ void draw_menu() {
 	batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), men->name, XYZ(48, 24, 0), RGBA(255, 144, 144, 192));
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		Option* option = &OPTIONS[menu][i];
+		if (option->name == NULL)
+			continue;
 
 		const float lx = 0.5f * dt();
 		option->hover = glm_lerp(option->hover, (float)(men->option == i && !option->disabled), SDL_min(lx, 1));
 
-		batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP),
-			option->format != NULL ? option->format() : option->name,
+		const char* name = fmt("%s%s", option->format != NULL ? option->format(option->name) : option->name,
+			(option->edit != NULL && typing_what() == option->edit && SDL_fmodf(totalticks(), 30) < 16)
+				? "|"
+				: "");
+
+		batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), name,
 			XYZ(48 + (option->hover * 8), menu_y + (i * 24), 0), option->disabled ? ALPHA(128) : WHITE);
 	}
 
 	if (men->from != MEN_NULL) {
-		// FIXME: Find a way to display keybinds and replace the hardcoded string here.
-		//        KB_PAUSE isn't supposed to be customizable, but I don't care.
-		batch_string("main", 24, ALIGN(FA_LEFT, FA_BOTTOM), "[Esc] Back", XYZ(48, SCREEN_HEIGHT - 24, 0),
-			ALPHA(128));
+		const char* indicator = fmt("[%s] %s", kb_label(KB_PAUSE),
+			(menu == MEN_JOINING_LOBBY || menu == MEN_LOBBY) ? "Disconnect" : "Back");
+		batch_string(
+			"main", 24, ALIGN(FA_LEFT, FA_BOTTOM), indicator, XYZ(48, SCREEN_HEIGHT - 24, 0), ALPHA(128));
 	}
 
 	goto jobwelldone;

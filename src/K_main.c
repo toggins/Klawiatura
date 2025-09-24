@@ -24,10 +24,9 @@
 #include "K_menu.h"
 #include "K_video.h"
 
-static void cmd_ip(IterArg);
+static void cmd_ip(IterArg), cmd_level(IterArg);
 MAKE_OPTION(data_path, NULL);
 MAKE_OPTION(config_path, NULL);
-MAKE_OPTION(level, NULL);
 MAKE_FLAG(force_shader);
 MAKE_FLAG(skip_intro);
 MAKE_FLAG(kevin);
@@ -39,10 +38,17 @@ CmdArg CMDLINE[] = {
 	{"-c", "-config",       CMD_FLAG(config_path) },
 	{"-K", "-kevin",        CMD_FLAG(kevin)       },
 	{"-a", "-ip",           cmd_ip                },
-	{"-l", "-level",        CMD_FLAG(level)       },
+	{"-l", "-level",        cmd_level             },
 	{NULL, NULL,            NULL                  },
 };
 
+ClientInfo CLIENT = {
+	{"Player",     ""    },
+        {1,            "test"},
+        {"Klawiatura", true  }
+};
+
+bool quickstart = false;
 bool permadeath = false;
 int main(int argc, char* argv[]) {
 	INFO("==========[KLAWIATURA]==========");
@@ -83,6 +89,9 @@ int main(int argc, char* argv[]) {
 				case SDL_EVENT_KEY_UP:
 					input_keyup(event.key.scancode);
 					break;
+				case SDL_EVENT_TEXT_INPUT:
+					input_text_input(event.text);
+					break;
 				case SDL_EVENT_WINDOW_RESIZED:
 					set_resolution(event.window.data1, event.window.data2);
 					break;
@@ -109,4 +118,9 @@ exit:
 
 static void cmd_ip(IterArg next) {
 	NutPunch_SetServerAddr(next());
+}
+
+static void cmd_level(IterArg next) {
+	SDL_strlcpy(CLIENT.game.level, next(), sizeof(CLIENT.game.level));
+	quickstart = true;
 }

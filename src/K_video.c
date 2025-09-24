@@ -230,6 +230,14 @@ void stop_drawing() {
 	SDL_GL_SwapWindow(window);
 }
 
+bool window_start_typing() {
+	return SDL_StartTextInput(window);
+}
+
+void window_stop_typing() {
+	SDL_StopTextInput(window);
+}
+
 // =======
 // DISPLAY
 // =======
@@ -581,8 +589,8 @@ static GLfloat string_width(const Font* font, GLfloat size, const char* str) {
 		}
 		if (SDL_isspace((int)gid))
 			gid = ' ';
-		if (gid <= 0 || gid > CHAR_MAX)
-			continue;
+		else if (gid <= 0 || gid > CHAR_MAX)
+			gid = '?';
 
 		// Valid glyph
 		cx += font->glyphs[gid].width * scale;
@@ -663,8 +671,8 @@ void batch_string(const char* name, GLfloat size, const FontAlignment alignment[
 		}
 		if (SDL_isspace((int)gid))
 			gid = ' ';
-		if (gid < 0 || gid > CHAR_MAX)
-			continue;
+		else if (gid < 0 || gid > CHAR_MAX)
+			gid = '?';
 
 		// Valid glyph
 		const Glyph* glyph = &font->glyphs[gid];

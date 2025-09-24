@@ -24,9 +24,12 @@ typedef struct {
 	const char* name;
 	bool disabled;
 	void (*callback)();
-	const char* (*format)();
+	const char* (*format)(const char*);
+
 	float hover;
 	MenuType enter;
+	char* edit;
+	size_t edit_size;
 } Option;
 
 typedef struct {

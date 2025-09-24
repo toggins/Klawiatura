@@ -1,6 +1,7 @@
 #include <SDL3/SDL_keyboard.h>
 
 #include "K_input.h"
+#include "K_video.h"
 
 static KeybindState kb_then = 0, kb_now = 0;           // Tick-specific
 static KeybindState kb_incoming = 0, kb_repeating = 0; // Event-specific
@@ -11,7 +12,7 @@ Bindings BINDS[KB_SIZE] = {
 	[KB_RIGHT] = {"Right",    SDL_SCANCODE_RIGHT },
 	[KB_JUMP] = {"Jump",     SDL_SCANCODE_Z     },
 	[KB_FIRE] = {"Fire",     SDL_SCANCODE_X     },
-	[KB_RUN] = {"Run",      SDL_SCANCODE_C     },
+	[KB_RUN] = {"Run",      SDL_SCANCODE_X     },
 
 	[KB_PAUSE] = {"Pause",    SDL_SCANCODE_ESCAPE},
 	[KB_UI_UP] = {"UI Up",    SDL_SCANCODE_UP    },
@@ -19,7 +20,16 @@ Bindings BINDS[KB_SIZE] = {
 	[KB_UI_DOWN] = {"UI Down",  SDL_SCANCODE_DOWN  },
 	[KB_UI_RIGHT] = {"UI Right", SDL_SCANCODE_RIGHT },
 	[KB_UI_ENTER] = {"UI Enter", SDL_SCANCODE_Z     },
+
+	[KB_KEVIN_K] = {"K",        SDL_SCANCODE_K     },
+	[KB_KEVIN_E] = {"E",        SDL_SCANCODE_E     },
+	[KB_KEVIN_V] = {"V",        SDL_SCANCODE_V     },
+	[KB_KEVIN_I] = {"I",        SDL_SCANCODE_I     },
+	[KB_KEVIN_N] = {"N",        SDL_SCANCODE_N     },
 };
+
+static char* text = NULL;
+static size_t text_size = 0;
 
 void input_init() {}
 void input_teardown() {}
@@ -31,6 +41,18 @@ void input_newframe() {
 }
 
 void input_keydown(SDL_Scancode key) {
+	if (typing_what() != NULL) {
+		if (key == SDL_SCANCODE_BACKSPACE) {
+			// FIXME: This doesn't work properly on UTF8 strings. I'm too lazy to look into
+			//        SDL_StepBackUTF8()
+			const size_t len = SDL_strlen(text);
+			if (len > 0)
+				text[len - 1] = '\0';
+		} else if (key == SDL_SCANCODE_RETURN || key == SDL_SCANCODE_ESCAPE)
+			stop_typing();
+		return;
+	}
+
 	for (int i = 0; i < KB_SIZE; i++) {
 		const KeybindState mask = (key == BINDS[i].key) << i;
 		kb_incoming |= mask;
@@ -67,4 +89,31 @@ KeybindValue kb_value(Keybind kb) {
 
 float kb_axis(Keybind neg, Keybind pos) {
 	return (float)(kb_value(pos) - kb_value(neg)) / (float)KB_VALUE_MAX;
+}
+
+const char* kb_label(Keybind kb) {
+	return SDL_GetScancodeName(BINDS[kb].key);
+}
+
+void start_typing(char* ptext, size_t size) {
+	if (!window_start_typing())
+		return;
+	text = ptext;
+	text_size = size;
+}
+
+void stop_typing() {
+	window_stop_typing();
+	text = NULL;
+	text_size = 0;
+}
+
+const char* typing_what() {
+	return (text != NULL && text_size > 0) ? text : NULL;
+}
+
+void input_text_input(SDL_TextInputEvent event) {
+	if (typing_what() == NULL)
+		return;
+	SDL_strlcat(text, event.text, text_size);
 }
