@@ -129,8 +129,11 @@ void start_drawing();
 void stop_drawing();
 
 // Display
+void get_resolution(int*, int*);
 void set_resolution(int, int);
+bool get_fullscreen();
 void set_fullscreen(bool);
+bool get_vsync();
 void set_vsync(bool);
 
 bool window_start_typing();

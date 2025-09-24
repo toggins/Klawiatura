@@ -1,5 +1,6 @@
 #include "K_audio.h"
 #include "K_cmd.h"
+#include "K_config.h"
 #include "K_game.h"
 #include "K_input.h"
 #include "K_menu.h"
@@ -18,6 +19,31 @@ static void noop() {
 #define FMT_OPTION(fname, ...)                                                                                         \
 	static const char* fmt_##fname(const char* base) {                                                             \
 		return fmt(base, __VA_ARGS__);                                                                         \
+	}
+#define BOOL_OPTION(fname, get, set)                                                                                   \
+	static void toggle_##fname(int flip) {                                                                         \
+		(set)(!((get)()));                                                                                     \
+	}
+#define VOLUME_OPTION(vname)                                                                                           \
+	static void toggle_##vname(int flip) {                                                                         \
+		float volume = get_##vname();                                                                          \
+		const float delta = (float)flip * 0.1f;                                                                \
+                                                                                                                       \
+		if (delta > 0.f) {                                                                                     \
+			if (volume < 0.99f && (volume + delta) >= 1.f)                                                 \
+				volume = 1.f;                                                                          \
+			else if (volume >= 0.99f && (volume + delta) >= 1.f)                                           \
+				volume = 0.f;                                                                          \
+			else                                                                                           \
+				volume += delta;                                                                       \
+		} else if (volume > 0.01f && (volume + delta) < 0.f)                                                   \
+			volume = 0.f;                                                                                  \
+		else if (volume <= 0.01f && (volume + delta) <= 0.f)                                                   \
+			volume = 1.f;                                                                                  \
+		else                                                                                                   \
+			volume += delta;                                                                               \
+                                                                                                                       \
+		set_##vname(volume);                                                                                   \
 	}
 
 // Main Menu
@@ -53,6 +79,51 @@ static void set_players() {
 FMT_OPTION(name, CLIENT.user.name);
 FMT_OPTION(skin, CLIENT.user.skin);
 
+static const char* fmt_resolution(const char* base) {
+	int width, height;
+	get_resolution(&width, &height);
+
+	return fmt(base, width, height);
+}
+
+static void toggle_resolution(int flip) {
+	int width, height;
+	get_resolution(&width, &height);
+
+	const float sx = (float)width / (float)SCREEN_WIDTH;
+	const float sy = (float)height / (float)SCREEN_HEIGHT;
+	const float scale = SDL_max(sx, sy);
+
+	if (flip >= 0) {
+		if (scale < 1.25)
+			set_resolution(SCREEN_WIDTH * 1.5, SCREEN_HEIGHT * 1.5);
+		else if (scale >= 1.25 && scale < 1.75)
+			set_resolution(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2);
+		else if (scale >= 1.75)
+			set_resolution(SCREEN_WIDTH, SCREEN_HEIGHT);
+	} else if (scale < 1.25)
+		set_resolution(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2);
+	else if (scale >= 1.25 && scale < 1.75)
+		set_resolution(SCREEN_WIDTH, SCREEN_HEIGHT);
+	else if (scale >= 1.75)
+		set_resolution(SCREEN_WIDTH * 1.5, SCREEN_HEIGHT * 1.5);
+}
+
+FMT_OPTION(fullscreen, get_fullscreen() ? "On" : "Off");
+BOOL_OPTION(fullscreen, get_fullscreen, set_fullscreen);
+
+FMT_OPTION(vsync, get_vsync() ? "On" : "Off");
+BOOL_OPTION(vsync, get_vsync, set_vsync);
+
+FMT_OPTION(volume, get_volume() * 100);
+VOLUME_OPTION(volume);
+
+FMT_OPTION(sound_volume, get_sound_volume() * 100);
+VOLUME_OPTION(sound_volume);
+
+FMT_OPTION(music_volume, get_music_volume() * 100);
+VOLUME_OPTION(music_volume);
+
 // Controls
 FMT_OPTION(up, kb_label(KB_UP));
 FMT_OPTION(left, kb_label(KB_LEFT));
@@ -63,6 +134,8 @@ FMT_OPTION(fire, kb_label(KB_FIRE));
 FMT_OPTION(run, kb_label(KB_RUN));
 
 #undef FMT_OPTION
+#undef BOOL_OPTION
+#undef VOLUME_OPTION
 
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {.noreturn = true},
@@ -102,13 +175,13 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Name: %s", .format = fmt_name, EDIT(CLIENT.user.name)},
 		{"Skin: %s", .format = fmt_skin, EDIT(CLIENT.user.skin)},
 		{},
-		{"Scale: %d"},
-		{"Fullscreen: %s"},
-		{"Vsync: %s"},
+		{"Resolution: %dx%d", .format = fmt_resolution, .callback = toggle_resolution},
+		{"Fullscreen: %s", .format = fmt_fullscreen, .callback = toggle_fullscreen},
+		{"Vsync: %s", .format = fmt_vsync, .callback = toggle_vsync},
 		{},
-		{"Master Volume: %d"},
-		{"Sound Volume: %d"},
-		{"Music Volume: %d"},
+		{"Master Volume: %.0f%%", .format = fmt_volume, .callback = toggle_volume},
+		{"Sound Volume: %.0f%%", .format = fmt_sound_volume, .callback = toggle_sound_volume},
+		{"Music Volume: %.0f%%", .format = fmt_music_volume, .callback = toggle_music_volume},
 	},
 	[MEN_CONTROLS] = {
 		{"Up: %s", .format = fmt_up},
@@ -191,6 +264,9 @@ void update_menu() {
 			continue;
 		}
 
+		// GROSS HACK: Disable "Resolution" option on fullscreen
+		OPTIONS[MEN_OPTIONS][5].disabled = get_fullscreen();
+
 		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
 		if (!change)
 			goto try_select;
@@ -219,18 +295,20 @@ void update_menu() {
 		}
 
 	try_select:
-		if (kb_pressed(KB_UI_ENTER)) {
+		bool entered = kb_pressed(KB_UI_ENTER);
+		int flip = kb_repeated(KB_UI_RIGHT) - kb_repeated(KB_UI_LEFT);
+		if (flip != 0 || entered) {
 			const Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
 			if (opt->callback != NULL && !opt->disabled) {
 				play_generic_sound("select");
-				opt->callback();
+				opt->callback(flip == 0 ? 1 : flip);
 			}
-			if (opt->edit != NULL) {
+			if (opt->edit != NULL && entered) {
 				play_generic_sound("select");
 				start_typing(opt->edit, opt->edit_size); // FIXME: Play "select" when pressing Enter or
 				                                         //        backspace while typing
 			}
-			if (opt->enter != MEN_NULL) {
+			if (opt->enter != MEN_NULL && entered) {
 				play_generic_sound("select");
 				set_menu(opt->enter);
 			}
@@ -332,8 +410,22 @@ bool set_menu(MenuType next_menu) {
 
 	if (MENUS[cur_menu].from != next_menu)
 		MENUS[next_menu].from = MENUS[next_menu].noreturn ? MEN_NULL : cur_menu;
-	if ((cur_menu == MEN_NULL || cur_menu == MEN_INTRO) && next_menu == MEN_MAIN)
-		play_generic_track("title", PLAY_LOOPING);
+	switch (cur_menu) {
+		case MEN_NULL:
+		case MEN_INTRO:
+			if (next_menu == MEN_MAIN)
+				play_generic_track("title", PLAY_LOOPING);
+			break;
+
+		case MEN_OPTIONS:
+		case MEN_CONTROLS:
+			if (next_menu != MEN_OPTIONS && next_menu != MEN_CONTROLS)
+				save_config();
+			break;
+
+		default:
+			break;
+	}
 	cur_menu = next_menu;
 
 	// Go to nearest valid option

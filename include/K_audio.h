@@ -43,8 +43,11 @@ void audio_init();
 void audio_update();
 void audio_teardown();
 
+float get_volume();
 void set_volume(float);
+float get_sound_volume();
 void set_sound_volume(float);
+float get_music_volume();
 void set_music_volume(float);
 
 // Assets

@@ -1,20 +1,55 @@
 #include "K_audio.h"
+#include "K_cmd.h"
 #include "K_config.h"
 #include "K_file.h"
 #include "K_input.h"
 #include "K_log.h"
+#include "K_string.h"
 #include "K_video.h"
 
 typedef struct {
 	const char* name;
-	void (*h_bool)(bool), (*h_int)(int), (*h_float)(float);
+
+	bool (*r_bool)();
+	int (*r_int)();
+	float (*r_float)();
+	const char* (*r_string)();
+
+	void (*w_bool)(bool);
+	void (*w_int)(int);
+	void (*w_float)(float);
+	void (*w_string)(const char*);
 } ConfigOption;
 
+extern ClientInfo CLIENT;
+static const char* get_name() {
+	return CLIENT.user.name;
+}
+static void set_name(const char* name) {
+	SDL_strlcpy(CLIENT.user.name, name, sizeof(CLIENT.user.name));
+}
+static const char* get_skin() {
+	return CLIENT.user.skin;
+}
+static void set_skin(const char* skin) {
+	SDL_strlcpy(CLIENT.user.skin, skin, sizeof(CLIENT.user.skin));
+}
+
 static int cfg_width = 0, cfg_height = 0;
+static int get_width() {
+	if (!get_fullscreen())
+		get_resolution(&cfg_width, &cfg_height);
+	return cfg_width;
+}
 static void set_width(int width) {
 	cfg_width = width;
 	if (cfg_height)
 		set_resolution(cfg_width, cfg_height);
+}
+static int get_height() {
+	if (!get_fullscreen())
+		get_resolution(&cfg_width, &cfg_height);
+	return cfg_height;
 }
 static void set_height(int height) {
 	cfg_height = height;
@@ -23,13 +58,15 @@ static void set_height(int height) {
 }
 
 static const ConfigOption OPTIONS[] = {
-	{"width",        .h_int = set_width         },
-	{"height",       .h_int = set_height        },
-	{"fullscreen",   .h_bool = set_fullscreen   },
-	{"vsync",        .h_bool = set_vsync        },
-	{"volume",       .h_float = set_volume      },
-	{"sound_volume", .h_float = set_sound_volume},
-	{"music_volume", .h_float = set_music_volume},
+	{"name",         .r_string = get_name,        .w_string = set_name       },
+	{"skin",         .r_string = get_skin,        .w_string = set_skin       },
+	{"width",        .r_int = get_width,          .w_int = set_width         },
+	{"height",       .r_int = get_height,         .w_int = set_height        },
+	{"fullscreen",   .r_bool = get_fullscreen,    .w_bool = set_fullscreen   },
+	{"vsync",        .r_bool = get_vsync,         .w_bool = set_vsync        },
+	{"volume",       .r_float = get_volume,       .w_float = set_volume      },
+	{"sound_volume", .r_float = get_sound_volume, .w_float = set_sound_volume},
+	{"music_volume", .r_float = get_music_volume, .w_float = set_music_volume},
 };
 
 static const char* config_path = NULL;
@@ -69,9 +106,10 @@ static void parse_config(yyjson_val* obj) {
 			const ConfigOption* opt = &OPTIONS[i];
 			if (SDL_strcmp(name, opt->name))
 				continue;
-			HANDLE_OPT(h_bool, yyjson_get_bool);
-			HANDLE_OPT(h_int, yyjson_get_int);
-			HANDLE_OPT(h_float, yyjson_get_real);
+			HANDLE_OPT(w_bool, yyjson_get_bool);
+			HANDLE_OPT(w_int, yyjson_get_int);
+			HANDLE_OPT(w_float, yyjson_get_real);
+			HANDLE_OPT(w_string, yyjson_get_str);
 		}
 		for (int i = 0; i < KB_SIZE; i++) {
 			if (BINDS[i].name == NULL)
@@ -105,4 +143,52 @@ void load_config() {
 	else
 		WARN("Config loading skipped, has to be a key-value mapping (got %s)", yyjson_get_type_desc(root));
 	yyjson_doc_free(json);
+}
+
+void save_config() {
+	if (config_path != NULL) {
+		WARN("Cannot save config outside of user path");
+		return;
+	}
+
+	yyjson_mut_doc* json = yyjson_mut_doc_new(NULL);
+	yyjson_mut_val* root = yyjson_mut_obj(json);
+	yyjson_mut_doc_set_root(json, root);
+
+	for (int i = 0; i < sizeof(OPTIONS) / sizeof(*OPTIONS); i++) {
+		const ConfigOption* opt = &OPTIONS[i];
+
+		yyjson_mut_val* key = yyjson_mut_strcpy(json, opt->name);
+		yyjson_mut_val* value = NULL;
+
+		if (opt->r_bool != NULL)
+			value = yyjson_mut_bool(json, opt->r_bool());
+		else if (opt->r_int != NULL)
+			value = yyjson_mut_sint(json, opt->r_int());
+		else if (opt->r_float != NULL)
+			value = yyjson_mut_double(json, opt->r_float());
+		else if (opt->r_string != NULL)
+			value = yyjson_mut_strcpy(json, opt->r_string());
+		else
+			value = yyjson_mut_null(json);
+
+		yyjson_mut_obj_add(root, key, value);
+	}
+
+	size_t size;
+	yyjson_write_err error;
+	char* buffer = yyjson_mut_write_opts(json, JSON_WRITE_FLAGS, NULL, &size, &error);
+	yyjson_mut_doc_free(json);
+
+	if (buffer == NULL) {
+		WTF("save_config fail: %s", error.msg);
+		return;
+	}
+	const char* path = fmt("%sconfig.json", get_user_path());
+	if (!SDL_SaveFile(path, buffer, size)) {
+		WTF("save_config fail: %s", SDL_GetError());
+		return;
+	}
+	SDL_free(buffer);
+	INFO("Config saved");
 }

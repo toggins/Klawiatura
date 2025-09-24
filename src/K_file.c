@@ -60,3 +60,11 @@ const char* find_data_file(const char* filename, const char* ignore_ext) {
 const char* find_user_file(const char* filename, const char* ignore_ext) {
 	return find_file(user_path, filename, ignore_ext);
 }
+
+const char* get_data_path() {
+	return data_path;
+}
+
+const char* get_user_path() {
+	return user_path;
+}

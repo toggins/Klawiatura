@@ -46,6 +46,7 @@ void audio_init() {
 	FMOD_System_GetMasterChannelGroup(speaker, &master_group);
 	FMOD_System_CreateChannelGroup(speaker, "sound", &sound_group);
 	FMOD_System_CreateChannelGroup(speaker, "music", &music_group);
+	FMOD_ChannelGroup_SetVolume(music_group, 0.5f);
 
 	FMOD_System_CreateChannelGroup(speaker, "generic", &generic_group);
 	FMOD_System_CreateChannelGroup(speaker, "generic_sound", &generic_sound_group);
@@ -82,12 +83,30 @@ void audio_teardown() {
 	FMOD_System_Release(speaker);
 }
 
+float get_volume() {
+	float volume = 1;
+	FMOD_ChannelGroup_GetVolume(master_group, &volume);
+	return volume;
+}
+
 void set_volume(float volume) {
 	FMOD_ChannelGroup_SetVolume(master_group, volume);
 }
 
+float get_sound_volume() {
+	float volume = 1;
+	FMOD_ChannelGroup_GetVolume(sound_group, &volume);
+	return volume;
+}
+
 void set_sound_volume(float volume) {
 	FMOD_ChannelGroup_SetVolume(sound_group, volume);
+}
+
+float get_music_volume() {
+	float volume = 0.5f;
+	FMOD_ChannelGroup_GetVolume(music_group, &volume);
+	return volume;
 }
 
 void set_music_volume(float volume) {

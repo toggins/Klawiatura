@@ -243,17 +243,31 @@ void window_stop_typing() {
 // DISPLAY
 // =======
 
+void get_resolution(int* width, int* height) {
+	SDL_GetWindowSizeInPixels(window, width, height);
+}
+
 void set_resolution(int width, int height) {
 	SDL_SetWindowSize(window, width <= 0 ? SCREEN_WIDTH : width, height <= 0 ? SCREEN_HEIGHT : height);
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	SDL_SyncWindow(window);
-	SDL_GetWindowSizeInPixels(window, &screen_width, &screen_height);
+	get_resolution(&screen_width, &screen_height);
+}
+
+bool get_fullscreen() {
+	return SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN;
 }
 
 void set_fullscreen(bool fullscreen) {
 	SDL_SetWindowFullscreen(window, fullscreen);
 	SDL_SyncWindow(window);
 	SDL_GetWindowSizeInPixels(window, &screen_width, &screen_height);
+}
+
+bool get_vsync() {
+	int interval = 0;
+	SDL_GL_GetSwapInterval(&interval);
+	return interval != 0;
 }
 
 void set_vsync(bool vsync) {
