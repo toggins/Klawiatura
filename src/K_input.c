@@ -41,24 +41,19 @@ void input_newframe() {
 }
 
 void input_keydown(SDL_Scancode key) {
-	if (typing_what() != NULL) {
-		if (key == SDL_SCANCODE_BACKSPACE) {
-			// FIXME: This doesn't work properly on UTF8 strings. I'm too lazy to look into
-			//        SDL_StepBackUTF8()
-			const size_t len = SDL_strlen(text);
-			if (len > 0)
-				text[len - 1] = '\0';
-		} else if (key == SDL_SCANCODE_RETURN || key == SDL_SCANCODE_ESCAPE)
-			stop_typing();
-		return;
-	}
-
-	for (int i = 0; i < KB_SIZE; i++) {
-		const KeybindState mask = (key == BINDS[i].key) << i;
-		kb_incoming |= mask;
-		kb_now |= mask;
-		kb_repeating |= mask;
-	}
+	if (typing_what() == NULL) {
+		for (int i = 0; i < KB_SIZE; i++) {
+			const KeybindState mask = (key == BINDS[i].key) << i;
+			kb_incoming |= mask;
+			kb_now |= mask;
+			kb_repeating |= mask;
+		}
+	} else if (key == SDL_SCANCODE_BACKSPACE) {
+		char* back = text + SDL_strlen(text);
+		if (SDL_StepBackUTF8(text, (const char**)&back))
+			*back = '\0';
+	} else if (key == SDL_SCANCODE_RETURN || key == SDL_SCANCODE_ESCAPE)
+		stop_typing();
 }
 void input_keyup(SDL_Scancode key) {
 	for (int i = 0; i < KB_SIZE; i++)
