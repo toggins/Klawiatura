@@ -659,7 +659,7 @@ void batch_string(const char* name, GLfloat size, const FontAlignment alignment[
 
 	size_t bytes = SDL_strlen(str);
 	while (bytes > 0) {
-		size_t gid = SDL_StepUTF8(&str, &bytes);
+		uint32_t gid = SDL_StepUTF8(&str, &bytes);
 
 		// Special/invalid characters
 		if (gid == '\r')
