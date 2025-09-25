@@ -34,7 +34,8 @@ typedef struct {
 } Option;
 
 typedef struct {
-	const char* name;
+	const char *name, *back_sound;
+	void (*update)(), (*enter)(), (*leave)(MenuType next);
 	bool noreturn, ghost;
 
 	MenuType from;
@@ -46,4 +47,4 @@ void start_menu(bool);
 void update_menu();
 void draw_menu();
 
-bool set_menu(MenuType);
+bool set_menu(MenuType), prev_menu();

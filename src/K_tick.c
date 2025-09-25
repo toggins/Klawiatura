@@ -22,11 +22,10 @@ void new_frame() {
 }
 
 bool got_ticks() {
-	if (pending_ticks >= 1.f) {
-		net_newframe();
-		return true;
-	}
-	return false;
+	if (pending_ticks < 1.f)
+		return false;
+	net_newframe();
+	return true;
 }
 
 void next_tick() {

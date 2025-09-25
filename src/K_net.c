@@ -8,13 +8,15 @@
 #include "K_cmd.h"
 #include "K_net.h"
 
-static const char* hostname = NUTPUNCH_DEFAULT_SERVER;
-
-static int status = 0;
-static const char* last_error = NULL;
+static const char *hostname = NUTPUNCH_DEFAULT_SERVER, *last_error = NULL;
 
 static char cur_lobby[CLIENT_STRING_MAX] = "";
-static bool hosting = false;
+static enum {
+	NET_NULL,
+	NET_HOST,
+	NET_JOIN,
+	NET_LIST,
+} netmode = NET_NULL;
 
 static const char* MAGIC_KEY = "KLAWIATURA";
 static const uint8_t MAGIC_VALUE = 127;
@@ -60,32 +62,53 @@ void set_hostname(const char* hn) {
 // INTERFACE
 // =========
 
+static void np_set_string(void setter(const char*, int, const void*), const char* name, const char* str) {
+	(setter)(name, (int)SDL_strnlen(str, NUTPUNCH_FIELD_DATA_MAX - 1), str);
+}
+static void np_lobby_set_string(const char* name, const char* str) {
+	return np_set_string(NutPunch_LobbySet, name, str);
+}
+static void np_peer_set_string(const char* name, const char* str) {
+	return np_set_string(NutPunch_PeerSet, name, str);
+}
+
+#define MAKE_LOBBY_GETTER(suffix, type)                                                                                \
+	static void np_lobby_get_##suffix(type* dest, const char* name) {                                              \
+		int size = 0;                                                                                          \
+		type* value = (type*)NutPunch_LobbyGet(name, &size);                                                   \
+		if (value != NULL && size == sizeof(type))                                                             \
+			*dest = *value;                                                                                \
+	}
+MAKE_LOBBY_GETTER(i8, int8_t);
+#undef MAKE_GETTER
+
+static void np_lobby_get_string(char* dest, const char* name) {
+	int size = 0;
+	char* str = (char*)NutPunch_LobbyGet(name, &size);
+	if (str != NULL && size <= NUTPUNCH_FIELD_DATA_MAX)
+		SDL_strlcpy(dest, str, size + 1);
+}
+
 extern ClientInfo CLIENT;
 void net_newframe() {
-	status = NutPunch_Update();
-	last_error = NutPunch_GetLastError();
-
-	if (!is_connected())
+	if (NutPunch_Update() == NP_Status_Error) {
+		netmode = NET_NULL;
+		last_error = NutPunch_GetLastError();
+	}
+	if (!is_connected()) {
+		SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
 		return;
+	}
 
 	if (NutPunch_PeerAlive(NutPunch_LocalPeer()))
-		NutPunch_PeerSet(
-			"NAME", (int)SDL_strnlen(CLIENT.user.name, NUTPUNCH_FIELD_DATA_MAX - 1), CLIENT.user.name);
+		np_peer_set_string("NAME", CLIENT.user.name);
 
-	if (hosting) {
+	if (netmode == NET_HOST) {
 		NutPunch_LobbySet("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
-		NutPunch_LobbySet(
-			"LEVEL", (int)SDL_strnlen(CLIENT.game.level, NUTPUNCH_FIELD_DATA_MAX - 1), CLIENT.game.level);
-	} else {
-		int size;
-
-		int8_t* pplayers = (int8_t*)NutPunch_LobbyGet("PLAYERS", &size);
-		if (pplayers != NULL && size == sizeof(CLIENT.game.players))
-			CLIENT.game.players = *pplayers;
-
-		char* plevel = (char*)NutPunch_LobbyGet("LEVEL", &size);
-		if (plevel != NULL && size <= NUTPUNCH_FIELD_DATA_MAX)
-			SDL_strlcpy(CLIENT.game.level, plevel, size + 1);
+		np_lobby_set_string("LEVEL", CLIENT.game.level);
+	} else if (netmode == NET_JOIN) {
+		np_lobby_get_i8(&CLIENT.game.players, "PLAYERS");
+		np_lobby_get_string(CLIENT.game.level, "LEVEL");
 	}
 }
 
@@ -94,7 +117,7 @@ const char* net_error() {
 }
 
 bool is_connected() {
-	return status == NP_Status_Online && cur_lobby[0] != '\0';
+	return netmode != NET_NULL && cur_lobby[0] != '\0';
 }
 
 void disconnect() {
@@ -110,7 +133,10 @@ const char* get_lobby_id() {
 	return cur_lobby[0] == '\0' ? NULL : cur_lobby;
 }
 
-static void driving_license_check_fr() {
+void find_lobby_mode(const char* id) {
+	if (id != NULL)
+		SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
+
 	struct NutPunch_Filter filter = {0};
 	SDL_memcpy(filter.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
 	SDL_memcpy(filter.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
@@ -119,46 +145,36 @@ static void driving_license_check_fr() {
 	NutPunch_FindLobbies(1, &filter);
 }
 
-static void driving_license_check(const char* id) {
-	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
-	driving_license_check_fr();
-}
-
 void host_lobby(const char* id) {
-	driving_license_check(id);
-	hosting = true;
+	find_lobby_mode(id);
+	netmode = NET_HOST;
 }
 
 void join_lobby(const char* id) {
-	driving_license_check(id);
-	hosting = false;
+	find_lobby_mode(id);
+	netmode = NET_JOIN;
+}
+
+void list_lobbies() {
+	find_lobby_mode(NULL);
+	netmode = NET_LIST;
 }
 
 int find_lobby() {
-	if (status != NP_Status_Online)
+	if (netmode == NET_NULL)
 		return -1;
-
 	int n = NutPunch_LobbyCount();
-	for (int i = 0; i < n; i++) {
-		if (SDL_strcmp(NutPunch_GetLobby(i), cur_lobby) != 0)
-			continue;
-		if (!hosting) {
+	for (int i = 0; i < n; i++)
+		if (netmode == NET_JOIN && !SDL_strcmp(NutPunch_GetLobby(i), cur_lobby)) {
 			NutPunch_Join(cur_lobby);
 			return 1;
 		}
-		break;
-	}
-	if (hosting) {
+	if (netmode == NET_HOST) {
 		NutPunch_Host(cur_lobby);
 		NutPunch_LobbySet(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
 		return 1;
 	}
-
 	return 0;
-}
-
-void list_lobbies() {
-	driving_license_check_fr();
 }
 
 int get_lobby_count() {

@@ -132,29 +132,33 @@ FMT_OPTION(run, kb_label(KB_RUN));
 #undef BOOL_OPTION
 #undef VOLUME_OPTION
 
+static void update_intro(), update_find_lobbies(), update_joining();
+static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_play_title(MenuType);
+
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {.noreturn = true},
-	[MEN_INTRO] = {.noreturn = true},
+	[MEN_INTRO] = {.noreturn = true, .update = update_intro},
 	[MEN_MAIN] = {"Mario Together", .noreturn = true},
 	[MEN_SINGLEPLAYER] = {"Singleplayer"},
 	[MEN_MULTIPLAYER] = {"Multiplayer"},
 	[MEN_HOST_LOBBY] = {"Host Lobby"},
 	[MEN_JOIN_LOBBY] = {"Join a Lobby"},
-	[MEN_FIND_LOBBY] = {"Find Lobbies"},
-	[MEN_JOINING_LOBBY] = {"Please wait...", .ghost = true},
-	[MEN_LOBBY] = {"Lobby"},
-	[MEN_OPTIONS] = {"Options"},
-	[MEN_CONTROLS] = {"Change Controls"},
+	[MEN_FIND_LOBBY]
+	= {"Find Lobbies", .update = update_find_lobbies, .enter = list_lobbies, .leave = cleanup_lobby_list},
+	[MEN_JOINING_LOBBY]
+	= {"Please wait...", .update = update_joining, .back_sound = "disconnect", .leave = disconnect, .ghost = true},
+	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .leave = disconnect},
+	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
+	[MEN_CONTROLS] = {"Change Controls", .leave = maybe_save_config},
 };
 
 // Find lobbies
 static void join_found_lobby() {
 	const char* lober = get_lobby((int)MENUS[MEN_FIND_LOBBY].option);
-	if (lober == NULL)
-		return;
-
-	join_lobby(lober);
-	set_menu(MEN_JOINING_LOBBY);
+	if (lober != NULL) {
+		join_lobby(lober);
+		set_menu(MEN_JOINING_LOBBY);
+	}
 }
 
 #define EDIT(var) .edit = (var), .edit_size = sizeof(var)
@@ -263,76 +267,85 @@ void start_menu(bool skip_intro) {
 	set_menu(skip_intro ? MEN_MAIN : MEN_INTRO);
 }
 
-void update_menu() {
+static void maybe_save_config(MenuType next) {
+	if (next != MEN_OPTIONS && next != MEN_CONTROLS)
+		save_config();
+}
+
+static void cleanup_lobby_list(MenuType next) {
+	disconnect();
+	for (int i = 0; i < MAX_OPTIONS; i++) {
+		OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
+		OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
+		OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
+	}
+}
+
+static void maybe_play_title(MenuType next) {
+	if (next == MEN_MAIN)
+		play_generic_track("title", PLAY_LOOPING);
+}
+
+static void update_intro() {
+	if (totalticks() >= 150 || kb_pressed(KB_UI_ENTER))
+		set_menu(MEN_MAIN);
+}
+
+static void update_find_lobbies() {
+	for (int i = 0; i < MAX_OPTIONS; i++) {
+		if (get_lobby_count() <= 0) {
+			OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
+			OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
+			OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
+		} else if (i >= get_lobby_count()) {
+			OPTIONS[MEN_FIND_LOBBY][i].name = NULL;
+			OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
+			OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
+		} else {
+			OPTIONS[MEN_FIND_LOBBY][i].name = get_lobby(i);
+			OPTIONS[MEN_FIND_LOBBY][i].disabled = false;
+			OPTIONS[MEN_FIND_LOBBY][i].button = join_found_lobby;
+		}
+	}
+}
+
+static void update_joining() {
+	const int status = find_lobby();
+	if (status < 0) {
+		WTF("Lobby \"%s\" fail: %s", CLIENT.lobby.name, net_error());
+		play_generic_sound("disconnect");
+		prev_menu();
+	} else if (status > 0) {
+		play_generic_sound("connect");
+		set_menu(MEN_LOBBY);
+	}
+}
+
+static void update_inlobby() {
+	if (is_connected())
+		return;
+	WTF("Lobby \"%s\" fail: %s", CLIENT.lobby.name, net_error());
+	play_generic_sound("disconnect");
+	prev_menu();
+}
+
+static void run_disableif() {
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		Option* option = &OPTIONS[cur_menu][i];
 		if (option->disable_if != NULL)
 			option->disabled = option->disable_if();
 	}
+}
 
+void update_menu() {
 	for (new_frame(); got_ticks(); next_tick()) {
-		switch (cur_menu) {
-			case MEN_INTRO: {
-				if (totalticks() >= 150 || kb_pressed(KB_UI_ENTER))
-					set_menu(MEN_MAIN);
-				break;
-			}
+		int last_menu = cur_menu;
+		if (MENUS[cur_menu].update != NULL)
+			MENUS[cur_menu].update();
+		if (last_menu != cur_menu)
+			continue;
+		run_disableif();
 
-			case MEN_FIND_LOBBY: {
-				list_lobbies();
-
-				int n = get_lobby_count();
-				if (n <= 0)
-					for (int i = 0; i < MAX_OPTIONS; i++) {
-						OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
-						OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
-						OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
-					}
-				else
-					for (int i = 0; i < MAX_OPTIONS; i++) {
-						if (i >= n) {
-							OPTIONS[MEN_FIND_LOBBY][i].name = NULL;
-							OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
-							OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
-							continue;
-						}
-
-						OPTIONS[MEN_FIND_LOBBY][i].name = get_lobby(i);
-						OPTIONS[MEN_FIND_LOBBY][i].disabled = false;
-						OPTIONS[MEN_FIND_LOBBY][i].button = join_found_lobby;
-					}
-
-				goto menuinreal;
-			}
-
-			case MEN_JOINING_LOBBY: {
-				const int status = find_lobby();
-				if (status <= -1) {
-					WTF("Lobby \"%s\" fail: %s", CLIENT.lobby.name, net_error());
-					play_generic_sound("disconnect");
-					set_menu(MENUS[cur_menu].from);
-				} else if (status >= 1) {
-					play_generic_sound("connect");
-					set_menu(MEN_LOBBY);
-				}
-				goto menuinreal;
-			}
-
-			case MEN_LOBBY: {
-				if (is_connected())
-					goto menuinreal;
-				WTF("Lobby \"%s\" fail: %s", CLIENT.lobby.name, net_error());
-				play_generic_sound("disconnect");
-				set_menu(MENUS[cur_menu].from);
-				goto menuinreal;
-			}
-
-			default:
-				goto menuinreal;
-		}
-		continue;
-
-	menuinreal:
 		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
 		if (!change)
 			goto try_select;
@@ -388,24 +401,14 @@ void update_menu() {
 
 		if (!kb_pressed(KB_PAUSE))
 			continue; // de-nesting
-		// TODO: stuff this into a cleanup function or something?
-		switch (cur_menu) {
-			case MEN_JOINING_LOBBY:
-			case MEN_LOBBY: {
-				play_generic_sound("disconnect");
-				disconnect();
-			}
-			default:
-				if (set_menu(MENUS[cur_menu].from))
-					play_generic_sound("select");
-				break;
-		}
+		const char* sound = MENUS[cur_menu].back_sound;
+		if (prev_menu())
+			play_generic_sound(sound == NULL ? "select" : sound);
 	}
 }
 
 void draw_menu() {
 	start_drawing();
-
 	if (cur_menu == MEN_INTRO)
 		goto draw_intro;
 
@@ -486,37 +489,20 @@ bool set_menu(MenuType next_menu) {
 	if (cur_menu == next_menu || next_menu <= MEN_NULL || next_menu >= MEN_SIZE)
 		return false;
 
-	if (MENUS[cur_menu].from != next_menu)
-		MENUS[next_menu].from = MENUS[next_menu].noreturn
-		                                ? MEN_NULL
-		                                : (MENUS[cur_menu].ghost ? MENUS[cur_menu].from : cur_menu);
-
-	switch (cur_menu) {
-		case MEN_NULL:
-		case MEN_INTRO:
-			if (next_menu == MEN_MAIN)
-				play_generic_track("title", PLAY_LOOPING);
-			break;
-
-		case MEN_FIND_LOBBY: {
-			for (int i = 0; i < MAX_OPTIONS; i++) {
-				OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
-				OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
-				OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
-			}
-			break;
-		}
-
-		case MEN_OPTIONS:
-		case MEN_CONTROLS:
-			if (next_menu != MEN_OPTIONS && next_menu != MEN_CONTROLS)
-				save_config();
-			break;
-
-		default:
-			break;
+	if (MENUS[cur_menu].from != next_menu) {
+		if (MENUS[next_menu].noreturn)
+			MENUS[next_menu].from = MEN_NULL;
+		else if (MENUS[cur_menu].ghost)
+			MENUS[next_menu].from = MENUS[cur_menu].from;
+		else
+			MENUS[next_menu].from = cur_menu;
 	}
+
+	if (MENUS[cur_menu].leave != NULL)
+		MENUS[cur_menu].leave(next_menu);
 	cur_menu = next_menu;
+	if (MENUS[cur_menu].enter != NULL)
+		MENUS[cur_menu].enter();
 
 	// Go to nearest valid option
 	size_t new_option = MENUS[cur_menu].option;
@@ -532,6 +518,10 @@ bool set_menu(MenuType next_menu) {
 	}
 
 	return true;
+}
+
+bool prev_menu() {
+	return set_menu(MENUS[cur_menu].from);
 }
 
 static float volume_toggle_impl(float volume, int flip) {

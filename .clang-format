@@ -17,7 +17,8 @@ AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterReturnType: None
 AccessModifierOffset: -8
-IndentCaseLabels: true
+IndentCaseBlocks: false
+IndentCaseLabels: false
 AlignAfterOpenBracket: DontAlign
 IncludeBlocks: Regroup
 IncludeIsMainRegex: "a{999}" # no main includes
