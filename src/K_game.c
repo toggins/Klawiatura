@@ -34,7 +34,7 @@ GameState game_state = {0};
 // GAME
 // ====
 
-void start_game_state() {
+void nuke_game_state() {
 	SDL_memset(&game_state, 0, sizeof(game_state));
 
 	game_state.live_actors = NULLACT;
@@ -50,6 +50,10 @@ void start_game_state() {
 	game_state.clock = -1;
 
 	game_state.sequence.activator = NULLPLAY;
+}
+
+void start_game_state(GameContext ctx) {
+	nuke_game_state();
 }
 
 // =======

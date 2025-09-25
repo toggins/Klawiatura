@@ -2,8 +2,6 @@
 
 #include <SDL3/SDL_stdinc.h>
 
-#include "K_game.h"
-
 #include <nutpunch.h>
 
 #define CMD_OPT(ident) cmd_set_##ident
@@ -29,7 +27,7 @@ typedef struct {
 	} user;
 
 	struct {
-		PlayerID players;
+		int8_t players; // Supposed to be PlayerID
 		char level[CLIENT_STRING_MAX];
 	} game;
 

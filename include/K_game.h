@@ -1,6 +1,7 @@
 #pragma once
 
 #include "K_audio.h"
+#include "K_cmd.h"
 #include "K_math.h"
 #include "K_net.h" // IWYU pragma: keep
 #include "K_video.h"
@@ -320,7 +321,7 @@ typedef struct {
 	GameActor actors[MAX_ACTORS];
 	ActorID grid[GRID_SIZE];
 
-	char world[256], next[256];
+	char world[CLIENT_STRING_MAX], next[CLIENT_STRING_MAX];
 } GameState;
 
 typedef struct {
@@ -345,7 +346,8 @@ typedef struct {
 extern GekkoSession* game_session;
 extern GameState game_state;
 
-void start_game_state();
+void nuke_game_state();
+void start_game_state(GameContext);
 void update_game_state();
 void draw_game_state();
 void end_game_state();
