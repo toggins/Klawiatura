@@ -74,10 +74,13 @@ int main(int argc, char* argv[]) {
 	audio_init();
 	input_init();
 	config_init(config_path);
+	net_init();
 
 	start_menu(skip_intro);
 
 	while (!permadeath) {
+		net_update();
+
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 			switch (event.type) {
@@ -106,6 +109,7 @@ int main(int argc, char* argv[]) {
 	}
 
 exit:
+	net_teardown();
 	config_teardown();
 	input_teardown();
 	audio_teardown();
@@ -117,7 +121,7 @@ exit:
 }
 
 static void cmd_ip(IterArg next) {
-	NutPunch_SetServerAddr(next());
+	set_hostname(next());
 }
 
 static void cmd_level(IterArg next) {

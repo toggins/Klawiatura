@@ -47,17 +47,18 @@ FMT_OPTION(lobby, CLIENT.lobby.name);
 FMT_OPTION(lobby_public, CLIENT.lobby.public ? "Public" : "Private");
 FMT_OPTION(players, CLIENT.game.players);
 
-static void set_players() {
-	++CLIENT.game.players;
-	while (CLIENT.game.players > MAX_PLAYERS)
-		CLIENT.game.players -= MAX_PLAYERS;
-}
-
 // Join a Lobby
 // TODO
 
 // Find lobbies
 // TODO
+
+// Lobby
+static void set_players() {
+	++CLIENT.game.players;
+	while (CLIENT.game.players > MAX_PLAYERS)
+		CLIENT.game.players -= MAX_PLAYERS;
+}
 
 // Options
 FMT_OPTION(name, CLIENT.user.name);
@@ -367,6 +368,12 @@ void draw_menu() {
 		batch_cursor(48, SCREEN_HEIGHT - 24, 0);
 		batch_color(ALPHA(128));
 		batch_string("main", 24, ALIGN(FA_LEFT, FA_BOTTOM), indicator);
+	}
+
+	if (cur_menu == MEN_FIND_LOBBY) {
+		batch_cursor(SCREEN_WIDTH - 48, 24, 0);
+		batch_color(ALPHA(128));
+		batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), fmt("Server: %s", get_hostname()));
 	}
 
 	goto jobwelldone;
