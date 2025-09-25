@@ -22,7 +22,7 @@ typedef enum {
 
 typedef struct {
 	const char* name;
-	bool disabled;
+	bool disabled, (*disable_if)();
 	void (*callback)(int);
 	const char* (*format)(const char*);
 

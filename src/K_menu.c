@@ -159,7 +159,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Name: %s", .format = fmt_name, EDIT(CLIENT.user.name)},
 		{"Skin: %s", .format = fmt_skin, EDIT(CLIENT.user.skin)},
 		{},
-		{"Resolution: %dx%d", .format = fmt_resolution, .callback = toggle_resolution},
+		{"Resolution: %dx%d", .format = fmt_resolution, .callback = toggle_resolution, .disable_if = get_fullscreen},
 		{"Fullscreen: %s", .format = fmt_fullscreen, .callback = toggle_fullscreen},
 		{"Vsync: %s", .format = fmt_vsync, .callback = toggle_vsync},
 		{},
@@ -241,15 +241,18 @@ void start_menu(bool skip_intro) {
 }
 
 void update_menu() {
+	for (size_t i = 0; i < MAX_OPTIONS; i++) {
+		Option* option = &OPTIONS[cur_menu][i];
+		if (option->disable_if != NULL)
+			option->disabled = option->disable_if();
+	}
+
 	for (new_frame(); got_ticks(); next_tick()) {
 		if (cur_menu == MEN_INTRO) {
 			if (totalticks() >= 150 || kb_pressed(KB_UI_ENTER))
 				set_menu(MEN_MAIN);
 			continue;
 		}
-
-		// GROSS HACK: Disable "Resolution" option on fullscreen
-		OPTIONS[MEN_OPTIONS][5].disabled = get_fullscreen();
 
 		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
 		if (!change)
