@@ -12,6 +12,7 @@ extern ClientInfo CLIENT;
 
 static MenuType cur_menu = MEN_NULL;
 
+static float volume_toggle_impl(float, int);
 static void noop() {
 	// Do nothing as if something was done. For testing purposes only.
 }
@@ -26,24 +27,7 @@ static void noop() {
 	}
 #define VOLUME_OPTION(vname)                                                                                           \
 	static void toggle_##vname(int flip) {                                                                         \
-		float volume = get_##vname();                                                                          \
-		const float delta = (float)flip * 0.1f;                                                                \
-                                                                                                                       \
-		if (delta > 0.f) {                                                                                     \
-			if (volume < 0.99f && (volume + delta) >= 1.f)                                                 \
-				volume = 1.f;                                                                          \
-			else if (volume >= 0.99f && (volume + delta) >= 1.f)                                           \
-				volume = 0.f;                                                                          \
-			else                                                                                           \
-				volume += delta;                                                                       \
-		} else if (volume > 0.01f && (volume + delta) < 0.f)                                                   \
-			volume = 0.f;                                                                                  \
-		else if (volume <= 0.01f && (volume + delta) <= 0.f)                                                   \
-			volume = 1.f;                                                                                  \
-		else                                                                                                   \
-			volume += delta;                                                                               \
-                                                                                                                       \
-		set_##vname(volume);                                                                                   \
+		set_##vname(volume_toggle_impl(get_##vname(), flip));                                                  \
 	}
 
 // Main Menu
@@ -442,4 +426,24 @@ bool set_menu(MenuType next_menu) {
 	}
 
 	return true;
+}
+
+static float volume_toggle_impl(float volume, int flip) {
+	const float delta = (float)flip * 0.1f;
+
+	if (delta > 0.f) {
+		if (volume < 0.99f && (volume + delta) >= 1.f)
+			volume = 1.f;
+		else if (volume >= 0.99f && (volume + delta) >= 1.f)
+			volume = 0.f;
+		else
+			volume += delta;
+	} else if (volume > 0.01f && (volume + delta) < 0.f)
+		volume = 0.f;
+	else if (volume <= 0.01f && (volume + delta) <= 0.f)
+		volume = 1.f;
+	else
+		volume += delta;
+
+	return volume;
 }
