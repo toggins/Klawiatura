@@ -34,7 +34,7 @@ typedef struct {
 
 typedef struct {
 	const char* name;
-	bool noreturn;
+	bool noreturn, ghost;
 
 	MenuType from;
 	size_t option;

@@ -3,7 +3,9 @@
 #include "K_config.h"
 #include "K_game.h"
 #include "K_input.h"
+#include "K_log.h"
 #include "K_menu.h"
+#include "K_net.h"
 #include "K_string.h"
 #include "K_tick.h"
 #include "K_video.h"
@@ -47,13 +49,23 @@ FMT_OPTION(lobby, CLIENT.lobby.name);
 FMT_OPTION(lobby_public, CLIENT.lobby.public ? "Public" : "Private");
 FMT_OPTION(players, CLIENT.game.players);
 
+static void do_host_fr() {
+	host_lobby(CLIENT.lobby.name);
+	set_menu(MEN_JOINING_LOBBY);
+}
+
 // Join a Lobby
-// TODO
+static void do_join_fr() {
+	join_lobby(CLIENT.lobby.name);
+	set_menu(MEN_JOINING_LOBBY);
+}
 
 // Find lobbies
 // TODO
 
 // Lobby
+FMT_OPTION(active_lobby, get_lobby_id());
+
 static void set_players() {
 	++CLIENT.game.players;
 	while (CLIENT.game.players > MAX_PLAYERS)
@@ -131,7 +143,8 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_HOST_LOBBY] = {"Host Lobby"},
 	[MEN_JOIN_LOBBY] = {"Join a Lobby"},
 	[MEN_FIND_LOBBY] = {"Find Lobbies"},
-	[MEN_JOINING_LOBBY] = {"Please wait..."},
+	[MEN_JOINING_LOBBY] = {"Please wait...", .ghost = true},
+	[MEN_LOBBY] = {"Lobby"},
 	[MEN_OPTIONS] = {"Options"},
 	[MEN_CONTROLS] = {"Change Controls"},
 };
@@ -186,13 +199,13 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Visibility: %s", .disabled = true, .format = fmt_lobby_public},
 
 		{},
-		{"Host!"},
+		{"Host!", .callback = do_host_fr},
 	},
 	[MEN_JOIN_LOBBY] = {
 		// FIXME: Add explicit lobby joining to NutPunch.
 		{"Lobby ID: %s", .format = fmt_lobby, EDIT(CLIENT.lobby.name)},
 		{},
-		{"Join!"},
+		{"Join!", .callback = do_join_fr},
 	},
 	[MEN_FIND_LOBBY] = {
 		{"No lobbies found", .disabled = true},
@@ -202,7 +215,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Joining lobby \"%s\"", .disabled = true, .format = fmt_lobby},
 	},
 	[MEN_LOBBY] = {
-		{"Lobby: %s", .disabled = true, .format = fmt_lobby},
+		{"%s", .disabled = true, .format = fmt_active_lobby},
 		{},
 		{"Players: %d", .format = fmt_players, .callback = set_players},
 		{"Level: %s", .format = fmt_level, EDIT(CLIENT.game.level)},
@@ -249,12 +262,41 @@ void update_menu() {
 	}
 
 	for (new_frame(); got_ticks(); next_tick()) {
-		if (cur_menu == MEN_INTRO) {
-			if (totalticks() >= 150 || kb_pressed(KB_UI_ENTER))
-				set_menu(MEN_MAIN);
-			continue;
-		}
+		switch (cur_menu) {
+			case MEN_INTRO: {
+				if (totalticks() >= 150 || kb_pressed(KB_UI_ENTER))
+					set_menu(MEN_MAIN);
+				break;
+			}
 
+			case MEN_JOINING_LOBBY: {
+				const int status = find_lobby();
+				if (status <= -1) {
+					WTF("Lobby \"%s\" fail: %s", CLIENT.lobby.name, net_error());
+					play_generic_sound("disconnect");
+					set_menu(MENUS[cur_menu].from);
+				} else if (status >= 1) {
+					play_generic_sound("connect");
+					set_menu(MEN_LOBBY);
+				}
+				goto menuinreal;
+			}
+
+			case MEN_LOBBY: {
+				if (is_connected())
+					goto menuinreal;
+				WTF("Lobby \"%s\" fail: %s", CLIENT.lobby.name, net_error());
+				play_generic_sound("disconnect");
+				set_menu(MENUS[cur_menu].from);
+				goto menuinreal;
+			}
+
+			default:
+				goto menuinreal;
+		}
+		continue;
+
+	menuinreal:
 		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
 		if (!change)
 			goto try_select;
@@ -306,11 +348,11 @@ void update_menu() {
 			continue; // de-nesting
 		// TODO: stuff this into a cleanup function or something?
 		switch (cur_menu) {
-			// FIXME: Replace this non-default junk with actual lobby stuff
-			case MEN_JOINING_LOBBY: // Should abort connection and return to previous menu
-			case MEN_LOBBY:         // Should disconnect and return to the menu before MEN_JOINING_LOBBY
-				noop();
-				break;
+			case MEN_JOINING_LOBBY:
+			case MEN_LOBBY: {
+				play_generic_sound("disconnect");
+				disconnect();
+			}
 			default:
 				if (set_menu(MENUS[cur_menu].from))
 					play_generic_sound("select");
@@ -403,7 +445,10 @@ bool set_menu(MenuType next_menu) {
 		return false;
 
 	if (MENUS[cur_menu].from != next_menu)
-		MENUS[next_menu].from = MENUS[next_menu].noreturn ? MEN_NULL : cur_menu;
+		MENUS[next_menu].from = MENUS[next_menu].noreturn
+		                                ? MEN_NULL
+		                                : (MENUS[cur_menu].ghost ? MENUS[cur_menu].from : cur_menu);
+
 	switch (cur_menu) {
 		case MEN_NULL:
 		case MEN_INTRO:

@@ -79,8 +79,6 @@ int main(int argc, char* argv[]) {
 	start_menu(skip_intro);
 
 	while (!permadeath) {
-		net_update();
-
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 			switch (event.type) {

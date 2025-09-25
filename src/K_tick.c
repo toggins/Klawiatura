@@ -1,6 +1,7 @@
 #include <SDL3/SDL_timer.h>
 
 #include "K_input.h"
+#include "K_net.h"
 #include "K_tick.h"
 
 static uint64_t last_time = 0;
@@ -21,7 +22,11 @@ void new_frame() {
 }
 
 bool got_ticks() {
-	return pending_ticks >= 1.f;
+	if (pending_ticks >= 1.f) {
+		net_newframe();
+		return true;
+	}
+	return false;
 }
 
 void next_tick() {
