@@ -64,9 +64,10 @@ static void do_join_fr() {
 FMT_OPTION(active_lobby, get_lobby_id());
 
 static void set_players(int flip) {
-	CLIENT.game.players
-		= (int8_t)(flip >= 0 ? (CLIENT.game.players >= MAX_PLAYERS ? 0 : (CLIENT.game.players + 1))
-				     : (CLIENT.game.players <= 1 ? MAX_PLAYERS : (CLIENT.game.players - 1)));
+	if (flip >= 0)
+		CLIENT.game.players = (int8_t)(CLIENT.game.players >= MAX_PLAYERS ? 0 : (CLIENT.game.players + 1));
+	else
+		CLIENT.game.players = (int8_t)(CLIENT.game.players <= 1 ? MAX_PLAYERS : (CLIENT.game.players - 1));
 }
 
 // Options
