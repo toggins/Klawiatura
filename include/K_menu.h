@@ -23,7 +23,8 @@ typedef enum {
 typedef struct {
 	const char* name;
 	bool disabled, (*disable_if)();
-	void (*callback)(int);
+	void (*button)();
+	void (*flip)(int);
 	const char* (*format)(const char*);
 
 	float hover;

@@ -6,7 +6,6 @@
 #define NutPunch_Free SDL_free
 
 #include "K_cmd.h"
-#include "K_log.h"
 #include "K_net.h"
 
 static const char* hostname = NUTPUNCH_DEFAULT_SERVER;
@@ -61,9 +60,33 @@ void set_hostname(const char* hn) {
 // INTERFACE
 // =========
 
+extern ClientInfo CLIENT;
 void net_newframe() {
 	status = NutPunch_Update();
 	last_error = NutPunch_GetLastError();
+
+	if (!is_connected())
+		return;
+
+	if (NutPunch_PeerAlive(NutPunch_LocalPeer()))
+		NutPunch_PeerSet(
+			"NAME", (int)SDL_strnlen(CLIENT.user.name, NUTPUNCH_FIELD_DATA_MAX - 1), CLIENT.user.name);
+
+	if (hosting) {
+		NutPunch_LobbySet("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
+		NutPunch_LobbySet(
+			"LEVEL", (int)SDL_strnlen(CLIENT.game.level, NUTPUNCH_FIELD_DATA_MAX - 1), CLIENT.game.level);
+	} else {
+		int size;
+
+		int8_t* pplayers = (int8_t*)NutPunch_LobbyGet("PLAYERS", &size);
+		if (pplayers != NULL && size == sizeof(CLIENT.game.players))
+			CLIENT.game.players = *pplayers;
+
+		char* plevel = (char*)NutPunch_LobbyGet("LEVEL", &size);
+		if (plevel != NULL && size <= NUTPUNCH_FIELD_DATA_MAX)
+			SDL_strlcpy(CLIENT.game.level, plevel, size + 1);
+	}
 }
 
 const char* net_error() {
@@ -71,7 +94,12 @@ const char* net_error() {
 }
 
 bool is_connected() {
-	return status == NP_Status_Online;
+	return status == NP_Status_Online && cur_lobby[0] != '\0';
+}
+
+void disconnect() {
+	NutPunch_Disconnect();
+	cur_lobby[0] = '\0';
 }
 
 // =======
@@ -79,18 +107,21 @@ bool is_connected() {
 // =======
 
 const char* get_lobby_id() {
-	return cur_lobby;
+	return cur_lobby[0] == '\0' ? NULL : cur_lobby;
 }
 
-static void driving_license_check(const char* id) {
-	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
-
+static void driving_license_check_fr() {
 	struct NutPunch_Filter filter = {0};
 	SDL_memcpy(filter.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
 	SDL_memcpy(filter.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
 	filter.comparison = 0;
 
 	NutPunch_FindLobbies(1, &filter);
+}
+
+static void driving_license_check(const char* id) {
+	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
+	driving_license_check_fr();
 }
 
 void host_lobby(const char* id) {
@@ -126,6 +157,18 @@ int find_lobby() {
 	return 0;
 }
 
-void disconnect() {
-	NutPunch_Disconnect();
+void list_lobbies() {
+	driving_license_check_fr();
 }
+
+int get_lobby_count() {
+	return NutPunch_LobbyCount();
+}
+
+const char* get_lobby(int idx) {
+	return NutPunch_GetLobby(idx);
+}
+
+// =====
+// PEERS
+// =====

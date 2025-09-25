@@ -60,16 +60,13 @@ static void do_join_fr() {
 	set_menu(MEN_JOINING_LOBBY);
 }
 
-// Find lobbies
-// TODO
-
 // Lobby
 FMT_OPTION(active_lobby, get_lobby_id());
 
-static void set_players() {
-	++CLIENT.game.players;
-	while (CLIENT.game.players > MAX_PLAYERS)
-		CLIENT.game.players -= MAX_PLAYERS;
+static void set_players(int flip) {
+	CLIENT.game.players
+		= (int8_t)(flip >= 0 ? (CLIENT.game.players >= MAX_PLAYERS ? 0 : (CLIENT.game.players + 1))
+				     : (CLIENT.game.players <= 1 ? MAX_PLAYERS : (CLIENT.game.players - 1)));
 }
 
 // Options
@@ -149,13 +146,24 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_CONTROLS] = {"Change Controls"},
 };
 
+// Find lobbies
+static void join_found_lobby() {
+	const char* lober = get_lobby((int)MENUS[MEN_FIND_LOBBY].option);
+	if (lober == NULL)
+		return;
+
+	join_lobby(lober);
+	set_menu(MEN_JOINING_LOBBY);
+}
+
 #define EDIT(var) .edit = (var), .edit_size = sizeof(var)
+static const char* NO_LOBBIES_FOUND = "No lobbies found";
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_MAIN] = {
 		{"Singleplayer", .enter = MEN_SINGLEPLAYER},
 		{"Multiplayer", .enter = MEN_MULTIPLAYER},
 		{"Options", .enter = MEN_OPTIONS},
-		{"Exit", .callback = instaquit},
+		{"Exit", .button = instaquit},
 	},
 	[MEN_SINGLEPLAYER] = {
 		{"Level: %s", .format = fmt_level, EDIT(CLIENT.game.level)},
@@ -173,13 +181,13 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Name: %s", .format = fmt_name, EDIT(CLIENT.user.name)},
 		{"Skin: %s", .format = fmt_skin, EDIT(CLIENT.user.skin)},
 		{},
-		{"Resolution: %dx%d", .format = fmt_resolution, .callback = toggle_resolution, .disable_if = get_fullscreen},
-		{"Fullscreen: %s", .format = fmt_fullscreen, .callback = toggle_fullscreen},
-		{"Vsync: %s", .format = fmt_vsync, .callback = toggle_vsync},
+		{"Resolution: %dx%d", .disable_if = get_fullscreen, .format = fmt_resolution, .flip = toggle_resolution},
+		{"Fullscreen: %s", .format = fmt_fullscreen, .flip = toggle_fullscreen},
+		{"Vsync: %s", .format = fmt_vsync, .flip = toggle_vsync},
 		{},
-		{"Master Volume: %.0f%%", .format = fmt_volume, .callback = toggle_volume},
-		{"Sound Volume: %.0f%%", .format = fmt_sound_volume, .callback = toggle_sound_volume},
-		{"Music Volume: %.0f%%", .format = fmt_music_volume, .callback = toggle_music_volume},
+		{"Master Volume: %.0f%%", .format = fmt_volume, .flip = toggle_volume},
+		{"Sound Volume: %.0f%%", .format = fmt_sound_volume, .flip = toggle_sound_volume},
+		{"Music Volume: %.0f%%", .format = fmt_music_volume, .flip = toggle_music_volume},
 	},
 	[MEN_CONTROLS] = {
 		{"Up: %s", .format = fmt_up},
@@ -199,16 +207,16 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Visibility: %s", .disabled = true, .format = fmt_lobby_public},
 
 		{},
-		{"Host!", .callback = do_host_fr},
+		{"Host!", .button = do_host_fr},
 	},
 	[MEN_JOIN_LOBBY] = {
 		// FIXME: Add explicit lobby joining to NutPunch.
 		{"Lobby ID: %s", .format = fmt_lobby, EDIT(CLIENT.lobby.name)},
 		{},
-		{"Join!", .callback = do_join_fr},
+		{"Join!", .button = do_join_fr},
 	},
 	[MEN_FIND_LOBBY] = {
-		{"No lobbies found", .disabled = true},
+		{NULL, .disabled = true},
 		// FIXME: Display lobbies with player counts
 	},
 	[MEN_JOINING_LOBBY] = {
@@ -217,7 +225,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_LOBBY] = {
 		{"%s", .disabled = true, .format = fmt_active_lobby},
 		{},
-		{"Players: %d", .format = fmt_players, .callback = set_players},
+		{"Players: %d", .format = fmt_players, .flip = set_players},
 		{"Level: %s", .format = fmt_level, EDIT(CLIENT.game.level)},
 		{},
 		{"Start!"},
@@ -267,6 +275,33 @@ void update_menu() {
 				if (totalticks() >= 150 || kb_pressed(KB_UI_ENTER))
 					set_menu(MEN_MAIN);
 				break;
+			}
+
+			case MEN_FIND_LOBBY: {
+				list_lobbies();
+
+				int n = get_lobby_count();
+				if (n <= 0)
+					for (int i = 0; i < MAX_OPTIONS; i++) {
+						OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
+						OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
+						OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
+					}
+				else
+					for (int i = 0; i < MAX_OPTIONS; i++) {
+						if (i >= n) {
+							OPTIONS[MEN_FIND_LOBBY][i].name = NULL;
+							OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
+							OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
+							continue;
+						}
+
+						OPTIONS[MEN_FIND_LOBBY][i].name = get_lobby(i);
+						OPTIONS[MEN_FIND_LOBBY][i].disabled = false;
+						OPTIONS[MEN_FIND_LOBBY][i].button = join_found_lobby;
+					}
+
+				goto menuinreal;
 			}
 
 			case MEN_JOINING_LOBBY: {
@@ -325,22 +360,28 @@ void update_menu() {
 		}
 
 	try_select:
-		bool entered = kb_pressed(KB_UI_ENTER);
-		int flip = kb_repeated(KB_UI_RIGHT) - kb_repeated(KB_UI_LEFT);
-		if (flip != 0 || entered) {
+		if (kb_pressed(KB_UI_ENTER)) {
 			const Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
-			if (opt->callback != NULL && !opt->disabled) {
-				play_generic_sound("select");
-				opt->callback(flip == 0 ? 1 : flip);
-			}
-			if (opt->edit != NULL && entered) {
-				play_generic_sound("select");
+			if (opt->disabled)
+				goto NO_SELECT_CYKA;
+
+			play_generic_sound("select");
+			if (opt->button != NULL)
+				opt->button();
+			if (opt->edit != NULL)
 				start_typing(opt->edit, opt->edit_size); // FIXME: Play "select" when pressing Enter or
 				                                         //        backspace while typing
-			}
-			if (opt->enter != MEN_NULL && entered) {
-				play_generic_sound("select");
+			if (opt->enter != MEN_NULL)
 				set_menu(opt->enter);
+		}
+
+	NO_SELECT_CYKA:
+		int flip = kb_repeated(KB_UI_RIGHT) - kb_repeated(KB_UI_LEFT);
+		if (flip != 0) {
+			const Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
+			if (opt->flip != NULL && !opt->disabled) {
+				play_generic_sound("select");
+				opt->flip(flip);
 			}
 		}
 
@@ -455,6 +496,15 @@ bool set_menu(MenuType next_menu) {
 			if (next_menu == MEN_MAIN)
 				play_generic_track("title", PLAY_LOOPING);
 			break;
+
+		case MEN_FIND_LOBBY: {
+			for (int i = 0; i < MAX_OPTIONS; i++) {
+				OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
+				OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
+				OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
+			}
+			break;
+		}
 
 		case MEN_OPTIONS:
 		case MEN_CONTROLS:

@@ -14,9 +14,17 @@ void set_hostname(const char*);
 void net_newframe();
 bool is_connected();
 const char* net_error();
+void disconnect();
 
 // Lobbies
 const char* get_lobby_id();
 void host_lobby(const char*), join_lobby(const char*);
+
 int find_lobby();
-void disconnect();
+void list_lobbies();
+int get_lobby_count();
+const char* get_lobby(int);
+
+// Peers
+int get_peer_count();
+const char* get_peer_name(int);
