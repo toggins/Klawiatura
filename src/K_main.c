@@ -32,14 +32,14 @@ MAKE_FLAG(skip_intro);
 MAKE_FLAG(kevin);
 
 CmdArg CMDLINE[] = {
-	{"-s", "-force_shader", CMD_FLAG(force_shader)},
-	{"-i", "-skip_intro",   CMD_FLAG(skip_intro)  },
-	{"-d", "-data",         CMD_FLAG(data_path)   },
-	{"-c", "-config",       CMD_FLAG(config_path) },
-	{"-K", "-kevin",        CMD_FLAG(kevin)       },
-	{"-a", "-ip",           cmd_ip                },
-	{"-l", "-level",        cmd_level             },
-	{NULL, NULL,            NULL                  },
+	{"-s", "-force_shader", CMD_OPT(force_shader)},
+	{"-i", "-skip_intro",   CMD_OPT(skip_intro)  },
+	{"-d", "-data",         CMD_OPT(data_path)   },
+	{"-c", "-config",       CMD_OPT(config_path) },
+	{"-K", "-kevin",        CMD_OPT(kevin)       },
+	{"-a", "-ip",           cmd_ip               },
+	{"-l", "-level",        cmd_level            },
+	{NULL, NULL,            NULL                 },
 };
 
 ClientInfo CLIENT = (ClientInfo){

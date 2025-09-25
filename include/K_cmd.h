@@ -6,12 +6,12 @@
 
 #include <nutpunch.h>
 
-#define CMD_FLAG(ident) cmd_set_##ident
+#define CMD_OPT(ident) cmd_set_##ident
 #define MAKE_FLAG(ident) MAKE_OPTION_PRO(ident, bool, false, true)
 #define MAKE_OPTION(ident, default) MAKE_OPTION_PRO(ident, const char*, default, next())
 #define MAKE_OPTION_PRO(ident, type, default, set_expr)                                                                \
 	static type ident = default;                                                                                   \
-	static void CMD_FLAG(ident)(IterArg next) {                                                                    \
+	static void CMD_OPT(ident)(IterArg next) {                                                                     \
 		(ident) = (set_expr);                                                                                  \
 	}
 
