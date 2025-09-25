@@ -80,16 +80,34 @@ void config_init(const char* path) {
 
 void config_teardown() {}
 
+static void parse_kb(yyjson_val* obj, void (*load)(Bindings*, yyjson_val*)) {
+	if (obj == NULL)
+		return;
+
+	yyjson_obj_iter iter = {0};
+	yyjson_obj_iter_init(obj, &iter);
+
+	yyjson_val* vkey = NULL;
+	while (NULL != (vkey = yyjson_obj_iter_next(&iter))) {
+		if (!yyjson_is_str(vkey))
+			continue;
+		yyjson_val* value = yyjson_obj_iter_get_val(vkey);
+		const char* name = yyjson_get_str(vkey);
+		for (int i = 0; i < KB_SIZE; i++) {
+			Bindings* bind = &BINDS[i];
+			if (bind->name != NULL && !SDL_strcmp(name, bind->name))
+				load(bind, value);
+		}
+	}
+}
+
+static void kb_load_key(Bindings* bind, yyjson_val* value) {
+	bind->key = yyjson_get_int(value);
+}
+
 #define HANDLE_OPT(fn, conversion)                                                                                     \
 	if (opt->fn != NULL) {                                                                                         \
 		opt->fn(conversion(value));                                                                            \
-		goto next_opt;                                                                                         \
-	}
-#define HANDLE_KB(prefix, field, conversion)                                                                           \
-	if (SDL_strlen(name) > SDL_strlen(prefix) + 1 && !SDL_memcmp(name, prefix "_", SDL_strlen(prefix) + 1)         \
-		&& !SDL_strcmp(name + SDL_strlen(prefix) + 1, BINDS[i].name))                                          \
-	{                                                                                                              \
-		BINDS[i].field = (conversion(value));                                                                  \
 		goto next_opt;                                                                                         \
 	}
 static void parse_config(yyjson_val* obj) {
@@ -111,16 +129,12 @@ static void parse_config(yyjson_val* obj) {
 			HANDLE_OPT(w_float, yyjson_get_real);
 			HANDLE_OPT(w_string, yyjson_get_str);
 		}
-		for (int i = 0; i < KB_SIZE; i++) {
-			if (BINDS[i].name == NULL)
-				continue;
-			HANDLE_KB("kbd", key, yyjson_get_int);
-		}
 	next_opt:
 		continue;
 	}
+
+	parse_kb(yyjson_obj_get(obj, "kbd"), kb_load_key);
 }
-#undef HANDLE_KB
 #undef HANDLE_OPT
 
 void load_config() {
@@ -145,6 +159,24 @@ void load_config() {
 	yyjson_doc_free(json);
 }
 
+static yyjson_mut_val* kb_serialize_key(yyjson_mut_doc* json, const Bindings* bind) {
+	return yyjson_mut_int(json, bind->key);
+}
+
+static void save_kb(yyjson_mut_doc* json, yyjson_mut_val* root, const char* name,
+	yyjson_mut_val* (*serialize)(yyjson_mut_doc*, const Bindings*)) {
+	yyjson_mut_val* obj = yyjson_mut_obj(json);
+
+	for (size_t i = 0; i < KB_SIZE; i++) {
+		const Bindings* binding = &BINDS[i];
+		yyjson_mut_val* key = yyjson_mut_str(json, binding->name);
+		yyjson_mut_obj_add(obj, key, serialize(json, binding));
+	}
+
+	yyjson_mut_val* key = yyjson_mut_str(json, name);
+	yyjson_mut_obj_add(root, key, obj);
+}
+
 void save_config() {
 	if (config_path != NULL) {
 		WARN("Cannot save config outside of user path");
@@ -155,7 +187,7 @@ void save_config() {
 	yyjson_mut_val* root = yyjson_mut_obj(json);
 	yyjson_mut_doc_set_root(json, root);
 
-	for (int i = 0; i < sizeof(OPTIONS) / sizeof(*OPTIONS); i++) {
+	for (size_t i = 0; i < sizeof(OPTIONS) / sizeof(*OPTIONS); i++) {
 		const ConfigOption* opt = &OPTIONS[i];
 
 		yyjson_mut_val* key = yyjson_mut_strcpy(json, opt->name);
@@ -174,6 +206,7 @@ void save_config() {
 
 		yyjson_mut_obj_add(root, key, value);
 	}
+	save_kb(json, root, "kbd", kb_serialize_key);
 
 	size_t size;
 	yyjson_write_err error;
