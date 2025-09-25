@@ -17,16 +17,10 @@ static const char* last_error = NULL;
 static char cur_lobby[CLIENT_STRING_MAX] = "";
 static bool hosting = false;
 
-static struct NutPunch_Filter filter = {};
 static const char* MAGIC_KEY = "KLAWIATURA";
 static const uint8_t MAGIC_VALUE = 127;
 
 void net_init() {
-	struct NutPunch_Filter filter = {0};
-	SDL_memcpy(filter.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
-	SDL_memcpy(filter.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
-	filter.comparison = 0;
-
 	NutPunch_SetServerAddr(hostname);
 }
 
@@ -88,15 +82,24 @@ const char* get_lobby_id() {
 	return cur_lobby;
 }
 
-void host_lobby(const char* id) {
+static void driving_license_check(const char* id) {
 	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
+
+	struct NutPunch_Filter filter = {0};
+	SDL_memcpy(filter.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
+	SDL_memcpy(filter.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
+	filter.comparison = 0;
+
 	NutPunch_FindLobbies(1, &filter);
+}
+
+void host_lobby(const char* id) {
+	driving_license_check(id);
 	hosting = true;
 }
 
 void join_lobby(const char* id) {
-	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
-	NutPunch_FindLobbies(1, &filter);
+	driving_license_check(id);
 	hosting = false;
 }
 
@@ -105,27 +108,21 @@ int find_lobby() {
 		return -1;
 
 	int n = NutPunch_LobbyCount();
-	INFO("=====");
 	for (int i = 0; i < n; i++) {
-		const char* lobby = NutPunch_GetLobby(i);
-		INFO("%i. %s", i, lobby);
-		if (SDL_strcmp(lobby, cur_lobby) != 0)
+		if (SDL_strcmp(NutPunch_GetLobby(i), cur_lobby) != 0)
 			continue;
-
-		if (hosting)
-			break;
-		else {
-			NutPunch_Join(lobby);
+		if (!hosting) {
+			NutPunch_Join(cur_lobby);
 			return 1;
 		}
+		break;
 	}
-	INFO("=====");
-
 	if (hosting) {
 		NutPunch_Host(cur_lobby);
 		NutPunch_LobbySet(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
 		return 1;
 	}
+
 	return 0;
 }
 
