@@ -231,6 +231,15 @@ void stop_drawing() {
 	SDL_GL_SwapWindow(window);
 }
 
+bool window_focused() {
+	const SDL_WindowFlags flags = SDL_GetWindowFlags(window);
+	return (flags & (SDL_WINDOW_OCCLUDED | SDL_WINDOW_MINIMIZED | SDL_WINDOW_NOT_FOCUSABLE)) == 0
+	       && (flags
+			  & (SDL_WINDOW_MOUSE_GRABBED | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_CAPTURE
+				  | SDL_WINDOW_KEYBOARD_GRABBED))
+	                  != 0;
+}
+
 bool window_start_typing() {
 	return SDL_StartTextInput(window);
 }
@@ -658,26 +667,26 @@ void batch_string(const char* font_name, GLfloat size, const FontAlignment align
 
 	// Horizontal alignment
 	switch (alignment[0]) {
-		case FA_CENTER:
-			ox -= string_width(font, size, str) / 2.f;
-			break;
-		case FA_RIGHT:
-			ox -= string_width(font, size, str);
-			break;
-		default:
-			break;
+	case FA_CENTER:
+		ox -= string_width(font, size, str) / 2.f;
+		break;
+	case FA_RIGHT:
+		ox -= string_width(font, size, str);
+		break;
+	default:
+		break;
 	}
 
 	// Vertical alignment
 	switch (alignment[1]) {
-		case FA_MIDDLE:
-			oy -= string_height(font, size, str) / 2.f;
-			break;
-		case FA_BOTTOM:
-			oy -= string_height(font, size, str);
-			break;
-		default:
-			break;
+	case FA_MIDDLE:
+		oy -= string_height(font, size, str) / 2.f;
+		break;
+	case FA_BOTTOM:
+		oy -= string_height(font, size, str);
+		break;
+	default:
+		break;
 	}
 
 	GLfloat cx = ox, cy = oy;

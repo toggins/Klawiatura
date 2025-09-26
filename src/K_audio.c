@@ -3,6 +3,7 @@
 #include "K_log.h"
 #include "K_memory.h"
 #include "K_string.h"
+#include "K_video.h"
 
 #include <fmod_errors.h>
 
@@ -69,6 +70,8 @@ void audio_init() {
 }
 
 void audio_update() {
+	FMOD_ChannelGroup_SetMute(master_group, !window_focused());
+
 	FMOD_BOOL state_playing = false;
 	FMOD_ChannelGroup_IsPlaying(state_group, &state_playing);
 	FMOD_ChannelGroup_SetMute(generic_group, state_playing);
