@@ -470,6 +470,16 @@ void draw_menu() {
 		batch_cursor(SCREEN_WIDTH - 48, 24, 0);
 		batch_color(ALPHA(128));
 		batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), fmt("Server: %s", get_hostname()));
+	} else if (cur_menu == MEN_LOBBY) {
+		GLfloat y = 24;
+		for (int i = 0; i < MAX_PEERS; i++) {
+			if (!peer_exists(i))
+				continue;
+			batch_cursor(SCREEN_WIDTH - 48, y, 0);
+			batch_color(ALPHA(128));
+			batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), fmt("%i. %s", i + 1, get_peer_name(i)));
+			y += 24;
+		}
 	}
 
 	goto jobwelldone;

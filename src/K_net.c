@@ -6,7 +6,7 @@
 #define NutPunch_Free SDL_free
 
 #include "K_cmd.h"
-#include "K_log.h"
+#include "K_log.h" // IWYU pragma: keep for now
 #include "K_net.h"
 
 static const char *hostname = NUTPUNCH_DEFAULT_SERVER, *last_error = NULL;
@@ -200,3 +200,17 @@ const char* get_lobby(int idx) {
 // =====
 // PEERS
 // =====
+
+int get_peer_count() {
+	return NutPunch_PeerCount();
+}
+
+bool peer_exists(int idx) {
+	return NutPunch_PeerAlive(idx);
+}
+
+const char* get_peer_name(int idx) {
+	int size = 0;
+	char* str = (char*)NutPunch_PeerGet(idx, "NAME", &size);
+	return (str == NULL || size > NUTPUNCH_FIELD_DATA_MAX) ? NULL : str;
+}

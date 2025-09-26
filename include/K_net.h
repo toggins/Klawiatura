@@ -5,6 +5,8 @@
 #include <gekkonet.h>
 #include <nutpunch.h>
 
+#define MAX_PEERS NUTPUNCH_MAX_PLAYERS
+
 void net_init(), net_teardown();
 
 const char* get_hostname();
@@ -27,4 +29,5 @@ const char* get_lobby(int);
 
 // Peers
 int get_peer_count();
+bool peer_exists(int);
 const char* get_peer_name(int);
