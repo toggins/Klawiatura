@@ -6,6 +6,7 @@
 #define NutPunch_Free SDL_free
 
 #include "K_cmd.h"
+#include "K_log.h"
 #include "K_net.h"
 
 static const char *hostname = NUTPUNCH_DEFAULT_SERVER, *last_error = NULL;
@@ -92,13 +93,11 @@ static void np_lobby_get_string(char* dest, const char* name) {
 extern ClientInfo CLIENT;
 void net_newframe() {
 	if (NutPunch_Update() == NP_Status_Error) {
-		netmode = NET_NULL;
 		last_error = NutPunch_GetLastError();
+		disconnect();
 	}
-	if (!is_connected()) {
-		SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
+	if (!is_connected())
 		return;
-	}
 
 	if (NutPunch_PeerAlive(NutPunch_LocalPeer()))
 		np_peer_set_string("NAME", CLIENT.user.name);
@@ -122,7 +121,8 @@ bool is_connected() {
 
 void disconnect() {
 	NutPunch_Disconnect();
-	cur_lobby[0] = '\0';
+	netmode = NET_NULL;
+	SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
 }
 
 // =======
@@ -134,7 +134,9 @@ const char* get_lobby_id() {
 }
 
 void find_lobby_mode(const char* id) {
-	if (id != NULL)
+	if (id == NULL)
+		SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
+	else
 		SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
 
 	struct NutPunch_Filter filter = {0};

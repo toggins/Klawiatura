@@ -132,12 +132,13 @@ FMT_OPTION(run, kb_label(KB_RUN));
 #undef BOOL_OPTION
 #undef VOLUME_OPTION
 
-static void update_intro(), update_find_lobbies(), update_joining_lobby();
-static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_play_title(MenuType);
+static void update_intro(), update_find_lobbies(), update_joining_lobby(), update_inlobby();
+static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_play_title(MenuType),
+	maybe_disconnect(MenuType);
 
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {.noreturn = true},
-	[MEN_INTRO] = {.noreturn = true, .update = update_intro},
+	[MEN_INTRO] = {.noreturn = true, .update = update_intro, .leave = maybe_play_title},
 	[MEN_MAIN] = {"Mario Together", .noreturn = true},
 	[MEN_SINGLEPLAYER] = {"Singleplayer"},
 	[MEN_MULTIPLAYER] = {"Multiplayer"},
@@ -146,8 +147,8 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_FIND_LOBBY]
 	= {"Find Lobbies", .update = update_find_lobbies, .enter = list_lobbies, .leave = cleanup_lobby_list},
 	[MEN_JOINING_LOBBY] = {"Please wait...", .update = update_joining_lobby, .back_sound = "disconnect",
-		      .leave = disconnect, .ghost = true},
-	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .leave = disconnect},
+		      .leave = maybe_disconnect, .ghost = true},
+	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .update = update_inlobby, .leave = disconnect},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Change Controls", .leave = maybe_save_config},
 };
@@ -225,7 +226,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		// FIXME: Display lobbies with player counts
 	},
 	[MEN_JOINING_LOBBY] = {
-		{"Joining lobby \"%s\"", .disabled = true, .format = fmt_lobby},
+		{"Joining lobby \"%s\"", .disabled = true, .format = fmt_active_lobby},
 	},
 	[MEN_LOBBY] = {
 		{"%s", .disabled = true, .format = fmt_active_lobby},
@@ -265,6 +266,7 @@ void start_menu(bool skip_intro) {
 	load_track("human_like_predator");
 
 	set_menu(skip_intro ? MEN_MAIN : MEN_INTRO);
+	maybe_play_title(cur_menu);
 }
 
 static void maybe_save_config(MenuType next) {
@@ -312,7 +314,7 @@ static void update_find_lobbies() {
 static void update_joining_lobby() {
 	const int status = find_lobby();
 	if (status < 0) {
-		WTF("Lobby \"%s\" fail: %s", CLIENT.lobby.name, net_error());
+		WTF("Lobby fail: %s", net_error());
 		play_generic_sound("disconnect");
 		prev_menu();
 	} else if (status > 0) {
@@ -324,9 +326,14 @@ static void update_joining_lobby() {
 static void update_inlobby() {
 	if (is_connected())
 		return;
-	WTF("Lobby \"%s\" fail: %s", CLIENT.lobby.name, net_error());
+	WTF("Lobby fail: %s", net_error());
 	play_generic_sound("disconnect");
 	prev_menu();
+}
+
+static void maybe_disconnect(MenuType next) {
+	if (next != MEN_LOBBY)
+		disconnect();
 }
 
 static void run_disableif() {
@@ -382,6 +389,8 @@ void update_menu() {
 			play_generic_sound("select");
 			if (opt->button != NULL)
 				opt->button();
+			if (opt->flip != NULL)
+				opt->flip(1);
 			if (opt->edit != NULL)
 				start_typing(opt->edit, opt->edit_size); // FIXME: Play "select" when pressing Enter or
 				                                         //        backspace while typing
@@ -394,7 +403,7 @@ void update_menu() {
 		if (flip != 0) {
 			const Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
 			if (opt->flip != NULL && !opt->disabled) {
-				play_generic_sound("select");
+				play_generic_sound("toggle");
 				opt->flip(flip);
 			}
 		}
