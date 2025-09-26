@@ -132,7 +132,7 @@ FMT_OPTION(run, kb_label(KB_RUN));
 #undef BOOL_OPTION
 #undef VOLUME_OPTION
 
-static void update_intro(), update_find_lobbies(), update_joining();
+static void update_intro(), update_find_lobbies(), update_joining_lobby();
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_play_title(MenuType);
 
 static Menu MENUS[MEN_SIZE] = {
@@ -145,8 +145,8 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_JOIN_LOBBY] = {"Join a Lobby"},
 	[MEN_FIND_LOBBY]
 	= {"Find Lobbies", .update = update_find_lobbies, .enter = list_lobbies, .leave = cleanup_lobby_list},
-	[MEN_JOINING_LOBBY]
-	= {"Please wait...", .update = update_joining, .back_sound = "disconnect", .leave = disconnect, .ghost = true},
+	[MEN_JOINING_LOBBY] = {"Please wait...", .update = update_joining_lobby, .back_sound = "disconnect",
+		      .leave = disconnect, .ghost = true},
 	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .leave = disconnect},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Change Controls", .leave = maybe_save_config},
@@ -309,7 +309,7 @@ static void update_find_lobbies() {
 	}
 }
 
-static void update_joining() {
+static void update_joining_lobby() {
 	const int status = find_lobby();
 	if (status < 0) {
 		WTF("Lobby \"%s\" fail: %s", CLIENT.lobby.name, net_error());

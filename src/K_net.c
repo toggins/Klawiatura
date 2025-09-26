@@ -161,14 +161,24 @@ void list_lobbies() {
 }
 
 int find_lobby() {
-	if (netmode == NET_NULL)
+	if (netmode == NET_NULL) {
+		last_error = "Not connected to network";
 		return -1;
+	}
+	if (netmode == NET_LIST)
+		return 0;
 	int n = NutPunch_LobbyCount();
-	for (int i = 0; i < n; i++)
-		if (netmode == NET_JOIN && !SDL_strcmp(NutPunch_GetLobby(i), cur_lobby)) {
+	for (int i = 0; i < n; i++) {
+		if (SDL_strcmp(cur_lobby, NutPunch_GetLobby(i)))
+			continue;
+		if (netmode == NET_HOST) {
+			last_error = "Lobby with this name exists";
+			return -1;
+		} else if (netmode == NET_JOIN) {
 			NutPunch_Join(cur_lobby);
 			return 1;
 		}
+	}
 	if (netmode == NET_HOST) {
 		NutPunch_Host(cur_lobby);
 		NutPunch_LobbySet(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
