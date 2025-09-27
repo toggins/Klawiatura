@@ -233,11 +233,10 @@ void stop_drawing() {
 
 bool window_focused() {
 	const SDL_WindowFlags flags = SDL_GetWindowFlags(window);
-	return (flags & (SDL_WINDOW_OCCLUDED | SDL_WINDOW_MINIMIZED | SDL_WINDOW_NOT_FOCUSABLE)) == 0
-	       && (flags
-			  & (SDL_WINDOW_MOUSE_GRABBED | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_CAPTURE
-				  | SDL_WINDOW_KEYBOARD_GRABBED))
-	                  != 0;
+	const bool focus_impossible = SDL_WINDOW_OCCLUDED | SDL_WINDOW_MINIMIZED | SDL_WINDOW_NOT_FOCUSABLE,
+		   hasfocus = SDL_WINDOW_MOUSE_GRABBED | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_CAPTURE
+	                      | SDL_WINDOW_KEYBOARD_GRABBED;
+	return !(flags & focus_impossible) && (flags & hasfocus);
 }
 
 bool window_start_typing() {
