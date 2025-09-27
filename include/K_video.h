@@ -89,15 +89,15 @@ typedef struct {
 	bool filter;
 } VertexBatch;
 
-typedef struct TileBatch {
-	struct TileBatch* next;
-	const struct Texture* texture;
+typedef struct TileMap {
+	struct TileMap* next;
+	const Texture* texture;
 	bool translucent;
 
 	GLuint vao, vbo;
 	size_t vertex_count, vertex_capacity;
 	Vertex* vertices;
-} TileBatch;
+} TileMap;
 
 enum SurfaceAttributes {
 	SURF_COLOR,
@@ -198,3 +198,9 @@ void dispose_surface(Surface*);
 void resize_surface(Surface*, GLuint, GLuint);
 void push_surface(Surface*);
 void pop_surface();
+
+// Tiles
+void tile_sprite(const char*, const GLfloat[3], const GLfloat[2], const GLubyte[4]);
+void tile_rectangle(const char*, const GLfloat[2][2], GLfloat, const GLubyte[4][4]);
+void draw_tilemaps();
+void clear_tilemaps();

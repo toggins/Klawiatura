@@ -28,6 +28,9 @@ static mat4 view_matrix = GLM_MAT4_IDENTITY;
 static mat4 projection_matrix = GLM_MAT4_IDENTITY;
 static mat4 mvp_matrix = GLM_MAT4_IDENTITY;
 
+static StTinyMap* tilemaps = NULL;
+static TileMap* last_tilemap = NULL;
+
 #include "embeds/shaders/fragment.glsl"
 #include "embeds/shaders/vertex.glsl"
 
@@ -203,6 +206,7 @@ void video_teardown() {
 	glDeleteTextures(1, &blank_texture);
 	FreeTinyMap(textures);
 	FreeTinyMap(fonts);
+	FreeTinyMap(tilemaps);
 
 	glDeleteProgram(shader);
 
@@ -951,4 +955,156 @@ void pop_surface() {
 	}
 
 	current_surface = surface;
+}
+
+// =====
+// TILES
+// =====
+
+static void nuke_tilemap(void* ptr) {
+	struct TileMap* tilemap = (struct TileMap*)ptr;
+	if (last_tilemap == tilemap)
+		last_tilemap = tilemap->next;
+	glDeleteVertexArrays(1, &(tilemap->vao));
+	glDeleteBuffers(1, &(tilemap->vbo));
+	SDL_free(tilemap->vertices);
+}
+
+static TileMap* fetch_tilemap(const char* name) {
+	const StTinyKey key = long_key(name == NULL ? "" : name);
+	TileMap* ptr = StMapGet(tilemaps, key);
+	if (ptr != NULL)
+		return ptr;
+
+	TileMap tilemap = {0};
+
+	tilemap.next = last_tilemap;
+	if (name == NULL)
+		tilemap.texture = NULL;
+	else {
+		load_texture(name);
+		tilemap.texture = get_texture(name);
+	}
+	tilemap.translucent = false;
+
+	glGenVertexArrays(1, &(tilemap.vao));
+	glBindVertexArray(tilemap.vao);
+	glEnableVertexArrayAttrib(tilemap.vao, VATT_POSITION);
+	glVertexArrayAttribFormat(tilemap.vao, VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3);
+	glEnableVertexArrayAttrib(tilemap.vao, VATT_COLOR);
+	glVertexArrayAttribFormat(tilemap.vao, VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GLubyte) * 4);
+	glEnableVertexArrayAttrib(tilemap.vao, VATT_UV);
+	glVertexArrayAttribFormat(tilemap.vao, VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2);
+
+	tilemap.vertex_count = 0;
+	tilemap.vertex_capacity = 6;
+	tilemap.vertices = SDL_malloc(tilemap.vertex_capacity * sizeof(Vertex));
+	if (tilemap.vertices == NULL)
+		FATAL("Out of memory for tilemap \"%s\" vertices", name);
+
+	glGenBuffers(1, &(tilemap.vbo));
+	glBindBuffer(GL_ARRAY_BUFFER, tilemap.vbo);
+	glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * tilemap.vertex_capacity), NULL, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(VATT_POSITION);
+	glVertexAttribPointer(VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+	glEnableVertexAttribArray(VATT_COLOR);
+	glVertexAttribPointer(VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+	glEnableVertexAttribArray(VATT_UV);
+	glVertexAttribPointer(VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+
+	StTinyBucket* bucket = StMapPut(tilemaps, key, &tilemap, sizeof(tilemap));
+	bucket->cleanup = nuke_tilemap;
+	return (last_tilemap = bucket->data);
+}
+
+static void tile_vertex(TileMap* tilemap, const GLfloat pos[3], const GLubyte color[4], const GLfloat uv[2]) {
+	if (tilemap->vertex_count >= tilemap->vertex_capacity) {
+		const size_t new_size = tilemap->vertex_capacity * 2;
+		if (new_size < tilemap->vertex_capacity)
+			FATAL("Capacity overflow in tilemap %p", tilemap);
+
+		tilemap->vertices = SDL_realloc(tilemap->vertices, new_size * sizeof(Vertex));
+		if (tilemap->vertices == NULL)
+			FATAL("Out of memory for tilemap %p vertices", tilemap);
+
+		tilemap->vertex_capacity = new_size;
+
+		glBindBuffer(GL_ARRAY_BUFFER, tilemap->vbo);
+		glBufferData(
+			GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * tilemap->vertex_capacity), NULL, GL_STATIC_DRAW);
+	}
+
+	tilemap->vertices[tilemap->vertex_count++]
+		= (Vertex){pos[0], pos[1], pos[2], color[0], color[1], color[2], color[3], uv[0], uv[1]};
+}
+
+void tile_sprite(const char* name, const GLfloat pos[3], const GLfloat scale[2], const GLubyte color[4]) {
+	TileMap* tilemap = fetch_tilemap(name);
+	const Texture* texture = tilemap->texture;
+	if (texture == NULL)
+		return;
+
+	const GLfloat x1 = pos[0] - (texture->offset[0] * scale[0]);
+	const GLfloat y1 = pos[1] - (texture->offset[1] * scale[1]);
+	const GLfloat x2 = x1 + ((GLfloat)texture->size[0] * scale[0]);
+	const GLfloat y2 = y1 + ((GLfloat)texture->size[1] * scale[1]);
+	const GLfloat z = pos[2];
+
+	tile_vertex(tilemap, XYZ(x1, y2, z), color, UV(0, 1));
+	tile_vertex(tilemap, XYZ(x1, y1, z), color, UV(0, 0));
+	tile_vertex(tilemap, XYZ(x2, y1, z), color, UV(1, 0));
+	tile_vertex(tilemap, XYZ(x2, y1, z), color, UV(1, 0));
+	tile_vertex(tilemap, XYZ(x2, y2, z), color, UV(1, 1));
+	tile_vertex(tilemap, XYZ(x1, y2, z), color, UV(0, 1));
+
+	if (color[3] < 255)
+		tilemap->translucent = true;
+}
+
+void tile_rectangle(const char* name, const GLfloat rect[2][2], GLfloat z, const GLubyte color[4][4]) {
+	TileMap* tilemap = fetch_tilemap(name);
+	const Texture* texture = tilemap->texture;
+	const GLfloat u = (texture != NULL) ? ((rect[1][0] - rect[0][0]) / (GLfloat)(texture->size[0])) : 1;
+	const GLfloat v = (texture != NULL) ? ((rect[1][1] - rect[0][1]) / (GLfloat)(texture->size[1])) : 1;
+
+	tile_vertex(tilemap, XYZ(rect[0][0], rect[1][1], z), color[2], UV(0, v));
+	tile_vertex(tilemap, XYZ(rect[0][0], rect[0][1], z), color[0], UV(0, 0));
+	tile_vertex(tilemap, XYZ(rect[1][0], rect[0][1], z), color[1], UV(u, 0));
+	tile_vertex(tilemap, XYZ(rect[1][0], rect[0][1], z), color[1], UV(u, 0));
+	tile_vertex(tilemap, XYZ(rect[1][0], rect[1][1], z), color[3], UV(u, v));
+	tile_vertex(tilemap, XYZ(rect[0][0], rect[1][1], z), color[2], UV(0, v));
+
+	if (color[0][3] < 255 || color[1][3] < 255 || color[2][3] < 255 || color[3][3] < 255)
+		tilemap->translucent = true;
+}
+
+void draw_tilemaps() {
+	TileMap* tilemap = last_tilemap;
+	if (tilemap == NULL)
+		return;
+
+	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
+	glUniform1f(uniforms.alpha_test, 0.5f);
+	while (tilemap != NULL) {
+		glDepthMask(tilemap->translucent ? GL_FALSE : GL_TRUE);
+		glBindVertexArray(tilemap->vao);
+		glBindBuffer(GL_ARRAY_BUFFER, tilemap->vbo);
+		glBufferSubData(
+			GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(Vertex) * tilemap->vertex_count), tilemap->vertices);
+
+		glBindTexture(GL_TEXTURE_2D, (tilemap->texture == NULL) ? blank_texture : tilemap->texture->texture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glDrawArrays(GL_TRIANGLES, 0, (GLsizei)tilemap->vertex_count);
+
+		tilemap = tilemap->next;
+	}
+
+	glDepthMask(GL_TRUE);
+}
+
+void clear_tilemaps() {
+	FreeTinyMap(tilemaps);
+	tilemaps = NewTinyMap();
+	last_tilemap = NULL;
 }
