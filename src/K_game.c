@@ -27,6 +27,7 @@ static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_PLAYER] = &TAB_PLAYER,
 };
 
+static Surface* game_surface = NULL;
 static GekkoSession* game_session = NULL;
 GameState game_state = {0};
 
@@ -41,7 +42,20 @@ void start_game(GameContext* ctx) {
 	load_texture("ui/sidebar_l");
 	load_texture("ui/sidebar_r");
 
+	game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, true, true);
+
 	gekko_create(&game_session);
+
+	GekkoConfig cfg = {0};
+	cfg.desync_detection = true;
+	cfg.input_size = sizeof(GameInput);
+	cfg.state_size = sizeof(GameState);
+	cfg.max_spectators = 0;
+	cfg.input_prediction_window = 4;
+	cfg.num_players = ctx->num_players;
+
+	populate_game(game_session);
+	gekko_start(game_session, &cfg);
 
 	start_game_state(ctx);
 	start_audio_state();
@@ -62,6 +76,8 @@ void nuke_game() {
 
 	gekko_destroy(game_session);
 	game_session = NULL;
+	destroy_surface(game_surface);
+	game_surface = NULL;
 }
 
 void update_game() {}
@@ -72,6 +88,16 @@ void draw_game() {
 	batch_color(WHITE);
 	batch_sprite("ui/sidebar_l", NO_FLIP);
 	batch_sprite("ui/sidebar_r", NO_FLIP);
+
+	push_surface(game_surface);
+	clear_color(0, 0, 0, 1);
+	clear_depth(1);
+	pop_surface();
+
+	batch_cursor(0, 0, 0);
+	batch_color(WHITE);
+	batch_surface(game_surface);
+
 	stop_drawing();
 }
 
