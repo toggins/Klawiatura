@@ -29,6 +29,7 @@ typedef enum {
 	KB_KEVIN_V,
 	KB_KEVIN_I,
 	KB_KEVIN_N,
+	KB_KEVIN_BAIL,
 
 	KB_SIZE,
 } Keybind;

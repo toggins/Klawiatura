@@ -13,6 +13,7 @@
 extern ClientInfo CLIENT;
 
 static MenuType cur_menu = MEN_NULL;
+static int kevin_state = 0, kevin_time = 0;
 
 static float volume_toggle_impl(float, int);
 static void noop() {
@@ -356,6 +357,21 @@ static void run_disableif() {
 	}
 }
 
+static void type_kevin(Keybind kb) {
+	if (!kb_pressed(kb))
+		return;
+
+	++kevin_state;
+	if (kevin_state >= 5) {
+		play_generic_sound("kevin_on");
+		play_generic_track("human_like_predator", PLAY_LOOPING);
+		kevin_time = 0;
+	} else {
+		play_generic_sound("kevin_type");
+		kevin_time = TICKRATE;
+	}
+}
+
 void update_menu() {
 	for (new_frame(); got_ticks(); next_tick()) {
 		int last_menu = cur_menu;
@@ -364,6 +380,37 @@ void update_menu() {
 		if (last_menu != cur_menu)
 			continue;
 		run_disableif();
+
+		if (kevin_state < 5 && kevin_time > 0) {
+			--kevin_time;
+			if (kevin_time <= 0)
+				kevin_state = 0;
+		}
+		switch (kevin_state) {
+		default:
+			type_kevin(KB_KEVIN_K);
+			break;
+		case 1:
+			type_kevin(KB_KEVIN_E);
+			break;
+		case 2:
+			type_kevin(KB_KEVIN_V);
+			break;
+		case 3:
+			type_kevin(KB_KEVIN_I);
+			break;
+		case 4:
+			type_kevin(KB_KEVIN_N);
+			break;
+		case 5: {
+			if (!kb_pressed(KB_KEVIN_BAIL))
+				break;
+			kevin_state = 0;
+			play_generic_sound("thwomp");
+			play_generic_track("title", PLAY_LOOPING);
+			break;
+		}
+		}
 
 		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
 		if (!change)
@@ -493,6 +540,31 @@ void draw_menu() {
 			y += 24;
 		}
 	}
+
+	const char* kevinstr = NULL;
+	switch (kevin_state) {
+	case 1:
+		kevinstr = "K";
+		break;
+	case 2:
+		kevinstr = "KE";
+		break;
+	case 3:
+		kevinstr = "KEV";
+		break;
+	case 4:
+		kevinstr = "KEVI";
+		break;
+	case 5:
+		kevinstr = "KEVIN";
+		break;
+	default:
+		break;
+	}
+
+	batch_cursor(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 48, 0);
+	batch_color(RGB(255, 128, 128));
+	batch_string("main", 24, ALIGN(FA_CENTER, FA_BOTTOM), kevinstr);
 
 	goto jobwelldone;
 
