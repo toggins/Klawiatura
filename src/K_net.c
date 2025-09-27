@@ -185,6 +185,9 @@ int find_lobby() {
 		NutPunch_Host(cur_lobby);
 		NutPunch_LobbySet(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
 		return 1;
+	} else if (netmode == NET_JOIN) {
+		last_error = "Lobby doesn't exist";
+		return -1;
 	}
 	return 0;
 }
