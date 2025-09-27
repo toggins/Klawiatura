@@ -917,6 +917,7 @@ void push_surface(Surface* surface) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		glDisable(GL_DEPTH_TEST);
+		glCullFace(GL_FRONT);
 	} else {
 		if (surface->active)
 			FATAL("Pushing an active surface?");
@@ -927,6 +928,7 @@ void push_surface(Surface* surface) {
 		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
 		glViewport(0, 0, (GLsizei)(surface->size[0]), (GLsizei)(surface->size[1]));
 		(surface->enabled[SURF_DEPTH] ? glEnable : glDisable)(GL_DEPTH_TEST);
+		glCullFace(GL_BACK);
 	}
 
 	current_surface = surface;
@@ -947,11 +949,13 @@ void pop_surface() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, screen_width, screen_height);
 		glDisable(GL_DEPTH_TEST);
+		glCullFace(GL_FRONT);
 	} else {
 		check_surface(surface);
 		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
 		glViewport(0, 0, (GLsizei)(surface->size[0]), (GLsizei)(surface->size[1]));
 		(surface->enabled[SURF_DEPTH] ? glEnable : glDisable)(GL_DEPTH_TEST);
+		glCullFace(GL_BACK);
 	}
 
 	current_surface = surface;
@@ -1085,6 +1089,7 @@ void draw_tilemaps() {
 
 	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
 	glUniform1f(uniforms.alpha_test, 0.5f);
+	glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)(*get_mvp_matrix()));
 	while (tilemap != NULL) {
 		glDepthMask(tilemap->translucent ? GL_FALSE : GL_TRUE);
 		glBindVertexArray(tilemap->vao);
