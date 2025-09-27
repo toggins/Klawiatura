@@ -121,8 +121,8 @@ bool is_connected() {
 
 void disconnect() {
 	NutPunch_Disconnect();
-	netmode = NET_NULL;
 	SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
+	netmode = NET_NULL;
 }
 
 // =======
@@ -166,11 +166,10 @@ int find_lobby() {
 	if (netmode == NET_NULL) {
 		last_error = "Not connected to network";
 		return -1;
-	}
-	if (netmode == NET_LIST)
+	} else if (netmode == NET_LIST)
 		return 0;
-	int n = NutPunch_LobbyCount();
-	for (int i = 0; i < n; i++) {
+
+	for (int i = 0; i < NutPunch_LobbyCount(); i++) {
 		if (SDL_strcmp(cur_lobby, NutPunch_GetLobby(i)))
 			continue;
 		if (netmode == NET_HOST) {
@@ -181,6 +180,7 @@ int find_lobby() {
 			return 1;
 		}
 	}
+
 	if (netmode == NET_HOST) {
 		NutPunch_Host(cur_lobby);
 		NutPunch_LobbySet(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);

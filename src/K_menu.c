@@ -287,7 +287,7 @@ static void maybe_save_config(MenuType next) {
 }
 
 static void cleanup_lobby_list(MenuType next) {
-	disconnect();
+	maybe_disconnect(next);
 	for (int i = 0; i < MAX_OPTIONS; i++) {
 		OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
 		OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
@@ -344,7 +344,7 @@ static void update_inlobby() {
 }
 
 static void maybe_disconnect(MenuType next) {
-	if (next != MEN_LOBBY)
+	if (next != MEN_LOBBY && next != MEN_JOINING_LOBBY)
 		disconnect();
 }
 
@@ -425,7 +425,6 @@ void update_menu() {
 				new_option = 0;
 			else
 				new_option += change;
-
 			Option* option = &OPTIONS[cur_menu][new_option];
 			if (option->name != NULL && !option->disabled)
 				goto found_option;
