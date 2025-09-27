@@ -23,10 +23,14 @@
 
 const GameActorTable TAB_NULL = {0};
 extern const GameActorTable TAB_PLAYER;
+extern const GameActorTable TAB_CLOUD;
+extern const GameActorTable TAB_BUSH;
 
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
 	[ACT_PLAYER] = &TAB_PLAYER,
+	[ACT_CLOUD] = &TAB_CLOUD,
+	[ACT_BUSH] = &TAB_BUSH,
 };
 
 static Surface* game_surface = NULL;
@@ -40,6 +44,13 @@ GameState game_state = {0};
 void start_game(GameContext* ctx) {
 	if (game_session != NULL)
 		return;
+
+	for (int i = ACT_NULL; i < ACT_SIZE; i++) {
+		const GameActorTable* const table = ACTORS[i];
+		INFO("Class %i: {%i, %p, %p, %p, %p, %p, %p, %p, %p, %p}", i, table->solid, table->load, table->create,
+			table->tick, table->draw, table->cleanup, table->collide, table->displace, table->on_top,
+			table->on_bottom);
+	}
 
 	load_texture("ui/sidebar_l");
 	load_texture("ui/sidebar_r");
@@ -86,19 +97,27 @@ void update_game() {}
 
 void draw_game() {
 	start_drawing();
-	batch_cursor(0, 0, 0);
-	batch_color(WHITE);
+	batch_start(ORIGO, 0, WHITE);
 	batch_sprite("ui/sidebar_l", NO_FLIP);
 	batch_sprite("ui/sidebar_r", NO_FLIP);
 
 	push_surface(game_surface);
+
 	// clear_color(0, 0, 0, 1);
 	clear_depth(1);
+
 	draw_tilemaps();
+
+	const GameActor* actor = get_actor(game_state.live_actors);
+	while (actor != NULL) {
+		if (ANY_FLAG(actor, FLG_VISIBLE))
+			ACTOR_CALL(actor, draw);
+		actor = get_actor(actor->next);
+	}
+
 	pop_surface();
 
-	batch_cursor(0, 0, 0);
-	batch_color(WHITE);
+	batch_start(ORIGO, 0, WHITE);
 	batch_surface(game_surface);
 
 	stop_drawing();
@@ -109,6 +128,8 @@ void nuke_game_state() {
 	SDL_memset(&game_state, 0, sizeof(game_state));
 
 	game_state.live_actors = NULLACT;
+	for (ActorID i = 0; i < MAX_ACTORS; i++)
+		game_state.actors[i].id = NULLACT;
 	for (int32_t i = 0; i < GRID_SIZE; i++)
 		game_state.grid[i] = NULLACT;
 
@@ -547,6 +568,14 @@ void list_cell_at(CellList* list, const frect rect) {
 				actor = get_actor(actor->previous_cell);
 			}
 		}
+}
+
+// Generic interpolated (not yet) actor drawing function.
+//
+// Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
+void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
+	batch_start(XYZ(FtFloat(actor->pos.x), FtFloat(actor->pos.y), FtFloat(actor->depth)), angle, color);
+	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 }
 
 // ====

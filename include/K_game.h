@@ -353,7 +353,7 @@ typedef struct {
 	void (*draw)(const GameActor*);            ///
 	void (*cleanup)(GameActor*);               ///
 	void (*collide)(GameActor*, GameActor*);   /// Callback function for `collide_object()`.
-	void (*displace)(GameActor*, GameActor*);  /// Callback function for `displace_object()`. wip
+	void (*displace)(GameActor*, GameActor*);  /// Callback function for `displace_object()`. (WIP)
 	void (*on_top)(GameActor*, GameActor*);    /// Callback function for when the displacee is above the object.
 	void (*on_bottom)(GameActor*, GameActor*); /// Callback function for when the displacee is below the object.
 } GameActorTable;
@@ -373,11 +373,9 @@ void draw_game_state();
 void end_game_state();
 
 // Players
-
 GamePlayer* get_player(PlayerID);
 
 // Actors
-
 void load_actor(GameActorType);
 GameActor* create_actor(GameActorType, const fvec2);
 
@@ -391,6 +389,7 @@ typedef struct {
 
 void list_cell_at(CellList*, const frect);
 
-// Math
+void draw_actor(const GameActor*, const char*, GLfloat, const GLubyte[4]);
 
+// Math
 int32_t rng(int32_t);
