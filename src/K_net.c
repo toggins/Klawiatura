@@ -125,6 +125,14 @@ void disconnect() {
 	netmode = NET_NULL;
 }
 
+bool is_host() {
+	return netmode == NET_HOST;
+}
+
+bool is_client() {
+	return netmode == NET_JOIN;
+}
+
 // =======
 // LOBBIES
 // =======
@@ -216,4 +224,11 @@ const char* get_peer_name(int idx) {
 	int size = 0;
 	char* str = (char*)NutPunch_PeerGet(idx, "NAME", &size);
 	return (str == NULL || size > NUTPUNCH_FIELD_DATA_MAX) ? NULL : str;
+}
+
+int8_t populate_game(GekkoSession* session) {
+	// FIXME: Actually fill players.
+	//        When the local peer is filled, give it 2 ticks of input delay here.
+	gekko_add_actor(session, LocalPlayer, NULL);
+	return 0;
 }

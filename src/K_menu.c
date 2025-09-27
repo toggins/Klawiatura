@@ -74,6 +74,7 @@ static void do_join_fr() {
 
 // Lobby
 FMT_OPTION(active_lobby, get_lobby_id());
+FMT_OPTION(lobby_start, is_host() ? "Start!" : "Waiting for host");
 
 static void set_players(int flip) {
 	if (flip >= 0)
@@ -243,10 +244,10 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_LOBBY] = {
 		{"%s", .disabled = true, .format = fmt_active_lobby},
 		{},
-		{"Players: %d", .format = fmt_players, .flip = set_players},
-		{"Level: %s", .format = fmt_level, EDIT(CLIENT.game.level)},
+		{"Players: %d", .format = fmt_players, .flip = set_players, .disable_if = is_client},
+		{"Level: %s", .format = fmt_level, EDIT(CLIENT.game.level), .disable_if = is_client},
 		{},
-		{"Start!"},
+		{"%s", .format = fmt_lobby_start, .disable_if = is_client},
 	},
 };
 #undef EDIT
