@@ -6,6 +6,9 @@
 #include "K_net.h" // IWYU pragma: keep
 #include "K_video.h"
 
+#define MAJOR_LEVEL_VERSION 0
+#define MINOR_LEVEL_VERSION 1
+
 #define MAX_PLAYERS 4
 #define MAX_MISSILES 2
 #define MAX_SINK 6
@@ -17,6 +20,7 @@
 #define NULLCELL ((int32_t)(-1))
 
 #define MAX_VALUES 32
+#define GAME_STRING_MAX 256
 
 typedef fixed ActorValue;
 typedef uint32_t ActorFlag;
@@ -221,15 +225,16 @@ enum {
 
 typedef struct {
 	PlayerID num_players;
+	GameFlag flags;
+	ActorID checkpoint;
+
+	char level[CLIENT_STRING_MAX];
 	struct {
 		int8_t lives;
 		uint8_t coins;
 		PlayerPower power;
 		uint32_t score;
 	} players[MAX_PLAYERS];
-
-	GameFlag flags;
-	char level[CLIENT_STRING_MAX];
 } GameContext;
 
 typedef struct {
@@ -331,7 +336,7 @@ typedef struct {
 	GameActor actors[MAX_ACTORS];
 	ActorID grid[GRID_SIZE];
 
-	char world[CLIENT_STRING_MAX], next[CLIENT_STRING_MAX];
+	char world[GAME_STRING_MAX], next[GAME_STRING_MAX];
 } GameState;
 
 typedef struct {
