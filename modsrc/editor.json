@@ -10,63 +10,63 @@
                             "def": "Grass TL",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_GRASSA"
+                            "texture": "tiles/grass"
                         },
 
                         {
                             "def": "Grass T",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_GRASSB"
+                            "texture": "tiles/grass2"
                         },
 
                         {
                             "def": "Grass TR",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_GRASSC"
+                            "texture": "tiles/grass3"
                         },
 
                         {
                             "def": "Grass ML",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_GRASSD"
+                            "texture": "tiles/grass4"
                         },
 
                         {
                             "def": "Grass M",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_GRASSE"
+                            "texture": "tiles/grass5"
                         },
 
                         {
                             "def": "Grass MR",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_GRASSF"
+                            "texture": "tiles/grass6"
                         },
 
                         {
                             "def": "Grass BL",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_GRASSG"
+                            "texture": "tiles/grass7"
                         },
 
                         {
                             "def": "Grass B",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_GRASSH"
+                            "texture": "tiles/grass8"
                         },
 
                         {
                             "def": "Grass BR",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_GRASSI"
+                            "texture": "tiles/grass9"
                         }
                     ]
                 ],
@@ -78,7 +78,7 @@
                             "def": "Block",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BLOCKA"
+                            "texture": "tiles/block"
                         }
                     ]
                 ],
@@ -90,21 +90,21 @@
                             "def": "Platform Tile",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_PLATFA"
+                            "texture": "tiles/bridge_red"
                         },
 
                         {
                             "def": "Platform Tile Purple",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_PLATFB"
+                            "texture": "tiles/bridge_purple"
                         },
 
                         {
                             "def": "Platform Tile Gray",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_PLATFC"
+                            "texture": "tiles/bridge_gray"
                         }
                     ]
                 ],
@@ -116,42 +116,42 @@
                             "def": "Pipe V T",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_PIP1VA"
+                            "texture": "tiles/pipe"
                         },
 
                         {
                             "def": "Pipe V M",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_PIP1VB"
+                            "texture": "tiles/pipe2"
                         },
 
                         {
                             "def": "Pipe V B",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_PIP1VC"
+                            "texture": "tiles/pipe3"
                         },
 
                         {
                             "def": "Pipe Gray V T",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_PIP3VA"
+                            "texture": "tiles/pipe_gray"
                         },
 
                         {
                             "def": "Pipe Gray V M",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_PIP3VB"
+                            "texture": "tiles/pipe_gray2"
                         },
 
                         {
                             "def": "Pipe Gray V B",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_PIP3VC"
+                            "texture": "tiles/pipe_gray3"
                         }
                     ]
                 ],
@@ -163,35 +163,35 @@
                             "def": "Castle Brick",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BRICKA"
+                            "texture": "tiles/brick"
                         },
 
                         {
                             "def": "Castle Brick 2",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BRICKB"
+                            "texture": "tiles/brick2"
                         },
 
                         {
                             "def": "Castle Brick Small",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BRICKC"
+                            "texture": "tiles/brick3"
                         },
 
                         {
                             "def": "Castle Brick Lava L",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BRICKD"
+                            "texture": "tiles/brick4"
                         },
 
                         {
                             "def": "Castle Brick Lava R",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BRICKE"
+                            "texture": "tiles/brick5"
                         }
                     ]
                 ],
@@ -203,98 +203,98 @@
                             "def": "Tank Block L",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_TANKA"
+                            "texture": "tiles/tank"
                         },
 
                         {
                             "def": "Tank Block M",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_TANKB"
+                            "texture": "tiles/tank2"
                         },
 
                         {
                             "def": "Tank Block R",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_TANKC"
+                            "texture": "tiles/tank3"
                         },
 
                         {
                             "def": "Tank Block",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_TANKD"
+                            "texture": "tiles/tank4"
                         },
 
                         {
                             "def": "Tank Block Dirty",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_TANKE"
+                            "texture": "tiles/tank5"
                         },
 
                         {
                             "def": "Tank Block Screws",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_TANKF"
+                            "texture": "tiles/tank6"
                         },
 
                         {
                             "def": "Tank Block Bolts",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_TANKG"
+                            "texture": "tiles/tank7"
                         },
 
                         {
                             "def": "Tank Slope L",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_TANKH"
+                            "texture": "tiles/tank8"
                         },
 
                         {
                             "def": "Tank Slope R",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_TANKI"
+                            "texture": "tiles/tank9"
                         },
 
                         {
                             "def": "Tank Support M",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_TANKJ"
+                            "texture": "tiles/tank10"
                         },
 
                         {
                             "def": "Tank Support T",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_TANKK"
+                            "texture": "tiles/tank11"
                         },
 
                         {
                             "def": "Tank Support Back",
                             "type": "backdrop",
                             "z": 23,
-                            "texture": "T_TANKL"
+                            "texture": "tiles/tank12"
                         },
 
                         {
                             "def": "Tank Lid",
                             "type": "backdrop",
                             "z": 22,
-                            "texture": "T_TANKM"
+                            "texture": "tiles/tank13"
                         },
 
                         {
                             "def": "Tank Chains",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_TANKN"
+                            "texture": "tiles/tank14"
                         },
 
                         {
@@ -302,7 +302,7 @@
                             "type": "object",
                             "index": 78,
                             "z": 20,
-                            "texture": "T_WHELLA"
+                            "texture": "tiles/wheel_l"
                         },
 
                         {
@@ -310,7 +310,7 @@
                             "type": "object",
                             "index": 79,
                             "z": 20,
-                            "texture": "T_WHEELA"
+                            "texture": "tiles/wheel"
                         },
 
                         {
@@ -318,7 +318,7 @@
                             "type": "object",
                             "index": 80,
                             "z": 20,
-                            "texture": "T_WHELRA"
+                            "texture": "tiles/wheel_r"
                         }
                     ]
                 ],
@@ -452,7 +452,7 @@
                             "z": -50,
                             "stretch": true,
                             "max_stretch": [65535, 28],
-                            "texture": "B_CLOUDB"
+                            "texture": "bg/clouds2"
                         },
 
                         {
@@ -461,7 +461,7 @@
                             "z": 75,
                             "stretch": true,
                             "max_stretch": [65535, 28],
-                            "texture": "B_CLOUDB"
+                            "texture": "bg/clouds2"
                         },
 
                         {
@@ -470,7 +470,7 @@
                             "z": 100,
                             "stretch": true,
                             "max_stretch": [65535, 28],
-                            "texture": "B_CLOUDB"
+                            "texture": "bg/clouds2"
                         },
 
                         {
@@ -479,7 +479,7 @@
                             "z": 190,
                             "stretch": true,
                             "max_stretch": [65535, 480],
-                            "texture": "B_CASTLA"
+                            "texture": "bg/castle"
                         }
                     ]
                 ],
@@ -491,7 +491,7 @@
                             "def": "Giant Cloud",
                             "type": "backdrop",
                             "z": 57,
-                            "texture": "B_CLOUDS"
+                            "texture": "bg/big_clouds"
                         },
 
                         {
@@ -499,28 +499,28 @@
                             "type": "object",
                             "z": 56,
                             "index": 50,
-                            "texture": "S_CFACEA"
+                            "texture": "bg/cloud_face"
                         },
 
                         {
                             "def": "Hill",
                             "type": "backdrop",
                             "z": 54,
-                            "texture": "B_HILLA"
+                            "texture": "bg/hill"
                         },
 
                         {
                             "def": "Hill Minix",
                             "type": "backdrop",
                             "z": 54,
-                            "texture": "B_HILLB"
+                            "texture": "bg/hill3"
                         },
 
                         {
                             "def": "Forest",
                             "type": "backdrop",
                             "z": 50,
-                            "texture": "B_FOREST"
+                            "texture": "bg/forest"
                         },
 
                         {
@@ -529,7 +529,7 @@
                             "z": 51,
                             "stretch": true,
                             "max_stretch": [65535, 83],
-                            "texture": "B_FORESB"
+                            "texture": "bg/forest2"
                         },
 
                         {
@@ -538,7 +538,7 @@
                             "z": 52,
                             "stretch": true,
                             "max_stretch": [65535, 83],
-                            "texture": "B_FORESB"
+                            "texture": "bg/forest2"
                         },
 
                         {
@@ -547,21 +547,21 @@
                             "z": 53,
                             "stretch": true,
                             "max_stretch": [65535, 83],
-                            "texture": "B_FORESB"
+                            "texture": "bg/forest2"
                         },
 
                         {
                             "def": "Hills",
                             "type": "backdrop",
                             "z": 55,
-                            "texture": "B_HILLS"
+                            "texture": "bg/hills"
                         },
 
                         {
                             "def": "Pyramid",
                             "type": "backdrop",
                             "z": 50,
-                            "texture": "B_PYRAM"
+                            "texture": "bg/pyramid"
                         }
                     ]
                 ],
@@ -575,35 +575,35 @@
                                 {
                                     "def": "Sign Up",
                                     "type": "backdrop",
-                                    "texture": "S_UP",
+                                    "texture": "props/sign/up",
                                     "z": 25
                                 },
 
                                 {
                                     "def": "Sign Left",
                                     "type": "backdrop",
-                                    "texture": "S_LEFT",
+                                    "texture": "props/sign/left",
                                     "z": 25
                                 },
 
                                 {
                                     "def": "Sign Down",
                                     "type": "backdrop",
-                                    "texture": "S_DOWN",
+                                    "texture": "props/sign/down",
                                     "z": 25
                                 },
 
                                 {
                                     "def": "Sign Right",
                                     "type": "backdrop",
-                                    "texture": "S_RIGHT",
+                                    "texture": "props/sign/right",
                                     "z": 25
                                 },
 
                                 {
                                     "def": "Hardcore 1-4",
                                     "type": "backdrop",
-                                    "texture": "S_HARD14",
+                                    "texture": "props/sign/hardcore_1_4",
                                     "z": 25
                                 }
                             ]
@@ -613,7 +613,7 @@
                             "def": "Cloud",
                             "type": "object",
                             "index": 73,
-                            "texture": "S_CLOUDA",
+                            "texture": "props/cloud",
                             "z": 26
                         },
 
@@ -621,7 +621,7 @@
                             "def": "Cloud Dark",
                             "type": "object",
                             "index": 74,
-                            "texture": "S_CLODDA",
+                            "texture": "props/cloud_dark",
                             "z": 26
                         },
 
@@ -629,7 +629,7 @@
                             "def": "Bush",
                             "type": "object",
                             "index": 75,
-                            "texture": "S_BUSHA",
+                            "texture": "props/bush",
                             "z": 25
                         },
 
@@ -637,70 +637,70 @@
                             "def": "Bush Snow",
                             "type": "object",
                             "index": 76,
-                            "texture": "S_BUSHSA",
+                            "texture": "props/bush_snow",
                             "z": 25
                         },
 
                         {
                             "def": "Tree Small",
                             "type": "backdrop",
-                            "texture": "S_TREEA",
+                            "texture": "props/tree",
                             "z": 26
                         },
 
                         {
                             "def": "Tree",
                             "type": "backdrop",
-                            "texture": "S_TREEB",
+                            "texture": "props/tree2",
                             "z": 26
                         },
 
                         {
                             "def": "Tree Back",
                             "type": "backdrop",
-                            "texture": "S_TREEBG",
+                            "texture": "props/tree2_b",
                             "z": 26
                         },
 
                         {
                             "def": "Tree Minix",
                             "type": "backdrop",
-                            "texture": "S_TREEM",
+                            "texture": "props/tree_minix",
                             "z": 26
                         },
 
                         {
                             "def": "Fence L",
                             "type": "backdrop",
-                            "texture": "S_FENCEA",
+                            "texture": "props/fence_l",
                             "z": 25
                         },
 
                         {
                             "def": "Fence M",
                             "type": "backdrop",
-                            "texture": "S_FENCEB",
+                            "texture": "props/fence",
                             "z": 25
                         },
 
                         {
                             "def": "Fence R",
                             "type": "backdrop",
-                            "texture": "S_FENCEC",
+                            "texture": "props/fence_r",
                             "z": 25
                         },
 
                         {
                             "def": "Support L",
                             "type": "backdrop",
-                            "texture": "S_SUPPTL",
+                            "texture": "props/support_l",
                             "z": 22
                         },
 
                         {
                             "def": "Support R",
                             "type": "backdrop",
-                            "texture": "S_SUPPTR",
+                            "texture": "props/support_r",
                             "z": 22
                         }
                     ]
@@ -715,7 +715,7 @@
                     "def": "Solid",
                     "type": "object",
                     "index": 1,
-                    "texture": "M_SOLID",
+                    "texture": "markers/solid",
                     "stretch": true,
                     "max_stretch": [256, 256]
                 },
@@ -724,7 +724,7 @@
                     "def": "Solid Top",
                     "type": "object",
                     "index": 2,
-                    "texture": "M_SOLIDT",
+                    "texture": "markers/solid_top",
                     "stretch": true,
                     "max_stretch": [256, 256]
                 },
@@ -733,7 +733,7 @@
                     "def": "Solid Slope",
                     "type": "object",
                     "index": 3,
-                    "texture": "M_SLOPE",
+                    "texture": "markers/solid_slope",
                     "stretch": true,
                     "max_stretch": [256, 256],
 
@@ -750,7 +750,7 @@
                     "type": "object",
                     "index": 4,
                     "z": -1,
-                    "texture": "M_PLAYER",
+                    "texture": "markers/player",
 
                     "flags": [
                         {
@@ -775,7 +775,7 @@
                     "type": "object",
                     "index": 31,
                     "z": 1,
-                    "texture": "M_CHECKA",
+                    "texture": "markers/checkpoint",
 
                     "values": [
                         {
@@ -816,7 +816,7 @@
                     "type": "object",
                     "index": 85,
                     "z": 19,
-                    "texture": "M_PLTFRM",
+                    "texture": "markers/platform/big",
 
                     "values": [
                         {
@@ -849,7 +849,7 @@
                     "def": "Warp",
                     "type": "object",
                     "index": 51,
-                    "texture": "M_WARP",
+                    "texture": "markers/warp",
 
                     "values": [
                         {
@@ -918,7 +918,7 @@
                     "def": "Bounds",
                     "type": "object",
                     "index": 57,
-                    "texture": "M_SOLIDT",
+                    "texture": "markers/solid_top",
                     "stretch": true,
                     "max_stretch": [256, 256],
 
@@ -954,7 +954,7 @@
                     "type": "object",
                     "index": 53,
                     "z": 1,
-                    "texture": "M_SOLIDT",
+                    "texture": "markers/solid_top",
                     "stretch": true,
                     "max_stretch": [256, 256],
 
@@ -973,7 +973,7 @@
                             "def": "Goal",
                             "type": "backdrop",
                             "z": 24,
-                            "texture": "M_GOAL"
+                            "texture": "markers/goal"
                         },
 
                         {
@@ -981,7 +981,7 @@
                             "type": "object",
                             "index": 32,
                             "z": 23,
-                            "texture": "M_GOALBA",
+                            "texture": "markers/goal_bar",
 
                             "flags": [
                                 {
@@ -995,7 +995,7 @@
                             "def": "Goal Mark",
                             "type": "backdrop",
                             "z": 24,
-                            "texture": "M_GOALM"
+                            "texture": "markers/goal_mark"
                         },
 
                         {
@@ -1003,7 +1003,7 @@
                             "type": "object",
                             "index": 34,
                             "z": 24,
-                            "texture": "M_GOALM",
+                            "texture": "markers/goal_mark",
                             "stretch": true,
                             "max_stretch": [256, 256],
 
@@ -1021,7 +1021,7 @@
                     "def": "Autoscroll",
                     "type": "object",
                     "index": 77,
-                    "texture": "M_SCROLL",
+                    "texture": "markers/autoscroll",
 
                     "values": [
                         {
@@ -1059,7 +1059,7 @@
                             "type": "object",
                             "index": 26,
                             "z": 20,
-                            "texture": "I_BLOCKA",
+                            "texture": "items/block",
                             "values": [
                                 {
                                     "name": "Object Index",
@@ -1074,7 +1074,7 @@
                             "type": "object",
                             "index": 27,
                             "z": 20,
-                            "texture": "I_BLOCKC",
+                            "texture": "items/block3",
 
                             "values": [
                                 {
@@ -1097,7 +1097,7 @@
                             "type": "object",
                             "index": 28,
                             "z": 20,
-                            "texture": "I_BRICKA",
+                            "texture": "items/brick",
 
                             "flags": [
                                 {
@@ -1112,7 +1112,7 @@
                             "type": "object",
                             "index": 30,
                             "z": 20,
-                            "texture": "I_BRICKA",
+                            "texture": "items/brick_coin",
 
                             "values": [
                                 {
@@ -1140,7 +1140,7 @@
                             "type": "object",
                             "index": 11,
                             "z": 1,
-                            "texture": "I_SHROOM"
+                            "texture": "items/mushroom"
                         },
 
                         {
@@ -1148,7 +1148,7 @@
                             "type": "object",
                             "index": 12,
                             "z": 1,
-                            "texture": "I_1UP"
+                            "texture": "items/mushroom_1up"
                         },
 
                         {
@@ -1156,7 +1156,7 @@
                             "type": "object",
                             "index": 14,
                             "z": 1,
-                            "texture": "I_FLWRA"
+                            "texture": "items/flower"
                         },
 
                         {
@@ -1164,7 +1164,7 @@
                             "type": "object",
                             "index": 15,
                             "z": 1,
-                            "texture": "I_BEETA"
+                            "texture": "items/beetroot"
                         },
 
                         {
@@ -1172,7 +1172,7 @@
                             "type": "object",
                             "index": 16,
                             "z": 1,
-                            "texture": "I_LUIA"
+                            "texture": "items/lui"
                         },
 
                         {
@@ -1180,7 +1180,7 @@
                             "type": "object",
                             "index": 17,
                             "z": 1,
-                            "texture": "I_HAMMER"
+                            "texture": "items/hammer"
                         }
                     ]
                 ],
@@ -1190,7 +1190,7 @@
                     "type": "object",
                     "index": 9,
                     "z": 1,
-                    "texture": "I_COINA"
+                    "texture": "items/coin"
                 }
             ]
         ],
@@ -1202,7 +1202,7 @@
                     "def": "Goomba",
                     "type": "object",
                     "index": 38,
-                    "texture": "E_GOOMBA",
+                    "texture": "enemies/goomba",
 
                     "flags": [
                         {
@@ -1217,7 +1217,7 @@
                     "def": "Koopa",
                     "type": "object",
                     "index": 40,
-                    "texture": "E_KOOPAA",
+                    "texture": "enemies/koopa",
 
                     "flags": [
                         {
@@ -1237,7 +1237,7 @@
                     "def": "Parakoopa",
                     "type": "object",
                     "index": 42,
-                    "texture": "E_PKOOPA",
+                    "texture": "enemies/parakoopa",
 
                     "flags": [
                         {
@@ -1251,7 +1251,7 @@
                     "def": "Spiny",
                     "type": "object",
                     "index": 45,
-                    "texture": "E_SPINYA",
+                    "texture": "enemies/spiny",
 
                     "flags": [
                         {
@@ -1273,7 +1273,7 @@
                     "type": "object",
                     "index": 48,
                     "z": 21,
-                    "texture": "E_PIRANA",
+                    "texture": "enemies/piranha",
 
                     "flags": [
                         {
@@ -1297,7 +1297,7 @@
                     "def": "Bro",
                     "type": "object",
                     "index": 49,
-                    "texture": "E_BROA",
+                    "texture": "enemies/bro",
 
                     "values": [
                         {
@@ -1312,7 +1312,7 @@
                     "def": "Bullet Bill",
                     "type": "object",
                     "index": 54,
-                    "texture": "M_SOLIDT"
+                    "texture": "markers/solid_top"
                 },
 
                 {
@@ -1320,7 +1320,7 @@
                     "type": "object",
                     "index": 61,
                     "z": 19,
-                    "texture": "E_RDBALL",
+                    "texture": "enemies/rotodisc_ball",
 
                     "values": [
                         {
@@ -1357,7 +1357,7 @@
                     "def": "Cheep Cheep Blue",
                     "type": "object",
                     "index": 58,
-                    "texture": "E_CHEEBA",
+                    "texture": "enemies/cheep_blue",
 
                     "flags": [
                         {
@@ -1372,7 +1372,7 @@
                     "def": "Cheep Cheep Spiky",
                     "type": "object",
                     "index": 59,
-                    "texture": "E_CHEESA",
+                    "texture": "enemies/cheep_spiky",
 
                     "flags": [
                         {
@@ -1387,7 +1387,7 @@
                     "def": "Thwomp",
                     "type": "object",
                     "index": 63,
-                    "texture": "E_THWMPA"
+                    "texture": "enemies/thwomp"
                 },
 
                 {
@@ -1395,7 +1395,7 @@
                     "type": "object",
                     "index": 81,
                     "z": 20,
-                    "texture": "E_SBCANN",
+                    "texture": "enemies/spike_cannon",
 
                     "flags": [
                         {
@@ -1410,14 +1410,14 @@
                     "type": "object",
                     "index": 66,
                     "z": 20,
-                    "texture": "E_LAVAA"
+                    "texture": "enemies/lava"
                 },
 
                 {
                     "def": "Lava Body",
                     "type": "backdrop",
                     "z": 20,
-                    "texture": "T_LAVA",
+                    "texture": "tiles/lava",
                     "stretch": true
                 },
 
@@ -1425,7 +1425,7 @@
                     "def": "Podoboo",
                     "type": "object",
                     "index": 67,
-                    "texture": "M_SOLIDT"
+                    "texture": "enemies/podoboo"
                 },
 
                 {
@@ -1439,7 +1439,7 @@
                     "def": "Bowser",
                     "type": "object",
                     "index": 89,
-                    "texture": "E_BOWSRA"
+                    "texture": "enemies/bowser"
                 }
             ]
         ]
