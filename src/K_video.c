@@ -772,18 +772,22 @@ const mat4* get_mvp_matrix() {
 }
 
 void set_model_matrix(mat4 matrix) {
+	submit_batch();
 	glm_mat4_copy(matrix, (current_surface == NULL) ? model_matrix : current_surface->model_matrix);
 }
 
 void set_view_matrix(mat4 matrix) {
+	submit_batch();
 	glm_mat4_copy(matrix, (current_surface == NULL) ? view_matrix : current_surface->view_matrix);
 }
 
 void set_projection_matrix(mat4 matrix) {
+	submit_batch();
 	glm_mat4_copy(matrix, (current_surface == NULL) ? projection_matrix : current_surface->projection_matrix);
 }
 
 void apply_matrices() {
+	submit_batch();
 	if (current_surface != NULL) {
 		glm_mat4_mul(current_surface->view_matrix, current_surface->model_matrix, current_surface->mvp_matrix);
 		glm_mat4_mul(
