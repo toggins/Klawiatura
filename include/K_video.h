@@ -25,6 +25,8 @@
 #define BLACK RGB(0, 0, 0)
 
 #define XYZ(x, y, z) ((GLfloat[3]){(x), (y), (z)})
+#define XY(x, y) XYZ(x, y, 0)
+#define ORIGO XY(0, 0)
 
 #define FLIP(x, y) ((GLboolean[2]){(x), (y)})
 #define NO_FLIP FLIP(false, false)
@@ -167,9 +169,10 @@ void load_font(const char*);
 const Font* get_font(const char*);
 
 // Painting tools
-void batch_cursor(const GLfloat x, const GLfloat y, const GLfloat z);
-void batch_color(const GLubyte[4]);
+void batch_cursor(const GLfloat[3]);
 void batch_angle(const GLfloat);
+void batch_color(const GLubyte[4]);
+void batch_start(const GLfloat[3], const GLfloat, const GLubyte[4]);
 
 // Batch
 void batch_alpha_test(GLfloat);

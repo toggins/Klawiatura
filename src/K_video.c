@@ -528,10 +528,10 @@ just_push:
 #undef CLR
 }
 
-void batch_cursor(const GLfloat x, const GLfloat y, const GLfloat z) {
-	batch.cursor[0] = x;
-	batch.cursor[1] = y;
-	batch.cursor[2] = z;
+void batch_cursor(const GLfloat pos[3]) {
+	batch.cursor[0] = pos[0];
+	batch.cursor[1] = pos[1];
+	batch.cursor[2] = pos[2];
 }
 
 void batch_color(const GLubyte color[4]) {
@@ -540,6 +540,12 @@ void batch_color(const GLubyte color[4]) {
 
 void batch_angle(const GLfloat angle) {
 	batch.angle = angle;
+}
+
+void batch_start(const GLfloat pos[3], const GLfloat angle, const GLubyte color[4]) {
+	batch_cursor(pos);
+	batch_angle(angle);
+	batch_color(color);
 }
 
 /// Adds a texture as a sprite to the vertex batch.
