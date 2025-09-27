@@ -149,7 +149,7 @@ static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_pla
 	maybe_disconnect(MenuType);
 
 static Menu MENUS[MEN_SIZE] = {
-	[MEN_NULL] = {.noreturn = true},
+	[MEN_NULL] = {.noreturn = true, .leave = maybe_play_title},
 	[MEN_INTRO] = {.noreturn = true, .update = update_intro, .leave = maybe_play_title},
 	[MEN_MAIN] = {"Mario Together", .noreturn = true},
 	[MEN_SINGLEPLAYER] = {"Singleplayer"},
@@ -279,7 +279,6 @@ void start_menu(bool skip_intro) {
 	load_track("human_like_predator");
 
 	set_menu(skip_intro ? MEN_MAIN : MEN_INTRO);
-	maybe_play_title(cur_menu);
 }
 
 static void maybe_save_config(MenuType next) {
