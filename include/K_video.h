@@ -128,6 +128,10 @@ void video_teardown();
 void start_drawing();
 void stop_drawing();
 
+// State
+void start_video_state();
+void nuke_video_state();
+
 // Display
 void get_resolution(int*, int*);
 void set_resolution(int, int);

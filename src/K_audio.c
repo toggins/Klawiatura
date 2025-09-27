@@ -1,5 +1,6 @@
 #include "K_audio.h"
 #include "K_file.h"
+#include "K_game.h"
 #include "K_log.h"
 #include "K_memory.h"
 #include "K_string.h"
@@ -71,10 +72,7 @@ void audio_init() {
 
 void audio_update() {
 	FMOD_ChannelGroup_SetMute(master_group, !window_focused());
-
-	FMOD_BOOL state_playing = false;
-	FMOD_ChannelGroup_IsPlaying(state_group, &state_playing);
-	FMOD_ChannelGroup_SetMute(generic_group, state_playing);
+	FMOD_ChannelGroup_SetMute(generic_music_group, game_exists());
 
 	FMOD_System_Update(speaker);
 }
@@ -115,6 +113,13 @@ float get_music_volume() {
 void set_music_volume(float volume) {
 	FMOD_ChannelGroup_SetVolume(music_group, volume);
 }
+
+// =====
+// STATE
+// =====
+
+void start_audio_state() {}
+void nuke_audio_state() {}
 
 // ======
 // ASSETS

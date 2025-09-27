@@ -220,6 +220,16 @@ enum {
 };
 
 typedef struct {
+	PlayerID num_players;
+	struct {
+		int8_t lives;
+		uint8_t coins;
+		PlayerPower power;
+		uint32_t score;
+	} players[MAX_PLAYERS];
+
+	GameFlag flags;
+	char level[CLIENT_STRING_MAX];
 } GameContext;
 
 typedef struct {
@@ -343,11 +353,16 @@ typedef struct {
 	void (*on_bottom)(GameActor*, GameActor*); /// Callback function for when the displacee is below the object.
 } GameActorTable;
 
-extern GekkoSession* game_session;
 extern GameState game_state;
 
+void start_game(GameContext*);
+bool game_exists();
+void nuke_game();
+void update_game();
+void draw_game();
+
 void nuke_game_state();
-void start_game_state(GameContext);
+void start_game_state(GameContext*);
 void update_game_state();
 void draw_game_state();
 void end_game_state();

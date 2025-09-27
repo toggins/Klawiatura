@@ -82,31 +82,37 @@ int main(int argc, char* argv[]) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 			switch (event.type) {
-				case SDL_EVENT_QUIT:
-					goto exit;
-				case SDL_EVENT_KEY_DOWN:
-					input_keydown(event.key.scancode);
-					break;
-				case SDL_EVENT_KEY_UP:
-					input_keyup(event.key.scancode);
-					break;
-				case SDL_EVENT_TEXT_INPUT:
-					input_text_input(event.text);
-					break;
-				case SDL_EVENT_WINDOW_RESIZED:
-					set_resolution(event.window.data1, event.window.data2);
-					break;
-				default:
-					break;
+			case SDL_EVENT_QUIT:
+				goto exit;
+			case SDL_EVENT_KEY_DOWN:
+				input_keydown(event.key.scancode);
+				break;
+			case SDL_EVENT_KEY_UP:
+				input_keyup(event.key.scancode);
+				break;
+			case SDL_EVENT_TEXT_INPUT:
+				input_text_input(event.text);
+				break;
+			case SDL_EVENT_WINDOW_RESIZED:
+				set_resolution(event.window.data1, event.window.data2);
+				break;
+			default:
+				break;
 			}
 
-		update_menu();
-		draw_menu();
+		if (game_exists()) {
+			update_game();
+			draw_game();
+		} else {
+			update_menu();
+			draw_menu();
+		}
 
 		audio_update();
 	}
 
 exit:
+	nuke_game();
 	net_teardown();
 	config_teardown();
 	input_teardown();

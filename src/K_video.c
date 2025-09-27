@@ -248,6 +248,13 @@ void window_stop_typing() {
 	SDL_StopTextInput(window);
 }
 
+// =====
+// STATE
+// =====
+
+void start_video_state() {}
+void nuke_video_state() {}
+
 // =======
 // DISPLAY
 // =======

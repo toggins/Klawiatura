@@ -41,6 +41,17 @@ static void instaquit() {
 // Singleplayer
 FMT_OPTION(level, CLIENT.game.level);
 
+static void play_singleplayer() {
+	play_generic_sound("enter");
+
+	GameContext ctx = {0};
+	ctx.num_players = 1;
+	ctx.players[0].lives = 4;
+	ctx.players[0].power = POW_SMALL;
+
+	start_game(&ctx);
+}
+
 // Multiplayer
 // TODO
 
@@ -174,7 +185,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_SINGLEPLAYER] = {
 		{"Level: %s", .format = fmt_level, EDIT(CLIENT.game.level)},
 		{},
-		{"Start!"},
+		{"Start!", .button = play_singleplayer},
 	},
 	[MEN_MULTIPLAYER] = {
 		{"Host Lobby", .enter = MEN_HOST_LOBBY},
@@ -251,6 +262,7 @@ void start_menu(bool skip_intro) {
 	load_sound("switch");
 	load_sound("select");
 	load_sound("toggle");
+	load_sound("enter");
 	load_sound("on");
 	load_sound("off");
 	load_sound("kevin_type");

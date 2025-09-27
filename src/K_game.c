@@ -27,12 +27,53 @@ static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_PLAYER] = &TAB_PLAYER,
 };
 
-GekkoSession* game_session = NULL;
+static GekkoSession* game_session = NULL;
 GameState game_state = {0};
 
 // ====
 // GAME
 // ====
+
+void start_game(GameContext* ctx) {
+	if (game_session != NULL)
+		return;
+
+	load_texture("ui/sidebar_l");
+	load_texture("ui/sidebar_r");
+
+	gekko_create(&game_session);
+
+	start_game_state(ctx);
+	start_audio_state();
+	start_video_state();
+}
+
+bool game_exists() {
+	return game_session != NULL;
+}
+
+void nuke_game() {
+	if (game_session == NULL)
+		return;
+
+	nuke_game_state();
+	nuke_audio_state();
+	nuke_video_state();
+
+	gekko_destroy(game_session);
+	game_session = NULL;
+}
+
+void update_game() {}
+
+void draw_game() {
+	start_drawing();
+	batch_cursor(0, 0, 0);
+	batch_color(WHITE);
+	batch_sprite("ui/sidebar_l", NO_FLIP);
+	batch_sprite("ui/sidebar_r", NO_FLIP);
+	stop_drawing();
+}
 
 void nuke_game_state() {
 	SDL_memset(&game_state, 0, sizeof(game_state));
@@ -52,7 +93,7 @@ void nuke_game_state() {
 	game_state.sequence.activator = NULLPLAY;
 }
 
-void start_game_state(GameContext ctx) {
+void start_game_state(GameContext* ctx) {
 	nuke_game_state();
 }
 

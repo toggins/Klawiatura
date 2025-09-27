@@ -50,8 +50,11 @@ void set_sound_volume(float);
 float get_music_volume();
 void set_music_volume(float);
 
-// Assets
+// State
+void start_audio_state();
+void nuke_audio_state();
 
+// Assets
 void load_sound(const char*);
 const Sound* get_sound(const char*);
 
@@ -59,14 +62,12 @@ void load_track(const char*);
 const Track* get_track(const char*);
 
 // Generic
-
 void play_generic_sound(const char*);
 void play_generic_track(const char*, PlayFlags);
 void stop_generic_sounds();
 void stop_generic_tracks();
 
 // State
-
 void play_state_sound(const char*);
 void play_state_sound_at(const char*, float, float);
 void play_state_track(TrackSlots, const char*, PlayFlags);
