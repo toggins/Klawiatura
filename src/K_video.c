@@ -231,12 +231,12 @@ void stop_drawing() {
 	SDL_GL_SwapWindow(window);
 }
 
+#define FOCUS_IMPOSSIBLE (SDL_WINDOW_OCCLUDED | SDL_WINDOW_MINIMIZED | SDL_WINDOW_NOT_FOCUSABLE)
+#define HAS_FOCUS                                                                                                      \
+	(SDL_WINDOW_MOUSE_GRABBED | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_CAPTURE | SDL_WINDOW_KEYBOARD_GRABBED)
 bool window_focused() {
 	const SDL_WindowFlags flags = SDL_GetWindowFlags(window);
-	const bool focus_impossible = SDL_WINDOW_OCCLUDED | SDL_WINDOW_MINIMIZED | SDL_WINDOW_NOT_FOCUSABLE,
-		   hasfocus = SDL_WINDOW_MOUSE_GRABBED | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_CAPTURE
-	                      | SDL_WINDOW_KEYBOARD_GRABBED;
-	return !(flags & focus_impossible) && (flags & hasfocus);
+	return !(flags & FOCUS_IMPOSSIBLE) && (flags & HAS_FOCUS);
 }
 
 bool window_start_typing() {
