@@ -45,15 +45,6 @@ void start_game(GameContext* ctx) {
 	if (game_session != NULL)
 		return;
 
-	for (int i = ACT_NULL; i < ACT_SIZE; i++) {
-		const GameActorTable* const table = ACTORS[i];
-		if (table == NULL)
-			continue;
-		INFO("Class %i: {%i, %p, %p, %p, %p, %p, %p, %p, %p, %p}", i, table->solid, table->load, table->create,
-			table->tick, table->draw, table->cleanup, table->collide, table->displace, table->on_top,
-			table->on_bottom);
-	}
-
 	load_texture("ui/sidebar_l");
 	load_texture("ui/sidebar_r");
 
@@ -423,9 +414,9 @@ GameActor* create_actor(GameActorType type, const fvec2 pos) {
 	GameActor* actor = NULL;
 	for (ActorID i = 0; i < MAX_ACTORS; i++) {
 		actor = &game_state.actors[index];
-		index = (ActorID)((index + 1) % MAX_ACTORS);
 		if (actor->id == NULLACT)
 			goto found;
+		index = (ActorID)((index + 1) % MAX_ACTORS);
 	}
 
 	WARN("Too many actors!!!");
