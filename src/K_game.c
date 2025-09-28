@@ -5,19 +5,19 @@
 
 #define ACTOR_TYPE_CALL(type, fn)                                                                                      \
 	do {                                                                                                           \
-		if (ACTORS[(type)]->fn != NULL)                                                                        \
+		if (ACTORS[(type)] != NULL && ACTORS[(type)]->fn != NULL)                                              \
 			ACTORS[(type)]->fn();                                                                          \
 	} while (0)
 
 #define ACTOR_CALL(act, fn)                                                                                            \
 	do {                                                                                                           \
-		if (ACTORS[(act)->type]->fn != NULL)                                                                   \
+		if (ACTORS[(act)->type] != NULL && ACTORS[(act)->type]->fn != NULL)                                    \
 			ACTORS[(act)->type]->fn((act));                                                                \
 	} while (0)
 
-#define ACTOR_CALL_DUO(act, fn, act2)                                                                                  \
+#define ACTOR_CALL2(act, fn, act2)                                                                                     \
 	do {                                                                                                           \
-		if (ACTORS[(act)->type]->fn != NULL)                                                                   \
+		if (ACTORS[(act)->type] != NULL && ACTORS[(act)->type]->fn != NULL)                                    \
 			ACTORS[(act)->type]->fn((act), (act2));                                                        \
 	} while (0)
 
@@ -47,6 +47,8 @@ void start_game(GameContext* ctx) {
 
 	for (int i = ACT_NULL; i < ACT_SIZE; i++) {
 		const GameActorTable* const table = ACTORS[i];
+		if (table == NULL)
+			continue;
 		INFO("Class %i: {%i, %p, %p, %p, %p, %p, %p, %p, %p, %p}", i, table->solid, table->load, table->create,
 			table->tick, table->draw, table->cleanup, table->collide, table->displace, table->on_top,
 			table->on_bottom);
@@ -418,36 +420,40 @@ GameActor* create_actor(GameActorType type, const fvec2 pos) {
 	}
 
 	ActorID index = game_state.next_actor;
+	GameActor* actor = NULL;
 	for (ActorID i = 0; i < MAX_ACTORS; i++) {
-		GameActor* actor = &game_state.actors[index];
-		if (actor->id == NULLACT) {
-			load_actor(type);
-			SDL_memset(actor, 0, sizeof(GameActor));
-
-			actor->id = index;
-			actor->type = type;
-
-			actor->previous = game_state.live_actors;
-			actor->next = NULLACT;
-			GameActor* first = get_actor(game_state.live_actors);
-			if (first != NULL)
-				first->next = index;
-			game_state.live_actors = index;
-
-			actor->cell = NULLCELL;
-			actor->previous_cell = actor->next_cell = NULLACT;
-			move_actor(actor, pos);
-
-			FLAG_ON(actor, FLG_VISIBLE);
-			ACTOR_CALL(actor, create);
-
-			game_state.next_actor = (ActorID)((index + 1) % MAX_ACTORS);
-			return actor;
-		}
+		actor = &game_state.actors[index];
+		if (actor->id == NULLACT)
+			goto found;
 		index = (ActorID)((index + 1) % MAX_ACTORS);
 	}
 
+	WARN("Too many actors!!!");
 	return NULL;
+
+found:
+	load_actor(type);
+	SDL_memset(actor, 0, sizeof(GameActor));
+
+	actor->id = index;
+	actor->type = type;
+
+	actor->previous = game_state.live_actors;
+	actor->next = NULLACT;
+	GameActor* first = get_actor(game_state.live_actors);
+	if (first != NULL)
+		first->next = index;
+	game_state.live_actors = index;
+
+	actor->cell = NULLCELL;
+	actor->previous_cell = actor->next_cell = NULLACT;
+	move_actor(actor, pos);
+
+	FLAG_ON(actor, FLG_VISIBLE);
+	ACTOR_CALL(actor, create);
+
+	game_state.next_actor = (ActorID)((index + 1) % MAX_ACTORS);
+	return actor;
 }
 
 /// (INTERNAL) Nuke an actor.
