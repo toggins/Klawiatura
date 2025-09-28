@@ -101,8 +101,8 @@ int main(int argc, char* argv[]) {
 			}
 
 		if (game_exists()) {
-			update_game();
-			draw_game();
+			if (update_game())
+				draw_game();
 		} else {
 			update_menu();
 			draw_menu();

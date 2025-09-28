@@ -256,6 +256,16 @@ void window_stop_typing() {
 // =====
 
 void start_video_state() {}
+void tick_video_state() {}
+
+void save_video_state(VideoState* vs) {
+	SDL_memcpy(vs, &video_state, sizeof(VideoState));
+}
+
+void load_video_state(const VideoState* vs) {
+	SDL_memcpy(&video_state, vs, sizeof(VideoState));
+}
+
 void nuke_video_state() {}
 
 // =======

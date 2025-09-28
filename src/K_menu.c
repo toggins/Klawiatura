@@ -377,7 +377,7 @@ static void type_kevin(Keybind kb) {
 }
 
 void update_menu() {
-	for (new_frame(); got_ticks(); next_tick()) {
+	for (new_frame(0); got_ticks(); next_tick()) {
 		int last_menu = cur_menu;
 		if (MENUS[cur_menu].update != NULL)
 			MENUS[cur_menu].update();

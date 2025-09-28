@@ -132,6 +132,9 @@ void stop_drawing();
 
 // State
 void start_video_state();
+void tick_video_state();
+void save_video_state(VideoState*);
+void load_video_state(const VideoState*);
 void nuke_video_state();
 
 // Display

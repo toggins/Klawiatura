@@ -12,9 +12,10 @@ void from_scratch() {
 	pending_ticks = total_ticks = delta_time = 0.f;
 }
 
-void new_frame() {
+void new_frame(float ahead) {
 	const uint64_t current_time = SDL_GetPerformanceCounter();
-	delta_time = ((float)(current_time - last_time) / (float)SDL_GetPerformanceFrequency()) * (float)TICKRATE;
+	delta_time = ((float)(current_time - last_time) / (float)SDL_GetPerformanceFrequency())
+	             * ((float)TICKRATE - ahead);
 	last_time = current_time;
 
 	pending_ticks += delta_time;

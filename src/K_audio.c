@@ -119,6 +119,16 @@ void set_music_volume(float volume) {
 // =====
 
 void start_audio_state() {}
+void tick_audio_state() {}
+
+void save_audio_state(AudioState* as) {
+	SDL_memcpy(as, &audio_state, sizeof(AudioState));
+}
+
+void load_audio_state(const AudioState* as) {
+	SDL_memcpy(&audio_state, as, sizeof(AudioState));
+}
+
 void nuke_audio_state() {}
 
 // ======

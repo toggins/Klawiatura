@@ -1,7 +1,9 @@
 #include "K_file.h"
 #include "K_game.h"
+#include "K_input.h"
 #include "K_log.h"
 #include "K_string.h"
+#include "K_tick.h"
 
 #define ACTOR_TYPE_CALL(type, fn)                                                                                      \
 	do {                                                                                                           \
@@ -37,6 +39,8 @@ static Surface* game_surface = NULL;
 static GekkoSession* game_session = NULL;
 GameState game_state = {0};
 
+PlayerID local_player = -1, view_player = -1, num_players = 0;
+
 // ====
 // GAME
 // ====
@@ -55,17 +59,20 @@ void start_game(GameContext* ctx) {
 	GekkoConfig cfg = {0};
 	cfg.desync_detection = true;
 	cfg.input_size = sizeof(GameInput);
-	cfg.state_size = sizeof(GameState);
+	cfg.state_size = sizeof(SaveState);
 	cfg.max_spectators = 0;
 	cfg.input_prediction_window = 4;
-	cfg.num_players = ctx->num_players;
+	cfg.num_players = num_players = ctx->num_players;
+	local_player = view_player = ctx->local_player;
 
 	populate_game(game_session);
 	gekko_start(game_session, &cfg);
+	gekko_net_adapter_set(game_session, NULL); // FIXME: Write a NutPunch adapter
 
 	start_game_state(ctx);
 	start_audio_state();
 	start_video_state();
+	from_scratch();
 }
 
 bool game_exists() {
@@ -86,9 +93,146 @@ void nuke_game() {
 	game_surface = NULL;
 }
 
-void update_game() {}
+bool update_game() {
+	// 	if (num_players > 1)
+	// 		goto rollbacker;
+
+	// 	for (new_frame(0); got_ticks(); next_tick()) {
+	// 		if (kb_pressed(KB_PAUSE))
+	// 			goto byebye_game;
+
+	// 		GameInput inputs[MAX_PLAYERS] = {0};
+	// 		if (kb_pressed(KB_UP))
+	// 			inputs[0] |= GI_UP;
+	// 		if (kb_pressed(KB_LEFT))
+	// 			inputs[0] |= GI_LEFT;
+	// 		if (kb_pressed(KB_DOWN))
+	// 			inputs[0] |= GI_DOWN;
+	// 		if (kb_pressed(KB_RIGHT))
+	// 			inputs[0] |= GI_RIGHT;
+	// 		if (kb_pressed(KB_JUMP))
+	// 			inputs[0] |= GI_JUMP;
+	// 		if (kb_pressed(KB_FIRE))
+	// 			inputs[0] |= GI_FIRE;
+	// 		if (kb_pressed(KB_RUN))
+	// 			inputs[0] |= GI_RUN;
+
+	// 		tick_game_state(inputs);
+	// 		tick_video_state();
+	// 		tick_audio_state();
+	// 	}
+
+	// 	return true;
+
+	// rollbacker:
+	gekko_network_poll(game_session);
+
+	const float ahead = gekko_frames_ahead(game_session);
+	for (new_frame(SDL_clamp(ahead, 0, 2)); got_ticks(); next_tick()) {
+		if (kb_pressed(KB_PAUSE))
+			goto byebye_game;
+
+		GameInput input = 0;
+		if (kb_pressed(KB_UP))
+			input |= GI_UP;
+		if (kb_pressed(KB_LEFT))
+			input |= GI_LEFT;
+		if (kb_pressed(KB_DOWN))
+			input |= GI_DOWN;
+		if (kb_pressed(KB_RIGHT))
+			input |= GI_RIGHT;
+		if (kb_pressed(KB_JUMP))
+			input |= GI_JUMP;
+		if (kb_pressed(KB_FIRE))
+			input |= GI_FIRE;
+		if (kb_pressed(KB_RUN))
+			input |= GI_RUN;
+
+		gekko_add_local_input(game_session, local_player, &input);
+
+		int count = 0;
+		GekkoSessionEvent** events = gekko_session_events(game_session, &count);
+		for (int i = 0; i < count; i++) {
+			GekkoSessionEvent* event = events[i];
+			switch (event->type) {
+			case DesyncDetected: {
+				dump_game_state();
+				struct Desynced desync = event->data.desynced;
+				INFO("OOPS: Out of sync with player %d (tick %d, l %u != r %u)",
+					desync.remote_handle + 1, desync.frame, desync.local_checksum,
+					desync.remote_checksum);
+				goto byebye_game;
+			}
+
+			case PlayerConnected: {
+				struct Connected connect = event->data.connected;
+				INFO("Player %i connected", connect.handle + 1);
+				break;
+			}
+
+			case PlayerDisconnected: {
+				struct Disconnected disconnect = event->data.disconnected;
+				INFO("OOPS: Player %i disconnected", disconnect.handle + 1);
+				goto byebye_game;
+			}
+
+			default:
+				break;
+			}
+		}
+
+		count = 0;
+		GekkoGameEvent** updates = gekko_update_session(game_session, &count);
+		for (int i = 0; i < count; i++) {
+			GekkoGameEvent* event = updates[i];
+			switch (event->type) {
+			case SaveEvent: {
+				static SaveState save;
+				save_game_state(&save.game);
+				save_video_state(&(save.video));
+				save_audio_state(&(save.audio));
+
+				*(event->data.save.state_len) = sizeof(save);
+				*(event->data.save.checksum) = check_game_state();
+				SDL_memcpy(event->data.save.state, &save, sizeof(save));
+				break;
+			}
+
+			case LoadEvent: {
+				const SaveState* load = (SaveState*)(event->data.load.state);
+				load_game_state(&(load->game));
+				load_video_state(&(load->video));
+				load_audio_state(&(load->audio));
+				break;
+			}
+
+			case AdvanceEvent: {
+				GameInput inputs[MAX_PLAYERS] = {0};
+				for (size_t j = 0; j < num_players; j++)
+					inputs[j] = ((GameInput*)(event->data.adv.inputs))[j];
+				tick_game_state(inputs);
+				tick_video_state();
+				tick_audio_state();
+				break;
+			}
+
+			default:
+				break;
+			}
+		}
+	}
+
+	return true;
+
+byebye_game:
+	nuke_game();
+	return false;
+}
 
 void draw_game() {
+	if (game_session == NULL)
+		return;
+
 	start_drawing();
 	batch_start(ORIGO, 0, WHITE);
 	batch_sprite("ui/sidebar_l", NO_FLIP);
@@ -115,6 +259,40 @@ void draw_game() {
 
 	stop_drawing();
 }
+
+static void destroy_actor(GameActor*);
+void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
+	GameActor* actor = get_actor(game_state.live_actors);
+	while (actor != NULL) {
+		ACTOR_CALL(actor, tick);
+
+		GameActor* next = get_actor(actor->previous);
+		if (ANY_FLAG(actor, FLG_DESTROY))
+			destroy_actor(actor);
+		actor = next;
+	}
+
+	++game_state.time;
+	INFO("%zu", game_state.time);
+}
+
+void save_game_state(GameState* gs) {
+	SDL_memcpy(gs, &game_state, sizeof(GameState));
+}
+
+void load_game_state(const GameState* gs) {
+	SDL_memcpy(&game_state, gs, sizeof(GameState));
+}
+
+uint32_t check_game_state() {
+	uint32_t checksum = 0;
+	const uint8_t* data = (uint8_t*)(&game_state);
+	for (size_t i = 0; i < sizeof(GameState); i++)
+		checksum += data[i];
+	return checksum;
+}
+
+void dump_game_state() {}
 
 void nuke_game_state() {
 	clear_tilemaps();

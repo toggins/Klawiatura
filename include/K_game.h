@@ -224,7 +224,7 @@ enum {
 };
 
 typedef struct {
-	PlayerID num_players;
+	PlayerID num_players, local_player;
 	GameFlag flags;
 	ActorID checkpoint;
 
@@ -363,14 +363,18 @@ extern GameState game_state;
 void start_game(GameContext*);
 bool game_exists();
 void nuke_game();
-void update_game();
+bool update_game();
 void draw_game();
 
-void nuke_game_state();
 void start_game_state(GameContext*);
 void update_game_state();
 void draw_game_state();
-void end_game_state();
+void tick_game_state(const GameInput[MAX_PLAYERS]);
+void save_game_state(GameState*);
+void load_game_state(const GameState*);
+uint32_t check_game_state();
+void dump_game_state();
+void nuke_game_state();
 
 // Players
 GamePlayer* get_player(PlayerID);
