@@ -105,7 +105,7 @@ void draw_game() {
 	while (actor != NULL) {
 		if (ANY_FLAG(actor, FLG_VISIBLE))
 			ACTOR_CALL(actor, draw);
-		actor = get_actor(actor->next);
+		actor = get_actor(actor->previous);
 	}
 
 	pop_surface();
