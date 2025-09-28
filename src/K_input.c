@@ -61,6 +61,13 @@ void input_keyup(SDL_Scancode key) {
 		kb_incoming &= ~((key == BINDS[i].key) << i);
 }
 
+void input_wipeout() {
+	kb_then = 0;
+	kb_now = 0;
+	kb_incoming = 0;
+	kb_repeating = 0;
+}
+
 #define CHECK_KB(table, kb) (((table) & (1 << (kb))) != 0)
 
 bool kb_pressed(Keybind kb) {

@@ -103,6 +103,8 @@ int main(int argc, char* argv[]) {
 		if (game_exists()) {
 			if (update_game())
 				draw_game();
+			else
+				input_wipeout();
 		} else {
 			update_menu();
 			draw_menu();
