@@ -423,9 +423,9 @@ GameActor* create_actor(GameActorType type, const fvec2 pos) {
 	GameActor* actor = NULL;
 	for (ActorID i = 0; i < MAX_ACTORS; i++) {
 		actor = &game_state.actors[index];
+		index = (ActorID)((index + 1) % MAX_ACTORS);
 		if (actor->id == NULLACT)
 			goto found;
-		index = (ActorID)((index + 1) % MAX_ACTORS);
 	}
 
 	WARN("Too many actors!!!");
