@@ -94,37 +94,37 @@ void nuke_game() {
 }
 
 bool update_game() {
-	// 	if (num_players > 1)
-	// 		goto rollbacker;
+	if (num_players > 1)
+		goto rollbacker;
 
-	// 	for (new_frame(0); got_ticks(); next_tick()) {
-	// 		if (kb_pressed(KB_PAUSE))
-	// 			goto byebye_game;
+	for (new_frame(0); got_ticks(); next_tick()) {
+		if (kb_pressed(KB_PAUSE))
+			goto byebye_game;
 
-	// 		GameInput inputs[MAX_PLAYERS] = {0};
-	// 		if (kb_pressed(KB_UP))
-	// 			inputs[0] |= GI_UP;
-	// 		if (kb_pressed(KB_LEFT))
-	// 			inputs[0] |= GI_LEFT;
-	// 		if (kb_pressed(KB_DOWN))
-	// 			inputs[0] |= GI_DOWN;
-	// 		if (kb_pressed(KB_RIGHT))
-	// 			inputs[0] |= GI_RIGHT;
-	// 		if (kb_pressed(KB_JUMP))
-	// 			inputs[0] |= GI_JUMP;
-	// 		if (kb_pressed(KB_FIRE))
-	// 			inputs[0] |= GI_FIRE;
-	// 		if (kb_pressed(KB_RUN))
-	// 			inputs[0] |= GI_RUN;
+		GameInput inputs[MAX_PLAYERS] = {0};
+		if (kb_pressed(KB_UP))
+			inputs[0] |= GI_UP;
+		if (kb_pressed(KB_LEFT))
+			inputs[0] |= GI_LEFT;
+		if (kb_pressed(KB_DOWN))
+			inputs[0] |= GI_DOWN;
+		if (kb_pressed(KB_RIGHT))
+			inputs[0] |= GI_RIGHT;
+		if (kb_pressed(KB_JUMP))
+			inputs[0] |= GI_JUMP;
+		if (kb_pressed(KB_FIRE))
+			inputs[0] |= GI_FIRE;
+		if (kb_pressed(KB_RUN))
+			inputs[0] |= GI_RUN;
 
-	// 		tick_game_state(inputs);
-	// 		tick_video_state();
-	// 		tick_audio_state();
-	// 	}
+		tick_game_state(inputs);
+		tick_video_state();
+		tick_audio_state();
+	}
 
-	// 	return true;
+	return true;
 
-	// rollbacker:
+rollbacker:
 	gekko_network_poll(game_session);
 
 	const float ahead = gekko_frames_ahead(game_session);
