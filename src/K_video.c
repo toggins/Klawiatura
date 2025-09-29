@@ -70,10 +70,13 @@ void video_init(bool force_shader) {
 		      "required.");
 
 	if (force_shader) {
-		INFO("! Bypassing OpenGL support checks");
+		WARN("Bypassing OpenGL support checks");
 		goto bypass;
 	}
 
+	CHECK_GL_EXTENSION(GLAD_GL_ARB_vertex_buffer_object);
+	CHECK_GL_EXTENSION(GLAD_GL_ARB_vertex_array_object);
+	CHECK_GL_EXTENSION(GLAD_GL_ARB_framebuffer_object);
 	CHECK_GL_EXTENSION(GLAD_GL_ARB_shader_objects);
 	CHECK_GL_EXTENSION(GLAD_GL_ARB_vertex_shader);
 	CHECK_GL_EXTENSION(GLAD_GL_ARB_fragment_shader);
