@@ -5,7 +5,7 @@ enum {
 };
 
 static void create(GameActor* actor) {
-	actor->values[VAL_PROP_FRAME] = rng(100);
+	actor->values[VAL_PROP_FRAME] = rng(100L);
 }
 
 // =====

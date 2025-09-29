@@ -9,30 +9,30 @@
 #define MAJOR_LEVEL_VERSION 0
 #define MINOR_LEVEL_VERSION 1
 
-#define MAX_PLAYERS 4
-#define MAX_MISSILES 2
-#define MAX_SINK 6
-#define KEVIN_DELAY 50
-#define NULLPLAY ((PlayerID)(-1))
+#define MAX_PLAYERS 4L
+#define MAX_MISSILES 2L
+#define MAX_SINK 6L
+#define KEVIN_DELAY 50L
+#define NULLPLAY ((PlayerID)(-1L))
 
-#define MAX_ACTORS 1000
-#define NULLACT ((ActorID)(-1))
-#define NULLCELL ((int32_t)(-1))
+#define MAX_ACTORS 1000L
+#define NULLACT ((ActorID)(-1L))
+#define NULLCELL ((int32_t)(-1L))
 
-#define MAX_VALUES 32
-#define GAME_STRING_MAX 256
+#define MAX_VALUES 32L
+#define GAME_STRING_MAX 256L
 
 typedef fixed ActorValue;
 typedef uint32_t ActorFlag;
 
-#define MAX_CELLS 128
+#define MAX_CELLS 128L
 #define GRID_SIZE (MAX_CELLS * MAX_CELLS)
 #define CELL_SIZE ((fixed)(0x01000000))
 
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
-#define HALF_SCREEN_WIDTH (SCREEN_WIDTH >> 1)
-#define HALF_SCREEN_HEIGHT (SCREEN_HEIGHT >> 1)
+#define SCREEN_WIDTH 640L
+#define SCREEN_HEIGHT 480L
+#define HALF_SCREEN_WIDTH (SCREEN_WIDTH >> 1L)
+#define HALF_SCREEN_HEIGHT (SCREEN_HEIGHT >> 1L)
 #define F_SCREEN_WIDTH FfInt(SCREEN_WIDTH)
 #define F_SCREEN_HEIGHT FfInt(SCREEN_HEIGHT)
 #define F_HALF_SCREEN_WIDTH Fhalf(F_SCREEN_WIDTH)
@@ -281,7 +281,7 @@ enum BaseActorValues {
 	VAL_CUSTOM
 };
 
-#define ANY_FLAG(actor, flag) (((actor)->flags & (flag)) != 0)
+#define ANY_FLAG(actor, flag) (((actor)->flags & (flag)) != 0L)
 #define ALL_FLAG(actor, flag) (((actor)->flags & (flag)) == (flag))
 
 #define FLAG_ON(actor, flag) ((actor)->flags |= (flag))

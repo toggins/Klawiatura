@@ -39,7 +39,7 @@ static Surface* game_surface = NULL;
 static GekkoSession* game_session = NULL;
 GameState game_state = {0};
 
-PlayerID local_player = -1, view_player = -1, num_players = 0;
+PlayerID local_player = -1L, view_player = -1L, num_players = 0L;
 
 // ====
 // GAME
@@ -273,7 +273,6 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 	}
 
 	++game_state.time;
-	INFO("%zu", game_state.time);
 }
 
 void save_game_state(GameState* gs) {
@@ -563,7 +562,7 @@ void start_game_state(GameContext* ctx) {
 
 /// Fetch a player by its `PlayerID`.
 GamePlayer* get_player(PlayerID id) {
-	if (id < 0 || id >= MAX_PLAYERS)
+	if (id < 0L || id >= MAX_PLAYERS)
 		return NULL;
 	GamePlayer* player = &game_state.players[id];
 	return (player->id == NULLPLAY) ? NULL : player;
@@ -590,11 +589,11 @@ GameActor* create_actor(GameActorType type, const fvec2 pos) {
 
 	ActorID index = game_state.next_actor;
 	GameActor* actor = NULL;
-	for (ActorID i = 0; i < MAX_ACTORS; i++) {
+	for (ActorID i = 0L; i < MAX_ACTORS; i++) {
 		actor = &game_state.actors[index];
 		if (actor->id == NULLACT)
 			goto found;
-		index = (ActorID)((index + 1) % MAX_ACTORS);
+		index = (ActorID)((index + 1L) % MAX_ACTORS);
 	}
 
 	WARN("Too many actors!!!");
@@ -621,7 +620,7 @@ found:
 	FLAG_ON(actor, FLG_VISIBLE);
 	ACTOR_CALL(actor, create);
 
-	game_state.next_actor = (ActorID)((index + 1) % MAX_ACTORS);
+	game_state.next_actor = (ActorID)((index + 1L) % MAX_ACTORS);
 	return actor;
 }
 
@@ -641,7 +640,7 @@ static void destroy_actor(GameActor* actor) {
 
 	// Unlink cell
 	const int32_t cell = actor->cell;
-	if (cell >= 0 && cell < GRID_SIZE) {
+	if (cell >= 0L && cell < GRID_SIZE) {
 		GameActor* neighbor = get_actor(actor->previous_cell);
 		if (neighbor != NULL)
 			neighbor->next_cell = actor->next_cell;
@@ -672,7 +671,7 @@ static void destroy_actor(GameActor* actor) {
 
 /// Fetch an actor by its `ActorID`.
 GameActor* get_actor(ActorID id) {
-	if (id < 0 || id >= MAX_ACTORS)
+	if (id < 0L || id >= MAX_ACTORS)
 		return NULL;
 	GameActor* actor = &game_state.actors[id];
 	return (actor->id == NULLACT) ? NULL : actor;
@@ -685,14 +684,14 @@ void move_actor(GameActor* actor, const fvec2 pos) {
 
 	actor->pos = pos;
 	int32_t cx = actor->pos.x / CELL_SIZE, cy = actor->pos.y / CELL_SIZE;
-	cx = SDL_clamp(cx, 0, MAX_CELLS - 1), cy = SDL_clamp(cy, 0, MAX_CELLS - 1);
+	cx = SDL_clamp(cx, 0L, MAX_CELLS - 1L), cy = SDL_clamp(cy, 0L, MAX_CELLS - 1L);
 
 	const int32_t cell = (cy * MAX_CELLS) + cx;
 	if (cell == actor->cell)
 		return;
 
 	// Unlink old cell
-	if (cell >= 0 && cell < GRID_SIZE) {
+	if (cell >= 0L && cell < GRID_SIZE) {
 		GameActor* neighbor = get_actor(actor->previous_cell);
 		if (neighbor != NULL)
 			neighbor->next_cell = actor->next_cell;
@@ -717,16 +716,16 @@ void move_actor(GameActor* actor, const fvec2 pos) {
 
 /// Retrieve a list of actors overlapping a rectangle.
 void list_cell_at(CellList* list, const frect rect) {
-	list->num_actors = 0;
+	list->num_actors = 0L;
 
 	int32_t cx1 = (rect.start.x - CELL_SIZE) / CELL_SIZE;
 	int32_t cy1 = (rect.start.y - CELL_SIZE) / CELL_SIZE;
 	int32_t cx2 = (rect.end.x + CELL_SIZE) / CELL_SIZE;
 	int32_t cy2 = (rect.end.y + CELL_SIZE) / CELL_SIZE;
-	cx1 = SDL_clamp(cx1, 0, MAX_CELLS - 1);
-	cy1 = SDL_clamp(cy1, 0, MAX_CELLS - 1);
-	cx2 = SDL_clamp(cx2, 0, MAX_CELLS - 1);
-	cy2 = SDL_clamp(cy2, 0, MAX_CELLS - 1);
+	cx1 = SDL_clamp(cx1, 0L, MAX_CELLS - 1L);
+	cy1 = SDL_clamp(cy1, 0L, MAX_CELLS - 1L);
+	cx2 = SDL_clamp(cx2, 0L, MAX_CELLS - 1L);
+	cy2 = SDL_clamp(cy2, 0L, MAX_CELLS - 1L);
 
 	for (int32_t cy = cy1; cy <= cy2; cy++)
 		for (int32_t cx = cx1; cx <= cx2; cx++) {
@@ -760,6 +759,6 @@ void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const G
 /// Produce an exclusive random number.
 int32_t rng(int32_t x) {
 	// https://rosettacode.org/wiki/Linear_congruential_generator
-	game_state.seed = (game_state.seed * 1103515245 + 12345) & 2147483647;
+	game_state.seed = (game_state.seed * 1103515245L + 12345L) & 2147483647L;
 	return game_state.seed % x;
 }
