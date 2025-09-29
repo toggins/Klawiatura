@@ -41,9 +41,6 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
     GIT_TAG release-3.2.4)
 
-# OpenGL
-find_package(OpenGL REQUIRED)
-
 # GLAD (2.0.8, OpenGL 3.3 Core)
 FetchContent_Declare(
     glad
@@ -103,7 +100,7 @@ glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
 
 set(LIBS
     SDL3::SDL3-static SDL3_image::SDL3_image-static
-    ${OPENGL_gl_LIBRARY} glad_gl_core_33
+    glad_gl_core_33
     cglm fmod  GekkoNet
     S_fixed S_tructures nutpunch
     yyjson)
