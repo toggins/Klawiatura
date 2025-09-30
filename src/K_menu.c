@@ -74,7 +74,7 @@ static void do_join_fr() {
 }
 
 // Lobby
-FMT_OPTION(active_lobby, get_lobby_id());
+FMT_OPTION(active_lobby, get_lobby_id(), in_private_lobby() ? " (Private)" : "");
 FMT_OPTION(lobby_start, is_host() ? "Start!" : "Waiting for host");
 
 static void set_players(int flip) {
@@ -220,30 +220,28 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Fire: %s", .format = fmt_fire},
 	},
 	[MEN_HOST_LOBBY] = {
-		// FIXME: Add explicit lobby hosting to NutPunch. (if the lobby ID already exists, add a "(1)" to it or something)
 		{"Lobby ID: %s", .format = fmt_lobby, EDIT(CLIENT.lobby.name)},
 
-		// FIXME: Potential feature for NutPunch.
 		{"Visibility: %s", .format = fmt_lobby_public, .flip = toggle_lobby_public},
 
 		{},
 		{"Host!", .button = do_host_fr},
 	},
 	[MEN_JOIN_LOBBY] = {
-		// FIXME: Add explicit lobby joining to NutPunch.
 		{"Lobby ID: %s", .format = fmt_lobby, EDIT(CLIENT.lobby.name)},
 		{},
 		{"Join!", .button = do_join_fr},
 	},
 	[MEN_FIND_LOBBY] = {
 		{NULL, .disabled = true},
-		// FIXME: Display lobbies with player counts
+		// FIXME: Display lobbies with player counts!
+		//        Lobby lists return names, but no way to get their count.
 	},
 	[MEN_JOINING_LOBBY] = {
 		{"Joining lobby \"%s\"", .disabled = true, .format = fmt_active_lobby},
 	},
 	[MEN_LOBBY] = {
-		{"%s", .disabled = true, .format = fmt_active_lobby},
+		{"%s%s", .disabled = true, .format = fmt_active_lobby},
 		{},
 		{"Players: %d", .format = fmt_players, .flip = set_players, .disable_if = is_client},
 		{"Level: %s", .format = fmt_level, EDIT(CLIENT.game.level), .disable_if = is_client},

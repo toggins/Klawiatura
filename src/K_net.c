@@ -80,8 +80,9 @@ static void np_peer_set_string(const char* name, const char* str) {
 		if (value != NULL && size == sizeof(type))                                                             \
 			*dest = *value;                                                                                \
 	}
-MAKE_LOBBY_GETTER(i8, int8_t);
 MAKE_LOBBY_GETTER(bool, bool);
+MAKE_LOBBY_GETTER(u8, uint8_t);
+MAKE_LOBBY_GETTER(i8, int8_t);
 #undef MAKE_GETTER
 
 static void np_lobby_get_string(char* dest, const char* name) {
@@ -210,6 +211,12 @@ int get_lobby_count() {
 
 const char* get_lobby(int idx) {
 	return NutPunch_GetLobby(idx);
+}
+
+bool in_private_lobby() {
+	uint8_t magic = MAGIC_VALUE;
+	np_lobby_get_u8(&magic, MAGIC_KEY);
+	return magic == (MAGIC_VALUE - 1);
 }
 
 // =====
