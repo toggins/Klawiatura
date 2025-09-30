@@ -74,7 +74,7 @@ static void do_join_fr() {
 }
 
 // Lobby
-FMT_OPTION(active_lobby, get_lobby_id(), in_private_lobby() ? " (Private)" : "");
+FMT_OPTION(active_lobby, get_lobby_id(), in_public_lobby() ? "" : " (Private)");
 FMT_OPTION(lobby_start, is_host() ? "Start!" : "Waiting for host");
 
 static void set_players(int flip) {

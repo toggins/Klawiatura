@@ -29,7 +29,7 @@ int find_lobby();
 void list_lobbies();
 int get_lobby_count();
 const char* get_lobby(int);
-bool in_private_lobby();
+bool in_public_lobby();
 
 // Peers
 int get_peer_count();

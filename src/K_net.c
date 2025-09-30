@@ -213,10 +213,10 @@ const char* get_lobby(int idx) {
 	return NutPunch_GetLobby(idx);
 }
 
-bool in_private_lobby() {
+bool in_public_lobby() {
 	uint8_t magic = MAGIC_VALUE;
 	np_lobby_get_u8(&magic, MAGIC_KEY);
-	return magic == (MAGIC_VALUE - 1);
+	return magic == MAGIC_VALUE;
 }
 
 // =====
