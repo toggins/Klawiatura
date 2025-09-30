@@ -45,18 +45,9 @@ FMT_OPTION(level, CLIENT.game.level);
 static void play_singleplayer() {
 	play_generic_sound("enter");
 
-	GameContext ctx = {0};
-
-	ctx.flags |= GF_SINGLE;
-	if (CLIENT.game.kevin)
-		ctx.flags |= GF_KEVIN;
-
-	ctx.num_players = 1;
+	SETUP_SINGLEPLAYER(ctx, CLIENT.game.level, CLIENT.game.kevin);
 	ctx.players[0].lives = 4;
 	ctx.players[0].power = POW_SMALL;
-
-	SDL_strlcpy(ctx.level, CLIENT.game.level, sizeof(CLIENT.game.level));
-	ctx.checkpoint = NULLACT;
 
 	start_game(&ctx);
 }

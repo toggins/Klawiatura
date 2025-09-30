@@ -37,6 +37,21 @@ typedef uint32_t ActorFlag;
 #define F_HALF_SCREEN_WIDTH Fhalf(F_SCREEN_WIDTH)
 #define F_HALF_SCREEN_HEIGHT Fhalf(F_SCREEN_HEIGHT)
 
+#define SETUP_GAME(ctx, lvl, kevin)                                                                                    \
+	GameContext ctx = {0};                                                                                         \
+                                                                                                                       \
+	if (kevin)                                                                                                     \
+		ctx.flags |= GF_KEVIN;                                                                                 \
+                                                                                                                       \
+	SDL_strlcpy(ctx.level, lvl, sizeof(ctx.level));                                                                \
+	ctx.checkpoint = NULLACT
+
+#define SETUP_SINGLEPLAYER(ctx, lvl, kevin)                                                                            \
+	SETUP_GAME(ctx, lvl, kevin);                                                                                   \
+                                                                                                                       \
+	ctx.flags |= GF_SINGLE;                                                                                        \
+	ctx.num_players = 1
+
 typedef uint8_t Bool;
 typedef int8_t PlayerID;
 typedef int16_t ActorID;
@@ -335,7 +350,7 @@ typedef struct {
 	GameActor actors[MAX_ACTORS];
 	ActorID grid[GRID_SIZE];
 
-	char world[GAME_STRING_MAX], next[GAME_STRING_MAX];
+	char world[GAME_STRING_MAX], level[GAME_STRING_MAX], next[GAME_STRING_MAX];
 } GameState;
 
 typedef struct {

@@ -127,38 +127,22 @@ bool update_game() {
 			if (game_state.next[0] == '\0')
 				goto byebye_game;
 
-			GameContext ctx = {0};
-
-			ctx.flags |= GF_SINGLE;
-			if (CLIENT.game.kevin)
-				ctx.flags |= GF_KEVIN;
-
-			ctx.num_players = 1;
+			SETUP_SINGLEPLAYER(ctx, game_state.next, CLIENT.game.kevin);
 			ctx.players[0].lives = game_state.players[0].lives;
 			ctx.players[0].power = game_state.players[0].power;
 			ctx.players[0].coins = game_state.players[0].coins;
 			ctx.players[0].score = game_state.players[0].score;
 
-			SDL_strlcpy(ctx.level, game_state.next, sizeof(ctx.level));
-			ctx.checkpoint = NULLACT;
-
 			start_game_state(&ctx);
 		}
 
 		if (game_state.flags & GF_RESTART) {
-			GameContext ctx = {0};
-
-			ctx.flags |= GF_SINGLE | GF_REPLAY;
-			if (CLIENT.game.kevin)
-				ctx.flags |= GF_KEVIN;
-
-			ctx.num_players = 1;
+			SETUP_SINGLEPLAYER(ctx, game_state.level, CLIENT.game.kevin);
+			ctx.flags |= GF_REPLAY;
 			ctx.players[0].lives = game_state.players[0].lives;
 			ctx.players[0].power = POW_SMALL;
 			ctx.players[0].coins = game_state.players[0].coins;
 			ctx.players[0].score = game_state.players[0].score;
-
-			SDL_strlcpy(ctx.level, game_state.next, sizeof(ctx.level));
 			ctx.checkpoint = game_state.checkpoint;
 
 			start_game_state(&ctx);
@@ -373,6 +357,7 @@ static void read_string(const char** buf, char* dest, size_t maxlen) {
 void start_game_state(GameContext* ctx) {
 	nuke_game_state();
 
+	SDL_strlcpy(game_state.level, ctx->level, sizeof(game_state.level));
 	game_state.flags |= ctx->flags;
 	game_state.checkpoint = ctx->checkpoint;
 
