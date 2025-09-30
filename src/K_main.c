@@ -24,19 +24,18 @@
 #include "K_menu.h"
 #include "K_video.h"
 
-static void cmd_ip(IterArg), cmd_level(IterArg);
+static void cmd_ip(IterArg), cmd_level(IterArg), cmd_kevin(IterArg);
 MAKE_OPTION(data_path, NULL);
 MAKE_OPTION(config_path, NULL);
 MAKE_FLAG(force_shader);
 MAKE_FLAG(skip_intro);
-MAKE_FLAG(kevin);
 
 CmdArg CMDLINE[] = {
 	{"-s", "-force_shader", CMD_OPT(force_shader)},
 	{"-i", "-skip_intro",   CMD_OPT(skip_intro)  },
 	{"-d", "-data",         CMD_OPT(data_path)   },
 	{"-c", "-config",       CMD_OPT(config_path) },
-	{"-K", "-kevin",        CMD_OPT(kevin)       },
+	{"-K", "-kevin",        cmd_kevin            },
 	{"-a", "-ip",           cmd_ip               },
 	{"-l", "-level",        cmd_level            },
 	{NULL, NULL,            NULL                 },
@@ -76,14 +75,19 @@ int main(int argc, char* argv[]) {
 	config_init(config_path);
 	net_init();
 
-	start_menu(skip_intro);
+	if (quickstart) {
+		GameContext ctx;
+		setup_game_context(&ctx, CLIENT.game.level, GF_SINGLE | GF_TRY_KEVIN);
+		start_game(&ctx);
+	} else
+		start_menu(skip_intro);
 
 	while (!permadeath) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 			switch (event.type) {
 			case SDL_EVENT_QUIT:
-				goto exit;
+				goto teardown;
 			case SDL_EVENT_KEY_DOWN:
 				input_keydown(event.key.scancode);
 				break;
@@ -103,8 +107,11 @@ int main(int argc, char* argv[]) {
 		if (game_exists()) {
 			if (update_game())
 				draw_game();
-			else
+			else {
 				input_wipeout();
+				if (quickstart)
+					goto teardown;
+			}
 		} else {
 			update_menu();
 			draw_menu();
@@ -113,7 +120,7 @@ int main(int argc, char* argv[]) {
 		audio_update();
 	}
 
-exit:
+teardown:
 	nuke_game();
 	net_teardown();
 	config_teardown();
@@ -133,4 +140,8 @@ static void cmd_ip(IterArg next) {
 static void cmd_level(IterArg next) {
 	SDL_strlcpy(CLIENT.game.level, next(), sizeof(CLIENT.game.level));
 	quickstart = true;
+}
+
+static void cmd_kevin(IterArg next) {
+	CLIENT.game.kevin = true;
 }

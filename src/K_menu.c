@@ -296,7 +296,7 @@ static void cleanup_lobby_list(MenuType next) {
 }
 
 static void maybe_play_title(MenuType next) {
-	if (next == MEN_MAIN)
+	if (next == MEN_MAIN && !CLIENT.game.kevin)
 		play_generic_track("title", PLAY_LOOPING);
 }
 
