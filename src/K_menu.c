@@ -534,13 +534,20 @@ void draw_menu() {
 		batch_color(ALPHA(128));
 		batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), fmt("Server: %s", get_hostname()));
 	} else if (cur_menu == MEN_LOBBY) {
+		batch_color(RGBA(255, 144, 144, 128));
+		batch_cursor(XY(SCREEN_WIDTH - 48, 24));
+		int num_peers = get_peer_count();
+		batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), fmt("Peers (%i / %i)", num_peers, MAX_PEERS));
+
 		batch_color(ALPHA(128));
-		GLfloat y = 24;
+		GLfloat y = 48;
+		int idx = 1;
 		for (int i = 0; i < MAX_PEERS; i++) {
 			if (!peer_exists(i))
 				continue;
 			batch_cursor(XY(SCREEN_WIDTH - 48, y));
-			batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), fmt("%i. %s", i + 1, get_peer_name(i)));
+			batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), fmt("%i. %s", idx, get_peer_name(i)));
+			++idx;
 			y += 24;
 		}
 	}
