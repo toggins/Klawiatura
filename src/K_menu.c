@@ -58,6 +58,10 @@ FMT_OPTION(lobby, CLIENT.lobby.name);
 FMT_OPTION(lobby_public, CLIENT.lobby.public ? "Public" : "Private");
 FMT_OPTION(players, CLIENT.game.players);
 
+static void toggle_lobby_public(int flip) {
+	CLIENT.lobby.public = !CLIENT.lobby.public;
+}
+
 static void do_host_fr() {
 	host_lobby(CLIENT.lobby.name);
 	set_menu(MEN_JOINING_LOBBY);
@@ -220,7 +224,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Lobby ID: %s", .format = fmt_lobby, EDIT(CLIENT.lobby.name)},
 
 		// FIXME: Potential feature for NutPunch.
-		{"Visibility: %s", .disabled = true, .format = fmt_lobby_public},
+		{"Visibility: %s", .format = fmt_lobby_public, .flip = toggle_lobby_public},
 
 		{},
 		{"Host!", .button = do_host_fr},
