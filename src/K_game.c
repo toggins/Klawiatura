@@ -46,6 +46,21 @@ PlayerID local_player = -1L, view_player = -1L, num_players = 0L;
 // GAME
 // ====
 
+/// Initializes a GameContext struct with a clean 1-player preset.
+void setup_game_context(GameContext* ctx, const char* level, GameFlag flags) {
+	SDL_memset(ctx, 0, sizeof(GameContext));
+	ctx->flags = flags;
+
+	ctx->num_players = 1;
+	for (size_t i = 0; i < MAX_PLAYERS; i++) {
+		ctx->players[0].power = POW_SMALL;
+		ctx->players[0].lives = DEFAULT_LIVES;
+	}
+
+	SDL_strlcpy(ctx->level, level, sizeof(ctx->level));
+	ctx->checkpoint = NULLACT;
+}
+
 void start_game(GameContext* ctx) {
 	if (game_session != NULL)
 		return;
@@ -127,7 +142,8 @@ bool update_game() {
 			if (game_state.next[0] == '\0')
 				goto byebye_game;
 
-			SETUP_SINGLEPLAYER(ctx, game_state.next, CLIENT.game.kevin);
+			GameContext ctx;
+			setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_TRY_KEVIN);
 			ctx.players[0].lives = game_state.players[0].lives;
 			ctx.players[0].power = game_state.players[0].power;
 			ctx.players[0].coins = game_state.players[0].coins;
@@ -137,10 +153,9 @@ bool update_game() {
 		}
 
 		if (game_state.flags & GF_RESTART) {
-			SETUP_SINGLEPLAYER(ctx, game_state.level, CLIENT.game.kevin);
-			ctx.flags |= GF_REPLAY;
+			GameContext ctx;
+			setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
 			ctx.players[0].lives = game_state.players[0].lives;
-			ctx.players[0].power = POW_SMALL;
 			ctx.players[0].coins = game_state.players[0].coins;
 			ctx.players[0].score = game_state.players[0].score;
 			ctx.checkpoint = game_state.checkpoint;

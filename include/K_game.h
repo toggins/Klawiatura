@@ -9,6 +9,7 @@
 #define MINOR_LEVEL_VERSION 1
 
 #define MAX_PLAYERS 4L
+#define DEFAULT_LIVES 4L
 #define MAX_MISSILES 2L
 #define MAX_SINK 6L
 #define KEVIN_DELAY 50L
@@ -36,21 +37,6 @@ typedef uint32_t ActorFlag;
 #define F_SCREEN_HEIGHT FfInt(SCREEN_HEIGHT)
 #define F_HALF_SCREEN_WIDTH Fhalf(F_SCREEN_WIDTH)
 #define F_HALF_SCREEN_HEIGHT Fhalf(F_SCREEN_HEIGHT)
-
-#define SETUP_GAME(ctx, lvl, kevin)                                                                                    \
-	GameContext ctx = {0};                                                                                         \
-                                                                                                                       \
-	if (kevin)                                                                                                     \
-		ctx.flags |= GF_KEVIN;                                                                                 \
-                                                                                                                       \
-	SDL_strlcpy(ctx.level, lvl, sizeof(ctx.level));                                                                \
-	ctx.checkpoint = NULLACT
-
-#define SETUP_SINGLEPLAYER(ctx, lvl, kevin)                                                                            \
-	SETUP_GAME(ctx, lvl, kevin);                                                                                   \
-                                                                                                                       \
-	ctx.flags |= GF_SINGLE;                                                                                        \
-	ctx.num_players = 1
 
 typedef uint8_t Bool;
 typedef int8_t PlayerID;
@@ -82,6 +68,7 @@ enum {
 	GF_REPLAY = 1 << 10,
 	GF_SINGLE = 1 << 11,
 	GF_RESTART = 1 << 12,
+#define GF_TRY_KEVIN (CLIENT.game.kevin * GF_KEVIN)
 };
 
 typedef uint8_t GameSequenceType;
@@ -373,6 +360,8 @@ typedef struct {
 } GameActorTable;
 
 extern GameState game_state;
+
+void setup_game_context(GameContext*, const char*, GameFlag);
 
 void start_game(GameContext*);
 bool game_exists();

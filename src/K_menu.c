@@ -45,10 +45,8 @@ FMT_OPTION(level, CLIENT.game.level);
 static void play_singleplayer() {
 	play_generic_sound("enter");
 
-	SETUP_SINGLEPLAYER(ctx, CLIENT.game.level, CLIENT.game.kevin);
-	ctx.players[0].lives = 4;
-	ctx.players[0].power = POW_SMALL;
-
+	GameContext ctx;
+	setup_game_context(&ctx, CLIENT.game.level, GF_SINGLE | GF_TRY_KEVIN);
 	start_game(&ctx);
 }
 
