@@ -18,6 +18,7 @@ static enum {
 	NET_JOIN,
 	NET_LIST,
 } netmode = NET_NULL;
+static bool found_lobby = false;
 
 static const char* MAGIC_KEY = "KLAWIATURA";
 static const uint8_t MAGIC_VALUE = 127;
@@ -120,13 +121,14 @@ const char* net_error() {
 }
 
 bool is_connected() {
-	return netmode != NET_NULL && cur_lobby[0] != '\0';
+	return netmode != NET_NULL && cur_lobby[0] != '\0' && found_lobby && NutPunch_PeerCount() >= 1;
 }
 
 void disconnect() {
 	NutPunch_Disconnect();
 	SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
 	netmode = NET_NULL;
+	found_lobby = false;
 }
 
 bool is_host() {
@@ -180,6 +182,8 @@ int find_lobby() {
 		return -1;
 	} else if (netmode == NET_LIST)
 		return 0;
+	else if (found_lobby)
+		return NutPunch_PeerCount() >= 1;
 
 	for (int i = 0; i < NutPunch_LobbyCount(); i++) {
 		if (SDL_strcmp(cur_lobby, NutPunch_GetLobby(i)))
@@ -189,7 +193,8 @@ int find_lobby() {
 			return -1;
 		} else if (netmode == NET_JOIN) {
 			NutPunch_Join(cur_lobby);
-			return 1;
+			found_lobby = true;
+			return 0;
 		}
 	}
 
@@ -197,7 +202,8 @@ int find_lobby() {
 		NutPunch_Host(cur_lobby);
 		uint8_t magic = MAGIC_VALUE - !CLIENT.lobby.public;
 		NutPunch_LobbySet(MAGIC_KEY, sizeof(magic), &magic);
-		return 1;
+		found_lobby = true;
+		return 0;
 	} else if (netmode == NET_JOIN) {
 		last_error = "Lobby doesn't exist";
 		return -1;
