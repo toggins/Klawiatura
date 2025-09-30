@@ -81,6 +81,7 @@ static void np_peer_set_string(const char* name, const char* str) {
 			*dest = *value;                                                                                \
 	}
 MAKE_LOBBY_GETTER(i8, int8_t);
+MAKE_LOBBY_GETTER(bool, bool);
 #undef MAKE_GETTER
 
 static void np_lobby_get_string(char* dest, const char* name) {
@@ -104,9 +105,11 @@ void net_newframe() {
 
 	if (netmode == NET_HOST) {
 		NutPunch_LobbySet("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
+		NutPunch_LobbySet("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
 		np_lobby_set_string("LEVEL", CLIENT.game.level);
 	} else if (netmode == NET_JOIN) {
 		np_lobby_get_i8(&CLIENT.game.players, "PLAYERS");
+		np_lobby_get_bool(&CLIENT.game.kevin, "KEVIN");
 		np_lobby_get_string(CLIENT.game.level, "LEVEL");
 	}
 }
