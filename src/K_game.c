@@ -120,6 +120,43 @@ bool update_game() {
 		tick_game_state(inputs);
 		tick_video_state();
 		tick_audio_state();
+
+		if (game_state.flags & GF_END) {
+			if (game_state.next[0] == '\0')
+				goto byebye_game;
+
+			GameContext ctx = {0};
+
+			ctx.flags |= GF_SINGLE;
+
+			ctx.num_players = 1;
+			ctx.players[0].lives = game_state.players[0].lives;
+			ctx.players[0].power = game_state.players[0].power;
+			ctx.players[0].coins = game_state.players[0].coins;
+			ctx.players[0].score = game_state.players[0].score;
+
+			SDL_strlcpy(ctx.level, game_state.next, sizeof(ctx.level));
+			ctx.checkpoint = NULLACT;
+
+			start_game_state(&ctx);
+		}
+
+		if (game_state.flags & GF_RESTART) {
+			GameContext ctx = {0};
+
+			ctx.flags |= GF_SINGLE | GF_REPLAY;
+
+			ctx.num_players = 1;
+			ctx.players[0].lives = game_state.players[0].lives;
+			ctx.players[0].power = POW_SMALL;
+			ctx.players[0].coins = game_state.players[0].coins;
+			ctx.players[0].score = game_state.players[0].score;
+
+			SDL_strlcpy(ctx.level, game_state.next, sizeof(ctx.level));
+			ctx.checkpoint = game_state.checkpoint;
+
+			start_game_state(&ctx);
+		}
 	}
 
 	return true;

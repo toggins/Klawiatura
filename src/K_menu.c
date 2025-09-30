@@ -47,11 +47,13 @@ static void play_singleplayer() {
 
 	GameContext ctx = {0};
 
+	ctx.flags |= GF_SINGLE;
+
 	ctx.num_players = 1;
 	ctx.players[0].lives = 4;
 	ctx.players[0].power = POW_SMALL;
 
-	SDL_strlcpy(ctx.level, CLIENT.game.level, sizeof(ctx.level));
+	SDL_strlcpy(ctx.level, CLIENT.game.level, sizeof(CLIENT.game.level));
 	ctx.checkpoint = NULLACT;
 
 	start_game(&ctx);

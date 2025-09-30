@@ -1,7 +1,6 @@
 #pragma once
 
 #include "K_audio.h"
-#include "K_cmd.h"
 #include "K_math.h"
 #include "K_net.h" // IWYU pragma: keep
 #include "K_video.h"
@@ -228,7 +227,7 @@ typedef struct {
 	GameFlag flags;
 	ActorID checkpoint;
 
-	char level[CLIENT_STRING_MAX];
+	char level[GAME_STRING_MAX];
 	struct {
 		int8_t lives;
 		uint8_t coins;
