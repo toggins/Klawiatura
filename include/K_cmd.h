@@ -28,6 +28,7 @@ typedef struct {
 
 	struct {
 		int8_t players; // Supposed to be PlayerID
+		bool kevin;
 		char level[CLIENT_STRING_MAX];
 	} game;
 

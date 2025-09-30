@@ -1,3 +1,4 @@
+#include "K_cmd.h"
 #include "K_file.h"
 #include "K_game.h"
 #include "K_input.h"
@@ -93,6 +94,7 @@ void nuke_game() {
 	game_surface = NULL;
 }
 
+extern ClientInfo CLIENT;
 bool update_game() {
 	if (num_players > 1)
 		goto rollbacker;
@@ -128,6 +130,8 @@ bool update_game() {
 			GameContext ctx = {0};
 
 			ctx.flags |= GF_SINGLE;
+			if (CLIENT.game.kevin)
+				ctx.flags |= GF_KEVIN;
 
 			ctx.num_players = 1;
 			ctx.players[0].lives = game_state.players[0].lives;
@@ -145,6 +149,8 @@ bool update_game() {
 			GameContext ctx = {0};
 
 			ctx.flags |= GF_SINGLE | GF_REPLAY;
+			if (CLIENT.game.kevin)
+				ctx.flags |= GF_KEVIN;
 
 			ctx.num_players = 1;
 			ctx.players[0].lives = game_state.players[0].lives;

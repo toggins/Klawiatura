@@ -43,9 +43,9 @@ CmdArg CMDLINE[] = {
 };
 
 ClientInfo CLIENT = (ClientInfo){
-	.user = {"Player",     ""    },
-	.game = {1,            "test"},
-	.lobby = {"Klawiatura", true  },
+	.user = {"Player", ""},
+	.game = {1, false, "test"},
+	.lobby = {"Klawiatura", true},
 };
 
 bool quickstart = false;

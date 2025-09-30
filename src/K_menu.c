@@ -48,6 +48,8 @@ static void play_singleplayer() {
 	GameContext ctx = {0};
 
 	ctx.flags |= GF_SINGLE;
+	if (CLIENT.game.kevin)
+		ctx.flags |= GF_KEVIN;
 
 	ctx.num_players = 1;
 	ctx.players[0].lives = 4;
@@ -367,13 +369,11 @@ static void type_kevin(Keybind kb) {
 	if (!kb_pressed(kb))
 		return;
 
-	++kevin_state;
-	if (kevin_state >= 5) {
-		play_generic_sound("kevin_on");
-		play_generic_track("human_like_predator", PLAY_LOOPING);
-		kevin_time = 0;
-	} else {
+	if (kevin_state >= 4)
+		CLIENT.game.kevin = true;
+	else {
 		play_generic_sound("kevin_type");
+		++kevin_state;
 		kevin_time = TICKRATE;
 	}
 }
@@ -392,31 +392,41 @@ void update_menu() {
 			if (kevin_time <= 0)
 				kevin_state = 0;
 		}
-		switch (kevin_state) {
-		default:
-			type_kevin(KB_KEVIN_K);
-			break;
-		case 1:
-			type_kevin(KB_KEVIN_E);
-			break;
-		case 2:
-			type_kevin(KB_KEVIN_V);
-			break;
-		case 3:
-			type_kevin(KB_KEVIN_I);
-			break;
-		case 4:
-			type_kevin(KB_KEVIN_N);
-			break;
-		case 5: {
-			if (!kb_pressed(KB_KEVIN_BAIL))
-				break;
-			kevin_state = 0;
+
+		if (CLIENT.game.kevin && kevin_state < 5) {
+			play_generic_sound("kevin_on");
+			play_generic_track("human_like_predator", PLAY_LOOPING);
+			kevin_state = 5;
+			kevin_time = 0;
+		} else if (!CLIENT.game.kevin && kevin_state >= 5) {
 			play_generic_sound("thwomp");
 			play_generic_track("title", PLAY_LOOPING);
-			break;
+			kevin_state = 0;
+			kevin_time = 0;
 		}
-		}
+
+		if (!is_connected() || is_host())
+			switch (kevin_state) {
+			default:
+				type_kevin(KB_KEVIN_K);
+				break;
+			case 1:
+				type_kevin(KB_KEVIN_E);
+				break;
+			case 2:
+				type_kevin(KB_KEVIN_V);
+				break;
+			case 3:
+				type_kevin(KB_KEVIN_I);
+				break;
+			case 4:
+				type_kevin(KB_KEVIN_N);
+				break;
+			case 5:
+				if (kb_pressed(KB_KEVIN_BAIL))
+					CLIENT.game.kevin = false;
+				break;
+			}
 
 		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
 		if (!change)
