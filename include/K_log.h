@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdlib.h> // IWYU pragma: keep
-// ^ required for `exit(1)` below. DO NOT TOUCH YOU FUCKER
+// ^ required for `exit(EXIT_FAILURE)` below. DO NOT TOUCH YOU FUCKER
 
 #include <SDL3/SDL_log.h>
 #include <SDL3/SDL_stdinc.h>
@@ -14,5 +14,5 @@
 #define FATAL(...)                                                                                                     \
 	do {                                                                                                           \
 		LOG_WITH(SDL_LogCritical, __VA_ARGS__);                                                                \
-		exit(1);                                                                                               \
+		exit(EXIT_FAILURE);                                                                                    \
 	} while (0)
