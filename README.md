@@ -11,19 +11,19 @@ Mario Forever with rollback netcode.
 
 ## Multiplayer
 
-> [!WARNING]
-> Multiplayer with 3+ players is not guaranteed to be stable. It's possible to get a desync error & crash if packets get dropped.
-
-The main kicker of this project. Networking is purely peer-to-peer. You can host and find lobbies through the public NutPunch server. Lobbies will automatically start the game once the player count is fulfilled. For custom servers, host a [NutPuncher](https://github.com/Schwungus/nutpunch) server and connect to it using `-ip`.
+The main kicker of this project. Networking is purely peer-to-peer. You can host and find lobbies through the public NutPunch server. Lobbies can hold up to 16 peers → 4 players and 12 spectators with lowest numbered peers taking priority as players. For custom servers, host a [NutPuncher](https://github.com/Schwungus/nutpunch) server and connect to it using `-ip`.
 
 ## Launch options
 
 You can adjust Klawiatura with these launch options:
 
-- `-force_shader`: Skip checking supported OpenGL extensions. Useful if running under RenderDoc or WSL, where the checks fail even if the game runs fine otherwise.
-- `-ip <ip>`: IP address of the [NutPuncher](https://github.com/Schwungus/nutpunch) server. (Default: [the public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance))
-- `-level <name>`: Name of the level file to load. This command will quickstart the level in singleplayer.
-- `-kevin`: Awakens Kevin.
+| Command | Arguments | Description |
+| ------- | --------- | ----------- |
+| `-force_shader`, `-s` | | Skip checking supported OpenGL extensions. Useful if running under RenderDoc or WSL, where the checks fail even if the game runs fine otherwise. |
+| `-i`, `-skip_intro` | | Skips the disclaimer screen. |
+| `-K`, `-kevin` | | Awakens Kevin. |
+| `-l`, `-level` | `<name>` | Level file to load. Quickstarts the game in singleplayer. |
+| `-a`, `-ip` | `<ip>` | IP address of the [NutPuncher](https://github.com/Schwungus/nutpunch) server. (Default: [the public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance)) |
 
 You can add these options to a desktop shortcut:
 
