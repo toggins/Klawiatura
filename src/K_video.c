@@ -776,7 +776,7 @@ void submit_batch() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 	glUniform1f(uniforms.alpha_test, batch.alpha_test);
 	glUniform1f(uniforms.stencil, batch.stencil);
-	glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)(*get_mvp_matrix()));
+	glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)get_mvp_matrix());
 
 	// Apply blend mode
 	glBlendFuncSeparate(batch.blend_src[0], batch.blend_dest[0], batch.blend_src[1], batch.blend_dest[1]);
@@ -1108,7 +1108,7 @@ void draw_tilemaps() {
 
 	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
 	glUniform1f(uniforms.alpha_test, 0.5f);
-	glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)(*get_mvp_matrix()));
+	glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)get_mvp_matrix());
 	while (tilemap != NULL) {
 		glDepthMask(tilemap->translucent ? GL_FALSE : GL_TRUE);
 		glBindVertexArray(tilemap->vao);
