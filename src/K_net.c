@@ -105,11 +105,11 @@ void net_newframe() {
 	if (NutPunch_PeerAlive(NutPunch_LocalPeer()))
 		np_peer_set_string("NAME", CLIENT.user.name);
 
-	if (netmode == NET_HOST) {
+	if (is_host()) {
 		NutPunch_LobbySet("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
 		NutPunch_LobbySet("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
 		np_lobby_set_string("LEVEL", CLIENT.game.level);
-	} else if (netmode == NET_JOIN) {
+	} else {
 		np_lobby_get_i8(&CLIENT.game.players, "PLAYERS");
 		np_lobby_get_bool(&CLIENT.game.kevin, "KEVIN");
 		np_lobby_get_string(CLIENT.game.level, "LEVEL");
