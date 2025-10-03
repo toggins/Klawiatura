@@ -17,13 +17,15 @@ The main kicker of this project. Networking is purely peer-to-peer. You can host
 
 You can adjust Klawiatura with these launch options:
 
-| Command | Arguments | Description |
-| ------- | --------- | ----------- |
-| `-force_shader`, `-s` | | Skip checking supported OpenGL extensions. Useful if running under RenderDoc or WSL, where the checks fail even if the game runs fine otherwise. |
-| `-i`, `-skip_intro` | | Skips the disclaimer screen. |
-| `-K`, `-kevin` | | Awakens Kevin. |
-| `-l`, `-level` | `<name>` | Level file to load. Quickstarts the game in singleplayer. |
-| `-a`, `-ip` | `<ip>` | IP address of the [NutPuncher](https://github.com/Schwungus/nutpunch) server. (Default: [the public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance)) |
+| Command               | Arguments | Description |
+| --------------------- | --------- | ----------- |
+| `-s`, `-force_shader` |           | Skip checking supported OpenGL extensions. Useful if running under RenderDoc or WSL, where the checks fail even if the game runs fine otherwise. |
+| `-i`, `-skip_intro`   |           | Skips the disclaimer screen. |
+| `-d`, `-data`         | <path>    | Path of the data folder to load assets from. |
+| `-c`, `-config`       | <path>    | Path of the config file. Disables config saving. |
+| `-K`, `-kevin`        |           | Awakens Kevin. |
+| `-a`, `-ip`           | `<ip>`    | IP address of the [NutPuncher](https://github.com/Schwungus/nutpunch) server. (Default: [the public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance)) |
+| `-l`, `-level`        | `<name>`  | Level file to load. Quickstarts the game in singleplayer. |
 
 You can add these options to a desktop shortcut:
 
