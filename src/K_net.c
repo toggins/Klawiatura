@@ -132,11 +132,11 @@ void disconnect() {
 }
 
 bool is_host() {
-	return netmode == NET_HOST;
+	return NutPunch_IsMaster();
 }
 
 bool is_client() {
-	return netmode == NET_JOIN;
+	return !NutPunch_IsMaster();
 }
 
 // =======
@@ -153,7 +153,7 @@ void find_lobby_mode(const char* id) {
 	else
 		SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
 
-	struct NutPunch_Filter filter = {0};
+	NutPunch_Filter filter = {0};
 	SDL_memcpy(filter.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
 	SDL_memcpy(filter.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
 	filter.comparison = 0;
