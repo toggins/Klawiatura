@@ -134,6 +134,7 @@ FMT_OPTION(music_volume, get_music_volume() * 100);
 VOLUME_OPTION(music_volume);
 
 // Controls
+FMT_OPTION(device, input_device());
 FMT_OPTION(up, kb_label(KB_UP));
 FMT_OPTION(left, kb_label(KB_LEFT));
 FMT_OPTION(down, kb_label(KB_DOWN));
@@ -196,10 +197,10 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Find Lobbies", .enter = MEN_FIND_LOBBY},
 	},
 	[MEN_OPTIONS] = {
-		{"Change Controls", .enter = MEN_CONTROLS},
-		{},
 		{"Name: %s", .format = fmt_name, EDIT(CLIENT.user.name)},
 		{"Skin: %s", .format = fmt_skin, EDIT(CLIENT.user.skin)},
+		{},
+		{"Change Controls", .enter = MEN_CONTROLS},
 		{},
 		{"Resolution: %dx%d", .disable_if = get_fullscreen, .format = fmt_resolution, .flip = toggle_resolution},
 		{"Fullscreen: %s", .format = fmt_fullscreen, .flip = toggle_fullscreen},
@@ -210,6 +211,8 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Music Volume: %.0f%%", .format = fmt_music_volume, .flip = toggle_music_volume},
 	},
 	[MEN_CONTROLS] = {
+		{"Device: %s", .format = fmt_device, .disabled = true},
+		{},
 		{"Up: %s", .format = fmt_up},
 		{"Left: %s", .format = fmt_left},
 		{"Down: %s", .format = fmt_down},
@@ -256,6 +259,7 @@ void start_menu(bool skip_intro) {
 
 	load_texture("ui/disclaimer");
 	load_texture("ui/background");
+	load_texture("ui/shortcut");
 
 	load_font("main");
 	load_font("hud");
@@ -516,9 +520,16 @@ void draw_menu() {
 			suffix = "|";
 		const char* name = fmt("%s%s", format, suffix);
 
-		batch_cursor(XY(48.f + (opt->hover * 8.f), menu_y + ((GLfloat)i * 24.f)));
-		batch_color(opt->disabled ? ALPHA(128) : WHITE);
+		const GLfloat x = 48.f + (opt->hover * 8.f);
+		const GLfloat y = menu_y + ((GLfloat)i * 24.f);
+		batch_cursor(XY(x, y));
+		batch_color(ALPHA(opt->disabled ? 128 : 255));
 		batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), name);
+
+		if (opt->enter != MEN_NULL) {
+			batch_cursor(XY(x + string_width("main", 24, name) + 4.f, y + 8.f));
+			batch_sprite("ui/shortcut", NO_FLIP);
+		}
 	}
 
 	if (menu->from != MEN_NULL) {
@@ -574,7 +585,7 @@ void draw_menu() {
 	}
 
 	batch_cursor(XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 48));
-	batch_color(RGB(255, 128, 128));
+	batch_color(RGB(255, 96, 96));
 	batch_string("main", 24, ALIGN(FA_CENTER, FA_BOTTOM), kevinstr);
 
 	goto jobwelldone;

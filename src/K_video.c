@@ -633,7 +633,7 @@ void batch_surface(Surface* surface) {
 	batch_vertex(XYZ(x1, y2, z), batch.color, UV(0, 1));
 }
 
-static GLfloat string_width(const Font* font, GLfloat size, const char* str) {
+static GLfloat string_width_fast(const Font* font, GLfloat size, const char* str) {
 	if (font == NULL)
 		return 0;
 
@@ -669,7 +669,11 @@ static GLfloat string_width(const Font* font, GLfloat size, const char* str) {
 	return width;
 }
 
-static GLfloat string_height(const Font* font, GLfloat size, const char* str) {
+GLfloat string_width(const char* name, GLfloat size, const char* str) {
+	return string_width_fast(get_font(name), size, str);
+}
+
+static GLfloat string_height_fast(const Font* font, GLfloat size, const char* str) {
 	if (font == NULL)
 		return 0;
 
@@ -680,6 +684,10 @@ static GLfloat string_height(const Font* font, GLfloat size, const char* str) {
 			height += font->height;
 
 	return height;
+}
+
+GLfloat string_height(const char* name, GLfloat size, const char* str) {
+	return string_height_fast(get_font(name), size, str);
 }
 
 /// Adds a string to the vertex batch.
@@ -697,10 +705,10 @@ void batch_string(const char* font_name, GLfloat size, const FontAlignment align
 	// Horizontal alignment
 	switch (alignment[0]) {
 	case FA_CENTER:
-		ox -= string_width(font, size, str) / 2.f;
+		ox -= string_width_fast(font, size, str) / 2.f;
 		break;
 	case FA_RIGHT:
-		ox -= string_width(font, size, str);
+		ox -= string_width_fast(font, size, str);
 		break;
 	default:
 		break;
@@ -709,10 +717,10 @@ void batch_string(const char* font_name, GLfloat size, const FontAlignment align
 	// Vertical alignment
 	switch (alignment[1]) {
 	case FA_MIDDLE:
-		oy -= string_height(font, size, str) / 2.f;
+		oy -= string_height_fast(font, size, str) / 2.f;
 		break;
 	case FA_BOTTOM:
-		oy -= string_height(font, size, str);
+		oy -= string_height_fast(font, size, str);
 		break;
 	default:
 		break;

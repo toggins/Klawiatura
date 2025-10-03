@@ -68,6 +68,11 @@ void input_wipeout() {
 	kb_repeating = 0;
 }
 
+const char* input_device() {
+	// TODO
+	return "Keyboard";
+}
+
 #define CHECK_KB(table, kb) (((table) & (1 << (kb))) != 0)
 
 bool kb_pressed(Keybind kb) {

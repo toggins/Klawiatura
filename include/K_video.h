@@ -185,6 +185,8 @@ void batch_sprite(const char*, const GLboolean[2]);
 void batch_surface(Surface*);
 void batch_rectangle(const char*, const GLfloat[2][2]);
 void batch_ellipse(const GLfloat[2][2]);
+GLfloat string_width(const char*, GLfloat, const char*);
+GLfloat string_height(const char*, GLfloat, const char*);
 void batch_string(const char*, GLfloat, const FontAlignment[2], const char*);
 void submit_batch();
 
