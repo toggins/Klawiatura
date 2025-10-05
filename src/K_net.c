@@ -64,14 +64,17 @@ void set_hostname(const char* hn) {
 // INTERFACE
 // =========
 
+#define np_lobby_set NutPunch_LobbySet
+#define np_peer_set NutPunch_PeerSet
+
 static void np_set_string(void setter(const char*, int, const void*), const char* name, const char* str) {
 	(setter)(name, (int)SDL_strnlen(str, NUTPUNCH_FIELD_DATA_MAX - 1), str);
 }
 static void np_lobby_set_string(const char* name, const char* str) {
-	return np_set_string(NutPunch_LobbySet, name, str);
+	return np_set_string(np_lobby_set, name, str);
 }
 static void np_peer_set_string(const char* name, const char* str) {
-	return np_set_string(NutPunch_PeerSet, name, str);
+	return np_set_string(np_peer_set, name, str);
 }
 
 #define MAKE_LOBBY_GETTER(suffix, type)                                                                                \
@@ -106,8 +109,8 @@ void net_newframe() {
 		np_peer_set_string("NAME", CLIENT.user.name);
 
 	if (is_host()) {
-		NutPunch_LobbySet("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
-		NutPunch_LobbySet("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
+		np_lobby_set("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
+		np_lobby_set("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
 		np_lobby_set_string("LEVEL", CLIENT.game.level);
 	} else {
 		np_lobby_get_i8(&CLIENT.game.players, "PLAYERS");
@@ -201,7 +204,7 @@ int find_lobby() {
 	if (netmode == NET_HOST) {
 		NutPunch_Host(cur_lobby);
 		uint8_t magic = MAGIC_VALUE - !CLIENT.lobby.public;
-		NutPunch_LobbySet(MAGIC_KEY, sizeof(magic), &magic);
+		np_lobby_set(MAGIC_KEY, sizeof(magic), &magic);
 		found_lobby = true;
 		return 0;
 	} else if (netmode == NET_JOIN) {
