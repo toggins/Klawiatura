@@ -84,7 +84,7 @@ static void np_peer_set_string(const char* name, const char* str) {
 MAKE_LOBBY_GETTER(bool, bool);
 MAKE_LOBBY_GETTER(u8, uint8_t);
 MAKE_LOBBY_GETTER(i8, int8_t);
-#undef MAKE_GETTER
+#undef MAKE_LOBBY_GETTER
 
 static void np_lobby_get_string(char* dest, const char* name) {
 	int size = 0;
