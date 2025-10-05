@@ -8,6 +8,7 @@
 #include "K_cmd.h"
 #include "K_log.h" // IWYU pragma: keep for now
 #include "K_net.h"
+#include "K_tick.h"
 
 static const char *hostname = NUTPUNCH_DEFAULT_SERVER, *last_error = NULL;
 
@@ -124,7 +125,7 @@ const char* net_error() {
 }
 
 bool is_connected() {
-	return netmode != NET_NULL && cur_lobby[0] != '\0' && found_lobby && NutPunch_PeerCount() >= 1;
+	return netmode != NET_NULL && cur_lobby[0] != '\0' && NutPunch_PeerCount() >= 1;
 }
 
 void disconnect() {
@@ -150,7 +151,8 @@ const char* get_lobby_id() {
 	return cur_lobby[0] == '\0' ? NULL : cur_lobby;
 }
 
-void find_lobby_mode(const char* id) {
+static int find_lobby_timeout = 0;
+static void find_lobby_mode(const char* id) {
 	if (id == NULL)
 		SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
 	else
@@ -161,6 +163,8 @@ void find_lobby_mode(const char* id) {
 	SDL_memcpy(filter.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
 	filter.comparison = 0;
 
+	found_lobby = false;
+	find_lobby_timeout = TICKRATE;
 	NutPunch_FindLobbies(1, &filter);
 }
 
@@ -183,11 +187,11 @@ int find_lobby() {
 	if (netmode == NET_NULL) {
 		last_error = "Not connected to network";
 		return -1;
-	} else if (netmode == NET_LIST)
+	} else if (netmode == NET_LIST) {
 		return 0;
-	else if (found_lobby)
+	} else if (found_lobby) {
 		return NutPunch_PeerCount() >= 1;
-
+	}
 	for (int i = 0; i < NutPunch_LobbyCount(); i++) {
 		if (SDL_strcmp(cur_lobby, NutPunch_GetLobby(i)))
 			continue;
@@ -200,16 +204,19 @@ int find_lobby() {
 			return 0;
 		}
 	}
-
 	if (netmode == NET_HOST) {
 		NutPunch_Host(cur_lobby);
 		uint8_t magic = MAGIC_VALUE - !CLIENT.lobby.public;
 		np_lobby_set(MAGIC_KEY, sizeof(magic), &magic);
 		found_lobby = true;
 		return 0;
-	} else if (netmode == NET_JOIN) {
-		last_error = "Lobby doesn't exist";
-		return -1;
+	} else if (!found_lobby && netmode == NET_JOIN) {
+		if (!NutPunch_LobbyCount() && find_lobby_timeout > 0)
+			find_lobby_timeout--;
+		if (!find_lobby_timeout) {
+			last_error = "Lobby doesn't exist";
+			return -1;
+		}
 	}
 	return 0;
 }
