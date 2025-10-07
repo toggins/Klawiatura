@@ -633,9 +633,10 @@ GameActor* respawn_player(GamePlayer* player) {
 		return NULL;
 
 	pawn = create_actor(ACT_PLAYER, spawn->pos);
-	pawn->values[VAL_PLAYER_INDEX] = (ActorValue)player->id;
-	player->actor = pawn->id;
-
+	if (pawn != NULL) {
+		pawn->values[VAL_PLAYER_INDEX] = (ActorValue)player->id;
+		player->actor = pawn->id;
+	}
 	return pawn;
 }
 
