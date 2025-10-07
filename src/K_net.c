@@ -187,11 +187,11 @@ int find_lobby() {
 	if (netmode == NET_NULL) {
 		last_error = "Not connected to network";
 		return -1;
-	} else if (netmode == NET_LIST) {
+	} else if (netmode == NET_LIST)
 		return 0;
-	} else if (found_lobby) {
+	else if (found_lobby)
 		return NutPunch_PeerCount() >= 1;
-	}
+
 	for (int i = 0; i < NutPunch_LobbyCount(); i++) {
 		if (SDL_strcmp(cur_lobby, NutPunch_GetLobby(i)))
 			continue;
@@ -204,6 +204,7 @@ int find_lobby() {
 			return 0;
 		}
 	}
+
 	if (netmode == NET_HOST) {
 		NutPunch_Host(cur_lobby);
 		uint8_t magic = MAGIC_VALUE - !CLIENT.lobby.public;
@@ -218,6 +219,7 @@ int find_lobby() {
 			return -1;
 		}
 	}
+
 	return 0;
 }
 
