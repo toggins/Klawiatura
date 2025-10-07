@@ -1,24 +1,4 @@
-#include "K_game.h"
-
-// NOTE: just an example on how to structure all the other actors...
-//
-// if you really need to use these structs outside the .c file, you're gonna have to put em in a header file next to
-// this one
-
-enum {
-	VAL_PLAYER_INDEX = VAL_CUSTOM,
-	VAL_PLAYER_FRAME,
-	VAL_PLAYER_GROUND,
-	VAL_PLAYER_SPRING,
-	VAL_PLAYER_POWER,
-	VAL_PLAYER_FLASH,
-	VAL_PLAYER_STARMAN,
-	VAL_PLAYER_STARMAN_COMBO,
-	VAL_PLAYER_FIRE,
-	VAL_PLAYER_WARP,
-	VAL_PLAYER_WARP_STATE,
-	VAL_PLAYER_PLATFORM,
-};
+#include "K_player.h"
 
 enum {
 	FLG_PLAYER_DUCK = CUSTOM_FLAG(0),
@@ -32,10 +12,54 @@ enum {
 	FLG_PLAYER_DEAD = CUSTOM_FLAG(8),
 };
 
-static void tick(GameActor* actor) {
-	FLAG_ON(actor, FLG_PLAYER_DEAD);
-	TOGGLE_FLAG(actor, FLG_X_FLIP);
+// ===========
+// SPAWN POINT
+// ===========
+
+static void create_spawn(GameActor* actor) {
+	game_state.spawn = actor->id;
 }
 
-// don't forget to include it inside K_game.c
-const GameActorTable TAB_PLAYER = {SOL_NONE, .tick = tick};
+static void cleanup_spawn(GameActor* actor) {
+	if (game_state.spawn == actor->id)
+		game_state.spawn = NULLACT;
+}
+
+const GameActorTable TAB_PLAYER_SPAWN = {SOL_NONE, .create = create_spawn, .cleanup = cleanup_spawn};
+
+// ====
+// PAWN
+// ====
+
+static void load() {
+	load_texture("markers/player");
+}
+
+static void create(GameActor* actor) {}
+
+static void tick(GameActor* actor) {
+	GamePlayer* player = get_player((PlayerID)actor->values[VAL_PLAYER_INDEX]);
+	if (player == NULL) {
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	move_actor(actor,
+		(fvec2){actor->pos.x + FfInt((int8_t)ANY_INPUT(player, GI_RIGHT) - (int8_t)ANY_INPUT(player, GI_LEFT)),
+			actor->pos.y + FfInt((int8_t)ANY_INPUT(player, GI_DOWN) - (int8_t)ANY_INPUT(player, GI_UP))});
+}
+
+static void draw(const GameActor* actor) {
+	draw_actor(actor, "markers/player", 0, WHITE);
+}
+
+static void cleanup(GameActor* actor) {
+	GamePlayer* player = get_player((PlayerID)actor->values[VAL_PLAYER_INDEX]);
+	if (player == NULL)
+		return;
+	if (player->actor == actor->id)
+		player->actor = NULLACT;
+}
+
+const GameActorTable TAB_PLAYER
+	= {SOL_NONE, .load = load, .create = create, .tick = tick, .draw = draw, .cleanup = cleanup};

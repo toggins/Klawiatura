@@ -267,6 +267,11 @@ typedef struct {
 	} kevin;
 } GamePlayer;
 
+#define ANY_INPUT(player, inp) (((player)->input & (inp)) != 0L)
+#define ALL_INPUT(player, inp) (((player)->input & (inp)) == (inp))
+#define ANY_LAST_INPUT(player, inp) (((player)->last_input & (inp)) != 0L)
+#define ALL_LAST_INPUT(player, inp) (((player)->last_input & (inp)) == (inp))
+
 typedef struct {
 	GameSequenceType type;
 	PlayerID activator;
@@ -381,6 +386,7 @@ void nuke_game_state();
 
 // Players
 GamePlayer* get_player(PlayerID);
+GameActor* respawn_player(GamePlayer*);
 
 // Actors
 void load_actor(GameActorType);

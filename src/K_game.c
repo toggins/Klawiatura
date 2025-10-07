@@ -6,6 +6,8 @@
 #include "K_string.h"
 #include "K_tick.h"
 
+#include "actors/K_player.h"
+
 #define ACTOR_TYPE_CALL(type, fn)                                                                                      \
 	do {                                                                                                           \
 		if (ACTORS[(type)] != NULL && ACTORS[(type)]->fn != NULL)                                              \
@@ -25,12 +27,14 @@
 	} while (0)
 
 const GameActorTable TAB_NULL = {0};
+extern const GameActorTable TAB_PLAYER_SPAWN;
 extern const GameActorTable TAB_PLAYER;
 extern const GameActorTable TAB_CLOUD;
 extern const GameActorTable TAB_BUSH;
 
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
+	[ACT_PLAYER_SPAWN] = &TAB_PLAYER_SPAWN,
 	[ACT_PLAYER] = &TAB_PLAYER,
 	[ACT_CLOUD] = &TAB_CLOUD,
 	[ACT_BUSH] = &TAB_BUSH,
@@ -119,20 +123,13 @@ bool update_game() {
 			goto byebye_game;
 
 		GameInput inputs[MAX_PLAYERS] = {0};
-		if (kb_pressed(KB_UP))
-			inputs[0] |= GI_UP;
-		if (kb_pressed(KB_LEFT))
-			inputs[0] |= GI_LEFT;
-		if (kb_pressed(KB_DOWN))
-			inputs[0] |= GI_DOWN;
-		if (kb_pressed(KB_RIGHT))
-			inputs[0] |= GI_RIGHT;
-		if (kb_pressed(KB_JUMP))
-			inputs[0] |= GI_JUMP;
-		if (kb_pressed(KB_FIRE))
-			inputs[0] |= GI_FIRE;
-		if (kb_pressed(KB_RUN))
-			inputs[0] |= GI_RUN;
+		if (kb_down(KB_UP)) { inputs[0] |= GI_UP; }
+		if (kb_down(KB_LEFT)) { inputs[0] |= GI_LEFT; }
+		if (kb_down(KB_DOWN)) { inputs[0] |= GI_DOWN; }
+		if (kb_down(KB_RIGHT)) { inputs[0] |= GI_RIGHT; }
+		if (kb_down(KB_JUMP)) { inputs[0] |= GI_JUMP; }
+		if (kb_down(KB_FIRE)) { inputs[0] |= GI_FIRE; }
+		if (kb_down(KB_RUN)) { inputs[0] |= GI_RUN; }
 
 		tick_game_state(inputs);
 		tick_video_state();
@@ -175,20 +172,13 @@ rollbacker:
 			goto byebye_game;
 
 		GameInput input = 0;
-		if (kb_pressed(KB_UP))
-			input |= GI_UP;
-		if (kb_pressed(KB_LEFT))
-			input |= GI_LEFT;
-		if (kb_pressed(KB_DOWN))
-			input |= GI_DOWN;
-		if (kb_pressed(KB_RIGHT))
-			input |= GI_RIGHT;
-		if (kb_pressed(KB_JUMP))
-			input |= GI_JUMP;
-		if (kb_pressed(KB_FIRE))
-			input |= GI_FIRE;
-		if (kb_pressed(KB_RUN))
-			input |= GI_RUN;
+		if (kb_down(KB_UP)) { input |= GI_UP; }
+		if (kb_down(KB_LEFT)) { input |= GI_LEFT; }
+		if (kb_down(KB_DOWN)) { input |= GI_DOWN; }
+		if (kb_down(KB_RIGHT)) { input |= GI_RIGHT; }
+		if (kb_down(KB_JUMP)) { input |= GI_JUMP; }
+		if (kb_down(KB_FIRE)) { input |= GI_FIRE; }
+		if (kb_down(KB_RUN)) { input |= GI_RUN; }
 
 		gekko_add_local_input(game_session, local_player, &input);
 
@@ -304,6 +294,12 @@ void draw_game() {
 
 static void destroy_actor(GameActor*);
 void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
+	for (PlayerID i = 0; i < num_players; i++) {
+		GamePlayer* player = get_player(i);
+		player->last_input = player->input;
+		player->input = inputs[i];
+	}
+
 	GameActor* actor = get_actor(game_state.live_actors);
 	while (actor != NULL) {
 		ACTOR_CALL(actor, tick);
@@ -371,6 +367,9 @@ static void read_string(const char** buf, char* dest, size_t maxlen) {
 #define BYTE_OFFS(idx) (*((GLubyte*)(buf + sizeof(GLubyte[(idx)]))))
 void start_game_state(GameContext* ctx) {
 	nuke_game_state();
+
+	if (num_players <= 0 || num_players > MAX_PLAYERS)
+		FATAL("Invalid player count for game! Expected 1 to 4, got %i", num_players);
 
 	SDL_strlcpy(game_state.level, ctx->level, sizeof(game_state.level));
 	game_state.flags |= ctx->flags;
@@ -595,6 +594,15 @@ void start_game_state(GameContext* ctx) {
 	}
 
 	SDL_free(data);
+
+	for (PlayerID i = 0; i < num_players; i++) {
+		GamePlayer* player = get_player(i);
+		player->lives = ctx->players[i].lives;
+		player->coins = ctx->players[i].coins;
+		player->score = ctx->players[i].score;
+		player->power = ctx->players[i].power;
+		respawn_player(player);
+	}
 }
 #undef FLOAT_OFFS
 #undef BYTE_OFFS
@@ -605,10 +613,30 @@ void start_game_state(GameContext* ctx) {
 
 /// Fetch a player by its `PlayerID`.
 GamePlayer* get_player(PlayerID id) {
-	if (id < 0L || id >= MAX_PLAYERS)
+	if (id < 0L || id >= num_players)
 		return NULL;
 	GamePlayer* player = &game_state.players[id];
 	return (player->id == NULLPLAY) ? NULL : player;
+}
+
+/// Attempts to respawn the player.
+GameActor* respawn_player(GamePlayer* player) {
+	if (player == NULL || player->lives < 0L)
+		return NULL;
+
+	GameActor* pawn = get_actor(player->actor);
+	if (pawn != NULL)
+		FLAG_ON(pawn, FLG_DESTROY);
+
+	GameActor* spawn = get_actor(game_state.spawn);
+	if (spawn == NULL)
+		return NULL;
+
+	pawn = create_actor(ACT_PLAYER, spawn->pos);
+	pawn->values[VAL_PLAYER_INDEX] = (ActorValue)player->id;
+	player->actor = pawn->id;
+
+	return pawn;
 }
 
 // ======
@@ -668,6 +696,8 @@ found:
 }
 
 /// (INTERNAL) Nuke an actor.
+///
+/// Do not use this function directly. Use the `FLG_DESTROY` flag on actors instead.
 static void destroy_actor(GameActor* actor) {
 	if (actor == NULL)
 		return;
