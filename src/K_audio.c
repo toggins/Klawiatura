@@ -1,3 +1,5 @@
+#include <fmod_errors.h>
+
 #include "K_audio.h"
 #include "K_file.h"
 #include "K_game.h"
@@ -5,8 +7,6 @@
 #include "K_memory.h"
 #include "K_string.h"
 #include "K_video.h"
-
-#include <fmod_errors.h>
 
 static FMOD_SYSTEM* speaker = NULL;
 
@@ -33,12 +33,10 @@ static StTinyMap* tracks = NULL;
 void audio_init() {
 	FMOD_Debug_Initialize(FMOD_DEBUG_LEVEL_WARNING, FMOD_DEBUG_MODE_TTY, NULL, NULL);
 	FMOD_RESULT result = FMOD_System_Create(&speaker, FMOD_VERSION);
-	if (result != FMOD_OK)
-		FATAL("FMOD_System_Create fail: %s", FMOD_ErrorString(result));
+	EXPECT(result == FMOD_OK, "FMOD_System_Create fail: %s", FMOD_ErrorString(result));
 
 	result = FMOD_System_Init(speaker, MAX_SOUNDS, FMOD_INIT_NORMAL, NULL);
-	if (result != FMOD_OK)
-		FATAL("FMOD_System_Init fail: %s", FMOD_ErrorString(result));
+	EXPECT(result == FMOD_OK, "FMOD_System_Init fail: %s", FMOD_ErrorString(result));
 
 	uint32_t version, buildnumber;
 	FMOD_System_GetVersion(speaker, &version, &buildnumber);

@@ -79,9 +79,9 @@ static void np_peer_set_string(const char* name, const char* str) {
 }
 
 #define MAKE_LOBBY_GETTER(suffix, type)                                                                                \
-	static void np_lobby_get_##suffix(type* dest, const char* name) {                                              \
+	static void np_lobby_get_##suffix(const char* name, type* dest) {                                              \
 		int size = 0;                                                                                          \
-		type* value = (type*)NutPunch_LobbyGet(name, &size);                                                   \
+		type* value = NutPunch_LobbyGet(name, &size);                                                          \
 		if (value != NULL && size == sizeof(type))                                                             \
 			*dest = *value;                                                                                \
 	}
@@ -92,32 +92,30 @@ MAKE_LOBBY_GETTER(i8, int8_t);
 
 static void np_lobby_get_string(char* dest, const char* name) {
 	int size = 0;
-	char* str = (char*)NutPunch_LobbyGet(name, &size);
+	char* str = NutPunch_LobbyGet(name, &size);
 	if (str != NULL && size <= NUTPUNCH_FIELD_DATA_MAX)
 		SDL_strlcpy(dest, str, size + 1);
 }
 
 extern ClientInfo CLIENT;
 void net_newframe() {
+	np_peer_set_string("NAME", CLIENT.user.name);
+	if (is_host()) {
+		np_lobby_set("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
+		np_lobby_set("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
+		np_lobby_set_string("LEVEL", CLIENT.game.level);
+	} else {
+		np_lobby_get_i8("PLAYERS", &CLIENT.game.players);
+		np_lobby_get_bool("KEVIN", &CLIENT.game.kevin);
+		np_lobby_get_string("LEVEL", CLIENT.game.level);
+	}
+
 	if (NutPunch_Update() == NP_Status_Error) {
 		last_error = NutPunch_GetLastError();
 		disconnect();
 	}
 	if (!is_connected())
 		return;
-
-	if (NutPunch_PeerAlive(NutPunch_LocalPeer()))
-		np_peer_set_string("NAME", CLIENT.user.name);
-
-	if (is_host()) {
-		np_lobby_set("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
-		np_lobby_set("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
-		np_lobby_set_string("LEVEL", CLIENT.game.level);
-	} else {
-		np_lobby_get_i8(&CLIENT.game.players, "PLAYERS");
-		np_lobby_get_bool(&CLIENT.game.kevin, "KEVIN");
-		np_lobby_get_string(CLIENT.game.level, "LEVEL");
-	}
 }
 
 const char* net_error() {
@@ -232,8 +230,8 @@ const char* get_lobby(int idx) {
 }
 
 bool in_public_lobby() {
-	uint8_t magic = MAGIC_VALUE;
-	np_lobby_get_u8(&magic, MAGIC_KEY);
+	uint8_t magic = 0;
+	np_lobby_get_u8(MAGIC_KEY, &magic);
 	return magic == MAGIC_VALUE;
 }
 

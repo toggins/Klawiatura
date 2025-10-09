@@ -1,19 +1,18 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#define FIX_IMPLEMENTATION
-#include <S_fixed.h>
+#include "K_log.h"
 
+#define S_TRUCTURES_IMPLEMENTATION
 #define StAlloc SDL_malloc
 #define StFree SDL_free
 #define StMemset SDL_memset
 #define StMemcpy SDL_memcpy
-
-#include "K_log.h"
 #define StLog FATAL
-
-#define S_TRUCTURES_IMPLEMENTATION
 #include <S_tructures.h>
+
+#define FIX_IMPLEMENTATION
+#include <S_fixed.h>
 
 #include "K_audio.h"
 #include "K_cmd.h"
@@ -22,9 +21,10 @@
 #include "K_game.h" // IWYU pragma: keep (for now)
 #include "K_input.h"
 #include "K_menu.h"
+#include "K_os.h"
 #include "K_video.h"
 
-static void cmd_ip(IterArg), cmd_level(IterArg), cmd_kevin(IterArg);
+static void cmd_ip(), cmd_level(), cmd_kevin(), cmd_console();
 MAKE_OPTION(data_path, NULL);
 MAKE_OPTION(config_path, NULL);
 MAKE_FLAG(force_shader);
@@ -47,9 +47,9 @@ ClientInfo CLIENT = (ClientInfo){
 	.lobby = {"Klawiatura", true},
 };
 
-bool quickstart = false;
-bool permadeath = false;
+bool quickstart = false, permadeath = false;
 int main(int argc, char* argv[]) {
+	fix_stdio(), handle_cmdline(argc, argv);
 	INFO("==========[KLAWIATURA]==========");
 	INFO("      MARIO FOREVER ONLINE      ");
 	INFO("================================");
@@ -62,11 +62,7 @@ int main(int argc, char* argv[]) {
 	INFO("We do not condone any commercial");
 	INFO("      use of this project.      ");
 	INFO("                                ");
-
-	handle_cmdline(argc, argv);
-
-	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
-		FATAL("SDL_Init fail: %s", SDL_GetError());
+	EXPECT(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS), "SDL_Init fail: %s", SDL_GetError());
 
 	file_init(data_path);
 	video_init(force_shader);
@@ -133,15 +129,15 @@ teardown:
 	return 0;
 }
 
-static void cmd_ip(IterArg next) {
-	set_hostname(next());
+static void cmd_ip() {
+	set_hostname(next_arg());
 }
 
-static void cmd_level(IterArg next) {
-	SDL_strlcpy(CLIENT.game.level, next(), sizeof(CLIENT.game.level));
+static void cmd_level() {
+	SDL_strlcpy(CLIENT.game.level, next_arg(), sizeof(CLIENT.game.level));
 	quickstart = true;
 }
 
-static void cmd_kevin(IterArg next) {
+static void cmd_kevin() {
 	CLIENT.game.kevin = true;
 }

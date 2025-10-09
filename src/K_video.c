@@ -1,11 +1,11 @@
+#include <SDL3_image/SDL_image.h>
+
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
 #include "K_memory.h"
 #include "K_string.h"
 #include "K_video.h"
-
-#include <SDL3_image/SDL_image.h>
 
 static SDL_Window* window = NULL;
 static SDL_GLContext gpu = NULL;
@@ -37,11 +37,7 @@ static TileMap* last_tilemap = NULL;
 VideoState video_state = {0};
 
 #define CHECK_GL_EXTENSION(ext)                                                                                        \
-	do {                                                                                                           \
-		if ((ext))                                                                                             \
-			break;                                                                                         \
-		FATAL("Missing OpenGL extension: " #ext "\nAt least OpenGL 3.3 with shader support is required.");     \
-	} while (0)
+	EXPECT((ext), "Missing OpenGL extension: " #ext "\nAt least OpenGL 3.3 with shader support is required.");
 
 void video_init(bool force_shader) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -50,24 +46,21 @@ void video_init(bool force_shader) {
 
 	// Window
 	window = SDL_CreateWindow("Klawiatura", SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-	if (window == NULL)
-		FATAL("Window fail: %s", SDL_GetError());
+	EXPECT(window, "Window fail: %s", SDL_GetError());
 
 	// OpenGL
 	gpu = SDL_GL_CreateContext(window);
-	if (gpu == NULL || !SDL_GL_MakeCurrent(window, gpu))
-		FATAL("GPU fail: %s", SDL_GetError());
+	EXPECT(gpu && SDL_GL_MakeCurrent(window, gpu), "GPU fail: %s", SDL_GetError());
 
 	SDL_GL_SetSwapInterval(0);
 
 	int version = gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
-	if (version == 0)
-		FATAL("Failed to load OpenGL functions");
+	EXPECT(version, "Failed to load OpenGL functions");
 
 	INFO("GLAD version: %d.%d", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
-	if (!GLAD_GL_VERSION_3_3)
-		FATAL("Unsupported OpenGL version\nAt least OpenGL 3.3 with framebuffer and shader support is "
-		      "required.");
+	EXPECT(GLAD_GL_VERSION_3_3,
+		"Unsupported OpenGL version\nAt least OpenGL 3.3 with framebuffer and shader support is "
+		"required.");
 
 	if (force_shader) {
 		WARN("Bypassing OpenGL support checks");
@@ -107,8 +100,7 @@ bypass:
 	batch.vertex_count = 0;
 	batch.vertex_capacity = 3;
 	batch.vertices = SDL_malloc(batch.vertex_capacity * sizeof(Vertex));
-	if (batch.vertices == NULL)
-		FATAL("batch.vertices fail");
+	EXPECT(batch.vertices, "batch.vertices fail");
 
 	glGenBuffers(1, &batch.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
@@ -361,8 +353,7 @@ void load_texture(const char* name) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
 	SDL_Surface* temp = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
-	if (temp == NULL)
-		FATAL("Texture \"%s\" conversion fail: %s", name, SDL_GetError());
+	EXPECT(temp, "Texture \"%s\" conversion fail: %s", name, SDL_GetError());
 	SDL_DestroySurface(surface);
 	surface = temp;
 
@@ -520,11 +511,9 @@ static void batch_vertex(const GLfloat pos[3], const GLubyte color[4], const GLf
 	submit_batch();
 
 	const size_t new_size = batch.vertex_capacity * 2;
-	if (new_size < batch.vertex_capacity)
-		FATAL("Capacity overflow in vertex batch");
+	EXPECT(new_size >= batch.vertex_capacity, "Capacity overflow in vertex batch");
 	batch.vertices = SDL_realloc(batch.vertices, new_size * sizeof(Vertex));
-	if (batch.vertices == NULL)
-		FATAL("Out of memory for vertex batch");
+	EXPECT(batch.vertices, "Out of memory for vertex batch");
 
 	batch.vertex_capacity = new_size;
 
@@ -610,8 +599,7 @@ void batch_sprite(const char* name, const GLboolean flip[2]) {
 void batch_surface(Surface* surface) {
 	if (surface == NULL)
 		return;
-	if (surface->active)
-		FATAL("Drawing an active surface?");
+	EXPECT(!surface->active, "Drawing an active surface?");
 	if (surface->texture[SURF_COLOR] == 0)
 		return;
 
@@ -835,8 +823,7 @@ void apply_matrices() {
 
 Surface* create_surface(GLuint width, GLuint height, bool color, bool depth) {
 	Surface* surface = SDL_malloc(sizeof(*surface));
-	if (surface == NULL)
-		FATAL("create_surface fail");
+	EXPECT(surface, "create_surface fail");
 	SDL_memset(surface, 0, sizeof(*surface));
 
 	glm_mat4_identity(surface->model_matrix);
@@ -901,8 +888,7 @@ void check_surface(Surface* surface) {
 
 /// Nukes the surface's framebuffer.
 void dispose_surface(Surface* surface) {
-	if (surface->active)
-		FATAL("Disposing an active surface?");
+	EXPECT(!surface->active, "Disposing an active surface?");
 
 	if (surface->fbo != 0) {
 		glDeleteFramebuffers(1, &surface->fbo);
@@ -921,11 +907,9 @@ void dispose_surface(Surface* surface) {
 }
 
 void resize_surface(Surface* surface, GLuint width, GLuint height) {
-	if (surface->active)
-		FATAL("Resizing an active surface?");
+	EXPECT(!surface->active, "Resizing an active surface?");
 	if (surface->size[0] == width && surface->size[1] == height)
 		return;
-
 	dispose_surface(surface);
 	surface->size[0] = width;
 	surface->size[1] = height;
@@ -933,11 +917,8 @@ void resize_surface(Surface* surface, GLuint width, GLuint height) {
 
 /// Pushes an INACTIVE surface onto the stack.
 void push_surface(Surface* surface) {
-	if (surface == NULL)
-		FATAL("Pushing a null surface?");
-	if (current_surface == surface)
-		FATAL("Pushing the current surface?");
-
+	EXPECT(surface, "Pushing a null surface?");
+	EXPECT(current_surface != surface, "Pushing the current surface?");
 	submit_batch();
 
 	if (surface == NULL) {
@@ -946,8 +927,7 @@ void push_surface(Surface* surface) {
 		glDisable(GL_DEPTH_TEST);
 		glCullFace(GL_FRONT);
 	} else {
-		if (surface->active)
-			FATAL("Pushing an active surface?");
+		EXPECT(!surface->active, "Pushing an active surface?");
 		surface->active = true;
 		surface->previous = current_surface;
 
@@ -963,9 +943,7 @@ void push_surface(Surface* surface) {
 
 /// Pops an ACTIVE surface off the stack.
 void pop_surface() {
-	if (current_surface == NULL)
-		FATAL("Popping a null surface?");
-
+	EXPECT(current_surface, "Popping a null surface?");
 	submit_batch();
 
 	Surface* surface = current_surface->previous;
@@ -1030,8 +1008,7 @@ static TileMap* fetch_tilemap(const char* name) {
 	tilemap.vertex_count = 0;
 	tilemap.vertex_capacity = 6;
 	tilemap.vertices = SDL_malloc(tilemap.vertex_capacity * sizeof(Vertex));
-	if (tilemap.vertices == NULL)
-		FATAL("Out of memory for tilemap \"%s\" vertices", name);
+	EXPECT(tilemap.vertices, "Out of memory for tilemap \"%s\" vertices", name);
 
 	glGenBuffers(1, &(tilemap.vbo));
 	glBindBuffer(GL_ARRAY_BUFFER, tilemap.vbo);

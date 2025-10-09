@@ -13,8 +13,7 @@ void file_init(const char* path) {
 		INFO("Using data path \"%s\"", path);
 
 	user_path = SDL_GetPrefPath("toggins", "Klawiatura");
-	if (user_path == NULL)
-		FATAL("SDL_GetPrefPath fail");
+	EXPECT(user_path, "SDL_GetPrefPath fail");
 }
 
 void file_teardown() {
