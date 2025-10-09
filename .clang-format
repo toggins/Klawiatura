@@ -37,8 +37,12 @@ IncludeCategories:
   - Regex: "^<S_"
     Priority: 20
     CaseSensitive: true
+  - Regex: "^<"
+    Priority: 15
+    CaseSensitive: true
   - Regex: '^"K_'
     Priority: 50
     CaseSensitive: true
   - Regex: ".*"
-    Priority: 999
+    Priority: 100
+    CaseSensitive: true
