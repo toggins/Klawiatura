@@ -1,6 +1,10 @@
 {
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "file",
+    "files.exclude": {
+        ".cache": true,
+        "build": true
+    },
     "C_Cpp.intelliSenseEngine": "disabled",
     "clangd.enable": true,
     "clangd.enableCodeCompletion": true,
