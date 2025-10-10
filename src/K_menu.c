@@ -10,8 +10,6 @@
 #include "K_tick.h"
 #include "K_video.h"
 
-extern ClientInfo CLIENT;
-
 static MenuType cur_menu = MEN_NULL;
 static int kevin_state = 0, kevin_time = 0;
 
@@ -151,10 +149,12 @@ static void update_intro(), update_find_lobbies(), update_joining_lobby(), updat
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_play_title(MenuType),
 	maybe_disconnect(MenuType);
 
+#define GHOST .ghost = true
+#define NORETURN .noreturn = true
 static Menu MENUS[MEN_SIZE] = {
-	[MEN_NULL] = {.noreturn = true, .leave = maybe_play_title},
-	[MEN_INTRO] = {.noreturn = true, .update = update_intro, .leave = maybe_play_title},
-	[MEN_MAIN] = {"Mario Together", .noreturn = true},
+	[MEN_NULL] = {NORETURN, .leave = maybe_play_title},
+	[MEN_INTRO] = {NORETURN, .update = update_intro, .leave = maybe_play_title},
+	[MEN_MAIN] = {"Mario Together", NORETURN},
 	[MEN_SINGLEPLAYER] = {"Singleplayer"},
 	[MEN_MULTIPLAYER] = {"Multiplayer"},
 	[MEN_HOST_LOBBY] = {"Host Lobby"},
@@ -162,7 +162,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_FIND_LOBBY]
 	= {"Find Lobbies", .update = update_find_lobbies, .enter = list_lobbies, .leave = cleanup_lobby_list},
 	[MEN_JOINING_LOBBY] = {"Please wait...", .update = update_joining_lobby, .back_sound = "disconnect",
-		      .leave = maybe_disconnect, .ghost = true},
+		      .leave = maybe_disconnect, GHOST},
 	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .update = update_inlobby, .leave = disconnect},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Change Controls", .leave = maybe_save_config},
@@ -178,7 +178,12 @@ static void join_found_lobby() {
 }
 
 #define EDIT(var) .edit = (var), .edit_size = sizeof(var)
+#define TOGGLE(fname) .flip = toggle_##fname
+#define FORMAT(fname) .format = fmt_##fname
+#define DISABLE .disabled = true
+
 static const char* NO_LOBBIES_FOUND = "No lobbies found";
+
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_MAIN] = {
 		{"Singleplayer", .enter = MEN_SINGLEPLAYER},
@@ -187,7 +192,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Exit", .button = instaquit},
 	},
 	[MEN_SINGLEPLAYER] = {
-		{"Level: %s", .format = fmt_level, EDIT(CLIENT.game.level)},
+		{"Level: %s", FORMAT(level), EDIT(CLIENT.game.level)},
 		{},
 		{"Start!", .button = play_singleplayer},
 	},
@@ -197,62 +202,59 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Find Lobbies", .enter = MEN_FIND_LOBBY},
 	},
 	[MEN_OPTIONS] = {
-		{"Name: %s", .format = fmt_name, EDIT(CLIENT.user.name)},
-		{"Skin: %s", .format = fmt_skin, EDIT(CLIENT.user.skin)},
+		{"Name: %s", FORMAT(name), EDIT(CLIENT.user.name)},
+		{"Skin: %s", FORMAT(skin), EDIT(CLIENT.user.skin)},
 		{},
 		{"Change Controls", .enter = MEN_CONTROLS},
 		{},
-		{"Resolution: %dx%d", .disable_if = get_fullscreen, .format = fmt_resolution, .flip = toggle_resolution},
-		{"Fullscreen: %s", .format = fmt_fullscreen, .flip = toggle_fullscreen},
-		{"Vsync: %s", .format = fmt_vsync, .flip = toggle_vsync},
+		{"Resolution: %dx%d", .disable_if = get_fullscreen, FORMAT(resolution), TOGGLE(resolution)},
+		{"Fullscreen: %s", FORMAT(fullscreen), TOGGLE(fullscreen)},
+		{"Vsync: %s", FORMAT(vsync), TOGGLE(vsync)},
 		{},
-		{"Master Volume: %.0f%%", .format = fmt_volume, .flip = toggle_volume},
-		{"Sound Volume: %.0f%%", .format = fmt_sound_volume, .flip = toggle_sound_volume},
-		{"Music Volume: %.0f%%", .format = fmt_music_volume, .flip = toggle_music_volume},
+		{"Master Volume: %.0f%%", FORMAT(volume), TOGGLE(volume)},
+		{"Sound Volume: %.0f%%", FORMAT(sound_volume), TOGGLE(sound_volume)},
+		{"Music Volume: %.0f%%", FORMAT(music_volume), TOGGLE(music_volume)},
 	},
 	[MEN_CONTROLS] = {
-		{"Device: %s", .format = fmt_device, .disabled = true},
+		{"Device: %s", DISABLE, FORMAT(device)},
 		{},
-		{"Up: %s", .format = fmt_up},
-		{"Left: %s", .format = fmt_left},
-		{"Down: %s", .format = fmt_down},
-		{"Right: %s", .format = fmt_right},
+		{"Up: %s", FORMAT(up)},
+		{"Left: %s", FORMAT(left)},
+		{"Down: %s", FORMAT(down)},
+		{"Right: %s", FORMAT(right)},
 		{},
-		{"Jump: %s", .format = fmt_jump},
-		{"Run: %s", .format = fmt_run},
-		{"Fire: %s", .format = fmt_fire},
+		{"Jump: %s", FORMAT(jump)},
+		{"Run: %s", FORMAT(run)},
+		{"Fire: %s", FORMAT(fire)},
 	},
 	[MEN_HOST_LOBBY] = {
-		{"Lobby ID: %s", .format = fmt_lobby, EDIT(CLIENT.lobby.name)},
-
-		{"Visibility: %s", .format = fmt_lobby_public, .flip = toggle_lobby_public},
-
+		{"Lobby ID: %s", FORMAT(lobby), EDIT(CLIENT.lobby.name)},
+		{"Visibility: %s", FORMAT(lobby_public), TOGGLE(lobby_public)},
 		{},
 		{"Host!", .button = do_host_fr},
 	},
 	[MEN_JOIN_LOBBY] = {
-		{"Lobby ID: %s", .format = fmt_lobby, EDIT(CLIENT.lobby.name)},
+		{"Lobby ID: %s", FORMAT(lobby), EDIT(CLIENT.lobby.name)},
 		{},
 		{"Join!", .button = do_join_fr},
 	},
 	[MEN_FIND_LOBBY] = {
-		{NULL, .disabled = true},
+		{NULL, DISABLE},
 		// FIXME: Display lobbies with player counts!
 		//        Lobby lists return names, but no way to get their count.
 	},
 	[MEN_JOINING_LOBBY] = {
-		{"Joining lobby \"%s\"", .disabled = true, .format = fmt_active_lobby},
+		{"Joining lobby \"%s\"", DISABLE, FORMAT(active_lobby)},
 	},
 	[MEN_LOBBY] = {
-		{"%s%s", .disabled = true, .format = fmt_active_lobby},
+		{"%s%s", DISABLE, FORMAT(active_lobby)},
 		{},
-		{"Players: %d", .format = fmt_players, .flip = set_players, .disable_if = is_client},
-		{"Level: %s", .format = fmt_level, EDIT(CLIENT.game.level), .disable_if = is_client},
+		{"Players: %d", FORMAT(players), .flip = set_players, .disable_if = is_client},
+		{"Level: %s", FORMAT(level), EDIT(CLIENT.game.level), .disable_if = is_client},
 		{},
-		{"%s", .format = fmt_lobby_start, .disable_if = is_client},
+		{"%s", FORMAT(lobby_start), .disable_if = is_client},
 	},
 };
-#undef EDIT
 
 void start_menu(bool skip_intro) {
 	from_scratch();
@@ -451,19 +453,19 @@ void update_menu() {
 
 	try_select:
 		if (kb_pressed(KB_UI_ENTER)) {
-			const Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
+			Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
 			if (opt->disabled)
 				goto NO_SELECT_CYKA;
 
 			play_generic_sound("select");
 			if (opt->button != NULL)
 				opt->button();
-			if (opt->flip != NULL)
+			else if (opt->flip != NULL)
 				opt->flip(1);
-			if (opt->edit != NULL)
-				start_typing(opt->edit, opt->edit_size); // FIXME: Play "select" when pressing Enter or
-				                                         //        backspace while typing
-			if (opt->enter != MEN_NULL)
+			else if (opt->edit != NULL)
+				start_typing(opt->edit, &opt->edit_size); // FIXME: Play "select" when pressing Enter or
+				                                          //        backspace while typing
+			else if (opt->enter != MEN_NULL)
 				set_menu(opt->enter);
 		}
 
@@ -500,12 +502,14 @@ void draw_menu() {
 	menu->cursor = glm_lerp(menu->cursor, (float)menu->option, SDL_min(lx, 1));
 	if (!OPTIONS[cur_menu][menu->option].disabled) {
 		batch_cursor(XY(44 + (SDL_sinf(totalticks() / 5.f) * 4), menu_y + (menu->cursor * 24)));
-		batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), ">");
+		batch_align(FA_RIGHT, FA_TOP);
+		batch_string("main", 24, ">");
 	}
 
 	batch_cursor(XY(48, 24));
 	batch_color(RGBA(255, 144, 144, 192));
-	batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), menu->name);
+	batch_align(FA_LEFT, FA_TOP);
+	batch_string("main", 24, menu->name);
 
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		Option* opt = &OPTIONS[cur_menu][i];
@@ -522,9 +526,11 @@ void draw_menu() {
 
 		const GLfloat x = 48.f + (opt->hover * 8.f);
 		const GLfloat y = menu_y + ((GLfloat)i * 24.f);
+
 		batch_cursor(XY(x, y));
 		batch_color(ALPHA(opt->disabled ? 128 : 255));
-		batch_string("main", 24, ALIGN(FA_LEFT, FA_TOP), name);
+		batch_align(FA_LEFT, FA_TOP);
+		batch_string("main", 24, name);
 
 		if (opt->enter != MEN_NULL) {
 			batch_cursor(XY(x + string_width("main", 24, name) + 4.f, y + 8.f));
@@ -537,18 +543,21 @@ void draw_menu() {
 			   *indicator = fmt("[%s] %s", kb_label(KB_PAUSE), btn);
 		batch_cursor(XY(48, SCREEN_HEIGHT - 24));
 		batch_color(ALPHA(128));
-		batch_string("main", 24, ALIGN(FA_LEFT, FA_BOTTOM), indicator);
+		batch_align(FA_LEFT, FA_BOTTOM);
+		batch_string("main", 24, indicator);
 	}
 
 	if (cur_menu == MEN_FIND_LOBBY) {
 		batch_cursor(XY(SCREEN_WIDTH - 48, 24));
 		batch_color(ALPHA(128));
-		batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), fmt("Server: %s", get_hostname()));
+		batch_align(FA_RIGHT, FA_TOP);
+		batch_string("main", 24, fmt("Server: %s", get_hostname()));
 	} else if (cur_menu == MEN_LOBBY) {
 		batch_color(RGBA(255, 144, 144, 128));
 		batch_cursor(XY(SCREEN_WIDTH - 48, 24));
+		batch_align(FA_RIGHT, FA_TOP);
 		int num_peers = get_peer_count();
-		batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), fmt("Peers (%i / %i)", num_peers, MAX_PEERS));
+		batch_string("main", 24, fmt("Peers (%i / %i)", num_peers, MAX_PEERS));
 
 		batch_color(ALPHA(128));
 		GLfloat y = 48;
@@ -557,7 +566,8 @@ void draw_menu() {
 			if (!peer_exists(i))
 				continue;
 			batch_cursor(XY(SCREEN_WIDTH - 48, y));
-			batch_string("main", 24, ALIGN(FA_RIGHT, FA_TOP), fmt("%i. %s", idx, get_peer_name(i)));
+			batch_align(FA_RIGHT, FA_TOP);
+			batch_string("main", 24, fmt("%i. %s", idx, get_peer_name(i)));
 			++idx;
 			y += 24;
 		}
@@ -586,7 +596,8 @@ void draw_menu() {
 
 	batch_cursor(XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 48));
 	batch_color(RGB(255, 96, 96));
-	batch_string("main", 24, ALIGN(FA_CENTER, FA_BOTTOM), kevinstr);
+	batch_align(FA_CENTER, FA_BOTTOM);
+	batch_string("main", 24, kevinstr);
 
 	goto jobwelldone;
 

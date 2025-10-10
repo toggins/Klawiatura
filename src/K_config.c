@@ -15,13 +15,9 @@ typedef struct {
 	float (*r_float)();
 	const char* (*r_string)();
 
-	void (*w_bool)(bool);
-	void (*w_int)(int);
-	void (*w_float)(float);
-	void (*w_string)(const char*);
+	void (*w_bool)(bool), (*w_int)(int), (*w_float)(float), (*w_string)(const char*);
 } ConfigOption;
 
-extern ClientInfo CLIENT;
 static const char* get_name() {
 	return CLIENT.user.name;
 }

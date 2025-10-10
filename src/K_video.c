@@ -544,10 +544,13 @@ void batch_angle(const GLfloat angle) {
 	batch.angle = angle;
 }
 
+void batch_align(const FontAlignment h, const FontAlignment v) {
+	batch.halign = h;
+	batch.valign = v;
+}
+
 void batch_start(const GLfloat pos[3], const GLfloat angle, const GLubyte color[4]) {
-	batch_cursor(pos);
-	batch_angle(angle);
-	batch_color(color);
+	batch_cursor(pos), batch_angle(angle), batch_color(color);
 }
 
 /// Adds a texture as a sprite to the vertex batch.
@@ -679,7 +682,7 @@ GLfloat string_height(const char* name, GLfloat size, const char* str) {
 }
 
 /// Adds a string to the vertex batch.
-void batch_string(const char* font_name, GLfloat size, const FontAlignment alignment[2], const char* str) {
+void batch_string(const char* font_name, GLfloat size, const char* str) {
 	const Font* font = get_font(font_name);
 	if (font == NULL || str == NULL)
 		return;
@@ -691,7 +694,7 @@ void batch_string(const char* font_name, GLfloat size, const FontAlignment align
 	GLfloat oy = batch.cursor[1];
 
 	// Horizontal alignment
-	switch (alignment[0]) {
+	switch (batch.halign) {
 	case FA_CENTER:
 		ox -= string_width_fast(font, size, str) / 2.f;
 		break;
@@ -703,7 +706,7 @@ void batch_string(const char* font_name, GLfloat size, const FontAlignment align
 	}
 
 	// Vertical alignment
-	switch (alignment[1]) {
+	switch (batch.valign) {
 	case FA_MIDDLE:
 		oy -= string_height_fast(font, size, str) / 2.f;
 		break;

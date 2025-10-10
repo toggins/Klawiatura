@@ -94,10 +94,9 @@ static void np_lobby_get_string(char* dest, const char* name) {
 	int size = 0;
 	char* str = NutPunch_LobbyGet(name, &size);
 	if (str != NULL && size <= NUTPUNCH_FIELD_DATA_MAX)
-		SDL_strlcpy(dest, str, size + 1);
+		SDL_memcpy(dest, str, size);
 }
 
-extern ClientInfo CLIENT;
 void net_newframe() {
 	np_peer_set_string("NAME", CLIENT.user.name);
 	if (is_host()) {

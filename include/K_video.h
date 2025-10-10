@@ -33,9 +33,6 @@
 
 #define UV(u, v) ((GLfloat[2]){(u), (v)})
 
-#define ALIGN(h, v) ((FontAlignment[2]){(h), (v)})
-#define TOP_LEFT ALIGN(FA_LEFT, FA_TOP)
-
 enum VertexAttributes {
 	VATT_POSITION,
 	VATT_COLOR,
@@ -83,6 +80,7 @@ typedef struct {
 
 	GLfloat cursor[3], angle;
 	GLubyte color[4];
+	int8_t halign : 4, valign : 4;
 	GLfloat tint[4], stencil;
 	GLuint texture;
 	GLfloat alpha_test;
@@ -172,9 +170,8 @@ void load_font(const char*);
 const Font* get_font(const char*);
 
 // Painting tools
-void batch_cursor(const GLfloat[3]);
-void batch_angle(const GLfloat);
-void batch_color(const GLubyte[4]);
+void batch_cursor(const GLfloat[3]), batch_angle(const GLfloat);
+void batch_color(const GLubyte[4]), batch_align(const FontAlignment, const FontAlignment);
 void batch_start(const GLfloat[3], const GLfloat, const GLubyte[4]);
 
 // Batch
@@ -187,7 +184,7 @@ void batch_rectangle(const char*, const GLfloat[2][2]);
 void batch_ellipse(const GLfloat[2][2]);
 GLfloat string_width(const char*, GLfloat, const char*);
 GLfloat string_height(const char*, GLfloat, const char*);
-void batch_string(const char*, GLfloat, const FontAlignment[2], const char*);
+void batch_string(const char*, GLfloat, const char*);
 void submit_batch();
 
 // Matrices

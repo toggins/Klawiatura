@@ -41,15 +41,19 @@ CmdArg CMDLINE[] = {
 	{NULL, NULL,            NULL                 },
 };
 
-ClientInfo CLIENT = (ClientInfo){
-	.user = {"Player", ""},
-	.game = {1, false, "test"},
-	.lobby = {"Klawiatura", true},
+ClientInfo CLIENT = {
+	.user.name = "Player",
+	.user.skin = "",
+	.game.players = 1,
+	.game.level = "test",
+	.lobby.name = "Klawiatura",
+	.lobby.public = true,
 };
 
 bool quickstart = false, permadeath = false;
-int main(int argc, char* argv[]) {
-	fix_stdio(), handle_cmdline(argc, argv);
+static int realmain();
+
+static void show_disclaimer() {
 	INFO("==========[KLAWIATURA]==========");
 	INFO("      MARIO FOREVER ONLINE      ");
 	INFO("================================");
@@ -62,8 +66,16 @@ int main(int argc, char* argv[]) {
 	INFO("We do not condone any commercial");
 	INFO("      use of this project.      ");
 	INFO("                                ");
-	EXPECT(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS), "SDL_Init fail: %s", SDL_GetError());
+}
 
+int main(int argc, char* argv[]) {
+	fix_stdio(), show_disclaimer();
+	handle_cmdline(argc, argv);
+	return realmain();
+}
+
+static int realmain() {
+	EXPECT(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS), "SDL_Init fail: %s", SDL_GetError());
 	file_init(data_path);
 	video_init(force_shader);
 	audio_init();
@@ -126,7 +138,7 @@ teardown:
 	file_teardown();
 	SDL_Quit();
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 static void cmd_ip() {

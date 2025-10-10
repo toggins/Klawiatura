@@ -3,7 +3,7 @@
     "editor.formatOnSaveMode": "file",
     "files.exclude": {
         ".cache": true,
-        "build": true
+        "build*/": true
     },
     "C_Cpp.intelliSenseEngine": "disabled",
     "clangd.enable": true,

@@ -37,5 +37,6 @@ typedef struct {
 		bool public;
 	} lobby;
 } ClientInfo;
+extern ClientInfo CLIENT;
 
 void handle_cmdline(int, char*[]);

@@ -1,4 +1,3 @@
-#include "K_cmd.h"
 #include "K_file.h"
 #include "K_game.h"
 #include "K_input.h"
@@ -113,7 +112,6 @@ void nuke_game() {
 	game_surface = NULL;
 }
 
-extern ClientInfo CLIENT;
 bool update_game() {
 	if (num_players > 1)
 		goto rollbacker;
