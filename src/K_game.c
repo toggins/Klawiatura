@@ -256,6 +256,7 @@ rollbacker:
 
 byebye_game:
 	nuke_game();
+	disconnect();
 	return false;
 }
 
