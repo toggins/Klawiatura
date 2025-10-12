@@ -69,7 +69,9 @@ void set_hostname(const char* hn) {
 #define np_peer_set NutPunch_PeerSet
 
 static void np_set_string(void setter(const char*, int, const void*), const char* name, const char* str) {
-	(setter)(name, (int)SDL_strnlen(str, NUTPUNCH_FIELD_DATA_MAX - 1), str);
+	static char buf[NUTPUNCH_FIELD_DATA_MAX] = {0};
+	SDL_memset(buf, 0, sizeof(buf)), SDL_strlcpy(buf, str, sizeof(buf));
+	(setter)(name, sizeof(buf), buf);
 }
 static void np_lobby_set_string(const char* name, const char* str) {
 	return np_set_string(np_lobby_set, name, str);
@@ -90,11 +92,11 @@ MAKE_LOBBY_GETTER(u8, uint8_t);
 MAKE_LOBBY_GETTER(i8, int8_t);
 #undef MAKE_LOBBY_GETTER
 
-static void np_lobby_get_string(char* dest, const char* name) {
+static void np_lobby_get_string(const char* name, char dest[NUTPUNCH_FIELD_DATA_MAX]) {
 	int size = 0;
 	char* str = NutPunch_LobbyGet(name, &size);
-	if (str != NULL && size <= NUTPUNCH_FIELD_DATA_MAX)
-		SDL_memcpy(dest, str, size);
+	if (str != NULL && size == NUTPUNCH_FIELD_DATA_MAX)
+		SDL_memcpy(dest, str, NUTPUNCH_FIELD_DATA_MAX);
 }
 
 void net_newframe() {

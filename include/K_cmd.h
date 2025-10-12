@@ -19,7 +19,7 @@ typedef struct {
 	void (*handler)();
 } CmdArg;
 
-#define CLIENT_STRING_MAX (NUTPUNCH_FIELD_DATA_MAX + 1)
+#define CLIENT_STRING_MAX (NUTPUNCH_FIELD_DATA_MAX)
 typedef struct {
 	struct {
 		char name[CLIENT_STRING_MAX];
