@@ -18,10 +18,9 @@ bool is_connected();
 const char* net_error();
 void disconnect();
 
-bool is_host();
-bool is_client();
-void sync_user_data();
-void sync_lobby_data();
+bool is_host(), is_client();
+void push_user_data();
+void push_lobby_data(), pull_lobby_data();
 
 // Lobbies
 const char* get_lobby_id();
