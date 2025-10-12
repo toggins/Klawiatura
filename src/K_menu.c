@@ -77,9 +77,9 @@ FMT_OPTION(lobby_start, is_host() ? "Start!" : "Waiting for host");
 
 static void set_players(int flip) {
 	if (flip >= 0)
-		CLIENT.game.players = (int8_t)(CLIENT.game.players >= MAX_PLAYERS ? 1 : (CLIENT.game.players + 1));
+		CLIENT.game.players = (int8_t)(CLIENT.game.players >= MAX_PLAYERS ? 2 : (CLIENT.game.players + 1));
 	else
-		CLIENT.game.players = (int8_t)(CLIENT.game.players <= 1 ? MAX_PLAYERS : (CLIENT.game.players - 1));
+		CLIENT.game.players = (int8_t)(CLIENT.game.players <= 2 ? MAX_PLAYERS : (CLIENT.game.players - 1));
 }
 
 // Options
@@ -231,6 +231,9 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Lobby ID: %s", FORMAT(lobby), EDIT(CLIENT.lobby.name)},
 		{"Visibility: %s", FORMAT(lobby_public), TOGGLE(lobby_public)},
 		{},
+		{"Players: %d", FORMAT(players), .flip = set_players},
+		{"Level: %s", FORMAT(level), EDIT(CLIENT.game.level)},
+		{},
 		{"Host!", .button = do_host_fr},
 	},
 	[MEN_JOIN_LOBBY] = {
@@ -249,10 +252,10 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_LOBBY] = {
 		{"%s%s", DISABLE, FORMAT(active_lobby)},
 		{},
-		{"Players: %d", FORMAT(players), .flip = set_players, .disable_if = is_client},
-		{"Level: %s", FORMAT(level), EDIT(CLIENT.game.level), .disable_if = is_client},
+		{"Players: %d", FORMAT(players), .disabled = true},
+		{"Level: %s", FORMAT(level), .disabled = true},
 		{},
-		{"%s", FORMAT(lobby_start), .disable_if = is_client},
+		{"Waiting for players", .disabled = true},
 	},
 };
 
@@ -402,7 +405,7 @@ void update_menu() {
 			kevin_time = 0;
 		}
 
-		if (!is_connected() || is_host())
+		if (!is_connected() && (cur_menu != MEN_JOINING_LOBBY && cur_menu != MEN_LOBBY))
 			switch (kevin_state) {
 			default:
 				type_kevin(KB_KEVIN_K);
@@ -557,7 +560,7 @@ void draw_menu() {
 		batch_cursor(XY(SCREEN_WIDTH - 48, 24));
 		batch_align(FA_RIGHT, FA_TOP);
 		int num_peers = get_peer_count();
-		batch_string("main", 24, fmt("Peers (%i / %i)", num_peers, MAX_PEERS));
+		batch_string("main", 24, fmt("Players (%i / %i)", num_peers, CLIENT.game.players));
 
 		batch_color(ALPHA(128));
 		GLfloat y = 48;
