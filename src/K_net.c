@@ -171,9 +171,12 @@ static void find_lobby_mode(const char* id) {
 
 	NutPunch_Filter filter = {0};
 	SDL_memcpy(filter.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
-	// FIXME: Can't join private lobbies because of this comparison.
-	SDL_memcpy(filter.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
-	filter.comparison = NPF_Eq;
+	if (id == NULL) {
+		SDL_memcpy(filter.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
+		filter.comparison = NPF_Eq;
+	} else {
+		filter.comparison = NPF_Greater;
+	}
 
 	found_lobby = false;
 	find_lobby_timeout = 5 * TICKRATE;
