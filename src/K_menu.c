@@ -77,7 +77,7 @@ FMT_OPTION(lobby_start, is_host() ? "Start!" : "Waiting for host");
 
 static void set_players(int flip) {
 	if (flip >= 0)
-		CLIENT.game.players = (int8_t)(CLIENT.game.players >= MAX_PLAYERS ? 0 : (CLIENT.game.players + 1));
+		CLIENT.game.players = (int8_t)(CLIENT.game.players >= MAX_PLAYERS ? 1 : (CLIENT.game.players + 1));
 	else
 		CLIENT.game.players = (int8_t)(CLIENT.game.players <= 1 ? MAX_PLAYERS : (CLIENT.game.players - 1));
 }
