@@ -102,18 +102,18 @@ static void np_lobby_get_string(const char* name, char dest[NUTPUNCH_FIELD_DATA_
 }
 
 void net_newframe() {
-	push_user_data();
-	if (is_host())
-		push_lobby_data();
+	if (is_connected()) {
+		push_user_data();
+		if (is_host())
+			push_lobby_data();
+	}
 
 	if (NutPunch_Update() == NPS_Error) {
 		last_error = NutPunch_GetLastError();
 		disconnect();
 	}
-	if (!is_connected())
-		return;
 
-	if (is_client())
+	if (is_connected() && is_client())
 		pull_lobby_data();
 }
 
@@ -212,6 +212,11 @@ int find_lobby() {
 		return 0;
 	else if (found_lobby) {
 		push_user_data();
+		if (netmode == NET_HOST)
+			push_lobby_data();
+		else if (netmode == NET_JOIN)
+			pull_lobby_data();
+
 		return NutPunch_PeerCount() >= 1;
 	}
 
@@ -223,6 +228,7 @@ int find_lobby() {
 			return -1;
 		} else if (netmode == NET_JOIN) {
 			NutPunch_Join(cur_lobby);
+			pull_lobby_data();
 			found_lobby = true;
 			return 0;
 		}
@@ -231,6 +237,7 @@ int find_lobby() {
 	if (netmode == NET_HOST) {
 		NutPunch_Host(cur_lobby);
 
+		push_user_data();
 		uint8_t magic = CLIENT.lobby.public ? PUBLIC_LOBBY : PRIVATE_LOBBY;
 		np_lobby_set(MAGIC_KEY, sizeof(magic), &magic);
 		push_lobby_data();
