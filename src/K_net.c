@@ -98,16 +98,9 @@ static void np_lobby_get_string(char* dest, const char* name) {
 }
 
 void net_newframe() {
-	np_peer_set_string("NAME", CLIENT.user.name);
-	if (is_host()) {
-		np_lobby_set("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
-		np_lobby_set("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
-		np_lobby_set_string("LEVEL", CLIENT.game.level);
-	} else {
-		np_lobby_get_i8("PLAYERS", &CLIENT.game.players);
-		np_lobby_get_bool("KEVIN", &CLIENT.game.kevin);
-		np_lobby_get_string("LEVEL", CLIENT.game.level);
-	}
+	sync_user_data();
+	if (is_host())
+		sync_lobby_data();
 
 	if (NutPunch_Update() == NP_Status_Error) {
 		last_error = NutPunch_GetLastError();
@@ -115,6 +108,12 @@ void net_newframe() {
 	}
 	if (!is_connected())
 		return;
+
+	if (is_client()) {
+		np_lobby_get_i8("PLAYERS", &CLIENT.game.players);
+		np_lobby_get_bool("KEVIN", &CLIENT.game.kevin);
+		np_lobby_get_string("LEVEL", CLIENT.game.level);
+	}
 }
 
 const char* net_error() {
@@ -140,6 +139,16 @@ bool is_client() {
 	return !NutPunch_IsMaster();
 }
 
+void sync_user_data() {
+	np_peer_set_string("NAME", CLIENT.user.name);
+}
+
+void sync_lobby_data() {
+	np_lobby_set("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
+	np_lobby_set("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
+	np_lobby_set_string("LEVEL", CLIENT.game.level);
+}
+
 // =======
 // LOBBIES
 // =======
@@ -157,11 +166,12 @@ static void find_lobby_mode(const char* id) {
 
 	NutPunch_Filter filter = {0};
 	SDL_memcpy(filter.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
+	// FIXME: Can't join private lobbies because of this comparison.
 	SDL_memcpy(filter.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
 	filter.comparison = 0;
 
 	found_lobby = false;
-	find_lobby_timeout = TICKRATE;
+	find_lobby_timeout = 5 * TICKRATE;
 	NutPunch_FindLobbies(1, &filter);
 }
 
@@ -186,8 +196,10 @@ int find_lobby() {
 		return -1;
 	} else if (netmode == NET_LIST)
 		return 0;
-	else if (found_lobby)
+	else if (found_lobby) {
+		sync_user_data();
 		return NutPunch_PeerCount() >= 1;
+	}
 
 	for (int i = 0; i < NutPunch_LobbyCount(); i++) {
 		if (SDL_strcmp(cur_lobby, NutPunch_GetLobby(i)))
@@ -204,8 +216,11 @@ int find_lobby() {
 
 	if (netmode == NET_HOST) {
 		NutPunch_Host(cur_lobby);
+
 		uint8_t magic = MAGIC_VALUE - !CLIENT.lobby.public;
 		np_lobby_set(MAGIC_KEY, sizeof(magic), &magic);
+		sync_lobby_data();
+
 		found_lobby = true;
 		return 0;
 	} else if (!found_lobby && netmode == NET_JOIN) {

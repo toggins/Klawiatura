@@ -20,6 +20,8 @@ void disconnect();
 
 bool is_host();
 bool is_client();
+void sync_user_data();
+void sync_lobby_data();
 
 // Lobbies
 const char* get_lobby_id();
