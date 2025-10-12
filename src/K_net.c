@@ -102,7 +102,7 @@ void net_newframe() {
 	if (is_host())
 		push_lobby_data();
 
-	if (NutPunch_Update() == NP_Status_Error) {
+	if (NutPunch_Update() == NPS_Error) {
 		last_error = NutPunch_GetLastError();
 		disconnect();
 	}
@@ -171,7 +171,7 @@ static void find_lobby_mode(const char* id) {
 	SDL_memcpy(filter.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
 	// FIXME: Can't join private lobbies because of this comparison.
 	SDL_memcpy(filter.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
-	filter.comparison = 0;
+	filter.comparison = NPF_Eq;
 
 	found_lobby = false;
 	find_lobby_timeout = 5 * TICKRATE;
