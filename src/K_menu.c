@@ -345,11 +345,22 @@ static void update_joining_lobby() {
 }
 
 static void update_inlobby() {
-	if (is_connected())
+	if (!is_connected()) {
+		WTF("Lobby fail: %s", net_error());
+		play_generic_sound("disconnect");
+		prev_menu();
 		return;
-	WTF("Lobby fail: %s", net_error());
-	play_generic_sound("disconnect");
-	prev_menu();
+	}
+
+	if (get_peer_count() < CLIENT.game.players)
+		return;
+	play_generic_sound("enter");
+	make_lobby_active();
+
+	GameContext ctx;
+	setup_game_context(&ctx, CLIENT.game.level, GF_TRY_KEVIN);
+	ctx.num_players = CLIENT.game.players;
+	start_game(&ctx);
 }
 
 static void maybe_disconnect(MenuType next) {

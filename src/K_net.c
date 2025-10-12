@@ -144,18 +144,6 @@ void push_user_data() {
 	np_peer_set_string("NAME", CLIENT.user.name);
 }
 
-void push_lobby_data() {
-	np_lobby_set("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
-	np_lobby_set("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
-	np_lobby_set_string("LEVEL", CLIENT.game.level);
-}
-
-void pull_lobby_data() {
-	np_lobby_get_i8("PLAYERS", &CLIENT.game.players);
-	np_lobby_get_bool("KEVIN", &CLIENT.game.kevin);
-	np_lobby_get_string("LEVEL", CLIENT.game.level);
-}
-
 // =======
 // LOBBIES
 // =======
@@ -238,7 +226,7 @@ int find_lobby() {
 		NutPunch_Host(cur_lobby);
 
 		push_user_data();
-		uint8_t magic = CLIENT.lobby.public ? PUBLIC_LOBBY : PRIVATE_LOBBY;
+		const uint8_t magic = CLIENT.lobby.public ? PUBLIC_LOBBY : PRIVATE_LOBBY;
 		np_lobby_set(MAGIC_KEY, sizeof(magic), &magic);
 		push_lobby_data();
 
@@ -268,6 +256,23 @@ bool in_public_lobby() {
 	uint8_t magic = 0;
 	np_lobby_get_u8(MAGIC_KEY, &magic);
 	return magic == PUBLIC_LOBBY;
+}
+
+void push_lobby_data() {
+	np_lobby_set("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
+	np_lobby_set("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
+	np_lobby_set_string("LEVEL", CLIENT.game.level);
+}
+
+void pull_lobby_data() {
+	np_lobby_get_i8("PLAYERS", &CLIENT.game.players);
+	np_lobby_get_bool("KEVIN", &CLIENT.game.kevin);
+	np_lobby_get_string("LEVEL", CLIENT.game.level);
+}
+
+void make_lobby_active() {
+	const uint8_t magic = ACTIVE_LOBBY;
+	np_lobby_set(MAGIC_KEY, sizeof(magic), &magic);
 }
 
 // =====

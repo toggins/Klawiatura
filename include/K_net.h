@@ -20,11 +20,12 @@ void disconnect();
 
 bool is_host(), is_client();
 void push_user_data();
-void push_lobby_data(), pull_lobby_data();
 
 // Lobbies
 const char* get_lobby_id();
 void host_lobby(const char*), join_lobby(const char*);
+void push_lobby_data(), pull_lobby_data();
+void make_lobby_active();
 
 int find_lobby();
 void list_lobbies();
