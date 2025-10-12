@@ -22,7 +22,9 @@ static enum {
 static bool found_lobby = false;
 
 static const char* MAGIC_KEY = "KLAWIATURA";
-static const uint8_t MAGIC_VALUE = 127;
+#define PUBLIC_LOBBY 127
+#define PRIVATE_LOBBY 126
+#define ACTIVE_LOBBY 0
 
 void net_init() {
 	NutPunch_SetServerAddr(hostname);
@@ -171,12 +173,16 @@ static void find_lobby_mode(const char* id) {
 
 	NutPunch_Filter filter = {0};
 	SDL_memcpy(filter.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
+
+	uint8_t magic;
 	if (id == NULL) {
-		SDL_memcpy(filter.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
+		magic = PUBLIC_LOBBY;
 		filter.comparison = NPF_Eq;
 	} else {
+		magic = ACTIVE_LOBBY;
 		filter.comparison = NPF_Greater;
 	}
+	SDL_memcpy(filter.value, &magic, sizeof(magic));
 
 	found_lobby = false;
 	find_lobby_timeout = 5 * TICKRATE;
@@ -225,7 +231,7 @@ int find_lobby() {
 	if (netmode == NET_HOST) {
 		NutPunch_Host(cur_lobby);
 
-		uint8_t magic = MAGIC_VALUE - !CLIENT.lobby.public;
+		uint8_t magic = CLIENT.lobby.public ? PUBLIC_LOBBY : PRIVATE_LOBBY;
 		np_lobby_set(MAGIC_KEY, sizeof(magic), &magic);
 		push_lobby_data();
 
@@ -254,7 +260,7 @@ const char* get_lobby(int idx) {
 bool in_public_lobby() {
 	uint8_t magic = 0;
 	np_lobby_get_u8(MAGIC_KEY, &magic);
-	return magic == MAGIC_VALUE;
+	return magic == PUBLIC_LOBBY;
 }
 
 // =====
