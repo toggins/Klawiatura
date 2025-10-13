@@ -44,6 +44,7 @@ CmdArg CMDLINE[] = {
 ClientInfo CLIENT = {
 	.user.name = "Player",
 	.user.skin = "",
+	.input.delay = 2,
 	.game.players = 2,
 	.game.level = "test",
 	.lobby.name = "Klawiatura",

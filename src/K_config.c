@@ -31,6 +31,13 @@ static void set_skin(const char* skin) {
 	SDL_strlcpy(CLIENT.user.skin, skin, sizeof(CLIENT.user.skin));
 }
 
+static int get_delay() {
+	return CLIENT.input.delay;
+}
+static void set_delay(int delay) {
+	CLIENT.input.delay = delay;
+}
+
 static int cfg_width = 0, cfg_height = 0;
 static int get_width() {
 	if (!get_fullscreen())
@@ -56,6 +63,7 @@ static void set_height(int height) {
 static const ConfigOption OPTIONS[] = {
 	{"name",         .r_string = get_name,        .w_string = set_name       },
 	{"skin",         .r_string = get_skin,        .w_string = set_skin       },
+	{"delay",        .r_int = get_delay,          .w_int = set_delay         },
 	{"width",        .r_int = get_width,          .w_int = set_width         },
 	{"height",       .r_int = get_height,         .w_int = set_height        },
 	{"fullscreen",   .r_bool = get_fullscreen,    .w_bool = set_fullscreen   },

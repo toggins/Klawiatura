@@ -80,7 +80,7 @@ void start_game(GameContext* ctx) {
 	cfg.input_size = sizeof(GameInput);
 	cfg.state_size = sizeof(SaveState);
 	cfg.max_spectators = 0;
-	cfg.input_prediction_window = 4;
+	cfg.input_prediction_window = MAX_INPUT_DELAY;
 	cfg.num_players = num_players = ctx->num_players;
 
 	gekko_start(game_session, &cfg);

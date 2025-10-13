@@ -346,7 +346,7 @@ PlayerID populate_game(GekkoSession* session) {
 		if (NutPunch_LocalPeer() == i) {
 			local = counter;
 			gekko_add_actor(session, LocalPlayer, NULL);
-			gekko_set_local_delay(session, local, 2);
+			gekko_set_local_delay(session, local, CLIENT.input.delay);
 			INFO("You are player %i", local + 1);
 		} else {
 			indices[counter] = i;

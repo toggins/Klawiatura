@@ -27,6 +27,10 @@ typedef struct {
 	} user;
 
 	struct {
+		uint8_t delay;
+	} input;
+
+	struct {
 		int8_t players; // Supposed to be PlayerID, but including `K_game.h` causes errors.
 		bool kevin;
 		char level[CLIENT_STRING_MAX];
