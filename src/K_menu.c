@@ -622,11 +622,10 @@ void draw_menu() {
 draw_intro:
 	clear_color(0, 0, 0, 1);
 
-	float a = 1.f;
-	const float ticks = totalticks();
-	if (ticks < 25)
+	float a = 1.f, ticks = totalticks();
+	if (ticks < 25.f)
 		a = ticks / 25.f;
-	if (ticks > 125)
+	if (ticks > 125.f)
 		a = 1.f - ((ticks - 100.f) / 25.f);
 
 	batch_alpha_test(0);
