@@ -12,6 +12,7 @@
 
 static MenuType cur_menu = MEN_NULL;
 static int kevin_state = 0, kevin_time = 0;
+static float kevin_lerp = 0.f;
 
 static float volume_toggle_impl(float, int);
 static void noop() {
@@ -85,6 +86,14 @@ static void set_players(int flip) {
 // Options
 FMT_OPTION(name, CLIENT.user.name);
 FMT_OPTION(skin, CLIENT.user.skin);
+
+FMT_OPTION(delay, CLIENT.input.delay);
+static void set_delay(int flip) {
+	if (flip >= 0)
+		CLIENT.input.delay = (uint8_t)(CLIENT.input.delay >= MAX_INPUT_DELAY ? 0 : (CLIENT.input.delay + 1));
+	else
+		CLIENT.input.delay = (uint8_t)(CLIENT.input.delay <= 0 ? MAX_INPUT_DELAY : (CLIENT.input.delay - 1));
+}
 
 static const char* fmt_resolution(const char* base) {
 	int width, height;
@@ -165,7 +174,7 @@ static Menu MENUS[MEN_SIZE] = {
 		      .leave = maybe_disconnect, GHOST},
 	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .update = update_inlobby, .leave = disconnect},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
-	[MEN_CONTROLS] = {"Change Controls", .leave = maybe_save_config},
+	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
 };
 
 // Find lobbies
@@ -205,7 +214,8 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Name: %s", FORMAT(name), EDIT(CLIENT.user.name)},
 		{"Skin: %s", FORMAT(skin), EDIT(CLIENT.user.skin)},
 		{},
-		{"Change Controls", .enter = MEN_CONTROLS},
+		{"Controls", .enter = MEN_CONTROLS},
+		{"Input Delay: %i", FORMAT(delay), .flip = set_delay},
 		{},
 		{"Resolution: %dx%d", .disable_if = get_fullscreen, FORMAT(resolution), TOGGLE(resolution)},
 		{"Fullscreen: %s", FORMAT(fullscreen), TOGGLE(fullscreen)},
@@ -379,6 +389,9 @@ static void run_disableif() {
 static const char* kevinstr = "";
 static void keve() {
 	switch (kevin_state) {
+	default:
+		kevinstr = "";
+		break;
 	case 1:
 		kevinstr = "K";
 		break;
@@ -393,8 +406,6 @@ static void keve() {
 		break;
 	case 5:
 		kevinstr = "KEVIN";
-		break;
-	default:
 		break;
 	}
 }
@@ -534,24 +545,37 @@ void draw_menu() {
 	if (cur_menu == MEN_INTRO)
 		goto draw_intro;
 
-	batch_start(ORIGO, 0, WHITE);
+	batch_start(ORIGO, 0.f, WHITE);
 	batch_sprite("ui/background", NO_FLIP);
 
+	const float lk = 0.125f * dt();
+	kevin_lerp = glm_lerp(kevin_lerp, CLIENT.game.kevin, SDL_min(lk, 1.f));
+	const GLubyte fade_alpha = (GLubyte)(kevin_lerp * 255.f);
+	batch_cursor(XY(-SCREEN_WIDTH, 0));
+	batch_colors((GLubyte[4][4]){
+		{32, 0, 0, 0         },
+                {32, 0, 0, 0         },
+                {0,  0, 0, fade_alpha},
+                {0,  0, 0, fade_alpha}
+        });
+	batch_rectangle(NULL, XY(SCREEN_WIDTH * 3, SCREEN_HEIGHT));
+	batch_color(WHITE);
+
 	Menu* menu = &MENUS[cur_menu];
-	const float menu_y = 60;
+	const float menu_y = 60.f;
 
 	const float lx = 0.6f * dt();
-	menu->cursor = glm_lerp(menu->cursor, (float)menu->option, SDL_min(lx, 1));
+	menu->cursor = glm_lerp(menu->cursor, (float)menu->option, SDL_min(lx, 1.f));
 	if (!OPTIONS[cur_menu][menu->option].disabled) {
-		batch_cursor(XY(44 + (SDL_sinf(totalticks() / 5.f) * 4), menu_y + (menu->cursor * 24)));
+		batch_cursor(XY(44.f + (SDL_sinf(totalticks() / 5.f) * 4.f), menu_y + (menu->cursor * 24.f)));
 		batch_align(FA_RIGHT, FA_TOP);
-		batch_string("main", 24, ">");
+		batch_string("main", 24.f, ">");
 	}
 
-	batch_cursor(XY(48, 24));
+	batch_cursor(XY(48.f, 24.f));
 	batch_color(RGBA(255, 144, 144, 192));
 	batch_align(FA_LEFT, FA_TOP);
-	batch_string("main", 24, menu->name);
+	batch_string("main", 24.f, menu->name);
 
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		Option* opt = &OPTIONS[cur_menu][i];
@@ -559,10 +583,10 @@ void draw_menu() {
 			continue;
 
 		const float lx = 0.5f * dt();
-		opt->hover = glm_lerp(opt->hover, (float)(menu->option == i && !opt->disabled), SDL_min(lx, 1));
+		opt->hover = glm_lerp(opt->hover, (float)(menu->option == i && !opt->disabled), SDL_min(lx, 1.f));
 
 		const char *suffix = "", *format = opt->format == NULL ? opt->name : opt->format(opt->name);
-		if (opt->edit != NULL && typing_what() == opt->edit && SDL_fmodf(totalticks(), 30) < 16)
+		if (opt->edit != NULL && typing_what() == opt->edit && SDL_fmodf(totalticks(), 30.f) < 16.f)
 			suffix = "|";
 		const char* name = fmt("%s%s", format, suffix);
 
@@ -572,10 +596,10 @@ void draw_menu() {
 		batch_cursor(XY(x, y));
 		batch_color(ALPHA(opt->disabled ? 128 : 255));
 		batch_align(FA_LEFT, FA_TOP);
-		batch_string("main", 24, name);
+		batch_string("main", 24.f, name);
 
 		if (opt->enter != MEN_NULL) {
-			batch_cursor(XY(x + string_width("main", 24, name) + 4.f, y + 8.f));
+			batch_cursor(XY(x + string_width("main", 24.f, name) + 4.f, y + 8.f));
 			batch_sprite("ui/shortcut", NO_FLIP);
 		}
 	}
@@ -583,42 +607,47 @@ void draw_menu() {
 	if (menu->from != MEN_NULL) {
 		const char *btn = (cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY) ? "Disconnect" : "Back",
 			   *indicator = fmt("[%s] %s", kb_label(KB_PAUSE), btn);
-		batch_cursor(XY(48, SCREEN_HEIGHT - 24));
+		batch_cursor(XY(48.f, SCREEN_HEIGHT - 24.f));
 		batch_color(ALPHA(128));
 		batch_align(FA_LEFT, FA_BOTTOM);
-		batch_string("main", 24, indicator);
+		batch_string("main", 24.f, indicator);
 	}
 
 	if (cur_menu == MEN_FIND_LOBBY) {
-		batch_cursor(XY(SCREEN_WIDTH - 48, 24));
+		batch_cursor(XY(SCREEN_WIDTH - 48.f, 24.f));
 		batch_color(ALPHA(128));
 		batch_align(FA_RIGHT, FA_TOP);
-		batch_string("main", 24, fmt("Server: %s", get_hostname()));
+		batch_string("main", 24.f, fmt("Server: %s", get_hostname()));
 	} else if (cur_menu == MEN_LOBBY) {
 		batch_color(RGBA(255, 144, 144, 128));
-		batch_cursor(XY(SCREEN_WIDTH - 48, 24));
+		batch_cursor(XY(SCREEN_WIDTH - 48.f, 24.f));
 		batch_align(FA_RIGHT, FA_TOP);
 		int num_peers = get_peer_count();
-		batch_string("main", 24, fmt("Players (%i / %i)", num_peers, CLIENT.game.players));
+		batch_string("main", 24.f, fmt("Players (%i / %i)", num_peers, CLIENT.game.players));
 
 		batch_color(ALPHA(128));
-		GLfloat y = 48;
+		GLfloat y = 48.f;
 		int idx = 1;
 		for (int i = 0; i < MAX_PEERS; i++) {
 			if (!peer_exists(i))
 				continue;
-			batch_cursor(XY(SCREEN_WIDTH - 48, y));
+			batch_cursor(XY(SCREEN_WIDTH - 48.f, y));
 			batch_align(FA_RIGHT, FA_TOP);
-			batch_string("main", 24, fmt("%i. %s", idx, get_peer_name(i)));
+			batch_string("main", 24.f, fmt("%i. %s", idx, get_peer_name(i)));
 			++idx;
-			y += 24;
+			y += 24.f;
 		}
 	}
 
-	batch_cursor(XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 48));
+	batch_cursor(XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 48.f));
 	batch_color(RGB(255, 96, 96));
 	batch_align(FA_CENTER, FA_BOTTOM);
-	batch_string("main", 24, kevinstr);
+	batch_string("main", 24.f + ((16.f + SDL_sinf(totalticks() / 32.f) * 4.f) * kevin_lerp), kevinstr);
+	if (cur_menu != MEN_JOINING_LOBBY && cur_menu != MEN_LOBBY) {
+		batch_color(ALPHA(128 * kevin_lerp));
+		batch_align(FA_CENTER, FA_TOP);
+		batch_string("main", 24, fmt("[%s] Deactivate", kb_label(KB_KEVIN_BAIL)));
+	}
 
 	goto jobwelldone;
 
