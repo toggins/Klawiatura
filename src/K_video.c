@@ -115,7 +115,10 @@ bypass:
 	glEnableVertexAttribArray(VATT_UV);
 	glVertexAttribPointer(VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
-	batch.color[0] = batch.color[1] = batch.color[2] = batch.color[3] = 1;
+	batch.color[0][0] = batch.color[0][1] = batch.color[0][2] = batch.color[0][3] = batch.color[1][0]
+		= batch.color[1][1] = batch.color[1][2] = batch.color[1][3] = batch.color[2][0] = batch.color[2][1]
+		= batch.color[2][2] = batch.color[2][3] = batch.color[3][0] = batch.color[3][1] = batch.color[3][2]
+		= batch.color[3][3] = 1;
 	batch.tint[0] = batch.tint[1] = batch.tint[2] = batch.tint[3] = 1;
 	batch.stencil = 0;
 	batch.texture = blank_texture;
@@ -537,7 +540,14 @@ void batch_cursor(const GLfloat pos[3]) {
 }
 
 void batch_color(const GLubyte color[4]) {
-	SDL_memcpy(batch.color, color, sizeof(batch.color));
+	SDL_memcpy(batch.color[0], color, sizeof(batch.color[0]));
+	SDL_memcpy(batch.color[1], color, sizeof(batch.color[1]));
+	SDL_memcpy(batch.color[2], color, sizeof(batch.color[2]));
+	SDL_memcpy(batch.color[3], color, sizeof(batch.color[3]));
+}
+
+void batch_colors(const GLubyte colors[4][4]) {
+	SDL_memcpy(batch.color, colors, sizeof(batch.color));
 }
 
 void batch_angle(const GLfloat angle) {
@@ -551,6 +561,27 @@ void batch_align(const FontAlignment h, const FontAlignment v) {
 
 void batch_start(const GLfloat pos[3], const GLfloat angle, const GLubyte color[4]) {
 	batch_cursor(pos), batch_angle(angle), batch_color(color);
+}
+
+/// Adds a (textured) rectangle to the vertex batch.
+void batch_rectangle(const char* name, const GLfloat size[2]) {
+	const Texture* texture = get_texture(name);
+	batch_texture(texture == NULL ? blank_texture : texture->texture);
+
+	// Position
+	const GLfloat x1 = batch.cursor[0];
+	const GLfloat y1 = batch.cursor[1];
+	const GLfloat x2 = x1 + size[0];
+	const GLfloat y2 = y1 + size[1];
+	const GLfloat z = batch.cursor[2];
+
+	// Vertices
+	batch_vertex(XYZ(x1, y2, z), batch.color[2], UV(0, 1));
+	batch_vertex(XYZ(x1, y1, z), batch.color[0], UV(0, 0));
+	batch_vertex(XYZ(x2, y1, z), batch.color[1], UV(1, 0));
+	batch_vertex(XYZ(x2, y1, z), batch.color[1], UV(1, 0));
+	batch_vertex(XYZ(x2, y2, z), batch.color[3], UV(1, 1));
+	batch_vertex(XYZ(x1, y2, z), batch.color[2], UV(0, 1));
 }
 
 /// Adds a texture as a sprite to the vertex batch.
@@ -590,12 +621,12 @@ void batch_sprite(const char* name, const GLboolean flip[2]) {
 	const GLfloat v2 = (GLfloat)(!flip[1]);
 
 	// Vertices
-	batch_vertex(XYZ(p3[0], p3[1], z), batch.color, UV(u1, v2));
-	batch_vertex(XYZ(p1[0], p1[1], z), batch.color, UV(u1, v1));
-	batch_vertex(XYZ(p2[0], p2[1], z), batch.color, UV(u2, v1));
-	batch_vertex(XYZ(p2[0], p2[1], z), batch.color, UV(u2, v1));
-	batch_vertex(XYZ(p4[0], p4[1], z), batch.color, UV(u2, v2));
-	batch_vertex(XYZ(p3[0], p3[1], z), batch.color, UV(u1, v2));
+	batch_vertex(XYZ(p3[0], p3[1], z), batch.color[2], UV(u1, v2));
+	batch_vertex(XYZ(p1[0], p1[1], z), batch.color[0], UV(u1, v1));
+	batch_vertex(XYZ(p2[0], p2[1], z), batch.color[1], UV(u2, v1));
+	batch_vertex(XYZ(p2[0], p2[1], z), batch.color[1], UV(u2, v1));
+	batch_vertex(XYZ(p4[0], p4[1], z), batch.color[3], UV(u2, v2));
+	batch_vertex(XYZ(p3[0], p3[1], z), batch.color[2], UV(u1, v2));
 }
 
 /// Adds a surface to the vertex batch.
@@ -616,12 +647,12 @@ void batch_surface(Surface* surface) {
 	const GLfloat z = batch.cursor[2];
 
 	// Vertices
-	batch_vertex(XYZ(x1, y2, z), batch.color, UV(0, 1));
-	batch_vertex(XYZ(x1, y1, z), batch.color, UV(0, 0));
-	batch_vertex(XYZ(x2, y1, z), batch.color, UV(1, 0));
-	batch_vertex(XYZ(x2, y1, z), batch.color, UV(1, 0));
-	batch_vertex(XYZ(x2, y2, z), batch.color, UV(1, 1));
-	batch_vertex(XYZ(x1, y2, z), batch.color, UV(0, 1));
+	batch_vertex(XYZ(x1, y2, z), batch.color[2], UV(0, 1));
+	batch_vertex(XYZ(x1, y1, z), batch.color[0], UV(0, 0));
+	batch_vertex(XYZ(x2, y1, z), batch.color[1], UV(1, 0));
+	batch_vertex(XYZ(x2, y1, z), batch.color[1], UV(1, 0));
+	batch_vertex(XYZ(x2, y2, z), batch.color[3], UV(1, 1));
+	batch_vertex(XYZ(x1, y2, z), batch.color[2], UV(0, 1));
 }
 
 static GLfloat string_width_fast(const Font* font, GLfloat size, const char* str) {
@@ -630,8 +661,6 @@ static GLfloat string_width_fast(const Font* font, GLfloat size, const char* str
 
 	GLfloat width = 0;
 	GLfloat cx = 0;
-	const GLfloat scale = size / font->height;
-	const GLfloat spacing = font->spacing * scale;
 
 	size_t bytes = SDL_strlen(str);
 	while (bytes > 0) {
@@ -650,14 +679,14 @@ static GLfloat string_width_fast(const Font* font, GLfloat size, const char* str
 			gid = '?';
 
 		// Valid glyph
-		cx += font->glyphs[gid].width * scale;
+		cx += font->glyphs[gid].width;
 		if (bytes > 0)
-			cx += spacing;
+			cx += font->spacing;
 
 		width = SDL_max(width, cx);
 	}
 
-	return width;
+	return width * (size / font->height);
 }
 
 GLfloat string_width(const char* name, GLfloat size, const char* str) {
@@ -674,7 +703,7 @@ static GLfloat string_height_fast(const Font* font, GLfloat size, const char* st
 		if (SDL_StepUTF8(&str, &bytes) == '\n')
 			height += font->height;
 
-	return height;
+	return height * (size / font->height);
 }
 
 GLfloat string_height(const char* name, GLfloat size, const char* str) {
@@ -746,12 +775,12 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 		const GLfloat y1 = cy;
 		const GLfloat x2 = x1 + width;
 		const GLfloat y2 = y1 + size;
-		batch_vertex(XYZ(x1, y2, batch.cursor[2]), batch.color, UV(glyph->uvs[0], glyph->uvs[3]));
-		batch_vertex(XYZ(x1, y1, batch.cursor[2]), batch.color, UV(glyph->uvs[0], glyph->uvs[1]));
-		batch_vertex(XYZ(x2, y1, batch.cursor[2]), batch.color, UV(glyph->uvs[2], glyph->uvs[1]));
-		batch_vertex(XYZ(x2, y1, batch.cursor[2]), batch.color, UV(glyph->uvs[2], glyph->uvs[1]));
-		batch_vertex(XYZ(x2, y2, batch.cursor[2]), batch.color, UV(glyph->uvs[2], glyph->uvs[3]));
-		batch_vertex(XYZ(x1, y2, batch.cursor[2]), batch.color, UV(glyph->uvs[0], glyph->uvs[3]));
+		batch_vertex(XYZ(x1, y2, batch.cursor[2]), batch.color[2], UV(glyph->uvs[0], glyph->uvs[3]));
+		batch_vertex(XYZ(x1, y1, batch.cursor[2]), batch.color[0], UV(glyph->uvs[0], glyph->uvs[1]));
+		batch_vertex(XYZ(x2, y1, batch.cursor[2]), batch.color[1], UV(glyph->uvs[2], glyph->uvs[1]));
+		batch_vertex(XYZ(x2, y1, batch.cursor[2]), batch.color[1], UV(glyph->uvs[2], glyph->uvs[1]));
+		batch_vertex(XYZ(x2, y2, batch.cursor[2]), batch.color[3], UV(glyph->uvs[2], glyph->uvs[3]));
+		batch_vertex(XYZ(x1, y2, batch.cursor[2]), batch.color[2], UV(glyph->uvs[0], glyph->uvs[3]));
 
 		cx += width;
 		if (bytes > 0)
