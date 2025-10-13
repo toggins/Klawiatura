@@ -501,6 +501,29 @@ void update_menu() {
 	}
 }
 
+static const char* kevinstr = "";
+static void keve() {
+	switch (kevin_state) {
+	case 1:
+		kevinstr = "K";
+		break;
+	case 2:
+		kevinstr = "KE";
+		break;
+	case 3:
+		kevinstr = "KEV";
+		break;
+	case 4:
+		kevinstr = "KEVI";
+		break;
+	case 5:
+		kevinstr = "KEVIN";
+		break;
+	default:
+		break;
+	}
+}
+
 void draw_menu() {
 	start_drawing();
 	if (cur_menu == MEN_INTRO)
@@ -587,26 +610,7 @@ void draw_menu() {
 		}
 	}
 
-	const char* kevinstr = NULL;
-	switch (kevin_state) {
-	case 1:
-		kevinstr = "K";
-		break;
-	case 2:
-		kevinstr = "KE";
-		break;
-	case 3:
-		kevinstr = "KEV";
-		break;
-	case 4:
-		kevinstr = "KEVI";
-		break;
-	case 5:
-		kevinstr = "KEVIN";
-		break;
-	default:
-		break;
-	}
+	keve(); // FIXME: please move this from draw to update sometime
 
 	batch_cursor(XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 48));
 	batch_color(RGB(255, 96, 96));
