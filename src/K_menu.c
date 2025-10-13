@@ -376,6 +376,29 @@ static void run_disableif() {
 	}
 }
 
+static const char* kevinstr = "";
+static void keve() {
+	switch (kevin_state) {
+	case 1:
+		kevinstr = "K";
+		break;
+	case 2:
+		kevinstr = "KE";
+		break;
+	case 3:
+		kevinstr = "KEV";
+		break;
+	case 4:
+		kevinstr = "KEVI";
+		break;
+	case 5:
+		kevinstr = "KEVIN";
+		break;
+	default:
+		break;
+	}
+}
+
 static void type_kevin(Keybind kb) {
 	if (!kb_pressed(kb))
 		return;
@@ -387,6 +410,7 @@ static void type_kevin(Keybind kb) {
 		++kevin_state;
 		kevin_time = TICKRATE;
 	}
+	keve();
 }
 
 void update_menu() {
@@ -400,8 +424,10 @@ void update_menu() {
 
 		if (kevin_state < 5 && kevin_time > 0) {
 			--kevin_time;
-			if (kevin_time <= 0)
+			if (kevin_time <= 0) {
 				kevin_state = 0;
+				keve();
+			}
 		}
 
 		if (CLIENT.game.kevin && kevin_state < 5) {
@@ -409,11 +435,13 @@ void update_menu() {
 			play_generic_track("human_like_predator", PLAY_LOOPING);
 			kevin_state = 5;
 			kevin_time = 0;
+			keve();
 		} else if (!CLIENT.game.kevin && kevin_state >= 5) {
 			play_generic_sound("thwomp");
 			play_generic_track("title", PLAY_LOOPING);
 			kevin_state = 0;
 			kevin_time = 0;
+			keve();
 		}
 
 		if (!is_connected() && (cur_menu != MEN_JOINING_LOBBY && cur_menu != MEN_LOBBY))
@@ -498,29 +526,6 @@ void update_menu() {
 		const char* sound = MENUS[cur_menu].back_sound;
 		if (prev_menu())
 			play_generic_sound(sound == NULL ? "select" : sound);
-	}
-}
-
-static const char* kevinstr = "";
-static void keve() {
-	switch (kevin_state) {
-	case 1:
-		kevinstr = "K";
-		break;
-	case 2:
-		kevinstr = "KE";
-		break;
-	case 3:
-		kevinstr = "KEV";
-		break;
-	case 4:
-		kevinstr = "KEVI";
-		break;
-	case 5:
-		kevinstr = "KEVIN";
-		break;
-	default:
-		break;
 	}
 }
 
@@ -609,8 +614,6 @@ void draw_menu() {
 			y += 24;
 		}
 	}
-
-	keve(); // FIXME: please move this from draw to update sometime
 
 	batch_cursor(XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 48));
 	batch_color(RGB(255, 96, 96));
