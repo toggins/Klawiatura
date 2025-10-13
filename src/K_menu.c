@@ -83,6 +83,8 @@ static void set_players(int flip) {
 		CLIENT.game.players = (int8_t)(CLIENT.game.players <= 2 ? MAX_PLAYERS : (CLIENT.game.players - 1));
 }
 
+FMT_OPTION(waiting, (get_peer_count() >= CLIENT.game.players) ? "Starting!" : "Waiting for players");
+
 // Options
 FMT_OPTION(name, CLIENT.user.name);
 FMT_OPTION(skin, CLIENT.user.skin);
@@ -265,7 +267,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Players: %d", DISABLE, FORMAT(players)},
 		{"Level: %s", DISABLE, FORMAT(level)},
 		{},
-		{"Waiting for players", DISABLE},
+		{"%s", DISABLE, FORMAT(waiting)},
 	},
 };
 
