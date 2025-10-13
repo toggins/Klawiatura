@@ -391,7 +391,7 @@ static void type_kevin(Keybind kb) {
 
 void update_menu() {
 	for (new_frame(0); got_ticks(); next_tick()) {
-		int last_menu = cur_menu;
+		int last_menu = cur_menu, flip = 0;
 		if (MENUS[cur_menu].update != NULL)
 			MENUS[cur_menu].update();
 		if (last_menu != cur_menu)
@@ -484,7 +484,7 @@ void update_menu() {
 		}
 
 	NO_SELECT_CYKA:
-		int flip = kb_repeated(KB_UI_RIGHT) - kb_repeated(KB_UI_LEFT);
+		flip = kb_repeated(KB_UI_RIGHT) - kb_repeated(KB_UI_LEFT);
 		if (flip != 0) {
 			const Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
 			if (opt->flip != NULL && !opt->disabled) {
