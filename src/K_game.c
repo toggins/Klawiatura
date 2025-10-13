@@ -56,8 +56,8 @@ void setup_game_context(GameContext* ctx, const char* level, GameFlag flags) {
 
 	ctx->num_players = 1;
 	for (size_t i = 0; i < MAX_PLAYERS; i++) {
-		ctx->players[0].power = POW_SMALL;
-		ctx->players[0].lives = DEFAULT_LIVES;
+		ctx->players[i].power = POW_SMALL;
+		ctx->players[i].lives = DEFAULT_LIVES;
 	}
 
 	SDL_strlcpy(ctx->level, level, sizeof(ctx->level));
@@ -82,11 +82,9 @@ void start_game(GameContext* ctx) {
 	cfg.max_spectators = 0;
 	cfg.input_prediction_window = 4;
 	cfg.num_players = num_players = ctx->num_players;
-	local_player = view_player = ctx->local_player;
 
-	populate_game(game_session);
 	gekko_start(game_session, &cfg);
-	gekko_net_adapter_set(game_session, NULL); // FIXME: Write a NutPunch adapter
+	local_player = view_player = populate_game(game_session);
 
 	start_game_state(ctx);
 	start_audio_state();
@@ -113,55 +111,6 @@ void nuke_game() {
 }
 
 bool update_game() {
-	if (num_players > 1)
-		goto rollbacker;
-
-	for (new_frame(0); got_ticks(); next_tick()) {
-		if (kb_pressed(KB_PAUSE))
-			goto byebye_game;
-
-		GameInput inputs[MAX_PLAYERS] = {0};
-		if (kb_down(KB_UP)) { inputs[0] |= GI_UP; }
-		if (kb_down(KB_LEFT)) { inputs[0] |= GI_LEFT; }
-		if (kb_down(KB_DOWN)) { inputs[0] |= GI_DOWN; }
-		if (kb_down(KB_RIGHT)) { inputs[0] |= GI_RIGHT; }
-		if (kb_down(KB_JUMP)) { inputs[0] |= GI_JUMP; }
-		if (kb_down(KB_FIRE)) { inputs[0] |= GI_FIRE; }
-		if (kb_down(KB_RUN)) { inputs[0] |= GI_RUN; }
-
-		tick_game_state(inputs);
-		tick_video_state();
-		tick_audio_state();
-
-		if (game_state.flags & GF_END) {
-			if (game_state.next[0] == '\0')
-				goto byebye_game;
-
-			GameContext ctx;
-			setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_TRY_KEVIN);
-			ctx.players[0].lives = game_state.players[0].lives;
-			ctx.players[0].power = game_state.players[0].power;
-			ctx.players[0].coins = game_state.players[0].coins;
-			ctx.players[0].score = game_state.players[0].score;
-
-			start_game_state(&ctx);
-		}
-
-		if (game_state.flags & GF_RESTART) {
-			GameContext ctx;
-			setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
-			ctx.players[0].lives = game_state.players[0].lives;
-			ctx.players[0].coins = game_state.players[0].coins;
-			ctx.players[0].score = game_state.players[0].score;
-			ctx.checkpoint = game_state.checkpoint;
-
-			start_game_state(&ctx);
-		}
-	}
-
-	return true;
-
-rollbacker:
 	gekko_network_poll(game_session);
 
 	const float ahead = gekko_frames_ahead(game_session);
@@ -252,6 +201,42 @@ rollbacker:
 		}
 	}
 
+	// !!! CLIENT-SIDE !!!
+	// FIXME: Figure out this whole section for multiplayer.
+	//        No, you can't just shove all this into the game loop.
+	if (!(game_state.flags & GF_SINGLE))
+		goto skip_level_change;
+
+	if (game_state.flags & GF_END) {
+		if (game_state.next[0] == '\0')
+			goto byebye_game;
+
+		GameContext ctx;
+		setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_TRY_KEVIN);
+		ctx.players[0].lives = game_state.players[0].lives;
+		ctx.players[0].power = game_state.players[0].power;
+		ctx.players[0].coins = game_state.players[0].coins;
+		ctx.players[0].score = game_state.players[0].score;
+
+		nuke_game();
+		start_game(&ctx);
+		goto skip_level_change;
+	}
+
+	if (game_state.flags & GF_RESTART) {
+		GameContext ctx;
+		setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
+		ctx.players[0].lives = game_state.players[0].lives;
+		ctx.players[0].coins = game_state.players[0].coins;
+		ctx.players[0].score = game_state.players[0].score;
+		ctx.checkpoint = game_state.checkpoint;
+
+		nuke_game();
+		start_game(&ctx);
+	}
+	// !!! CLIENT-SIDE !!!
+
+skip_level_change:
 	return true;
 
 byebye_game:
@@ -334,6 +319,9 @@ void nuke_game_state() {
 	clear_tilemaps();
 	SDL_memset(&game_state, 0, sizeof(game_state));
 
+	for (PlayerID i = 0; i < MAX_PLAYERS; i++)
+		game_state.players[i].id = i;
+
 	game_state.live_actors = NULLACT;
 	for (ActorID i = 0; i < MAX_ACTORS; i++)
 		game_state.actors[i].id = NULLACT;
@@ -369,6 +357,9 @@ void start_game_state(GameContext* ctx) {
 
 	if (num_players <= 0 || num_players > MAX_PLAYERS)
 		FATAL("Invalid player count for game! Expected 1 to 4, got %i", num_players);
+	for (PlayerID i = 0; i < MAX_PLAYERS; i++)
+		if (i >= num_players)
+			game_state.players[i].id = NULLPLAY;
 
 	SDL_strlcpy(game_state.level, ctx->level, sizeof(game_state.level));
 	game_state.flags |= ctx->flags;
@@ -594,8 +585,11 @@ void start_game_state(GameContext* ctx) {
 
 	SDL_free(data);
 
-	for (PlayerID i = 0; i < num_players; i++) {
+	for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
 		GamePlayer* player = get_player(i);
+		if (player == NULL)
+			continue;
+
 		player->lives = ctx->players[i].lives;
 		player->coins = ctx->players[i].coins;
 		player->score = ctx->players[i].score;
@@ -636,6 +630,7 @@ GameActor* respawn_player(GamePlayer* player) {
 		pawn->values[VAL_PLAYER_INDEX] = (ActorValue)player->id;
 		player->actor = pawn->id;
 	}
+	INFO("Respawned player %i as %i", player->id, player->actor);
 	return pawn;
 }
 

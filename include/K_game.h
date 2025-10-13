@@ -226,7 +226,7 @@ enum {
 };
 
 typedef struct {
-	PlayerID num_players, local_player;
+	PlayerID num_players;
 	GameFlag flags;
 	ActorID checkpoint;
 

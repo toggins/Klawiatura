@@ -27,7 +27,7 @@ typedef struct {
 	} user;
 
 	struct {
-		int8_t players; // Supposed to be PlayerID
+		int8_t players; // Supposed to be PlayerID, but including `K_game.h` causes errors.
 		bool kevin;
 		char level[CLIENT_STRING_MAX];
 	} game;

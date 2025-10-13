@@ -6,6 +6,7 @@
 #define NutPunch_Free SDL_free
 
 #include "K_cmd.h"
+#include "K_game.h"
 #include "K_log.h" // IWYU pragma: keep for now
 #include "K_net.h"
 #include "K_tick.h"
@@ -293,9 +294,70 @@ const char* get_peer_name(int idx) {
 	return (str == NULL || size > NUTPUNCH_FIELD_DATA_MAX) ? NULL : str;
 }
 
-int8_t populate_game(GekkoSession* session) {
-	// FIXME: Actually fill players.
-	//        When the local peer is filled, give it 2 ticks of input delay here.
-	gekko_add_actor(session, LocalPlayer, NULL);
-	return 0;
+static void send_data(GekkoNetAddress* gn_addr, const char* data, int len) {
+	NutPunch_Send(*(int*)gn_addr->data, data, len);
+}
+
+static GekkoNetResult** receive_data(int* pCount) {
+	static GekkoNetResult* packets[64] = {0};
+	static char data[NUTPUNCH_BUFFER_SIZE] = {0};
+	*pCount = 0;
+
+	while (NutPunch_HasMessage()) {
+		int size = sizeof(data);
+		int peer = NutPunch_NextMessage(data, &size);
+		GekkoNetResult* res = SDL_malloc(sizeof(GekkoNetResult));
+
+		res->addr.size = sizeof(peer);
+		res->addr.data = SDL_malloc(res->addr.size);
+		SDL_memcpy(res->addr.data, &peer, res->addr.size);
+
+		res->data_len = size;
+		res->data = SDL_malloc(size);
+		SDL_memcpy(res->data, data, size);
+
+		packets[(*pCount)++] = res;
+	}
+
+	return packets;
+}
+
+PlayerID populate_game(GekkoSession* session) {
+	static GekkoNetAdapter adapter = {0};
+	adapter.send_data = send_data;
+	adapter.receive_data = receive_data;
+	adapter.free_data = SDL_free;
+	gekko_net_adapter_set(session, &adapter);
+
+	const int num_peers = NutPunch_PeerCount();
+	if (num_peers <= 1) {
+		gekko_add_actor(session, LocalPlayer, NULL);
+		return 0;
+	}
+
+	int counter = 0, local = MAX_PLAYERS;
+	static int indices[MAX_PLAYERS] = {0};
+	static GekkoNetAddress addrs[MAX_PLAYERS] = {0};
+
+	for (int i = 0; i < NUTPUNCH_MAX_PLAYERS; i++) {
+		if (!NutPunch_PeerAlive(i))
+			continue;
+
+		if (NutPunch_LocalPeer() == i) {
+			local = counter;
+			gekko_add_actor(session, LocalPlayer, NULL);
+			gekko_set_local_delay(session, local, 2);
+			INFO("You are player %i", local + 1);
+		} else {
+			indices[counter] = i;
+			addrs[counter].data = indices + counter;
+			addrs[counter].size = sizeof(*indices);
+			gekko_add_actor(session, RemotePlayer, addrs + counter);
+		}
+
+		if (++counter == num_peers)
+			break;
+	}
+
+	return (PlayerID)local;
 }
