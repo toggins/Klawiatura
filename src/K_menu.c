@@ -252,10 +252,10 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_LOBBY] = {
 		{"%s%s", DISABLE, FORMAT(active_lobby)},
 		{},
-		{"Players: %d", FORMAT(players), .disabled = true},
-		{"Level: %s", FORMAT(level), .disabled = true},
+		{"Players: %d", DISABLE, FORMAT(players)},
+		{"Level: %s", DISABLE, FORMAT(level)},
 		{},
-		{"Waiting for players", .disabled = true},
+		{"Waiting for players", DISABLE},
 	},
 };
 
