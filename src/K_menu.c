@@ -191,9 +191,7 @@ static void join_found_lobby() {
 static const char* NO_LOBBIES_FOUND = "No lobbies found";
 
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
-	[MEN_ERROR] = {
-		{"", .disabled = true},
-	},
+	[MEN_ERROR] = {},
 	[MEN_MAIN] = {
 		{"Singleplayer", .enter = MEN_SINGLEPLAYER},
 		{"Multiplayer", .enter = MEN_MULTIPLAYER},
@@ -673,14 +671,26 @@ jobwelldone:
 }
 
 void show_error(const char* fmt, ...) {
-	static char buf[128] = {0};
+	static char buf[128] = {0}, tokens[MAX_OPTIONS][64];
 	va_list args;
 
 	va_start(args, fmt);
 	SDL_strlcpy(buf, vfmt(fmt, args), sizeof(buf));
-	OPTIONS[MEN_ERROR][0].name = buf;
 	va_end(args);
 
+	for (int i = 0; i < MAX_OPTIONS; i++) {
+		OPTIONS[MEN_ERROR][i].name = "";
+		OPTIONS[MEN_ERROR][i].disabled = true;
+	}
+
+	char idx = 0, *sep = "\n", *state = buf, *token = SDL_strtok_r(buf, sep, &state);
+	while (token) {
+		SDL_strlcpy(tokens[idx], token, sizeof(tokens[idx]));
+		OPTIONS[MEN_ERROR][idx].name = tokens[idx], idx += 1;
+		token = SDL_strtok_r(NULL, sep, &state);
+	}
+
+done:
 	set_menu(MEN_ERROR);
 }
 
