@@ -260,10 +260,10 @@ void draw_game() {
 		if (pawn == NULL)
 			goto nocam;
 
-		const float bx1 = FtFloat(player->bounds.start.x) + (float)HALF_SCREEN_WIDTH;
-		const float by1 = FtFloat(player->bounds.start.y) + (float)HALF_SCREEN_HEIGHT;
-		const float bx2 = FtFloat(player->bounds.end.x) - (float)HALF_SCREEN_WIDTH;
-		const float by2 = FtFloat(player->bounds.end.y) - (float)HALF_SCREEN_HEIGHT;
+		const float bx1 = FtFloat(player->bounds.start.x + F_HALF_SCREEN_WIDTH);
+		const float by1 = FtFloat(player->bounds.start.y + F_HALF_SCREEN_HEIGHT);
+		const float bx2 = FtFloat(player->bounds.end.x - F_HALF_SCREEN_WIDTH);
+		const float by2 = FtFloat(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
 
 		const float x = FtFloat(pawn->pos.x);
 		const float y = FtFloat(pawn->pos.y);
