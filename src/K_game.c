@@ -25,12 +25,8 @@
 			ACTORS[(act)->type]->fn((act), (act2));                                                        \
 	} while (0)
 
-const GameActorTable TAB_NULL = {0};
-extern const GameActorTable TAB_PLAYER_SPAWN;
-extern const GameActorTable TAB_PLAYER;
-extern const GameActorTable TAB_CLOUD;
-extern const GameActorTable TAB_BUSH;
-
+static const GameActorTable TAB_NULL = {0};
+extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_CLOUD, TAB_BUSH;
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
 	[ACT_PLAYER_SPAWN] = &TAB_PLAYER_SPAWN,

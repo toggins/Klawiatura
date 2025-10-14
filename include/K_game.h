@@ -353,16 +353,22 @@ typedef struct {
 } SaveState;
 
 typedef struct {
-	SolidType solid;                           /// Considered (not or partially) solid by displacees.
-	void (*load)();                            /// Assets to load on start/creation.
-	void (*create)(GameActor*);                ///
-	void (*tick)(GameActor*);                  ///
-	void (*draw)(const GameActor*);            ///
-	void (*cleanup)(GameActor*);               ///
-	void (*collide)(GameActor*, GameActor*);   /// Callback function for `collide_object()`.
-	void (*displace)(GameActor*, GameActor*);  /// Callback function for `displace_object()`. (WIP)
-	void (*on_top)(GameActor*, GameActor*);    /// Callback function for when the displacee is above the object.
-	void (*on_bottom)(GameActor*, GameActor*); /// Callback function for when the displacee is below the object.
+	/// Considered (not or partially) solid by displacees.
+	SolidType solid;
+	/// Callback for loading assets on start/creation.
+	void (*load)();
+	void (*create)(GameActor*);
+	void (*tick)(GameActor*);
+	void (*draw)(const GameActor*);
+	void (*cleanup)(GameActor*);
+	/// Callback function for `collide_object()`.
+	void (*collide)(GameActor*, GameActor*);
+	/// Callback function for `displace_object()`. (WIP)
+	void (*displace)(GameActor*, GameActor*);
+	/// Callback function for when the displacee is above the object.
+	void (*on_top)(GameActor*, GameActor*);
+	/// Callback function for when the displacee is below the object.
+	void (*on_bottom)(GameActor*, GameActor*);
 } GameActorTable;
 
 extern GameState game_state;
