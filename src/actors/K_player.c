@@ -25,7 +25,7 @@ static void cleanup_spawn(GameActor* actor) {
 		game_state.spawn = NULLACT;
 }
 
-const GameActorTable TAB_PLAYER_SPAWN = {SOL_NONE, .create = create_spawn, .cleanup = cleanup_spawn};
+const GameActorTable TAB_PLAYER_SPAWN = {.create = create_spawn, .cleanup = cleanup_spawn};
 
 // ====
 // PAWN
@@ -61,5 +61,4 @@ static void cleanup(GameActor* actor) {
 		player->actor = NULLACT;
 }
 
-const GameActorTable TAB_PLAYER
-	= {SOL_NONE, .load = load, .create = create, .tick = tick, .draw = draw, .cleanup = cleanup};
+const GameActorTable TAB_PLAYER = {.load = load, .create = create, .tick = tick, .draw = draw, .cleanup = cleanup};

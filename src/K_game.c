@@ -26,6 +26,14 @@
 			ACTORS[(act)->type]->fn((act), (act2));                                                        \
 	} while (0)
 
+SolidType always_solid(GameActor* actor) {
+	return SOL_FULL;
+}
+
+SolidType always_platform(GameActor* actor) {
+	return SOL_TOP;
+}
+
 static const GameActorTable TAB_NULL = {0};
 extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_CLOUD, TAB_BUSH;
 static const GameActorTable* const ACTORS[ACT_SIZE] = {

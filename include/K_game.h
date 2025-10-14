@@ -352,22 +352,25 @@ typedef struct {
 	AudioState audio;
 } SaveState;
 
+SolidType always_solid(GameActor*);
+SolidType always_platform(GameActor*);
+
 typedef struct {
-	/// Considered (not or partially) solid by displacees.
-	SolidType solid;
+	/// Whether or not the actor is considered (partially) solid by displacees.
+	SolidType (*is_solid)(GameActor*);
 	/// Callback for loading assets on start/creation.
 	void (*load)();
 	void (*create)(GameActor*);
 	void (*tick)(GameActor*);
 	void (*draw)(const GameActor*);
 	void (*cleanup)(GameActor*);
-	/// Callback function for `collide_object()`.
+	/// Callback function for `collide_actor()`.
 	void (*collide)(GameActor*, GameActor*);
-	/// Callback function for `displace_object()`. (WIP)
+	/// Callback function for `displace_actor()`. (WIP)
 	void (*displace)(GameActor*, GameActor*);
-	/// Callback function for when the displacee is above the object.
+	/// Callback function for when the displacee is above the actor.
 	void (*on_top)(GameActor*, GameActor*);
-	/// Callback function for when the displacee is below the object.
+	/// Callback function for when the displacee is below the actor.
 	void (*on_bottom)(GameActor*, GameActor*);
 } GameActorTable;
 

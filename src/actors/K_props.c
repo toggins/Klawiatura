@@ -35,7 +35,7 @@ static void draw_cloud(const GameActor* actor) {
 	draw_actor(actor, tex, 0, WHITE);
 }
 
-const GameActorTable TAB_CLOUD = {SOL_NONE, .load = load_cloud, .create = create, .draw = draw_cloud};
+const GameActorTable TAB_CLOUD = {.load = load_cloud, .create = create, .draw = draw_cloud};
 
 // ====
 // BUSH
@@ -64,4 +64,4 @@ static void draw_bush(const GameActor* actor) {
 	draw_actor(actor, tex, 0, WHITE);
 }
 
-const GameActorTable TAB_BUSH = {SOL_NONE, .load = load_bush, .create = create, .draw = draw_bush};
+const GameActorTable TAB_BUSH = {.load = load_bush, .create = create, .draw = draw_bush};
