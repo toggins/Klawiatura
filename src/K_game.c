@@ -2,6 +2,7 @@
 #include "K_game.h"
 #include "K_input.h"
 #include "K_log.h"
+#include "K_menu.h"
 #include "K_string.h"
 #include "K_tick.h"
 
@@ -133,7 +134,10 @@ bool update_game() {
 			case DesyncDetected: {
 				dump_game_state();
 				struct Desynced desync = event->data.desynced;
-				INFO("OOPS: Out of sync with player %d (tick %d, l %u != r %u)",
+				show_error("Out of sync with player %i\n"
+					   "Tick: %i\n"
+					   "Local Checksum: %u\n"
+					   "Remote Checksum: %u",
 					desync.remote_handle + 1, desync.frame, desync.local_checksum,
 					desync.remote_checksum);
 				goto byebye_game;
@@ -147,7 +151,7 @@ bool update_game() {
 
 			case PlayerDisconnected: {
 				struct Disconnected disconnect = event->data.disconnected;
-				INFO("OOPS: Player %i disconnected", disconnect.handle + 1);
+				show_error("Player %i disconnected", disconnect.handle + 1);
 				goto byebye_game;
 			}
 
@@ -188,6 +192,40 @@ bool update_game() {
 				tick_game_state(inputs);
 				tick_video_state();
 				tick_audio_state();
+
+				// !!! CLIENT-SIDE !!!
+				// FIXME: Figure out this whole section for
+				//        multiplayer.
+				//        Instant level changes aren't safe
+				//        because of rollback.
+				if (!(game_state.flags & GF_SINGLE))
+					break;
+
+				if (game_state.flags & GF_END) {
+					if (game_state.next[0] == '\0')
+						goto byebye_game;
+
+					GameContext ctx;
+					setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_TRY_KEVIN);
+					ctx.players[0].lives = game_state.players[0].lives;
+					ctx.players[0].power = game_state.players[0].power;
+					ctx.players[0].coins = game_state.players[0].coins;
+					ctx.players[0].score = game_state.players[0].score;
+
+					nuke_game();
+					start_game(&ctx);
+				} else if (game_state.flags & GF_RESTART) {
+					GameContext ctx;
+					setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
+					ctx.players[0].lives = game_state.players[0].lives;
+					ctx.players[0].coins = game_state.players[0].coins;
+					ctx.players[0].score = game_state.players[0].score;
+					ctx.checkpoint = game_state.checkpoint;
+
+					nuke_game();
+					start_game(&ctx);
+				}
+				// !!! CLIENT-SIDE !!!
 				break;
 			}
 
@@ -197,42 +235,6 @@ bool update_game() {
 		}
 	}
 
-	// !!! CLIENT-SIDE !!!
-	// FIXME: Figure out this whole section for multiplayer.
-	//        No, you can't just shove all this into the game loop.
-	if (!(game_state.flags & GF_SINGLE))
-		goto skip_level_change;
-
-	if (game_state.flags & GF_END) {
-		if (game_state.next[0] == '\0')
-			goto byebye_game;
-
-		GameContext ctx;
-		setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_TRY_KEVIN);
-		ctx.players[0].lives = game_state.players[0].lives;
-		ctx.players[0].power = game_state.players[0].power;
-		ctx.players[0].coins = game_state.players[0].coins;
-		ctx.players[0].score = game_state.players[0].score;
-
-		nuke_game();
-		start_game(&ctx);
-		goto skip_level_change;
-	}
-
-	if (game_state.flags & GF_RESTART) {
-		GameContext ctx;
-		setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
-		ctx.players[0].lives = game_state.players[0].lives;
-		ctx.players[0].coins = game_state.players[0].coins;
-		ctx.players[0].score = game_state.players[0].score;
-		ctx.checkpoint = game_state.checkpoint;
-
-		nuke_game();
-		start_game(&ctx);
-	}
-	// !!! CLIENT-SIDE !!!
-
-skip_level_change:
 	return true;
 
 byebye_game:
