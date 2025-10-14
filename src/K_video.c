@@ -73,8 +73,6 @@ void video_init(bool force_shader) {
 	CHECK_GL_EXTENSION(GLAD_GL_ARB_shader_objects);
 	CHECK_GL_EXTENSION(GLAD_GL_ARB_vertex_shader);
 	CHECK_GL_EXTENSION(GLAD_GL_ARB_fragment_shader);
-	CHECK_GL_EXTENSION(GLAD_GL_ARB_vertex_program);
-	CHECK_GL_EXTENSION(GLAD_GL_ARB_fragment_program);
 
 bypass:
 	INFO("OpenGL vendor: %s", glGetString(GL_VENDOR));
