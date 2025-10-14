@@ -271,6 +271,7 @@ void draw_game() {
 	batch_sprite("ui/sidebar_r", NO_FLIP);
 
 	push_surface(game_surface);
+	static mat4 proj = GLM_MAT4_IDENTITY;
 
 	const GamePlayer* player = get_player(view_player);
 	if (player != NULL) {
@@ -288,7 +289,6 @@ void draw_game() {
 		const float cx = SDL_clamp(x, bx1, bx2);
 		const float cy = SDL_clamp(y, by1, by2);
 
-		static mat4 proj = GLM_MAT4_IDENTITY;
 		glm_ortho(cx - (float)HALF_SCREEN_WIDTH, cx + (float)HALF_SCREEN_WIDTH, cy - (float)HALF_SCREEN_HEIGHT,
 			cy + (float)HALF_SCREEN_HEIGHT, -16000, 16000, proj);
 		set_projection_matrix(proj);
@@ -308,6 +308,18 @@ nocam:
 		actor = get_actor(actor->previous);
 	}
 
+	if (player != NULL) {
+		glm_ortho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -16000, 16000, proj);
+		set_projection_matrix(proj);
+		apply_matrices();
+
+		batch_start(XYZ(32.f, 16.f, -10000.f), 0.f, WHITE);
+		batch_string("hud", 16, fmt("MARIO * %u", SDL_max(player->lives, 0)));
+		batch_cursor(XYZ(147.f, 34.f, -10000.f));
+		batch_align(FA_RIGHT, FA_TOP);
+		batch_string("hud", 16, fmt("%u", player->score));
+		batch_align(FA_LEFT, FA_TOP);
+	}
 	pop_surface();
 
 	batch_start(ORIGO, 0, WHITE);
