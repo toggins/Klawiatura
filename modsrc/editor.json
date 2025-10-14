@@ -331,70 +331,70 @@
                             "def": "Bill Blaster",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BLASTA"
+                            "texture": "tiles/blaster"
                         },
 
                         {
                             "def": "Bill Blaster 2",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BLASTI"
+                            "texture": "tiles/blaster3"
                         },
 
                         {
                             "def": "Bill Blaster 3",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BLASTJ"
+                            "texture": "tiles/blaster4"
                         },
 
                         {
                             "def": "Bill Blaster Tall",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BLASTB"
+                            "texture": "tiles/blaster5"
                         },
 
                         {
                             "def": "Bill Blaster Tall 2",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BLASTC"
+                            "texture": "tiles/blaster6"
                         },
 
                         {
                             "def": "Bill Blaster Tower",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BLASTD"
+                            "texture": "tiles/blaster7"
                         },
 
                         {
                             "def": "Bill Blaster Tower 2",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BLASTE"
+                            "texture": "tiles/blaster8"
                         },
 
                         {
                             "def": "Bill Blaster Tower 3",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BLASTF"
+                            "texture": "tiles/blaster9"
                         },
 
                         {
                             "def": "Bill Blaster Tower 4",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BLASTG"
+                            "texture": "tiles/blaster10"
                         },
 
                         {
                             "def": "Bill Blaster Down",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "T_BLASTH"
+                            "texture": "tiles/blaster2"
                         }
                     ]
                 ]
