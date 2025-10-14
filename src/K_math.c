@@ -19,7 +19,7 @@ fvec2 Vsub(register fvec2 a, register fvec2 b) {
 /// Pythagorean theorem is useless in fixed point math due to overflows.
 fixed Vdist(register fvec2 a, register fvec2 b) {
 	a = Vsub(a, b);
-	return Fsub(Fadd(a.x, a.y), Fhalf(Fmin(a.x, a.y)));
+	return (a.x + a.y) - Fhalf(Fmin(a.x, a.y));
 }
 
 /// Radian angle between two points.
@@ -29,6 +29,6 @@ fixed Vtheta(register fvec2 a, register fvec2 b) {
 }
 
 /// Check if there are any collision points between two rectangles.
-bool Rcollide(frect a, frect b) {
+Bool Rcollide(frect a, frect b) {
 	return a.start.x < b.end.x && a.end.x > b.start.x && a.start.y < b.end.y && a.end.y > b.start.y;
 }

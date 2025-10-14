@@ -35,7 +35,19 @@ static void load() {
 	load_texture("markers/player");
 }
 
-static void create(GameActor* actor) {}
+static void create(GameActor* actor) {
+	actor->depth = -FxOne;
+
+	actor->box.start.x = FfInt(-9L);
+	actor->box.start.y = FfInt(-25L);
+	actor->box.end.x = FfInt(10L);
+	actor->box.end.y = FxOne;
+
+	actor->values[VAL_PLAYER_INDEX] = (ActorValue)NULLPLAY;
+	actor->values[VAL_PLAYER_GROUND] = 2L;
+	actor->values[VAL_PLAYER_WARP] = NULLACT;
+	actor->values[VAL_PLAYER_PLATFORM] = NULLACT;
+}
 
 static void tick(GameActor* actor) {
 	GamePlayer* player = get_player((PlayerID)actor->values[VAL_PLAYER_INDEX]);
@@ -44,9 +56,11 @@ static void tick(GameActor* actor) {
 		return;
 	}
 
-	move_actor(actor,
-		(fvec2){actor->pos.x + FfInt((int8_t)ANY_INPUT(player, GI_RIGHT) - (int8_t)ANY_INPUT(player, GI_LEFT)),
-			actor->pos.y + FfInt((int8_t)ANY_INPUT(player, GI_DOWN) - (int8_t)ANY_INPUT(player, GI_UP))});
+	fvec2 move
+		= POS_ADD(actor, FfInt(((int8_t)ANY_INPUT(player, GI_RIGHT) - (int8_t)ANY_INPUT(player, GI_LEFT)) * 2L),
+			FfInt(((int8_t)ANY_INPUT(player, GI_DOWN) - (int8_t)ANY_INPUT(player, GI_UP)) * 2L));
+	if (!touching_solid(HITBOX_ADD(actor, move.x, move.y), SOL_ALL))
+		move_actor(actor, move);
 }
 
 static void draw(const GameActor* actor) {

@@ -39,7 +39,6 @@ typedef uint32_t ActorFlag;
 #define F_HALF_SCREEN_WIDTH Fhalf(F_SCREEN_WIDTH)
 #define F_HALF_SCREEN_HEIGHT Fhalf(F_SCREEN_HEIGHT)
 
-typedef uint8_t Bool;
 typedef int8_t PlayerID;
 typedef int16_t ActorID;
 
@@ -210,9 +209,9 @@ enum {
 
 typedef uint8_t SolidType;
 enum {
-	SOL_NONE,
-	SOL_FULL,
-	SOL_TOP,
+	SOL_SOLID = 1 << 0,
+	SOL_TOP = 1 << 1,
+	SOL_ALL = SOL_SOLID | SOL_TOP,
 };
 
 typedef uint8_t PlatformType;
@@ -305,6 +304,21 @@ enum BaseActorFlags {
 #define CUSTOM_FLAG(idx) (1 << (5 + (idx)))
 };
 
+#define POS_ADD(actor, _x, _y) ((fvec2){(actor)->pos.x + (_x), (actor)->pos.y + (_y)})
+#define POS_SPEED(actor)                                                                                               \
+	((fvec2){(actor)->pos.x + (actor)->values[VAL_X_SPEED], (actor)->pos.y + (actor)->values[VAL_Y_SPEED]})
+
+#define HITBOX(actor)                                                                                                  \
+	((frect){                                                                                                      \
+		{(actor)->pos.x + (actor)->box.start.x, (actor)->pos.y + (actor)->box.start.y},                        \
+		{(actor)->pos.x + (actor)->box.end.x,   (actor)->pos.y + (actor)->box.end.y  } \
+        })
+#define HITBOX_ADD(actor, _x, _y)                                                                                      \
+	((frect){                                                                                                      \
+		{(actor)->pos.x + (actor)->box.start.x + (_x), (actor)->pos.y + (actor)->box.start.y + (_y)},          \
+		{(actor)->pos.x + (actor)->box.end.x + (_x),   (actor)->pos.y + (actor)->box.end.y + (_y)  } \
+        })
+
 typedef struct {
 	ActorID id;
 	GameActorType type;
@@ -352,12 +366,12 @@ typedef struct {
 	AudioState audio;
 } SaveState;
 
-SolidType always_solid(GameActor*);
-SolidType always_platform(GameActor*);
+SolidType always_solid(const GameActor*);
+SolidType always_top(const GameActor*);
 
 typedef struct {
 	/// Whether or not the actor is considered (partially) solid by displacees.
-	SolidType (*is_solid)(GameActor*);
+	SolidType (*is_solid)(const GameActor*);
 	/// Callback for loading assets on start/creation.
 	void (*load)();
 	void (*create)(GameActor*);
@@ -409,8 +423,10 @@ typedef struct {
 	GameActor* actors[MAX_ACTORS];
 	ActorID num_actors;
 } CellList;
-
 void list_cell_at(CellList*, const frect);
+Bool touching_solid(const frect, SolidType);
+void displace_actor(GameActor*, const fvec2);
+void bump_actor(GameActor*);
 
 void draw_actor(const GameActor*, const char*, GLfloat, const GLubyte[4]);
 

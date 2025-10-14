@@ -26,22 +26,26 @@
 			ACTORS[(act)->type]->fn((act), (act2));                                                        \
 	} while (0)
 
-SolidType always_solid(GameActor* actor) {
-	return SOL_FULL;
+SolidType always_solid(const GameActor* actor) {
+	return SOL_SOLID;
 }
 
-SolidType always_platform(GameActor* actor) {
+SolidType always_top(const GameActor* actor) {
 	return SOL_TOP;
 }
 
 static const GameActorTable TAB_NULL = {0};
-extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_CLOUD, TAB_BUSH;
+extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_CLOUD, TAB_BUSH, TAB_SOLID, TAB_SOLID_TOP,
+	TAB_SOLID_SLOPE;
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
 	[ACT_PLAYER_SPAWN] = &TAB_PLAYER_SPAWN,
 	[ACT_PLAYER] = &TAB_PLAYER,
 	[ACT_CLOUD] = &TAB_CLOUD,
 	[ACT_BUSH] = &TAB_BUSH,
+	[ACT_SOLID] = &TAB_SOLID,
+	[ACT_SOLID_TOP] = &TAB_SOLID_TOP,
+	[ACT_SOLID_SLOPE] = &TAB_SOLID_SLOPE,
 };
 
 static Surface* game_surface = NULL;
@@ -295,6 +299,15 @@ nocam:
 	while (actor != NULL) {
 		if (ANY_FLAG(actor, FLG_VISIBLE))
 			ACTOR_CALL(actor, draw);
+		batch_start(XYZ(FtFloat(actor->pos.x + actor->box.start.x), FtFloat(actor->pos.y + actor->box.start.y),
+				    -1000),
+			0,
+			ALPHA((ACTORS[actor->type] != NULL && ACTORS[actor->type]->is_solid != NULL
+				      && ACTORS[actor->type]->is_solid(actor))
+					? 128
+					: 64));
+		batch_rectangle(NULL, XY(FtFloat(actor->box.end.x - actor->box.start.x),
+					      FtFloat(actor->box.end.y - actor->box.start.y)));
 		actor = get_actor(actor->previous);
 	}
 
@@ -738,8 +751,7 @@ static void destroy_actor(GameActor* actor) {
 	actor->type = ACT_NULL;
 
 	// Unlink cell
-	const int32_t cell = actor->cell;
-	if (cell >= 0L && cell < GRID_SIZE) {
+	if (actor->cell >= 0L && actor->cell < GRID_SIZE) {
 		GameActor* neighbor = get_actor(actor->previous_cell);
 		if (neighbor != NULL)
 			neighbor->next_cell = actor->next_cell;
@@ -750,10 +762,10 @@ static void destroy_actor(GameActor* actor) {
 			neighbor->previous_cell = actor->previous_cell;
 		actor->previous_cell = NULLACT;
 
-		if (game_state.grid[cell] == actor->id)
-			game_state.grid[cell] = actor->previous_cell;
+		if (game_state.grid[actor->cell] == actor->id)
+			game_state.grid[actor->cell] = actor->previous_cell;
+		actor->cell = NULLCELL;
 	}
-	actor->cell = NULLCELL;
 
 	// Unlink list
 	if (game_state.live_actors == actor->id)
@@ -785,12 +797,12 @@ void move_actor(GameActor* actor, const fvec2 pos) {
 	int32_t cx = actor->pos.x / CELL_SIZE, cy = actor->pos.y / CELL_SIZE;
 	cx = SDL_clamp(cx, 0L, MAX_CELLS - 1L), cy = SDL_clamp(cy, 0L, MAX_CELLS - 1L);
 
-	const int32_t cell = (cy * MAX_CELLS) + cx;
+	const int32_t cell = cx + (cy * MAX_CELLS);
 	if (cell == actor->cell)
 		return;
 
 	// Unlink old cell
-	if (cell >= 0L && cell < GRID_SIZE) {
+	if (actor->cell >= 0L && actor->cell < GRID_SIZE) {
 		GameActor* neighbor = get_actor(actor->previous_cell);
 		if (neighbor != NULL)
 			neighbor->next_cell = actor->next_cell;
@@ -799,8 +811,8 @@ void move_actor(GameActor* actor, const fvec2 pos) {
 		if (neighbor != NULL)
 			neighbor->previous_cell = actor->previous_cell;
 
-		if (game_state.grid[cell] == actor->id)
-			game_state.grid[cell] = actor->previous_cell;
+		if (game_state.grid[actor->cell] == actor->id)
+			game_state.grid[actor->cell] = actor->previous_cell;
 	}
 
 	// Link new cell
@@ -826,21 +838,35 @@ void list_cell_at(CellList* list, const frect rect) {
 	cx2 = SDL_clamp(cx2, 0L, MAX_CELLS - 1L);
 	cy2 = SDL_clamp(cy2, 0L, MAX_CELLS - 1L);
 
-	for (int32_t cy = cy1; cy <= cy2; cy++)
-		for (int32_t cx = cx1; cx <= cx2; cx++) {
-			GameActor* actor = get_actor(game_state.grid[cx + (cy * MAX_CELLS)]);
-			while (actor != NULL) {
-				if (ANY_FLAG(actor, FLG_DESTROY))
-					goto next;
-				frect abox;
-				abox.start = Vadd(actor->pos, actor->box.start);
-				abox.end = Vadd(actor->pos, actor->box.end);
-				if (Rcollide(rect, abox))
+	for (int32_t cx = cx1; cx <= cx2; cx++)
+		for (int32_t cy = cy1; cy <= cy2; cy++)
+			for (GameActor* actor = get_actor(game_state.grid[cx + (cy * MAX_CELLS)]); actor != NULL;
+				actor = get_actor(actor->previous_cell))
+				if (!ANY_FLAG(actor, FLG_DESTROY) && Rcollide(rect, HITBOX(actor)))
 					list->actors[list->num_actors++] = actor;
-			next:
-				actor = get_actor(actor->previous_cell);
-			}
-		}
+}
+
+/// Check if there are solid actors in a rectangle.
+Bool touching_solid(const frect rect, SolidType types) {
+	int32_t cx1 = (rect.start.x - CELL_SIZE) / CELL_SIZE;
+	int32_t cy1 = (rect.start.y - CELL_SIZE) / CELL_SIZE;
+	int32_t cx2 = (rect.end.x + CELL_SIZE) / CELL_SIZE;
+	int32_t cy2 = (rect.end.y + CELL_SIZE) / CELL_SIZE;
+	cx1 = SDL_clamp(cx1, 0L, MAX_CELLS - 1L);
+	cy1 = SDL_clamp(cy1, 0L, MAX_CELLS - 1L);
+	cx2 = SDL_clamp(cx2, 0L, MAX_CELLS - 1L);
+	cy2 = SDL_clamp(cy2, 0L, MAX_CELLS - 1L);
+
+	for (int32_t cx = cx1; cx <= cx2; cx++)
+		for (int32_t cy = cy1; cy <= cy2; cy++)
+			for (GameActor* actor = get_actor(game_state.grid[cx + (cy * MAX_CELLS)]); actor != NULL;
+				actor = get_actor(actor->previous_cell))
+				if (ACTORS[actor->type] != NULL && ACTORS[actor->type]->is_solid != NULL
+					&& (ACTORS[actor->type]->is_solid(actor) & types)
+					&& Rcollide(rect, HITBOX(actor)))
+					return true;
+
+	return false;
 }
 
 // Generic interpolated (not yet) actor drawing function.
