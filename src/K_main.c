@@ -77,6 +77,7 @@ int main(int argc, char* argv[]) {
 
 static int realmain() {
 	EXPECT(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS), "SDL_Init fail: %s", SDL_GetError());
+
 	file_init(data_path);
 	video_init(force_shader);
 	audio_init();
@@ -113,14 +114,12 @@ static int realmain() {
 				break;
 			}
 
-		if (game_exists()) {
-			if (update_game())
-				draw_game();
-			else {
-				input_wipeout();
-				if (quickstart)
-					goto teardown;
-			}
+		if (game_exists() && update_game())
+			draw_game();
+		else if (game_exists()) {
+			input_wipeout();
+			if (quickstart)
+				goto teardown;
 		} else {
 			update_menu();
 			draw_menu();
