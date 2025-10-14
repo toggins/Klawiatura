@@ -2,4 +2,4 @@
 
 #include <vadefs.h>
 
-const char* fmt(const char*, ...);
+const char *fmt(const char*, ...), *vfmt(const char*, va_list);

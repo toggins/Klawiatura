@@ -3,7 +3,6 @@
 #include "K_config.h"
 #include "K_game.h"
 #include "K_input.h"
-#include "K_log.h"
 #include "K_menu.h"
 #include "K_net.h"
 #include "K_string.h"
@@ -15,10 +14,6 @@ static int kevin_state = 0, kevin_time = 0;
 static float kevin_lerp = 0.f;
 
 static float volume_toggle_impl(float, int);
-static void noop() {
-	// Do nothing as if something was done. For testing purposes only.
-}
-
 #define FMT_OPTION(fname, ...)                                                                                         \
 	static const char* fmt_##fname(const char* base) {                                                             \
 		return fmt(base, __VA_ARGS__);                                                                         \
@@ -31,6 +26,10 @@ static void noop() {
 	static void toggle_##vname(int flip) {                                                                         \
 		set_##vname(volume_toggle_impl(get_##vname(), flip));                                                  \
 	}
+
+static void button_back() {
+	prev_menu();
+}
 
 // Main Menu
 extern bool permadeath;
@@ -100,7 +99,6 @@ static void set_delay(int flip) {
 static const char* fmt_resolution(const char* base) {
 	int width, height;
 	get_resolution(&width, &height);
-
 	return fmt(base, width, height);
 }
 
@@ -177,6 +175,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .update = update_inlobby, .leave = disconnect},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
+	[MEN_ERROR] = {"Error!!!", GHOST},
 };
 
 // Find lobbies
@@ -196,6 +195,9 @@ static void join_found_lobby() {
 static const char* NO_LOBBIES_FOUND = "No lobbies found";
 
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
+	[MEN_ERROR] = {
+		{"", .button = button_back},
+	},
 	[MEN_MAIN] = {
 		{"Singleplayer", .enter = MEN_SINGLEPLAYER},
 		{"Multiplayer", .enter = MEN_MULTIPLAYER},
@@ -347,20 +349,18 @@ static void update_find_lobbies() {
 static void update_joining_lobby() {
 	const int status = find_lobby();
 	if (status < 0) {
-		WTF("Lobby fail: %s", net_error());
+		show_error("Lobby fail: %s", net_error());
 		play_generic_sound("disconnect");
-		prev_menu();
 	} else if (status > 0) {
-		play_generic_sound("connect");
 		set_menu(MEN_LOBBY);
+		play_generic_sound("connect");
 	}
 }
 
 static void update_inlobby() {
 	if (!is_connected()) {
-		WTF("Lobby fail: %s", net_error());
+		show_error("Lobby fail: %s", net_error());
 		play_generic_sound("disconnect");
-		prev_menu();
 		return;
 	}
 
@@ -670,6 +670,18 @@ draw_intro:
 
 jobwelldone:
 	stop_drawing();
+}
+
+void show_error(const char* fmt, ...) {
+	static char buf[128] = {0};
+	va_list args;
+
+	va_start(args, fmt);
+	SDL_strlcpy(buf, vfmt(fmt, args), sizeof(buf));
+	OPTIONS[MEN_ERROR][0].name = buf;
+	va_end(args);
+
+	set_menu(MEN_ERROR);
 }
 
 bool set_menu(MenuType next_menu) {
