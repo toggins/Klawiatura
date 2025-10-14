@@ -318,6 +318,16 @@ enum BaseActorFlags {
 		{(actor)->pos.x + (actor)->box.start.x + (_x), (actor)->pos.y + (actor)->box.start.y + (_y)},          \
 		{(actor)->pos.x + (actor)->box.end.x + (_x),   (actor)->pos.y + (actor)->box.end.y + (_y)  } \
         })
+#define HITBOX_LEFT(actor)                                                                                             \
+	((frect){                                                                                                      \
+		{(actor)->pos.x + (actor)->box.start.x - FxOne, (actor)->pos.y + (actor)->box.start.y},                \
+		{(actor)->pos.x + (actor)->box.end.x,           (actor)->pos.y + (actor)->box.end.y  } \
+        })
+#define HITBOX_RIGHT(actor)                                                                                            \
+	((frect){                                                                                                      \
+		{(actor)->pos.x + (actor)->box.start.x,       (actor)->pos.y + (actor)->box.start.y},                        \
+		{(actor)->pos.x + (actor)->box.end.x + FxOne, (actor)->pos.y + (actor)->box.end.y  } \
+        })
 
 typedef struct {
 	ActorID id;
@@ -381,7 +391,7 @@ typedef struct {
 	/// Callback function for `collide_actor()`.
 	void (*collide)(GameActor*, GameActor*);
 	/// Callback function for `displace_actor()`. (WIP)
-	void (*displace)(GameActor*, GameActor*);
+	// void (*displace)(GameActor*, GameActor*);
 	/// Callback function for when the displacee is above the actor.
 	void (*on_top)(GameActor*, GameActor*);
 	/// Callback function for when the displacee is below the actor.
@@ -424,9 +434,9 @@ typedef struct {
 	ActorID num_actors;
 } CellList;
 void list_cell_at(CellList*, const frect);
+void collide_actor(GameActor*);
 Bool touching_solid(const frect, SolidType);
-void displace_actor(GameActor*, const fvec2);
-void bump_actor(GameActor*);
+void displace_actor(GameActor*, fixed, Bool);
 
 void draw_actor(const GameActor*, const char*, GLfloat, const GLubyte[4]);
 
