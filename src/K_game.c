@@ -299,15 +299,6 @@ nocam:
 	while (actor != NULL) {
 		if (ANY_FLAG(actor, FLG_VISIBLE))
 			ACTOR_CALL(actor, draw);
-		batch_start(XYZ(FtFloat(actor->pos.x + actor->box.start.x), FtFloat(actor->pos.y + actor->box.start.y),
-				    -1000),
-			0,
-			ALPHA((ACTORS[actor->type] != NULL && ACTORS[actor->type]->is_solid != NULL
-				      && ACTORS[actor->type]->is_solid(actor))
-					? 128
-					: 64));
-		batch_rectangle(NULL, XY(FtFloat(actor->box.end.x - actor->box.start.x),
-					      FtFloat(actor->box.end.y - actor->box.start.y)));
 		actor = get_actor(actor->previous);
 	}
 
