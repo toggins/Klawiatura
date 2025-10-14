@@ -114,12 +114,14 @@ static int realmain() {
 				break;
 			}
 
-		if (game_exists() && update_game())
-			draw_game();
-		else if (game_exists()) {
-			input_wipeout();
-			if (quickstart)
-				goto teardown;
+		if (game_exists()) {
+			if (update_game())
+				draw_game();
+			else {
+				input_wipeout();
+				if (quickstart)
+					goto teardown;
+			}
 		} else {
 			update_menu();
 			draw_menu();
