@@ -118,9 +118,9 @@ static int realmain() {
 			if (update_game())
 				draw_game();
 			else {
-				input_wipeout();
 				if (quickstart)
 					goto teardown;
+				input_wipeout();
 			}
 		} else {
 			update_menu();
