@@ -56,11 +56,10 @@ static void tick(GameActor* actor) {
 		return;
 	}
 
-	fvec2 move
-		= POS_ADD(actor, FfInt(((int8_t)ANY_INPUT(player, GI_RIGHT) - (int8_t)ANY_INPUT(player, GI_LEFT)) * 2L),
-			FfInt(((int8_t)ANY_INPUT(player, GI_DOWN) - (int8_t)ANY_INPUT(player, GI_UP)) * 2L));
+	fvec2 move = {FfInt(((int8_t)ANY_INPUT(player, GI_RIGHT) - (int8_t)ANY_INPUT(player, GI_LEFT)) * 2L),
+		FfInt(((int8_t)ANY_INPUT(player, GI_DOWN) - (int8_t)ANY_INPUT(player, GI_UP)) * 2L)};
 	if (!touching_solid(HITBOX_ADD(actor, move.x, move.y), SOL_ALL))
-		move_actor(actor, move);
+		move_actor(actor, POS_ADD(actor, move.x, move.y));
 }
 
 static void draw(const GameActor* actor) {
