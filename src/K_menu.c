@@ -671,26 +671,23 @@ jobwelldone:
 }
 
 void show_error(const char* fmt, ...) {
-	static char buf[128] = {0}, tokens[MAX_OPTIONS][64];
+	static char buf[128] = {0};
 	va_list args;
 
 	va_start(args, fmt);
 	SDL_strlcpy(buf, vfmt(fmt, args), sizeof(buf));
 	va_end(args);
 
+	char idx = 0, *sep = "\n", *state = buf, *token = SDL_strtok_r(buf, sep, &state);
 	for (int i = 0; i < MAX_OPTIONS; i++) {
 		OPTIONS[MEN_ERROR][i].name = "";
 		OPTIONS[MEN_ERROR][i].disabled = true;
 	}
-
-	char idx = 0, *sep = "\n", *state = buf, *token = SDL_strtok_r(buf, sep, &state);
 	while (token) {
-		SDL_strlcpy(tokens[idx], token, sizeof(tokens[idx]));
-		OPTIONS[MEN_ERROR][idx].name = tokens[idx], idx += 1;
+		OPTIONS[MEN_ERROR][idx].name = token, idx += 1;
 		token = SDL_strtok_r(NULL, sep, &state);
 	}
 
-done:
 	set_menu(MEN_ERROR);
 }
 
