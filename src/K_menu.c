@@ -27,10 +27,6 @@ static float volume_toggle_impl(float, int);
 		set_##vname(volume_toggle_impl(get_##vname(), flip));                                                  \
 	}
 
-static void button_back() {
-	prev_menu();
-}
-
 // Main Menu
 extern bool permadeath;
 static void instaquit() {
@@ -172,10 +168,10 @@ static Menu MENUS[MEN_SIZE] = {
 	= {"Find Lobbies", .update = update_find_lobbies, .enter = list_lobbies, .leave = cleanup_lobby_list},
 	[MEN_JOINING_LOBBY] = {"Please wait...", .update = update_joining_lobby, .back_sound = "disconnect",
 		      .leave = maybe_disconnect, GHOST},
-	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .update = update_inlobby, .leave = disconnect},
+	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .update = update_inlobby, .leave = disconnect, GHOST},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
-	[MEN_ERROR] = {"Error!!!", GHOST},
+	[MEN_ERROR] = {"Error", GHOST},
 };
 
 // Find lobbies
@@ -196,7 +192,7 @@ static const char* NO_LOBBIES_FOUND = "No lobbies found";
 
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_ERROR] = {
-		{"", .button = button_back},
+		{"", .disabled = true},
 	},
 	[MEN_MAIN] = {
 		{"Singleplayer", .enter = MEN_SINGLEPLAYER},
@@ -349,7 +345,7 @@ static void update_find_lobbies() {
 static void update_joining_lobby() {
 	const int status = find_lobby();
 	if (status < 0) {
-		show_error("Lobby fail: %s", net_error());
+		show_error("Failed to join lobby\n%s", net_error());
 		play_generic_sound("disconnect");
 	} else if (status > 0) {
 		set_menu(MEN_LOBBY);
@@ -359,7 +355,11 @@ static void update_joining_lobby() {
 
 static void update_inlobby() {
 	if (!is_connected()) {
-		show_error("Lobby fail: %s", net_error());
+		const char* error = net_error();
+		if (error == NULL)
+			prev_menu();
+		else
+			show_error("Lost connection\n%s", net_error());
 		play_generic_sound("disconnect");
 		return;
 	}
