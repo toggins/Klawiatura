@@ -254,6 +254,30 @@ void draw_game() {
 
 	push_surface(game_surface);
 
+	const GamePlayer* player = get_player(view_player);
+	if (player != NULL) {
+		const GameActor* pawn = get_actor(player->actor);
+		if (pawn == NULL)
+			goto nocam;
+
+		const float bx1 = FtFloat(player->bounds.start.x) + (float)HALF_SCREEN_WIDTH;
+		const float by1 = FtFloat(player->bounds.start.y) + (float)HALF_SCREEN_HEIGHT;
+		const float bx2 = FtFloat(player->bounds.end.x) - (float)HALF_SCREEN_WIDTH;
+		const float by2 = FtFloat(player->bounds.end.y) - (float)HALF_SCREEN_HEIGHT;
+
+		const float x = FtFloat(pawn->pos.x);
+		const float y = FtFloat(pawn->pos.y);
+		const float cx = SDL_clamp(x, bx1, bx2);
+		const float cy = SDL_clamp(y, by1, by2);
+
+		static mat4 proj = GLM_MAT4_IDENTITY;
+		glm_ortho(cx - (float)HALF_SCREEN_WIDTH, cx + (float)HALF_SCREEN_WIDTH, cy - (float)HALF_SCREEN_HEIGHT,
+			cy + (float)HALF_SCREEN_HEIGHT, -16000, 16000, proj);
+		set_projection_matrix(proj);
+		apply_matrices();
+	}
+
+nocam:
 	// clear_color(0, 0, 0, 1);
 	clear_depth(1);
 
@@ -412,7 +436,7 @@ void start_game_state(GameContext* ctx) {
 		SDL_free(data);
 		return;
 	}
-	buf += sizeof(uint8_t); // MAJOR_LEVEL_VERSION
+	buf += sizeof(uint8_t);
 
 	const uint8_t minor = *buf;
 	if (minor != MINOR_LEVEL_VERSION) {
@@ -420,7 +444,7 @@ void start_game_state(GameContext* ctx) {
 		SDL_free(data);
 		return;
 	}
-	buf += sizeof(uint8_t); // MINOR_LEVEL_VERSION
+	buf += sizeof(uint8_t);
 
 	// Level
 	char level_name[32];
@@ -592,6 +616,7 @@ void start_game_state(GameContext* ctx) {
 		player->coins = ctx->players[i].coins;
 		player->score = ctx->players[i].score;
 		player->power = ctx->players[i].power;
+		SDL_memcpy(&player->bounds, &game_state.bounds, sizeof(game_state.bounds));
 		respawn_player(player);
 	}
 }
