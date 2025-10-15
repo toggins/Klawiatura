@@ -376,8 +376,7 @@ typedef struct {
 	AudioState audio;
 } SaveState;
 
-SolidType always_solid(const GameActor*);
-SolidType always_top(const GameActor*);
+SolidType always_solid(const GameActor*), always_top(const GameActor*);
 
 typedef struct {
 	/// Whether or not the actor is considered (partially) solid by displacees.
