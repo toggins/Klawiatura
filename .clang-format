@@ -7,6 +7,7 @@ BreakBeforeBinaryOperators: All
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterControlStatement: MultiLine
+SpaceAfterCStyleCast: false
 DerivePointerAlignment: false
 PointerAlignment: Left
 AllowShortBlocksOnASingleLine: Always
@@ -20,6 +21,8 @@ AccessModifierOffset: -8
 IndentCaseBlocks: false
 IndentCaseLabels: false
 AlignAfterOpenBracket: DontAlign
+RemoveBracesLLVM: true
+ReflowComments: Always
 IncludeBlocks: Regroup
 IncludeIsMainRegex: "a{999}" # no main includes
 IncludeCategories:

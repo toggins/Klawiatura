@@ -15,7 +15,7 @@ const char* next_arg() {
 static void handle_cmdline_fr() {
 	while (argi < argc) {
 		const CmdArg *cmd = CMDLINE, nullcmd = {0};
-		for (; SDL_memcmp(cmd, &nullcmd, sizeof(*cmd)); cmd++) {
+		for (; SDL_memcmp(cmd, &nullcmd, sizeof(*cmd)); cmd++)
 			if ((cmd->shortform != NULL && !SDL_strcmp(argv[argi], cmd->shortform))
 				|| (cmd->longform != NULL && !SDL_strcmp(argv[argi], cmd->longform)))
 			{
@@ -23,7 +23,6 @@ static void handle_cmdline_fr() {
 				cmd->handler();
 				goto next;
 			};
-		}
 		WARN("Unrecognized command-line option: '%s'", argv[argi++]);
 	next:
 		continue;

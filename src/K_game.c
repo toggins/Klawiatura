@@ -134,13 +134,20 @@ bool update_game() {
 			goto byebye_game;
 
 		GameInput input = 0;
-		if (kb_down(KB_UP)) { input |= GI_UP; }
-		if (kb_down(KB_LEFT)) { input |= GI_LEFT; }
-		if (kb_down(KB_DOWN)) { input |= GI_DOWN; }
-		if (kb_down(KB_RIGHT)) { input |= GI_RIGHT; }
-		if (kb_down(KB_JUMP)) { input |= GI_JUMP; }
-		if (kb_down(KB_FIRE)) { input |= GI_FIRE; }
-		if (kb_down(KB_RUN)) { input |= GI_RUN; }
+		if (kb_down(KB_UP))
+			input |= GI_UP;
+		if (kb_down(KB_LEFT))
+			input |= GI_LEFT;
+		if (kb_down(KB_DOWN))
+			input |= GI_DOWN;
+		if (kb_down(KB_RIGHT))
+			input |= GI_RIGHT;
+		if (kb_down(KB_JUMP))
+			input |= GI_JUMP;
+		if (kb_down(KB_FIRE))
+			input |= GI_FIRE;
+		if (kb_down(KB_RUN))
+			input |= GI_RUN;
 
 		gekko_add_local_input(game_session, local_player, &input);
 
