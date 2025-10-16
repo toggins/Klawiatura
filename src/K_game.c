@@ -129,8 +129,8 @@ void nuke_game() {
 bool update_game() {
 	gekko_network_poll(game_session);
 
-	const float ahead = gekko_frames_ahead(game_session);
-	for (new_frame(SDL_clamp(ahead, 0, 2)); got_ticks(); next_tick()) {
+	const float ahh = gekko_frames_ahead(game_session), ahead = SDL_clamp(ahh, 0, 2);
+	for (new_frame(ahead); got_ticks(); next_tick()) {
 		if (kb_pressed(KB_PAUSE))
 			goto byebye_game;
 
@@ -149,7 +149,6 @@ bool update_game() {
 			input |= GI_FIRE;
 		if (kb_down(KB_RUN))
 			input |= GI_RUN;
-
 		gekko_add_local_input(game_session, local_player, &input);
 
 		int count = 0;
@@ -194,20 +193,20 @@ bool update_game() {
 			case SaveEvent: {
 				static SaveState save;
 				save_game_state(&save.game);
-				save_video_state(&(save.video));
-				save_audio_state(&(save.audio));
+				save_video_state(&save.video);
+				save_audio_state(&save.audio);
 
-				*(event->data.save.state_len) = sizeof(save);
-				*(event->data.save.checksum) = check_game_state();
+				*event->data.save.state_len = sizeof(save);
+				*event->data.save.checksum = check_game_state();
 				SDL_memcpy(event->data.save.state, &save, sizeof(save));
 				break;
 			}
 
 			case LoadEvent: {
 				const SaveState* load = (SaveState*)(event->data.load.state);
-				load_game_state(&(load->game));
-				load_video_state(&(load->video));
-				load_audio_state(&(load->audio));
+				load_game_state(&load->game);
+				load_video_state(&load->video);
+				load_audio_state(&load->audio);
 				break;
 			}
 
