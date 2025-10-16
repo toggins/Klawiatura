@@ -159,7 +159,7 @@ void load_audio_state(const AudioState* as) {
 		if (cur_track->track != load_track->track || cur_track->flags != load_track->flags) {
 			stop_state_track(i);
 			if (load_track->track == NULL
-				|| (!(load_track->flags & PLAY_LOOPING) && load_track->track != NULL
+				|| (!(load_track->flags & PLAY_LOOPING)
 					&& load_track->offset >= load_track->track->length))
 				continue;
 
@@ -393,8 +393,6 @@ void play_state_track(TrackSlots slot, const char* name, PlayFlags flags) {
 
 void stop_state_track(TrackSlots slot) {
 	TrackObject* track = &audio_state.tracks[slot];
-	if (track->track == NULL)
-		return;
 	track->track = NULL;
 
 	if (music_channels[slot] != NULL) {
