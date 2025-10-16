@@ -104,9 +104,9 @@ void start_game(GameContext* ctx) {
 	gekko_start(game_session, &cfg);
 	local_player = view_player = populate_game(game_session);
 
-	start_game_state(ctx);
 	start_audio_state();
 	start_video_state();
+	start_game_state(ctx);
 	from_scratch();
 }
 
@@ -305,15 +305,16 @@ void draw_game() {
 		const float bx2 = FtFloat(player->bounds.end.x - F_HALF_SCREEN_WIDTH);
 		const float by2 = FtFloat(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
 
-		const float x = FtFloat(pawn->pos.x);
-		const float y = FtFloat(pawn->pos.y);
-		const float cx = SDL_clamp(x, bx1, bx2);
-		const float cy = SDL_clamp(y, by1, by2);
+		float cx = FtFloat(pawn->pos.x);
+		float cy = FtFloat(pawn->pos.y);
+		cx = SDL_clamp(cx, bx1, bx2);
+		cy = SDL_clamp(cy, by1, by2);
 
 		glm_ortho(cx - (float)HALF_SCREEN_WIDTH, cx + (float)HALF_SCREEN_WIDTH, cy - (float)HALF_SCREEN_HEIGHT,
 			cy + (float)HALF_SCREEN_HEIGHT, -16000, 16000, proj);
 		set_projection_matrix(proj);
 		apply_matrices();
+		move_ears((float[2]){cx, cy});
 	}
 
 nocam:
@@ -538,8 +539,10 @@ void start_game_state(GameContext* ctx) {
 	read_string((const char**)(&buf), game_state.next, sizeof(game_state.next));
 
 	char track_name[2][GAME_STRING_MAX];
-	read_string((const char**)(&buf), track_name[0], sizeof(track_name));
-	read_string((const char**)(&buf), track_name[1], sizeof(track_name));
+	for (int i = 0; i < 2; i++) {
+		read_string((const char**)(&buf), track_name[i], sizeof(track_name));
+		load_track(track_name[i]);
+	}
 
 	game_state.flags |= *((GameFlag*)buf);
 	buf += sizeof(GameFlag);
@@ -697,6 +700,8 @@ void start_game_state(GameContext* ctx) {
 		SDL_memcpy(&player->bounds, &game_state.bounds, sizeof(game_state.bounds));
 		respawn_player(player);
 	}
+
+	play_state_track(TS_MAIN, track_name[0], PLAY_LOOPING);
 }
 #undef FLOAT_OFFS
 #undef BYTE_OFFS
@@ -731,7 +736,6 @@ GameActor* respawn_player(GamePlayer* player) {
 		pawn->values[VAL_PLAYER_INDEX] = (ActorValue)player->id;
 		player->actor = pawn->id;
 	}
-	INFO("Respawned player %i as %i", player->id, player->actor);
 	return pawn;
 }
 
@@ -1143,6 +1147,11 @@ void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
 	batch_start(XYZ(FtFloat(actor->pos.x), FtFloat(actor->pos.y), FtFloat(actor->depth)), angle, color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
+}
+
+// Convenience function for playing a sound at an actor's position.
+void play_actor_sound(const GameActor* actor, const char* name) {
+	play_state_sound_at(name, (float[2]){FtFloat(actor->pos.x), FtFloat(actor->pos.y)});
 }
 
 // ====

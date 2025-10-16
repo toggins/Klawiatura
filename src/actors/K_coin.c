@@ -1,5 +1,4 @@
 #include "K_game.h"
-#include "K_log.h"
 
 static void load() {
 	load_texture("items/coin");
@@ -48,9 +47,9 @@ static void collide(GameActor* actor, GameActor* from) {
 		player->coins -= 100L;
 	}
 	player->score += 200L;
+	play_actor_sound(actor, "coin");
 
 	FLAG_ON(actor, FLG_DESTROY);
-	INFO("Bye %i", actor->id);
 }
 
 const GameActorTable TAB_COIN = {.load = load, .create = create, .draw = draw, .collide = collide};

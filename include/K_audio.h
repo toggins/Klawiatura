@@ -4,7 +4,7 @@
 
 #include <fmod.h>
 
-#define MAX_SOUNDS 32
+#define MAX_SOUNDS 16
 
 typedef struct {
 	char* name;
@@ -18,26 +18,44 @@ typedef struct {
 	uint32_t length, loop[2];
 } Track;
 
-typedef struct {
-	void* temp;
-} AudioState;
-
-extern AudioState audio_state;
-
 typedef uint8_t TrackSlots;
 enum {
-	TRK_MAIN,
-	TRK_EVENT,
-	TRK_POWER,
-	TRK_SCORE,
-	TRK_FANFARE,
-	TRK_SIZE,
+	TS_MAIN,
+	TS_EVENT,
+	TS_POWER,
+	TS_SCORE,
+	TS_FANFARE,
+	TS_SIZE,
 };
 
 typedef uint8_t PlayFlags;
 enum {
 	PLAY_LOOPING = 1 << 0,
+	PLAY_PAN = 1 << 1,
 };
+
+typedef struct {
+	const Track* track;
+	uint32_t offset;
+	PlayFlags flags;
+} TrackObject;
+
+typedef struct {
+	const Sound* sound;
+	uint32_t offset;
+	PlayFlags flags;
+	float pos[2];
+} SoundObject;
+
+typedef struct {
+	TrackObject tracks[TS_SIZE];
+	TrackSlots top_track;
+
+	SoundObject sounds[MAX_SOUNDS];
+	uint8_t next_sound;
+} AudioState;
+
+extern AudioState audio_state;
 
 void audio_init();
 void audio_update();
@@ -49,6 +67,7 @@ float get_sound_volume();
 void set_sound_volume(float);
 float get_music_volume();
 void set_music_volume(float);
+void move_ears(const float[2]);
 
 // State
 void start_audio_state();
@@ -64,15 +83,13 @@ const Sound* get_sound(const char*);
 void load_track(const char*);
 const Track* get_track(const char*);
 
-// Generic
+// Generic Sounds
 void play_generic_sound(const char*);
 void play_generic_track(const char*, PlayFlags);
-void stop_generic_sounds();
-void stop_generic_tracks();
 
-// State
+// State Sounds
 void play_state_sound(const char*);
-void play_state_sound_at(const char*, float, float);
+void play_state_sound_at(const char*, const float[2]);
+
 void play_state_track(TrackSlots, const char*, PlayFlags);
-void stop_state_sounds();
-void stop_state_tracks();
+void stop_state_track(TrackSlots);

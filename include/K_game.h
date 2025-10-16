@@ -442,6 +442,7 @@ Bool touching_solid(const frect, SolidType);
 void displace_actor(GameActor*, fixed, Bool);
 
 void draw_actor(const GameActor*, const char*, GLfloat, const GLubyte[4]);
+void play_actor_sound(const GameActor*, const char*);
 
 // Math
 int32_t rng(int32_t);
