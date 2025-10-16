@@ -5,6 +5,9 @@
         ".cache": true,
         "build*/": true
     },
+    "files.associations": {
+        "*.h": "c"
+    },
     "C_Cpp.intelliSenseEngine": "disabled",
     "clangd.enable": true,
     "clangd.enableCodeCompletion": true,
