@@ -17,7 +17,7 @@ set(BUILD_SHARED_LIBS OFF)
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
-# SDL3 (3.2.22)
+# SDL3 (3.2.24)
 set(SDL_SHARED OFF CACHE INTERNAL "")
 set(SDL_STATIC ON CACHE INTERNAL "")
 set(SDL_TEST_LIBRARY OFF CACHE INTERNAL "")
@@ -28,7 +28,7 @@ set(SDL_CAMERA OFF CACHE INTERNAL "")
 FetchContent_Declare(
     SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG release-3.2.22)
+    GIT_TAG release-3.2.24)
 
 # SDL_image (3.2.4)
 set(SDLIMAGE_AVIF OFF CACHE INTERNAL "")
@@ -77,7 +77,7 @@ set(NUTPUNCH_BUILD_LOBBYIST OFF CACHE INTERNAL "")
 FetchContent_Declare(
     nutpunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG b960d0cc0894b0c94f1d8c42d207045df212fc5c)
+    GIT_TAG 3628fe3e936baf3d7cb9eaf5be016213276cc47a)
 
 # yyjson (0.12.0)
 FetchContent_Declare(
@@ -89,8 +89,8 @@ FetchContent_Declare(
 set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 FetchContent_Declare(
     GekkoNet
-    GIT_REPOSITORY https://github.com/Schwungus/GekkoNet.git
-    GIT_TAG 4242ecb8daa66281517f26ae928f304032e3418e)
+    GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
+    GIT_TAG cc7318f8088ce2561f3adcb055f3d09a2e919f76)
 
 # FMOD Core API (2.03.08)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
