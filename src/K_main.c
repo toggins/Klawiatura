@@ -55,18 +55,18 @@ bool quickstart = false, permadeath = false;
 static int realmain();
 
 static void show_disclaimer() {
-	INFO("==========[KLAWIATURA]==========");
-	INFO("      MARIO FOREVER ONLINE      ");
-	INFO("================================");
-	INFO("                                ");
-	INFO("         ! DISCLAIMER !         ");
-	INFO("   This is a free, open-source  ");
-	INFO("project not created for any sort");
-	INFO("           of profit.           ");
-	INFO(" All assets belong to Nintendo. ");
-	INFO("We do not condone any commercial");
-	INFO("      use of this project.      ");
-	INFO("                                ");
+	printf("==========[KLAWIATURA]==========\n");
+	printf("      MARIO FOREVER ONLINE      \n");
+	printf("================================\n");
+	printf("                                \n");
+	printf("         ! DISCLAIMER !         \n");
+	printf("   This is a free, open-source  \n");
+	printf("project not created for any sort\n");
+	printf("           of profit.           \n");
+	printf(" All assets belong to Nintendo. \n");
+	printf("We do not condone any commercial\n");
+	printf("      use of this project.      \n");
+	printf("                                \n");
 }
 
 int main(int argc, char* argv[]) {

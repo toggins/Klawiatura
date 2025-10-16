@@ -326,22 +326,16 @@ static void nuke_texture(void* ptr) {
 }
 
 void load_texture(const char* name) {
-	if (name == NULL || get_texture(name) != NULL)
+	if (!name || !*name || get_texture(name))
 		return;
 
 	Texture texture = {0};
 
 	const char* file = find_data_file(fmt("data/textures/%s.*", name), ".json");
-	if (file == NULL) {
-		WTF("Texture \"%s\" not found", name);
-		return;
-	}
+	ASSUME(file, "Texture \"%s\" not found", name);
 
 	SDL_Surface* surface = IMG_Load(file);
-	if (surface == NULL) {
-		WTF("Texture \"%s\" fail: %s", name, SDL_GetError());
-		return;
-	}
+	ASSUME(surface, "Texture \"%s\" fail: %s", name, SDL_GetError());
 
 	texture.name = SDL_strdup(name);
 	texture.size[0] = surface->w;
@@ -383,7 +377,7 @@ eatadick:
 }
 
 const Texture* get_texture(const char* name) {
-	return (name == NULL) ? NULL : StMapGet(textures, long_key(name));
+	return !name ? NULL : StMapGet(textures, long_key(name));
 }
 
 // =====
@@ -402,17 +396,11 @@ void load_font(const char* name) {
 	Font font = {0};
 
 	const char* file = find_data_file(fmt("data/fonts/%s.*", name), NULL);
-	if (file == NULL) {
-		WTF("Font \"%s\" not found", name);
-		return;
-	}
+	ASSUME(file, "Font \"%s\" not found", name);
 
 	yyjson_read_err error;
 	yyjson_doc* json = yyjson_read_file(file, JSON_READ_FLAGS, NULL, &error);
-	if (json == NULL) {
-		WTF("Font \"%s\" fail: %s", name, error.msg);
-		return;
-	}
+	ASSUME(json, "Font \"%s\" fail: %s", name, error.msg);
 
 	yyjson_val* root = yyjson_doc_get_root(json);
 	if (!yyjson_is_obj(root)) {

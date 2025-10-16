@@ -148,10 +148,7 @@ void load_sound(const char* name) {
 	const char* file = find_data_file(fmt("data/sounds/%s.*", name), ".json");
 	FMOD_SOUND* data = NULL;
 	FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESAMPLE, NULL, &data);
-	if (result != FMOD_OK) {
-		WTF("Sound \"%s\" fail: %s", name, FMOD_ErrorString(result));
-		return;
-	}
+	ASSUME(result == FMOD_OK, "Sound \"%s\" fail: %s", name, FMOD_ErrorString(result));
 
 	sound.name = SDL_strdup(name);
 	sound.sound = data;
@@ -179,10 +176,7 @@ void load_track(const char* name) {
 	const char* file = find_data_file(fmt("data/music/%s.*", name), ".json");
 	FMOD_SOUND* data = NULL;
 	FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESTREAM | FMOD_ACCURATETIME, NULL, &data);
-	if (result != FMOD_OK) {
-		WTF("Track \"%s\" fail: %s", name, FMOD_ErrorString(result));
-		return;
-	}
+	ASSUME(result == FMOD_OK, "Track \"%s\" fail: %s", name, FMOD_ErrorString(result));
 
 	track.name = SDL_strdup(name);
 	track.stream = data;

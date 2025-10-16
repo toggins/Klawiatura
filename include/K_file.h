@@ -8,3 +8,5 @@
 void file_init(const char*), file_teardown();
 const char *find_data_file(const char*, const char*), *find_user_file(const char*, const char*);
 const char *get_data_path(), *get_user_path();
+
+const char* file_basename(const char*);

@@ -150,10 +150,7 @@ void load_config() {
 
 	yyjson_read_err error;
 	yyjson_doc* json = yyjson_read_file(config_file, JSON_READ_FLAGS, NULL, &error);
-	if (json == NULL) {
-		WTF("Failed to load config: %s", error.msg);
-		return;
-	}
+	ASSUME(json, "Failed to load config: %s", error.msg);
 
 	yyjson_val* root = yyjson_doc_get_root(json);
 	if (yyjson_is_obj(root))
@@ -214,18 +211,15 @@ void save_config() {
 
 	size_t size;
 	yyjson_write_err error;
+
 	char* buffer = yyjson_mut_write_opts(json, JSON_WRITE_FLAGS, NULL, &size, &error);
 	yyjson_mut_doc_free(json);
+	ASSUME(buffer, "save_config fail: %s", error.msg);
 
-	if (buffer == NULL) {
-		WTF("save_config fail: %s", error.msg);
-		return;
-	}
 	const char* path = fmt("%sconfig.json", get_user_path());
-	if (!SDL_SaveFile(path, buffer, size)) {
-		WTF("save_config fail: %s", SDL_GetError());
-		return;
-	}
+	ASSUME(SDL_SaveFile(path, buffer, size), "save_config fail: %s", SDL_GetError());
+	// FIXME: leaky below if assumption fails....
+
 	SDL_free(buffer);
 	INFO("Config saved");
 }

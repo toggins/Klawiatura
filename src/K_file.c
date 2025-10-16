@@ -67,3 +67,10 @@ const char* get_data_path() {
 const char* get_user_path() {
 	return user_path;
 }
+
+const char* file_basename(const char* path) {
+	const char* s = SDL_strrchr(path, '/');
+	if (!s)
+		s = SDL_strrchr(path, '\\');
+	return s ? s + 1 : path;
+}

@@ -454,10 +454,7 @@ void start_game_state(GameContext* ctx) {
 	//
 	//
 	uint8_t* data = SDL_LoadFile(find_data_file(fmt("data/levels/%s.*", ctx->level), NULL), NULL);
-	if (data == NULL) {
-		WTF("Failed to load level \"%s\": %s", ctx->level, SDL_GetError());
-		return;
-	}
+	ASSUME(data, "Failed to load level \"%s\": %s", ctx->level, SDL_GetError());
 	const uint8_t* buf = data;
 
 	// Header
