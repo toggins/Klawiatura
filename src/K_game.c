@@ -404,9 +404,9 @@ static void read_string(const char** buf, char* dest, size_t maxlen) {
 	while (**buf != '\0') {
 		if (i < maxlen)
 			dest[i++] = **buf;
-		*buf += sizeof(char);
+		*buf += 1;
 	}
-	*buf += sizeof(char);
+	*buf += 1;
 	dest[SDL_min(i, maxlen - 1)] = '\0';
 }
 
@@ -458,12 +458,12 @@ void start_game_state(GameContext* ctx) {
 	const uint8_t* buf = data;
 
 	// Header
-	if (SDL_strncmp((const char*)buf, "Klawiatura", sizeof(char[10])) != 0) {
+	if (SDL_strncmp((const char*)buf, "Klawiatura", 10) != 0) {
 		WTF("Invalid level header");
 		SDL_free(data);
 		return;
 	}
-	buf += sizeof(char[10]);
+	buf += 10;
 
 	const uint8_t major = *buf;
 	if (major != MAJOR_LEVEL_VERSION) {
@@ -471,7 +471,7 @@ void start_game_state(GameContext* ctx) {
 		SDL_free(data);
 		return;
 	}
-	buf += sizeof(uint8_t);
+	buf++;
 
 	const uint8_t minor = *buf;
 	if (minor != MINOR_LEVEL_VERSION) {
@@ -479,13 +479,13 @@ void start_game_state(GameContext* ctx) {
 		SDL_free(data);
 		return;
 	}
-	buf += sizeof(uint8_t);
+	buf++;
 
 	// Level
 	char level_name[32];
-	SDL_memcpy(level_name, buf, sizeof(char[32]));
+	SDL_memcpy(level_name, buf, 32);
 	INFO("Level: %s (%s)", ctx->level, level_name);
-	buf += sizeof(char[32]);
+	buf += 32;
 
 	read_string((const char**)(&buf), game_state.world, sizeof(game_state.world));
 	load_texture(game_state.world);
@@ -529,11 +529,11 @@ void start_game_state(GameContext* ctx) {
 	for (uint32_t i = 0; i < num_markers; i++) {
 		// Skip editor def
 		while (*buf != '\0')
-			buf += sizeof(char);
-		buf += sizeof(char);
+			buf++;
+		buf++;
 
 		uint8_t marker_type = *((uint8_t*)buf);
-		buf += sizeof(uint8_t);
+		buf++;
 
 		switch (marker_type) {
 		default:
@@ -597,12 +597,10 @@ void start_game_state(GameContext* ctx) {
 				buf += sizeof(fvec2);
 
 				uint8_t num_values = *((uint8_t*)buf);
-				buf += sizeof(uint8_t);
+				buf++;
 
-				for (uint8_t j = 0; j < num_values; j++) {
-					buf += sizeof(uint8_t);
-					buf += sizeof(ActorValue);
-				}
+				for (uint8_t j = 0; j < num_values; j++)
+					buf += 1 + sizeof(ActorValue);
 
 				buf += sizeof(ActorFlag);
 				break;
@@ -619,11 +617,11 @@ void start_game_state(GameContext* ctx) {
 			actor->box.end.y = Fmul(actor->box.end.y, scale.y);
 
 			uint8_t num_values = *((uint8_t*)buf);
-			buf += sizeof(uint8_t);
+			buf++;
 
 			for (uint8_t j = 0; j < num_values; j++) {
 				uint8_t idx = *((uint8_t*)buf);
-				buf += sizeof(uint8_t);
+				buf++;
 
 				actor->values[idx] = *((ActorValue*)buf);
 				buf += sizeof(ActorValue);

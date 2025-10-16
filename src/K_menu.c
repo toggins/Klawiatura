@@ -684,7 +684,7 @@ void show_error(const char* fmt, ...) {
 		OPTIONS[MEN_ERROR][i].disabled = true;
 	}
 	while (token) {
-		OPTIONS[MEN_ERROR][idx].name = token, idx += 1;
+		OPTIONS[MEN_ERROR][idx].name = token, idx++;
 		token = SDL_strtok_r(NULL, sep, &state);
 	}
 
