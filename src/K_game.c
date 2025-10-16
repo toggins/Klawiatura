@@ -231,7 +231,7 @@ bool update_game() {
 					if (game_state.next[0] == '\0')
 						goto byebye_game;
 
-					GameContext ctx;
+					GameContext ctx = {0};
 					setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_TRY_KEVIN);
 					ctx.players[0].lives = game_state.players[0].lives;
 					ctx.players[0].power = game_state.players[0].power;
@@ -241,7 +241,7 @@ bool update_game() {
 					nuke_game();
 					start_game(&ctx);
 				} else if (game_state.flags & GF_RESTART) {
-					GameContext ctx;
+					GameContext ctx = {0};
 					setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
 					ctx.players[0].lives = game_state.players[0].lives;
 					ctx.players[0].coins = game_state.players[0].coins;
