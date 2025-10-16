@@ -395,6 +395,8 @@ typedef struct {
 	void (*on_top)(GameActor*, GameActor*);
 	/// Callback function for when the displacee is below the actor.
 	void (*on_bottom)(GameActor*, GameActor*);
+	/// Callback function for getting the actor's player ID.
+	PlayerID (*owner)(GameActor*);
 } GameActorTable;
 
 extern GameState game_state;
@@ -420,10 +422,12 @@ void nuke_game_state();
 // Players
 GamePlayer* get_player(PlayerID);
 GameActor* respawn_player(GamePlayer*);
+GamePlayer* get_owner(GameActor*);
 
 // Actors
 void load_actor(GameActorType);
 GameActor* create_actor(GameActorType, const fvec2);
+void replace_actors(GameActorType, GameActorType);
 
 GameActor* get_actor(ActorID);
 void move_actor(GameActor*, const fvec2);

@@ -43,7 +43,7 @@ SolidType always_top(const GameActor* actor) {
 
 static const GameActorTable TAB_NULL = {0};
 extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_CLOUD, TAB_BUSH, TAB_SOLID, TAB_SOLID_TOP,
-	TAB_SOLID_SLOPE;
+	TAB_SOLID_SLOPE, TAB_COIN;
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
 	[ACT_PLAYER_SPAWN] = &TAB_PLAYER_SPAWN,
@@ -53,6 +53,8 @@ static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_SOLID] = &TAB_SOLID,
 	[ACT_SOLID_TOP] = &TAB_SOLID_TOP,
 	[ACT_SOLID_SLOPE] = &TAB_SOLID_SLOPE,
+	[ACT_COIN] = &TAB_COIN,
+	[ACT_PSWITCH_COIN] = &TAB_COIN,
 };
 
 static Surface* game_surface = NULL;
@@ -338,6 +340,36 @@ nocam:
 		batch_align(FA_RIGHT, FA_TOP);
 		batch_string("hud", 16, fmt("%u", player->score));
 		batch_align(FA_LEFT, FA_TOP);
+
+		const char* tex;
+		switch ((int)((float)(game_state.time) / 6.25f) % 4) {
+		default:
+			tex = "ui/coins";
+			break;
+		case 1:
+		case 3:
+			tex = "ui/coins2";
+			break;
+		case 2:
+			tex = "ui/coins3";
+			break;
+		}
+		batch_cursor(XYZ(224.f, 34.f, -10000.f));
+		batch_sprite(tex, NO_FLIP);
+		batch_cursor(XYZ(288.f, 34.f, -10000.f));
+		batch_string("hud", 16, fmt("%u", player->coins));
+
+		batch_cursor(XYZ(432.f, 16.f, -10000.f));
+		batch_sprite(game_state.world, NO_FLIP);
+
+		if (game_state.clock >= 0L) {
+			batch_cursor(XYZ(608.f, 16.f, -10000.f));
+			batch_align(FA_RIGHT, FA_TOP);
+			batch_string("hud", 16, "TIME");
+			batch_cursor(XYZ(608.f, 34.f, -10000.f));
+			batch_string("hud", 16, fmt("%u", game_state.clock));
+			batch_align(FA_LEFT, FA_TOP);
+		}
 	}
 	pop_surface();
 
@@ -442,6 +474,9 @@ void start_game_state(GameContext* ctx) {
 	//
 	//
 	//
+	load_texture("ui/coins");
+	load_texture("ui/coins2");
+	load_texture("ui/coins3");
 	load_texture("markers/water");
 	load_texture("markers/water2");
 	load_texture("markers/water3");
@@ -700,6 +735,13 @@ GameActor* respawn_player(GamePlayer* player) {
 	return pawn;
 }
 
+/// Gets the player that the actor belongs to.
+GamePlayer* get_owner(GameActor* actor) {
+	return (ACTORS[actor->type] == NULL || ACTORS[actor->type]->owner == NULL)
+	               ? NULL
+	               : get_player(ACTORS[actor->type]->owner(actor));
+}
+
 // ======
 // ACTORS
 // ======
@@ -777,22 +819,19 @@ static void destroy_actor(GameActor* actor) {
 		GameActor* neighbor = get_actor(actor->previous_cell);
 		if (neighbor != NULL)
 			neighbor->next_cell = actor->next_cell;
-		actor->next_cell = NULLACT;
 
 		neighbor = get_actor(actor->next_cell);
 		if (neighbor != NULL)
 			neighbor->previous_cell = actor->previous_cell;
-		actor->previous_cell = NULLACT;
 
 		if (game_state.grid[actor->cell] == actor->id)
 			game_state.grid[actor->cell] = actor->previous_cell;
+
+		actor->previous_cell = actor->next_cell = NULLACT;
 		actor->cell = NULLCELL;
 	}
 
 	// Unlink list
-	if (game_state.live_actors == actor->id)
-		game_state.live_actors = actor->previous;
-
 	GameActor* neighbor = get_actor(actor->previous);
 	if (neighbor != NULL)
 		neighbor->next = actor->next;
@@ -800,6 +839,21 @@ static void destroy_actor(GameActor* actor) {
 	neighbor = get_actor(actor->next);
 	if (neighbor != NULL)
 		neighbor->previous = actor->previous;
+
+	if (game_state.live_actors == actor->id)
+		game_state.live_actors = actor->previous;
+
+	actor->previous = actor->next = NULLACT;
+}
+
+/// Destroys all `before` actors and creates `after` actors on top of them.
+void replace_actors(GameActorType before, GameActorType after) {
+	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
+		if (actor->type != before)
+			continue;
+		FLAG_ON(actor, FLG_DESTROY);
+		create_actor(after, actor->pos);
+	}
 }
 
 /// Fetch an actor by its `ActorID`.

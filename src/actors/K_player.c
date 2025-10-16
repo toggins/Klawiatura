@@ -76,4 +76,9 @@ static void cleanup(GameActor* actor) {
 		player->actor = NULLACT;
 }
 
-const GameActorTable TAB_PLAYER = {.load = load, .create = create, .tick = tick, .draw = draw, .cleanup = cleanup};
+static PlayerID owner(GameActor* actor) {
+	return (PlayerID)actor->values[VAL_PLAYER_INDEX];
+}
+
+const GameActorTable TAB_PLAYER
+	= {.load = load, .create = create, .tick = tick, .draw = draw, .cleanup = cleanup, .owner = owner};
