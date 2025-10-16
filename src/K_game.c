@@ -149,6 +149,8 @@ bool update_game() {
 			input |= GI_FIRE;
 		if (kb_down(KB_RUN))
 			input |= GI_RUN;
+		if (game_state.flags & (GF_END | GF_RESTART))
+			input |= GI_WARP;
 		gekko_add_local_input(game_session, local_player, &input);
 
 		int count = 0;
@@ -218,39 +220,49 @@ bool update_game() {
 				tick_video_state();
 				tick_audio_state();
 
-				// !!! CLIENT-SIDE !!!
-				// FIXME: Figure out this whole section for
-				//        multiplayer.
-				//        Instant level changes aren't safe
-				//        because of rollback.
-				if (!(game_state.flags & GF_SINGLE))
-					break;
+				for (size_t j = 0; j < num_players; j++)
+					if (!(inputs[j] & GI_WARP))
+						goto no_warp;
 
 				if (game_state.flags & GF_END) {
 					if (game_state.next[0] == '\0')
 						goto byebye_game;
 
 					GameContext ctx = {0};
-					setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_TRY_KEVIN);
-					ctx.players[0].lives = game_state.players[0].lives;
-					ctx.players[0].power = game_state.players[0].power;
-					ctx.players[0].coins = game_state.players[0].coins;
-					ctx.players[0].score = game_state.players[0].score;
+					setup_game_context(&ctx, game_state.next, GF_TRY_SINGLE | GF_TRY_KEVIN);
+					ctx.num_players = num_players;
+					for (PlayerID i = 0; i < num_players; i++) {
+						const int8_t lives = game_state.players[i].lives;
+						if (lives < 0)
+							continue;
+						ctx.players[i].lives = lives;
+						ctx.players[i].power = game_state.players[i].power;
+						ctx.players[i].coins = game_state.players[i].coins;
+						ctx.players[i].score = game_state.players[i].score;
+					}
 
 					nuke_game();
 					start_game(&ctx);
 				} else if (game_state.flags & GF_RESTART) {
 					GameContext ctx = {0};
-					setup_game_context(&ctx, game_state.next, GF_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
-					ctx.players[0].lives = game_state.players[0].lives;
-					ctx.players[0].coins = game_state.players[0].coins;
-					ctx.players[0].score = game_state.players[0].score;
+					setup_game_context(
+						&ctx, game_state.next, GF_TRY_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
+					ctx.num_players = num_players;
+					for (PlayerID i = 0; i < num_players; i++) {
+						const int8_t lives = game_state.players[i].lives;
+						if (lives < 0)
+							continue;
+						ctx.players[i].lives = lives;
+						ctx.players[i].coins = game_state.players[i].coins;
+						ctx.players[i].score = game_state.players[i].score;
+					}
 					ctx.checkpoint = game_state.checkpoint;
 
 					nuke_game();
 					start_game(&ctx);
 				}
-				// !!! CLIENT-SIDE !!!
+
+			no_warp:
 				break;
 			}
 
@@ -379,7 +391,7 @@ void nuke_game_state() {
 	SDL_memset(&game_state, 0, sizeof(game_state));
 
 	for (PlayerID i = 0; i < MAX_PLAYERS; i++)
-		game_state.players[i].id = i;
+		game_state.players[i].id = NULLPLAY;
 
 	game_state.live_actors = NULLACT;
 	for (ActorID i = 0; i < MAX_ACTORS; i++)
@@ -416,9 +428,8 @@ void start_game_state(GameContext* ctx) {
 
 	if (num_players <= 0 || num_players > MAX_PLAYERS)
 		FATAL("Invalid player count for game! Expected 1 to 4, got %i", num_players);
-	for (PlayerID i = 0; i < MAX_PLAYERS; i++)
-		if (i >= num_players)
-			game_state.players[i].id = NULLPLAY;
+	for (PlayerID i = 0; i < num_players; i++)
+		game_state.players[i].id = i;
 
 	SDL_strlcpy(game_state.level, ctx->level, sizeof(game_state.level));
 	game_state.flags |= ctx->flags;

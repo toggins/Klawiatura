@@ -50,6 +50,7 @@ enum {
 	GI_JUMP = 1 << 4,
 	GI_RUN = 1 << 5,
 	GI_FIRE = 1 << 6,
+	GI_WARP = 1 << 7,
 };
 
 typedef uint16_t GameFlag;
@@ -67,6 +68,7 @@ enum {
 	GF_REPLAY = 1 << 10,
 	GF_SINGLE = 1 << 11,
 	GF_RESTART = 1 << 12,
+#define GF_TRY_SINGLE (((game_state.flags & GF_SINGLE) == GF_SINGLE) * GF_SINGLE)
 };
 
 typedef uint8_t GameSequenceType;
