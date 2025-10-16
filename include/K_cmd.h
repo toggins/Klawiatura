@@ -4,6 +4,8 @@
 
 #include <nutpunch.h>
 
+#include "K_game.h"
+
 #define CMD_OPT(ident) cmd_set_##ident
 #define MAKE_FLAG(ident) MAKE_OPTION_PRO(ident, bool, false, true)
 #define MAKE_OPTION(ident, default) MAKE_OPTION_PRO(ident, const char*, default, next_arg())
@@ -20,6 +22,8 @@ typedef struct {
 } CmdArg;
 
 #define CLIENT_STRING_MAX (NUTPUNCH_FIELD_DATA_MAX)
+#define GF_TRY_KEVIN (CLIENT.game.kevin * GF_KEVIN)
+
 typedef struct {
 	struct {
 		char name[CLIENT_STRING_MAX];
@@ -31,7 +35,7 @@ typedef struct {
 	} input;
 
 	struct {
-		int8_t players; // Supposed to be PlayerID, but including `K_game.h` causes errors.
+		PlayerID players;
 		bool kevin;
 		char level[CLIENT_STRING_MAX];
 	} game;

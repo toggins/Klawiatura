@@ -1,7 +1,6 @@
 #pragma once
 
 #include "K_audio.h"
-#include "K_cmd.h" // IWYU pragma: keep for `GF_TRY_KEVIN`
 #include "K_math.h"
 #include "K_net.h" // IWYU pragma: keep
 #include "K_video.h"
@@ -68,7 +67,6 @@ enum {
 	GF_REPLAY = 1 << 10,
 	GF_SINGLE = 1 << 11,
 	GF_RESTART = 1 << 12,
-#define GF_TRY_KEVIN (CLIENT.game.kevin * GF_KEVIN)
 };
 
 typedef uint8_t GameSequenceType;
