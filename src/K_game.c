@@ -122,7 +122,7 @@ void nuke_game() {
 	nuke_audio_state();
 	nuke_video_state();
 
-	gekko_destroy(game_session);
+	gekko_destroy(&game_session);
 	game_session = NULL;
 	destroy_surface(game_surface);
 	game_surface = NULL;
