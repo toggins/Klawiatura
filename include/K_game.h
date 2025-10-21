@@ -411,7 +411,7 @@ typedef struct {
 	/// Callback function for when the displacee is to the right of the actor.
 	void (*on_right)(GameActor*, GameActor*);
 	/// Callback function for getting the actor's player ID.
-	PlayerID (*owner)(GameActor*);
+	PlayerID (*owner)(const GameActor*);
 } GameActorTable;
 
 extern GameState game_state;
@@ -435,9 +435,11 @@ void dump_game_state();
 void nuke_game_state();
 
 // Players
-GamePlayer* get_player(PlayerID);
+GamePlayer *get_player(PlayerID), *get_owner(const GameActor*);
 GameActor* respawn_player(GamePlayer*);
-GamePlayer* get_owner(GameActor*);
+
+PlayerID localplayer(), viewplayer(), numplayers();
+void set_view_player(GamePlayer*);
 
 // Actors
 void load_actor(GameActorType);
@@ -445,6 +447,7 @@ GameActor* create_actor(GameActorType, const fvec2);
 void replace_actors(GameActorType, GameActorType);
 
 GameActor* get_actor(ActorID);
+const InterpActor* get_interp(const GameActor*);
 void move_actor(GameActor*, const fvec2);
 
 typedef struct {

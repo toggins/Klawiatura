@@ -1,3 +1,5 @@
+#pragma once
+
 #include "K_game.h"
 
 enum {
@@ -26,7 +28,11 @@ enum {
 	FLG_PLAYER_WARP_OUT = CUSTOM_FLAG(7),
 	FLG_PLAYER_DEAD = CUSTOM_FLAG(8),
 	FLG_PLAYER_CARRIED = CUSTOM_FLAG(9),
+	FLG_PLAYER_JACKASS = CUSTOM_FLAG(10),
 };
 
 PlayerFrame get_player_frame(const GameActor*);
 const char* get_player_texture(PlayerPower, PlayerFrame);
+
+Bool hit_player(GameActor*);
+void kill_player(GameActor*), win_player(GameActor*);

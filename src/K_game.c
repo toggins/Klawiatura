@@ -42,12 +42,13 @@ SolidType always_top(const GameActor* actor) {
 }
 
 static const GameActorTable TAB_NULL = {0};
-extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_CLOUD, TAB_BUSH, TAB_SOLID, TAB_SOLID_TOP,
-	TAB_SOLID_SLOPE, TAB_COIN;
+extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_PLAYER_DEAD, TAB_CLOUD, TAB_BUSH, TAB_SOLID,
+	TAB_SOLID_TOP, TAB_SOLID_SLOPE, TAB_COIN, TAB_POINTS, TAB_GOAL_BAR, TAB_GOAL_BAR_FLY, TAB_GOAL_MARK;
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
 	[ACT_PLAYER_SPAWN] = &TAB_PLAYER_SPAWN,
 	[ACT_PLAYER] = &TAB_PLAYER,
+	[ACT_PLAYER_DEAD] = &TAB_PLAYER_DEAD,
 	[ACT_CLOUD] = &TAB_CLOUD,
 	[ACT_BUSH] = &TAB_BUSH,
 	[ACT_SOLID] = &TAB_SOLID,
@@ -55,15 +56,20 @@ static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_SOLID_SLOPE] = &TAB_SOLID_SLOPE,
 	[ACT_COIN] = &TAB_COIN,
 	[ACT_PSWITCH_COIN] = &TAB_COIN,
+	[ACT_POINTS] = &TAB_POINTS,
+	[ACT_GOAL_BAR] = &TAB_GOAL_BAR,
+	[ACT_GOAL_BAR_FLY] = &TAB_GOAL_BAR_FLY,
+	[ACT_GOAL_MARK] = &TAB_GOAL_MARK,
 };
 
 static Surface* game_surface = NULL;
 static GekkoSession* game_session = NULL;
 GameState game_state = {0};
 
-PlayerID local_player = -1L, view_player = -1L, num_players = 0L;
+PlayerID local_player = NULLPLAY, view_player = NULLPLAY, num_players = 0L;
 
 static InterpState interp = {0};
+static float camera[2] = {0};
 
 // ====
 // GAME
@@ -267,10 +273,11 @@ bool update_game() {
 
 					nuke_game();
 					start_game(&ctx);
+					goto break_events;
 				} else if (game_state.flags & GF_RESTART) {
 					GameContext ctx = {0};
 					setup_game_context(
-						&ctx, game_state.next, GF_TRY_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
+						&ctx, game_state.level, GF_TRY_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
 					ctx.num_players = num_players;
 					for (PlayerID i = 0; i < num_players; i++) {
 						const int8_t lives = game_state.players[i].lives;
@@ -284,6 +291,7 @@ bool update_game() {
 
 					nuke_game();
 					start_game(&ctx);
+					goto break_events;
 				}
 
 			no_warp:
@@ -295,6 +303,7 @@ bool update_game() {
 			}
 		}
 
+	break_events:
 		next_tick();
 	}
 
@@ -331,28 +340,26 @@ void draw_game() {
 	const GamePlayer* player = get_player(view_player);
 	if (player != NULL) {
 		const GameActor* pawn = get_actor(player->actor);
-		if (pawn == NULL)
-			goto nocam;
+		if (pawn != NULL) {
+			InterpActor* ipawn = &interp.actors[pawn->id];
+			camera[0] = FtInt(ipawn->pos.x);
+			camera[1] = FtInt(ipawn->pos.y);
+		}
 
 		const float bx1 = FtFloat(player->bounds.start.x + F_HALF_SCREEN_WIDTH);
 		const float by1 = FtFloat(player->bounds.start.y + F_HALF_SCREEN_HEIGHT);
 		const float bx2 = FtFloat(player->bounds.end.x - F_HALF_SCREEN_WIDTH);
 		const float by2 = FtFloat(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
-
-		const InterpActor* ipawn = &interp.actors[pawn->id];
-		float cx = FtInt(ipawn->pos.x);
-		float cy = FtInt(ipawn->pos.y);
-		cx = SDL_clamp(cx, bx1, bx2);
-		cy = SDL_clamp(cy, by1, by2);
-
-		glm_ortho(cx - (float)HALF_SCREEN_WIDTH, cx + (float)HALF_SCREEN_WIDTH, cy - (float)HALF_SCREEN_HEIGHT,
-			cy + (float)HALF_SCREEN_HEIGHT, -16000, 16000, proj);
-		set_projection_matrix(proj);
-		apply_matrices();
-		move_ears((float[2]){cx, cy});
+		camera[0] = SDL_clamp(camera[0], bx1, bx2);
+		camera[1] = SDL_clamp(camera[1], by1, by2);
 	}
 
-nocam:
+	glm_ortho(camera[0] - (float)HALF_SCREEN_WIDTH, camera[0] + (float)HALF_SCREEN_WIDTH,
+		camera[1] - (float)HALF_SCREEN_HEIGHT, camera[1] + (float)HALF_SCREEN_HEIGHT, -16000, 16000, proj);
+	set_projection_matrix(proj);
+	apply_matrices();
+	move_ears(camera);
+
 	// clear_color(0, 0, 0, 1);
 	clear_depth(1);
 
@@ -375,7 +382,6 @@ nocam:
 		batch_cursor(XYZ(147.f, 34.f, -10000.f));
 		batch_align(FA_RIGHT, FA_TOP);
 		batch_string("hud", 16, fmt("%u", player->score));
-		batch_align(FA_LEFT, FA_TOP);
 
 		const char* tex;
 		switch ((int)((float)(game_state.time) / 6.25f) % 4) {
@@ -404,7 +410,17 @@ nocam:
 			batch_string("hud", 16, "TIME");
 			batch_cursor(XYZ(608.f, 34.f, -10000.f));
 			batch_string("hud", 16, fmt("%u", game_state.clock));
+		}
+
+		if (game_state.sequence.type == SEQ_LOSE && game_state.sequence.time > 0L) {
+			batch_cursor(XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, -10000.f));
+			batch_align(FA_CENTER, FA_MIDDLE);
+			batch_string("hud", 16, (game_state.clock == 0) ? "TIME UP" : "GAME OVER");
+		} else if (local_player != view_player) {
+			batch_cursor(XYZ(32, 64, -10000.f));
+			batch_color(ALPHA(160));
 			batch_align(FA_LEFT, FA_TOP);
+			batch_string("main", 24, fmt("Spectating: %s", get_peer_name(view_player)));
 		}
 	}
 	pop_surface();
@@ -434,6 +450,79 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 	}
 
 	++game_state.time;
+	switch (game_state.sequence.type) {
+	default:
+		break;
+
+	case SEQ_NONE: {
+		if (game_state.clock <= 0L || (game_state.time % 25L) != 0L)
+			break;
+
+		--game_state.clock;
+		if (game_state.clock <= 100L && !(game_state.flags & GF_HURRY)) {
+			play_state_sound("hurry");
+			game_state.flags |= GF_HURRY;
+		}
+
+		if (game_state.clock <= 0L)
+			for (PlayerID i = 0; i < num_players; i++) {
+				GamePlayer* player = get_player(i);
+				if (player == NULL)
+					continue;
+				kill_player(get_actor(player->actor));
+			}
+
+		break;
+	}
+
+	case SEQ_LOSE: {
+		if (game_state.sequence.time <= 0L || game_state.sequence.time > 300L)
+			break;
+		++game_state.sequence.time;
+
+		if (game_state.sequence.time > 300L) {
+			Bool all_dead = true;
+			for (PlayerID i = 0; i < num_players; i++) {
+				GamePlayer* player = get_player(i);
+				if (player != NULL && player->lives >= 0) {
+					all_dead = false;
+					break;
+				}
+			}
+
+			if (all_dead)
+				game_state.flags |= GF_RESTART;
+			else {
+				SDL_memset(game_state.next, 0, sizeof(game_state.next));
+				game_state.flags |= GF_END;
+			}
+		}
+		break;
+	}
+
+	case SEQ_WIN: {
+		const uint16_t duration = (game_state.flags & GF_LOST) ? 150L : 400L;
+		++game_state.sequence.time;
+
+		if (game_state.sequence.time > duration && game_state.clock > 0L) {
+			const int32_t diff = (game_state.clock > 0L) + (((game_state.clock - 1L) >= 10L) * 10L);
+			game_state.clock -= diff;
+
+			GamePlayer* player = get_player(game_state.sequence.activator);
+			if (player != NULL)
+				player->score += diff * 10L;
+
+			if ((game_state.time % 5L) == 0L)
+				play_state_sound("tick");
+			--game_state.sequence.time;
+		}
+
+		if (game_state.sequence.time > (duration + 50L))
+			game_state.flags |= GF_END;
+	}
+
+	break;
+	}
 }
 
 void save_game_state(GameState* gs) {
@@ -469,8 +558,10 @@ void nuke_game_state() {
 	}
 
 	game_state.live_actors = NULLACT;
-	for (ActorID i = 0; i < MAX_ACTORS; i++)
-		game_state.actors[i].id = NULLACT;
+	for (ActorID i = 0; i < MAX_ACTORS; i++) {
+		game_state.actors[i].id = game_state.actors[i].previous = game_state.actors[i].next
+			= game_state.actors[i].previous_cell = game_state.actors[i].next_cell = NULLACT;
+	}
 	for (int32_t i = 0; i < GRID_SIZE; i++)
 		game_state.grid[i] = NULLACT;
 
@@ -784,10 +875,26 @@ GameActor* respawn_player(GamePlayer* player) {
 }
 
 /// Gets the player that the actor belongs to.
-GamePlayer* get_owner(GameActor* actor) {
+GamePlayer* get_owner(const GameActor* actor) {
 	return (ACTORS[actor->type] == NULL || ACTORS[actor->type]->owner == NULL)
 	               ? NULL
 	               : get_player(ACTORS[actor->type]->owner(actor));
+}
+
+PlayerID localplayer() {
+	return local_player;
+}
+
+PlayerID viewplayer() {
+	return view_player;
+}
+
+PlayerID numplayers() {
+	return num_players;
+}
+
+void set_view_player(GamePlayer* player) {
+	view_player = (PlayerID)((player == NULL) ? NULLPLAY : player->id);
 }
 
 // ======
@@ -860,9 +967,6 @@ static void destroy_actor(GameActor* actor) {
 	else
 		ACTOR_CALL(actor, cleanup);
 
-	actor->id = NULLACT;
-	actor->type = ACT_NULL;
-
 	// Unlink cell
 	if (actor->cell >= 0L && actor->cell < GRID_SIZE) {
 		GameActor* neighbor = get_actor(actor->previous_cell);
@@ -893,6 +997,9 @@ static void destroy_actor(GameActor* actor) {
 		game_state.live_actors = actor->previous;
 
 	actor->previous = actor->next = NULLACT;
+
+	actor->id = NULLACT;
+	actor->type = ACT_NULL;
 }
 
 /// Destroys all `before` actors and creates `after` actors on top of them.
@@ -911,6 +1018,13 @@ GameActor* get_actor(ActorID id) {
 		return NULL;
 	GameActor* actor = &game_state.actors[id];
 	return (actor->id == NULLACT) ? NULL : actor;
+}
+
+/// Fetch an actor's interpolation data.
+const InterpActor* get_interp(const GameActor* actor) {
+	if (actor == NULL || actor->id < 0L || actor->id >= MAX_ACTORS)
+		return NULL;
+	return &interp.actors[actor->id];
 }
 
 /// Move an actor and determine whether or not it actually moved.

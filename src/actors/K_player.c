@@ -1,4 +1,5 @@
 #include "K_player.h"
+#include "K_points.h"
 
 // ================
 // HELPER FUNCTIONS
@@ -401,9 +402,129 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 	}
 }
 
-// ===========
-// SPAWN POINT
-// ===========
+Bool hit_player(GameActor* actor) {
+	if (actor->type != ACT_PLAYER || actor->values[VAL_PLAYER_FLASH] > 0L || actor->values[VAL_PLAYER_STARMAN] > 0L
+		|| actor->values[VAL_PLAYER_WARP] > 0L || game_state.sequence.type == SEQ_WIN)
+		return false;
+
+	GamePlayer* player = get_owner(actor);
+	if (player != NULL) {
+		if (player->power == POW_SMALL) {
+			kill_player(actor);
+			return true;
+		}
+		player->power = (player->power == POW_BIG) ? POW_SMALL : POW_BIG;
+	}
+
+	actor->values[VAL_PLAYER_POWER] = 3000L, actor->values[VAL_PLAYER_FLASH] = 100L;
+	play_actor_sound(actor, "warp");
+	return true;
+}
+
+void kill_player(GameActor* actor) {
+	if (actor->type != ACT_PLAYER)
+		return;
+
+	GameActor* dead = create_actor(ACT_PLAYER_DEAD, actor->pos);
+	if (dead == NULL)
+		return;
+
+	// !!! CLIENT-SIDE !!!
+	if (actor->values[VAL_PLAYER_INDEX] == localplayer() && actor->values[VAL_PLAYER_STARMAN] > 0L)
+		stop_state_track(TS_POWER);
+	// !!! CLIENT-SIDE !!!
+
+	GamePlayer* player = get_owner(actor);
+	if (player != NULL) {
+		dead->values[VAL_PLAYER_INDEX] = (ActorValue)player->id;
+
+		--player->lives;
+		player->power = POW_SMALL;
+
+		GameActor* kpawn = get_actor(player->kevin.actor);
+		if (kpawn != NULL) {
+			create_actor(ACT_EXPLODE, POS_ADD(kpawn, FxZero, FfInt(-16L)));
+			FLAG_ON(kpawn, FLG_DESTROY);
+		}
+		player->kevin.actor = NULLACT;
+	}
+
+	Bool all_dead = true;
+	if (game_state.sequence.type == SEQ_NONE && game_state.clock != 0L && !(game_state.flags & GF_SINGLE))
+		for (PlayerID i = 0; i < numplayers(); i++) {
+			GamePlayer* survivor = get_player(i);
+			if (survivor != NULL && survivor->lives >= 0L) {
+				all_dead = false;
+				break;
+			}
+		}
+	if (all_dead) {
+		FLAG_ON(dead, FLG_PLAYER_DEAD);
+		if (!(game_state.flags & GF_SINGLE) && game_state.sequence.type == SEQ_WIN && rng(100L) == 0L)
+			FLAG_ON(dead, FLG_PLAYER_JACKASS);
+
+		game_state.sequence.type = SEQ_LOSE;
+		game_state.sequence.time = 0L;
+	}
+
+	FLAG_ON(actor, FLG_DESTROY);
+}
+
+void win_player(GameActor* actor) {
+	if (actor->type != ACT_PLAYER || game_state.sequence.type == SEQ_WIN)
+		return;
+
+	GamePlayer* player = get_owner(actor);
+	if (player == NULL)
+		return;
+
+	game_state.sequence.type = SEQ_WIN;
+	game_state.sequence.time = 1L;
+	game_state.sequence.activator = player->id;
+	set_view_player(player);
+
+	for (PlayerID i = 0L; i < numplayers(); i++) {
+		GamePlayer* p = get_player(i);
+		if (p == player)
+			continue;
+
+		GameActor* pawn = get_actor(p->actor);
+		if (pawn != NULL)
+			FLAG_ON(pawn, FLG_DESTROY);
+		p->actor = NULLACT;
+	}
+
+	for (ActorID i = 0L; i < MAX_MISSILES; i++) {
+		GameActor* missile = get_actor(player->missiles[i]);
+		if (missile == NULL)
+			continue;
+
+		int32_t points;
+		switch (missile->type) {
+		default:
+			points = 100L;
+			break;
+		case ACT_MISSILE_BEETROOT:
+			points = 200L;
+			break;
+		case ACT_MISSILE_HAMMER:
+			points = 500L;
+			break;
+		}
+		give_points(missile, player, points);
+		FLAG_ON(missile, FLG_DESTROY);
+	}
+
+	game_state.pswitch = 0L;
+	actor->values[VAL_PLAYER_FLASH] = actor->values[VAL_PLAYER_STARMAN] = 0L;
+	for (TrackSlots i = 0L; i < (TrackSlots)TS_SIZE; i++)
+		stop_state_track(i);
+	play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? "win2" : "win", false);
+}
+
+// ============
+// PLAYER SPAWN
+// ============
 
 static void create_spawn(GameActor* actor) {
 	game_state.spawn = actor->id;
@@ -416,15 +537,24 @@ static void cleanup_spawn(GameActor* actor) {
 
 const GameActorTable TAB_PLAYER_SPAWN = {.create = create_spawn, .cleanup = cleanup_spawn};
 
-// ====
-// PAWN
-// ====
+// ======
+// PLAYER
+// ======
 
 static void load() {
 	load_player_textures();
 
 	load_sound("jump");
 	load_sound("swim");
+	load_sound("warp");
+	load_sound("starman");
+	load_sound("respawn");
+
+	load_track("win");
+	load_track("win2");
+	load_track("win3");
+
+	load_actor(ACT_PLAYER_DEAD);
 }
 
 static void create(GameActor* actor) {
@@ -442,7 +572,7 @@ static void create(GameActor* actor) {
 }
 
 static void tick(GameActor* actor) {
-	GamePlayer* player = get_player((PlayerID)actor->values[VAL_PLAYER_INDEX]);
+	GamePlayer* player = get_owner(actor);
 	if (player == NULL) {
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
@@ -467,22 +597,20 @@ static void tick(GameActor* actor) {
 	const ActorID pfid = (ActorID)(actor->values[VAL_PLAYER_PLATFORM]);
 	GameActor* platform = get_actor(pfid);
 	if (platform != NULL) {
-		const fixed vx = actor->values[VAL_X_SPEED];
-		const fixed vy = actor->values[VAL_Y_SPEED];
+		const fixed vx = actor->values[VAL_X_SPEED], vy = actor->values[VAL_Y_SPEED];
 
-		actor->values[VAL_X_SPEED] = platform->values[VAL_X_SPEED];
+		actor->values[VAL_X_SPEED] = platform->values[VAL_X_SPEED],
 		actor->values[VAL_Y_SPEED] = platform->values[VAL_Y_SPEED];
 		displace_actor(actor, FxZero, false);
-		actor->values[VAL_X_SPEED] = vx;
-		actor->values[VAL_Y_SPEED] = vy;
+		actor->values[VAL_X_SPEED] = vx, actor->values[VAL_Y_SPEED] = vy;
 
-		const frect mbox = HITBOX_ADD(actor, platform->values[VAL_X_SPEED], platform->values[VAL_Y_SPEED]);
-		const frect pbox = HITBOX(platform);
+		const frect mbox = HITBOX_ADD(actor, platform->values[VAL_X_SPEED], platform->values[VAL_Y_SPEED]),
+			    pbox = HITBOX(platform);
 		actor->values[VAL_PLAYER_PLATFORM] = Rcollide(mbox, pbox) ? pfid : NULLACT;
 	}
 
-	const Bool cant_run = !ANY_INPUT(player, GI_RUN) || actor->pos.y >= game_state.water;
-	const Bool jumped = ANY_PRESSED(player, GI_JUMP);
+	const Bool cant_run = (!ANY_INPUT(player, GI_RUN) || actor->pos.y >= game_state.water),
+		   jumped = ANY_PRESSED(player, GI_JUMP);
 
 	if (ANY_INPUT(player, GI_RIGHT) && actor->values[VAL_X_TOUCH] <= 0L && !ANY_FLAG(actor, FLG_PLAYER_DUCK)
 		&& actor->values[VAL_X_SPEED] >= FxZero
@@ -610,9 +738,8 @@ static void tick(GameActor* actor) {
 					actor->values[VAL_X_SPEED] = Fmax(actor->values[VAL_X_SPEED], FxZero);
 					actor->values[VAL_X_TOUCH] = -1L;
 
-					if (touching_solid(HITBOX(actor), SOL_SOLID)) {
-						// kill_player(actor);
-					}
+					if (touching_solid(HITBOX(actor), SOL_SOLID))
+						kill_player(actor);
 				}
 				if ((actor->pos.x + actor->box.end.x) > game_state.bounds.end.x) {
 					move_actor(actor,
@@ -620,9 +747,8 @@ static void tick(GameActor* actor) {
 					actor->values[VAL_X_SPEED] = Fmin(actor->values[VAL_X_SPEED], FxZero);
 					actor->values[VAL_X_TOUCH] = 1L;
 
-					if (touching_solid(HITBOX(actor), SOL_SOLID)) {
-						// kill_player(actor);
-					}
+					if (touching_solid(HITBOX(actor), SOL_SOLID))
+						kill_player(actor);
 				}
 			}
 
@@ -676,15 +802,35 @@ static void tick(GameActor* actor) {
 
 	if (actor->values[VAL_PLAYER_FLASH] > 0L)
 		--actor->values[VAL_PLAYER_FLASH];
-	// TODO: Starman
+	if (actor->values[VAL_PLAYER_STARMAN] > 0L) {
+		--actor->values[VAL_PLAYER_STARMAN];
+		const int32_t starman = actor->values[VAL_PLAYER_STARMAN];
+		if (starman == 100L)
+			play_actor_sound(actor, "starman");
+		if (starman <= 0L) {
+			actor->values[VAL_PLAYER_STARMAN_COMBO] = 0L;
 
-	// TODO: Pit
+			// !!! CLIENT-SIDE !!!
+			if (actor->values[VAL_PLAYER_INDEX] == localplayer())
+				stop_state_track(TS_POWER);
+			// !!! CLIENT-SIDE !!!
+		}
+	}
+
+	if (actor->pos.y
+		> (((get_actor(game_state.autoscroll) != NULL) ? game_state.bounds.end.y : player->bounds.end.y)
+			+ FfInt(64L)))
+	{
+		kill_player(actor);
+		goto sync_pos;
+	}
 
 	// TODO: Kevin
 
 	collide_actor(actor);
 	FLAG_OFF(actor, FLG_PLAYER_STOMP);
 
+sync_pos:
 	player->pos.x = actor->pos.x;
 	player->pos.y = actor->pos.y;
 }
@@ -704,9 +850,116 @@ static void cleanup(GameActor* actor) {
 		player->actor = NULLACT;
 }
 
-static PlayerID owner(GameActor* actor) {
+static PlayerID owner(const GameActor* actor) {
 	return (PlayerID)actor->values[VAL_PLAYER_INDEX];
 }
 
 const GameActorTable TAB_PLAYER
 	= {.load = load, .create = create, .tick = tick, .draw = draw, .cleanup = cleanup, .owner = owner};
+
+// ===========
+// DEAD PLAYER
+// ===========
+
+static void load_dead() {
+	load_texture("player/mario/dead");
+
+	load_sound("lose");
+	load_sound("dead");
+	load_sound("hardcore");
+
+	load_track("lose");
+	load_track("lose2");
+	load_track("game_over");
+}
+
+static void create_dead(GameActor* actor) {
+	actor->depth = -FxOne;
+	actor->values[VAL_PLAYER_INDEX] = (ActorValue)NULLPLAY;
+}
+
+static void tick_dead(GameActor* actor) {
+	GamePlayer* player = get_owner(actor);
+	if (player == NULL) {
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	if (actor->values[VAL_PLAYER_FRAME] >= 25L) {
+		actor->values[VAL_Y_SPEED] += 26214L;
+		move_actor(actor, POS_SPEED(actor));
+	}
+
+	switch ((actor->values[VAL_PLAYER_FRAME])++) {
+	default:
+		break;
+
+	case 0: {
+		if (ANY_FLAG(actor, FLG_PLAYER_DEAD)) {
+			for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++)
+				stop_state_track(i);
+			play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? "lose2" : "lose", false);
+			if (game_state.flags & GF_HARDCORE)
+				play_state_sound("hardcore");
+		} else
+			play_actor_sound(actor, (player->lives >= 0L) ? "lose" : "dead");
+		break;
+	}
+
+	case 25:
+		actor->values[VAL_Y_SPEED] = FfInt(-10L);
+		break;
+
+	case 150: {
+		if (ANY_FLAG(actor, FLG_PLAYER_DEAD) || (game_state.flags & GF_SINGLE))
+			break;
+
+		GameActor* pawn = respawn_player(player);
+		if (pawn != NULL) {
+			play_actor_sound(pawn, "respawn");
+			pawn->values[VAL_PLAYER_FLASH] = 100L;
+			FLAG_ON(actor, FLG_DESTROY);
+		}
+
+		break;
+	}
+
+	case 200: {
+		if (player->lives >= 0L)
+			game_state.flags |= GF_RESTART;
+		break;
+	}
+
+	case 210: {
+		if (ANY_FLAG(actor, FLG_PLAYER_DEAD) || game_state.clock == 0L) {
+			game_state.sequence.type = SEQ_LOSE;
+			game_state.sequence.time = 1L;
+			play_state_track(TS_FANFARE, "game_over", false);
+		}
+
+		FLAG_ON(actor, FLG_DESTROY);
+		break;
+	}
+	}
+}
+
+static void draw_dead(const GameActor* actor) {
+	if (ANY_FLAG(actor, FLG_PLAYER_JACKASS)) {
+		const GamePlayer* player = get_owner(actor);
+		if (player->lives >= 0L) {
+			const InterpActor* iactor = get_interp(actor);
+			if (iactor != NULL) {
+				batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y + actor->box.start.y) - 32.f,
+						    -1000.f),
+					0.f, WHITE);
+				batch_align(FA_CENTER, FA_BOTTOM);
+				batch_string("main", 24, "Jackass");
+			}
+		}
+	}
+
+	draw_actor(actor, "player/mario/dead", 0.f, WHITE);
+}
+
+const GameActorTable TAB_PLAYER_DEAD
+	= {.load = load_dead, .create = create_dead, .tick = tick_dead, .draw = draw_dead, .owner = owner};
