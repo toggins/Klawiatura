@@ -1,5 +1,406 @@
 #include "K_player.h"
 
+// ================
+// HELPER FUNCTIONS
+// ================
+
+static void load_player_textures() {
+	load_texture("player/mario/dead");
+	load_texture("player/mario/grow");
+	load_texture("player/mario/grow2");
+	load_texture("player/mario/grow3");
+
+	load_texture("player/mario/small/idle");
+	load_texture("player/mario/small/walk");
+	load_texture("player/mario/small/walk2");
+	load_texture("player/mario/small/jump");
+	load_texture("player/mario/small/swim");
+	load_texture("player/mario/small/swim2");
+	load_texture("player/mario/small/swim3");
+	load_texture("player/mario/small/swim4");
+
+	load_texture("player/mario/big/idle");
+	load_texture("player/mario/big/walk");
+	load_texture("player/mario/big/walk2");
+	load_texture("player/mario/big/jump");
+	load_texture("player/mario/big/duck");
+	load_texture("player/mario/big/swim");
+	load_texture("player/mario/big/swim2");
+	load_texture("player/mario/big/swim3");
+	load_texture("player/mario/big/swim4");
+
+	load_texture("player/mario/fire/idle");
+	load_texture("player/mario/fire/walk");
+	load_texture("player/mario/fire/walk2");
+	load_texture("player/mario/fire/jump");
+	load_texture("player/mario/fire/duck");
+	load_texture("player/mario/fire/fire");
+	load_texture("player/mario/fire/swim");
+	load_texture("player/mario/fire/swim2");
+	load_texture("player/mario/fire/swim3");
+	load_texture("player/mario/fire/swim4");
+
+	load_texture("player/mario/beetroot/idle");
+	load_texture("player/mario/beetroot/walk");
+	load_texture("player/mario/beetroot/walk2");
+	load_texture("player/mario/beetroot/jump");
+	load_texture("player/mario/beetroot/duck");
+	load_texture("player/mario/beetroot/fire");
+	load_texture("player/mario/beetroot/swim");
+	load_texture("player/mario/beetroot/swim2");
+	load_texture("player/mario/beetroot/swim3");
+	load_texture("player/mario/beetroot/swim4");
+
+	load_texture("player/mario/lui/idle");
+	load_texture("player/mario/lui/walk");
+	load_texture("player/mario/lui/walk2");
+	load_texture("player/mario/lui/jump");
+	load_texture("player/mario/lui/duck");
+	load_texture("player/mario/lui/swim");
+	load_texture("player/mario/lui/swim2");
+	load_texture("player/mario/lui/swim3");
+	load_texture("player/mario/lui/swim4");
+
+	load_texture("player/mario/hammer/idle");
+	load_texture("player/mario/hammer/walk");
+	load_texture("player/mario/hammer/walk2");
+	load_texture("player/mario/hammer/jump");
+	load_texture("player/mario/hammer/duck");
+	load_texture("player/mario/hammer/fire");
+	load_texture("player/mario/hammer/swim");
+	load_texture("player/mario/hammer/swim2");
+	load_texture("player/mario/hammer/swim3");
+	load_texture("player/mario/hammer/swim4");
+}
+
+PlayerFrame get_player_frame(const GameActor* actor) {
+	//     const GameActor* warp = get_actor((ActorID)actor->values[VAL_PLAYER_WARP]);
+	//     if (warp != NULL)
+	//         switch (warp->values[VAL_WARP_ANGLE]) {
+	//             case 0:
+	//             case 2:
+	//                 switch (FtInt(actor->values[VAL_PLAYER_FRAME]) % 3L) {
+	//                     default:
+	//                         return PF_WALK1;
+	//                     case 1:
+	//                         return PF_WALK2;
+	//                     case 2:
+	//                         return PF_WALK3;
+	//                 }
+	//             case 1:
+	//                 return PF_JUMP;
+	//             default:
+	//                 return PF_DUCK;
+	//         }
+
+	if (actor->values[VAL_PLAYER_POWER] > 0L) {
+		const GamePlayer* player = get_player((PlayerID)actor->values[VAL_PLAYER_INDEX]);
+		switch ((player == NULL) ? POW_SMALL : player->power) {
+		case POW_SMALL:
+		case POW_BIG: {
+			switch ((actor->values[VAL_PLAYER_POWER] / 100L) % 3L) {
+			default:
+				return PF_GROW1;
+			case 1:
+				return PF_GROW2;
+			case 2:
+				return PF_GROW3;
+			}
+			break;
+		}
+
+		default: {
+			switch ((actor->values[VAL_PLAYER_POWER] / 100L) % 4L) {
+			default:
+				return PF_GROW1;
+			case 1:
+				return PF_GROW2;
+			case 2:
+				return PF_GROW3;
+			case 3:
+				return PF_GROW4;
+			}
+			break;
+		}
+		}
+	}
+
+	if (actor->values[VAL_PLAYER_GROUND] <= 0L) {
+		if (ANY_FLAG(actor, FLG_PLAYER_SWIM)) {
+			const int32_t frame = FtInt(actor->values[VAL_PLAYER_FRAME]);
+			switch (frame) {
+			case 0:
+			case 3:
+				return PF_SWIM1;
+			case 1:
+			case 4:
+				return PF_SWIM2;
+			case 2:
+			case 5:
+				return PF_SWIM3;
+			default:
+				return (frame % 2L) ? PF_SWIM5 : PF_SWIM4;
+			}
+		} else
+			return (actor->values[VAL_Y_SPEED] < FxZero) ? PF_JUMP : PF_FALL;
+	}
+
+	if (ANY_FLAG(actor, FLG_PLAYER_DUCK))
+		return PF_DUCK;
+
+	if (actor->values[VAL_PLAYER_FIRE] > 0L)
+		return PF_FIRE;
+
+	if (actor->values[VAL_X_SPEED] != FxZero)
+		switch (FtInt(actor->values[VAL_PLAYER_FRAME]) % 3L) {
+		default:
+			return PF_WALK1;
+		case 1:
+			return PF_WALK2;
+		case 2:
+			return PF_WALK3;
+		}
+
+	return PF_IDLE;
+}
+
+const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
+	if (frame == PF_DEAD)
+		return "player/mario/dead";
+
+	switch (power) {
+	default:
+	case POW_SMALL: {
+		switch (frame) {
+		default:
+			return "player/mario/small/idle";
+
+		case PF_WALK1:
+			return "player/mario/small/walk";
+		case PF_WALK2:
+			return "player/mario/small/walk2";
+
+		case PF_JUMP:
+		case PF_FALL:
+			return "player/mario/small/jump";
+
+		case PF_SWIM1:
+		case PF_SWIM4:
+			return "player/mario/small/swim";
+		case PF_SWIM2:
+			return "player/mario/small/swim2";
+		case PF_SWIM3:
+			return "player/mario/small/swim3";
+		case PF_SWIM5:
+			return "player/mario/small/swim4";
+
+		case PF_GROW2:
+			return "player/mario/grow";
+		case PF_GROW3:
+			return "player/mario/big/walk2";
+		}
+		break;
+	}
+
+	case POW_BIG: {
+		switch (frame) {
+		default:
+			return "player/mario/big/idle";
+
+		case PF_WALK1:
+			return "player/mario/big/walk";
+		case PF_WALK2:
+		case PF_GROW1:
+			return "player/mario/big/walk2";
+
+		case PF_JUMP:
+		case PF_FALL:
+			return "player/mario/big/jump";
+
+		case PF_DUCK:
+			return "player/mario/big/duck";
+
+		case PF_SWIM1:
+		case PF_SWIM4:
+			return "player/mario/big/swim";
+		case PF_SWIM2:
+			return "player/mario/big/swim2";
+		case PF_SWIM3:
+			return "player/mario/big/swim3";
+		case PF_SWIM5:
+			return "player/mario/big/swim4";
+
+		case PF_GROW2:
+			return "player/mario/grow";
+		case PF_GROW3:
+			return "player/mario/small/idle";
+		}
+		break;
+	}
+
+	case POW_FIRE: {
+		switch (frame) {
+		default:
+			return "player/mario/fire/idle";
+
+		case PF_WALK1:
+			return "player/mario/fire/walk";
+		case PF_WALK2:
+		case PF_GROW3:
+			return "player/mario/fire/walk2";
+
+		case PF_JUMP:
+		case PF_FALL:
+			return "player/mario/fire/jump";
+
+		case PF_DUCK:
+			return "player/mario/fire/duck";
+
+		case PF_FIRE:
+			return "player/mario/fire/fire";
+
+		case PF_SWIM1:
+		case PF_SWIM4:
+			return "player/mario/fire/swim";
+		case PF_SWIM2:
+			return "player/mario/fire/swim2";
+		case PF_SWIM3:
+			return "player/mario/fire/swim3";
+		case PF_SWIM5:
+			return "player/mario/fire/swim4";
+
+		case PF_GROW1:
+			return "player/mario/big/walk2";
+		case PF_GROW2:
+			return "player/mario/grow2";
+		case PF_GROW4:
+			return "player/mario/grow3";
+		}
+		break;
+	}
+
+	case POW_BEETROOT: {
+		switch (frame) {
+		default:
+			return "player/mario/beetroot/idle";
+
+		case PF_WALK1:
+			return "player/mario/beetroot/walk";
+		case PF_WALK2:
+		case PF_GROW3:
+			return "player/mario/beetroot/walk2";
+
+		case PF_JUMP:
+		case PF_FALL:
+			return "player/mario/beetroot/jump";
+
+		case PF_DUCK:
+			return "player/mario/beetroot/duck";
+
+		case PF_FIRE:
+			return "player/mario/beetroot/fire";
+
+		case PF_SWIM1:
+		case PF_SWIM4:
+			return "player/mario/beetroot/swim";
+		case PF_SWIM2:
+			return "player/mario/beetroot/swim2";
+		case PF_SWIM3:
+			return "player/mario/beetroot/swim3";
+		case PF_SWIM5:
+			return "player/mario/beetroot/swim4";
+
+		case PF_GROW1:
+			return "player/mario/big/walk2";
+		case PF_GROW2:
+			return "player/mario/grow2";
+		case PF_GROW4:
+			return "player/mario/grow3";
+		}
+		break;
+	}
+
+	case POW_LUI: {
+		switch (frame) {
+		default:
+			return "player/mario/lui/idle";
+
+		case PF_WALK1:
+			return "player/mario/lui/walk";
+		case PF_WALK2:
+		case PF_GROW3:
+			return "player/mario/lui/walk2";
+
+		case PF_JUMP:
+		case PF_FALL:
+			return "player/mario/lui/jump";
+
+		case PF_DUCK:
+			return "player/mario/lui/duck";
+
+		case PF_SWIM1:
+		case PF_SWIM4:
+			return "player/mario/lui/swim";
+		case PF_SWIM2:
+			return "player/mario/lui/swim2";
+		case PF_SWIM3:
+			return "player/mario/lui/swim3";
+		case PF_SWIM5:
+			return "player/mario/lui/swim4";
+
+		case PF_GROW1:
+			return "player/mario/big/walk2";
+		case PF_GROW2:
+			return "player/mario/grow2";
+		case PF_GROW4:
+			return "player/mario/grow3";
+		}
+		break;
+	}
+
+	case POW_HAMMER: {
+		switch (frame) {
+		default:
+			return "player/mario/hammer/idle";
+
+		case PF_WALK1:
+			return "player/mario/hammer/walk";
+		case PF_WALK2:
+		case PF_GROW3:
+			return "player/mario/hammer/walk2";
+
+		case PF_JUMP:
+		case PF_FALL:
+			return "player/mario/hammer/jump";
+
+		case PF_DUCK:
+			return "player/mario/hammer/duck";
+
+		case PF_FIRE:
+			return "player/mario/hammer/fire";
+
+		case PF_SWIM1:
+		case PF_SWIM4:
+			return "player/mario/hammer/swim";
+		case PF_SWIM2:
+			return "player/mario/hammer/swim2";
+		case PF_SWIM3:
+			return "player/mario/hammer/swim3";
+		case PF_SWIM5:
+			return "player/mario/hammer/swim4";
+
+		case PF_GROW1:
+			return "player/mario/big/walk2";
+		case PF_GROW2:
+			return "player/mario/grow2";
+		case PF_GROW4:
+			return "player/mario/grow3";
+		}
+		break;
+	}
+	}
+}
+
 // ===========
 // SPAWN POINT
 // ===========
@@ -20,7 +421,7 @@ const GameActorTable TAB_PLAYER_SPAWN = {.create = create_spawn, .cleanup = clea
 // ====
 
 static void load() {
-	load_texture("markers/player");
+	load_player_textures();
 
 	load_sound("jump");
 	load_sound("swim");
@@ -289,7 +690,10 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	draw_actor(actor, "markers/player", 0, WHITE);
+	GamePlayer* player = get_player((PlayerID)actor->values[VAL_PLAYER_INDEX]);
+	if (player == NULL)
+		return;
+	draw_actor(actor, get_player_texture(player->power, get_player_frame(actor)), 0, WHITE);
 }
 
 static void cleanup(GameActor* actor) {

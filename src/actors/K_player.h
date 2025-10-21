@@ -27,3 +27,6 @@ enum {
 	FLG_PLAYER_DEAD = CUSTOM_FLAG(8),
 	FLG_PLAYER_CARRIED = CUSTOM_FLAG(9),
 };
+
+PlayerFrame get_player_frame(const GameActor*);
+const char* get_player_texture(PlayerPower, PlayerFrame);
