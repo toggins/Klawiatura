@@ -1022,7 +1022,7 @@ void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
 		Bool stop = false;
 		if (actor->values[VAL_X_SPEED] < FxZero) {
 			for (ActorID i = 0; i < list.num_actors; i++) {
-				const GameActor* displacer = list.actors[i];
+				GameActor* displacer = list.actors[i];
 				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
 					continue;
 
@@ -1052,11 +1052,12 @@ void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
 				x = Fmax(x, displacer->pos.x + displacer->box.end.x - actor->box.start.x);
 				stop = true;
 				climbed = false;
+				ACTOR_CALL2(displacer, on_right, actor);
 			}
 			actor->values[VAL_X_TOUCH] = -(stop && !climbed);
 		} else if (actor->values[VAL_X_SPEED] > FxZero) {
 			for (ActorID i = 0; i < list.num_actors; i++) {
-				const GameActor* displacer = list.actors[i];
+				GameActor* displacer = list.actors[i];
 				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
 					continue;
 
@@ -1086,6 +1087,7 @@ void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
 				x = Fmin(x, displacer->pos.x + displacer->box.start.x - actor->box.end.x);
 				stop = true;
 				climbed = false;
+				ACTOR_CALL2(displacer, on_left, actor);
 			}
 			actor->values[VAL_X_TOUCH] = stop && !climbed;
 		}

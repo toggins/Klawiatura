@@ -395,6 +395,10 @@ typedef struct {
 	void (*on_top)(GameActor*, GameActor*);
 	/// Callback function for when the displacee is below the actor.
 	void (*on_bottom)(GameActor*, GameActor*);
+	/// Callback function for when the displacee is to the left of the actor.
+	void (*on_left)(GameActor*, GameActor*);
+	/// Callback function for when the displacee is to the right of the actor.
+	void (*on_right)(GameActor*, GameActor*);
 	/// Callback function for getting the actor's player ID.
 	PlayerID (*owner)(GameActor*);
 } GameActorTable;
