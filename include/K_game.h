@@ -378,6 +378,15 @@ typedef struct {
 	AudioState audio;
 } SaveState;
 
+typedef struct {
+	GameActorType type;
+	fvec2 from, to, pos;
+} InterpActor;
+
+typedef struct {
+	InterpActor actors[MAX_ACTORS];
+} InterpState;
+
 SolidType always_solid(const GameActor*), always_top(const GameActor*);
 
 typedef struct {
@@ -452,3 +461,6 @@ void play_actor_sound(const GameActor*, const char*);
 
 // Math
 int32_t rng(int32_t);
+
+// Interpolation
+void skip_interp(GameActor*);

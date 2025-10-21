@@ -41,3 +41,7 @@ float dt() {
 float totalticks() {
 	return total_ticks;
 }
+
+float pendingticks() {
+	return pending_ticks;
+}

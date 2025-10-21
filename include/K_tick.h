@@ -6,4 +6,4 @@
 
 bool got_ticks();
 void from_scratch(), new_frame(float), next_tick();
-float dt(), totalticks();
+float dt(), totalticks(), pendingticks();

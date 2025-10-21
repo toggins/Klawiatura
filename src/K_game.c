@@ -63,6 +63,8 @@ GameState game_state = {0};
 
 PlayerID local_player = -1L, view_player = -1L, num_players = 0L;
 
+static InterpState interp = {0};
+
 // ====
 // GAME
 // ====
@@ -133,7 +135,26 @@ bool update_game() {
 	gekko_network_poll(game_session);
 
 	const float ahh = gekko_frames_ahead(game_session), ahead = SDL_clamp(ahh, 0, 2);
-	for (new_frame(ahead); got_ticks(); next_tick()) {
+	new_frame(ahead);
+
+	if (!got_ticks())
+		goto no_tick;
+
+	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
+		InterpActor* iactor = &interp.actors[actor->id];
+		if (iactor->type != actor->type) {
+			iactor->type = actor->type;
+			skip_interp(actor);
+			continue;
+		}
+
+		iactor->from.x = iactor->to.x;
+		iactor->from.y = iactor->to.y;
+		iactor->to.x = actor->pos.x;
+		iactor->to.y = actor->pos.y;
+	}
+
+	while (got_ticks()) {
 		if (kb_pressed(KB_PAUSE))
 			goto byebye_game;
 
@@ -273,6 +294,18 @@ bool update_game() {
 				break;
 			}
 		}
+
+		next_tick();
+	}
+
+no_tick:
+	const float ftick = pendingticks();
+	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
+		InterpActor* iactor = &interp.actors[actor->id];
+		iactor->pos.x
+			= (fixed)((float)iactor->from.x + (((float)iactor->to.x - (float)iactor->from.x) * ftick));
+		iactor->pos.y
+			= (fixed)((float)iactor->from.y + (((float)iactor->to.y - (float)iactor->from.y) * ftick));
 	}
 
 	return true;
@@ -306,8 +339,9 @@ void draw_game() {
 		const float bx2 = FtFloat(player->bounds.end.x - F_HALF_SCREEN_WIDTH);
 		const float by2 = FtFloat(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
 
-		float cx = FtInt(pawn->pos.x);
-		float cy = FtInt(pawn->pos.y);
+		const InterpActor* ipawn = &interp.actors[pawn->id];
+		float cx = FtInt(ipawn->pos.x);
+		float cy = FtInt(ipawn->pos.y);
 		cx = SDL_clamp(cx, bx1, bx2);
 		cy = SDL_clamp(cy, by1, by2);
 
@@ -449,6 +483,8 @@ void nuke_game_state() {
 	game_state.clock = -1;
 
 	game_state.sequence.activator = NULLPLAY;
+
+	SDL_memset(&interp, 0, sizeof(interp));
 }
 
 static void read_string(const char** buf, char* dest, size_t maxlen) {
@@ -802,6 +838,7 @@ found:
 	actor->cell = NULLCELL;
 	actor->previous_cell = actor->next_cell = NULLACT;
 	move_actor(actor, pos);
+	skip_interp(actor);
 
 	FLAG_ON(actor, FLG_VISIBLE);
 	ACTOR_CALL(actor, create);
@@ -1154,7 +1191,8 @@ void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
 //
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
-	batch_start(XYZ(FtInt(actor->pos.x), FtInt(actor->pos.y), FtFloat(actor->depth)), angle, color);
+	const InterpActor* iactor = &interp.actors[actor->id];
+	batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)), angle, color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 }
 
@@ -1172,4 +1210,18 @@ int32_t rng(int32_t x) {
 	// https://rosettacode.org/wiki/Linear_congruential_generator
 	game_state.seed = (game_state.seed * 1103515245L + 12345L) & 2147483647L;
 	return game_state.seed % x;
+}
+
+// ======
+// INTERP
+// ======
+
+// Skip interpolating an actor's position.
+void skip_interp(GameActor* actor) {
+	if (actor == NULL || actor->id < 0L || actor->id >= MAX_ACTORS)
+		return;
+
+	InterpActor* iactor = &interp.actors[actor->id];
+	iactor->from.x = iactor->to.x = iactor->pos.x = actor->pos.x;
+	iactor->from.y = iactor->to.y = iactor->pos.y = actor->pos.y;
 }
