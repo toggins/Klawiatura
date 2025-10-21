@@ -127,6 +127,11 @@ BOOL_OPTION(fullscreen, get_fullscreen, set_fullscreen);
 FMT_OPTION(vsync, get_vsync() ? "On" : "Off");
 BOOL_OPTION(vsync, get_vsync, set_vsync);
 
+FMT_OPTION(filter, CLIENT.video.filter ? "On" : "Off");
+static void toggle_filter(int flip) {
+	CLIENT.video.filter = !CLIENT.video.filter;
+}
+
 FMT_OPTION(volume, get_volume() * 100);
 VOLUME_OPTION(volume);
 
@@ -218,6 +223,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Resolution: %dx%d", .disable_if = get_fullscreen, FORMAT(resolution), TOGGLE(resolution)},
 		{"Fullscreen: %s", FORMAT(fullscreen), TOGGLE(fullscreen)},
 		{"Vsync: %s", FORMAT(vsync), TOGGLE(vsync)},
+		{"Texture Filter: %s", FORMAT(filter), TOGGLE(filter)},
 		{},
 		{"Master Volume: %.0f%%", FORMAT(volume), TOGGLE(volume)},
 		{"Sound Volume: %.0f%%", FORMAT(sound_volume), TOGGLE(sound_volume)},

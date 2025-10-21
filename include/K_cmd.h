@@ -35,6 +35,10 @@ typedef struct {
 	} input;
 
 	struct {
+		bool filter;
+	} video;
+
+	struct {
 		PlayerID players;
 		bool kevin;
 		char level[CLIENT_STRING_MAX];

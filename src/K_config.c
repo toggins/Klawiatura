@@ -40,7 +40,7 @@ static void set_delay(int delay) {
 
 static int cfg_width = 0, cfg_height = 0;
 static int get_width() {
-	if (!get_fullscreen())
+	if (!window_maximized())
 		get_resolution(&cfg_width, &cfg_height);
 	return cfg_width;
 }
@@ -50,7 +50,7 @@ static void set_width(int width) {
 		set_resolution(cfg_width, cfg_height);
 }
 static int get_height() {
-	if (!get_fullscreen())
+	if (!window_maximized())
 		get_resolution(&cfg_width, &cfg_height);
 	return cfg_height;
 }
@@ -58,6 +58,12 @@ static void set_height(int height) {
 	cfg_height = height;
 	if (cfg_width)
 		set_resolution(cfg_width, cfg_height);
+}
+static bool get_filter() {
+	return CLIENT.video.filter;
+}
+static void set_filter(bool filter) {
+	CLIENT.video.filter = filter;
 }
 
 static const ConfigOption OPTIONS[] = {
@@ -68,6 +74,7 @@ static const ConfigOption OPTIONS[] = {
 	{"height",       .r_int = get_height,         .w_int = set_height        },
 	{"fullscreen",   .r_bool = get_fullscreen,    .w_bool = set_fullscreen   },
 	{"vsync",        .r_bool = get_vsync,         .w_bool = set_vsync        },
+	{"filter",       .r_bool = get_filter,        .w_bool = set_filter       },
 	{"volume",       .r_float = get_volume,       .w_float = set_volume      },
 	{"sound_volume", .r_float = get_sound_volume, .w_float = set_sound_volume},
 	{"music_volume", .r_float = get_music_volume, .w_float = set_music_volume},

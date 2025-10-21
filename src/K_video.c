@@ -1,5 +1,6 @@
 #include <SDL3_image/SDL_image.h>
 
+#include "K_cmd.h"
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
@@ -35,6 +36,8 @@ static TileMap* last_tilemap = NULL;
 #include "embeds/shaders/vertex.glsl"
 
 VideoState video_state = {0};
+
+extern ClientInfo CLIENT;
 
 #define CHECK_GL_EXTENSION(ext)                                                                                        \
 	EXPECT((ext), "Missing OpenGL extension: " #ext "\nAt least OpenGL 3.3 with shader support is required.");
@@ -229,6 +232,10 @@ void start_drawing() {
 void stop_drawing() {
 	submit_batch();
 	SDL_GL_SwapWindow(window);
+}
+
+bool window_maximized() {
+	return get_fullscreen() || (SDL_GetWindowFlags(window) & SDL_WINDOW_MAXIMIZED);
 }
 
 #define FOCUS_IMPOSSIBLE (SDL_WINDOW_OCCLUDED | SDL_WINDOW_MINIMIZED | SDL_WINDOW_NOT_FOCUSABLE)
@@ -792,7 +799,7 @@ void submit_batch() {
 
 	// Apply texture
 	glBindTexture(GL_TEXTURE_2D, batch.texture);
-	const GLint filter = batch.filter ? GL_LINEAR : GL_NEAREST;
+	const GLint filter = (batch.filter || CLIENT.video.filter) ? GL_LINEAR : GL_NEAREST;
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 	glUniform1f(uniforms.alpha_test, batch.alpha_test);

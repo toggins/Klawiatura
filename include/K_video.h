@@ -143,6 +143,7 @@ void set_fullscreen(bool);
 bool get_vsync();
 void set_vsync(bool);
 
+bool window_maximized();
 bool window_focused();
 bool window_start_typing();
 void window_stop_typing();
