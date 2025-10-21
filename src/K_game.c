@@ -108,6 +108,7 @@ void start_game(GameContext* ctx) {
 	start_video_state();
 	start_game_state(ctx);
 	from_scratch();
+	input_wipeout();
 }
 
 bool game_exists() {
@@ -305,8 +306,8 @@ void draw_game() {
 		const float bx2 = FtFloat(player->bounds.end.x - F_HALF_SCREEN_WIDTH);
 		const float by2 = FtFloat(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
 
-		float cx = FtFloat(pawn->pos.x);
-		float cy = FtFloat(pawn->pos.y);
+		float cx = FtInt(pawn->pos.x);
+		float cy = FtInt(pawn->pos.y);
 		cx = SDL_clamp(cx, bx1, bx2);
 		cy = SDL_clamp(cy, by1, by2);
 
@@ -423,8 +424,15 @@ void nuke_game_state() {
 	clear_tilemaps();
 	SDL_memset(&game_state, 0, sizeof(game_state));
 
-	for (PlayerID i = 0; i < MAX_PLAYERS; i++)
+	for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
 		game_state.players[i].id = NULLPLAY;
+		game_state.players[i].actor = NULLACT;
+		for (ActorID j = 0; j < MAX_MISSILES; j++)
+			game_state.players[i].missiles[j] = NULLACT;
+		for (ActorID j = 0; j < MAX_SINK; j++)
+			game_state.players[i].sink[j] = NULLACT;
+		game_state.players[i].kevin.actor = NULLACT;
+	}
 
 	game_state.live_actors = NULLACT;
 	for (ActorID i = 0; i < MAX_ACTORS; i++)
@@ -1006,8 +1014,8 @@ void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
 		return;
 	}
 
-	actor->values[VAL_X_TOUCH] = 0L, actor->values[VAL_Y_TOUCH] = 0L;
-	fix16_t x = actor->pos.x, y = actor->pos.y;
+	actor->values[VAL_X_TOUCH] = actor->values[VAL_Y_TOUCH] = 0L;
+	fixed x = actor->pos.x, y = actor->pos.y;
 
 	// Horizontal collision
 	x += actor->values[VAL_X_SPEED];
@@ -1030,8 +1038,7 @@ void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
 					&& (actor->pos.y + actor->box.end.y - climb)
 						   < (displacer->pos.y + displacer->box.start.y))
 				{
-					const fix16_t step
-						= displacer->pos.y + displacer->box.start.y - actor->box.end.y;
+					const fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
 					if (!touching_solid(
 						    (frect){
 							    {x + actor->box.start.x - FxOne,
@@ -1147,7 +1154,7 @@ void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
 //
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
-	batch_start(XYZ(FtFloat(actor->pos.x), FtFloat(actor->pos.y), FtFloat(actor->depth)), angle, color);
+	batch_start(XYZ(FtInt(actor->pos.x), FtInt(actor->pos.y), FtFloat(actor->depth)), angle, color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 }
 

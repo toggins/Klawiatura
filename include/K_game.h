@@ -255,7 +255,7 @@ typedef struct {
 
 	struct {
 		int8_t delay;
-		ActorID object;
+		ActorID actor;
 		fvec2 start;
 
 		struct {
@@ -271,6 +271,8 @@ typedef struct {
 #define ALL_INPUT(player, inp) (((player)->input & (inp)) == (inp))
 #define ANY_LAST_INPUT(player, inp) (((player)->last_input & (inp)) != 0L)
 #define ALL_LAST_INPUT(player, inp) (((player)->last_input & (inp)) == (inp))
+#define ANY_PRESSED(player, inp) (ANY_INPUT(player, inp) && !ANY_LAST_INPUT(player, inp))
+#define ANY_RELEASED(player, inp) (!ANY_INPUT(player, inp) && ANY_LAST_INPUT(player, inp))
 
 typedef struct {
 	GameSequenceType type;
