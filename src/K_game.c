@@ -569,9 +569,9 @@ void nuke_game_state() {
 	game_state.size.y = game_state.bounds.end.y = F_SCREEN_HEIGHT;
 
 	game_state.spawn = game_state.checkpoint = game_state.autoscroll = NULLACT;
-	game_state.water = FfInt(32767);
+	game_state.water = FfInt(32767L);
 
-	game_state.clock = -1;
+	game_state.clock = -1L;
 
 	game_state.sequence.activator = NULLPLAY;
 
@@ -1135,7 +1135,7 @@ Bool touching_solid(const frect rect, SolidType types) {
 }
 
 /// Move the actor with speed and displacement from solid actors.
-void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
+void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 	if (actor == NULL)
 		return;
 
@@ -1147,7 +1147,7 @@ void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
         },
 			SOL_SOLID))
 	{
-		fix16_t shift = ANY_FLAG(actor, FLG_X_FLIP) ? FxOne : -FxOne;
+		fixed shift = ANY_FLAG(actor, FLG_X_FLIP) ? FxOne : -FxOne;
 		if (ANY_FLAG(actor, FLG_X_FLIP)) {
 			if (touching_solid(HITBOX_RIGHT(actor), SOL_SOLID)
 				&& !touching_solid(HITBOX_LEFT(actor), SOL_SOLID))
@@ -1223,8 +1223,7 @@ void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
 					&& (actor->pos.y + actor->box.end.y - climb)
 						   < (displacer->pos.y + displacer->box.start.y))
 				{
-					const fix16_t step
-						= displacer->pos.y + displacer->box.start.y - actor->box.end.y;
+					const fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
 					if (!touching_solid(
 						    (frect){
 							    {x + actor->box.start.x + FxOne,
@@ -1273,7 +1272,7 @@ void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
 				stop = true;
 				ACTOR_CALL2(displacer, on_bottom, actor);
 			}
-			actor->values[VAL_Y_TOUCH] = -(fix16_t)stop;
+			actor->values[VAL_Y_TOUCH] = -(fixed)stop;
 		} else if (actor->values[VAL_Y_SPEED] > FxZero) {
 			for (ActorID i = 0; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
@@ -1291,7 +1290,7 @@ void displace_actor(GameActor* actor, fix16_t climb, Bool unstuck) {
 				stop = true;
 				ACTOR_CALL2(displacer, on_top, actor);
 			}
-			actor->values[VAL_Y_TOUCH] = (fix16_t)stop;
+			actor->values[VAL_Y_TOUCH] = (fixed)stop;
 		}
 
 		if (stop)
