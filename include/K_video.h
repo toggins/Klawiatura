@@ -176,6 +176,7 @@ void batch_align(const FontAlignment, const FontAlignment);
 void batch_start(const GLfloat[3], const GLfloat, const GLubyte[4]);
 
 // Batch
+void batch_filter(bool);
 void batch_alpha_test(GLfloat);
 void batch_stencil(GLfloat);
 void batch_logic(GLenum);

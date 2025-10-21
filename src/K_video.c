@@ -479,6 +479,13 @@ const Font* get_font(const char* name) {
 // BATCH
 // =====
 
+void batch_filter(bool filter) {
+	if (batch.filter != filter) {
+		submit_batch();
+		batch.filter = filter;
+	}
+}
+
 void batch_alpha_test(GLfloat threshold) {
 	if (batch.alpha_test != threshold) {
 		submit_batch();
