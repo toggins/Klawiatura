@@ -560,7 +560,7 @@ void batch_align(const FontAlignment h, const FontAlignment v) {
 }
 
 void batch_start(const GLfloat pos[3], const GLfloat angle, const GLubyte color[4]) {
-	batch_cursor(pos), batch_angle(angle), batch_color(color);
+	batch_cursor(pos), batch_angle(angle), batch_color(color), batch_align(FA_LEFT, FA_TOP);
 }
 
 /// Adds a (textured) rectangle to the vertex batch.
