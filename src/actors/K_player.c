@@ -844,7 +844,8 @@ static void draw(const GameActor* actor) {
 		return;
 
 	const char* tex = get_player_texture(player->power, get_player_frame(actor));
-	draw_actor(actor, tex, 0.f, WHITE);
+	const GLfloat a = (localplayer() == player->id) ? 255L : 191L;
+	draw_actor(actor, tex, 0.f, ALPHA(a));
 
 	if (actor->values[VAL_PLAYER_STARMAN] > 0L) {
 		GLubyte r, g, b;
@@ -883,7 +884,7 @@ static void draw(const GameActor* actor) {
 
 		batch_stencil(1.f);
 		batch_blendmode(GL_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA, GL_ONE);
-		draw_actor(actor, tex, 0.f, RGB(r, g, b));
+		draw_actor(actor, tex, 0.f, RGBA(r, g, b, a));
 		batch_blendmode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
 		batch_stencil(0.f);
 	}
@@ -1009,19 +1010,14 @@ static void tick_dead(GameActor* actor) {
 }
 
 static void draw_dead(const GameActor* actor) {
-	draw_actor(actor, "player/mario/dead", 0.f, WHITE);
+	draw_actor(actor, "player/mario/dead", 0.f, ALPHA((localplayer() == get_owner_id(actor)) ? 255L : 191L));
 
-	if (ANY_FLAG(actor, FLG_PLAYER_JACKASS)) {
-		const GamePlayer* player = get_owner(actor);
-		if (player->lives >= 0L) {
-			const InterpActor* iactor = get_interp(actor);
-			batch_start(
-				XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y + actor->box.start.y) - 32.f, -1000.f),
-				0.f, WHITE);
-			batch_align(FA_CENTER, FA_BOTTOM);
-			batch_string("main", 24, "Jackass");
-		}
-	}
+	if (!ANY_FLAG(actor, FLG_PLAYER_JACKASS))
+		return;
+	const InterpActor* iactor = get_interp(actor);
+	batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y + actor->box.start.y) - 32.f, -1000.f), 0.f, WHITE);
+	batch_align(FA_CENTER, FA_BOTTOM);
+	batch_string("main", 24, "Jackass");
 }
 
 const GameActorTable TAB_PLAYER_DEAD
