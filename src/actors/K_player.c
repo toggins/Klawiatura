@@ -984,8 +984,14 @@ static void tick_dead(GameActor* actor) {
 	}
 
 	case 200: {
-		if (player->lives >= 0L)
-			game_state.flags |= GF_RESTART;
+		for (PlayerID i = 0; i < numplayers(); i++) {
+			GamePlayer* p = get_player(i);
+			if (p != NULL && p->lives >= 0L) {
+				game_state.flags |= GF_RESTART;
+				break;
+			}
+		}
+
 		break;
 	}
 
