@@ -50,7 +50,7 @@ static const GameActorTable TAB_NULL = {0};
 extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_PLAYER_DEAD, TAB_CLOUD, TAB_BUSH, TAB_SOLID,
 	TAB_SOLID_TOP, TAB_SOLID_SLOPE, TAB_COIN, TAB_COIN_POP, TAB_POINTS, TAB_GOAL_BAR, TAB_GOAL_BAR_FLY,
 	TAB_GOAL_MARK, TAB_ITEM_BLOCK, TAB_HIDDEN_BLOCK, TAB_BRICK_BLOCK, TAB_COIN_BLOCK, TAB_NOTE_BLOCK,
-	TAB_BLOCK_BUMP;
+	TAB_BLOCK_BUMP, TAB_PSWITCH;
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
 	[ACT_PLAYER_SPAWN] = &TAB_PLAYER_SPAWN,
@@ -75,6 +75,7 @@ static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_PSWITCH_BRICK] = &TAB_BRICK_BLOCK,
 	[ACT_BLOCK_BUMP] = &TAB_BLOCK_BUMP,
 	[ACT_NOTE_BLOCK] = &TAB_NOTE_BLOCK,
+	[ACT_PSWITCH] = &TAB_PSWITCH,
 };
 
 static Surface* game_surface = NULL;
@@ -455,9 +456,25 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 		player->input = inputs[i];
 	}
 
+	if (game_state.pswitch > 0L) {
+		--game_state.pswitch;
+
+		if (game_state.pswitch == 100L)
+			play_state_sound("starman");
+
+		if (game_state.pswitch <= 0L) {
+			replace_actors(ACT_PSWITCH_BRICK, ACT_COIN);
+			replace_actors(ACT_PSWITCH_COIN, ACT_BRICK_BLOCK);
+			stop_state_track(TS_EVENT);
+		}
+	}
+
 	GameActor* actor = get_actor(game_state.live_actors);
 	while (actor != NULL) {
-		ACTOR_CALL(actor, tick);
+		if (actor->values[VAL_SPROUT] > 0L)
+			--actor->values[VAL_SPROUT];
+		else
+			ACTOR_CALL(actor, tick);
 
 		GameActor* next = get_actor(actor->previous);
 		if (ANY_FLAG(actor, FLG_DESTROY))
@@ -1013,8 +1030,9 @@ void replace_actors(GameActorType before, GameActorType after) {
 	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
 		if (actor->type != before)
 			continue;
-		FLAG_ON(actor, FLG_DESTROY);
-		create_actor(after, actor->pos);
+		ACTOR_CALL(actor, cleanup);
+		actor->type = after;
+		ACTOR_CALL(actor, create);
 	}
 }
 
@@ -1311,7 +1329,8 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
 	const InterpActor* iactor = &interp.actors[actor->id];
-	batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + actor->values[VAL_SPROUT], FtFloat(actor->depth)),
+	batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + actor->values[VAL_SPROUT],
+			    actor->values[VAL_SPROUT] > 0L ? 21.f : FtFloat(actor->depth)),
 		angle, color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 }

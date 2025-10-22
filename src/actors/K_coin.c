@@ -17,12 +17,11 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->depth = FxOne;
-
 	actor->box.start.x = FfInt(6L);
 	actor->box.start.y = FfInt(2L);
 	actor->box.end.x = FfInt(25L);
 	actor->box.end.y = FfInt(30L);
+	actor->depth = FxOne;
 }
 
 static void draw(const GameActor* actor) {

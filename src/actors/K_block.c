@@ -162,6 +162,7 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
+	actor->box.start.x = actor->box.start.y = FxZero;
 	actor->box.end.x = actor->box.end.y = FfInt(32L);
 	actor->depth = FfInt(20L);
 
