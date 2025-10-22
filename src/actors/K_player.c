@@ -804,6 +804,7 @@ static void tick(GameActor* actor) {
 
 	if (actor->values[VAL_PLAYER_FLASH] > 0L)
 		--actor->values[VAL_PLAYER_FLASH];
+
 	if (actor->values[VAL_PLAYER_STARMAN] > 0L) {
 		--actor->values[VAL_PLAYER_STARMAN];
 		const int32_t starman = actor->values[VAL_PLAYER_STARMAN];
@@ -841,7 +842,63 @@ static void draw(const GameActor* actor) {
 	GamePlayer* player = get_player((PlayerID)actor->values[VAL_PLAYER_INDEX]);
 	if (player == NULL || (actor->values[VAL_PLAYER_FLASH] % 2L) > 0L)
 		return;
-	draw_actor(actor, get_player_texture(player->power, get_player_frame(actor)), 0.f, WHITE);
+
+	const char* tex = get_player_texture(player->power, get_player_frame(actor));
+	draw_actor(actor, tex, 0.f, WHITE);
+
+	if (actor->values[VAL_PLAYER_STARMAN] > 0L) {
+		GLubyte r, g, b;
+		switch (game_state.time % 5L) {
+		default: {
+			r = 248L;
+			g = 0L;
+			b = 0L;
+			break;
+		}
+		case 1: {
+			r = 192L;
+			g = 152L;
+			b = 0L;
+			break;
+		}
+		case 2: {
+			r = 144L;
+			g = 192L;
+			b = 40L;
+			break;
+		}
+		case 3: {
+			r = 88L;
+			g = 136L;
+			b = 232L;
+			break;
+		}
+		case 4: {
+			r = 192L;
+			g = 120L;
+			b = 200L;
+			break;
+		}
+		}
+
+		batch_stencil(1.f);
+		batch_blendmode(GL_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA, GL_ONE);
+		draw_actor(actor, tex, 0.f, RGB(r, g, b));
+		batch_blendmode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
+		batch_stencil(0.f);
+	}
+
+	if (viewplayer() != player->id) {
+		const char* name = get_peer_name(player->id);
+		if (name == NULL)
+			return;
+		const InterpActor* iactor = get_interp(actor);
+		batch_cursor(
+			XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + FtFloat(actor->box.start.y) - 10.f, -1000.f));
+		batch_color(ALPHA(160L));
+		batch_align(FA_CENTER, FA_BOTTOM);
+		batch_string("main", 20, name);
+	}
 }
 
 static void cleanup(GameActor* actor) {
@@ -946,6 +1003,8 @@ static void tick_dead(GameActor* actor) {
 }
 
 static void draw_dead(const GameActor* actor) {
+	draw_actor(actor, "player/mario/dead", 0.f, WHITE);
+
 	if (ANY_FLAG(actor, FLG_PLAYER_JACKASS)) {
 		const GamePlayer* player = get_owner(actor);
 		if (player->lives >= 0L) {
@@ -957,8 +1016,6 @@ static void draw_dead(const GameActor* actor) {
 			batch_string("main", 24, "Jackass");
 		}
 	}
-
-	draw_actor(actor, "player/mario/dead", 0.f, WHITE);
 }
 
 const GameActorTable TAB_PLAYER_DEAD

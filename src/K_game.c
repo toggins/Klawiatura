@@ -50,7 +50,7 @@ static const GameActorTable TAB_NULL = {0};
 extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_PLAYER_DEAD, TAB_CLOUD, TAB_BUSH, TAB_SOLID,
 	TAB_SOLID_TOP, TAB_SOLID_SLOPE, TAB_COIN, TAB_COIN_POP, TAB_POINTS, TAB_GOAL_BAR, TAB_GOAL_BAR_FLY,
 	TAB_GOAL_MARK, TAB_ITEM_BLOCK, TAB_HIDDEN_BLOCK, TAB_BRICK_BLOCK, TAB_COIN_BLOCK, TAB_NOTE_BLOCK,
-	TAB_BLOCK_BUMP, TAB_PSWITCH;
+	TAB_BLOCK_BUMP, TAB_PSWITCH, TAB_STARMAN;
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
 	[ACT_PLAYER_SPAWN] = &TAB_PLAYER_SPAWN,
@@ -76,6 +76,7 @@ static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_BLOCK_BUMP] = &TAB_BLOCK_BUMP,
 	[ACT_NOTE_BLOCK] = &TAB_NOTE_BLOCK,
 	[ACT_PSWITCH] = &TAB_PSWITCH,
+	[ACT_STARMAN] = &TAB_STARMAN,
 };
 
 static Surface* game_surface = NULL;
@@ -377,8 +378,8 @@ void draw_game() {
 	apply_matrices();
 	move_ears(camera);
 
-	// clear_color(0, 0, 0, 1);
-	clear_depth(1);
+	// clear_color(0.f, 0.f, 0.f, 1.f);
+	clear_depth(1.f);
 
 	draw_tilemaps();
 
