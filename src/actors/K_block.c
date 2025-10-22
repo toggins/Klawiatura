@@ -1,6 +1,7 @@
 #include "K_block.h"
 #include "K_coin.h"
 #include "K_game.h"
+#include "K_player.h"
 #include "K_powerup.h"
 
 // ================
@@ -22,51 +23,64 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 		break;
 	}
 
-	if (ANY_FLAG(actor, FLG_BLOCK_EMPTY) || actor->values[VAL_BLOCK_BUMP] > 0L)
+	if ((ANY_FLAG(actor, FLG_BLOCK_EMPTY) && actor->type != ACT_NOTE_BLOCK)
+		|| (actor->values[VAL_BLOCK_BUMP] > 0L
+			&& (actor->type != ACT_NOTE_BLOCK || actor->values[VAL_Y_TOUCH] == -1L)))
 		return;
 
 	GameActor* bump = create_actor(ACT_BLOCK_BUMP, actor->pos);
 	if (bump != NULL)
 		bump->values[VAL_BLOCK_PLAYER] = (ActorValue)get_owner_id(from);
 
-	if ((actor->type == ACT_BRICK_BLOCK || actor->type == ACT_PSWITCH_BRICK)
-		&& actor->values[VAL_BLOCK_ITEM] == ACT_NULL)
-	{
-		if (strong) {
-			GameActor* shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, FfInt(8L), FfInt(8L)));
-			if (shard != NULL) {
-				shard->values[VAL_X_SPEED] = FfInt(-2L), shard->values[VAL_Y_SPEED] = FfInt(-8L);
-				FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
-			}
+	switch (actor->type) {
+	default:
+		break;
 
-			shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, FfInt(16L), FfInt(8L)));
-			if (shard != NULL) {
-				shard->values[VAL_X_SPEED] = FfInt(2L), shard->values[VAL_Y_SPEED] = FfInt(-8L);
-				FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
-			}
-
-			shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, FfInt(8L), FfInt(16L)));
-			if (shard != NULL) {
-				shard->values[VAL_X_SPEED] = FfInt(-3L), shard->values[VAL_Y_SPEED] = FfInt(-6L);
-				FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
-			}
-
-			shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, FfInt(16L), FfInt(16L)));
-			if (shard != NULL) {
-				shard->values[VAL_X_SPEED] = FfInt(3L), shard->values[VAL_Y_SPEED] = FfInt(-6L);
-				FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
-			}
-
-			GamePlayer* player = get_owner(from);
-			if (player != NULL)
-				player->score += 50L;
-
-			play_actor_sound(actor, "break");
-			FLAG_ON(actor, FLG_DESTROY);
-			return;
+	case ACT_BRICK_BLOCK:
+	case ACT_PSWITCH_BRICK: {
+		if (!strong) {
+			play_actor_sound(actor, "bump");
+			break;
 		}
 
+		GameActor* shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, FfInt(8L), FfInt(8L)));
+		if (shard != NULL) {
+			shard->values[VAL_X_SPEED] = FfInt(-2L), shard->values[VAL_Y_SPEED] = FfInt(-8L);
+			FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
+		}
+
+		shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, FfInt(16L), FfInt(8L)));
+		if (shard != NULL) {
+			shard->values[VAL_X_SPEED] = FfInt(2L), shard->values[VAL_Y_SPEED] = FfInt(-8L);
+			FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
+		}
+
+		shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, FfInt(8L), FfInt(16L)));
+		if (shard != NULL) {
+			shard->values[VAL_X_SPEED] = FfInt(-3L), shard->values[VAL_Y_SPEED] = FfInt(-6L);
+			FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
+		}
+
+		shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, FfInt(16L), FfInt(16L)));
+		if (shard != NULL) {
+			shard->values[VAL_X_SPEED] = FfInt(3L), shard->values[VAL_Y_SPEED] = FfInt(-6L);
+			FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
+		}
+
+		GamePlayer* player = get_owner(from);
+		if (player != NULL)
+			player->score += 50L;
+
+		play_actor_sound(actor, "break");
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	case ACT_NOTE_BLOCK: {
+		actor->values[VAL_X_TOUCH] = 0L, actor->values[VAL_Y_TOUCH] = -1L;
 		play_actor_sound(actor, "bump");
+		break;
+	}
 	}
 
 	Bool is_powerup = false;
@@ -88,7 +102,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 	}
 	}
 
-	GameActor* item = (actor->values[VAL_BLOCK_ITEM] == ACT_NULL)
+	GameActor* item = (actor->values[VAL_BLOCK_ITEM] == ACT_NULL || ANY_FLAG(actor, FLG_BLOCK_EMPTY))
 	                          ? NULL
 	                          : create_actor(actor->values[VAL_BLOCK_ITEM], actor->pos);
 	if (item != NULL) {
@@ -125,7 +139,8 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 
 	actor->values[VAL_BLOCK_BUMP] = 1L;
 	if (actor->type == ACT_ITEM_BLOCK
-		|| ((actor->type == ACT_BRICK_BLOCK || actor->type == ACT_PSWITCH_BRICK)
+		|| ((actor->type == ACT_BRICK_BLOCK || actor->type == ACT_PSWITCH_BRICK
+			    || actor->type == ACT_NOTE_BLOCK)
 			&& actor->values[VAL_BLOCK_ITEM] != ACT_NULL)
 		|| actor->values[VAL_BLOCK_TIME] > 300L)
 		FLAG_ON(actor, FLG_BLOCK_EMPTY);
@@ -322,6 +337,149 @@ const GameActorTable TAB_COIN_BLOCK = {.is_solid = always_solid,
 	.tick = tick_coin_block,
 	.draw = draw_coin_block,
 	.on_bottom = on_bottom};
+
+// ==========
+// NOTE BLOCK
+// ==========
+
+static Bool note_solid(const GameActor* actor) {
+	return !ANY_FLAG(actor, FLG_BLOCK_HIDDEN) * SOL_SOLID;
+}
+
+static void load_note() {
+	load_texture("items/note");
+	load_texture("items/note2");
+	load_texture("items/note3");
+
+	load_sound("bump");
+	load_sound("spring");
+	load_sound("sprout");
+}
+
+static void draw_note(const GameActor* actor) {
+	if (ANY_FLAG(actor, FLG_BLOCK_HIDDEN))
+		return;
+
+	const char* tex;
+	switch ((int)((float)(game_state.time) / 7.69230769231f) % 4L) {
+	default:
+		tex = "items/note2";
+		break;
+	case 1L:
+	case 3L:
+		tex = "items/note";
+		break;
+	case 2L:
+		tex = "items/note3";
+		break;
+	}
+
+	int8_t bump;
+	switch (actor->values[VAL_BLOCK_BUMP]) {
+	default:
+		bump = 0L;
+		break;
+	case 2L:
+	case 10L:
+		bump = 3L;
+		break;
+	case 3L:
+	case 9L:
+		bump = 6L;
+		break;
+	case 4L:
+	case 8L:
+		bump = 8L;
+		break;
+	case 5L:
+	case 7L:
+		bump = 10L;
+		break;
+	case 6L:
+		bump = 11L;
+		break;
+	}
+
+	const int8_t bx = (int8_t)(actor->values[VAL_X_TOUCH] * bump), by = (int8_t)(actor->values[VAL_Y_TOUCH] * bump);
+	batch_start(XYZ(FtInt(actor->pos.x) + bx, FtInt(actor->pos.y) + by, FtFloat(actor->depth)), 0.f, WHITE);
+	batch_sprite(tex, NO_FLIP);
+}
+
+static void note_top(GameActor* actor, GameActor* from) {
+	if (from->type != ACT_PLAYER)
+		return;
+
+	from->values[VAL_Y_SPEED] = FfInt((from->values[VAL_PLAYER_SPRING] > 0L) ? -19L : -10L);
+	if (actor->values[VAL_BLOCK_BUMP] <= 0L || actor->values[VAL_Y_TOUCH] != 1L) {
+		actor->values[VAL_BLOCK_BUMP] = 1L;
+		actor->values[VAL_X_TOUCH] = 0L, actor->values[VAL_Y_TOUCH] = 1L;
+		play_actor_sound(actor, "spring");
+	}
+}
+
+static void note_left(GameActor* actor, GameActor* from) {
+	if (from->type != ACT_PLAYER)
+		return;
+
+	from->values[VAL_X_SPEED] = FfInt(-5L);
+	if (actor->values[VAL_BLOCK_BUMP] <= 0L || actor->values[VAL_X_TOUCH] != 1L) {
+		actor->values[VAL_BLOCK_BUMP] = 1L;
+		actor->values[VAL_X_TOUCH] = 1L, actor->values[VAL_Y_TOUCH] = 0L;
+		play_actor_sound(actor, "bump");
+	}
+}
+
+static void note_right(GameActor* actor, GameActor* from) {
+	if (from->type != ACT_PLAYER)
+		return;
+
+	from->values[VAL_X_SPEED] = FfInt(5L);
+	if (actor->values[VAL_BLOCK_BUMP] <= 0L || actor->values[VAL_X_TOUCH] != -1L) {
+		actor->values[VAL_BLOCK_BUMP] = 1L;
+		actor->values[VAL_X_TOUCH] = -1L, actor->values[VAL_Y_TOUCH] = 0L;
+		play_actor_sound(actor, "bump");
+	}
+}
+
+static void collide_note(GameActor* actor, GameActor* from) {
+	if (from->type != ACT_PLAYER)
+		return;
+
+	if ((from->pos.x + from->box.end.x - Fmax(FxZero, from->values[VAL_X_SPEED]) - FxOne)
+		<= (actor->pos.x + actor->box.start.x))
+	{
+		move_actor(from, (fvec2){actor->pos.x + actor->box.start.x - from->box.end.x, from->pos.y});
+		FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
+	} else if ((from->pos.x + from->box.start.x - Fmin(FxZero, from->values[VAL_X_SPEED]) + FxOne)
+		   >= (actor->pos.x + actor->box.end.x))
+	{
+		move_actor(from, (fvec2){actor->pos.x + actor->box.end.x - from->box.start.x, from->pos.y});
+		FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
+	}
+
+	if ((from->pos.y + from->box.end.y - Fmax(FxZero, from->values[VAL_Y_SPEED]) - FxOne)
+		<= (actor->pos.y + actor->box.start.y))
+	{
+		move_actor(from, (fvec2){from->pos.x, actor->pos.y + actor->box.start.y - from->box.end.y});
+		FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
+	} else if ((from->pos.y + from->box.start.y - Fmin(FxZero, from->values[VAL_Y_SPEED]) + FxOne)
+		   >= (actor->pos.y + actor->box.end.y))
+	{
+		move_actor(from, (fvec2){from->pos.x, actor->pos.y + actor->box.end.y - from->box.start.y});
+		FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
+	}
+}
+
+const GameActorTable TAB_NOTE_BLOCK = {.is_solid = note_solid,
+	.load = load_note,
+	.create = create,
+	.tick = tick,
+	.draw = draw_note,
+	.collide = collide_note,
+	.on_top = note_top,
+	.on_bottom = on_bottom,
+	.on_left = note_left,
+	.on_right = note_right};
 
 // ==========
 // BLOCK BUMP

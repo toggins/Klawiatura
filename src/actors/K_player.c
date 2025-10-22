@@ -678,6 +678,8 @@ static void tick(GameActor* actor) {
 			play_actor_sound(actor, "swim");
 		}
 	}
+	if (actor->values[VAL_PLAYER_SPRING] > 0L)
+		--actor->values[VAL_PLAYER_SPRING];
 
 	if (actor->pos.y >= game_state.water) {
 		if (!ANY_FLAG(actor, FLG_PLAYER_SWIM)) {

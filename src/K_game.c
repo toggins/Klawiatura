@@ -49,7 +49,8 @@ SolidType always_bottom(const GameActor* actor) {
 static const GameActorTable TAB_NULL = {0};
 extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_PLAYER_DEAD, TAB_CLOUD, TAB_BUSH, TAB_SOLID,
 	TAB_SOLID_TOP, TAB_SOLID_SLOPE, TAB_COIN, TAB_COIN_POP, TAB_POINTS, TAB_GOAL_BAR, TAB_GOAL_BAR_FLY,
-	TAB_GOAL_MARK, TAB_ITEM_BLOCK, TAB_HIDDEN_BLOCK, TAB_BRICK_BLOCK, TAB_COIN_BLOCK, TAB_BLOCK_BUMP;
+	TAB_GOAL_MARK, TAB_ITEM_BLOCK, TAB_HIDDEN_BLOCK, TAB_BRICK_BLOCK, TAB_COIN_BLOCK, TAB_NOTE_BLOCK,
+	TAB_BLOCK_BUMP;
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
 	[ACT_PLAYER_SPAWN] = &TAB_PLAYER_SPAWN,
@@ -73,6 +74,7 @@ static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_BRICK_BLOCK_COIN] = &TAB_COIN_BLOCK,
 	[ACT_PSWITCH_BRICK] = &TAB_BRICK_BLOCK,
 	[ACT_BLOCK_BUMP] = &TAB_BLOCK_BUMP,
+	[ACT_NOTE_BLOCK] = &TAB_NOTE_BLOCK,
 };
 
 static Surface* game_surface = NULL;
@@ -1210,10 +1212,10 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 					continue;
 				}
 
-				x = Fmax(x, displacer->pos.x + displacer->box.end.x - actor->box.start.x);
-				stop = true;
-				climbed = false;
 				ACTOR_CALL2(displacer, on_right, actor);
+				x = Fmax(x, displacer->pos.x + displacer->box.end.x - actor->box.start.x);
+				stop = actor->values[VAL_X_SPEED] <= FxZero;
+				climbed = false;
 			}
 			actor->values[VAL_X_TOUCH] = -(stop && !climbed);
 		} else if (actor->values[VAL_X_SPEED] > FxZero) {
@@ -1244,10 +1246,10 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 					continue;
 				}
 
-				x = Fmin(x, displacer->pos.x + displacer->box.start.x - actor->box.end.x);
-				stop = true;
-				climbed = false;
 				ACTOR_CALL2(displacer, on_left, actor);
+				x = Fmin(x, displacer->pos.x + displacer->box.start.x - actor->box.end.x);
+				stop = actor->values[VAL_X_SPEED] >= FxZero;
+				climbed = false;
 			}
 			actor->values[VAL_X_TOUCH] = stop && !climbed;
 		}
@@ -1271,9 +1273,9 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
 					continue;
 
-				y = Fmax(y, displacer->pos.y + displacer->box.end.y - actor->box.start.y);
-				stop = true;
 				ACTOR_CALL2(displacer, on_bottom, actor);
+				y = Fmax(y, displacer->pos.y + displacer->box.end.y - actor->box.start.y);
+				stop = actor->values[VAL_Y_SPEED] <= FxZero;
 			}
 			actor->values[VAL_Y_TOUCH] = -(fixed)stop;
 		} else if (actor->values[VAL_Y_SPEED] > FxZero) {
@@ -1289,9 +1291,9 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 							   > (displacer->pos.y + displacer->box.start.y + climb)))
 					continue;
 
-				y = Fmin(y, displacer->pos.y + displacer->box.start.y - actor->box.end.y);
-				stop = true;
 				ACTOR_CALL2(displacer, on_top, actor);
+				y = Fmin(y, displacer->pos.y + displacer->box.start.y - actor->box.end.y);
+				stop = actor->values[VAL_Y_SPEED] >= FxZero;
 			}
 			actor->values[VAL_Y_TOUCH] = (fixed)stop;
 		}
