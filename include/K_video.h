@@ -85,7 +85,6 @@ typedef struct {
 	GLuint texture;
 	GLfloat alpha_test;
 	GLenum blend_src[2], blend_dest[2];
-	GLenum logic;
 	bool filter;
 } VertexBatch;
 
@@ -180,7 +179,8 @@ void batch_start(const GLfloat[3], const GLfloat, const GLubyte[4]);
 void batch_filter(bool);
 void batch_alpha_test(GLfloat);
 void batch_stencil(GLfloat);
-void batch_logic(GLenum);
+void batch_blendmode(GLenum, GLenum, GLenum, GLenum);
+
 void batch_rectangle(const char*, const GLfloat[2]);
 void batch_sprite(const char*, const GLboolean[2]);
 void batch_surface(Surface*);

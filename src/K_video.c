@@ -128,7 +128,6 @@ bypass:
 	batch.blend_src[0] = batch.blend_src[1] = GL_SRC_ALPHA;
 	batch.blend_dest[0] = GL_ONE_MINUS_SRC_ALPHA;
 	batch.blend_dest[1] = GL_ONE;
-	batch.logic = GL_COPY;
 
 	batch.filter = false;
 
@@ -500,6 +499,25 @@ void batch_alpha_test(GLfloat threshold) {
 	}
 }
 
+void batch_stencil(GLfloat stencil) {
+	if (batch.stencil != stencil) {
+		submit_batch();
+		batch.stencil = stencil;
+	}
+}
+
+void batch_blendmode(GLenum src, GLenum dest, GLenum asrc, GLenum adest) {
+	if (batch.blend_src[0] != src || batch.blend_dest[0] != dest || batch.blend_src[1] != asrc
+		|| batch.blend_dest[1] != adest)
+	{
+		submit_batch();
+		batch.blend_src[0] = src;
+		batch.blend_dest[0] = dest;
+		batch.blend_src[1] = asrc;
+		batch.blend_dest[1] = adest;
+	}
+}
+
 static void batch_texture(GLuint tex) {
 	if (batch.texture != tex) {
 		submit_batch();
@@ -808,7 +826,6 @@ void submit_batch() {
 
 	// Apply blend mode
 	glBlendFuncSeparate(batch.blend_src[0], batch.blend_dest[0], batch.blend_src[1], batch.blend_dest[1]);
-	glLogicOp(batch.logic);
 
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)batch.vertex_count);
 	batch.vertex_count = 0;
