@@ -98,7 +98,7 @@ void setup_game_context(GameContext* ctx, const char* level, GameFlag flags) {
 	ctx->flags = flags;
 
 	ctx->num_players = 1;
-	for (size_t i = 0; i < MAX_PLAYERS; i++) {
+	for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
 		ctx->players[i].power = POW_SMALL;
 		ctx->players[i].lives = DEFAULT_LIVES;
 	}
@@ -262,13 +262,13 @@ bool update_game() {
 
 			case AdvanceEvent: {
 				GameInput inputs[MAX_PLAYERS] = {0};
-				for (size_t j = 0; j < num_players; j++)
+				for (PlayerID j = 0; j < num_players; j++)
 					inputs[j] = ((GameInput*)(event->data.adv.inputs))[j];
 				tick_game_state(inputs);
 				tick_video_state();
 				tick_audio_state();
 
-				for (size_t j = 0; j < num_players; j++)
+				for (PlayerID j = 0; j < num_players; j++)
 					if (!(inputs[j] & GI_WARP))
 						goto no_warp;
 
@@ -281,7 +281,7 @@ bool update_game() {
 					ctx.num_players = num_players;
 					for (PlayerID i = 0; i < num_players; i++) {
 						const int8_t lives = game_state.players[i].lives;
-						if (lives < 0)
+						if (lives < 0L)
 							continue;
 						ctx.players[i].lives = lives;
 						ctx.players[i].power = game_state.players[i].power;
@@ -298,10 +298,7 @@ bool update_game() {
 						&ctx, game_state.level, GF_TRY_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
 					ctx.num_players = num_players;
 					for (PlayerID i = 0; i < num_players; i++) {
-						const int8_t lives = game_state.players[i].lives;
-						if (lives < 0)
-							continue;
-						ctx.players[i].lives = lives;
+						ctx.players[i].lives = game_state.players[i].lives;
 						ctx.players[i].coins = game_state.players[i].coins;
 						ctx.players[i].score = game_state.players[i].score;
 					}
@@ -555,7 +552,7 @@ void load_game_state(const GameState* gs) {
 uint32_t check_game_state() {
 	uint32_t checksum = 0;
 	const uint8_t* data = (uint8_t*)(&game_state);
-	for (size_t i = 0; i < sizeof(GameState); i++)
+	for (uint32_t i = 0; i < sizeof(GameState); i++)
 		checksum += data[i];
 	return checksum;
 }
@@ -597,8 +594,8 @@ void nuke_game_state() {
 	SDL_memset(&interp, 0, sizeof(interp));
 }
 
-static void read_string(const char** buf, char* dest, size_t maxlen) {
-	size_t i = 0;
+static void read_string(const char** buf, char* dest, uint32_t maxlen) {
+	uint32_t i = 0;
 	while (**buf != '\0') {
 		if (i < maxlen)
 			dest[i++] = **buf;
@@ -874,8 +871,23 @@ GamePlayer* get_player(PlayerID id) {
 
 /// Attempts to respawn the player.
 GameActor* respawn_player(GamePlayer* player) {
-	if (player == NULL || player->lives < 0L)
+	if (player == NULL)
 		return NULL;
+
+	if (player->lives < 0L) {
+		// !!! CLIENT-SIDE !!!
+		if (view_player == player->id)
+			for (PlayerID i = 0; i < num_players; i++) {
+				GamePlayer* p = get_player(i);
+				if (p != NULL && p->lives >= 0L) {
+					set_view_player(p);
+					break;
+				}
+			}
+		// !!! CLIENT-SIDE !!!
+
+		return NULL;
+	}
 
 	GameActor* pawn = get_actor(player->actor);
 	if (pawn != NULL)
