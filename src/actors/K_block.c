@@ -242,7 +242,7 @@ static void load_hidden() {
 static void collide_hidden(GameActor* actor, GameActor* from) {
 	if (from->type != ACT_PLAYER
 		|| !(from->values[VAL_Y_SPEED] < FxZero
-			&& ((from->pos.y + from->box.start.y) - from->values[VAL_Y_SPEED])
+			&& ((from->pos.y + from->box.start.y) - from->values[VAL_Y_SPEED] + FxOne)
 				   > (actor->pos.y + actor->box.end.y)))
 		return;
 
