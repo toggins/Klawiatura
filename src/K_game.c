@@ -7,6 +7,7 @@
 #include "K_string.h"
 #include "K_tick.h"
 
+#include "actors/K_block.h"
 #include "actors/K_player.h"
 
 #define ACTOR_TYPE_CALL(type, fn)                                                                                      \
@@ -41,9 +42,14 @@ SolidType always_top(const GameActor* actor) {
 	return SOL_TOP;
 }
 
+SolidType always_bottom(const GameActor* actor) {
+	return SOL_BOTTOM;
+}
+
 static const GameActorTable TAB_NULL = {0};
 extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_PLAYER_DEAD, TAB_CLOUD, TAB_BUSH, TAB_SOLID,
-	TAB_SOLID_TOP, TAB_SOLID_SLOPE, TAB_COIN, TAB_POINTS, TAB_GOAL_BAR, TAB_GOAL_BAR_FLY, TAB_GOAL_MARK;
+	TAB_SOLID_TOP, TAB_SOLID_SLOPE, TAB_COIN, TAB_COIN_POP, TAB_POINTS, TAB_GOAL_BAR, TAB_GOAL_BAR_FLY,
+	TAB_GOAL_MARK, TAB_ITEM_BLOCK, TAB_HIDDEN_BLOCK, TAB_BRICK_BLOCK, TAB_COIN_BLOCK, TAB_BLOCK_BUMP;
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
 	[ACT_PLAYER_SPAWN] = &TAB_PLAYER_SPAWN,
@@ -55,11 +61,18 @@ static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_SOLID_TOP] = &TAB_SOLID_TOP,
 	[ACT_SOLID_SLOPE] = &TAB_SOLID_SLOPE,
 	[ACT_COIN] = &TAB_COIN,
+	[ACT_COIN_POP] = &TAB_COIN_POP,
 	[ACT_PSWITCH_COIN] = &TAB_COIN,
 	[ACT_POINTS] = &TAB_POINTS,
 	[ACT_GOAL_BAR] = &TAB_GOAL_BAR,
 	[ACT_GOAL_BAR_FLY] = &TAB_GOAL_BAR_FLY,
 	[ACT_GOAL_MARK] = &TAB_GOAL_MARK,
+	[ACT_ITEM_BLOCK] = &TAB_ITEM_BLOCK,
+	[ACT_HIDDEN_BLOCK] = &TAB_HIDDEN_BLOCK,
+	[ACT_BRICK_BLOCK] = &TAB_BRICK_BLOCK,
+	[ACT_BRICK_BLOCK_COIN] = &TAB_COIN_BLOCK,
+	[ACT_PSWITCH_BRICK] = &TAB_BRICK_BLOCK,
+	[ACT_BLOCK_BUMP] = &TAB_BLOCK_BUMP,
 };
 
 static Surface* game_surface = NULL;
@@ -478,25 +491,10 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 	case SEQ_LOSE: {
 		if (game_state.sequence.time <= 0L || game_state.sequence.time > 300L)
 			break;
-		++game_state.sequence.time;
-
-		if (game_state.sequence.time > 300L) {
-			Bool all_dead = true;
-			for (PlayerID i = 0; i < num_players; i++) {
-				GamePlayer* player = get_player(i);
-				if (player != NULL && player->lives >= 0) {
-					all_dead = false;
-					break;
-				}
-			}
-
-			if (all_dead)
-				game_state.flags |= GF_RESTART;
-			else {
-				SDL_memset(game_state.next, 0, sizeof(game_state.next));
-				game_state.flags |= GF_END;
-			}
-		}
+		if (++game_state.sequence.time <= 300L)
+			break;
+		SDL_memset(game_state.next, 0, sizeof(game_state.next));
+		game_state.flags |= GF_END;
 		break;
 	}
 
@@ -813,9 +811,9 @@ void start_game_state(GameContext* ctx) {
 			actor->flags |= *((ActorFlag*)buf);
 			buf += sizeof(ActorFlag);
 
-			// if (actor->type == ACT_HIDDEN_BLOCK && ANY_FLAG(actor, FLG_BLOCK_ONCE)
-			// 	&& (game_state.flags & GF_REPLAY))
-			// 	actor->flags |= FLG_DESTROY;
+			if (actor->type == ACT_HIDDEN_BLOCK && ANY_FLAG(actor, FLG_BLOCK_ONCE)
+				&& (game_state.flags & GF_REPLAY))
+				FLAG_ON(actor, FLG_DESTROY);
 			break;
 		}
 		}
@@ -874,11 +872,16 @@ GameActor* respawn_player(GamePlayer* player) {
 	return pawn;
 }
 
+/// Gets the ID of the player that the actor belongs to.
+PlayerID get_owner_id(const GameActor* actor) {
+	return (PlayerID)((ACTORS[actor->type] == NULL || ACTORS[actor->type]->owner == NULL)
+				  ? NULLPLAY
+				  : ACTORS[actor->type]->owner(actor));
+}
+
 /// Gets the player that the actor belongs to.
 GamePlayer* get_owner(const GameActor* actor) {
-	return (ACTORS[actor->type] == NULL || ACTORS[actor->type]->owner == NULL)
-	               ? NULL
-	               : get_player(ACTORS[actor->type]->owner(actor));
+	return get_player(get_owner_id(actor));
 }
 
 PlayerID localplayer() {
@@ -1305,7 +1308,8 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
 	const InterpActor* iactor = &interp.actors[actor->id];
-	batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)), angle, color);
+	batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + actor->values[VAL_SPROUT], FtFloat(actor->depth)),
+		angle, color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 }
 

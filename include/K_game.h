@@ -171,6 +171,7 @@ enum {
 	ACT_LAVA_SPLASH,
 	ACT_PODOBOO_VOLCANO,
 	ACT_BOWSER,
+	ACT_NOTE_BLOCK,
 
 	ACT_SIZE,
 };
@@ -211,7 +212,8 @@ typedef uint8_t SolidType;
 enum {
 	SOL_SOLID = 1 << 0,
 	SOL_TOP = 1 << 1,
-	SOL_ALL = SOL_SOLID | SOL_TOP,
+	SOL_BOTTOM = 1 << 2,
+	SOL_ALL = SOL_SOLID | SOL_TOP | SOL_BOTTOM,
 };
 
 typedef uint8_t PlatformType;
@@ -387,7 +389,7 @@ typedef struct {
 	InterpActor actors[MAX_ACTORS];
 } InterpState;
 
-SolidType always_solid(const GameActor*), always_top(const GameActor*);
+SolidType always_solid(const GameActor*), always_top(const GameActor*), always_bottom(const GameActor*);
 
 typedef struct {
 	/// Whether or not the actor is considered (partially) solid by displacees.
@@ -436,6 +438,7 @@ void nuke_game_state();
 
 // Players
 GamePlayer *get_player(PlayerID), *get_owner(const GameActor*);
+PlayerID get_owner_id(const GameActor*);
 GameActor* respawn_player(GamePlayer*);
 
 PlayerID localplayer(), viewplayer(), numplayers();

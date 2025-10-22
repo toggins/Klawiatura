@@ -1,11 +1,5 @@
 #include "K_points.h"
 
-enum {
-	VAL_POINTS = VAL_CUSTOM,
-	VAL_POINTS_PLAYER,
-	VAL_POINTS_TIME,
-};
-
 // ================
 // HELPER FUNCTIONS
 // ================

@@ -837,9 +837,9 @@ sync_pos:
 
 static void draw(const GameActor* actor) {
 	GamePlayer* player = get_player((PlayerID)actor->values[VAL_PLAYER_INDEX]);
-	if (player == NULL)
+	if (player == NULL || (actor->values[VAL_PLAYER_FLASH] % 2L) > 0L)
 		return;
-	draw_actor(actor, get_player_texture(player->power, get_player_frame(actor)), 0, WHITE);
+	draw_actor(actor, get_player_texture(player->power, get_player_frame(actor)), 0.f, WHITE);
 }
 
 static void cleanup(GameActor* actor) {
@@ -948,13 +948,11 @@ static void draw_dead(const GameActor* actor) {
 		const GamePlayer* player = get_owner(actor);
 		if (player->lives >= 0L) {
 			const InterpActor* iactor = get_interp(actor);
-			if (iactor != NULL) {
-				batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y + actor->box.start.y) - 32.f,
-						    -1000.f),
-					0.f, WHITE);
-				batch_align(FA_CENTER, FA_BOTTOM);
-				batch_string("main", 24, "Jackass");
-			}
+			batch_start(
+				XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y + actor->box.start.y) - 32.f, -1000.f),
+				0.f, WHITE);
+			batch_align(FA_CENTER, FA_BOTTOM);
+			batch_string("main", 24, "Jackass");
 		}
 	}
 

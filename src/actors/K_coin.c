@@ -1,4 +1,9 @@
-#include "K_game.h"
+#include "K_coin.h"
+#include "K_points.h"
+
+// ====
+// COIN
+// ====
 
 static void load() {
 	load_texture("items/coin");
@@ -6,6 +11,9 @@ static void load() {
 	load_texture("items/coin3");
 
 	load_sound("coin");
+
+	load_actor(ACT_COIN_POP);
+	load_actor(ACT_POINTS);
 }
 
 static void create(GameActor* actor) {
@@ -19,37 +27,157 @@ static void create(GameActor* actor) {
 
 static void draw(const GameActor* actor) {
 	const char* tex;
-	switch ((game_state.time / 5) % 4) {
+	switch ((game_state.time / 5L) % 4L) {
 	default:
 		tex = "items/coin";
 		break;
-	case 1:
-	case 3:
+	case 1L:
+	case 3L:
 		tex = "items/coin2";
 		break;
-	case 2:
+	case 2L:
 		tex = "items/coin3";
 		break;
 	}
-	draw_actor(actor, tex, 0, WHITE);
+	draw_actor(actor, tex, 0.f, WHITE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER)
-		return;
-	GamePlayer* player = get_owner(from);
-	if (player == NULL)
-		return;
+	switch (from->type) {
+	default:
+		break;
 
-	++player->coins;
-	while (player->coins >= 100L) {
-		++player->lives;
-		player->coins -= 100L;
+	case ACT_PLAYER: {
+		GamePlayer* player = get_owner(from);
+		if (player == NULL)
+			break;
+
+		++player->coins;
+		while (player->coins >= 100L) {
+			give_points(actor, player, -1L);
+			player->coins -= 100L;
+		}
+		player->score += 200L;
+		play_actor_sound(actor, "coin");
+
+		FLAG_ON(actor, FLG_DESTROY);
+		break;
 	}
-	player->score += 200L;
-	play_actor_sound(actor, "coin");
 
-	FLAG_ON(actor, FLG_DESTROY);
+	case ACT_BLOCK_BUMP: {
+		GameActor* pop = create_actor(ACT_COIN_POP, POS_ADD(actor, FfInt(16L), FfInt(28L)));
+		if (pop != NULL)
+			pop->values[VAL_COIN_POP_PLAYER] = (ActorValue)get_owner_id(from);
+		FLAG_ON(actor, FLG_DESTROY);
+		break;
+	}
+	}
 }
 
 const GameActorTable TAB_COIN = {.load = load, .create = create, .draw = draw, .collide = collide};
+
+// ========
+// COIN POP
+// ========
+
+static void load_pop() {
+	load_texture("items/coin_pop");
+	load_texture("items/coin_pop2");
+	load_texture("items/coin_pop3");
+	load_texture("items/coin_pop4");
+	load_texture("effects/spark");
+	load_texture("effects/spark2");
+	load_texture("effects/spark3");
+	load_texture("effects/spark4");
+
+	load_sound("coin");
+
+	load_actor(ACT_POINTS);
+}
+
+static void create_pop(GameActor* actor) {
+	actor->values[VAL_COIN_POP_PLAYER] = (ActorValue)NULLPLAY;
+}
+
+static void tick_pop(GameActor* actor) {
+	if (!ANY_FLAG(actor, FLG_COIN_POP_START)) {
+		GamePlayer* player = get_owner(actor);
+		if (player != NULL) {
+			++player->coins;
+			while (player->coins >= 100L) {
+				give_points(actor, player, -1L);
+				player->coins -= 100L;
+			}
+			player->score += 200L;
+		}
+
+		play_actor_sound(actor, "coin");
+		actor->values[VAL_Y_SPEED] = -278528L;
+		FLAG_ON(actor, FLG_COIN_POP_START);
+	}
+
+	if (actor->values[VAL_Y_SPEED] < FxZero) {
+		move_actor(actor, POS_SPEED(actor));
+		actor->values[VAL_Y_SPEED] = Fmin(actor->values[VAL_Y_SPEED] + 10945L, FxZero);
+	}
+
+	if (ANY_FLAG(actor, FLG_COIN_POP_SPARK)) {
+		actor->values[VAL_COIN_POP_FRAME] += 35L;
+		if (actor->values[VAL_COIN_POP_FRAME] >= 400L) {
+			GameActor* points = create_actor(ACT_POINTS, actor->pos);
+			if (points != NULL) {
+				points->values[VAL_POINTS_PLAYER] = (ActorValue)get_owner_id(actor);
+				points->values[VAL_POINTS] = 200L;
+			}
+			FLAG_ON(actor, FLG_DESTROY);
+		}
+	} else {
+		actor->values[VAL_COIN_POP_FRAME] += 70L;
+		if (actor->values[VAL_COIN_POP_FRAME] >= 1400L) {
+			actor->values[VAL_COIN_POP_FRAME] = 0L;
+			FLAG_ON(actor, FLG_COIN_POP_SPARK);
+		}
+	}
+}
+
+static void draw_pop(const GameActor* actor) {
+	const char* tex;
+	if (ANY_FLAG(actor, FLG_COIN_POP_SPARK))
+		switch (actor->values[VAL_COIN_POP_FRAME] / 100L) {
+		default:
+			tex = "effects/spark";
+			break;
+		case 1:
+			tex = "effects/spark2";
+			break;
+		case 2:
+			tex = "effects/spark3";
+			break;
+		case 3:
+			tex = "effects/spark4";
+			break;
+		}
+	else
+		switch ((actor->values[VAL_COIN_POP_FRAME] / 100L) % 5L) {
+		default:
+			tex = "items/coin_pop";
+			break;
+		case 2:
+			tex = "items/coin_pop2";
+			break;
+		case 3:
+			tex = "items/coin_pop3";
+			break;
+		case 4:
+			tex = "items/coin_pop4";
+			break;
+		}
+	draw_actor(actor, tex, 0.f, WHITE);
+}
+
+static PlayerID pop_owner(const GameActor* actor) {
+	return (PlayerID)actor->values[VAL_COIN_POP_PLAYER];
+}
+
+const GameActorTable TAB_COIN_POP
+	= {.load = load_pop, .create = create_pop, .tick = tick_pop, .draw = draw_pop, .owner = pop_owner};
