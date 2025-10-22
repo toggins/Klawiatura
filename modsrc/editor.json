@@ -1099,6 +1099,14 @@
                             "z": 20,
                             "texture": "items/brick",
 
+                            "values": [
+                                {
+                                    "name": "Object Index",
+                                    "index": 7,
+                                    "default": 0
+                                }
+                            ],
+
                             "flags": [
                                 {
                                     "name": "Gray?",
@@ -1126,6 +1134,30 @@
                                 {
                                     "name": "Gray?",
                                     "bit": 6
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Note Block",
+                            "type": "object",
+                            "index": 90,
+                            "z": 20,
+                            "texture": "items/note",
+
+                            "values": [
+                                {
+                                    "name": "Object Index",
+                                    "index": 7,
+                                    "default": 0
+                                }
+                            ],
+
+                            "flags": [
+                                {
+                                    "name": "Hidden?",
+                                    "bit": 8,
+                                    "default": false
                                 }
                             ]
                         }
