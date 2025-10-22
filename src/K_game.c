@@ -155,6 +155,7 @@ void nuke_game() {
 bool update_game() {
 	gekko_network_poll(game_session);
 
+	float ftick = 0.f;
 	const float ahh = gekko_frames_ahead(game_session), ahead = SDL_clamp(ahh, 0, 2);
 	new_frame(ahead);
 
@@ -323,7 +324,7 @@ bool update_game() {
 	}
 
 no_tick:
-	const float ftick = pendingticks();
+	ftick = pendingticks();
 	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
 		InterpActor* iactor = &interp.actors[actor->id];
 		iactor->pos.x
