@@ -1027,13 +1027,14 @@
                         {
                             "name": "X Speed",
                             "index": 0,
-                            "default": 1,
+                            "default": 65536,
                             "fixed": true
                         },
 
                         {
                             "name": "Y Speed",
                             "index": 1,
+                            "default": 0,
                             "fixed": true
                         }
                     ],
