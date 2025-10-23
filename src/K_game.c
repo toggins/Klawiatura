@@ -8,6 +8,7 @@
 #include "K_tick.h"
 
 #include "actors/K_block.h"
+#include "actors/K_checkpoint.h"
 #include "actors/K_player.h"
 
 #define ACTOR_TYPE_CALL(type, fn)                                                                                      \
@@ -50,7 +51,7 @@ static const GameActorTable TAB_NULL = {0};
 extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_PLAYER_DEAD, TAB_CLOUD, TAB_BUSH, TAB_SOLID,
 	TAB_SOLID_TOP, TAB_SOLID_SLOPE, TAB_COIN, TAB_COIN_POP, TAB_POINTS, TAB_GOAL_BAR, TAB_GOAL_BAR_FLY,
 	TAB_GOAL_MARK, TAB_ITEM_BLOCK, TAB_HIDDEN_BLOCK, TAB_BRICK_BLOCK, TAB_COIN_BLOCK, TAB_NOTE_BLOCK,
-	TAB_BLOCK_BUMP, TAB_PSWITCH, TAB_STARMAN, TAB_AUTOSCROLL, TAB_BOUNDS;
+	TAB_BLOCK_BUMP, TAB_PSWITCH, TAB_STARMAN, TAB_AUTOSCROLL, TAB_BOUNDS, TAB_CHECKPOINT;
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
 	[ACT_PLAYER_SPAWN] = &TAB_PLAYER_SPAWN,
@@ -79,6 +80,7 @@ static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_STARMAN] = &TAB_STARMAN,
 	[ACT_AUTOSCROLL] = &TAB_AUTOSCROLL,
 	[ACT_BOUNDS] = &TAB_BOUNDS,
+	[ACT_CHECKPOINT] = &TAB_CHECKPOINT,
 };
 
 static Surface* game_surface = NULL;
@@ -922,16 +924,16 @@ GameActor* respawn_player(GamePlayer* player) {
 	if (spawn == NULL)
 		return NULL;
 
-	// 		if (spawn->type == OBJ_CHECKPOINT &&
-	//         spawn->values[VAL_CHECKPOINT_BOUNDS_X1] != spawn->values[VAL_CHECKPOINT_BOUNDS_X2] &&
-	//         spawn->values[VAL_CHECKPOINT_BOUNDS_Y1] != spawn->values[VAL_CHECKPOINT_BOUNDS_Y2]) {
-	//         player->bounds[0][0] = spawn->values[VAL_CHECKPOINT_BOUNDS_X1];
-	//         player->bounds[0][1] = spawn->values[VAL_CHECKPOINT_BOUNDS_Y1];
-	//         player->bounds[1][0] = spawn->values[VAL_CHECKPOINT_BOUNDS_X2];
-	//         player->bounds[1][1] = spawn->values[VAL_CHECKPOINT_BOUNDS_Y2];
-	//     } else {
-	SDL_memcpy(&player->bounds, &game_state.bounds, sizeof(game_state.bounds));
-	//}
+	if (spawn->type == ACT_CHECKPOINT
+		&& VAL(spawn, VAL_CHECKPOINT_BOUNDS_X1) != VAL(spawn, VAL_CHECKPOINT_BOUNDS_X2)
+		&& VAL(spawn, VAL_CHECKPOINT_BOUNDS_Y1) != VAL(spawn, VAL_CHECKPOINT_BOUNDS_Y2))
+	{
+		player->bounds.start.x = VAL(spawn, VAL_CHECKPOINT_BOUNDS_X1),
+		player->bounds.start.y = VAL(spawn, VAL_CHECKPOINT_BOUNDS_Y1),
+		player->bounds.end.x = VAL(spawn, VAL_CHECKPOINT_BOUNDS_X2),
+		player->bounds.end.y = VAL(spawn, VAL_CHECKPOINT_BOUNDS_Y2);
+	} else
+		SDL_memcpy(&player->bounds, &game_state.bounds, sizeof(game_state.bounds));
 
 	pawn = create_actor(
 		ACT_PLAYER, (spawn->type == ACT_AUTOSCROLL)
