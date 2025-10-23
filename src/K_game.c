@@ -49,9 +49,10 @@ SolidType always_bottom(const GameActor* actor) {
 
 static const GameActorTable TAB_NULL = {0};
 extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_PLAYER_DEAD, TAB_CLOUD, TAB_BUSH, TAB_SOLID,
-	TAB_SOLID_TOP, TAB_SOLID_SLOPE, TAB_COIN, TAB_COIN_POP, TAB_POINTS, TAB_GOAL_BAR, TAB_GOAL_BAR_FLY,
-	TAB_GOAL_MARK, TAB_ITEM_BLOCK, TAB_HIDDEN_BLOCK, TAB_BRICK_BLOCK, TAB_COIN_BLOCK, TAB_NOTE_BLOCK,
-	TAB_BLOCK_BUMP, TAB_PSWITCH, TAB_STARMAN, TAB_AUTOSCROLL, TAB_BOUNDS, TAB_CHECKPOINT;
+	TAB_SOLID_TOP, TAB_SOLID_SLOPE, TAB_WHEEL_LEFT, TAB_WHEEL, TAB_WHEEL_RIGHT, TAB_COIN, TAB_COIN_POP, TAB_POINTS,
+	TAB_GOAL_BAR, TAB_GOAL_BAR_FLY, TAB_GOAL_MARK, TAB_ITEM_BLOCK, TAB_HIDDEN_BLOCK, TAB_BRICK_BLOCK,
+	TAB_COIN_BLOCK, TAB_NOTE_BLOCK, TAB_BLOCK_BUMP, TAB_PSWITCH, TAB_STARMAN, TAB_AUTOSCROLL, TAB_BOUNDS,
+	TAB_CHECKPOINT;
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
 	[ACT_PLAYER_SPAWN] = &TAB_PLAYER_SPAWN,
@@ -81,6 +82,9 @@ static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_AUTOSCROLL] = &TAB_AUTOSCROLL,
 	[ACT_BOUNDS] = &TAB_BOUNDS,
 	[ACT_CHECKPOINT] = &TAB_CHECKPOINT,
+	[ACT_WHEEL_LEFT] = &TAB_WHEEL_LEFT,
+	[ACT_WHEEL] = &TAB_WHEEL,
+	[ACT_WHEEL_RIGHT] = &TAB_WHEEL_RIGHT,
 };
 
 static Surface* game_surface = NULL;
@@ -435,11 +439,38 @@ void draw_game() {
 		batch_sprite(game_state.world, NO_FLIP);
 
 		if (game_state.clock >= 0L) {
-			batch_cursor(XYZ(608.f, 16.f, -10000.f));
+			GLfloat scale;
+			if ((game_state.flags & GF_HURRY) && video_state.hurry < 120.f) {
+				video_state.hurry += dt();
+				if (video_state.hurry < 8.f)
+					scale = 1.f + ((video_state.hurry / 8.f) * 0.6f);
+				else if (video_state.hurry >= 8.f && video_state.hurry <= 112.f)
+					scale = 1.6f;
+				else if (video_state.hurry > 112.f)
+					scale = 1.6f - (((video_state.hurry - 112.f) / 8.f) * 0.6f);
+			} else
+				scale = 1.f;
+
+			const GLfloat x = (float)SCREEN_WIDTH - (32.f * scale);
+			const GLfloat size = 16 * scale;
+
+			batch_cursor(XYZ(x, 24.f * scale, -10000.f));
+
+			GLfloat yscale;
+			if (video_state.hurry > 0.f && video_state.hurry < 120.f)
+				yscale = glm_lerp(
+					1.f, 0.8f + (SDL_sinf(video_state.hurry * 0.6f) * 0.2f), (scale - 1.0f) / 0.6f);
+			else
+				yscale = 1.f;
+			batch_scale(XY(1.f, yscale));
+
+			batch_align(FA_RIGHT, FA_MIDDLE);
+			batch_string("hud", size, "TIME");
+			batch_scale(XY(1.f, 1.f));
+
+			batch_cursor(XYZ(x, 34.f * scale, -10000.f));
 			batch_align(FA_RIGHT, FA_TOP);
-			batch_string("hud", 16, "TIME");
-			batch_cursor(XYZ(608.f, 34.f, -10000.f));
-			batch_string("hud", 16, fmt("%u", game_state.clock));
+			batch_string("hud", size, fmt("%u", game_state.clock));
 		}
 
 		if (game_state.sequence.type == SEQ_LOSE && game_state.sequence.time > 0L) {
