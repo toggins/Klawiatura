@@ -461,6 +461,7 @@ const InterpActor* get_interp(const GameActor*);
 void move_actor(GameActor*, const fvec2);
 
 Bool below_level(GameActor*);
+Bool in_any_view(GameActor*, fixed, Bool);
 
 typedef struct {
 	GameActor* actors[MAX_ACTORS];

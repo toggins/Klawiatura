@@ -50,7 +50,7 @@ static const GameActorTable TAB_NULL = {0};
 extern const GameActorTable TAB_PLAYER_SPAWN, TAB_PLAYER, TAB_PLAYER_DEAD, TAB_CLOUD, TAB_BUSH, TAB_SOLID,
 	TAB_SOLID_TOP, TAB_SOLID_SLOPE, TAB_COIN, TAB_COIN_POP, TAB_POINTS, TAB_GOAL_BAR, TAB_GOAL_BAR_FLY,
 	TAB_GOAL_MARK, TAB_ITEM_BLOCK, TAB_HIDDEN_BLOCK, TAB_BRICK_BLOCK, TAB_COIN_BLOCK, TAB_NOTE_BLOCK,
-	TAB_BLOCK_BUMP, TAB_PSWITCH, TAB_STARMAN;
+	TAB_BLOCK_BUMP, TAB_PSWITCH, TAB_STARMAN, TAB_AUTOSCROLL;
 static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NULL] = &TAB_NULL,
 	[ACT_PLAYER_SPAWN] = &TAB_PLAYER_SPAWN,
@@ -77,6 +77,7 @@ static const GameActorTable* const ACTORS[ACT_SIZE] = {
 	[ACT_NOTE_BLOCK] = &TAB_NOTE_BLOCK,
 	[ACT_PSWITCH] = &TAB_PSWITCH,
 	[ACT_STARMAN] = &TAB_STARMAN,
+	[ACT_AUTOSCROLL] = &TAB_AUTOSCROLL,
 };
 
 static Surface* game_surface = NULL;
@@ -353,24 +354,35 @@ void draw_game() {
 	static mat4 proj = GLM_MAT4_IDENTITY;
 
 	const GamePlayer* player = get_player(view_player);
-	if (player != NULL) {
+	const GameActor* autoscroll = get_actor(game_state.autoscroll);
+	if (autoscroll != NULL) {
+		InterpActor* iautoscroll = &interp.actors[autoscroll->id];
+		camera[0] = FtInt(iautoscroll->pos.x + F_HALF_SCREEN_WIDTH);
+		camera[1] = FtInt(iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT);
+
+		const float bx1 = HALF_SCREEN_WIDTH, by1 = HALF_SCREEN_HEIGHT,
+			    bx2 = FtInt(game_state.size.x - F_HALF_SCREEN_WIDTH),
+			    by2 = FtInt(game_state.size.y - F_HALF_SCREEN_HEIGHT);
+		camera[0] = SDL_clamp(camera[0], bx1, bx2);
+		camera[1] = SDL_clamp(camera[1], by1, by2);
+	} else if (player != NULL) {
 		const GameActor* pawn = get_actor(player->actor);
 		if (pawn != NULL) {
 			InterpActor* ipawn = &interp.actors[pawn->id];
 			camera[0] = FtInt(ipawn->pos.x);
 			camera[1] = FtInt(ipawn->pos.y);
-		}
 
-		const float bx1 = FtFloat(player->bounds.start.x + F_HALF_SCREEN_WIDTH);
-		const float by1 = FtFloat(player->bounds.start.y + F_HALF_SCREEN_HEIGHT);
-		const float bx2 = FtFloat(player->bounds.end.x - F_HALF_SCREEN_WIDTH);
-		const float by2 = FtFloat(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
-		camera[0] = SDL_clamp(camera[0], bx1, bx2);
-		camera[1] = SDL_clamp(camera[1], by1, by2);
+			const float bx1 = FtInt(player->bounds.start.x + F_HALF_SCREEN_WIDTH),
+				    by1 = FtInt(player->bounds.start.y + F_HALF_SCREEN_HEIGHT),
+				    bx2 = FtInt(player->bounds.end.x - F_HALF_SCREEN_WIDTH),
+				    by2 = FtInt(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
+			camera[0] = SDL_clamp(camera[0], bx1, bx2);
+			camera[1] = SDL_clamp(camera[1], by1, by2);
+		}
 	}
 
-	glm_ortho(camera[0] - (float)HALF_SCREEN_WIDTH, camera[0] + (float)HALF_SCREEN_WIDTH,
-		camera[1] - (float)HALF_SCREEN_HEIGHT, camera[1] + (float)HALF_SCREEN_HEIGHT, -16000, 16000, proj);
+	glm_ortho(camera[0] - HALF_SCREEN_WIDTH, camera[0] + HALF_SCREEN_WIDTH, camera[1] - HALF_SCREEN_HEIGHT,
+		camera[1] + HALF_SCREEN_HEIGHT, -16000, 16000, proj);
 	set_projection_matrix(proj);
 	apply_matrices();
 	move_ears(camera);
@@ -452,6 +464,15 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 		GamePlayer* player = get_player(i);
 		player->last_input = player->input;
 		player->input = inputs[i];
+	}
+
+	GameActor* autoscroll = get_actor(game_state.autoscroll);
+	if (autoscroll != NULL) {
+		game_state.bounds.start.x = Fclamp(autoscroll->pos.x, FxZero, game_state.size.x - F_SCREEN_WIDTH);
+		game_state.bounds.start.y = Fclamp(autoscroll->pos.y, FxZero, game_state.size.y - F_SCREEN_HEIGHT);
+		game_state.bounds.end.x = Fclamp(autoscroll->pos.x + F_SCREEN_WIDTH, F_SCREEN_WIDTH, game_state.size.x);
+		game_state.bounds.end.y
+			= Fclamp(autoscroll->pos.y + F_SCREEN_HEIGHT, F_SCREEN_HEIGHT, game_state.size.y);
 	}
 
 	if (game_state.pswitch > 0L) {
@@ -848,7 +869,6 @@ void start_game_state(GameContext* ctx) {
 		player->coins = ctx->players[i].coins;
 		player->score = ctx->players[i].score;
 		player->power = ctx->players[i].power;
-		SDL_memcpy(&player->bounds, &game_state.bounds, sizeof(game_state.bounds));
 		respawn_player(player);
 	}
 
@@ -893,11 +913,30 @@ GameActor* respawn_player(GamePlayer* player) {
 	if (pawn != NULL)
 		FLAG_ON(pawn, FLG_DESTROY);
 
-	GameActor* spawn = get_actor(game_state.spawn);
+	GameActor* spawn = get_actor(game_state.autoscroll);
+	if (spawn == NULL)
+		spawn = get_actor(game_state.checkpoint);
+	if (spawn == NULL)
+		spawn = get_actor(game_state.spawn);
 	if (spawn == NULL)
 		return NULL;
 
-	pawn = create_actor(ACT_PLAYER, spawn->pos);
+	// 		if (spawn->type == OBJ_CHECKPOINT &&
+	//         spawn->values[VAL_CHECKPOINT_BOUNDS_X1] != spawn->values[VAL_CHECKPOINT_BOUNDS_X2] &&
+	//         spawn->values[VAL_CHECKPOINT_BOUNDS_Y1] != spawn->values[VAL_CHECKPOINT_BOUNDS_Y2]) {
+	//         player->bounds[0][0] = spawn->values[VAL_CHECKPOINT_BOUNDS_X1];
+	//         player->bounds[0][1] = spawn->values[VAL_CHECKPOINT_BOUNDS_Y1];
+	//         player->bounds[1][0] = spawn->values[VAL_CHECKPOINT_BOUNDS_X2];
+	//         player->bounds[1][1] = spawn->values[VAL_CHECKPOINT_BOUNDS_Y2];
+	//     } else {
+	SDL_memcpy(&player->bounds, &game_state.bounds, sizeof(game_state.bounds));
+	//}
+
+	pawn = create_actor(
+		ACT_PLAYER, (spawn->type == ACT_AUTOSCROLL)
+				    ? (fvec2){Flerp(game_state.bounds.start.x, game_state.bounds.end.x, FxHalf),
+					      game_state.bounds.start.y}
+				    : spawn->pos);
 	if (pawn != NULL) {
 		VAL(pawn, VAL_PLAYER_INDEX) = (ActorValue)player->id;
 		player->actor = pawn->id;
@@ -1104,6 +1143,42 @@ void move_actor(GameActor* actor, const fvec2 pos) {
 /// Check if the actor's hitbox is below the level.
 Bool below_level(GameActor* actor) {
 	return actor != NULL && (actor->pos.y + actor->box.start.y) > game_state.size.y;
+}
+
+/// Check if the actor is within any player's range.
+Bool in_any_view(GameActor* actor, fixed padding, Bool ignore_top) {
+	if (actor == NULL)
+		return false;
+
+	const frect abox = HITBOX(actor);
+	const GameActor* autoscroll = get_actor(game_state.autoscroll);
+	if (autoscroll != NULL) {
+		const frect cbox = {Vadd(game_state.bounds.start, (fvec2){padding, padding}),
+			Vadd(game_state.bounds.end, (fvec2){padding, padding})};
+		if (abox.start.x < cbox.end.x && abox.end.x > cbox.start.x && abox.start.y < cbox.end.y
+			&& (ignore_top || abox.end.y > cbox.start.y))
+			return true;
+	} else
+		for (PlayerID i = 0; i < num_players; i++) {
+			const GamePlayer* player = get_player(i);
+			if (player == NULL)
+				continue;
+
+			const fixed cx = Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+					    player->bounds.end.x - F_HALF_SCREEN_WIDTH),
+				    cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
+					    player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
+
+			const frect cbox = {
+				{cx - F_HALF_SCREEN_WIDTH - padding, cy - F_HALF_SCREEN_HEIGHT - padding},
+				{cx + F_HALF_SCREEN_WIDTH + padding, cy + F_HALF_SCREEN_HEIGHT + padding}
+                        };
+			if (abox.start.x < cbox.end.x && abox.end.x > cbox.start.x && abox.start.y < cbox.end.y
+				&& (ignore_top || abox.end.y > cbox.start.y))
+				return true;
+		}
+
+	return false;
 }
 
 /// Retrieve a list of actors overlapping a rectangle.

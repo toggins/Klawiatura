@@ -587,19 +587,23 @@ void batch_rectangle(const char* name, const GLfloat size[2]) {
 	batch_texture(texture == NULL ? blank_texture : texture->texture);
 
 	// Position
-	const GLfloat x1 = batch.cursor[0];
-	const GLfloat y1 = batch.cursor[1];
-	const GLfloat x2 = x1 + size[0];
-	const GLfloat y2 = y1 + size[1];
+	const GLfloat x1 = batch.cursor[0], y1 = batch.cursor[1];
+	const GLfloat x2 = x1 + size[0], y2 = y1 + size[1];
 	const GLfloat z = batch.cursor[2];
 
+	GLfloat u, v;
+	if (texture == NULL)
+		u = 1.f, v = 1.f;
+	else
+		u = size[0] / (GLfloat)texture->size[0], v = size[1] / (GLfloat)texture->size[1];
+
 	// Vertices
-	batch_vertex(XYZ(x1, y2, z), batch.color[2], UV(0, 1));
+	batch_vertex(XYZ(x1, y2, z), batch.color[2], UV(0, v));
 	batch_vertex(XYZ(x1, y1, z), batch.color[0], UV(0, 0));
-	batch_vertex(XYZ(x2, y1, z), batch.color[1], UV(1, 0));
-	batch_vertex(XYZ(x2, y1, z), batch.color[1], UV(1, 0));
-	batch_vertex(XYZ(x2, y2, z), batch.color[3], UV(1, 1));
-	batch_vertex(XYZ(x1, y2, z), batch.color[2], UV(0, 1));
+	batch_vertex(XYZ(x2, y1, z), batch.color[1], UV(u, 0));
+	batch_vertex(XYZ(x2, y1, z), batch.color[1], UV(u, 0));
+	batch_vertex(XYZ(x2, y2, z), batch.color[3], UV(u, v));
+	batch_vertex(XYZ(x1, y2, z), batch.color[2], UV(0, v));
 }
 
 /// Adds a texture as a sprite to the vertex batch.

@@ -1,3 +1,4 @@
+#include "K_autoscroll.h"
 #include "K_player.h"
 #include "K_points.h"
 
@@ -732,7 +733,7 @@ static void tick(GameActor* actor) {
 		const GameActor* autoscroll = get_actor(game_state.autoscroll);
 		if (autoscroll != NULL) {
 			if (game_state.sequence.type != SEQ_WIN) {
-				if ((actor->pos.y + actor->box.start.x) < game_state.bounds.start.x) {
+				if ((actor->pos.x + actor->box.start.x) < game_state.bounds.start.x) {
 					move_actor(actor,
 						(fvec2){game_state.bounds.start.x - actor->box.start.x, actor->pos.y});
 					VAL(actor, VAL_X_SPEED) = Fmax(VAL(actor, VAL_X_SPEED), FxZero);
@@ -752,11 +753,11 @@ static void tick(GameActor* actor) {
 				}
 			}
 
-			// if ((autoscroll->flags & FLG_SCROLL_TANKS)
-			// 	&& (Fadd(object->pos[1], object->bbox[1][1]) >= Fsub(state.bounds[1][1], FfInt(64L))
-			// 		|| object->values[VAL_PLAYER_GROUND] <= 0L)
-			// 	&& !touching_solid(HITBOX_ADD(object, autoscroll->values[VAL_X_SPEED], FxZero)))
-			// 	move_object(oid, POS_ADD(object, autoscroll->values[VAL_X_SPEED], FxZero));
+			if (ANY_FLAG(autoscroll, FLG_SCROLL_TANKS)
+				&& ((actor->pos.y + actor->box.end.y) >= (game_state.bounds.end.y - FfInt(64L))
+					|| VAL(actor, VAL_PLAYER_GROUND) <= 0L)
+				&& !touching_solid(HITBOX_ADD(actor, VAL(autoscroll, VAL_X_SPEED), FxZero), SOL_SOLID))
+				move_actor(actor, POS_ADD(actor, VAL(autoscroll, VAL_X_SPEED), FxZero));
 		}
 	}
 
@@ -980,13 +981,14 @@ static void tick_dead(GameActor* actor) {
 	}
 
 	case 200L: {
-		for (PlayerID i = 0; i < numplayers(); i++) {
-			GamePlayer* p = get_player(i);
-			if (p != NULL && p->lives >= 0L) {
-				game_state.flags |= GF_RESTART;
-				break;
+		if (game_state.sequence.type == SEQ_LOSE)
+			for (PlayerID i = 0; i < numplayers(); i++) {
+				GamePlayer* p = get_player(i);
+				if (p != NULL && p->lives >= 0L) {
+					game_state.flags |= GF_RESTART;
+					break;
+				}
 			}
-		}
 
 		break;
 	}
