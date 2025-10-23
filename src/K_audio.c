@@ -16,12 +16,10 @@ static FMOD_CHANNELGROUP* sound_group = NULL;
 static FMOD_CHANNELGROUP* music_group = NULL;
 
 // Generic noise
-static FMOD_CHANNELGROUP* generic_group = NULL;
 static FMOD_CHANNELGROUP* generic_sound_group = NULL;
 static FMOD_CHANNELGROUP* generic_music_group = NULL;
 
 // Game state noise
-static FMOD_CHANNELGROUP* state_group = NULL;
 static FMOD_CHANNELGROUP* state_sound_group = NULL;
 static FMOD_CHANNELGROUP* state_music_group = NULL;
 
@@ -49,21 +47,15 @@ void audio_init() {
 	FMOD_System_CreateChannelGroup(speaker, "music", &music_group);
 	FMOD_ChannelGroup_SetVolume(music_group, 0.5f);
 
-	FMOD_System_CreateChannelGroup(speaker, "generic", &generic_group);
 	FMOD_System_CreateChannelGroup(speaker, "generic_sound", &generic_sound_group);
 	FMOD_System_CreateChannelGroup(speaker, "generic_music", &generic_music_group);
 	FMOD_ChannelGroup_AddGroup(sound_group, generic_sound_group, true, NULL);
-	FMOD_ChannelGroup_AddGroup(state_group, generic_sound_group, true, NULL);
 	FMOD_ChannelGroup_AddGroup(music_group, generic_music_group, true, NULL);
-	FMOD_ChannelGroup_AddGroup(state_group, generic_music_group, true, NULL);
 
-	FMOD_System_CreateChannelGroup(speaker, "state", &state_group);
 	FMOD_System_CreateChannelGroup(speaker, "state_sound", &state_sound_group);
 	FMOD_System_CreateChannelGroup(speaker, "state_music", &state_music_group);
 	FMOD_ChannelGroup_AddGroup(sound_group, state_sound_group, true, NULL);
-	FMOD_ChannelGroup_AddGroup(state_group, state_sound_group, true, NULL);
 	FMOD_ChannelGroup_AddGroup(music_group, state_music_group, true, NULL);
-	FMOD_ChannelGroup_AddGroup(state_group, state_music_group, true, NULL);
 
 	sounds = NewTinyMap();
 	tracks = NewTinyMap();
@@ -188,7 +180,7 @@ void load_audio_state(const AudioState* as) {
 			continue;
 
 		FMOD_CHANNEL* channel = NULL;
-		FMOD_System_PlaySound(speaker, sound->sound->sound, state_group, true, &channel);
+		FMOD_System_PlaySound(speaker, sound->sound->sound, state_sound_group, true, &channel);
 		if (sound->flags & PLAY_PAN) {
 			FMOD_Channel_SetMode(channel, FMOD_3D | FMOD_3D_LINEARROLLOFF);
 			FMOD_Channel_Set3DMinMaxDistance(channel, 320, 640);
@@ -201,7 +193,8 @@ void load_audio_state(const AudioState* as) {
 }
 
 void nuke_audio_state() {
-	FMOD_ChannelGroup_Stop(state_group);
+	FMOD_ChannelGroup_Stop(state_sound_group);
+	FMOD_ChannelGroup_Stop(state_music_group);
 	SDL_memset(&audio_state, 0, sizeof(audio_state));
 	SDL_memset(&music_channels, 0, sizeof(music_channels));
 }
