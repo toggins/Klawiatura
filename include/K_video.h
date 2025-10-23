@@ -78,7 +78,7 @@ typedef struct {
 	size_t vertex_count, vertex_capacity;
 	Vertex* vertices;
 
-	GLfloat cursor[3], angle;
+	GLfloat cursor[3], scale[2], angle;
 	GLubyte color[4][4];
 	int8_t halign : 4, valign : 4;
 	GLfloat tint[4], stencil;
@@ -116,7 +116,7 @@ typedef struct Surface {
 } Surface;
 
 typedef struct {
-	void* temp;
+	float quake, hurry;
 } VideoState;
 
 extern VideoState video_state;
@@ -170,7 +170,7 @@ void load_font(const char*);
 const Font* get_font(const char*);
 
 // Painting tools
-void batch_cursor(const GLfloat[3]), batch_angle(const GLfloat);
+void batch_cursor(const GLfloat[3]), batch_scale(const GLfloat[2]), batch_angle(const GLfloat);
 void batch_color(const GLubyte[4]), batch_colors(const GLubyte[4][4]);
 void batch_align(const FontAlignment, const FontAlignment);
 void batch_start(const GLfloat[3], const GLfloat, const GLubyte[4]);

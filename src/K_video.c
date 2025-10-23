@@ -116,6 +116,7 @@ bypass:
 	glEnableVertexAttribArray(VATT_UV);
 	glVertexAttribPointer(VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
+	batch.scale[0] = batch.scale[1] = 1;
 	batch.color[0][0] = batch.color[0][1] = batch.color[0][2] = batch.color[0][3] = batch.color[1][0]
 		= batch.color[1][1] = batch.color[1][2] = batch.color[1][3] = batch.color[2][0] = batch.color[2][1]
 		= batch.color[2][2] = batch.color[2][3] = batch.color[3][0] = batch.color[3][1] = batch.color[3][2]
@@ -268,7 +269,9 @@ void load_video_state(const VideoState* vs) {
 	SDL_memcpy(&video_state, vs, sizeof(VideoState));
 }
 
-void nuke_video_state() {}
+void nuke_video_state() {
+	SDL_memset(&video_state, 0, sizeof(video_state));
+}
 
 // =======
 // DISPLAY
@@ -557,6 +560,11 @@ void batch_cursor(const GLfloat pos[3]) {
 	batch.cursor[2] = pos[2];
 }
 
+void batch_scale(const GLfloat scale[2]) {
+	batch.scale[0] = scale[0];
+	batch.scale[1] = scale[1];
+}
+
 void batch_color(const GLubyte color[4]) {
 	SDL_memcpy(batch.color[0], color, sizeof(batch.color[0]));
 	SDL_memcpy(batch.color[1], color, sizeof(batch.color[1]));
@@ -578,7 +586,8 @@ void batch_align(const FontAlignment h, const FontAlignment v) {
 }
 
 void batch_start(const GLfloat pos[3], const GLfloat angle, const GLubyte color[4]) {
-	batch_cursor(pos), batch_angle(angle), batch_color(color), batch_align(FA_LEFT, FA_TOP);
+	batch_cursor(pos), batch_scale(XY(1.f, 1.f)), batch_angle(angle), batch_color(color),
+		batch_align(FA_LEFT, FA_TOP);
 }
 
 /// Adds a (textured) rectangle to the vertex batch.
@@ -588,7 +597,7 @@ void batch_rectangle(const char* name, const GLfloat size[2]) {
 
 	// Position
 	const GLfloat x1 = batch.cursor[0], y1 = batch.cursor[1];
-	const GLfloat x2 = x1 + size[0], y2 = y1 + size[1];
+	const GLfloat x2 = x1 + (size[0] * batch.scale[0]), y2 = y1 + (size[1] * batch.scale[1]);
 	const GLfloat z = batch.cursor[2];
 
 	GLfloat u, v;
@@ -617,8 +626,8 @@ void batch_sprite(const char* name, const GLboolean flip[2]) {
 	// Position
 	const GLfloat x1 = -(flip[0] ? ((GLfloat)(texture->size[0]) - (texture->offset[0])) : (texture->offset[0]));
 	const GLfloat y1 = -(flip[1] ? ((GLfloat)(texture->size[1]) - (texture->offset[1])) : (texture->offset[1]));
-	const GLfloat x2 = x1 + (GLfloat)texture->size[0];
-	const GLfloat y2 = y1 + (GLfloat)texture->size[1];
+	const GLfloat x2 = x1 + ((GLfloat)texture->size[0] * batch.scale[0]);
+	const GLfloat y2 = y1 + ((GLfloat)texture->size[1] * batch.scale[1]);
 	const GLfloat z = batch.cursor[2];
 
 	vec2 p1 = {x1, y1};
@@ -664,8 +673,8 @@ void batch_surface(Surface* surface) {
 	// Position
 	const GLfloat x1 = batch.cursor[0];
 	const GLfloat y1 = batch.cursor[1];
-	const GLfloat x2 = x1 + (GLfloat)surface->size[0];
-	const GLfloat y2 = y1 + (GLfloat)surface->size[1];
+	const GLfloat x2 = x1 + ((GLfloat)surface->size[0] * batch.scale[0]);
+	const GLfloat y2 = y1 + ((GLfloat)surface->size[1] * batch.scale[1]);
 	const GLfloat z = batch.cursor[2];
 
 	// Vertices
@@ -747,10 +756,10 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 	// Horizontal alignment
 	switch (batch.halign) {
 	case FA_CENTER:
-		ox -= string_width_fast(font, size, str) / 2.f;
+		ox -= (string_width_fast(font, size, str) / 2.f) * batch.scale[0];
 		break;
 	case FA_RIGHT:
-		ox -= string_width_fast(font, size, str);
+		ox -= (string_width_fast(font, size, str)) * batch.scale[0];
 		break;
 	default:
 		break;
@@ -759,10 +768,10 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 	// Vertical alignment
 	switch (batch.valign) {
 	case FA_MIDDLE:
-		oy -= string_height_fast(font, size, str) / 2.f;
+		oy -= (string_height_fast(font, size, str) / 2.f) * batch.scale[1];
 		break;
 	case FA_BOTTOM:
-		oy -= string_height_fast(font, size, str);
+		oy -= (string_height_fast(font, size, str)) * batch.scale[1];
 		break;
 	default:
 		break;
@@ -770,7 +779,8 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 
 	GLfloat cx = ox, cy = oy;
 	const GLfloat scale = size / font->height;
-	const GLfloat spacing = font->spacing * scale;
+	const GLfloat spacing = font->spacing * scale * batch.scale[0];
+	const GLfloat height = size * batch.scale[1];
 
 	size_t bytes = SDL_strlen(str);
 	while (bytes > 0) {
@@ -791,12 +801,12 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 
 		// Valid glyph
 		const Glyph* glyph = &font->glyphs[gid];
-		const GLfloat width = glyph->width * scale;
+		const GLfloat width = glyph->width * scale * batch.scale[0];
 
 		const GLfloat x1 = cx;
 		const GLfloat y1 = cy;
 		const GLfloat x2 = x1 + width;
-		const GLfloat y2 = y1 + size;
+		const GLfloat y2 = y1 + height;
 		batch_vertex(XYZ(x1, y2, batch.cursor[2]), batch.color[2], UV(glyph->uvs[0], glyph->uvs[3]));
 		batch_vertex(XYZ(x1, y1, batch.cursor[2]), batch.color[0], UV(glyph->uvs[0], glyph->uvs[1]));
 		batch_vertex(XYZ(x2, y1, batch.cursor[2]), batch.color[1], UV(glyph->uvs[2], glyph->uvs[1]));
