@@ -952,11 +952,16 @@ static void tick_dead(GameActor* actor) {
 
 	case 0L: {
 		if (ANY_FLAG(actor, FLG_PLAYER_DEAD)) {
+			GameActor* autoscroll = get_actor(game_state.autoscroll);
+			if (autoscroll != NULL && !ANY_FLAG(autoscroll, FLG_SCROLL_TANKS))
+				VAL(autoscroll, VAL_X_SPEED) = VAL(autoscroll, VAL_Y_SPEED) = FxZero;
+
+			if (game_state.flags & GF_HARDCORE)
+				play_state_sound("hardcore");
+
 			for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++)
 				stop_state_track(i);
 			play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? "lose2" : "lose", false);
-			if (game_state.flags & GF_HARDCORE)
-				play_state_sound("hardcore");
 		} else
 			play_actor_sound(actor, (player->lives >= 0L) ? "lose" : "dead");
 		break;
