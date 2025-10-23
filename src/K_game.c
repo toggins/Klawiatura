@@ -469,8 +469,8 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 
 	GameActor* actor = get_actor(game_state.live_actors);
 	while (actor != NULL) {
-		if (actor->values[VAL_SPROUT] > 0L)
-			--actor->values[VAL_SPROUT];
+		if (VAL(actor, VAL_SPROUT) > 0L)
+			--VAL(actor, VAL_SPROUT);
 		else
 			ACTOR_CALL(actor, tick);
 
@@ -822,11 +822,11 @@ void start_game_state(GameContext* ctx) {
 				uint8_t idx = *((uint8_t*)buf);
 				buf++;
 
-				actor->values[idx] = *((ActorValue*)buf);
+				VAL(actor, idx) = *((ActorValue*)buf);
 				buf += sizeof(ActorValue);
 			}
 
-			actor->flags |= *((ActorFlag*)buf);
+			FLAG_ON(actor, *((ActorFlag*)buf));
 			buf += sizeof(ActorFlag);
 
 			if (actor->type == ACT_HIDDEN_BLOCK && ANY_FLAG(actor, FLG_BLOCK_ONCE)
@@ -899,7 +899,7 @@ GameActor* respawn_player(GamePlayer* player) {
 
 	pawn = create_actor(ACT_PLAYER, spawn->pos);
 	if (pawn != NULL) {
-		pawn->values[VAL_PLAYER_INDEX] = (ActorValue)player->id;
+		VAL(pawn, VAL_PLAYER_INDEX) = (ActorValue)player->id;
 		player->actor = pawn->id;
 	}
 	return pawn;
@@ -1101,6 +1101,11 @@ void move_actor(GameActor* actor, const fvec2 pos) {
 	game_state.grid[cell] = actor->id;
 }
 
+/// Check if the actor's hitbox is below the level.
+Bool below_level(GameActor* actor) {
+	return actor != NULL && (actor->pos.y + actor->box.start.y) > game_state.size.y;
+}
+
 /// Retrieve a list of actors overlapping a rectangle.
 void list_cell_at(CellList* list, const frect rect) {
 	list->num_actors = 0L;
@@ -1196,17 +1201,16 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 		}
 
 		move_actor(actor, POS_ADD(actor, shift, FxZero));
-		actor->values[VAL_X_SPEED] = actor->values[VAL_Y_SPEED] = FxZero;
-		actor->values[VAL_X_TOUCH] = (shift >= FxZero) ? -1L : 1L;
-		actor->values[VAL_Y_TOUCH] = 1L;
+		VAL(actor, VAL_X_SPEED) = VAL(actor, VAL_Y_SPEED) = FxZero;
+		VAL(actor, VAL_X_TOUCH) = ((shift >= FxZero) ? -1L : 1L), VAL(actor, VAL_Y_TOUCH) = 1L;
 		return;
 	}
 
-	actor->values[VAL_X_TOUCH] = actor->values[VAL_Y_TOUCH] = 0L;
+	VAL(actor, VAL_X_TOUCH) = VAL(actor, VAL_Y_TOUCH) = 0L;
 	fixed x = actor->pos.x, y = actor->pos.y;
 
 	// Horizontal collision
-	x += actor->values[VAL_X_SPEED];
+	x += VAL(actor, VAL_X_SPEED);
 	CellList list = {0};
 	list_cell_at(&list, (frect){
 				    {x + actor->box.start.x, y + actor->box.start.y},
@@ -1216,13 +1220,13 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 
 	if (list.num_actors > 0L) {
 		Bool stop = false;
-		if (actor->values[VAL_X_SPEED] < FxZero) {
+		if (VAL(actor, VAL_X_SPEED) < FxZero) {
 			for (ActorID i = 0; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
 					continue;
 
-				if (actor->values[VAL_Y_SPEED] >= FxZero
+				if (VAL(actor, VAL_Y_SPEED) >= FxZero
 					&& (actor->pos.y + actor->box.end.y - climb)
 						   < (displacer->pos.y + displacer->box.start.y))
 				{
@@ -1237,8 +1241,8 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 						    SOL_SOLID))
 					{
 						y = step;
-						actor->values[VAL_Y_SPEED] = FxZero;
-						actor->values[VAL_Y_TOUCH] = 1L;
+						VAL(actor, VAL_Y_SPEED) = FxZero;
+						VAL(actor, VAL_Y_TOUCH) = 1L;
 						climbed = true;
 					}
 					continue;
@@ -1246,17 +1250,17 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 
 				ACTOR_CALL2(displacer, on_right, actor);
 				x = Fmax(x, displacer->pos.x + displacer->box.end.x - actor->box.start.x);
-				stop = actor->values[VAL_X_SPEED] <= FxZero;
+				stop = VAL(actor, VAL_X_SPEED) <= FxZero;
 				climbed = false;
 			}
-			actor->values[VAL_X_TOUCH] = -(stop && !climbed);
-		} else if (actor->values[VAL_X_SPEED] > FxZero) {
+			VAL(actor, VAL_X_TOUCH) = -(stop && !climbed);
+		} else if (VAL(actor, VAL_X_SPEED) > FxZero) {
 			for (ActorID i = 0; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
 					continue;
 
-				if (actor->values[VAL_Y_SPEED] >= FxZero
+				if (VAL(actor, VAL_Y_SPEED) >= FxZero
 					&& (actor->pos.y + actor->box.end.y - climb)
 						   < (displacer->pos.y + displacer->box.start.y))
 				{
@@ -1271,8 +1275,8 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 						    SOL_SOLID))
 					{
 						y = step;
-						actor->values[VAL_Y_SPEED] = FxZero;
-						actor->values[VAL_Y_TOUCH] = 1L;
+						VAL(actor, VAL_Y_SPEED) = FxZero;
+						VAL(actor, VAL_Y_TOUCH) = 1L;
 						climbed = true;
 					}
 					continue;
@@ -1280,18 +1284,18 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 
 				ACTOR_CALL2(displacer, on_left, actor);
 				x = Fmin(x, displacer->pos.x + displacer->box.start.x - actor->box.end.x);
-				stop = actor->values[VAL_X_SPEED] >= FxZero;
+				stop = VAL(actor, VAL_X_SPEED) >= FxZero;
 				climbed = false;
 			}
-			actor->values[VAL_X_TOUCH] = stop && !climbed;
+			VAL(actor, VAL_X_TOUCH) = stop && !climbed;
 		}
 
 		if (stop)
-			actor->values[VAL_X_SPEED] = FxZero;
+			VAL(actor, VAL_X_SPEED) = FxZero;
 	}
 
 	// Vertical collision
-	y += actor->values[VAL_Y_SPEED];
+	y += VAL(actor, VAL_Y_SPEED);
 	list_cell_at(&list, (frect){
 				    {x + actor->box.start.x, y + actor->box.start.y},
 				    {x + actor->box.end.x,   y + actor->box.end.y  }
@@ -1299,7 +1303,7 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 
 	if (list.num_actors > 0L) {
 		Bool stop = false;
-		if (actor->values[VAL_Y_SPEED] < FxZero) {
+		if (VAL(actor, VAL_Y_SPEED) < FxZero) {
 			for (ActorID i = 0; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
@@ -1307,10 +1311,10 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 
 				ACTOR_CALL2(displacer, on_bottom, actor);
 				y = Fmax(y, displacer->pos.y + displacer->box.end.y - actor->box.start.y);
-				stop = actor->values[VAL_Y_SPEED] <= FxZero;
+				stop = VAL(actor, VAL_Y_SPEED) <= FxZero;
 			}
-			actor->values[VAL_Y_TOUCH] = -(fixed)stop;
-		} else if (actor->values[VAL_Y_SPEED] > FxZero) {
+			VAL(actor, VAL_Y_TOUCH) = -(fixed)stop;
+		} else if (VAL(actor, VAL_Y_SPEED) > FxZero) {
 			for (ActorID i = 0; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer)
@@ -1319,19 +1323,19 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 				const SolidType solid = ACTOR_GET_SOLID(displacer);
 				if (!(solid & SOL_ALL)
 					|| ((solid & SOL_TOP)
-						&& (y + actor->box.end.y - actor->values[VAL_Y_SPEED])
+						&& (y + actor->box.end.y - VAL(actor, VAL_Y_SPEED))
 							   > (displacer->pos.y + displacer->box.start.y + climb)))
 					continue;
 
 				ACTOR_CALL2(displacer, on_top, actor);
 				y = Fmin(y, displacer->pos.y + displacer->box.start.y - actor->box.end.y);
-				stop = actor->values[VAL_Y_SPEED] >= FxZero;
+				stop = VAL(actor, VAL_Y_SPEED) >= FxZero;
 			}
-			actor->values[VAL_Y_TOUCH] = (fixed)stop;
+			VAL(actor, VAL_Y_TOUCH) = (fixed)stop;
 		}
 
 		if (stop)
-			actor->values[VAL_Y_SPEED] = FxZero;
+			VAL(actor, VAL_Y_SPEED) = FxZero;
 	}
 
 	move_actor(actor, (fvec2){x, y});
@@ -1342,8 +1346,9 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
 	const InterpActor* iactor = &interp.actors[actor->id];
-	batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + actor->values[VAL_SPROUT],
-			    actor->values[VAL_SPROUT] > 0L ? 21.f : FtFloat(actor->depth)),
+	const ActorValue sprout = VAL(actor, VAL_SPROUT);
+	batch_start(
+		XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + sprout, (sprout > 0L) ? 21.f : FtFloat(actor->depth)),
 		angle, color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 }

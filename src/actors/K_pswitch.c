@@ -31,23 +31,23 @@ static void create(GameActor* actor) {
 }
 
 static void tick(GameActor* actor) {
-	if (actor->values[VAL_PSWITCH] > 0L && !ANY_FLAG(actor, FLG_PSWITCH_ONCE))
-		--actor->values[VAL_PSWITCH];
+	if (!ANY_FLAG(actor, FLG_PSWITCH_ONCE))
+		VAL_TICK(actor, VAL_PSWITCH);
 }
 
 static void draw(const GameActor* actor) {
 	const char* tex;
-	if (actor->values[VAL_PSWITCH] > 0L)
+	if (VAL(actor, VAL_PSWITCH) > 0L)
 		tex = "markers/pswitch_flat";
 	else
 		switch ((int)((float)game_state.time / 3.703703703703704f) % 3L) {
 		default:
 			tex = "markers/pswitch";
 			break;
-		case 1:
+		case 1L:
 			tex = "markers/pswitch2";
 			break;
-		case 2:
+		case 2L:
 			tex = "markers/pswitch3";
 			break;
 		}
@@ -56,14 +56,14 @@ static void draw(const GameActor* actor) {
 }
 
 static void collide(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER || actor->values[VAL_PSWITCH] > 0L)
+	if (from->type != ACT_PLAYER || VAL(actor, VAL_PSWITCH) > 0L)
 		return;
 
 	if (from->pos.y < (actor->pos.y + FfInt(16L))
-		&& (from->values[VAL_Y_SPEED] > FfInt(2L) || ANY_FLAG(from, FLG_PLAYER_STOMP)))
+		&& (VAL(from, VAL_Y_SPEED) > FfInt(2L) || ANY_FLAG(from, FLG_PLAYER_STOMP)))
 	{
-		from->values[VAL_Y_SPEED] = -FxOne;
-		actor->values[VAL_PSWITCH] = game_state.pswitch = 600L;
+		VAL(from, VAL_Y_SPEED) = -FxOne;
+		VAL(actor, VAL_PSWITCH) = game_state.pswitch = 600L;
 
 		replace_actors(ACT_COIN, ACT_PSWITCH_BRICK);
 		replace_actors(ACT_BRICK_BLOCK, ACT_PSWITCH_COIN);

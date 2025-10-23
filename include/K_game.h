@@ -291,6 +291,13 @@ enum BaseActorValues {
 	VAL_CUSTOM
 };
 
+#define VAL(actor, val) ((actor)->values[val])
+#define VAL_TICK(actor, val)                                                                                           \
+	do {                                                                                                           \
+		if (VAL(actor, val) > 0L)                                                                              \
+			--VAL(actor, val);                                                                             \
+	} while (0)
+
 #define ANY_FLAG(actor, flag) (((actor)->flags & (flag)) != 0L)
 #define ALL_FLAG(actor, flag) (((actor)->flags & (flag)) == (flag))
 
@@ -452,6 +459,8 @@ void replace_actors(GameActorType, GameActorType);
 GameActor* get_actor(ActorID);
 const InterpActor* get_interp(const GameActor*);
 void move_actor(GameActor*, const fvec2);
+
+Bool below_level(GameActor*);
 
 typedef struct {
 	GameActor* actors[MAX_ACTORS];

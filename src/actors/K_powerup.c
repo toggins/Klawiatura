@@ -26,17 +26,17 @@ static void create_starman(GameActor* actor) {
 }
 
 static void tick_starman(GameActor* actor) {
-	if (actor->pos.y > game_state.size.y) {
+	if (below_level(actor)) {
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}
 
-	actor->values[VAL_Y_SPEED] += 13107L;
+	VAL(actor, VAL_Y_SPEED) += 13107L;
 	displace_actor(actor, FfInt(10L), false);
-	if (actor->values[VAL_X_TOUCH] != 0L)
-		actor->values[VAL_X_SPEED] = actor->values[VAL_X_TOUCH] * -163840L;
-	if (actor->values[VAL_Y_TOUCH] > 0L)
-		actor->values[VAL_Y_SPEED] = FfInt(-5L);
+	if (VAL(actor, VAL_X_TOUCH) != 0L)
+		VAL(actor, VAL_X_SPEED) = VAL(actor, VAL_X_TOUCH) * -163840L;
+	if (VAL(actor, VAL_Y_TOUCH) > 0L)
+		VAL(actor, VAL_Y_SPEED) = FfInt(-5L);
 }
 
 static void draw_starman(const GameActor* actor) {
@@ -63,11 +63,11 @@ static void collide_starman(GameActor* actor, GameActor* from) {
 		return;
 
 	// !!! CLIENT-SIDE !!!
-	if (localplayer() == from->values[VAL_PLAYER_INDEX])
+	if (localplayer() == VAL(from, VAL_PLAYER_INDEX))
 		play_state_track(TS_POWER, "starman", true);
 	// !!! CLIENT-SIDE !!!
 
-	from->values[VAL_PLAYER_STARMAN] = 500L;
+	VAL(from, VAL_PLAYER_STARMAN) = 500L;
 	play_actor_sound(from, "grow");
 	FLAG_ON(actor, FLG_DESTROY);
 }
