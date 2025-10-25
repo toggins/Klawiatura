@@ -76,6 +76,8 @@ enum {
 	SEQ_NONE,
 	SEQ_LOSE,
 	SEQ_WIN,
+	SEQ_AMBUSH,
+	SEQ_AMBUSH_END,
 };
 
 typedef uint16_t GameActorType;

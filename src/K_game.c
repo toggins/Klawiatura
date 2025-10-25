@@ -609,6 +609,38 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 			game_state.flags |= GF_END;
 	}
 
+	case SEQ_AMBUSH: {
+		if (game_state.sequence.time <= 0L)
+			game_state.sequence.type = SEQ_AMBUSH_END;
+		break;
+	}
+
+	case SEQ_AMBUSH_END: {
+		if (++game_state.sequence.time < 50L)
+			break;
+
+		GamePlayer* winner = get_player(game_state.sequence.activator);
+		if (winner != NULL && get_actor(winner->actor) != NULL)
+			goto youre_winner;
+
+		// Compensate with lowest scoring player
+		winner = NULL;
+		uint32_t score = 4294967295L; // World's most paranoid coder award
+		for (PlayerID i = 0; i < num_players; i++) {
+			GamePlayer* loser = get_player(i);
+			if (loser == NULL || loser->score > score || get_actor(loser->actor) == NULL)
+				continue;
+			winner = loser;
+			score = loser->score;
+		}
+		if (winner == NULL)
+			break;
+
+	youre_winner:
+		win_player(get_actor(winner->actor));
+		break;
+	}
+
 	break;
 	}
 }
@@ -769,6 +801,8 @@ void start_game_state(GameContext* ctx) {
 
 	game_state.flags |= *((GameFlag*)buf);
 	buf += sizeof(GameFlag);
+	if (game_state.flags & GF_AMBUSH)
+		game_state.sequence.type = SEQ_AMBUSH;
 
 	game_state.size.x = *((fixed*)buf);
 	buf += sizeof(fixed);
