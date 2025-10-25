@@ -1235,6 +1235,14 @@
                         },
 
                         {
+                            "def": "Mushroom Poison",
+                            "type": "object",
+                            "index": 13,
+                            "z": 1,
+                            "texture": "items/mushroom_poison"
+                        },
+
+                        {
                             "def": "Fire Flower",
                             "type": "object",
                             "index": 14,

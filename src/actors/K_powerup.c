@@ -1,5 +1,133 @@
 #include "K_player.h"
-#include "K_powerup.h" // IWYU pragma: keep
+#include "K_points.h"
+#include "K_powerup.h"
+
+// ========
+// MUSHROOM
+// ========
+
+static void load_mushroom() {
+	load_texture("items/mushroom");
+
+	load_sound("grow");
+
+	load_actor(ACT_POINTS);
+}
+
+static void create_mushroom(GameActor* actor) {
+	actor->box.start.x = FfInt(-15L);
+	actor->box.start.y = FfInt(-32L);
+	actor->box.end.x = FfInt(15L);
+	actor->depth = FxOne;
+
+	FLAG_ON(actor, FLG_POWERUP_FULL);
+}
+
+static void tick_mushroom(GameActor* actor) {
+	if (below_level(actor)) {
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	VAL(actor, VAL_Y_SPEED) += 19005L;
+	displace_actor(actor, FfInt(10L), false);
+	if (VAL(actor, VAL_X_TOUCH) != 0L)
+		VAL(actor, VAL_X_SPEED) = VAL(actor, VAL_X_TOUCH) * FfInt(-2L);
+}
+
+static void draw_mushroom(const GameActor* actor) {
+	draw_actor(actor, "items/mushroom", 0.f, WHITE);
+}
+
+static void collide_mushroom(GameActor* actor, GameActor* from) {
+	if (from->type != ACT_PLAYER)
+		return;
+
+	GamePlayer* player = get_owner(from);
+	if (player == NULL)
+		return;
+
+	if (player->power == POW_SMALL) {
+		VAL(from, VAL_PLAYER_POWER) = 3000L;
+		player->power = POW_BIG;
+	}
+	give_points(actor, player, 1000L);
+
+	play_actor_sound(from, "grow");
+	FLAG_ON(actor, FLG_DESTROY);
+}
+
+const GameActorTable TAB_MUSHROOM = {.load = load_mushroom,
+	.create = create_mushroom,
+	.tick = tick_mushroom,
+	.draw = draw_mushroom,
+	.collide = collide_mushroom};
+
+// ============
+// 1UP MUSHROOM
+// ============
+
+static void load_1up_mushroom() {
+	load_texture("items/mushroom_1up");
+
+	load_actor(ACT_POINTS);
+}
+
+static void draw_1up_mushroom(const GameActor* actor) {
+	draw_actor(actor, "items/mushroom_1up", 0.f, WHITE);
+}
+
+static void collide_1up_mushroom(GameActor* actor, GameActor* from) {
+	if (from->type != ACT_PLAYER)
+		return;
+
+	give_points(actor, get_owner(from), -1L);
+	FLAG_ON(actor, FLG_DESTROY);
+}
+
+const GameActorTable TAB_MUSHROOM_1UP = {.load = load_1up_mushroom,
+	.create = create_mushroom,
+	.tick = tick_mushroom,
+	.draw = draw_1up_mushroom,
+	.collide = collide_1up_mushroom};
+
+// ===============
+// POISON MUSHROOM
+// ===============
+
+static void load_poison_mushroom() {
+	load_texture("items/mushroom_poison");
+	load_texture("items/mushroom_poison2");
+
+	load_actor(ACT_EXPLODE);
+}
+
+static void create_poison_mushroom(GameActor* actor) {
+	create_mushroom(actor);
+	VAL(actor, VAL_X_SPEED) = FfInt(2L);
+}
+
+static void draw_poison_mushroom(const GameActor* actor) {
+	draw_actor(actor,
+		((int)((float)game_state.time / 11.11111111111111f) % 2L) ? "items/mushroom_poison2"
+									  : "items/mushroom_poison",
+		0.f, WHITE);
+}
+
+static void collide_poison_mushroom(GameActor* actor, GameActor* from) {
+	if (from->type != ACT_PLAYER || VAL(from, VAL_PLAYER_STARMAN) > 0L)
+		return;
+
+	kill_player(from);
+	create_actor(ACT_EXPLODE, POS_ADD(actor, FxZero, FfInt(-15L)));
+	FLAG_ON(actor, FLG_DESTROY);
+}
+
+const GameActorTable TAB_MUSHROOM_POISON = {.load = load_poison_mushroom,
+	.create = create_poison_mushroom,
+	.tick = tick_mushroom,
+	.draw = draw_poison_mushroom,
+	.collide = collide_poison_mushroom};
 
 // =======
 // STARMAN
