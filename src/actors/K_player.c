@@ -605,8 +605,9 @@ static void tick(GameActor* actor) {
 		displace_actor(actor, FxZero, false);
 		VAL(actor, VAL_X_SPEED) = vx, VAL(actor, VAL_Y_SPEED) = vy;
 
-		const frect mbox = HITBOX_ADD(actor, VAL(platform, VAL_X_SPEED), VAL(platform, VAL_Y_SPEED)),
-			    pbox = HITBOX(platform);
+		frect mbox = HITBOX_ADD(actor, VAL(platform, VAL_X_SPEED), VAL(platform, VAL_Y_SPEED));
+		mbox.end.y += FxOne;
+		const frect pbox = HITBOX(platform);
 		VAL(actor, VAL_PLAYER_PLATFORM) = Rcollide(mbox, pbox) ? pfid : NULLACT;
 	}
 
@@ -761,21 +762,16 @@ static void tick(GameActor* actor) {
 		}
 	}
 
-	const Bool carried = ANY_FLAG(actor, FLG_PLAYER_CARRIED);
-	if (VAL(actor, VAL_Y_TOUCH) <= 0L || carried) {
+	if (VAL(actor, VAL_Y_TOUCH) <= 0L) {
 		if (actor->pos.y >= game_state.water) {
-			if (VAL(actor, VAL_Y_SPEED) > FfInt(3L) && !carried) {
+			if (VAL(actor, VAL_Y_SPEED) > FfInt(3L))
 				VAL(actor, VAL_Y_SPEED) = Fmin(VAL(actor, VAL_Y_SPEED) - FxOne, FfInt(3L));
-			} else if (VAL(actor, VAL_Y_SPEED) < FfInt(3L) || carried) {
+			else if (VAL(actor, VAL_Y_SPEED) < FfInt(3L))
 				VAL(actor, VAL_Y_SPEED) += 6554L;
-				FLAG_OFF(actor, FLG_PLAYER_CARRIED);
-			}
-		} else if (VAL(actor, VAL_Y_SPEED) > FfInt(10L) && !carried) {
+		} else if (VAL(actor, VAL_Y_SPEED) > FfInt(10L)) {
 			VAL(actor, VAL_Y_SPEED) = Fmin(VAL(actor, VAL_Y_SPEED) - FxOne, FfInt(10L));
-		} else if (VAL(actor, VAL_Y_SPEED) < FfInt(10L) || carried) {
+		} else if (VAL(actor, VAL_Y_SPEED) < FfInt(10L))
 			VAL(actor, VAL_Y_SPEED) += FxOne;
-			FLAG_OFF(actor, FLG_PLAYER_CARRIED);
-		}
 	}
 
 	// Animation

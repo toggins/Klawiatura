@@ -826,9 +826,17 @@
                         },
 
                         {
-                            "name": "Speed",
+                            "name": "X Speed",
                             "index": 0,
-                            "default": 0
+                            "default": 0,
+                            "fixed": true
+                        },
+
+                        {
+                            "name": "Y Speed",
+                            "index": 1,
+                            "default": 0,
+                            "fixed": true
                         }
                     ],
 
@@ -839,7 +847,49 @@
                         },
 
                         {
-                            "name": "Descend?",
+                            "name": "Wrap Y?",
+                            "bit": 8
+                        }
+                    ]
+                },
+
+                {
+                    "def": "Platform Turn",
+                    "type": "object",
+                    "index": 86,
+                    "texture": "markers/solid_top",
+                    "stretch": true,
+                    "max_stretch": [256, 256],
+
+                    "values": [
+                        {
+                            "name": "X Speed",
+                            "index": 0,
+                            "default": 0,
+                            "fixed": true
+                        },
+
+                        {
+                            "name": "Y Speed",
+                            "index": 1,
+                            "default": 0,
+                            "fixed": true
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Relative?",
+                            "bit": 1
+                        },
+
+                        {
+                            "name": "Fall?",
+                            "bit": 7
+                        },
+
+                        {
+                            "name": "Wrap Y?",
                             "bit": 8
                         }
                     ]
