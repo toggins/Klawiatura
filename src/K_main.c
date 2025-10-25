@@ -78,6 +78,7 @@ int main(int argc, char* argv[]) {
 static int realmain() {
 	EXPECT(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS), "SDL_Init fail: %s", SDL_GetError());
 
+	populate_actors_table();
 	file_init(data_path);
 	video_init(force_shader);
 	audio_init();

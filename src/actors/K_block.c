@@ -17,7 +17,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 		return;
 	case ACT_ITEM_BLOCK:
 	case ACT_BRICK_BLOCK:
-	case ACT_BRICK_BLOCK_COIN:
+	case ACT_COIN_BLOCK:
 	case ACT_PSWITCH_BRICK:
 	case ACT_NOTE_BLOCK:
 		break;

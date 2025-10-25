@@ -111,7 +111,7 @@ enum {
 	ACT_HIDDEN_BLOCK,
 	ACT_BRICK_BLOCK,
 	ACT_BRICK_SHARD,
-	ACT_BRICK_BLOCK_COIN,
+	ACT_COIN_BLOCK,
 	ACT_CHECKPOINT,
 	ACT_GOAL_BAR,
 	ACT_GOAL_BAR_FLY,
@@ -322,23 +322,23 @@ enum BaseActorFlags {
 #define HITBOX(actor)                                                                                                  \
 	((frect){                                                                                                      \
 		{(actor)->pos.x + (actor)->box.start.x, (actor)->pos.y + (actor)->box.start.y},                        \
-		{(actor)->pos.x + (actor)->box.end.x,   (actor)->pos.y + (actor)->box.end.y  } \
-        })
+		{(actor)->pos.x + (actor)->box.end.x,   (actor)->pos.y + (actor)->box.end.y  },                            \
+	})
 #define HITBOX_ADD(actor, _x, _y)                                                                                      \
 	((frect){                                                                                                      \
 		{(actor)->pos.x + (actor)->box.start.x + (_x), (actor)->pos.y + (actor)->box.start.y + (_y)},          \
-		{(actor)->pos.x + (actor)->box.end.x + (_x),   (actor)->pos.y + (actor)->box.end.y + (_y)  } \
-        })
+		{(actor)->pos.x + (actor)->box.end.x + (_x),   (actor)->pos.y + (actor)->box.end.y + (_y)  },              \
+	})
 #define HITBOX_LEFT(actor)                                                                                             \
 	((frect){                                                                                                      \
 		{(actor)->pos.x + (actor)->box.start.x - FxOne, (actor)->pos.y + (actor)->box.start.y},                \
-		{(actor)->pos.x + (actor)->box.end.x,           (actor)->pos.y + (actor)->box.end.y  } \
-        })
+		{(actor)->pos.x + (actor)->box.end.x,           (actor)->pos.y + (actor)->box.end.y  },                            \
+	})
 #define HITBOX_RIGHT(actor)                                                                                            \
 	((frect){                                                                                                      \
 		{(actor)->pos.x + (actor)->box.start.x,       (actor)->pos.y + (actor)->box.start.y},                        \
-		{(actor)->pos.x + (actor)->box.end.x + FxOne, (actor)->pos.y + (actor)->box.end.y  } \
-        })
+		{(actor)->pos.x + (actor)->box.end.x + FxOne, (actor)->pos.y + (actor)->box.end.y  },                    \
+	})
 
 typedef struct {
 	ActorID id;
@@ -451,6 +451,7 @@ PlayerID localplayer(), viewplayer(), numplayers();
 void set_view_player(GamePlayer*);
 
 // Actors
+void populate_actors_table();
 void load_actor(GameActorType);
 GameActor* create_actor(GameActorType, const fvec2);
 void replace_actors(GameActorType, GameActorType);
