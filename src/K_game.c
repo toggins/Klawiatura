@@ -530,10 +530,12 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 
 	GameActor* actor = get_actor(game_state.live_actors);
 	while (actor != NULL) {
-		if (VAL(actor, VAL_SPROUT) > 0L)
-			--VAL(actor, VAL_SPROUT);
-		else
-			ACTOR_CALL(actor, tick);
+		if (!ANY_FLAG(actor, FLG_FREEZE)) {
+			if (VAL(actor, VAL_SPROUT) > 0L)
+				--VAL(actor, VAL_SPROUT);
+			else
+				ACTOR_CALL(actor, tick);
+		}
 
 		GameActor* next = get_actor(actor->previous);
 		if (ANY_FLAG(actor, FLG_DESTROY))
