@@ -171,7 +171,7 @@ static void load_flower() {
 
 static void create_flower(GameActor* actor) {
 	actor->box.start.x = FfInt(-17L);
-	actor->box.start.y = FfInt(-312L);
+	actor->box.start.y = FfInt(-32L);
 	actor->box.end.x = FfInt(16L);
 	actor->depth = FxOne;
 
