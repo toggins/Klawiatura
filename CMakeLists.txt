@@ -77,7 +77,7 @@ set(NUTPUNCH_BUILD_LOBBYIST OFF CACHE INTERNAL "")
 FetchContent_Declare(
     nutpunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG fca95da968353e5d02c0ca5dfa27136c9f67f585)
+    GIT_TAG 3c4cd630da33e19004c07cd10eb11baf3f083cf4)
 
 # yyjson (0.12.0)
 FetchContent_Declare(
@@ -90,7 +90,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 FetchContent_Declare(
     GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG cc7318f8088ce2561f3adcb055f3d09a2e919f76)
+    GIT_TAG 9460fc61d0570ce02b8118b4e9c356aa79a5ba56)
 
 # FMOD Core API (2.03.08)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
