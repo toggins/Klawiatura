@@ -251,7 +251,6 @@ bool update_game() {
 			case SaveEvent: {
 				static SaveState save;
 				save_game_state(&save.game);
-				save_video_state(&save.video);
 				save_audio_state(&save.audio);
 
 				*event->data.save.state_len = sizeof(save);
@@ -263,7 +262,6 @@ bool update_game() {
 			case LoadEvent: {
 				const SaveState* load = (SaveState*)(event->data.load.state);
 				load_game_state(&load->game);
-				load_video_state(&load->video);
 				load_audio_state(&load->audio);
 				break;
 			}
@@ -273,7 +271,6 @@ bool update_game() {
 				for (PlayerID j = 0; j < num_players; j++)
 					inputs[j] = ((GameInput*)(event->data.adv.inputs))[j];
 				tick_game_state(inputs);
-				tick_video_state();
 				tick_audio_state();
 
 				for (PlayerID j = 0; j < num_players; j++)

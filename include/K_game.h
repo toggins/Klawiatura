@@ -2,8 +2,8 @@
 
 #include "K_audio.h"
 #include "K_math.h"
-#include "K_net.h" // IWYU pragma: keep
-#include "K_video.h"
+#include "K_net.h"   // IWYU pragma: keep
+#include "K_video.h" // IWYU pragma: keep
 
 #define MAJOR_LEVEL_VERSION 0
 #define MINOR_LEVEL_VERSION 1
@@ -383,7 +383,6 @@ typedef struct {
 
 typedef struct {
 	GameState game;
-	VideoState video;
 	AudioState audio;
 } SaveState;
 
