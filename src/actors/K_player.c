@@ -940,7 +940,9 @@ static void draw(const GameActor* actor) {
 		return;
 
 	const char* tex = get_player_texture(player->power, get_player_frame(actor));
+	// !!! CLIENT-SIDE !!!
 	const GLfloat a = (localplayer() == player->id) ? 255L : 191L;
+	// !!! CLIENT-SIDE !!!
 	draw_actor(actor, tex, 0.f, ALPHA(a));
 
 	if (VAL(actor, VAL_PLAYER_STARMAN) > 0L) {
@@ -985,17 +987,18 @@ static void draw(const GameActor* actor) {
 		batch_stencil(0.f);
 	}
 
-	if (viewplayer() != player->id) {
-		const char* name = get_peer_name(player->id);
-		if (name == NULL)
-			return;
-		const InterpActor* iactor = get_interp(actor);
-		batch_cursor(
-			XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + FtFloat(actor->box.start.y) - 10.f, -1000.f));
-		batch_color(ALPHA(160L));
-		batch_align(FA_CENTER, FA_BOTTOM);
-		batch_string("main", 20, name);
-	}
+	// !!! CLIENT-SIDE !!!
+	if (viewplayer() == player->id)
+		return;
+	const char* name = get_peer_name(player->id);
+	if (name == NULL)
+		return;
+	const InterpActor* iactor = get_interp(actor);
+	batch_cursor(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + FtFloat(actor->box.start.y) - 10.f, -1000.f));
+	batch_color(ALPHA(160L));
+	batch_align(FA_CENTER, FA_BOTTOM);
+	batch_string("main", 20, name);
+	// !!! CLIENT-SIDE !!!
 }
 
 static void cleanup(GameActor* actor) {

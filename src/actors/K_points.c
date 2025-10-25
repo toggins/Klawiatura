@@ -5,7 +5,7 @@
 // ================
 
 void give_points(GameActor* actor, GamePlayer* player, int32_t points) {
-	if (actor == NULL || player == NULL)
+	if (actor == NULL || player == NULL || points == 0L)
 		return;
 
 	if (points < 0L) {
@@ -62,8 +62,10 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
+	// !!! CLIENT-SIDE !!!
 	if (viewplayer() != VAL(actor, VAL_POINTS_PLAYER))
 		return;
+	// !!! CLIENT-SIDE !!!
 
 	const char* tex;
 	switch (VAL(actor, VAL_POINTS)) {
