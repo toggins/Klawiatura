@@ -15,7 +15,7 @@ static void cleanup(GameActor* actor) {
 		}
 }
 
-PlayerID owner(const GameActor* actor) {
+static PlayerID owner(const GameActor* actor) {
 	return VAL(actor, VAL_MISSILE_PLAYER);
 }
 
