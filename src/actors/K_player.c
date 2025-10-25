@@ -1,4 +1,5 @@
 #include "K_autoscroll.h"
+#include "K_missiles.h"
 #include "K_player.h"
 #include "K_points.h"
 
@@ -429,6 +430,7 @@ void kill_player(GameActor* actor) {
 	GameActor* dead = create_actor(ACT_PLAYER_DEAD, actor->pos);
 	if (dead == NULL)
 		return;
+	align_interp(dead, actor);
 
 	// !!! CLIENT-SIDE !!!
 	if (localplayer() == VAL(actor, VAL_PLAYER_INDEX) && VAL(actor, VAL_PLAYER_STARMAN) > 0L)
@@ -444,7 +446,7 @@ void kill_player(GameActor* actor) {
 
 		GameActor* kpawn = get_actor(player->kevin.actor);
 		if (kpawn != NULL) {
-			create_actor(ACT_EXPLODE, POS_ADD(kpawn, FxZero, FfInt(-16L)));
+			align_interp(create_actor(ACT_EXPLODE, POS_ADD(kpawn, FxZero, FfInt(-16L))), kpawn);
 			FLAG_ON(kpawn, FLG_DESTROY);
 		}
 		player->kevin.actor = NULLACT;
@@ -546,6 +548,7 @@ static void load() {
 	load_player_textures();
 
 	load_sound("jump");
+	load_sound("fire");
 	load_sound("swim");
 	load_sound("warp");
 	load_sound("starman");
@@ -555,7 +558,14 @@ static void load() {
 	load_track("win2");
 	load_track("win3");
 
+	load_actor(ACT_PLAYER_EFFECT);
 	load_actor(ACT_PLAYER_DEAD);
+	load_actor(ACT_MISSILE_FIREBALL);
+	load_actor(ACT_MISSILE_BEETROOT);
+	load_actor(ACT_MISSILE_BEETROOT_SINK);
+	load_actor(ACT_MISSILE_HAMMER);
+	load_actor(ACT_POINTS);
+	load_actor(ACT_KEVIN);
 }
 
 static void create(GameActor* actor) {
@@ -795,6 +805,100 @@ static void tick(GameActor* actor) {
 		VAL(actor, VAL_PLAYER_FRAME) += Fclamp(Fmul(Fabs(VAL(actor, VAL_X_SPEED)), 5243L), 9175L, 16056L);
 	else
 		VAL(actor, VAL_PLAYER_FRAME) = FxZero;
+
+	switch (player->power) {
+	default:
+		break;
+
+	case POW_FIRE:
+	case POW_BEETROOT:
+	case POW_HAMMER: {
+		if (!ANY_PRESSED(player, GI_FIRE) || ANY_FLAG(actor, FLG_PLAYER_DUCK))
+			break;
+
+		ActorID midx;
+		for (; midx < MAX_MISSILES; midx++) {
+			GameActor* missile = get_actor(player->missiles[midx]);
+			if (missile == NULL)
+				goto new_missile;
+		}
+		break;
+
+	new_missile:
+		GameActorType mtype;
+		switch (player->power) {
+		default:
+			mtype = ACT_NULL;
+			break;
+		case POW_FIRE:
+			mtype = ACT_MISSILE_FIREBALL;
+			break;
+		case POW_BEETROOT: {
+			ActorID beetroots = 0L;
+			for (ActorID i = 0L; i < MAX_SINK; i++)
+				if (get_actor(player->sink[i]) != NULL)
+					++beetroots;
+			mtype = (beetroots >= MAX_SINK) ? ACT_NULL : ACT_MISSILE_BEETROOT;
+			break;
+		}
+		case POW_HAMMER:
+			mtype = ACT_MISSILE_HAMMER;
+			break;
+		}
+
+		GameActor* missile = create_actor(
+			mtype, POS_ADD(actor, FfInt(ANY_FLAG(actor, FLG_X_FLIP) ? -5L : 5L), FfInt(-29L)));
+		if (missile == NULL)
+			break;
+
+		player->missiles[midx] = missile->id;
+		VAL(missile, VAL_MISSILE_PLAYER) = (ActorValue)player->id;
+		switch (missile->type) {
+		default:
+			break;
+
+		case ACT_MISSILE_FIREBALL: {
+			FLAG_ON(missile, actor->flags & FLG_X_FLIP);
+			VAL(missile, VAL_X_SPEED) = ANY_FLAG(missile, FLG_X_FLIP) ? -532480L : 532480L;
+			break;
+		}
+
+		case ACT_MISSILE_BEETROOT: {
+			VAL(missile, VAL_X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -139264L : 139264L;
+			VAL(missile, VAL_Y_SPEED) = FfInt(-5L);
+			break;
+		}
+
+		case ACT_MISSILE_HAMMER: {
+			FLAG_ON(missile, actor->flags & FLG_X_FLIP);
+			VAL(missile, VAL_X_SPEED)
+				= (ANY_FLAG(actor, FLG_X_FLIP) ? -173015L : 173015L) + VAL(actor, VAL_X_SPEED);
+			VAL(missile, VAL_Y_SPEED) = FfInt(-7L) + Fmin(0L, Fhalf(VAL(actor, VAL_Y_SPEED)));
+			break;
+		}
+		}
+
+		if (VAL(actor, VAL_PLAYER_GROUND) > 0L)
+			VAL(actor, VAL_PLAYER_FIRE) = 2L;
+		play_actor_sound(actor, "fire");
+		break;
+	}
+
+	case POW_LUI: {
+		if (VAL(actor, VAL_PLAYER_GROUND) > 0L)
+			break;
+
+		GameActor* effect = create_actor(ACT_PLAYER_EFFECT, actor->pos);
+		if (effect == NULL)
+			return;
+
+		align_interp(effect, actor);
+		FLAG_ON(effect, actor->flags & FLG_X_FLIP);
+		VAL(effect, VAL_PLAYER_EFFECT_POWER) = player->power;
+		VAL(effect, VAL_PLAYER_EFFECT_FRAME) = get_player_frame(actor);
+		break;
+	}
+	}
 
 	VAL_TICK(actor, VAL_PLAYER_FLASH);
 

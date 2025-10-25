@@ -457,11 +457,11 @@ GameActor* create_actor(GameActorType, const fvec2);
 void replace_actors(GameActorType, GameActorType);
 
 GameActor* get_actor(ActorID);
-const InterpActor* get_interp(const GameActor*);
 void move_actor(GameActor*, const fvec2);
 
 Bool below_level(GameActor*);
 Bool in_any_view(GameActor*, fixed, Bool);
+Bool in_player_view(GameActor*, GamePlayer*, fixed, Bool);
 
 typedef struct {
 	GameActor* actors[MAX_ACTORS];
@@ -479,4 +479,6 @@ void play_actor_sound(const GameActor*, const char*);
 int32_t rng(int32_t);
 
 // Interpolation
-void skip_interp(GameActor*);
+const InterpActor* get_interp(const GameActor*);
+void skip_interp(const GameActor*);
+void align_interp(const GameActor*, const GameActor*);

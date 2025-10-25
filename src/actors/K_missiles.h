@@ -1,0 +1,11 @@
+#pragma once
+
+#include "K_game.h"
+
+enum {
+	VAL_MISSILE_PLAYER = VAL_CUSTOM,
+	VAL_MISSILE_ANGLE,
+	VAL_MISSILE_HITS,
+	VAL_MISSILE_HIT,
+	VAL_MISSILE_BUBBLE,
+};

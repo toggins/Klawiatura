@@ -2,7 +2,7 @@
 #include "K_coin.h"
 #include "K_game.h"
 #include "K_player.h"
-#include "K_powerup.h"
+#include "K_powerups.h"
 
 // ================
 // HELPER FUNCTIONS
@@ -303,6 +303,13 @@ static void draw_brick(const GameActor* actor) {
 }
 
 const GameActorTable TAB_BRICK_BLOCK = {.is_solid = always_solid,
+	.load = load_brick,
+	.create = create,
+	.tick = tick,
+	.draw = draw_brick,
+	.on_bottom = on_bottom};
+
+const GameActorTable TAB_PSWITCH_BRICK = {.is_solid = always_solid,
 	.load = load_brick,
 	.create = create,
 	.tick = tick,

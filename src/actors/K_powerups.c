@@ -1,6 +1,31 @@
 #include "K_player.h"
 #include "K_points.h"
-#include "K_powerup.h"
+#include "K_powerups.h"
+
+// ================
+// HELPER FUNCTIONS
+// ================
+
+static void collide_powerup(GameActor* actor, GameActor* from, PlayerPower power) {
+	if (from->type != ACT_PLAYER)
+		return;
+
+	GamePlayer* player = get_owner(from);
+	if (player == NULL)
+		return;
+
+	if (player->power == POW_SMALL && !ANY_FLAG(actor, FLG_POWERUP_FULL)) {
+		VAL(from, VAL_PLAYER_POWER) = 3000L;
+		player->power = POW_BIG;
+	} else if (player->power != POW_FIRE) {
+		VAL(from, VAL_PLAYER_POWER) = 4000L;
+		player->power = POW_FIRE;
+	}
+	give_points(actor, player, 1000L);
+
+	play_actor_sound(from, "grow");
+	FLAG_ON(actor, FLG_DESTROY);
+}
 
 // ========
 // MUSHROOM
@@ -119,7 +144,7 @@ static void collide_poison_mushroom(GameActor* actor, GameActor* from) {
 		return;
 
 	kill_player(from);
-	create_actor(ACT_EXPLODE, POS_ADD(actor, FxZero, FfInt(-15L)));
+	align_interp(create_actor(ACT_EXPLODE, POS_ADD(actor, FxZero, FfInt(-15L))), actor);
 	FLAG_ON(actor, FLG_DESTROY);
 }
 
@@ -128,6 +153,56 @@ const GameActorTable TAB_MUSHROOM_POISON = {.load = load_poison_mushroom,
 	.tick = tick_mushroom,
 	.draw = draw_poison_mushroom,
 	.collide = collide_poison_mushroom};
+
+// ===========
+// FIRE FLOWER
+// ===========
+
+static void load_flower() {
+	load_texture("items/flower");
+	load_texture("items/flower2");
+	load_texture("items/flower3");
+	load_texture("items/flower4");
+
+	load_sound("grow");
+
+	load_actor(ACT_POINTS);
+}
+
+static void create_flower(GameActor* actor) {
+	actor->box.start.x = FfInt(-17L);
+	actor->box.start.y = FfInt(-312L);
+	actor->box.end.x = FfInt(16L);
+	actor->depth = FxOne;
+
+	FLAG_ON(actor, FLG_POWERUP_FULL);
+}
+
+static void draw_flower(const GameActor* actor) {
+	const char* tex;
+	switch ((int)((float)game_state.time / 3.703703703703704f) % 4L) {
+	default:
+		tex = "items/flower";
+		break;
+	case 1L:
+		tex = "items/flower2";
+		break;
+	case 2L:
+		tex = "items/flower3";
+		break;
+	case 3L:
+		tex = "items/flower4";
+		break;
+	}
+	draw_actor(actor, tex, 0.f, WHITE);
+}
+
+static void collide_flower(GameActor* actor, GameActor* from) {
+	collide_powerup(actor, from, POW_FIRE);
+}
+
+const GameActorTable TAB_FIRE_FLOWER
+	= {.load = load_flower, .create = create_flower, .draw = draw_flower, .collide = collide_flower};
 
 // =======
 // STARMAN

@@ -56,6 +56,7 @@ void populate_actors_table() {
 	ACTOR(PLAYER_SPAWN);
 	ACTOR(PLAYER);
 	ACTOR(PLAYER_DEAD);
+	ACTOR(MISSILE_FIREBALL);
 	ACTOR(CLOUD);
 	ACTOR(BUSH);
 	ACTOR(SOLID);
@@ -77,9 +78,12 @@ void populate_actors_table() {
 	ACTOR(NOTE_BLOCK);
 	ACTOR(BLOCK_BUMP);
 	ACTOR(PSWITCH);
+	ACTOR(PSWITCH_COIN);
+	ACTOR(PSWITCH_BRICK);
 	ACTOR(MUSHROOM);
 	ACTOR(MUSHROOM_1UP);
 	ACTOR(MUSHROOM_POISON);
+	ACTOR(FIRE_FLOWER);
 	ACTOR(STARMAN);
 	ACTOR(AUTOSCROLL);
 	ACTOR(BOUNDS);
@@ -180,14 +184,13 @@ bool update_game() {
 		InterpActor* iactor = &interp.actors[actor->id];
 		if (iactor->type != actor->type) {
 			iactor->type = actor->type;
-			skip_interp(actor);
+			iactor->from.x = iactor->to.x = iactor->pos.x = actor->pos.x;
+			iactor->from.y = iactor->to.y = iactor->pos.y = actor->pos.y;
 			continue;
 		}
 
-		iactor->from.x = iactor->to.x;
-		iactor->from.y = iactor->to.y;
-		iactor->to.x = actor->pos.x;
-		iactor->to.y = actor->pos.y;
+		iactor->from.x = iactor->to.x, iactor->from.y = iactor->to.y;
+		iactor->to.x = actor->pos.x, iactor->to.y = actor->pos.y;
 	}
 
 	while (got_ticks()) {
@@ -533,7 +536,7 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 
 	GameActor* actor = get_actor(game_state.live_actors);
 	while (actor != NULL) {
-		if (!ANY_FLAG(actor, FLG_FREEZE)) {
+		if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE)) {
 			if (VAL(actor, VAL_SPROUT) > 0L)
 				--VAL(actor, VAL_SPROUT);
 			else
@@ -980,7 +983,7 @@ GameActor* respawn_player(GamePlayer* player) {
 	pawn = create_actor(
 		ACT_PLAYER, (spawn->type == ACT_AUTOSCROLL)
 				    ? (fvec2){Flerp(game_state.bounds.start.x, game_state.bounds.end.x, FxHalf),
-					    game_state.bounds.start.y}
+					      game_state.bounds.start.y}
 				    : spawn->pos);
 	if (pawn != NULL) {
 		VAL(pawn, VAL_PLAYER_INDEX) = (ActorValue)player->id;
@@ -1065,7 +1068,11 @@ found:
 	actor->cell = NULLCELL;
 	actor->previous_cell = actor->next_cell = NULLACT;
 	move_actor(actor, pos);
-	skip_interp(actor);
+
+	InterpActor* iactor = &interp.actors[index];
+	iactor->type = type;
+	iactor->from.x = iactor->to.x = iactor->pos.x = pos.x;
+	iactor->from.y = iactor->to.y = iactor->pos.y = pos.y;
 
 	FLAG_ON(actor, FLG_VISIBLE);
 	ACTOR_CALL(actor, create);
@@ -1141,13 +1148,6 @@ GameActor* get_actor(ActorID id) {
 	return (actor->id == NULLACT) ? NULL : actor;
 }
 
-/// Fetch an actor's interpolation data.
-const InterpActor* get_interp(const GameActor* actor) {
-	if (actor == NULL || actor->id < 0L || actor->id >= MAX_ACTORS)
-		return NULL;
-	return &interp.actors[actor->id];
-}
-
 /// Move an actor and determine whether or not it actually moved.
 void move_actor(GameActor* actor, const fvec2 pos) {
 	if (actor == NULL)
@@ -1191,40 +1191,68 @@ Bool below_level(GameActor* actor) {
 }
 
 /// Check if the actor is within any player's range.
+#define CHECK_AUTOSCROLL_VIEW                                                                                          \
+	const GameActor* autoscroll = get_actor(game_state.autoscroll);                                                \
+	if (autoscroll != NULL) {                                                                                      \
+		const frect cbox = {Vadd(game_state.bounds.start, (fvec2){padding, padding}),                          \
+			Vadd(game_state.bounds.end, (fvec2){padding, padding})};                                       \
+		return (abox.start.x < cbox.end.x && abox.end.x > cbox.start.x && abox.start.y < cbox.end.y            \
+			&& (ignore_top || abox.end.y > cbox.start.y));                                                 \
+	}
+
 Bool in_any_view(GameActor* actor, fixed padding, Bool ignore_top) {
 	if (actor == NULL)
 		return false;
 
 	const frect abox = HITBOX(actor);
-	const GameActor* autoscroll = get_actor(game_state.autoscroll);
-	if (autoscroll != NULL) {
-		const frect cbox = {Vadd(game_state.bounds.start, (fvec2){padding, padding}),
-			Vadd(game_state.bounds.end, (fvec2){padding, padding})};
+
+	CHECK_AUTOSCROLL_VIEW;
+
+	for (PlayerID i = 0; i < num_players; i++) {
+		const GamePlayer* player = get_player(i);
+		if (player == NULL)
+			continue;
+
+		const fixed cx = Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+				    player->bounds.end.x - F_HALF_SCREEN_WIDTH),
+			    cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
+				    player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
+
+		const frect cbox = {
+			{cx - F_HALF_SCREEN_WIDTH - padding, cy - F_HALF_SCREEN_HEIGHT - padding},
+			{cx + F_HALF_SCREEN_WIDTH + padding, cy + F_HALF_SCREEN_HEIGHT + padding}
+                };
 		if (abox.start.x < cbox.end.x && abox.end.x > cbox.start.x && abox.start.y < cbox.end.y
 			&& (ignore_top || abox.end.y > cbox.start.y))
 			return true;
-	} else
-		for (PlayerID i = 0; i < num_players; i++) {
-			const GamePlayer* player = get_player(i);
-			if (player == NULL)
-				continue;
-
-			const fixed cx = Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-					    player->bounds.end.x - F_HALF_SCREEN_WIDTH),
-				    cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
-					    player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
-
-			const frect cbox = {
-				{cx - F_HALF_SCREEN_WIDTH - padding, cy - F_HALF_SCREEN_HEIGHT - padding},
-				{cx + F_HALF_SCREEN_WIDTH + padding, cy + F_HALF_SCREEN_HEIGHT + padding}
-                        };
-			if (abox.start.x < cbox.end.x && abox.end.x > cbox.start.x && abox.start.y < cbox.end.y
-				&& (ignore_top || abox.end.y > cbox.start.y))
-				return true;
-		}
+	}
 
 	return false;
 }
+
+/// Check if the actor is within a player's range.
+Bool in_player_view(GameActor* actor, GamePlayer* player, fixed padding, Bool ignore_top) {
+	if (actor == NULL || player == NULL)
+		return false;
+
+	const frect abox = HITBOX(actor);
+
+	CHECK_AUTOSCROLL_VIEW;
+
+	const fixed cx = Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+			    player->bounds.end.x - F_HALF_SCREEN_WIDTH),
+		    cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
+			    player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
+
+	const frect cbox = {
+		{cx - F_HALF_SCREEN_WIDTH - padding, cy - F_HALF_SCREEN_HEIGHT - padding},
+		{cx + F_HALF_SCREEN_WIDTH + padding, cy + F_HALF_SCREEN_HEIGHT + padding}
+        };
+	return (abox.start.x < cbox.end.x && abox.end.x > cbox.start.x && abox.start.y < cbox.end.y
+		&& (ignore_top || abox.end.y > cbox.start.y));
+}
+
+#undef CHECK_AUTOSCROLL_VIEW
 
 /// Retrieve a list of actors overlapping a rectangle.
 void list_cell_at(CellList* list, const frect rect) {
@@ -1493,12 +1521,30 @@ int32_t rng(int32_t x) {
 // INTERP
 // ======
 
-// Skip interpolating an actor's position.
-void skip_interp(GameActor* actor) {
-	if (actor == NULL || actor->id < 0L || actor->id >= MAX_ACTORS)
-		return;
+#define BAD_ACTOR(actor) ((actor) == NULL || (actor)->id < 0L || (actor)->id >= MAX_ACTORS)
 
+/// Fetch an actor's interpolation data.
+const InterpActor* get_interp(const GameActor* actor) {
+	if (BAD_ACTOR(actor))
+		return NULL;
+	return &interp.actors[actor->id];
+}
+
+/// Skip interpolating an actor's position.
+void skip_interp(const GameActor* actor) {
+	if (BAD_ACTOR(actor))
+		return;
 	InterpActor* iactor = &interp.actors[actor->id];
 	iactor->from.x = iactor->to.x = iactor->pos.x = actor->pos.x;
 	iactor->from.y = iactor->to.y = iactor->pos.y = actor->pos.y;
 }
+
+/// Start interpolating an actor's position from another actor. Used for trails.
+void align_interp(const GameActor* actor, const GameActor* from) {
+	if (BAD_ACTOR(actor) || BAD_ACTOR(from))
+		return;
+	InterpActor *iactor = &interp.actors[actor->id], *ifrom = &interp.actors[from->id];
+	iactor->from.x = ifrom->pos.x, iactor->from.y = ifrom->pos.y;
+}
+
+#undef BAD_ACTOR
