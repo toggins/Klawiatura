@@ -1,3 +1,4 @@
+#include "K_block.h"
 #include "K_game.h"
 
 // =========
@@ -37,3 +38,36 @@ static void draw_explode(const GameActor* actor) {
 }
 
 const GameActorTable TAB_EXPLODE = {.load = load_explode, .tick = tick_explode, .draw = draw_explode};
+
+// ===========
+// BRICK SHARD
+// ===========
+
+static void load_shard() {
+	load_texture("effects/shard");
+	load_texture("effects/shard_gray");
+}
+
+static void create_shard(GameActor* actor) {
+	actor->box.start.x = actor->box.start.y = FfInt(-8L);
+	actor->box.end.x = actor->box.end.y = FfInt(8L);
+}
+
+static void tick_shard(GameActor* actor) {
+	if (!in_any_view(actor, FxZero, true)) {
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	VAL(actor, VAL_BRICK_SHARD_ANGLE) += 28824L;
+	VAL(actor, VAL_Y_SPEED) += 26214L;
+	move_actor(actor, POS_SPEED(actor));
+}
+
+static void draw_shard(const GameActor* actor) {
+	draw_actor(actor, ANY_FLAG(actor, FLG_BLOCK_GRAY) ? "effects/shard_gray" : "effects/shard",
+		FtFloat(VAL(actor, VAL_BRICK_SHARD_ANGLE)), WHITE);
+}
+
+const GameActorTable TAB_BRICK_SHARD
+	= {.load = load_shard, .create = create_shard, .tick = tick_shard, .draw = draw_shard};
