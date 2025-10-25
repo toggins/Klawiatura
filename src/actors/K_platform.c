@@ -83,19 +83,16 @@ static void tick(GameActor* actor) {
 	}
 
 	if (ANY_FLAG(actor, FLG_PLATFORM_WRAP) && !ANY_FLAG(actor, FLG_PLATFORM_FALLING)) {
-		if (VAL(actor, VAL_Y_SPEED) > FxZero && below_level(actor)) {
-			move_actor(actor,
-				(fvec2){actor->pos.x,
-					-actor->box.end.y - ((actor->pos.y + actor->box.start.y) - game_state.size.y)});
+		if (VAL(actor, VAL_Y_SPEED) > FxZero && actor->pos.y > (game_state.size.y + FfInt(10L))) {
+			move_actor(actor, (fvec2){actor->pos.x, FfInt(-10L)});
 			skip_interp(actor);
-		} else if (VAL(actor, VAL_Y_SPEED) < FxZero && (actor->pos.y + actor->box.end.y) < FxZero) {
-			move_actor(
-				actor, (fvec2){actor->pos.x, game_state.size.y + (actor->pos.y + actor->box.start.y)});
+		} else if (VAL(actor, VAL_Y_SPEED) < FxZero && actor->pos.y < FfInt(-10L)) {
+			move_actor(actor, (fvec2){actor->pos.x, game_state.size.y + FfInt(10L)});
 			skip_interp(actor);
 		}
 	}
 
-	if (below_level(actor)) {
+	if (actor->pos.y > (game_state.size.y + FfInt(32L))) {
 		if (!ANY_FLAG(actor, FLG_PLATFORM_WRAP) && (game_state.flags & GF_SINGLE)) {
 			FLAG_ON(actor, FLG_DESTROY);
 			return;
