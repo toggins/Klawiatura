@@ -13,7 +13,7 @@ void give_points(GameActor* actor, GamePlayer* player, int32_t points) {
 		player->lives = SDL_min(gimme, 100L);
 
 		// !!! CLIENT-SIDE !!!
-		if (player->id != viewplayer())
+		if (viewplayer() == player->id)
 			play_actor_sound(actor, "1up");
 		// !!! CLIENT-SIDE !!!
 	} else
