@@ -94,7 +94,6 @@ GameState game_state = {0};
 PlayerID local_player = NULLPLAY, view_player = NULLPLAY, num_players = 0L;
 
 static InterpState interp = {0};
-static float camera[2] = {0};
 
 // ====
 // GAME
@@ -356,40 +355,48 @@ void draw_game() {
 
 	push_surface(game_surface);
 	static mat4 proj = GLM_MAT4_IDENTITY;
+	VideoCamera* camera = &video_state.camera;
 
 	const GamePlayer* player = get_player(view_player);
 	const GameActor* autoscroll = get_actor(game_state.autoscroll);
 	if (autoscroll != NULL) {
 		InterpActor* iautoscroll = &interp.actors[autoscroll->id];
-		camera[0] = FtInt(iautoscroll->pos.x + F_HALF_SCREEN_WIDTH);
-		camera[1] = FtInt(iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT);
+		camera->pos[0] = FtInt(iautoscroll->pos.x + F_HALF_SCREEN_WIDTH);
+		camera->pos[1] = FtInt(iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT);
 
 		const float bx1 = HALF_SCREEN_WIDTH, by1 = HALF_SCREEN_HEIGHT,
 			    bx2 = FtInt(game_state.size.x - F_HALF_SCREEN_WIDTH),
 			    by2 = FtInt(game_state.size.y - F_HALF_SCREEN_HEIGHT);
-		camera[0] = SDL_clamp(camera[0], bx1, bx2);
-		camera[1] = SDL_clamp(camera[1], by1, by2);
+		camera->pos[0] = SDL_clamp(camera->pos[0], bx1, bx2);
+		camera->pos[1] = SDL_clamp(camera->pos[1], by1, by2);
 	} else if (player != NULL) {
 		const GameActor* pawn = get_actor(player->actor);
 		if (pawn != NULL) {
 			InterpActor* ipawn = &interp.actors[pawn->id];
-			camera[0] = FtInt(ipawn->pos.x);
-			camera[1] = FtInt(ipawn->pos.y);
+			camera->pos[0] = FtInt(ipawn->pos.x);
+			camera->pos[1] = FtInt(ipawn->pos.y);
 
 			const float bx1 = FtInt(player->bounds.start.x + F_HALF_SCREEN_WIDTH),
 				    by1 = FtInt(player->bounds.start.y + F_HALF_SCREEN_HEIGHT),
 				    bx2 = FtInt(player->bounds.end.x - F_HALF_SCREEN_WIDTH),
 				    by2 = FtInt(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
-			camera[0] = SDL_clamp(camera[0], bx1, bx2);
-			camera[1] = SDL_clamp(camera[1], by1, by2);
+			camera->pos[0] = SDL_clamp(camera->pos[0], bx1, bx2);
+			camera->pos[1] = SDL_clamp(camera->pos[1], by1, by2);
 		}
 	}
 
-	glm_ortho(camera[0] - HALF_SCREEN_WIDTH, camera[0] + HALF_SCREEN_WIDTH, camera[1] - HALF_SCREEN_HEIGHT,
-		camera[1] + HALF_SCREEN_HEIGHT, -16000, 16000, proj);
+	static vec2 cpos = GLM_VEC2_ZERO;
+	if (camera->lerp_time[0] < camera->lerp_time[1]) {
+		glm_vec2_lerp(camera->from, camera->pos, camera->lerp_time[0] / camera->lerp_time[1], cpos);
+		camera->lerp_time[0] += dt();
+	} else {
+		glm_vec2_copy(camera->pos, cpos);
+	}
+	glm_ortho(cpos[0] - HALF_SCREEN_WIDTH, cpos[0] + HALF_SCREEN_WIDTH, cpos[1] - HALF_SCREEN_HEIGHT,
+		cpos[1] + HALF_SCREEN_HEIGHT, -16000, 16000, proj);
 	set_projection_matrix(proj);
 	apply_matrices();
-	move_ears(camera);
+	move_ears(camera->pos);
 
 	// clear_color(0.f, 0.f, 0.f, 1.f);
 	clear_depth(1.f);

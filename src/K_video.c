@@ -1175,3 +1175,14 @@ void clear_tilemaps() {
 	tilemaps = NewTinyMap();
 	last_tilemap = NULL;
 }
+
+// ======
+// CAMERA
+// ======
+
+void lerp_camera(float ticks) {
+	VideoCamera* camera = &video_state.camera;
+	glm_vec2_copy(camera->pos, camera->from);
+	camera->lerp_time[0] = 0.f;
+	camera->lerp_time[1] = ticks;
+}

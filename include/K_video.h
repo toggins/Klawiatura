@@ -116,7 +116,13 @@ typedef struct Surface {
 } Surface;
 
 typedef struct {
+	vec2 pos, from;
+	float lerp_time[2];
+} VideoCamera;
+
+typedef struct {
 	float quake, hurry;
+	VideoCamera camera;
 } VideoState;
 
 extern VideoState video_state;
@@ -209,3 +215,6 @@ void tile_sprite(const char*, const GLfloat[3], const GLfloat[2], const GLubyte[
 void tile_rectangle(const char*, const GLfloat[2][2], GLfloat, const GLubyte[4][4]);
 void draw_tilemaps();
 void clear_tilemaps();
+
+// Camera
+void lerp_camera(float);

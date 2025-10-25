@@ -34,7 +34,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
 		// !!! CLIENT-SIDE !!!
 		if (viewplayer() == player->id) {
-			// lerp_camera(500);
+			lerp_camera(25.f);
 			play_state_sound("warp");
 		}
 		// !!! CLIENT-SIDE !!!
