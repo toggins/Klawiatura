@@ -78,6 +78,7 @@ static void collide(GameActor* actor, GameActor* from) {
 }
 
 const GameActorTable TAB_COIN = {.load = load, .create = create, .draw = draw, .collide = collide};
+const GameActorTable TAB_PSWITCH_COIN = {.load = load, .create = create, .draw = draw, .collide = collide};
 
 // ========
 // COIN POP
