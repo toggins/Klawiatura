@@ -7,6 +7,7 @@
 typedef enum {
 	MEN_NULL,
 	MEN_ERROR,
+	MEN_RESULTS,
 	MEN_INTRO,
 	MEN_MAIN,
 	MEN_SINGLEPLAYER,
@@ -50,3 +51,4 @@ void draw_menu();
 
 bool set_menu(MenuType), prev_menu();
 void show_error(const char*, ...);
+void show_results();

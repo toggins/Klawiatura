@@ -85,7 +85,9 @@ const Track* get_track(const char*);
 
 // Generic Sounds
 void play_generic_sound(const char*);
+
 void play_generic_track(const char*, PlayFlags);
+void stop_generic_track();
 
 // State Sounds
 void play_state_sound(const char*);

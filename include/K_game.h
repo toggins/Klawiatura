@@ -445,7 +445,7 @@ void nuke_game_state();
 // Players
 GamePlayer *get_player(PlayerID), *get_owner(const GameActor*);
 PlayerID get_owner_id(const GameActor*);
-GameActor* respawn_player(GamePlayer*);
+GameActor *respawn_player(GamePlayer*), *nearest_pawn(const fvec2);
 
 PlayerID localplayer(), viewplayer(), numplayers();
 void set_view_player(GamePlayer*);

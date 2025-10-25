@@ -156,13 +156,15 @@ FMT_OPTION(run, kb_label(KB_RUN));
 #undef VOLUME_OPTION
 
 static void update_intro(), update_find_lobbies(), update_joining_lobby(), update_inlobby();
-static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_play_title(MenuType),
-	maybe_disconnect(MenuType);
+static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), play_title_fr(MenuType),
+	maybe_play_title(MenuType), maybe_disconnect(MenuType);
 
 #define GHOST .ghost = true
 #define NORETURN .noreturn = true
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {NORETURN, .leave = maybe_play_title},
+	[MEN_ERROR] = {"Error", GHOST},
+	[MEN_RESULTS] = {"", GHOST, .leave = play_title_fr},
 	[MEN_INTRO] = {NORETURN, .update = update_intro, .leave = maybe_play_title},
 	[MEN_MAIN] = {"Mario Together", NORETURN},
 	[MEN_SINGLEPLAYER] = {"Singleplayer"},
@@ -176,7 +178,6 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .update = update_inlobby, .leave = disconnect, GHOST},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
-	[MEN_ERROR] = {"Error", GHOST},
 };
 
 // Find lobbies
@@ -197,6 +198,7 @@ static const char* NO_LOBBIES_FOUND = "No lobbies found";
 
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_ERROR] = {},
+	[MEN_RESULTS] = {},
 	[MEN_MAIN] = {
 		{"Singleplayer", .enter = MEN_SINGLEPLAYER},
 		{"Multiplayer", .enter = MEN_MULTIPLAYER},
@@ -300,6 +302,7 @@ void start_menu(bool skip_intro) {
 	load_track("mk_mario");
 	load_track("sf_map");
 	load_track("human_like_predator");
+	load_track("yi_score");
 
 	set_menu(skip_intro ? MEN_MAIN : MEN_INTRO);
 }
@@ -318,9 +321,13 @@ static void cleanup_lobby_list(MenuType next) {
 	}
 }
 
+static void play_title_fr(MenuType next) {
+	play_generic_track(CLIENT.game.kevin ? "human_like_predator" : "title", PLAY_LOOPING);
+}
+
 static void maybe_play_title(MenuType next) {
 	if (next == MEN_MAIN && !CLIENT.game.kevin)
-		play_generic_track("title", PLAY_LOOPING);
+		play_title_fr(next);
 }
 
 static void update_intro() {
@@ -449,13 +456,15 @@ void update_menu() {
 
 		if (CLIENT.game.kevin && kevin_state < 5) {
 			play_generic_sound("kevin_on");
-			play_generic_track("human_like_predator", PLAY_LOOPING);
+			if (cur_menu != MEN_RESULTS)
+				play_generic_track("human_like_predator", PLAY_LOOPING);
 			kevin_state = 5;
 			kevin_time = 0;
 			keve();
 		} else if (!CLIENT.game.kevin && kevin_state >= 5) {
 			play_generic_sound("thwomp");
-			play_generic_track("title", PLAY_LOOPING);
+			if (cur_menu != MEN_RESULTS)
+				play_generic_track("title", PLAY_LOOPING);
 			kevin_state = 0;
 			kevin_time = 0;
 			keve();
@@ -695,6 +704,43 @@ void show_error(const char* fmt, ...) {
 	}
 
 	set_menu(MEN_ERROR);
+}
+
+void show_results() {
+	for (int i = 0; i < MAX_OPTIONS; i++) {
+		OPTIONS[MEN_RESULTS][i].name = "";
+		OPTIONS[MEN_RESULTS][i].disabled = true;
+	}
+
+	char idx = 0;
+
+	// Endgame reason
+	bool all_dead = true;
+	for (PlayerID i = 0; i < numplayers(); i++) {
+		const GamePlayer* player = get_player(i);
+		if (player->lives >= 0L) {
+			all_dead = false;
+			break;
+		}
+	}
+
+	MENUS[MEN_RESULTS].name = all_dead ? "Game Over" : "World Completed";
+	OPTIONS[MEN_RESULTS][idx++].name
+		= all_dead ? ((game_state.flags & GF_KEVIN) ? "You couldn't outrun Kevin..." : "No players remaining")
+	                   : ((game_state.flags & GF_KEVIN) ? "Kevin will be back..." : "All levels cleared");
+
+	idx++;
+
+	// Scoreboard
+	OPTIONS[MEN_RESULTS][idx++].name = "Scoreboard:";
+	OPTIONS[MEN_RESULTS][idx++].name = "(TODO)"; // FIXME: Allocate a struct for the scoreboard and display it
+	                                             //        here. Free it after leaving this menu.
+
+	if (all_dead)
+		stop_generic_track();
+	else
+		play_generic_track("yi_score", PLAY_LOOPING);
+	set_menu(MEN_RESULTS);
 }
 
 bool set_menu(MenuType next_menu) {

@@ -286,8 +286,10 @@ bool update_game() {
 						goto no_warp;
 
 				if (game_state.flags & GF_END) {
-					if (game_state.next[0] == '\0')
+					if (game_state.next[0] == '\0') {
+						show_results();
 						goto byebye_game;
+					}
 
 					GameContext ctx = {0};
 					setup_game_context(&ctx, game_state.next, GF_TRY_SINGLE | GF_TRY_KEVIN);
@@ -991,6 +993,29 @@ GameActor* respawn_player(GamePlayer* player) {
 		player->actor = pawn->id;
 	}
 	return pawn;
+}
+
+/// Gets the nearest player actor from the position.
+GameActor* nearest_pawn(const fvec2 pos) {
+	GameActor* nearest = NULL;
+	fixed dist = FxZero;
+
+	for (PlayerID i = 0; i < num_players; i++) {
+		GamePlayer* player = get_player(i);
+		if (player == NULL)
+			continue;
+		GameActor* pawn = get_actor(player->actor);
+		if (pawn == NULL)
+			continue;
+
+		const fixed ndist = Vdist(pos, pawn->pos);
+		if (nearest == NULL || ndist < dist) {
+			nearest = pawn;
+			dist = ndist;
+		}
+	}
+
+	return nearest;
 }
 
 /// Gets the ID of the player that the actor belongs to.

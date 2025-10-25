@@ -301,12 +301,16 @@ void play_generic_track(const char* name, PlayFlags flags) {
 		return;
 	}
 
-	FMOD_ChannelGroup_Stop(generic_music_group);
+	stop_generic_track();
 
 	FMOD_CHANNEL* channel = NULL;
 	FMOD_System_PlaySound(speaker, track->stream, generic_music_group, true, &channel);
 	FMOD_Channel_SetMode(channel, (flags & PLAY_LOOPING ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
 	FMOD_Channel_SetPaused(channel, false);
+}
+
+void stop_generic_track() {
+	FMOD_ChannelGroup_Stop(generic_music_group);
 }
 
 // ============
