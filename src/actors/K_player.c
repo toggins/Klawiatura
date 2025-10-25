@@ -552,6 +552,8 @@ static void load() {
 	load_sound("swim");
 	load_sound("warp");
 	load_sound("starman");
+	load_sound("bump");
+	load_sound("stomp");
 	load_sound("respawn");
 
 	load_track("win");
@@ -1009,12 +1011,41 @@ static void cleanup(GameActor* actor) {
 		player->actor = NULLACT;
 }
 
+static void collide(GameActor* actor, GameActor* from) {
+	if (from->type != ACT_PLAYER || get_actor((ActorID)VAL(from, VAL_PLAYER_WARP)) != NULL)
+		return;
+
+	if (VAL(from, VAL_PLAYER_GROUND) <= 0L && VAL(from, VAL_Y_SPEED) > FxZero
+		&& from->pos.y < (actor->pos.y - FfInt(10L)))
+	{
+		GamePlayer* fplayer = get_owner(from);
+		VAL(from, VAL_Y_SPEED) = FfInt((fplayer != NULL && ANY_INPUT(fplayer, GI_JUMP)) ? -13L : -8L);
+		FLAG_ON(from, FLG_PLAYER_STOMP); // In case they overlap an enemy
+
+		VAL(actor, VAL_Y_SPEED) = Fmax(VAL(actor, VAL_Y_SPEED), FxZero);
+		play_actor_sound(actor, "stomp");
+	} else if (Fabs(VAL(from, VAL_X_SPEED)) > Fabs(VAL(actor, VAL_X_SPEED)))
+		if ((VAL(from, VAL_X_SPEED) > FxZero && from->pos.x < actor->pos.x)
+			|| (VAL(from, VAL_X_SPEED) < FxZero && from->pos.x > actor->pos.x))
+		{
+			VAL(actor, VAL_X_SPEED) += Fhalf(VAL(from, VAL_X_SPEED));
+			VAL(from, VAL_X_SPEED) = -Fhalf(VAL(from, VAL_X_SPEED));
+			if (Fabs(VAL(from, VAL_X_SPEED)) > FfInt(2L))
+				play_actor_sound(actor, "bump");
+		}
+}
+
 static PlayerID owner(const GameActor* actor) {
 	return (PlayerID)VAL(actor, VAL_PLAYER_INDEX);
 }
 
-const GameActorTable TAB_PLAYER
-	= {.load = load, .create = create, .tick = tick, .draw = draw, .cleanup = cleanup, .owner = owner};
+const GameActorTable TAB_PLAYER = {.load = load,
+	.create = create,
+	.tick = tick,
+	.draw = draw,
+	.cleanup = cleanup,
+	.collide = collide,
+	.owner = owner};
 
 // ===========
 // DEAD PLAYER
