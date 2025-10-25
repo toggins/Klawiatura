@@ -377,7 +377,10 @@ static void update_inlobby() {
 		return;
 	}
 
-	if (get_peer_count() < CLIENT.game.players)
+	int num_peers = 0;
+	for (int i = 0; i < MAX_PEERS; i++)
+		num_peers += get_peer_name(i) != NULL;
+	if (num_peers < CLIENT.game.players)
 		return;
 	play_generic_sound("enter");
 	make_lobby_active();
@@ -736,6 +739,14 @@ void show_error(const char* fmt, ...) {
 	set_menu(MEN_ERROR);
 }
 
+void populate_results() {
+	SDL_memset(&winners, 0, sizeof(winners));
+	for (PlayerID i = 0; i < numplayers(); i++) {
+		const char* name = get_peer_name(player_to_peer(i));
+		SDL_strlcpy(winners[i].name, (name == NULL) ? fmt("Player %i", i + 1) : name, sizeof(winners[i].name));
+	}
+}
+
 void show_results() {
 	for (int i = 0; i < MAX_OPTIONS; i++) {
 		OPTIONS[MEN_RESULTS][i].name = "";
@@ -762,14 +773,10 @@ void show_results() {
 	idx++;
 
 	// Scoreboard
-	SDL_memset(&winners, 0, sizeof(winners));
 	for (PlayerID i = 0; i < numplayers(); i++) {
 		const GamePlayer* player = get_player(i);
 		if (player == NULL)
 			continue;
-
-		const char* name = get_peer_name(i);
-		SDL_strlcpy(winners[i].name, (name == NULL) ? fmt("Player %i", i + 1) : name, sizeof(winners[i].name));
 		winners[i].lives = player->lives;
 		winners[i].score = player->score;
 	}

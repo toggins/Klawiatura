@@ -145,6 +145,7 @@ void start_game(GameContext* ctx) {
 
 	gekko_start(game_session, &cfg);
 	local_player = view_player = populate_game(game_session);
+	populate_results();
 
 	start_audio_state();
 	start_video_state();

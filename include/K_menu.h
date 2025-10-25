@@ -51,4 +51,5 @@ void draw_menu();
 
 bool set_menu(MenuType), prev_menu();
 void show_error(const char*, ...);
+void populate_results();
 void show_results();

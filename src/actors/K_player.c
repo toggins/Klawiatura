@@ -992,7 +992,7 @@ static void draw(const GameActor* actor) {
 	// !!! CLIENT-SIDE !!!
 	if (viewplayer() == player->id)
 		return;
-	const char* name = get_peer_name(player->id);
+	const char* name = get_peer_name(player_to_peer(player->id));
 	if (name == NULL)
 		return;
 	const InterpActor* iactor = get_interp(actor);

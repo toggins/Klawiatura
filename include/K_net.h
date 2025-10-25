@@ -36,5 +36,6 @@ bool in_public_lobby();
 // Peers
 int get_peer_count();
 bool peer_exists(int);
+int player_to_peer(int8_t);
 const char* get_peer_name(int);
 int8_t populate_game(GekkoSession*);

@@ -27,6 +27,8 @@ static const char* MAGIC_KEY = "KLAWIATURA";
 #define PRIVATE_LOBBY 126
 #define ACTIVE_LOBBY 0
 
+static int player_peers[MAX_PLAYERS] = {MAX_PEERS};
+
 void net_init() {
 	NutPunch_SetServerAddr(hostname);
 }
@@ -288,6 +290,10 @@ bool peer_exists(int idx) {
 	return NutPunch_PeerAlive(idx);
 }
 
+int player_to_peer(PlayerID pid) {
+	return (pid < 0L || pid >= MAX_PLAYERS) ? MAX_PEERS : player_peers[pid];
+}
+
 const char* get_peer_name(int idx) {
 	int size = 0;
 	char* str = (char*)NutPunch_PeerGet(idx, "NAME", &size);
@@ -354,6 +360,7 @@ PlayerID populate_game(GekkoSession* session) {
 			addrs[counter].size = sizeof(*indices);
 			gekko_add_actor(session, RemotePlayer, addrs + counter);
 		}
+		player_peers[counter] = i;
 
 		if (++counter == num_peers)
 			break;
