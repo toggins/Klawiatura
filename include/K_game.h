@@ -243,6 +243,13 @@ typedef struct {
 } GameContext;
 
 typedef struct {
+	int8_t lives;
+	uint32_t score;
+	char name[NUTPUNCH_FIELD_DATA_MAX]; // Supposed to be CLIENT_STRING_MAX, but including K_cmd.h causes
+	                                    // errors
+} GameWinner;
+
+typedef struct {
 	PlayerID id;
 	GameInput input, last_input;
 

@@ -13,6 +13,8 @@ static MenuType cur_menu = MEN_NULL;
 static int kevin_state = 0, kevin_time = 0;
 static float kevin_lerp = 0.f;
 
+static GameWinner winners[MAX_PLAYERS] = {0};
+
 static float volume_toggle_impl(float, int);
 #define FMT_OPTION(fname, ...)                                                                                         \
 	static const char* fmt_##fname(const char* base) {                                                             \
@@ -628,20 +630,27 @@ void draw_menu() {
 		batch_string("main", 24.f, indicator);
 	}
 
-	if (cur_menu == MEN_FIND_LOBBY) {
+	switch (cur_menu) {
+	default:
+		break;
+
+	case MEN_FIND_LOBBY: {
 		batch_cursor(XY(SCREEN_WIDTH - 48.f, 24.f));
 		batch_color(ALPHA(128));
 		batch_align(FA_RIGHT, FA_TOP);
 		batch_string("main", 24.f, fmt("Server: %s", get_hostname()));
-	} else if (cur_menu == MEN_LOBBY) {
-		batch_color(RGBA(255, 144, 144, 128));
+		break;
+	}
+
+	case MEN_LOBBY: {
+		batch_color(RGBA(255, 144, 144, 192));
 		batch_cursor(XY(SCREEN_WIDTH - 48.f, 24.f));
 		batch_align(FA_RIGHT, FA_TOP);
 		int num_peers = get_peer_count();
 		batch_string("main", 24.f, fmt("Players (%i / %i)", num_peers, CLIENT.game.players));
 
 		batch_color(ALPHA(128));
-		GLfloat y = 48.f;
+		GLfloat y = 60.f;
 		int idx = 1;
 		for (int i = 0; i < MAX_PEERS; i++) {
 			if (!peer_exists(i))
@@ -652,6 +661,27 @@ void draw_menu() {
 			++idx;
 			y += 24.f;
 		}
+
+		break;
+	}
+
+	case MEN_RESULTS: {
+		batch_cursor(XY(HALF_SCREEN_WIDTH, 174.f));
+		batch_color(RGBA(255, 144, 144, 192));
+		batch_align(FA_CENTER, FA_TOP);
+		batch_string("main", 24.f, "Scoreboard");
+
+		for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
+			if (winners[i].name[0] == '\0')
+				continue;
+			batch_cursor(XY(HALF_SCREEN_WIDTH, 210.f + (i * 24.f)));
+			batch_color((i == 0) ? RGBA(255, 255, 0, 192) : ((i >= 3) ? ALPHA(128) : ALPHA(192)));
+			batch_string("main", 24.f,
+				fmt("%i. %s x%i, %i pts", i + 1, winners[i].name, winners[i].lives, winners[i].score));
+		}
+
+		break;
+	}
 	}
 
 	batch_cursor(XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 48.f));
@@ -726,15 +756,36 @@ void show_results() {
 
 	MENUS[MEN_RESULTS].name = all_dead ? "Game Over" : "World Completed";
 	OPTIONS[MEN_RESULTS][idx++].name
-		= all_dead ? ((game_state.flags & GF_KEVIN) ? "You couldn't outrun Kevin..." : "No players remaining")
+		= all_dead ? ((game_state.flags & GF_KEVIN) ? "Nobody escaped Kevin..." : "No players remaining")
 	                   : ((game_state.flags & GF_KEVIN) ? "Kevin will be back..." : "All levels cleared");
 
 	idx++;
 
 	// Scoreboard
-	OPTIONS[MEN_RESULTS][idx++].name = "Scoreboard:";
-	OPTIONS[MEN_RESULTS][idx++].name = "(TODO)"; // FIXME: Allocate a struct for the scoreboard and display it
-	                                             //        here. Free it after leaving this menu.
+	SDL_memset(&winners, 0, sizeof(winners));
+	for (PlayerID i = 0; i < numplayers(); i++) {
+		const GamePlayer* player = get_player(i);
+		if (player == NULL)
+			continue;
+
+		const char* name = get_peer_name(i);
+		SDL_strlcpy(winners[i].name, (name == NULL) ? fmt("Player %i", i + 1) : name, sizeof(winners[i].name));
+		winners[i].lives = player->lives;
+		winners[i].score = player->score;
+	}
+
+	GameWinner cmp[2] = {0};
+	for (PlayerID i = 0; i < numplayers(); i++)
+		for (PlayerID j = 0; j < (numplayers() - 1); j++) {
+			if (winners[j].score >= winners[j + 1].score)
+				continue;
+
+			SDL_memcpy(&cmp[0], &winners[j], sizeof(cmp[0]));
+			SDL_memcpy(&cmp[1], &winners[j + 1], sizeof(cmp[1]));
+
+			SDL_memcpy(&winners[j], &cmp[1], sizeof(cmp[1]));
+			SDL_memcpy(&winners[j + 1], &cmp[0], sizeof(cmp[0]));
+		}
 
 	if (all_dead)
 		stop_generic_track();
