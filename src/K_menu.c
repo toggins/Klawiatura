@@ -143,6 +143,11 @@ VOLUME_OPTION(sound_volume);
 FMT_OPTION(music_volume, get_music_volume() * 100);
 VOLUME_OPTION(music_volume);
 
+FMT_OPTION(background, CLIENT.audio.background ? "Yes" : "No");
+static void toggle_background(int flip) {
+	CLIENT.audio.background = !CLIENT.audio.background;
+}
+
 // Controls
 FMT_OPTION(device, input_device());
 FMT_OPTION(up, kb_label(KB_UP));
@@ -232,6 +237,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Master Volume: %.0f%%", FORMAT(volume), TOGGLE(volume)},
 		{"Sound Volume: %.0f%%", FORMAT(sound_volume), TOGGLE(sound_volume)},
 		{"Music Volume: %.0f%%", FORMAT(music_volume), TOGGLE(music_volume)},
+		{"Play in Background: %s", FORMAT(background), TOGGLE(background)},
 	},
 	[MEN_CONTROLS] = {
 		{"Device: %s", DISABLE, FORMAT(device)},

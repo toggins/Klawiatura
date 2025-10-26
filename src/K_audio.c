@@ -1,12 +1,15 @@
 #include <fmod_errors.h>
 
 #include "K_audio.h"
+#include "K_cmd.h"
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
 #include "K_memory.h"
 #include "K_string.h"
 #include "K_video.h"
+
+extern ClientInfo CLIENT;
 
 static FMOD_SYSTEM* speaker = NULL;
 
@@ -62,7 +65,7 @@ void audio_init() {
 }
 
 void audio_update() {
-	FMOD_ChannelGroup_SetMute(master_group, !window_focused());
+	FMOD_ChannelGroup_SetMute(master_group, !(window_focused() || CLIENT.audio.background));
 	FMOD_ChannelGroup_SetMute(generic_music_group, game_exists());
 
 	FMOD_System_Update(speaker);

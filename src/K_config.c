@@ -65,6 +65,12 @@ static bool get_filter() {
 static void set_filter(bool filter) {
 	CLIENT.video.filter = filter;
 }
+static bool get_background() {
+	return CLIENT.audio.background;
+}
+static void set_background(bool background) {
+	CLIENT.audio.background = background;
+}
 
 static const ConfigOption OPTIONS[] = {
 	{"name",         .r_string = get_name,        .w_string = set_name       },
@@ -78,6 +84,7 @@ static const ConfigOption OPTIONS[] = {
 	{"volume",       .r_float = get_volume,       .w_float = set_volume      },
 	{"sound_volume", .r_float = get_sound_volume, .w_float = set_sound_volume},
 	{"music_volume", .r_float = get_music_volume, .w_float = set_music_volume},
+	{"background",   .r_bool = get_background,    .w_bool = set_background   },
 };
 
 static const char* config_path = NULL;
