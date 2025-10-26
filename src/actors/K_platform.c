@@ -3,9 +3,11 @@
 
 enum {
 	VAL_PLATFORM_TYPE = VAL_CUSTOM,
-	VAL_PLATFORM_FLAGS,
 	VAL_PLATFORM_X,
 	VAL_PLATFORM_Y,
+	VAL_PLATFORM_X_SPEED,
+	VAL_PLATFORM_Y_SPEED,
+	VAL_PLATFORM_FLAGS,
 	VAL_PLATFORM_RESPAWN,
 	VAL_PLATFORM_FRAME,
 };
@@ -76,8 +78,9 @@ static void tick(GameActor* actor) {
 		}
 		}
 
-		VAL(actor, VAL_PLATFORM_X) = actor->pos.x;
-		VAL(actor, VAL_PLATFORM_Y) = actor->pos.y;
+		VAL(actor, VAL_PLATFORM_X) = actor->pos.x, VAL(actor, VAL_PLATFORM_Y) = actor->pos.y;
+		VAL(actor, VAL_PLATFORM_X_SPEED) = VAL(actor, VAL_X_SPEED),
+			   VAL(actor, VAL_PLATFORM_Y_SPEED) = VAL(actor, VAL_Y_SPEED);
 		VAL(actor, VAL_PLATFORM_FLAGS) = (ActorValue)actor->flags;
 		FLAG_ON(actor, FLG_PLATFORM_START);
 	}
@@ -100,8 +103,10 @@ static void tick(GameActor* actor) {
 			move_actor(actor, (fvec2){VAL(actor, VAL_PLATFORM_X), VAL(actor, VAL_PLATFORM_Y)});
 			skip_interp(actor);
 
-			VAL(actor, VAL_PLATFORM_RESPAWN) = 0L;
+			VAL(actor, VAL_X_SPEED) = VAL(actor, VAL_PLATFORM_X_SPEED),
+				   VAL(actor, VAL_Y_SPEED) = VAL(actor, VAL_PLATFORM_Y_SPEED);
 			actor->flags = (ActorFlag)VAL(actor, VAL_PLATFORM_FLAGS);
+			VAL(actor, VAL_PLATFORM_RESPAWN) = 0L;
 		}
 	}
 
