@@ -118,11 +118,10 @@ static int realmain() {
 		if (game_exists()) {
 			if (update_game())
 				draw_game();
-			else {
-				if (quickstart)
-					goto teardown;
+			else if (quickstart)
+				goto teardown;
+			else
 				input_wipeout();
-			}
 		} else {
 			update_menu();
 			draw_menu();
