@@ -313,8 +313,8 @@ static GekkoNetResult** net_receive(int* pCount) {
 
 	while (NutPunch_HasMessage() && *pCount < sizeof(packets) / sizeof(void*)) {
 		int size = sizeof(data), peer = NutPunch_NextMessage(data, &size);
-		if (!SDL_memcmp(data, "CHATTO", 6)) { // GROSS HACK
-			push_chat_message(peer, data + 6);
+		if (!SDL_memcmp(data, "CHAT", 4)) { // GROSS HACK
+			push_chat_message(peer, data + 4);
 			continue;
 		}
 
@@ -361,8 +361,9 @@ PlayerID populate_game(GekkoSession* session) {
 			*(int*)addr.data = i;
 			gekko_add_actor(session, RemotePlayer, &addr);
 		}
+		player_peers[counter] = i;
 
-		if (++counter == num_peers)
+		if (++counter >= num_peers)
 			break;
 	}
 
