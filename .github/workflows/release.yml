@@ -3,7 +3,7 @@ name: Build and release binaries
 on:
   push:
     branches: [master]
-    tags: [stable, cpack-test]
+    tags: [stable]
 
 concurrency:
   group: ${{ github.ref }}
