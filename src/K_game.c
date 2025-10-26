@@ -126,8 +126,8 @@ static void send_chat_message() {
 	// TODO: use message headers to distinguish message types, instead of using gross hacks such as this.
 	static char buf[4 + sizeof(chat_message)] = "CHAT";
 	SDL_strlcpy(buf + 4, chat_message, sizeof(chat_message));
-	for (int i = 0; i < MAX_PLAYERS; i++)
-		NutPunch_SendReliably(i, buf, sizeof(buf));
+	for (PlayerID i = 0; i < MAX_PLAYERS; i++)
+		NutPunch_SendReliably(player_to_peer(i), buf, sizeof(buf));
 	push_chat_message(NutPunch_LocalPeer(), chat_message);
 	chat_message[0] = 0;
 }
