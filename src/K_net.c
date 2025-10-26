@@ -300,29 +300,26 @@ const char* get_peer_name(int idx) {
 	return (str == NULL || size > NUTPUNCH_FIELD_DATA_MAX) ? NULL : str;
 }
 
-static void send_data(GekkoNetAddress* gn_addr, const char* data, int len) {
+static void net_send(GekkoNetAddress* gn_addr, const char* data, int len) {
 	NutPunch_Send(*(int*)gn_addr->data, data, len);
 }
 
-static GekkoNetResult** receive_data(int* pCount) {
+static GekkoNetResult** net_receive(int* pCount) {
 	static GekkoNetResult* packets[64] = {0};
 	static char data[NUTPUNCH_BUFFER_SIZE] = {0};
 	*pCount = 0;
 
-	while (NutPunch_HasMessage()) {
-		int size = sizeof(data);
-		int peer = NutPunch_NextMessage(data, &size);
+	while (NutPunch_HasMessage() && *pCount < sizeof(packets) / sizeof(void*)) {
+		int size = sizeof(data), peer = NutPunch_NextMessage(data, &size);
 		GekkoNetResult* res = SDL_malloc(sizeof(GekkoNetResult));
 
-		res->addr.size = sizeof(peer);
-		res->addr.data = SDL_malloc(res->addr.size);
-		SDL_memcpy(res->addr.data, &peer, res->addr.size);
+		res->addr.size = sizeof(int), res->addr.data = SDL_malloc(res->addr.size);
+		*(int*)res->addr.data = peer;
 
-		res->data_len = size;
-		res->data = SDL_malloc(size);
+		res->data_len = size, res->data = SDL_malloc(size);
 		SDL_memcpy(res->data, data, size);
 
-		packets[(*pCount)++] = res;
+		packets[*pCount] = res, *pCount += 1;
 	}
 
 	return packets;
@@ -330,8 +327,8 @@ static GekkoNetResult** receive_data(int* pCount) {
 
 PlayerID populate_game(GekkoSession* session) {
 	static GekkoNetAdapter adapter = {0};
-	adapter.send_data = send_data;
-	adapter.receive_data = receive_data;
+	adapter.send_data = net_send;
+	adapter.receive_data = net_receive;
 	adapter.free_data = SDL_free;
 	gekko_net_adapter_set(session, &adapter);
 
@@ -342,9 +339,6 @@ PlayerID populate_game(GekkoSession* session) {
 	}
 
 	int counter = 0, local = MAX_PLAYERS;
-	static int indices[MAX_PLAYERS] = {0};
-	static GekkoNetAddress addrs[MAX_PLAYERS] = {0};
-
 	for (int i = 0; i < NUTPUNCH_MAX_PLAYERS; i++) {
 		if (!NutPunch_PeerAlive(i))
 			continue;
@@ -355,12 +349,11 @@ PlayerID populate_game(GekkoSession* session) {
 			gekko_set_local_delay(session, local, CLIENT.input.delay);
 			INFO("You are player %i", local + 1);
 		} else {
-			indices[counter] = i;
-			addrs[counter].data = indices + counter;
-			addrs[counter].size = sizeof(*indices);
-			gekko_add_actor(session, RemotePlayer, addrs + counter);
+			GekkoNetAddress addr = {0};
+			addr.size = sizeof(i), addr.data = SDL_malloc(i);
+			*(int*)addr.data = i;
+			gekko_add_actor(session, RemotePlayer, &addr);
 		}
-		player_peers[counter] = i;
 
 		if (++counter == num_peers)
 			break;
