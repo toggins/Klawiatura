@@ -167,7 +167,7 @@ static void draw_chat_hist() {
 		batch_color(ALPHA(SDL_min(1.f, fade) * a));
 
 		batch_align(FA_LEFT, FA_BOTTOM);
-		batch_cursor(XY(12.f, y - (i * chat_fs)));
+		batch_cursor(XYZ(12.f, y - (i * chat_fs), -10000.f));
 		batch_string("main", chat_fs, chat_hist[i].text);
 	}
 }
@@ -177,7 +177,7 @@ static void draw_chat_message() {
 		return;
 
 	batch_align(FA_LEFT, FA_BOTTOM);
-	batch_cursor(XY(12.f, SCREEN_HEIGHT - 12.f));
+	batch_cursor(XYZ(12.f, SCREEN_HEIGHT - 12.f, -10000.f));
 	batch_color(WHITE);
 	batch_string("main", chat_fs, fmt("> %s%s", chat_message, SDL_fmodf(totalticks(), 30.f) < 16.f ? "|" : ""));
 }
