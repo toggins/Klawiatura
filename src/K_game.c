@@ -4,8 +4,10 @@
 #include "K_input.h"
 #include "K_log.h"
 #include "K_menu.h"
+#include "K_net.h"
 #include "K_string.h"
 #include "K_tick.h"
+#include "K_video.h"
 
 #include "actors/K_block.h"
 #include "actors/K_checkpoint.h"
@@ -106,6 +108,82 @@ PlayerID local_player = NULLPLAY, view_player = NULLPLAY, num_players = 0L;
 static InterpState interp = {0};
 
 // ====
+// CHAT
+// ===
+
+static const GLfloat chat_fs = 24.f;
+static char chat_message[128] = {0};
+static struct {
+	char text[sizeof(chat_message)];
+	int lifetime;
+} chat_hist[32] = {0};
+
+static void send_chat_message() {
+	if (typing_what() || !SDL_strlen(chat_message))
+		return;
+	// TODO: use message headers to distinguish message types, instead of using gross hacks such as this.
+	static char buf[6 + sizeof(chat_message)] = "CHATTO";
+	SDL_strlcpy(buf + 6, chat_message, sizeof(chat_message));
+	for (int i = 0; i < MAX_PLAYERS; i++)
+		NutPunch_SendReliably(i, buf, sizeof(buf));
+	push_chat_message(NutPunch_LocalPeer(), chat_message);
+	chat_message[0] = 0;
+}
+
+static bool is_hist_null(int idx) {
+	if (idx < 0 || idx >= sizeof(chat_hist) / sizeof(*chat_hist))
+		return false;
+	return !SDL_strlen(chat_hist[idx].text);
+}
+
+void push_chat_message(const int from, const char* text) {
+	int len = sizeof(chat_hist) / sizeof(*chat_hist);
+	for (int i = 0; i < len; i++)
+		if (is_hist_null(i)) {
+			const char* line = fmt("%s: %s", get_peer_name(from), text);
+			SDL_strlcpy(chat_hist[i].text, line, sizeof(chat_message));
+			chat_hist[i].lifetime = 5 * TICKRATE;
+			return;
+		}
+}
+
+static void tick_chat_hist() {
+	for (int i = 0; i < sizeof(chat_hist) / sizeof(*chat_hist); i++) {
+		if (chat_hist[i].lifetime > 0)
+			chat_hist[i].lifetime--;
+		if (!chat_hist[i].lifetime)
+			chat_hist[i].text[0] = 0;
+	}
+}
+
+static void draw_chat_hist() {
+	int height, start = 0, len = sizeof(chat_hist) / sizeof(*chat_hist);
+	get_resolution(NULL, &height);
+
+	for (; start < len; start++)
+		if (!is_hist_null(start))
+			break;
+
+	for (int i = 0; i < len; i++) {
+		batch_align(FA_LEFT, FA_BOTTOM);
+		batch_cursor(XY(12, height - chat_fs * (1 + i - start)));
+		batch_string("main", chat_fs, chat_hist[i].text);
+	}
+}
+
+static void draw_chat_message() {
+	if (typing_what() != chat_message)
+		return;
+
+	int height;
+	get_resolution(NULL, &height);
+
+	batch_align(FA_LEFT, FA_BOTTOM);
+	batch_cursor(XY(12, height));
+	batch_string("main", chat_fs, fmt("> %s", chat_message));
+}
+
+// ====
 // GAME
 // ====
 
@@ -175,6 +253,14 @@ void nuke_game() {
 bool update_game() {
 	gekko_network_poll(game_session);
 
+	tick_chat_hist();
+	if (!typing_what() && is_connected()) {
+		if (kb_pressed(KB_CHAT))
+			start_typing(chat_message, sizeof(chat_message));
+		else
+			send_chat_message();
+	}
+
 	float ftick = 0.f;
 	const float ahh = gekko_frames_ahead(game_session), ahead = SDL_clamp(ahh, 0, 2);
 	new_frame(ahead);
@@ -200,22 +286,17 @@ bool update_game() {
 			goto byebye_game;
 
 		GameInput input = 0;
-		if (kb_down(KB_UP))
-			input |= GI_UP;
-		if (kb_down(KB_LEFT))
-			input |= GI_LEFT;
-		if (kb_down(KB_DOWN))
-			input |= GI_DOWN;
-		if (kb_down(KB_RIGHT))
-			input |= GI_RIGHT;
-		if (kb_down(KB_JUMP))
-			input |= GI_JUMP;
-		if (kb_down(KB_FIRE))
-			input |= GI_FIRE;
-		if (kb_down(KB_RUN))
-			input |= GI_RUN;
-		if (game_state.flags & (GF_END | GF_RESTART))
-			input |= GI_WARP;
+		if (!typing_what()) {
+			input |= kb_down(KB_UP) * GI_UP;
+			input |= kb_down(KB_LEFT) * GI_LEFT;
+			input |= kb_down(KB_DOWN) * GI_DOWN;
+			input |= kb_down(KB_RIGHT) * GI_RIGHT;
+			input |= kb_down(KB_JUMP) * GI_JUMP;
+			input |= kb_down(KB_FIRE) * GI_FIRE;
+			input |= kb_down(KB_RUN) * GI_RUN;
+			if (game_state.flags & (GF_END | GF_RESTART))
+				input |= GI_WARP;
+		}
 		gekko_add_local_input(game_session, local_player, &input);
 
 		int count = 0;
@@ -356,22 +437,14 @@ byebye_game:
 	return false;
 }
 
-void draw_game() {
-	if (game_session == NULL)
-		return;
+static mat4 proj = GLM_MAT4_IDENTITY;
 
-	start_drawing();
-	batch_start(ORIGO, 0, WHITE);
-	batch_sprite("ui/sidebar_l", NO_FLIP);
-	batch_sprite("ui/sidebar_r", NO_FLIP);
-
-	push_surface(game_surface);
-	static mat4 proj = GLM_MAT4_IDENTITY;
+static void perform_camera_magic() {
 	VideoCamera* camera = &video_state.camera;
 
 	const GamePlayer* player = get_player(view_player);
 	const GameActor* autoscroll = get_actor(game_state.autoscroll);
-	if (autoscroll != NULL) {
+	if (autoscroll) {
 		InterpActor* iautoscroll = &interp.actors[autoscroll->id];
 		camera->pos[0] = FtInt(iautoscroll->pos.x + F_HALF_SCREEN_WIDTH);
 		camera->pos[1] = FtInt(iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT);
@@ -381,7 +454,7 @@ void draw_game() {
 			    by2 = FtInt(game_state.size.y - F_HALF_SCREEN_HEIGHT);
 		camera->pos[0] = SDL_clamp(camera->pos[0], bx1, bx2);
 		camera->pos[1] = SDL_clamp(camera->pos[1], by1, by2);
-	} else if (player != NULL) {
+	} else if (player) {
 		const GameActor* pawn = get_actor(player->actor);
 		if (pawn != NULL) {
 			InterpActor* ipawn = &interp.actors[pawn->id];
@@ -409,7 +482,103 @@ void draw_game() {
 	set_projection_matrix(proj);
 	apply_matrices();
 	move_ears(camera->pos);
+}
 
+static void draw_hud() {
+	GamePlayer* player = get_player(view_player);
+	if (!player)
+		return;
+
+	glm_ortho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -16000, 16000, proj);
+	set_projection_matrix(proj);
+	apply_matrices();
+
+	batch_start(XYZ(32.f, 16.f, -10000.f), 0.f, WHITE);
+	batch_string("hud", 16, fmt("MARIO * %u", SDL_max(player->lives, 0)));
+	batch_cursor(XYZ(147.f, 34.f, -10000.f));
+	batch_align(FA_RIGHT, FA_TOP);
+	batch_string("hud", 16, fmt("%u", player->score));
+
+	const char* tex;
+	switch ((int)((float)(game_state.time) / 6.25f) % 4) {
+	default:
+		tex = "ui/coins";
+		break;
+	case 1:
+	case 3:
+		tex = "ui/coins2";
+		break;
+	case 2:
+		tex = "ui/coins3";
+		break;
+	}
+	batch_cursor(XYZ(224.f, 34.f, -10000.f));
+	batch_sprite(tex, NO_FLIP);
+	batch_cursor(XYZ(288.f, 34.f, -10000.f));
+	batch_string("hud", 16, fmt("%u", player->coins));
+
+	batch_cursor(XYZ(432.f, 16.f, -10000.f));
+	batch_sprite(game_state.world, NO_FLIP);
+
+	if (game_state.clock >= 0L) {
+		GLfloat scale;
+		if ((game_state.flags & GF_HURRY) && video_state.hurry < 120.f) {
+			video_state.hurry += dt();
+			if (video_state.hurry < 8.f)
+				scale = 1.f + ((video_state.hurry / 8.f) * 0.6f);
+			else if (video_state.hurry >= 8.f && video_state.hurry <= 112.f)
+				scale = 1.6f;
+			else if (video_state.hurry > 112.f)
+				scale = 1.6f - (((video_state.hurry - 112.f) / 8.f) * 0.6f);
+		} else
+			scale = 1.f;
+
+		const GLfloat x = (float)SCREEN_WIDTH - (32.f * scale);
+		const GLfloat size = 16 * scale;
+
+		batch_cursor(XYZ(x, 24.f * scale, -10000.f));
+
+		GLfloat yscale;
+		if (video_state.hurry > 0.f && video_state.hurry < 120.f)
+			yscale = glm_lerp(
+				1.f, 0.8f + (SDL_sinf(video_state.hurry * 0.6f) * 0.2f), (scale - 1.0f) / 0.6f);
+		else
+			yscale = 1.f;
+		batch_scale(XY(1.f, yscale));
+
+		batch_align(FA_RIGHT, FA_MIDDLE);
+		batch_string("hud", size, "TIME");
+		batch_scale(XY(1.f, 1.f));
+
+		batch_cursor(XYZ(x, 34.f * scale, -10000.f));
+		batch_align(FA_RIGHT, FA_TOP);
+		batch_string("hud", size, fmt("%u", game_state.clock));
+	}
+
+	if (game_state.sequence.type == SEQ_LOSE && game_state.sequence.time > 0L) {
+		batch_cursor(XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, -10000.f));
+		batch_align(FA_CENTER, FA_MIDDLE);
+		batch_string("hud", 16, (game_state.clock == 0) ? "TIME UP" : "GAME OVER");
+	} else if (local_player != view_player) {
+		batch_cursor(XYZ(32, 64, -10000.f));
+		batch_color(ALPHA(160));
+		batch_align(FA_LEFT, FA_TOP);
+		batch_string("main", 24, fmt("Spectating: %s", get_peer_name(view_player)));
+	}
+}
+
+void draw_game() {
+	if (game_session == NULL)
+		return;
+
+	start_drawing();
+	batch_start(ORIGO, 0, WHITE);
+	batch_sprite("ui/sidebar_l", NO_FLIP);
+	batch_sprite("ui/sidebar_r", NO_FLIP);
+
+	push_surface(game_surface);
+
+	perform_camera_magic();
 	// clear_color(0.f, 0.f, 0.f, 1.f);
 	clear_depth(1.f);
 
@@ -422,84 +591,9 @@ void draw_game() {
 		actor = get_actor(actor->previous);
 	}
 
-	if (player != NULL) {
-		glm_ortho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -16000, 16000, proj);
-		set_projection_matrix(proj);
-		apply_matrices();
-
-		batch_start(XYZ(32.f, 16.f, -10000.f), 0.f, WHITE);
-		batch_string("hud", 16, fmt("MARIO * %u", SDL_max(player->lives, 0)));
-		batch_cursor(XYZ(147.f, 34.f, -10000.f));
-		batch_align(FA_RIGHT, FA_TOP);
-		batch_string("hud", 16, fmt("%u", player->score));
-
-		const char* tex;
-		switch ((int)((float)(game_state.time) / 6.25f) % 4) {
-		default:
-			tex = "ui/coins";
-			break;
-		case 1:
-		case 3:
-			tex = "ui/coins2";
-			break;
-		case 2:
-			tex = "ui/coins3";
-			break;
-		}
-		batch_cursor(XYZ(224.f, 34.f, -10000.f));
-		batch_sprite(tex, NO_FLIP);
-		batch_cursor(XYZ(288.f, 34.f, -10000.f));
-		batch_string("hud", 16, fmt("%u", player->coins));
-
-		batch_cursor(XYZ(432.f, 16.f, -10000.f));
-		batch_sprite(game_state.world, NO_FLIP);
-
-		if (game_state.clock >= 0L) {
-			GLfloat scale;
-			if ((game_state.flags & GF_HURRY) && video_state.hurry < 120.f) {
-				video_state.hurry += dt();
-				if (video_state.hurry < 8.f)
-					scale = 1.f + ((video_state.hurry / 8.f) * 0.6f);
-				else if (video_state.hurry >= 8.f && video_state.hurry <= 112.f)
-					scale = 1.6f;
-				else if (video_state.hurry > 112.f)
-					scale = 1.6f - (((video_state.hurry - 112.f) / 8.f) * 0.6f);
-			} else
-				scale = 1.f;
-
-			const GLfloat x = (float)SCREEN_WIDTH - (32.f * scale);
-			const GLfloat size = 16 * scale;
-
-			batch_cursor(XYZ(x, 24.f * scale, -10000.f));
-
-			GLfloat yscale;
-			if (video_state.hurry > 0.f && video_state.hurry < 120.f)
-				yscale = glm_lerp(
-					1.f, 0.8f + (SDL_sinf(video_state.hurry * 0.6f) * 0.2f), (scale - 1.0f) / 0.6f);
-			else
-				yscale = 1.f;
-			batch_scale(XY(1.f, yscale));
-
-			batch_align(FA_RIGHT, FA_MIDDLE);
-			batch_string("hud", size, "TIME");
-			batch_scale(XY(1.f, 1.f));
-
-			batch_cursor(XYZ(x, 34.f * scale, -10000.f));
-			batch_align(FA_RIGHT, FA_TOP);
-			batch_string("hud", size, fmt("%u", game_state.clock));
-		}
-
-		if (game_state.sequence.type == SEQ_LOSE && game_state.sequence.time > 0L) {
-			batch_cursor(XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, -10000.f));
-			batch_align(FA_CENTER, FA_MIDDLE);
-			batch_string("hud", 16, (game_state.clock == 0) ? "TIME UP" : "GAME OVER");
-		} else if (local_player != view_player) {
-			batch_cursor(XYZ(32, 64, -10000.f));
-			batch_color(ALPHA(160));
-			batch_align(FA_LEFT, FA_TOP);
-			batch_string("main", 24, fmt("Spectating: %s", get_peer_name(view_player)));
-		}
-	}
+	draw_hud();
+	draw_chat_hist();
+	draw_chat_message();
 	pop_surface();
 
 	batch_start(ORIGO, 0, WHITE);

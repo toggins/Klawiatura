@@ -246,11 +246,11 @@ bool window_focused() {
 	return !(flags & FOCUS_IMPOSSIBLE) && (flags & HAS_FOCUS);
 }
 
-bool window_start_typing() {
+bool window_start_text_input() {
 	return SDL_StartTextInput(window);
 }
 
-void window_stop_typing() {
+void window_stop_text_input() {
 	SDL_StopTextInput(window);
 }
 

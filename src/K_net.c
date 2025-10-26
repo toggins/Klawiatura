@@ -133,6 +133,8 @@ void disconnect() {
 	SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
 	netmode = NET_NULL;
 	found_lobby = false;
+	if (net_error())
+		WARN("Net error: %s", net_error());
 }
 
 bool is_host() {
@@ -311,6 +313,11 @@ static GekkoNetResult** net_receive(int* pCount) {
 
 	while (NutPunch_HasMessage() && *pCount < sizeof(packets) / sizeof(void*)) {
 		int size = sizeof(data), peer = NutPunch_NextMessage(data, &size);
+		if (!SDL_memcmp(data, "CHATTO", 6)) { // GROSS HACK
+			push_chat_message(peer, data + 6);
+			continue;
+		}
+
 		GekkoNetResult* res = SDL_malloc(sizeof(GekkoNetResult));
 
 		res->addr.size = sizeof(int), res->addr.data = SDL_malloc(res->addr.size);

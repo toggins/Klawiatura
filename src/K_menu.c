@@ -536,8 +536,8 @@ void update_menu() {
 			else if (opt->flip != NULL)
 				opt->flip(1);
 			else if (opt->edit != NULL)
-				start_typing(opt->edit, &opt->edit_size); // FIXME: Play "select" when pressing Enter or
-				                                          //        backspace while typing
+				start_typing(opt->edit, opt->edit_size); // FIXME: Play "select" when pressing Enter or
+				                                         //        backspace while typing
 			else if (opt->enter != MEN_NULL)
 				set_menu(opt->enter);
 		}

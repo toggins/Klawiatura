@@ -451,7 +451,16 @@ uint32_t check_game_state();
 void dump_game_state();
 void nuke_game_state();
 
-// Players
+// ====
+// CHAT
+// ====
+
+void push_chat_message(const int, const char*);
+
+// =======
+// PLAYERS
+// =======
+
 GamePlayer *get_player(PlayerID), *get_owner(const GameActor*);
 PlayerID get_owner_id(const GameActor*);
 GameActor *respawn_player(GamePlayer*), *nearest_pawn(const fvec2);
@@ -459,7 +468,10 @@ GameActor *respawn_player(GamePlayer*), *nearest_pawn(const fvec2);
 PlayerID localplayer(), viewplayer(), numplayers();
 void set_view_player(GamePlayer*);
 
-// Actors
+// ======
+// ACTORS
+// ======
+
 void populate_actors_table();
 void load_actor(GameActorType);
 GameActor* create_actor(GameActorType, const fvec2);
@@ -484,10 +496,16 @@ void displace_actor(GameActor*, fixed, Bool);
 void draw_actor(const GameActor*, const char*, GLfloat, const GLubyte[4]);
 void play_actor_sound(const GameActor*, const char*);
 
-// Math
+// ====
+// MATH
+// ====
+
 int32_t rng(int32_t);
 
-// Interpolation
+// =============
+// INTERPOLATION
+// =============
+
 const InterpActor* get_interp(const GameActor*);
 void skip_interp(const GameActor*);
 void align_interp(const GameActor*, const GameActor*);

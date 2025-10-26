@@ -147,8 +147,8 @@ void set_vsync(bool);
 
 bool window_maximized();
 bool window_focused();
-bool window_start_typing();
-void window_stop_typing();
+bool window_start_text_input();
+void window_stop_text_input();
 
 // Basic
 void clear_color(GLfloat, GLfloat, GLfloat, GLfloat);

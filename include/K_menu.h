@@ -32,7 +32,7 @@ typedef struct {
 	float hover;
 	MenuType enter;
 	char* edit;
-	size_t edit_size;
+	const size_t edit_size;
 } Option;
 
 typedef struct {

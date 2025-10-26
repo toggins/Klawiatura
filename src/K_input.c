@@ -13,6 +13,7 @@ Bindings BINDS[KB_SIZE] = {
 	[KB_JUMP] = {"Jump",       SDL_SCANCODE_Z        },
 	[KB_FIRE] = {"Fire",       SDL_SCANCODE_X        },
 	[KB_RUN] = {"Run",        SDL_SCANCODE_X        },
+	[KB_CHAT] = {"Open chat",  SDL_SCANCODE_T        },
 
 	[KB_PAUSE] = {"Pause",      SDL_SCANCODE_ESCAPE   },
 	[KB_UI_UP] = {"UI Up",      SDL_SCANCODE_UP       },
@@ -30,7 +31,7 @@ Bindings BINDS[KB_SIZE] = {
 };
 
 static char* text = NULL;
-static size_t* text_size = NULL;
+static size_t text_size = 0;
 
 void input_init() {}
 void input_teardown() {}
@@ -103,20 +104,20 @@ const char* kb_label(Keybind kb) {
 	return SDL_GetScancodeName(BINDS[kb].key);
 }
 
-void start_typing(char* ptext, size_t* size) {
-	if (window_start_typing())
+void start_typing(char* ptext, size_t size) {
+	if (window_start_text_input())
 		text = ptext, text_size = size;
 }
 
 void stop_typing() {
-	window_stop_typing(), text = NULL, text_size = NULL;
+	window_stop_text_input(), text = NULL, text_size = 0;
 }
 
 const char* typing_what() {
-	return (text && text_size && *text_size > 0) ? text : NULL;
+	return (text && text_size) ? text : NULL;
 }
 
 void input_text_input(SDL_TextInputEvent event) {
 	if (typing_what())
-		SDL_strlcat(text, event.text, *text_size);
+		SDL_strlcat(text, event.text, text_size);
 }

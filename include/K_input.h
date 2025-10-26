@@ -15,6 +15,7 @@ typedef enum {
 	KB_JUMP,
 	KB_FIRE,
 	KB_RUN,
+	KB_CHAT,
 
 	// If you allow rebinding these I will pulverize you
 	KB_PAUSE,
@@ -55,7 +56,7 @@ KeybindValue kb_value(Keybind);
 float kb_axis(Keybind, Keybind);
 const char* kb_label(Keybind);
 
-void start_typing(char*, size_t*);
+void start_typing(char*, size_t);
 void stop_typing();
 const char* typing_what();
 void input_text_input(SDL_TextInputEvent);
