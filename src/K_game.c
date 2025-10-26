@@ -294,9 +294,9 @@ bool update_game() {
 			input |= kb_down(KB_JUMP) * GI_JUMP;
 			input |= kb_down(KB_FIRE) * GI_FIRE;
 			input |= kb_down(KB_RUN) * GI_RUN;
-			if (game_state.flags & (GF_END | GF_RESTART))
-				input |= GI_WARP;
 		}
+		if (game_state.flags & (GF_END | GF_RESTART))
+			input |= GI_WARP;
 		gekko_add_local_input(game_session, local_player, &input);
 
 		int count = 0;
