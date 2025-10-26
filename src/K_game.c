@@ -111,62 +111,63 @@ static InterpState interp = {0};
 // CHAT
 // ===
 
-static const GLfloat chat_fs = 24.f;
-static char chat_message[128] = {0};
+#define MAX_CHATS 8
+
+static const GLfloat chat_fs = 18.f;
+static char chat_message[100] = {0};
 static struct {
 	char text[sizeof(chat_message)];
-	int lifetime;
-} chat_hist[32] = {0};
+	float lifetime;
+} chat_hist[MAX_CHATS] = {0};
 
 static void send_chat_message() {
 	if (typing_what() || !SDL_strlen(chat_message))
 		return;
 	// TODO: use message headers to distinguish message types, instead of using gross hacks such as this.
-	static char buf[6 + sizeof(chat_message)] = "CHATTO";
-	SDL_strlcpy(buf + 6, chat_message, sizeof(chat_message));
+	static char buf[4 + sizeof(chat_message)] = "CHAT";
+	SDL_strlcpy(buf + 4, chat_message, sizeof(chat_message));
 	for (int i = 0; i < MAX_PLAYERS; i++)
 		NutPunch_SendReliably(i, buf, sizeof(buf));
 	push_chat_message(NutPunch_LocalPeer(), chat_message);
 	chat_message[0] = 0;
 }
 
-static bool is_hist_null(int idx) {
-	if (idx < 0 || idx >= sizeof(chat_hist) / sizeof(*chat_hist))
-		return false;
-	return !SDL_strlen(chat_hist[idx].text);
-}
-
 void push_chat_message(const int from, const char* text) {
-	int len = sizeof(chat_hist) / sizeof(*chat_hist);
-	for (int i = 0; i < len; i++)
-		if (is_hist_null(i)) {
-			const char* line = fmt("%s: %s", get_peer_name(from), text);
-			SDL_strlcpy(chat_hist[i].text, line, sizeof(chat_message));
-			chat_hist[i].lifetime = 5 * TICKRATE;
-			return;
-		}
+	SDL_memmove(&chat_hist[1], &chat_hist, sizeof(chat_hist) - sizeof(*chat_hist));
+
+	const char* line = fmt("%s: %s", get_peer_name(from), text);
+	SDL_strlcpy(chat_hist[0].text, line, sizeof(chat_message));
+	chat_hist[0].lifetime = 6 * TICKRATE;
+	play_generic_sound("chat");
 }
 
-static void tick_chat_hist() {
-	for (int i = 0; i < sizeof(chat_hist) / sizeof(*chat_hist); i++) {
-		if (chat_hist[i].lifetime > 0)
-			chat_hist[i].lifetime--;
-		if (!chat_hist[i].lifetime)
-			chat_hist[i].text[0] = 0;
+static void update_chat_hist() {
+	const float delta = dt();
+	for (int i = 0; i < MAX_CHATS; i++) {
+		if (chat_hist[i].lifetime > 0.f)
+			chat_hist[i].lifetime -= delta;
+		if (chat_hist[i].lifetime <= 0.f) {
+			if (i >= (MAX_CHATS - 1))
+				SDL_memset(&chat_hist[i], 0, sizeof(*chat_hist));
+			else {
+				SDL_memmove(&chat_hist[i], &chat_hist[i + 1], (MAX_CHATS - i) * sizeof(*chat_hist));
+				SDL_memset(&chat_hist[MAX_CHATS - 1], 0, sizeof(*chat_hist));
+			}
+		}
 	}
 }
 
 static void draw_chat_hist() {
-	int height, start = 0, len = sizeof(chat_hist) / sizeof(*chat_hist);
-	get_resolution(NULL, &height);
-
-	for (; start < len; start++)
-		if (!is_hist_null(start))
+	const float y = SCREEN_HEIGHT - 12.f - (1.5 * chat_fs);
+	const GLubyte a = (typing_what() == chat_message) ? 255 : 192;
+	for (int i = 0; i < MAX_CHATS; i++) {
+		if (chat_hist[i].lifetime <= 0.f)
 			break;
+		const float fade = chat_hist[i].lifetime / TICKRATE;
+		batch_color(ALPHA(SDL_min(1.f, fade) * a));
 
-	for (int i = 0; i < len; i++) {
 		batch_align(FA_LEFT, FA_BOTTOM);
-		batch_cursor(XY(12, height - chat_fs * (1 + i - start)));
+		batch_cursor(XY(12.f, y - (i * chat_fs)));
 		batch_string("main", chat_fs, chat_hist[i].text);
 	}
 }
@@ -175,12 +176,10 @@ static void draw_chat_message() {
 	if (typing_what() != chat_message)
 		return;
 
-	int height;
-	get_resolution(NULL, &height);
-
 	batch_align(FA_LEFT, FA_BOTTOM);
-	batch_cursor(XY(12, height));
-	batch_string("main", chat_fs, fmt("> %s", chat_message));
+	batch_cursor(XY(12.f, SCREEN_HEIGHT - 12.f));
+	batch_color(WHITE);
+	batch_string("main", chat_fs, fmt("> %s%s", chat_message, SDL_fmodf(totalticks(), 30.f) < 16.f ? "|" : ""));
 }
 
 // ====
@@ -253,7 +252,7 @@ void nuke_game() {
 bool update_game() {
 	gekko_network_poll(game_session);
 
-	tick_chat_hist();
+	update_chat_hist();
 	if (!typing_what() && is_connected()) {
 		if (kb_pressed(KB_CHAT))
 			start_typing(chat_message, sizeof(chat_message));
@@ -841,6 +840,7 @@ void start_game_state(GameContext* ctx) {
 
 	load_sound("hurry");
 	load_sound("tick");
+	load_sound("chat");
 
 	//
 	//
