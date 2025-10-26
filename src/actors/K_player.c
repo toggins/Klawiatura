@@ -1133,7 +1133,8 @@ static void tick_dead(GameActor* actor) {
 	}
 
 	case 210L: {
-		if (ANY_FLAG(actor, FLG_PLAYER_DEAD) || game_state.clock == 0L) {
+		if ((ANY_FLAG(actor, FLG_PLAYER_DEAD) || game_state.clock == 0L) && game_state.sequence.type != SEQ_WIN)
+		{
 			game_state.sequence.type = SEQ_LOSE;
 			game_state.sequence.time = 1L;
 			play_state_track(TS_FANFARE, "game_over", false);

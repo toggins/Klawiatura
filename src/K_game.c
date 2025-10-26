@@ -977,7 +977,7 @@ GamePlayer* get_player(PlayerID id) {
 
 /// Attempts to respawn the player.
 GameActor* respawn_player(GamePlayer* player) {
-	if (player == NULL)
+	if (player == NULL || game_state.sequence.type == SEQ_WIN)
 		return NULL;
 
 	if (player->lives < 0L) {
@@ -1021,7 +1021,7 @@ GameActor* respawn_player(GamePlayer* player) {
 	pawn = create_actor(
 		ACT_PLAYER, (spawn->type == ACT_AUTOSCROLL)
 				    ? (fvec2){Flerp(game_state.bounds.start.x, game_state.bounds.end.x, FxHalf),
-					    game_state.bounds.start.y}
+					      game_state.bounds.start.y}
 				    : spawn->pos);
 	if (pawn != NULL) {
 		VAL(pawn, VAL_PLAYER_INDEX) = (ActorValue)player->id;
