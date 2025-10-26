@@ -339,6 +339,9 @@ PlayerID populate_game(GekkoSession* session) {
 	adapter.free_data = SDL_free;
 	gekko_net_adapter_set(session, &adapter);
 
+	for (int i = 0; i < MAX_PLAYERS; i++)
+		player_peers[i] = MAX_PEERS;
+
 	const int num_peers = NutPunch_PeerCount();
 	if (num_peers <= 1) {
 		gekko_add_actor(session, LocalPlayer, NULL);
