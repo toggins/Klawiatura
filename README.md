@@ -56,11 +56,10 @@ You will need a system-wide install of the `jinja2` Python module for our depend
 py -m pip install jinja2
 ```
 
-### [FMOD Engine 2.03.08](https://www.fmod.com/download#fmodengine)
+### [FMOD Engine 2.03.09](https://www.fmod.com/download#fmodengine)
 
 Move everything from `C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core`
-to `include\fmod\windows` on Windows. This process is also similar enough on
-Linux.
+to `include\fmod\windows` on Windows. Same for the Linux version.
 
 ### Compiling
 
