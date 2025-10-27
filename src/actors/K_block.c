@@ -1,7 +1,7 @@
 #include "K_block.h"
-#include "K_coin.h"
+#include "K_coin.h" // IWYU pragma: keep
 #include "K_game.h"
-#include "K_player.h"
+#include "K_player.h" // IWYU pragma: keep
 #include "K_powerups.h"
 
 // ================
