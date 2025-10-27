@@ -70,5 +70,9 @@ static void draw_shard(const GameActor* actor) {
 		FtFloat(VAL(actor, BRICK_SHARD_ANGLE)), WHITE);
 }
 
-const GameActorTable TAB_BRICK_SHARD
-	= {.load = load_shard, .create = create_shard, .tick = tick_shard, .draw = draw_shard};
+const GameActorTable TAB_BRICK_SHARD = {
+	.load = load_shard,
+	.create = create_shard,
+	.tick = tick_shard,
+	.draw = draw_shard,
+};

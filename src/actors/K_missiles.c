@@ -69,9 +69,11 @@ static void draw_fireball(const GameActor* actor) {
 	draw_actor(actor, "missiles/fireball", FtFloat(VAL(actor, MISSILE_ANGLE)), WHITE);
 }
 
-const GameActorTable TAB_MISSILE_FIREBALL = {.load = load_fireball,
+const GameActorTable TAB_MISSILE_FIREBALL = {
+	.load = load_fireball,
 	.create = create_fireball,
 	.tick = tick_fireball,
 	.draw = draw_fireball,
 	.cleanup = cleanup,
-	.owner = owner};
+	.owner = owner,
+};

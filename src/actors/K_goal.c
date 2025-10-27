@@ -131,4 +131,9 @@ static void draw_fly(const GameActor* actor) {
 	draw_actor(actor, "markers/goal_bar2", FtFloat(VAL(actor, GOAL_ANGLE)), WHITE);
 }
 
-const GameActorTable TAB_GOAL_BAR_FLY = {.load = load_fly, .create = create_fly, .tick = tick_fly, .draw = draw_fly};
+const GameActorTable TAB_GOAL_BAR_FLY = {
+	.load = load_fly,
+	.create = create_fly,
+	.tick = tick_fly,
+	.draw = draw_fly,
+};

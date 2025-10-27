@@ -173,8 +173,13 @@ static void on_top(GameActor* actor, GameActor* from) {
 		FLAG_ON(actor, FLG_PLATFORM_FALLING);
 }
 
-const GameActorTable TAB_PLATFORM
-	= {.is_solid = always_top, .load = load, .tick = tick, .draw = draw, .on_top = on_top};
+const GameActorTable TAB_PLATFORM = {
+	.is_solid = always_top,
+	.load = load,
+	.tick = tick,
+	.draw = draw,
+	.on_top = on_top,
+};
 
 // ===============
 // PLATFORM TURNER

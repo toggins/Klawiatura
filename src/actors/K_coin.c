@@ -183,5 +183,10 @@ static PlayerID pop_owner(const GameActor* actor) {
 	return (PlayerID)VAL(actor, COIN_POP_PLAYER);
 }
 
-const GameActorTable TAB_COIN_POP
-	= {.load = load_pop, .create = create_pop, .tick = tick_pop, .draw = draw_pop, .owner = pop_owner};
+const GameActorTable TAB_COIN_POP = {
+	.load = load_pop,
+	.create = create_pop,
+	.tick = tick_pop,
+	.draw = draw_pop,
+	.owner = pop_owner,
+};

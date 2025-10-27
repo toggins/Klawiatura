@@ -1033,13 +1033,15 @@ static PlayerID owner(const GameActor* actor) {
 	return (PlayerID)VAL(actor, PLAYER_INDEX);
 }
 
-const GameActorTable TAB_PLAYER = {.load = load,
+const GameActorTable TAB_PLAYER = {
+	.load = load,
 	.create = create,
 	.tick = tick,
 	.draw = draw,
 	.cleanup = cleanup,
 	.collide = collide,
-	.owner = owner};
+	.owner = owner,
+};
 
 // ===========
 // DEAD PLAYER
@@ -1151,5 +1153,10 @@ static void draw_dead(const GameActor* actor) {
 	batch_string("main", 24, "Jackass");
 }
 
-const GameActorTable TAB_PLAYER_DEAD
-	= {.load = load_dead, .create = create_dead, .tick = tick_dead, .draw = draw_dead, .owner = owner};
+const GameActorTable TAB_PLAYER_DEAD = {
+	.load = load_dead,
+	.create = create_dead,
+	.tick = tick_dead,
+	.draw = draw_dead,
+	.owner = owner,
+};
