@@ -301,19 +301,21 @@ static void draw_brick(const GameActor* actor) {
 	batch_sprite(ANY_FLAG(actor, FLG_BLOCK_GRAY) ? "items/brick_gray" : "items/brick", NO_FLIP);
 }
 
-const GameActorTable TAB_BRICK_BLOCK = {.is_solid = always_solid,
+const GameActorTable TAB_BRICK_BLOCK = {
+	.is_solid = always_solid,
 	.load = load_brick,
 	.create = create,
 	.tick = tick,
 	.draw = draw_brick,
-	.on_bottom = on_bottom};
-
-const GameActorTable TAB_PSWITCH_BRICK = {.is_solid = always_solid,
+	.on_bottom = on_bottom,
+}, TAB_PSWITCH_BRICK = {
+	.is_solid = always_solid,
 	.load = load_brick,
 	.create = create,
 	.tick = tick,
 	.draw = draw_brick,
-	.on_bottom = on_bottom};
+	.on_bottom = on_bottom,
+};
 
 // ==========
 // COIN BLOCK
@@ -338,12 +340,14 @@ static void draw_coin_block(const GameActor* actor) {
 		draw_brick(actor);
 }
 
-const GameActorTable TAB_COIN_BLOCK = {.is_solid = always_solid,
+const GameActorTable TAB_COIN_BLOCK = {
+	.is_solid = always_solid,
 	.load = load_coin_block,
 	.create = create,
 	.tick = tick_coin_block,
 	.draw = draw_coin_block,
-	.on_bottom = on_bottom};
+	.on_bottom = on_bottom,
+};
 
 // ==========
 // NOTE BLOCK
@@ -477,7 +481,8 @@ static void collide_note(GameActor* actor, GameActor* from) {
 	}
 }
 
-const GameActorTable TAB_NOTE_BLOCK = {.is_solid = note_solid,
+const GameActorTable TAB_NOTE_BLOCK = {
+	.is_solid = note_solid,
 	.load = load_note,
 	.create = create,
 	.tick = tick,
@@ -486,7 +491,8 @@ const GameActorTable TAB_NOTE_BLOCK = {.is_solid = note_solid,
 	.on_top = note_top,
 	.on_bottom = on_bottom,
 	.on_left = note_left,
-	.on_right = note_right};
+	.on_right = note_right,
+};
 
 // ==========
 // BLOCK BUMP
@@ -509,4 +515,8 @@ static PlayerID bump_owner(const GameActor* actor) {
 	return (PlayerID)VAL(actor, BLOCK_PLAYER);
 }
 
-const GameActorTable TAB_BLOCK_BUMP = {.create = create_bump, .tick = tick_bump, .owner = bump_owner};
+const GameActorTable TAB_BLOCK_BUMP = {
+	.create = create_bump,
+	.tick = tick_bump,
+	.owner = bump_owner,
+};

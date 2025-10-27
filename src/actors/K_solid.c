@@ -5,9 +5,9 @@ static void create(GameActor* actor) {
 	actor->box.end.x = actor->box.end.y = FfInt(32L);
 }
 
-const GameActorTable TAB_SOLID = {.is_solid = always_solid, .create = create};
-const GameActorTable TAB_SOLID_TOP = {.is_solid = always_top, .create = create};
-const GameActorTable TAB_SOLID_SLOPE = {.is_solid = always_solid, .create = create};
+const GameActorTable TAB_SOLID = {.is_solid = always_solid, .create = create},
+		     TAB_SOLID_TOP = {.is_solid = always_top, .create = create},
+		     TAB_SOLID_SLOPE = {.is_solid = always_solid, .create = create};
 
 // ===========
 // TANK WHEELS
@@ -93,15 +93,24 @@ static void draw_right_wheel(const GameActor* actor) {
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
-const GameActorTable TAB_WHEEL_LEFT = {.is_solid = always_solid,
+const GameActorTable TAB_WHEEL_LEFT = {
+	.is_solid = always_solid,
 	.load = load_left_wheel,
 	.create = create,
 	.tick = tick_wheel,
-	.draw = draw_left_wheel};
-const GameActorTable TAB_WHEEL
-	= {.is_solid = always_solid, .load = load_wheel, .create = create, .tick = tick_wheel, .draw = draw_wheel};
-const GameActorTable TAB_WHEEL_RIGHT = {.is_solid = always_solid,
+	.draw = draw_left_wheel,
+};
+const GameActorTable TAB_WHEEL = {
+	.is_solid = always_solid,
+	.load = load_wheel,
+	.create = create,
+	.tick = tick_wheel,
+	.draw = draw_wheel,
+};
+const GameActorTable TAB_WHEEL_RIGHT = {
+	.is_solid = always_solid,
 	.load = load_right_wheel,
 	.create = create,
 	.tick = tick_wheel,
-	.draw = draw_right_wheel};
+	.draw = draw_right_wheel,
+};
