@@ -76,6 +76,9 @@ int main(int argc, char* argv[]) {
 }
 
 static int realmain() {
+	extern void log_init();
+	log_init();
+
 	EXPECT(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS), "SDL_Init fail: %s", SDL_GetError());
 
 	extern void populate_actors_table();
