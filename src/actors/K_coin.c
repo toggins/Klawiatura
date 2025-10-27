@@ -1,5 +1,5 @@
-#include "K_coin.h"
-#include "K_points.h"
+#include "actors/K_coin.h"
+#include "actors/K_points.h"
 
 // ====
 // COIN

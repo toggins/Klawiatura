@@ -1,4 +1,4 @@
-#include "K_missiles.h"
+#include "actors/K_missiles.h"
 
 static void create(GameActor* actor) {
 	VAL(actor, MISSILE_PLAYER) = (ActorValue)NULLPLAY;

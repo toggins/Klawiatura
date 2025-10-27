@@ -1,6 +1,7 @@
 #include "K_game.h"
-#include "K_player.h"
-#include "K_points.h"
+
+#include "actors/K_player.h"
+#include "actors/K_points.h"
 
 enum {
 	VAL_GOAL_Y = VAL_CUSTOM,

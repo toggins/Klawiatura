@@ -1,5 +1,6 @@
-#include "K_block.h"
 #include "K_game.h"
+
+#include "actors/K_block.h"
 
 // =========
 // EXPLOSION

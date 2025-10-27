@@ -1,4 +1,4 @@
-#include "K_autoscroll.h"
+#include "actors/K_autoscroll.h"
 
 static void load() {
 	load_texture("markers/platform/tanks");

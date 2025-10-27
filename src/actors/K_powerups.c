@@ -1,6 +1,6 @@
-#include "K_player.h"
-#include "K_points.h"
-#include "K_powerups.h"
+#include "actors/K_player.h"
+#include "actors/K_points.h"
+#include "actors/K_powerups.h"
 
 // ================
 // HELPER FUNCTIONS

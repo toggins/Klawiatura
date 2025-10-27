@@ -1,7 +1,7 @@
-#include "K_autoscroll.h"
-#include "K_missiles.h" // IWYU pragma: keep
-#include "K_player.h"
-#include "K_points.h"
+#include "actors/K_autoscroll.h"
+#include "actors/K_missiles.h" // IWYU pragma: keep
+#include "actors/K_player.h"
+#include "actors/K_points.h"
 
 // ================
 // HELPER FUNCTIONS

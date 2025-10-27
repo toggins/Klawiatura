@@ -1,8 +1,9 @@
-#include "K_block.h"
-#include "K_coin.h" // IWYU pragma: keep
 #include "K_game.h"
-#include "K_player.h" // IWYU pragma: keep
-#include "K_powerups.h"
+
+#include "actors/K_block.h"
+#include "actors/K_coin.h"   // IWYU pragma: keep
+#include "actors/K_player.h" // IWYU pragma: keep
+#include "actors/K_powerups.h"
 
 // ================
 // HELPER FUNCTIONS

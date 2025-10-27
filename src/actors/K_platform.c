@@ -1,5 +1,6 @@
 #include "K_game.h"
-#include "K_player.h"
+
+#include "actors/K_player.h" // IWYU pragma: keep
 
 enum {
 	VAL_PLATFORM_TYPE = VAL_CUSTOM,

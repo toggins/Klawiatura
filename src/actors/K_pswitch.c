@@ -1,5 +1,6 @@
 #include "K_game.h"
-#include "K_player.h"
+
+#include "actors/K_player.h"
 
 enum {
 	VAL_PSWITCH = VAL_CUSTOM,

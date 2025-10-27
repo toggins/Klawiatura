@@ -24,27 +24,23 @@ AlignAfterOpenBracket: DontAlign
 RemoveBracesLLVM: true
 IncludeBlocks: Regroup
 IncludeIsMainRegex: "a{999}" # no main includes
+SortIncludes: CaseSensitive
 IncludeCategories:
   - Regex: "^<std"
     Priority: 0
-    CaseSensitive: true
   - Regex: "^<glad/" # MUST come before SDL3
     Priority: 5
     SortPriority: 0
-    CaseSensitive: true
   - Regex: "^<SDL3/"
     Priority: 5
     SortPriority: 10
-    CaseSensitive: true
   - Regex: "^<S_"
     Priority: 20
-    CaseSensitive: true
   - Regex: "^<"
     Priority: 15
-    CaseSensitive: true
+  - Regex: '^".+/K_'
+    Priority: 60
   - Regex: '^"K_'
     Priority: 50
-    CaseSensitive: true
   - Regex: ".*"
     Priority: 100
-    CaseSensitive: true

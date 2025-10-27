@@ -1,5 +1,6 @@
-#include "K_autoscroll.h"
 #include "K_game.h"
+
+#include "actors/K_autoscroll.h"
 
 static void create(GameActor* actor) {
 	actor->box.end.x = actor->box.end.y = FfInt(32L);
