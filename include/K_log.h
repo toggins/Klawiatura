@@ -6,7 +6,8 @@
 __attribute__((noreturn)) void DIE();
 const char* log_basename(const char*);
 #define LOG_WITH(fn, msg, ...)                                                                                         \
-	fn(SDL_LOG_CATEGORY_APPLICATION, "(%s:%d) " msg, log_basename(__FILE__), __LINE__, ##__VA_ARGS__)
+	fn(SDL_LOG_CATEGORY_APPLICATION, "%s:%d %s() -> " msg, log_basename(__FILE__), __LINE__, __func__,             \
+		##__VA_ARGS__)
 
 #define INFO(...) LOG_WITH(SDL_LogInfo, __VA_ARGS__)
 #define WARN(...) LOG_WITH(SDL_LogWarn, __VA_ARGS__)
