@@ -472,7 +472,6 @@ void set_view_player(GamePlayer*);
 // ACTORS
 // ======
 
-void populate_actors_table();
 void load_actor(GameActorType);
 GameActor* create_actor(GameActorType, const fvec2);
 void replace_actors(GameActorType, GameActorType);

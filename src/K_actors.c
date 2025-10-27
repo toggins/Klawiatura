@@ -1,0 +1,51 @@
+#include "K_game.h"
+
+#define ACTOR(ident)                                                                                                   \
+	extern const GameActorTable TAB_##ident;                                                                       \
+	ACTORS[ACT_##ident] = &TAB_##ident;
+
+void populate_actors_table() {
+	extern const GameActorTable* ACTORS[ACT_SIZE];
+	static const GameActorTable TAB_NULL = {0};
+	ACTORS[ACT_NULL] = &TAB_NULL;
+
+	ACTOR(PLAYER_SPAWN);
+	ACTOR(PLAYER);
+	ACTOR(PLAYER_DEAD);
+	ACTOR(MISSILE_FIREBALL);
+	ACTOR(CLOUD);
+	ACTOR(BUSH);
+	ACTOR(SOLID);
+	ACTOR(SOLID_TOP);
+	ACTOR(SOLID_SLOPE);
+	ACTOR(WHEEL_LEFT);
+	ACTOR(WHEEL);
+	ACTOR(WHEEL_RIGHT);
+	ACTOR(COIN);
+	ACTOR(COIN_POP);
+	ACTOR(POINTS);
+	ACTOR(GOAL_BAR);
+	ACTOR(GOAL_BAR_FLY);
+	ACTOR(GOAL_MARK);
+	ACTOR(ITEM_BLOCK);
+	ACTOR(HIDDEN_BLOCK);
+	ACTOR(BRICK_BLOCK);
+	ACTOR(BRICK_SHARD);
+	ACTOR(COIN_BLOCK);
+	ACTOR(NOTE_BLOCK);
+	ACTOR(BLOCK_BUMP);
+	ACTOR(PSWITCH);
+	ACTOR(PSWITCH_COIN);
+	ACTOR(PSWITCH_BRICK);
+	ACTOR(MUSHROOM);
+	ACTOR(MUSHROOM_1UP);
+	ACTOR(MUSHROOM_POISON);
+	ACTOR(FIRE_FLOWER);
+	ACTOR(STARMAN);
+	ACTOR(AUTOSCROLL);
+	ACTOR(BOUNDS);
+	ACTOR(CHECKPOINT);
+	ACTOR(PLATFORM);
+	ACTOR(PLATFORM_TURN);
+	ACTOR(EXPLODE);
+}
