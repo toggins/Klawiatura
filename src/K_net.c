@@ -1,12 +1,15 @@
 #include "K_log.h" // IWYU pragma: keep
 
 #define NUTPUNCH_IMPLEMENTATION
+
 #define NutPunch_Memcmp SDL_memcmp
 #define NutPunch_Memset SDL_memset
 #define NutPunch_Memcpy SDL_memcpy
 #define NutPunch_Malloc SDL_malloc
 #define NutPunch_Free SDL_free
-#define NP_Log INFO
+
+#define NP_Info INFO
+#define NP_Warn WARN
 
 #include "K_cmd.h"
 #include "K_game.h"
