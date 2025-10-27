@@ -70,7 +70,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
 		GameActor* pop = create_actor(ACT_COIN_POP, POS_ADD(actor, FfInt(16L), FfInt(28L)));
 		if (pop != NULL)
-			VAL(pop, VAL_COIN_POP_PLAYER) = (ActorValue)player->id;
+			VAL(pop, COIN_POP_PLAYER) = (ActorValue)player->id;
 		FLAG_ON(actor, FLG_DESTROY);
 		break;
 	}
@@ -100,7 +100,7 @@ static void load_pop() {
 }
 
 static void create_pop(GameActor* actor) {
-	VAL(actor, VAL_COIN_POP_PLAYER) = (ActorValue)NULLPLAY;
+	VAL(actor, COIN_POP_PLAYER) = (ActorValue)NULLPLAY;
 }
 
 static void tick_pop(GameActor* actor) {
@@ -116,29 +116,29 @@ static void tick_pop(GameActor* actor) {
 		}
 
 		play_actor_sound(actor, "coin");
-		VAL(actor, VAL_Y_SPEED) = -278528L;
+		VAL(actor, Y_SPEED) = -278528L;
 		FLAG_ON(actor, FLG_COIN_POP_START);
 	}
 
-	if (VAL(actor, VAL_Y_SPEED) < FxZero) {
+	if (VAL(actor, Y_SPEED) < FxZero) {
 		move_actor(actor, POS_SPEED(actor));
-		VAL(actor, VAL_Y_SPEED) = Fmin(VAL(actor, VAL_Y_SPEED) + 10945L, FxZero);
+		VAL(actor, Y_SPEED) = Fmin(VAL(actor, Y_SPEED) + 10945L, FxZero);
 	}
 
 	if (ANY_FLAG(actor, FLG_COIN_POP_SPARK)) {
-		VAL(actor, VAL_COIN_POP_FRAME) += 35L;
-		if (VAL(actor, VAL_COIN_POP_FRAME) >= 400L) {
+		VAL(actor, COIN_POP_FRAME) += 35L;
+		if (VAL(actor, COIN_POP_FRAME) >= 400L) {
 			GameActor* points = create_actor(ACT_POINTS, actor->pos);
 			if (points != NULL) {
-				VAL(points, VAL_POINTS_PLAYER) = (ActorValue)get_owner_id(actor);
-				VAL(points, VAL_POINTS) = 200L;
+				VAL(points, POINTS_PLAYER) = (ActorValue)get_owner_id(actor);
+				VAL(points, POINTS) = 200L;
 			}
 			FLAG_ON(actor, FLG_DESTROY);
 		}
 	} else {
-		VAL(actor, VAL_COIN_POP_FRAME) += 70L;
-		if (VAL(actor, VAL_COIN_POP_FRAME) >= 1400L) {
-			VAL(actor, VAL_COIN_POP_FRAME) = 0L;
+		VAL(actor, COIN_POP_FRAME) += 70L;
+		if (VAL(actor, COIN_POP_FRAME) >= 1400L) {
+			VAL(actor, COIN_POP_FRAME) = 0L;
 			FLAG_ON(actor, FLG_COIN_POP_SPARK);
 		}
 	}
@@ -147,7 +147,7 @@ static void tick_pop(GameActor* actor) {
 static void draw_pop(const GameActor* actor) {
 	const char* tex;
 	if (ANY_FLAG(actor, FLG_COIN_POP_SPARK))
-		switch (VAL(actor, VAL_COIN_POP_FRAME) / 100L) {
+		switch (VAL(actor, COIN_POP_FRAME) / 100L) {
 		default:
 			tex = "effects/spark";
 			break;
@@ -162,7 +162,7 @@ static void draw_pop(const GameActor* actor) {
 			break;
 		}
 	else
-		switch ((VAL(actor, VAL_COIN_POP_FRAME) / 100L) % 5L) {
+		switch ((VAL(actor, COIN_POP_FRAME) / 100L) % 5L) {
 		default:
 			tex = "items/coin_pop";
 			break;
@@ -180,7 +180,7 @@ static void draw_pop(const GameActor* actor) {
 }
 
 static PlayerID pop_owner(const GameActor* actor) {
-	return (PlayerID)VAL(actor, VAL_COIN_POP_PLAYER);
+	return (PlayerID)VAL(actor, COIN_POP_PLAYER);
 }
 
 const GameActorTable TAB_COIN_POP

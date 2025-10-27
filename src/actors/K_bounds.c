@@ -22,15 +22,13 @@ static void collide(GameActor* actor, GameActor* from) {
 	GamePlayer* player = get_owner(from);
 	if (player == NULL)
 		return;
-	if (VAL(actor, VAL_BOUNDS_X1) == VAL(actor, VAL_BOUNDS_X2)
-		|| VAL(actor, VAL_BOUNDS_Y1) == VAL(actor, VAL_BOUNDS_Y2))
+	if (VAL(actor, BOUNDS_X1) == VAL(actor, BOUNDS_X2) || VAL(actor, BOUNDS_Y1) == VAL(actor, BOUNDS_Y2))
 		return;
-	if (player->bounds.start.x != VAL(actor, VAL_BOUNDS_X1) || player->bounds.start.y != VAL(actor, VAL_BOUNDS_Y1)
-		|| player->bounds.end.x != VAL(actor, VAL_BOUNDS_X2)
-		|| player->bounds.end.y != VAL(actor, VAL_BOUNDS_Y2))
+	if (player->bounds.start.x != VAL(actor, BOUNDS_X1) || player->bounds.start.y != VAL(actor, BOUNDS_Y1)
+		|| player->bounds.end.x != VAL(actor, BOUNDS_X2) || player->bounds.end.y != VAL(actor, BOUNDS_Y2))
 	{
-		player->bounds.start.x = VAL(actor, VAL_BOUNDS_X1), player->bounds.start.y = VAL(actor, VAL_BOUNDS_Y1),
-		player->bounds.end.x = VAL(actor, VAL_BOUNDS_X2), player->bounds.end.y = VAL(actor, VAL_BOUNDS_Y2);
+		player->bounds.start.x = VAL(actor, BOUNDS_X1), player->bounds.start.y = VAL(actor, BOUNDS_Y1),
+		player->bounds.end.x = VAL(actor, BOUNDS_X2), player->bounds.end.y = VAL(actor, BOUNDS_Y2);
 
 		// !!! CLIENT-SIDE !!!
 		if (viewplayer() == player->id) {

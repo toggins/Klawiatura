@@ -12,8 +12,7 @@ static void tick(GameActor* actor) {
 	if (game_state.autoscroll != actor->id && in_any_view(actor, FxZero, false)) {
 		GameActor* autoscroll = get_actor(game_state.autoscroll);
 		if (autoscroll != NULL) {
-			VAL(autoscroll, VAL_X_SPEED) = VAL(actor, VAL_X_SPEED),
-					VAL(autoscroll, VAL_Y_SPEED) = VAL(actor, VAL_Y_SPEED),
+			VAL(autoscroll, X_SPEED) = VAL(actor, X_SPEED), VAL(autoscroll, Y_SPEED) = VAL(actor, Y_SPEED),
 					FLAG_ON(autoscroll, actor->flags & FLG_SCROLL_TANKS);
 			FLAG_ON(actor, FLG_DESTROY);
 			return;
@@ -26,7 +25,7 @@ static void tick(GameActor* actor) {
 		if (ANY_FLAG(actor, FLG_SCROLL_TANKS)) {
 			const fixed end = game_state.size.x - F_SCREEN_WIDTH;
 			if (actor->pos.x > end) {
-				VAL(actor, VAL_X_SPEED) = FxZero;
+				VAL(actor, X_SPEED) = FxZero;
 				move_actor(actor, (fvec2){end, actor->pos.y});
 			}
 		}

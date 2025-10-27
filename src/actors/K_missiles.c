@@ -1,7 +1,7 @@
 #include "K_missiles.h"
 
 static void create(GameActor* actor) {
-	VAL(actor, VAL_MISSILE_PLAYER) = (ActorValue)NULLPLAY;
+	VAL(actor, MISSILE_PLAYER) = (ActorValue)NULLPLAY;
 }
 
 static void cleanup(GameActor* actor) {
@@ -16,7 +16,7 @@ static void cleanup(GameActor* actor) {
 }
 
 static PlayerID owner(const GameActor* actor) {
-	return VAL(actor, VAL_MISSILE_PLAYER);
+	return VAL(actor, MISSILE_PLAYER);
 }
 
 // ========
@@ -48,11 +48,11 @@ static void tick_fireball(GameActor* actor) {
 		return;
 	}
 
-	VAL(actor, VAL_MISSILE_ANGLE) += (VAL(actor, VAL_X_SPEED) < FxZero) ? -12868L : 12868L;
-	VAL(actor, VAL_Y_SPEED) += 26214L;
+	VAL(actor, MISSILE_ANGLE) += (VAL(actor, X_SPEED) < FxZero) ? -12868L : 12868L;
+	VAL(actor, Y_SPEED) += 26214L;
 
 	displace_actor(actor, FfInt(10L), false);
-	if (VAL(actor, VAL_X_TOUCH) != 0L)
+	if (VAL(actor, X_TOUCH) != 0L)
 		FLAG_ON(actor, FLG_DESTROY);
 	else
 		collide_actor(actor);
@@ -61,12 +61,12 @@ static void tick_fireball(GameActor* actor) {
 		return;
 	}
 
-	if (VAL(actor, VAL_Y_TOUCH) > 0L)
-		VAL(actor, VAL_Y_SPEED) = FfInt(-5L);
+	if (VAL(actor, Y_TOUCH) > 0L)
+		VAL(actor, Y_SPEED) = FfInt(-5L);
 }
 
 static void draw_fireball(const GameActor* actor) {
-	draw_actor(actor, "missiles/fireball", FtFloat(VAL(actor, VAL_MISSILE_ANGLE)), WHITE);
+	draw_actor(actor, "missiles/fireball", FtFloat(VAL(actor, MISSILE_ANGLE)), WHITE);
 }
 
 const GameActorTable TAB_MISSILE_FIREBALL = {.load = load_fireball,

@@ -300,7 +300,7 @@ enum BaseActorValues {
 	VAL_CUSTOM
 };
 
-#define VAL(actor, val) ((actor)->values[val])
+#define VAL(actor, val) ((actor)->values[VAL_##val])
 #define VAL_TICK(actor, val)                                                                                           \
 	do {                                                                                                           \
 		if (VAL(actor, val) > 0L)                                                                              \

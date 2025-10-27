@@ -22,8 +22,8 @@ void give_points(GameActor* actor, GamePlayer* player, int32_t points) {
 	GameActor* pts = create_actor(
 		ACT_POINTS, POS_ADD(actor, Flerp(actor->box.start.x, actor->box.end.x, FxHalf), actor->box.start.y));
 	if (pts != NULL) {
-		VAL(pts, VAL_POINTS_PLAYER) = (ActorValue)player->id;
-		VAL(pts, VAL_POINTS) = points;
+		VAL(pts, POINTS_PLAYER) = (ActorValue)player->id;
+		VAL(pts, POINTS) = points;
 	}
 }
 
@@ -47,28 +47,28 @@ static void load() {
 
 static void create(GameActor* actor) {
 	actor->depth = FfInt(-1000L);
-	VAL(actor, VAL_POINTS_PLAYER) = (ActorValue)NULLPLAY;
+	VAL(actor, POINTS_PLAYER) = (ActorValue)NULLPLAY;
 }
 
 static void tick(GameActor* actor) {
-	++VAL(actor, VAL_POINTS_TIME);
-	const ActorValue time = VAL(actor, VAL_POINTS_TIME);
+	++VAL(actor, POINTS_TIME);
+	const ActorValue time = VAL(actor, POINTS_TIME);
 	if (time < 35L)
 		move_actor(actor, POS_ADD(actor, FxZero, -FxOne));
 
-	const ActorValue pts = VAL(actor, VAL_POINTS);
+	const ActorValue pts = VAL(actor, POINTS);
 	if ((pts >= 10000L && time >= 300L) || (pts >= 1000L && time >= 200L) || (pts < 1000L && time >= 100L))
 		FLAG_ON(actor, FLG_DESTROY);
 }
 
 static void draw(const GameActor* actor) {
 	// !!! CLIENT-SIDE !!!
-	if (viewplayer() != VAL(actor, VAL_POINTS_PLAYER))
+	if (viewplayer() != VAL(actor, POINTS_PLAYER))
 		return;
 	// !!! CLIENT-SIDE !!!
 
 	const char* tex;
-	switch (VAL(actor, VAL_POINTS)) {
+	switch (VAL(actor, POINTS)) {
 	default:
 	case 100L:
 		tex = "ui/points/100";
@@ -103,7 +103,7 @@ static void draw(const GameActor* actor) {
 }
 
 static PlayerID owner(const GameActor* actor) {
-	return (PlayerID)VAL(actor, VAL_POINTS_PLAYER);
+	return (PlayerID)VAL(actor, POINTS_PLAYER);
 }
 
 const GameActorTable TAB_POINTS = {.load = load, .create = create, .tick = tick, .draw = draw, .owner = owner};

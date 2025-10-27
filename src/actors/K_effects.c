@@ -16,14 +16,14 @@ static void load_explode() {
 }
 
 static void tick_explode(GameActor* actor) {
-	VAL(actor, VAL_EXPLODE_FRAME) += 24L;
-	if (VAL(actor, VAL_EXPLODE_FRAME) >= 300L)
+	VAL(actor, EXPLODE_FRAME) += 24L;
+	if (VAL(actor, EXPLODE_FRAME) >= 300L)
 		FLAG_ON(actor, FLG_DESTROY);
 }
 
 static void draw_explode(const GameActor* actor) {
 	const char* tex;
-	switch (VAL(actor, VAL_EXPLODE_FRAME) / 100L) {
+	switch (VAL(actor, EXPLODE_FRAME) / 100L) {
 	default:
 		tex = "effects/explode";
 		break;
@@ -59,14 +59,14 @@ static void tick_shard(GameActor* actor) {
 		return;
 	}
 
-	VAL(actor, VAL_BRICK_SHARD_ANGLE) += 28824L;
-	VAL(actor, VAL_Y_SPEED) += 26214L;
+	VAL(actor, BRICK_SHARD_ANGLE) += 28824L;
+	VAL(actor, Y_SPEED) += 26214L;
 	move_actor(actor, POS_SPEED(actor));
 }
 
 static void draw_shard(const GameActor* actor) {
 	draw_actor(actor, ANY_FLAG(actor, FLG_BLOCK_GRAY) ? "effects/shard_gray" : "effects/shard",
-		FtFloat(VAL(actor, VAL_BRICK_SHARD_ANGLE)), WHITE);
+		FtFloat(VAL(actor, BRICK_SHARD_ANGLE)), WHITE);
 }
 
 const GameActorTable TAB_BRICK_SHARD

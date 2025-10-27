@@ -25,7 +25,7 @@ static void create_mark(GameActor* actor) {
 }
 
 static void collide_mark(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER || VAL(from, VAL_PLAYER_GROUND) <= 0L || game_state.sequence.type == SEQ_WIN)
+	if (from->type != ACT_PLAYER || VAL(from, PLAYER_GROUND) <= 0L || game_state.sequence.type == SEQ_WIN)
 		return;
 	give_points(from, get_owner(from), 100L);
 	win_player(from);
@@ -52,17 +52,17 @@ static void create_bar(GameActor* actor) {
 
 static void tick_bar(GameActor* actor) {
 	if (!ANY_FLAG(actor, FLG_GOAL_START)) {
-		VAL(actor, VAL_GOAL_Y) = actor->pos.y;
-		VAL(actor, VAL_Y_SPEED) = FfInt(3L);
+		VAL(actor, GOAL_Y) = actor->pos.y;
+		VAL(actor, Y_SPEED) = FfInt(3L);
 		FLAG_ON(actor, FLG_GOAL_START);
 	}
 
 	if (game_state.sequence.type == SEQ_WIN)
-		VAL(actor, VAL_Y_SPEED) = FxZero;
+		VAL(actor, Y_SPEED) = FxZero;
 
-	if ((VAL(actor, VAL_Y_SPEED) > FxZero && actor->pos.y >= (VAL(actor, VAL_GOAL_Y) + FfInt(220L)))
-		|| (VAL(actor, VAL_Y_SPEED) < FxZero && actor->pos.y <= VAL(actor, VAL_GOAL_Y)))
-		VAL(actor, VAL_Y_SPEED) = -VAL(actor, VAL_Y_SPEED);
+	if ((VAL(actor, Y_SPEED) > FxZero && actor->pos.y >= (VAL(actor, GOAL_Y) + FfInt(220L)))
+		|| (VAL(actor, Y_SPEED) < FxZero && actor->pos.y <= VAL(actor, GOAL_Y)))
+		VAL(actor, Y_SPEED) = -VAL(actor, Y_SPEED);
 	move_actor(actor, POS_SPEED(actor));
 }
 
@@ -75,7 +75,7 @@ static void collide_bar(GameActor* actor, GameActor* from) {
 		return;
 
 	int32_t points;
-	const fixed gy = VAL(actor, VAL_GOAL_Y);
+	const fixed gy = VAL(actor, GOAL_Y);
 	if (actor->pos.y < (gy + FfInt(30L)))
 		points = 10000L;
 	else if (actor->pos.y < (gy + FfInt(60L)))
@@ -94,7 +94,7 @@ static void collide_bar(GameActor* actor, GameActor* from) {
 	GameActor* bar = create_actor(ACT_GOAL_BAR_FLY, POS_ADD(actor, FfInt(-2L), FfInt(7L)));
 	if (bar != NULL) {
 		const fixed dir = 154416L + (-12868L + Fmul(FfInt(rng(3L)), 12868L));
-		VAL(bar, VAL_X_SPEED) = Fmul(327680L, Fcos(dir)), VAL(bar, VAL_Y_SPEED) = Fmul(327680L, -Fsin(dir));
+		VAL(bar, X_SPEED) = Fmul(327680L, Fcos(dir)), VAL(bar, Y_SPEED) = Fmul(327680L, -Fsin(dir));
 		FLAG_ON(actor, FLG_DESTROY);
 	}
 }
@@ -121,13 +121,13 @@ static void tick_fly(GameActor* actor) {
 		return;
 	}
 
-	VAL(actor, VAL_GOAL_ANGLE) += 25736L;
-	VAL(actor, VAL_Y_SPEED) += 13107L;
+	VAL(actor, GOAL_ANGLE) += 25736L;
+	VAL(actor, Y_SPEED) += 13107L;
 	move_actor(actor, POS_SPEED(actor));
 }
 
 static void draw_fly(const GameActor* actor) {
-	draw_actor(actor, "markers/goal_bar2", FtFloat(VAL(actor, VAL_GOAL_ANGLE)), WHITE);
+	draw_actor(actor, "markers/goal_bar2", FtFloat(VAL(actor, GOAL_ANGLE)), WHITE);
 }
 
 const GameActorTable TAB_GOAL_BAR_FLY = {.load = load_fly, .create = create_fly, .tick = tick_fly, .draw = draw_fly};

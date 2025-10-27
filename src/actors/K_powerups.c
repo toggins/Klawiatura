@@ -15,10 +15,10 @@ static void collide_powerup(GameActor* actor, GameActor* from, PlayerPower power
 		return;
 
 	if (player->power == POW_SMALL && !ANY_FLAG(actor, FLG_POWERUP_FULL)) {
-		VAL(from, VAL_PLAYER_POWER) = 3000L;
+		VAL(from, PLAYER_POWER) = 3000L;
 		player->power = POW_BIG;
 	} else if (player->power != POW_FIRE) {
-		VAL(from, VAL_PLAYER_POWER) = 4000L;
+		VAL(from, PLAYER_POWER) = 4000L;
 		player->power = POW_FIRE;
 	}
 	give_points(actor, player, 1000L);
@@ -54,10 +54,10 @@ static void tick_mushroom(GameActor* actor) {
 		return;
 	}
 
-	VAL(actor, VAL_Y_SPEED) += 19005L;
+	VAL(actor, Y_SPEED) += 19005L;
 	displace_actor(actor, FfInt(10L), false);
-	if (VAL(actor, VAL_X_TOUCH) != 0L)
-		VAL(actor, VAL_X_SPEED) = VAL(actor, VAL_X_TOUCH) * FfInt(-2L);
+	if (VAL(actor, X_TOUCH) != 0L)
+		VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * FfInt(-2L);
 }
 
 static void draw_mushroom(const GameActor* actor) {
@@ -73,7 +73,7 @@ static void collide_mushroom(GameActor* actor, GameActor* from) {
 		return;
 
 	if (player->power == POW_SMALL) {
-		VAL(from, VAL_PLAYER_POWER) = 3000L;
+		VAL(from, PLAYER_POWER) = 3000L;
 		player->power = POW_BIG;
 	}
 	give_points(actor, player, 1000L);
@@ -129,7 +129,7 @@ static void load_poison_mushroom() {
 
 static void create_poison_mushroom(GameActor* actor) {
 	create_mushroom(actor);
-	VAL(actor, VAL_X_SPEED) = FfInt(2L);
+	VAL(actor, X_SPEED) = FfInt(2L);
 }
 
 static void draw_poison_mushroom(const GameActor* actor) {
@@ -140,7 +140,7 @@ static void draw_poison_mushroom(const GameActor* actor) {
 }
 
 static void collide_poison_mushroom(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER || VAL(from, VAL_PLAYER_STARMAN) > 0L)
+	if (from->type != ACT_PLAYER || VAL(from, PLAYER_STARMAN) > 0L)
 		return;
 
 	kill_player(from);
@@ -234,12 +234,12 @@ static void tick_starman(GameActor* actor) {
 		return;
 	}
 
-	VAL(actor, VAL_Y_SPEED) += 13107L;
+	VAL(actor, Y_SPEED) += 13107L;
 	displace_actor(actor, FfInt(10L), false);
-	if (VAL(actor, VAL_X_TOUCH) != 0L)
-		VAL(actor, VAL_X_SPEED) = VAL(actor, VAL_X_TOUCH) * -163840L;
-	if (VAL(actor, VAL_Y_TOUCH) > 0L)
-		VAL(actor, VAL_Y_SPEED) = FfInt(-5L);
+	if (VAL(actor, X_TOUCH) != 0L)
+		VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * -163840L;
+	if (VAL(actor, Y_TOUCH) > 0L)
+		VAL(actor, Y_SPEED) = FfInt(-5L);
 }
 
 static void draw_starman(const GameActor* actor) {
@@ -266,11 +266,11 @@ static void collide_starman(GameActor* actor, GameActor* from) {
 		return;
 
 	// !!! CLIENT-SIDE !!!
-	if (localplayer() == VAL(from, VAL_PLAYER_INDEX))
+	if (localplayer() == VAL(from, PLAYER_INDEX))
 		play_state_track(TS_POWER, "starman", true);
 	// !!! CLIENT-SIDE !!!
 
-	VAL(from, VAL_PLAYER_STARMAN) = 500L;
+	VAL(from, PLAYER_STARMAN) = 500L;
 	play_actor_sound(from, "grow");
 	FLAG_ON(actor, FLG_DESTROY);
 }

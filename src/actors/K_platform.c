@@ -34,7 +34,7 @@ static void load() {
 
 static void tick(GameActor* actor) {
 	if (!ANY_FLAG(actor, FLG_PLATFORM_START)) {
-		switch (VAL(actor, VAL_PLATFORM_TYPE)) {
+		switch (VAL(actor, PLATFORM_TYPE)) {
 		default: {
 			actor->box.start.x = actor->box.start.y = FxZero;
 			actor->box.end.x = FfInt(95);
@@ -78,18 +78,17 @@ static void tick(GameActor* actor) {
 		}
 		}
 
-		VAL(actor, VAL_PLATFORM_X) = actor->pos.x, VAL(actor, VAL_PLATFORM_Y) = actor->pos.y;
-		VAL(actor, VAL_PLATFORM_X_SPEED) = VAL(actor, VAL_X_SPEED),
-			   VAL(actor, VAL_PLATFORM_Y_SPEED) = VAL(actor, VAL_Y_SPEED);
-		VAL(actor, VAL_PLATFORM_FLAGS) = (ActorValue)actor->flags;
+		VAL(actor, PLATFORM_X) = actor->pos.x, VAL(actor, PLATFORM_Y) = actor->pos.y;
+		VAL(actor, PLATFORM_X_SPEED) = VAL(actor, X_SPEED), VAL(actor, PLATFORM_Y_SPEED) = VAL(actor, Y_SPEED);
+		VAL(actor, PLATFORM_FLAGS) = (ActorValue)actor->flags;
 		FLAG_ON(actor, FLG_PLATFORM_START);
 	}
 
 	if (ANY_FLAG(actor, FLG_PLATFORM_WRAP) && !ANY_FLAG(actor, FLG_PLATFORM_FALLING)) {
-		if (VAL(actor, VAL_Y_SPEED) > FxZero && actor->pos.y > (game_state.size.y + FfInt(10L))) {
+		if (VAL(actor, Y_SPEED) > FxZero && actor->pos.y > (game_state.size.y + FfInt(10L))) {
 			move_actor(actor, (fvec2){actor->pos.x, FfInt(-10L)});
 			skip_interp(actor);
-		} else if (VAL(actor, VAL_Y_SPEED) < FxZero && actor->pos.y < FfInt(-10L)) {
+		} else if (VAL(actor, Y_SPEED) < FxZero && actor->pos.y < FfInt(-10L)) {
 			move_actor(actor, (fvec2){actor->pos.x, game_state.size.y + FfInt(10L)});
 			skip_interp(actor);
 		}
@@ -99,29 +98,29 @@ static void tick(GameActor* actor) {
 		if (!ANY_FLAG(actor, FLG_PLATFORM_WRAP) && (game_state.flags & GF_SINGLE)) {
 			FLAG_ON(actor, FLG_DESTROY);
 			return;
-		} else if (++VAL(actor, VAL_PLATFORM_RESPAWN) >= 150L) {
-			move_actor(actor, (fvec2){VAL(actor, VAL_PLATFORM_X), VAL(actor, VAL_PLATFORM_Y)});
+		} else if (++VAL(actor, PLATFORM_RESPAWN) >= 150L) {
+			move_actor(actor, (fvec2){VAL(actor, PLATFORM_X), VAL(actor, PLATFORM_Y)});
 			skip_interp(actor);
 
-			VAL(actor, VAL_X_SPEED) = VAL(actor, VAL_PLATFORM_X_SPEED),
-				   VAL(actor, VAL_Y_SPEED) = VAL(actor, VAL_PLATFORM_Y_SPEED);
-			actor->flags = (ActorFlag)VAL(actor, VAL_PLATFORM_FLAGS);
-			VAL(actor, VAL_PLATFORM_RESPAWN) = 0L;
+			VAL(actor, X_SPEED) = VAL(actor, PLATFORM_X_SPEED),
+				   VAL(actor, Y_SPEED) = VAL(actor, PLATFORM_Y_SPEED);
+			actor->flags = (ActorFlag)VAL(actor, PLATFORM_FLAGS);
+			VAL(actor, PLATFORM_RESPAWN) = 0L;
 		}
 	}
 
-	if (VAL(actor, VAL_PLATFORM_TYPE) == PLAT_CLOUD)
-		VAL(actor, VAL_PLATFORM_TYPE) += 8L;
+	if (VAL(actor, PLATFORM_TYPE) == PLAT_CLOUD)
+		VAL(actor, PLATFORM_TYPE) += 8L;
 
 	if (ANY_FLAG(actor, FLG_PLATFORM_FALLING))
-		VAL(actor, VAL_Y_SPEED) += 13107L;
+		VAL(actor, Y_SPEED) += 13107L;
 	move_actor(actor, POS_SPEED(actor));
 	collide_actor(actor);
 }
 
 static void draw(const GameActor* actor) {
 	const char* tex;
-	switch (VAL(actor, VAL_PLATFORM_TYPE)) {
+	switch (VAL(actor, PLATFORM_TYPE)) {
 	default:
 		tex = "markers/platform/big";
 		break;
@@ -131,7 +130,7 @@ static void draw(const GameActor* actor) {
 		break;
 
 	case PLAT_CLOUD: {
-		switch ((VAL(actor, VAL_PLATFORM_FRAME) / 100L) % 4L) {
+		switch ((VAL(actor, PLATFORM_FRAME) / 100L) % 4L) {
 		default:
 			tex = "markers/platform/cloud";
 			break;
@@ -168,7 +167,7 @@ static void on_top(GameActor* actor, GameActor* from) {
 	if (from->type != ACT_PLAYER)
 		return;
 
-	VAL(from, VAL_PLAYER_PLATFORM) = actor->id;
+	VAL(from, PLAYER_PLATFORM) = actor->id;
 	if (ANY_FLAG(actor, FLG_PLATFORM_FALL))
 		FLAG_ON(actor, FLG_PLATFORM_FALLING);
 }
@@ -189,13 +188,13 @@ static void collide_turn(GameActor* actor, GameActor* from) {
 		return;
 
 	if (ANY_FLAG(actor, FLG_PLATFORM_ADD)) {
-		VAL(from, VAL_X_SPEED) += VAL(actor, VAL_X_SPEED);
+		VAL(from, X_SPEED) += VAL(actor, X_SPEED);
 		if (!ANY_FLAG(actor, FLG_PLATFORM_FALLING))
-			VAL(from, VAL_Y_SPEED) += VAL(actor, VAL_Y_SPEED);
+			VAL(from, Y_SPEED) += VAL(actor, Y_SPEED);
 	} else {
-		VAL(from, VAL_X_SPEED) = VAL(actor, VAL_X_SPEED);
+		VAL(from, X_SPEED) = VAL(actor, X_SPEED);
 		if (!ANY_FLAG(actor, FLG_PLATFORM_FALLING))
-			VAL(from, VAL_Y_SPEED) = VAL(actor, VAL_Y_SPEED);
+			VAL(from, Y_SPEED) = VAL(actor, Y_SPEED);
 	}
 	from->flags = (actor->flags & ~FLG_PLATFORM_ADD) | (from->flags & FLG_PLATFORM_FALLING);
 }

@@ -38,13 +38,13 @@ static void load_right_wheel(GameActor* actor) {
 
 static void tick_wheel(GameActor* actor) {
 	GameActor* autoscroll = get_actor(game_state.autoscroll);
-	if (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS) && VAL(autoscroll, VAL_X_SPEED) != FxZero)
-		VAL(actor, VAL_WHEEL_FRAME) += (autoscroll->values[VAL_X_SPEED] > FxZero) ? FxHalf : -FxHalf;
+	if (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS) && VAL(autoscroll, X_SPEED) != FxZero)
+		VAL(actor, WHEEL_FRAME) += (autoscroll->values[VAL_X_SPEED] > FxZero) ? FxHalf : -FxHalf;
 }
 
 static void draw_left_wheel(const GameActor* actor) {
 	const char* tex;
-	switch (FtInt(VAL(actor, VAL_WHEEL_FRAME)) % 3L) {
+	switch (FtInt(VAL(actor, WHEEL_FRAME)) % 3L) {
 	default:
 		tex = "tiles/wheel_l";
 		break;
@@ -60,7 +60,7 @@ static void draw_left_wheel(const GameActor* actor) {
 
 static void draw_wheel(const GameActor* actor) {
 	const char* tex;
-	switch (FtInt(VAL(actor, VAL_WHEEL_FRAME)) % 4L) {
+	switch (FtInt(VAL(actor, WHEEL_FRAME)) % 4L) {
 	default:
 		tex = "tiles/wheel";
 		break;
@@ -79,7 +79,7 @@ static void draw_wheel(const GameActor* actor) {
 
 static void draw_right_wheel(const GameActor* actor) {
 	const char* tex;
-	switch (FtInt(VAL(actor, VAL_WHEEL_FRAME)) % 3L) {
+	switch (FtInt(VAL(actor, WHEEL_FRAME)) % 3L) {
 	default:
 		tex = "tiles/wheel_r";
 		break;

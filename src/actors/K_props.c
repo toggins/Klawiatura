@@ -5,7 +5,7 @@ enum {
 };
 
 static void create(GameActor* actor) {
-	VAL(actor, VAL_PROP_FRAME) = rng(100L);
+	VAL(actor, PROP_FRAME) = rng(100L);
 }
 
 // =====
@@ -20,7 +20,7 @@ static void load_cloud() {
 
 static void draw_cloud(const GameActor* actor) {
 	const char* tex;
-	switch (((int)((float)game_state.time / 12.5f) + VAL(actor, VAL_PROP_FRAME)) % 4L) {
+	switch (((int)((float)game_state.time / 12.5f) + VAL(actor, PROP_FRAME)) % 4L) {
 	default:
 		tex = "props/cloud";
 		break;
@@ -49,7 +49,7 @@ static void load_bush() {
 
 static void draw_bush(const GameActor* actor) {
 	const char* tex;
-	switch (((int)((float)game_state.time / 7.142857142857143f) + VAL(actor, VAL_PROP_FRAME)) % 4L) {
+	switch (((int)((float)game_state.time / 7.142857142857143f) + VAL(actor, PROP_FRAME)) % 4L) {
 	default:
 		tex = "props/bush";
 		break;
