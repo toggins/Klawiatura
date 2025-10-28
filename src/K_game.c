@@ -86,9 +86,12 @@ static void send_chat_message() {
 }
 
 void push_chat_message(const int from, const char* text) {
-	SDL_memmove(&chat_hist[1], &chat_hist, sizeof(chat_hist) - sizeof(*chat_hist));
+	for (int i = MAX_CHATS - 1; i >= 1; i--)
+		SDL_memcpy(&chat_hist[i], &chat_hist[i - 1], sizeof(*chat_hist));
 
 	const char* line = fmt("%s: %s", get_peer_name(from), text);
+	INFO("%s", line);
+
 	SDL_strlcpy(chat_hist[0].text, line, sizeof(chat_message));
 	chat_hist[0].lifetime = 6 * TICKRATE;
 	play_generic_sound("chat");
@@ -103,7 +106,8 @@ static void update_chat_hist() {
 			if (i >= (MAX_CHATS - 1))
 				SDL_memset(&chat_hist[i], 0, sizeof(*chat_hist));
 			else {
-				SDL_memmove(&chat_hist[i], &chat_hist[i + 1], (MAX_CHATS - i) * sizeof(*chat_hist));
+				for (int j = i; j < MAX_CHATS - 1; j++)
+					SDL_memcpy(&chat_hist[j], &chat_hist[j + 1], sizeof(*chat_hist));
 				SDL_memset(&chat_hist[MAX_CHATS - 1], 0, sizeof(*chat_hist));
 			}
 		}
