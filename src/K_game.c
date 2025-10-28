@@ -267,8 +267,8 @@ bool update_game() {
 					   "Tick: %i\n"
 					   "Local Checksum: %u\n"
 					   "Remote Checksum: %u",
-					desync.remote_handle + 1, desync.frame, desync.local_checksum,
-					desync.remote_checksum);
+					"\n\nGame state has been dumped to console.", desync.remote_handle + 1,
+					desync.frame, desync.local_checksum, desync.remote_checksum);
 				goto byebye_game;
 			}
 
@@ -712,7 +712,91 @@ uint32_t check_game_state() {
 	return checksum;
 }
 
-void dump_game_state() {}
+void dump_game_state() {
+	INFO("====================");
+	INFO("Flags: %u", game_state.flags);
+	INFO("");
+	INFO("[SEQUENCE]");
+	INFO("	Type: %u", game_state.sequence.type);
+	INFO("	Activator: %i", game_state.sequence.activator);
+	INFO("	Time: %u", game_state.sequence.time);
+	INFO("");
+	INFO("[PLAYERS]");
+	for (PlayerID i = 0; i < num_players; i++) {
+		const GamePlayer* player = &game_state.players[i];
+		INFO("	Player %i:", i + 1);
+		INFO("		ID: %i", player->id);
+		INFO("		Input: %u -> %u", player->last_input, player->input);
+		INFO("		Lives: %i", player->lives);
+		INFO("		Coins: %u", player->coins);
+		INFO("		Power: %u", player->power);
+		INFO("		Actor: %i (%p)", player->actor, get_actor(player->actor));
+		INFO("		Missiles:");
+		for (ActorID j = 0; j < MAX_MISSILES; j++)
+			INFO("			%i (%p)", player->missiles[j], get_actor(player->missiles[j]));
+		INFO("		Sinking Missiles:");
+		for (ActorID j = 0; j < MAX_SINK; j++)
+			INFO("			%i (%p)", player->sink[j], get_actor(player->sink[j]));
+		INFO("		Position: (%.2f, %.2f)", FtFloat(player->pos.x), FtFloat(player->pos.y));
+		INFO("		Bounds: (%.2f, %.2f, %.2f, %.2f)", FtFloat(player->bounds.start.x),
+			FtFloat(player->bounds.start.y), FtFloat(player->bounds.end.x), FtFloat(player->bounds.end.y));
+		INFO("		Score: %u", player->score);
+		INFO("		Kevin:");
+		INFO("			Delay: %i", player->kevin.delay);
+		INFO("			Actor: %i (%p)", player->kevin.actor, get_actor(player->kevin.actor));
+		INFO("			Start: (%.2f, %.2f)", FtFloat(player->kevin.start.x),
+			FtFloat(player->kevin.start.y));
+		INFO("			(Frames...)");
+		INFO("");
+	}
+	INFO("");
+	INFO("Spawn: %i (%p)", game_state.spawn, get_actor(game_state.spawn));
+	INFO("Checkpoint: %i (%p)", game_state.checkpoint, get_actor(game_state.checkpoint));
+	INFO("Autoscroll: %i (%p)", game_state.autoscroll, get_actor(game_state.autoscroll));
+	INFO("P-Switch: %u", game_state.pswitch);
+	INFO("Size: (%.2f, %.2f)", FtFloat(game_state.size.x), FtFloat(game_state.size.y));
+	INFO("Bounds: (%.2f, %.2f, %.2f, %.2f)", FtFloat(game_state.bounds.start.x), FtFloat(game_state.bounds.start.y),
+		FtFloat(game_state.bounds.end.x), FtFloat(game_state.bounds.end.y));
+	INFO("Water Y: %.2f", FtFloat(game_state.water));
+	INFO("Hazard Y: %.2f", FtFloat(game_state.hazard));
+	INFO("Clock: %i", game_state.clock);
+	INFO("Seed: %i", game_state.seed);
+	INFO("Tick: %zu", game_state.time);
+	INFO("");
+	INFO("[ACTORS]");
+	INFO("	Latest Actor: %i (%p)", game_state.live_actors, get_actor(game_state.live_actors));
+	INFO("	Next Actor ID: %i", game_state.next_actor);
+	INFO("");
+	for (const GameActor* actor = get_actor(game_state.live_actors); actor != NULL;
+		actor = get_actor(actor->previous))
+	{
+		INFO("	Actor %i:", actor->id);
+		INFO("		Type: %i", actor->type);
+		INFO("		Previous Actor: %i (%p)", actor->previous, get_actor(actor->previous));
+		INFO("		Next Actor: %i (%p)", actor->next, get_actor(actor->next));
+		INFO("		Previous Neighbor: %i (%p)", actor->previous_cell, get_actor(actor->previous_cell));
+		INFO("		Next Neighbor: %i (%p)", actor->next_cell, get_actor(actor->next_cell));
+		INFO("		Cell: %i", actor->cell);
+		INFO("		Position: (%.2f, %.2f)", FtFloat(actor->pos.x), FtFloat(actor->pos.y));
+		INFO("		Box: (%.2f, %.2f, %.2f, %.2f)", FtFloat(actor->box.start.x),
+			FtFloat(actor->box.start.y), FtFloat(actor->box.end.x), FtFloat(actor->box.end.y));
+		INFO("		Depth: %.2f", FtFloat(actor->depth));
+		INFO("		Flags: %u", actor->flags);
+		INFO("		Non-Zero Values:");
+		for (ActorValue i = 0; i < MAX_VALUES; i++)
+			if (actor->values[i] != 0L)
+				INFO("			%u: %i", i, actor->values[i]);
+		INFO("");
+	}
+	INFO("");
+	INFO("	(Grid...)");
+	INFO("");
+	INFO("[STRINGS]");
+	INFO("	World: %s", game_state.world);
+	INFO("	Level: %s", game_state.level);
+	INFO("	Next Level: %s", game_state.next);
+	INFO("====================");
+}
 
 void nuke_game_state() {
 	clear_tilemaps();
