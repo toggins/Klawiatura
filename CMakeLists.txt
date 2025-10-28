@@ -90,7 +90,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 FetchContent_Declare(
     GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG 9460fc61d0570ce02b8118b4e9c356aa79a5ba56)
+    GIT_TAG 70eafbc0b2e9d46316582d65054fd857b8144a26)
 
 # FMOD Core API (2.03.08)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
