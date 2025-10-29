@@ -474,7 +474,11 @@ static void draw_hud() {
 	batch_string("hud", 16, fmt("%u", player->coins));
 
 	batch_cursor(XYZ(432.f, 16.f, -10000.f));
-	batch_sprite(video_state.world, NO_FLIP);
+	if (video_state.world[0] == '@') {
+		batch_align(FA_CENTER, FA_TOP);
+		batch_string("main", 24, video_state.world + 1);
+	} else
+		batch_sprite(video_state.world, NO_FLIP);
 
 	if (game_state.clock >= 0L) {
 		GLfloat scale;
