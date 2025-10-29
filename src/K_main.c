@@ -83,12 +83,8 @@ static int realmain() {
 	extern void populate_actors_table();
 	populate_actors_table();
 
-	file_init(data_path);
-	video_init(force_shader);
-	audio_init();
-	input_init();
-	config_init(config_path);
-	net_init();
+	file_init(data_path), video_init(force_shader), audio_init();
+	input_init(), config_init(config_path), net_init();
 
 	if (quickstart) {
 		GameContext ctx;
@@ -135,13 +131,8 @@ static int realmain() {
 	}
 
 teardown:
-	nuke_game();
-	net_teardown();
-	config_teardown();
-	input_teardown();
-	audio_teardown();
-	video_teardown();
-	file_teardown();
+	nuke_game(), net_teardown(), config_teardown(), input_teardown();
+	audio_teardown(), video_teardown(), file_teardown();
 	SDL_Quit();
 
 	return EXIT_SUCCESS;
@@ -152,8 +143,7 @@ static void cmd_ip() {
 }
 
 static void cmd_level() {
-	SDL_strlcpy(CLIENT.game.level, next_arg(), sizeof(CLIENT.game.level));
-	quickstart = true;
+	SDL_strlcpy(CLIENT.game.level, next_arg(), sizeof(CLIENT.game.level)), quickstart = true;
 }
 
 static void cmd_kevin() {
