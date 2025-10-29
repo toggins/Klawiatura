@@ -474,7 +474,7 @@ static void draw_hud() {
 	batch_string("hud", 16, fmt("%u", player->coins));
 
 	batch_cursor(XYZ(432.f, 16.f, -10000.f));
-	batch_sprite(game_state.world, NO_FLIP);
+	batch_sprite(video_state.world, NO_FLIP);
 
 	if (game_state.clock >= 0L) {
 		GLfloat scale;
@@ -792,7 +792,6 @@ void dump_game_state() {
 	INFO("	(Grid...)");
 	INFO("");
 	INFO("[STRINGS]");
-	INFO("	World: %s", game_state.world);
 	INFO("	Level: %s", game_state.level);
 	INFO("	Next Level: %s", game_state.next);
 	INFO("====================");
@@ -924,8 +923,8 @@ void start_game_state(GameContext* ctx) {
 	INFO("Level: %s (%s)", ctx->level, level_name);
 	buf += 32;
 
-	read_string((const char**)(&buf), game_state.world, sizeof(game_state.world));
-	load_texture(game_state.world);
+	read_string((const char**)(&buf), video_state.world, sizeof(video_state.world));
+	load_texture(video_state.world);
 
 	read_string((const char**)(&buf), game_state.next, sizeof(game_state.next));
 
@@ -1160,6 +1159,7 @@ GameActor* respawn_player(GamePlayer* player) {
 	if (pawn != NULL) {
 		VAL(pawn, PLAYER_INDEX) = (ActorValue)player->id;
 		player->actor = pawn->id;
+		set_view_player(player);
 	}
 	return pawn;
 }

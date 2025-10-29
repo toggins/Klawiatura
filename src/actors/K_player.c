@@ -484,7 +484,6 @@ void win_player(GameActor* actor) {
 	game_state.sequence.type = SEQ_WIN;
 	game_state.sequence.time = 1L;
 	game_state.sequence.activator = player->id;
-	set_view_player(player);
 
 	for (PlayerID i = 0L; i < numplayers(); i++) {
 		GamePlayer* p = get_player(i);
@@ -520,6 +519,8 @@ void win_player(GameActor* actor) {
 
 	game_state.pswitch = 0L;
 	VAL(actor, PLAYER_FLASH) = VAL(actor, PLAYER_STARMAN) = 0L;
+	set_view_player(player);
+
 	for (TrackSlots i = 0L; i < (TrackSlots)TS_SIZE; i++)
 		stop_state_track(i);
 	play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? "win2" : "win", false);

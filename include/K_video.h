@@ -120,7 +120,11 @@ typedef struct {
 	float lerp_time[2];
 } VideoCamera;
 
+// FIXME: Can't include `K_game.h` or errors
+#define GAME_STRING_MAX 256L
+
 typedef struct {
+	char world[GAME_STRING_MAX];
 	float quake, hurry;
 	VideoCamera camera;
 } VideoState;
