@@ -495,6 +495,7 @@ void displace_actor(GameActor*, fixed, Bool);
 
 void draw_actor(const GameActor*, const char*, GLfloat, const GLubyte[4]);
 void draw_dead(const GameActor*);
+void quake_at_actor(const GameActor*, float);
 
 void play_actor_sound(const GameActor*, const char*);
 

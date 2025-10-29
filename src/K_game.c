@@ -1703,7 +1703,7 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 	move_actor(actor, (fvec2){x, y});
 }
 
-// Generic interpolated (not yet) actor drawing function.
+/// Generic interpolated (not yet) actor drawing function.
 //
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
@@ -1721,7 +1721,12 @@ void draw_dead(const GameActor* actor) {
 		ACTORS[type]->draw_dead(actor);
 }
 
-// Convenience function for playing a sound at an actor's position.
+/// Convenience function for quaking at an actor's position.
+void quake_at_actor(const GameActor* actor, float intensity) {
+	// FIXME: Implement screen shake.
+}
+
+/// Convenience function for playing a sound at an actor's position.
 void play_actor_sound(const GameActor* actor, const char* name) {
 	play_state_sound_at(name, (float[2]){FtFloat(actor->pos.x), FtFloat(actor->pos.y)});
 }

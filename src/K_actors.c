@@ -53,4 +53,5 @@ void populate_actors_table() {
 	ACTOR(DEAD);
 	ACTOR(PIRANHA_PLANT);
 	ACTOR(PIRANHA_FIRE);
+	ACTOR(THWOMP);
 }

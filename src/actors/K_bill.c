@@ -70,10 +70,9 @@ static void collide(GameActor* actor, GameActor* from) {
 		break;
 	}
 
-	case ACT_MISSILE_FIREBALL: {
+	case ACT_MISSILE_FIREBALL:
 		block_fireball(from);
 		break;
-	}
 	}
 }
 

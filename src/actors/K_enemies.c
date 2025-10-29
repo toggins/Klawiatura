@@ -39,7 +39,7 @@ GameActor* kill_enemy(GameActor* actor, Bool kick) {
 		return NULL;
 
 	VAL(dead, DEAD_TYPE) = actor->type;
-	FLAG_ON(dead, actor->flags & FLG_X_FLIP);
+	FLAG_ON(dead, (actor->flags & FLG_X_FLIP) | FLG_Y_FLIP);
 
 	switch (actor->type) {
 	default:
