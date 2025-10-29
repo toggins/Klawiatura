@@ -17,9 +17,9 @@ static void collide_powerup(GameActor* actor, GameActor* from, PlayerPower power
 	if (player->power == POW_SMALL && !ANY_FLAG(actor, FLG_POWERUP_FULL)) {
 		VAL(from, PLAYER_POWER) = 3000L;
 		player->power = POW_BIG;
-	} else if (player->power != POW_FIRE) {
+	} else if (player->power != power) {
 		VAL(from, PLAYER_POWER) = 4000L;
-		player->power = POW_FIRE;
+		player->power = power;
 	}
 	give_points(actor, player, 1000L);
 
@@ -203,6 +203,195 @@ static void collide_flower(GameActor* actor, GameActor* from) {
 
 const GameActorTable TAB_FIRE_FLOWER
 	= {.load = load_flower, .create = create_flower, .draw = draw_flower, .collide = collide_flower};
+
+// ========
+// BEETROOT
+// ========
+
+static void load_beetroot() {
+	load_texture("items/beetroot");
+	load_texture("items/beetroot2");
+	load_texture("items/beetroot3");
+
+	load_sound("grow");
+
+	load_actor(ACT_POINTS);
+}
+
+static void create_beetroot(GameActor* actor) {
+	actor->box.start.x = FfInt(-13L);
+	actor->box.start.y = FfInt(-32L);
+	actor->box.end.x = FfInt(14L);
+	actor->depth = FxOne;
+
+	FLAG_ON(actor, FLG_POWERUP_FULL);
+}
+
+static void draw_beetroot(const GameActor* actor) {
+	const char* tex;
+	switch ((int)((float)game_state.time / 12.5f) % 4L) {
+	default:
+		tex = "items/beetroot";
+		break;
+	case 1L:
+	case 3L:
+		tex = "items/beetroot2";
+		break;
+	case 2L:
+		tex = "items/beetroot3";
+		break;
+	}
+
+	draw_actor(actor, tex, 0.f, WHITE);
+}
+
+static void collide_beetroot(GameActor* actor, GameActor* from) {
+	collide_powerup(actor, from, POW_BEETROOT);
+}
+
+const GameActorTable TAB_BEETROOT
+	= {.load = load_beetroot, .create = create_beetroot, .draw = draw_beetroot, .collide = collide_beetroot};
+
+// =========
+// GREEN LUI
+// =========
+
+static void load_lui() {
+	load_texture("items/lui");
+	load_texture("items/lui2");
+	load_texture("items/lui3");
+	load_texture("items/lui4");
+	load_texture("items/lui5");
+	load_texture("items/lui_bounce");
+	load_texture("items/lui_bounce2");
+	load_texture("items/lui_bounce3");
+
+	load_sound("kick");
+	load_sound("grow");
+
+	load_actor(ACT_POINTS);
+}
+
+static void create_lui(GameActor* actor) {
+	actor->box.start.x = FfInt(-15L);
+	actor->box.start.y = FfInt(-30L);
+	actor->box.end.x = FfInt(15L);
+	actor->depth = FxOne;
+
+	FLAG_ON(actor, FLG_POWERUP_FULL);
+}
+
+static void tick_lui(GameActor* actor) {
+	if (VAL(actor, LUI_BOUNCE) > 0L) {
+		VAL(actor, LUI_BOUNCE) += 62L;
+		if (VAL(actor, LUI_BOUNCE) >= 600L)
+			VAL(actor, LUI_BOUNCE) = 0L;
+	}
+
+	VAL(actor, Y_SPEED) += 13107L;
+	displace_actor(actor, FxZero, false);
+	if (VAL(actor, Y_TOUCH) > 0L) {
+		VAL(actor, Y_SPEED) = FfInt(-7L);
+		VAL(actor, LUI_BOUNCE) = 1L;
+		play_actor_sound(actor, "kick");
+	}
+}
+
+static void draw_lui(const GameActor* actor) {
+	const char* tex;
+	if (VAL(actor, LUI_BOUNCE) > 0L)
+		switch (VAL(actor, LUI_BOUNCE) / 100L) {
+		default:
+		case 0L:
+			tex = "items/lui2";
+			break;
+
+		case 1L:
+		case 5L:
+			tex = "items/lui_bounce";
+			break;
+
+		case 2L:
+		case 4L:
+			tex = "items/lui_bounce2";
+			break;
+
+		case 3L:
+			tex = "items/lui_bounce3";
+			break;
+		}
+	else
+		switch (game_state.time % 12L) {
+		default:
+		case 10L:
+		case 11L:
+			tex = "items/lui";
+			break;
+
+		case 0L:
+			tex = "items/lui2";
+			break;
+
+		case 1L:
+		case 8L:
+		case 9L:
+			tex = "items/lui3";
+			break;
+
+		case 2L:
+		case 6L:
+		case 7L:
+			tex = "items/lui4";
+			break;
+
+		case 3L:
+		case 4L:
+		case 5L:
+			tex = "items/lui5";
+			break;
+		}
+
+	draw_actor(actor, tex, 0.f, WHITE);
+}
+
+static void collide_lui(GameActor* actor, GameActor* from) {
+	collide_powerup(actor, from, POW_LUI);
+}
+
+const GameActorTable TAB_LUI
+	= {.load = load_lui, .create = create_lui, .tick = tick_lui, .draw = draw_lui, .collide = collide_lui};
+
+// ===========
+// HAMMER SUIT
+// ===========
+
+static void load_hammer() {
+	load_texture("items/hammer_suit");
+
+	load_sound("grow");
+
+	load_actor(ACT_POINTS);
+}
+
+static void create_hammer(GameActor* actor) {
+	actor->box.start.x = FfInt(-13L);
+	actor->box.start.y = FfInt(-31L);
+	actor->box.end.x = FfInt(14L);
+	actor->depth = FxOne;
+
+	FLAG_ON(actor, FLG_POWERUP_FULL);
+}
+
+static void draw_hammer(const GameActor* actor) {
+	draw_actor(actor, "items/hammer_suit", 0.f, WHITE);
+}
+
+static void collide_hammer(GameActor* actor, GameActor* from) {
+	collide_powerup(actor, from, POW_HAMMER);
+}
+
+const GameActorTable TAB_HAMMER_SUIT
+	= {.load = load_hammer, .create = create_hammer, .draw = draw_hammer, .collide = collide_hammer};
 
 // =======
 // STARMAN
