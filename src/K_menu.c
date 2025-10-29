@@ -157,6 +157,7 @@ FMT_OPTION(right, kb_label(KB_RIGHT));
 FMT_OPTION(jump, kb_label(KB_JUMP));
 FMT_OPTION(fire, kb_label(KB_FIRE));
 FMT_OPTION(run, kb_label(KB_RUN));
+FMT_OPTION(chat, kb_label(KB_CHAT));
 
 #undef FMT_OPTION
 #undef BOOL_OPTION
@@ -250,6 +251,8 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Jump: %s", FORMAT(jump)},
 		{"Run: %s", FORMAT(run)},
 		{"Fire: %s", FORMAT(fire)},
+		{},
+		{"Chat: %s", FORMAT(chat)},
 	},
 	[MEN_HOST_LOBBY] = {
 		{"Lobby ID: %s", FORMAT(lobby), EDIT(CLIENT.lobby.name)},
@@ -306,9 +309,6 @@ void start_menu(bool skip_intro) {
 	load_sound("disconnect");
 
 	load_track("title");
-	load_track("smw_donut_plains");
-	load_track("mk_mario");
-	load_track("sf_map");
 	load_track("human_like_predator");
 	load_track("yi_score");
 
