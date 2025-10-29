@@ -1,3 +1,4 @@
+#include "actors/K_autoscroll.h"
 #include "actors/K_points.h"
 
 // ================
@@ -51,6 +52,10 @@ static void create(GameActor* actor) {
 }
 
 static void tick(GameActor* actor) {
+	GameActor* autoscroll = get_actor(game_state.autoscroll);
+	if (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS))
+		move_actor(actor, POS_ADD(actor, VAL(autoscroll, X_SPEED), VAL(autoscroll, Y_SPEED)));
+
 	++VAL(actor, POINTS_TIME);
 	const ActorValue time = VAL(actor, POINTS_TIME);
 	if (time < 35L)
