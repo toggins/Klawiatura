@@ -20,7 +20,7 @@ Bindings BINDS[KB_SIZE] = {
 	[KB_UI_LEFT] = {"UI Left",    SDL_SCANCODE_LEFT     },
 	[KB_UI_DOWN] = {"UI Down",    SDL_SCANCODE_DOWN     },
 	[KB_UI_RIGHT] = {"UI Right",   SDL_SCANCODE_RIGHT    },
-	[KB_UI_ENTER] = {"UI Enter",   SDL_SCANCODE_Z        },
+	[KB_UI_ENTER] = {"UI Enter",   SDL_SCANCODE_RETURN   },
 
 	[KB_KEVIN_K] = {"K",          SDL_SCANCODE_K        },
 	[KB_KEVIN_E] = {"E",          SDL_SCANCODE_E        },
