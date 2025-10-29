@@ -943,33 +943,21 @@ void start_game_state(GameContext* ctx) {
 		load_track(track_name[i]);
 	}
 
-	game_state.flags |= *((GameFlag*)buf);
-	buf += sizeof(GameFlag);
+	game_state.flags |= *((GameFlag*)buf), buf += sizeof(GameFlag);
 	if (game_state.flags & GF_AMBUSH)
 		game_state.sequence.type = SEQ_AMBUSH;
 
-	game_state.size.x = *((fixed*)buf);
-	buf += sizeof(fixed);
-	game_state.size.y = *((fixed*)buf);
-	buf += sizeof(fixed);
+	game_state.size.x = *((fixed*)buf), buf += sizeof(fixed);
+	game_state.size.y = *((fixed*)buf), buf += sizeof(fixed);
 
-	game_state.bounds.start.x = *((fixed*)buf);
-	buf += sizeof(fixed);
-	game_state.bounds.start.y = *((fixed*)buf);
-	buf += sizeof(fixed);
-	game_state.bounds.end.x = *((fixed*)buf);
-	buf += sizeof(fixed);
-	game_state.bounds.end.y = *((fixed*)buf);
-	buf += sizeof(fixed);
+	game_state.bounds.start.x = *((fixed*)buf), buf += sizeof(fixed);
+	game_state.bounds.start.y = *((fixed*)buf), buf += sizeof(fixed);
+	game_state.bounds.end.x = *((fixed*)buf), buf += sizeof(fixed);
+	game_state.bounds.end.y = *((fixed*)buf), buf += sizeof(fixed);
 
-	game_state.clock = *((int32_t*)buf);
-	buf += sizeof(int32_t);
-
-	game_state.water = *((fixed*)buf);
-	buf += sizeof(fixed);
-
-	game_state.hazard = *((fixed*)buf);
-	buf += sizeof(fixed);
+	game_state.clock = *((int32_t*)buf), buf += sizeof(int32_t);
+	game_state.water = *((fixed*)buf), buf += sizeof(fixed);
+	game_state.hazard = *((fixed*)buf), buf += sizeof(fixed);
 
 	// Markers
 	uint32_t num_markers = *((uint32_t*)buf);
@@ -1042,21 +1030,18 @@ void start_game_state(GameContext* ctx) {
 			if (actor == NULL) {
 				WARN("Unknown actor type %u", type);
 
-				buf += sizeof(fixed);
-				buf += sizeof(fvec2);
+				buf += sizeof(fixed), buf += sizeof(fvec2);
 
 				uint8_t num_values = *((uint8_t*)buf);
 				buf++;
-
 				for (uint8_t j = 0; j < num_values; j++)
 					buf += 1 + sizeof(ActorValue);
-
 				buf += sizeof(ActorFlag);
+
 				break;
 			}
 
-			actor->depth = *((fixed*)buf);
-			buf += sizeof(fixed);
+			actor->depth = *((fixed*)buf), buf += sizeof(fixed);
 
 			fvec2 scale = {*((fixed*)buf), *((fixed*)(buf + sizeof(fixed)))};
 			buf += sizeof(fvec2);
@@ -1067,17 +1052,12 @@ void start_game_state(GameContext* ctx) {
 
 			uint8_t num_values = *((uint8_t*)buf);
 			buf++;
-
 			for (uint8_t j = 0; j < num_values; j++) {
 				uint8_t idx = *((uint8_t*)buf);
 				buf++;
-
-				actor->values[idx] = *((ActorValue*)buf);
-				buf += sizeof(ActorValue);
+				actor->values[idx] = *((ActorValue*)buf), buf += sizeof(ActorValue);
 			}
-
-			FLAG_ON(actor, *((ActorFlag*)buf));
-			buf += sizeof(ActorFlag);
+			FLAG_ON(actor, *((ActorFlag*)buf)), buf += sizeof(ActorFlag);
 
 			if (actor->type == ACT_HIDDEN_BLOCK && ANY_FLAG(actor, FLG_BLOCK_ONCE)
 				&& (game_state.flags & GF_REPLAY))
