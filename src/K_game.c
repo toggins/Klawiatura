@@ -882,10 +882,13 @@ void start_game_state(GameContext* ctx) {
 	load_texture("markers/water8");
 
 	load_font("hud");
+	load_font("main");
 
 	load_sound("hurry");
 	load_sound("tick");
 	load_sound("chat");
+
+	load_track("yi_score");
 
 	//
 	//
@@ -929,7 +932,7 @@ void start_game_state(GameContext* ctx) {
 	buf += 32;
 
 	read_string((const char**)(&buf), video_state.world, sizeof(video_state.world));
-	if (video_state.world[0] != '\0')
+	if (video_state.world[0] != '@')
 		load_texture(video_state.world);
 
 	read_string((const char**)(&buf), game_state.next, sizeof(game_state.next));
