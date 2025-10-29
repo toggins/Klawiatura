@@ -1406,7 +1406,7 @@ Bool below_level(GameActor* actor) {
 #define CHECK_AUTOSCROLL_VIEW                                                                                          \
 	const GameActor* autoscroll = get_actor(game_state.autoscroll);                                                \
 	if (autoscroll != NULL) {                                                                                      \
-		const frect cbox = {Vadd(game_state.bounds.start, (fvec2){padding, padding}),                          \
+		const frect cbox = {Vsub(game_state.bounds.start, (fvec2){padding, padding}),                          \
 			Vadd(game_state.bounds.end, (fvec2){padding, padding})};                                       \
 		return (abox.start.x < cbox.end.x && abox.end.x > cbox.start.x && abox.start.y < cbox.end.y            \
 			&& (ignore_top || abox.end.y > cbox.start.y));                                                 \
