@@ -6,8 +6,6 @@
 
 void populate_actors_table() {
 	extern const GameActorTable* ACTORS[ACT_SIZE];
-	static const GameActorTable TAB_NULL = {0};
-	ACTORS[ACT_NULL] = &TAB_NULL;
 
 	ACTOR(PLAYER_SPAWN);
 	ACTOR(PLAYER);
@@ -66,4 +64,7 @@ void populate_actors_table() {
 	ACTOR(ROTODISC);
 	ACTOR(WATER_SPLASH);
 	ACTOR(BUBBLE);
+
+	static const GameActorTable TAB_NULL = {0};
+	ACTORS[ACT_NULL] = &TAB_NULL;
 }
