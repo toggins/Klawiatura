@@ -1272,6 +1272,14 @@
                             "index": 17,
                             "z": 1,
                             "texture": "items/hammer"
+                        },
+
+                        {
+                            "def": "Starman",
+                            "type": "object",
+                            "index": 18,
+                            "z": 1,
+                            "texture": "items/starman"
                         }
                     ]
                 ],
@@ -1280,7 +1288,7 @@
                     "def": "Coin",
                     "type": "object",
                     "index": 9,
-                    "z": 1,
+                    "z": 2,
                     "texture": "items/coin"
                 }
             ]
