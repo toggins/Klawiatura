@@ -408,8 +408,9 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 }
 
 Bool hit_player(GameActor* actor) {
-	if (actor->type != ACT_PLAYER || VAL(actor, PLAYER_FLASH) > 0L || VAL(actor, PLAYER_STARMAN) > 0L
-		|| VAL(actor, PLAYER_WARP) > 0L || game_state.sequence.type == SEQ_WIN)
+	if (actor == NULL || actor->type != ACT_PLAYER || VAL(actor, PLAYER_FLASH) > 0L
+		|| VAL(actor, PLAYER_STARMAN) > 0L || VAL(actor, PLAYER_WARP) > 0L
+		|| game_state.sequence.type == SEQ_WIN)
 		return false;
 
 	GamePlayer* player = get_owner(actor);

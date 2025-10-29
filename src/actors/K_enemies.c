@@ -1,4 +1,4 @@
-#include "actors/K_bill.h"
+#include "actors/K_artillery.h"
 #include "actors/K_enemies.h"
 #include "actors/K_points.h"
 
@@ -25,7 +25,7 @@ GameActor* kill_enemy(GameActor* actor, Bool kick) {
 	case ACT_BULLET_BILL: {
 		VAL(actor, X_SPEED) = Fmul(VAL(actor, X_SPEED), 45371L);
 		VAL(actor, Y_SPEED) = Fmax(VAL(actor, Y_SPEED), FxZero);
-		FLAG_ON(actor, FLG_BILL_DEAD);
+		FLAG_ON(actor, FLG_ARTILLERY_DEAD);
 
 		if (kick)
 			play_actor_sound(actor, "kick");

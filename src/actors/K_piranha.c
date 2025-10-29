@@ -212,8 +212,6 @@ static void draw_fire(const GameActor* actor) {
 }
 
 static void collide_fire(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER)
-		return;
 	hit_player(from);
 }
 
