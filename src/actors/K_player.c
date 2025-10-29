@@ -4,6 +4,8 @@
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 
+#define GROUND_TIME 5L
+
 // ================
 // HELPER FUNCTIONS
 // ================
@@ -619,7 +621,7 @@ static void create(GameActor* actor) {
 	actor->box.end.y = FxOne;
 
 	VAL(actor, PLAYER_INDEX) = (ActorValue)NULLPLAY;
-	VAL(actor, PLAYER_GROUND) = 2L;
+	VAL(actor, PLAYER_GROUND) = GROUND_TIME;
 	VAL(actor, PLAYER_WARP) = NULLACT;
 	VAL(actor, PLAYER_PLATFORM) = NULLACT;
 }
@@ -778,7 +780,7 @@ static void tick(GameActor* actor) {
 	} else {
 		displace_actor(actor, FfInt(10L), true);
 		if (VAL(actor, Y_TOUCH) > 0L)
-			VAL(actor, PLAYER_GROUND) = 2L;
+			VAL(actor, PLAYER_GROUND) = GROUND_TIME;
 
 		const GameActor* autoscroll = get_actor(game_state.autoscroll);
 		if (autoscroll != NULL) {
