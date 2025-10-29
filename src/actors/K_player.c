@@ -1111,6 +1111,10 @@ static void tick_corpse(GameActor* actor) {
 		return;
 	}
 
+	GameActor* autoscroll = get_actor(game_state.autoscroll);
+	if (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS))
+		move_actor(actor, POS_ADD(actor, VAL(autoscroll, X_SPEED), VAL(autoscroll, Y_SPEED)));
+
 	if (VAL(actor, PLAYER_FRAME) >= 25L) {
 		VAL(actor, Y_SPEED) += 26214L;
 		move_actor(actor, POS_SPEED(actor));
