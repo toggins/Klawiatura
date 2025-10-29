@@ -195,11 +195,11 @@ static void collide_turn(GameActor* actor, GameActor* from) {
 
 	if (ANY_FLAG(actor, FLG_PLATFORM_ADD)) {
 		VAL(from, X_SPEED) += VAL(actor, X_SPEED);
-		if (!ANY_FLAG(actor, FLG_PLATFORM_FALLING))
+		if (!ANY_FLAG(from, FLG_PLATFORM_FALLING))
 			VAL(from, Y_SPEED) += VAL(actor, Y_SPEED);
 	} else {
 		VAL(from, X_SPEED) = VAL(actor, X_SPEED);
-		if (!ANY_FLAG(actor, FLG_PLATFORM_FALLING))
+		if (!ANY_FLAG(from, FLG_PLATFORM_FALLING))
 			VAL(from, Y_SPEED) = VAL(actor, Y_SPEED);
 	}
 	from->flags = (actor->flags & ~FLG_PLATFORM_ADD) | (from->flags & FLG_PLATFORM_FALLING);
