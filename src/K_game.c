@@ -524,7 +524,7 @@ static void draw_hud() {
 		batch_cursor(XYZ(32, 64, -10000.f));
 		batch_color(ALPHA(160));
 		batch_align(FA_LEFT, FA_TOP);
-		batch_string("main", 24, fmt("Spectating: %s", get_peer_name(view_player)));
+		batch_string("main", 24, fmt("Spectating: %s", get_peer_name(player_to_peer(view_player))));
 	}
 }
 
