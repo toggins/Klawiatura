@@ -40,3 +40,4 @@ const char* get_player_texture(PlayerPower, PlayerFrame);
 
 Bool hit_player(GameActor*);
 void kill_player(GameActor*), win_player(GameActor*);
+void player_starman(GameActor*, GameActor*);

@@ -1,4 +1,5 @@
 #include "actors/K_autoscroll.h"
+#include "actors/K_enemies.h"
 #include "actors/K_missiles.h" // IWYU pragma: keep
 #include "actors/K_player.h"
 #include "actors/K_points.h"
@@ -526,6 +527,44 @@ void win_player(GameActor* actor) {
 	play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? "win2" : "win", false);
 }
 
+void player_starman(GameActor* actor, GameActor* from) {
+	if (actor == NULL || from == NULL)
+		return;
+
+	int32_t points;
+	switch (VAL(actor, PLAYER_STARMAN_COMBO)++) {
+	case 0:
+		points = 100L;
+		break;
+	case 1:
+		points = 200L;
+		break;
+	case 2:
+		points = 500L;
+		break;
+	case 3:
+		points = 1000L;
+		break;
+	case 4:
+		points = 2000L;
+		break;
+	case 5:
+		points = 5000L;
+		break;
+	default: {
+		points = -1L;
+		VAL(actor, PLAYER_STARMAN_COMBO) = 0L;
+		break;
+	}
+	}
+	give_points(from, get_owner(actor), points);
+
+	create_actor(ACT_EXPLODE,
+		(fvec2){Flerp(Fadd(from->pos.x, from->box.start.x), Fadd(from->pos.x, from->box.end.x), FxHalf),
+			Flerp(Fadd(from->pos.y, from->box.start.y), Fadd(from->pos.y, from->box.end.y), FxHalf)});
+	kill_enemy(from, true);
+}
+
 // ============
 // PLAYER SPAWN
 // ============
@@ -1048,7 +1087,7 @@ const GameActorTable TAB_PLAYER = {
 // DEAD PLAYER
 // ===========
 
-static void load_dead() {
+static void load_corpse() {
 	load_texture("player/mario/dead");
 
 	load_sound("lose");
@@ -1060,12 +1099,12 @@ static void load_dead() {
 	load_track("game_over");
 }
 
-static void create_dead(GameActor* actor) {
+static void create_corpse(GameActor* actor) {
 	actor->depth = -FxOne;
 	VAL(actor, PLAYER_INDEX) = (ActorValue)NULLPLAY;
 }
 
-static void tick_dead(GameActor* actor) {
+static void tick_corpse(GameActor* actor) {
 	GamePlayer* player = get_owner(actor);
 	if (player == NULL) {
 		FLAG_ON(actor, FLG_DESTROY);
@@ -1143,7 +1182,7 @@ static void tick_dead(GameActor* actor) {
 	}
 }
 
-static void draw_dead(const GameActor* actor) {
+static void draw_corpse(const GameActor* actor) {
 	draw_actor(actor, "player/mario/dead", 0.f, ALPHA((localplayer() == get_owner_id(actor)) ? 255L : 191L));
 
 	if (!ANY_FLAG(actor, FLG_PLAYER_JACKASS))
@@ -1155,9 +1194,9 @@ static void draw_dead(const GameActor* actor) {
 }
 
 const GameActorTable TAB_PLAYER_DEAD = {
-	.load = load_dead,
-	.create = create_dead,
-	.tick = tick_dead,
-	.draw = draw_dead,
+	.load = load_corpse,
+	.create = create_corpse,
+	.tick = tick_corpse,
+	.draw = draw_corpse,
 	.owner = owner,
 };

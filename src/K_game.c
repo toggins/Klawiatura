@@ -11,6 +11,7 @@
 
 #include "actors/K_block.h"
 #include "actors/K_checkpoint.h" // IWYU pragma: keep
+#include "actors/K_enemies.h"    // IWYU pragma: keep
 #include "actors/K_player.h"
 
 #define ACTOR_TYPE_CALL(type, fn)                                                                                      \
@@ -1711,6 +1712,12 @@ void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const G
 		XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + sprout, (sprout > 0L) ? 21.f : FtFloat(actor->depth)),
 		angle, color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
+}
+
+void draw_dead(const GameActor* actor) {
+	const GameActorType type = VAL(actor, DEAD_TYPE);
+	if (ACTORS[type] != NULL && ACTORS[type]->draw_dead != NULL)
+		ACTORS[type]->draw_dead(actor);
 }
 
 // Convenience function for playing a sound at an actor's position.

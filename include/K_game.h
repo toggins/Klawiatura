@@ -413,20 +413,22 @@ typedef struct {
 	void (*create)(GameActor*);
 	void (*tick)(GameActor*);
 	void (*draw)(const GameActor*);
+	/// Callback for drawing a dead enemy in `ACT_DEAD`.
+	void (*draw_dead)(const GameActor*);
 	void (*cleanup)(GameActor*);
-	/// Callback function for `collide_actor()`.
+	/// Callback for `collide_actor()`.
 	void (*collide)(GameActor*, GameActor*);
-	/// Callback function for `displace_actor()`. (WIP)
+	/// Callback for `displace_actor()`. (WIP)
 	// void (*displace)(GameActor*, GameActor*);
-	/// Callback function for when the displacee is above the actor.
+	/// Callback for when the displacee is above the actor.
 	void (*on_top)(GameActor*, GameActor*);
-	/// Callback function for when the displacee is below the actor.
+	/// Callback for when the displacee is below the actor.
 	void (*on_bottom)(GameActor*, GameActor*);
-	/// Callback function for when the displacee is to the left of the actor.
+	/// Callback for when the displacee is to the left of the actor.
 	void (*on_left)(GameActor*, GameActor*);
-	/// Callback function for when the displacee is to the right of the actor.
+	/// Callback for when the displacee is to the right of the actor.
 	void (*on_right)(GameActor*, GameActor*);
-	/// Callback function for getting the actor's player ID.
+	/// Callback for getting the actor's player ID.
 	PlayerID (*owner)(const GameActor*);
 } GameActorTable;
 
@@ -492,6 +494,8 @@ Bool touching_solid(const frect, SolidType);
 void displace_actor(GameActor*, fixed, Bool);
 
 void draw_actor(const GameActor*, const char*, GLfloat, const GLubyte[4]);
+void draw_dead(const GameActor*);
+
 void play_actor_sound(const GameActor*, const char*);
 
 // ====
