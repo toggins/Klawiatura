@@ -1163,7 +1163,10 @@ GameActor* respawn_player(GamePlayer* player) {
 	if (pawn != NULL) {
 		VAL(pawn, PLAYER_INDEX) = (ActorValue)player->id;
 		player->actor = pawn->id;
-		set_view_player(player);
+		// !!! CLIENT-SIDE !!!
+		if (local_player == player->id)
+			set_view_player(player);
+		// !!! CLIENT-SIDE !!!
 	}
 	return pawn;
 }
@@ -1216,7 +1219,17 @@ PlayerID numplayers() {
 }
 
 void set_view_player(GamePlayer* player) {
-	view_player = (PlayerID)((player == NULL) ? NULLPLAY : player->id);
+	if (player == NULL) {
+		view_player = NULLPLAY;
+		return;
+	}
+	if (view_player == player->id)
+		return;
+	GamePlayer* oplayer = get_player(view_player);
+	if (oplayer != NULL && Rcollide(oplayer->bounds, player->bounds))
+		lerp_camera(25.f);
+
+	view_player = player->id;
 }
 
 // ======
