@@ -242,13 +242,10 @@ typedef struct {
 	} players[MAX_PLAYERS];
 } GameContext;
 
-// FIXME: Can't include `K_cmd.h` or errors
-#define CLIENT_STRING_MAX NUTPUNCH_FIELD_DATA_MAX
-
 typedef struct {
 	int8_t lives;
 	uint32_t score;
-	char name[CLIENT_STRING_MAX];
+	char name[NUTPUNCH_FIELD_DATA_MAX]; // FIXME: Can't include `K_cmd.h` or errors
 } GameWinner;
 
 typedef struct {
