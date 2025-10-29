@@ -18,7 +18,6 @@
 #include "K_cmd.h"
 #include "K_config.h"
 #include "K_file.h"
-#include "K_game.h" // IWYU pragma: keep (for now)
 #include "K_input.h"
 #include "K_menu.h"
 #include "K_os.h"
