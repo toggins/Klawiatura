@@ -8,3 +8,4 @@ enum {
 
 GameActor* kill_enemy(GameActor*, Bool);
 void block_fireball(GameActor*);
+void hit_fireball(GameActor*, GameActor*, int32_t);

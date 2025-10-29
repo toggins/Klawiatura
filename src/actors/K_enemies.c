@@ -1,5 +1,6 @@
 #include "actors/K_bill.h"
 #include "actors/K_enemies.h"
+#include "actors/K_points.h"
 
 // ================
 // HELPER FUNCTIONS
@@ -61,6 +62,19 @@ void block_fireball(GameActor* actor) {
 		return;
 	play_actor_sound(actor, "bump");
 	FLAG_ON(actor, FLG_DESTROY);
+}
+
+void hit_fireball(GameActor* actor, GameActor* from, int32_t points) {
+	if (actor == NULL || from == NULL)
+		return;
+
+	GamePlayer* player = get_owner(from);
+	if (player == NULL)
+		return;
+
+	give_points(actor, player, points);
+	kill_enemy(actor, true);
+	FLAG_ON(from, FLG_DESTROY);
 }
 
 // ==========
