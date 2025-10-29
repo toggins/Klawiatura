@@ -563,6 +563,18 @@ void draw_game() {
 	stop_drawing();
 }
 
+#define TICK_LOOP(ticker)                                                                                              \
+	actor = get_actor(game_state.live_actors);                                                                     \
+	while (actor != NULL) {                                                                                        \
+		if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE) && VAL(actor, SPROUT) <= 0L)                            \
+			ACTOR_CALL(actor, ticker);                                                                     \
+                                                                                                                       \
+		GameActor* next = get_actor(actor->previous);                                                          \
+		if (ANY_FLAG(actor, FLG_DESTROY))                                                                      \
+			destroy_actor(actor);                                                                          \
+		actor = next;                                                                                          \
+	}
+
 static void destroy_actor(GameActor*);
 void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 	for (PlayerID i = 0; i < num_players; i++) {
@@ -599,7 +611,7 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 			if (VAL(actor, SPROUT) > 0L)
 				--VAL(actor, SPROUT);
 			else
-				ACTOR_CALL(actor, tick);
+				ACTOR_CALL(actor, pre_tick);
 		}
 
 		GameActor* next = get_actor(actor->previous);
@@ -607,6 +619,9 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 			destroy_actor(actor);
 		actor = next;
 	}
+
+	TICK_LOOP(tick);
+	TICK_LOOP(post_tick);
 
 	++game_state.time;
 	switch (game_state.sequence.type) {
@@ -700,6 +715,8 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 	break;
 	}
 }
+
+#undef TICK_LOOP
 
 void save_game_state(GameState* gs) {
 	SDL_memcpy(gs, &game_state, sizeof(GameState));

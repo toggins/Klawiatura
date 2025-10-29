@@ -406,29 +406,15 @@ typedef struct {
 SolidType always_solid(const GameActor*), always_top(const GameActor*), always_bottom(const GameActor*);
 
 typedef struct {
-	/// Whether or not the actor is considered (partially) solid by displacees.
 	SolidType (*is_solid)(const GameActor*);
-	/// Callback for loading assets on start/creation.
 	void (*load)();
 	void (*create)(GameActor*);
-	void (*tick)(GameActor*);
-	void (*draw)(const GameActor*);
-	/// Callback for drawing a dead enemy in `ACT_DEAD`.
-	void (*draw_dead)(const GameActor*);
+	void (*pre_tick)(GameActor*), (*tick)(GameActor*), (*post_tick)(GameActor*);
+	void (*draw)(const GameActor*), (*draw_dead)(const GameActor*);
 	void (*cleanup)(GameActor*);
-	/// Callback for `collide_actor()`.
 	void (*collide)(GameActor*, GameActor*);
-	/// Callback for `displace_actor()`. (WIP)
-	// void (*displace)(GameActor*, GameActor*);
-	/// Callback for when the displacee is above the actor.
-	void (*on_top)(GameActor*, GameActor*);
-	/// Callback for when the displacee is below the actor.
-	void (*on_bottom)(GameActor*, GameActor*);
-	/// Callback for when the displacee is to the left of the actor.
-	void (*on_left)(GameActor*, GameActor*);
-	/// Callback for when the displacee is to the right of the actor.
-	void (*on_right)(GameActor*, GameActor*);
-	/// Callback for getting the actor's player ID.
+	void (*on_top)(GameActor*, GameActor*), (*on_bottom)(GameActor*, GameActor*);
+	void (*on_left)(GameActor*, GameActor*), (*on_right)(GameActor*, GameActor*);
 	PlayerID (*owner)(const GameActor*);
 } GameActorTable;
 

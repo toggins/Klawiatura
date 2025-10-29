@@ -1,6 +1,7 @@
 #include "actors/K_autoscroll.h"
 #include "actors/K_enemies.h"
 #include "actors/K_missiles.h" // IWYU pragma: keep
+#include "actors/K_platform.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 
@@ -653,13 +654,15 @@ static void tick(GameActor* actor) {
 	const ActorID pfid = (ActorID)VAL(actor, PLAYER_PLATFORM);
 	GameActor* platform = get_actor(pfid);
 	if (platform != NULL) {
-		const fixed vx = VAL(actor, X_SPEED), vy = VAL(actor, Y_SPEED);
+		const fixed vx = VAL(actor, X_SPEED), vy = VAL(actor, Y_SPEED),
+			    pvx = platform->pos.x - VAL(platform, PLATFORM_X_FROM),
+			    pvy = platform->pos.y - VAL(platform, PLATFORM_Y_FROM);
 
-		VAL(actor, X_SPEED) = VAL(platform, X_SPEED), VAL(actor, Y_SPEED) = VAL(platform, Y_SPEED);
+		VAL(actor, X_SPEED) = pvx, VAL(actor, Y_SPEED) = pvy;
 		displace_actor(actor, FxZero, false);
 		VAL(actor, X_SPEED) = vx, VAL(actor, Y_SPEED) = vy;
 
-		frect mbox = HITBOX_ADD(actor, VAL(platform, X_SPEED), VAL(platform, Y_SPEED));
+		frect mbox = HITBOX_ADD(actor, pvx, pvy);
 		mbox.end.y += FxOne;
 		const frect pbox = HITBOX(platform);
 		VAL(actor, PLAYER_PLATFORM) = Rcollide(mbox, pbox) ? pfid : NULLACT;

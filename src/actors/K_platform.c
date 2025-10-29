@@ -1,25 +1,5 @@
-#include "K_game.h"
-
+#include "actors/K_platform.h"
 #include "actors/K_player.h" // IWYU pragma: keep
-
-enum {
-	VAL_PLATFORM_TYPE = VAL_CUSTOM,
-	VAL_PLATFORM_X,
-	VAL_PLATFORM_Y,
-	VAL_PLATFORM_X_SPEED,
-	VAL_PLATFORM_Y_SPEED,
-	VAL_PLATFORM_FLAGS,
-	VAL_PLATFORM_RESPAWN,
-	VAL_PLATFORM_FRAME,
-};
-
-enum {
-	FLG_PLATFORM_START = CUSTOM_FLAG(0),
-	FLG_PLATFORM_ADD = CUSTOM_FLAG(1),
-	FLG_PLATFORM_FALL = CUSTOM_FLAG(2),
-	FLG_PLATFORM_WRAP = CUSTOM_FLAG(3),
-	FLG_PLATFORM_FALLING = CUSTOM_FLAG(4),
-};
 
 static void load() {
 	load_texture("markers/platform/big");
@@ -33,7 +13,7 @@ static void load() {
 	load_texture("markers/platform/castle_button");
 }
 
-static void tick(GameActor* actor) {
+static void pre_tick(GameActor* actor) {
 	if (!ANY_FLAG(actor, FLG_PLATFORM_START)) {
 		switch (VAL(actor, PLATFORM_TYPE)) {
 		default: {
@@ -84,6 +64,8 @@ static void tick(GameActor* actor) {
 		VAL(actor, PLATFORM_FLAGS) = (ActorValue)actor->flags;
 		FLAG_ON(actor, FLG_PLATFORM_START);
 	}
+
+	VAL(actor, PLATFORM_X_FROM) = actor->pos.x, VAL(actor, PLATFORM_Y_FROM) = actor->pos.y;
 
 	if (ANY_FLAG(actor, FLG_PLATFORM_WRAP) && !ANY_FLAG(actor, FLG_PLATFORM_FALLING)) {
 		if (VAL(actor, Y_SPEED) > FxZero && actor->pos.y > (game_state.size.y + FfInt(10L))) {
@@ -176,7 +158,7 @@ static void on_top(GameActor* actor, GameActor* from) {
 const GameActorTable TAB_PLATFORM = {
 	.is_solid = always_top,
 	.load = load,
-	.tick = tick,
+	.pre_tick = pre_tick,
 	.draw = draw,
 	.on_top = on_top,
 };
