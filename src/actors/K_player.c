@@ -606,9 +606,10 @@ static void load() {
 
 	load_actor(ACT_PLAYER_EFFECT);
 	load_actor(ACT_PLAYER_DEAD);
+	load_actor(ACT_WATER_SPLASH);
+	load_actor(ACT_BUBBLE);
 	load_actor(ACT_MISSILE_FIREBALL);
 	load_actor(ACT_MISSILE_BEETROOT);
-	load_actor(ACT_MISSILE_BEETROOT_SINK);
 	load_actor(ACT_MISSILE_HAMMER);
 	load_actor(ACT_POINTS);
 	load_actor(ACT_KEVIN);
@@ -724,12 +725,10 @@ static void tick(GameActor* actor) {
 		VAL(actor, PLAYER_SPRING) = 7L;
 		if (actor->pos.y >= game_state.water && !ANY_INPUT(player, GI_DOWN)) {
 			VAL(actor, Y_TOUCH) = 0L;
-			VAL(actor, Y_SPEED)
-				= FfInt(((actor->pos.y + actor->box.start.y)
-						> (game_state.water + FfInt(16L)
-							|| (actor->pos.y + actor->box.end.y) < game_state.water))
-						? -3L
-						: -9L);
+			VAL(actor, Y_SPEED) = ((actor->pos.y + actor->box.start.y) > (game_state.water + FfInt(16L))
+						      || ((actor->pos.y + actor->box.end.y) < game_state.water))
+			                              ? FfInt(-3L)
+			                              : FfInt(-9L);
 			VAL(actor, PLAYER_GROUND) = 0L;
 			VAL(actor, PLAYER_FRAME) = FxZero;
 			play_actor_sound(actor, "swim");
@@ -767,7 +766,10 @@ static void tick(GameActor* actor) {
 	if (actor->pos.y > game_state.water && (game_state.time % 5L) == 0L)
 		if (rng(10L) == 5L)
 			create_actor(
-				ACT_BUBBLE, POS_ADD(actor, FxZero, FfInt((player->power == POW_SMALL) ? 18L : 39L)));
+				ACT_BUBBLE, POS_ADD(actor, FxZero,
+						    (player->power == POW_SMALL || ANY_FLAG(actor, FLG_PLAYER_DUCK))
+							    ? FfInt(-18L)
+							    : FfInt(-39L)));
 
 	if (jumped && VAL(actor, PLAYER_GROUND) <= 0L && VAL(actor, Y_SPEED) > FxZero)
 		FLAG_ON(actor, FLG_PLAYER_JUMP);
@@ -860,11 +862,9 @@ static void tick(GameActor* actor) {
 			break;
 
 		ActorID midx;
-		for (; midx < MAX_MISSILES; midx++) {
-			GameActor* missile = get_actor(player->missiles[midx]);
-			if (missile == NULL)
+		for (; midx < MAX_MISSILES; midx++)
+			if (get_actor(player->missiles[midx]) == NULL)
 				goto new_missile;
-		}
 		break;
 
 	new_missile:
@@ -873,9 +873,11 @@ static void tick(GameActor* actor) {
 		default:
 			mtype = ACT_NULL;
 			break;
+
 		case POW_FIRE:
 			mtype = ACT_MISSILE_FIREBALL;
 			break;
+
 		case POW_BEETROOT: {
 			ActorID beetroots = 0L;
 			for (ActorID i = 0L; i < MAX_SINK; i++)
@@ -884,13 +886,16 @@ static void tick(GameActor* actor) {
 			mtype = (beetroots >= MAX_SINK) ? ACT_NULL : ACT_MISSILE_BEETROOT;
 			break;
 		}
+
 		case POW_HAMMER:
 			mtype = ACT_MISSILE_HAMMER;
 			break;
 		}
 
+		if (mtype == ACT_NULL)
+			break;
 		GameActor* missile = create_actor(
-			mtype, POS_ADD(actor, FfInt(ANY_FLAG(actor, FLG_X_FLIP) ? -5L : 5L), FfInt(-29L)));
+			mtype, POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? FfInt(-5L) : FfInt(5L), FfInt(-29L)));
 		if (missile == NULL)
 			break;
 
