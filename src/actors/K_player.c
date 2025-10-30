@@ -132,6 +132,9 @@ PlayerFrame get_player_frame(const GameActor* actor) {
 		}
 	}
 
+	if (ANY_FLAG(actor, FLG_PLAYER_DUCK))
+		return PF_DUCK;
+
 	if (VAL(actor, PLAYER_GROUND) <= 0L) {
 		if (ANY_FLAG(actor, FLG_PLAYER_SWIM)) {
 			const int32_t frame = FtInt(VAL(actor, PLAYER_FRAME));
@@ -151,9 +154,6 @@ PlayerFrame get_player_frame(const GameActor* actor) {
 		} else
 			return (VAL(actor, Y_SPEED) < FxZero) ? PF_JUMP : PF_FALL;
 	}
-
-	if (ANY_FLAG(actor, FLG_PLAYER_DUCK))
-		return PF_DUCK;
 
 	if (VAL(actor, PLAYER_FIRE) > 0L)
 		return PF_FIRE;
@@ -703,27 +703,27 @@ static void tick(GameActor* actor) {
 	if (cant_run && Fabs(VAL(actor, X_SPEED)) > 286720L)
 		VAL(actor, X_SPEED) -= (VAL(actor, X_SPEED) >= FxZero) ? 8192L : -8192L;
 
-	if (ANY_INPUT(player, GI_DOWN) && !ANY_INPUT(player, GI_LEFT | GI_RIGHT) && VAL(actor, PLAYER_GROUND) > 0L
-		&& player->power != POW_SMALL)
+	if (ANY_INPUT(player, GI_DOWN) && VAL(actor, PLAYER_GROUND) > 0L && player->power != POW_SMALL)
 		FLAG_ON(actor, FLG_PLAYER_DUCK);
 	if (ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
-		if (!ANY_INPUT(player, GI_DOWN) || player->power == POW_SMALL)
+		if (!ANY_INPUT(player, GI_DOWN) || player->power == POW_SMALL || VAL(actor, PLAYER_GROUND) <= 0L)
 			FLAG_OFF(actor, FLG_PLAYER_DUCK);
 		else if (VAL(actor, X_SPEED) > FxZero)
-			VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 24576L, FxZero);
+			VAL(actor, X_SPEED)
+				= Fmax(VAL(actor, X_SPEED) - (ANY_INPUT(player, GI_RIGHT) ? 18432L : 24576L), FxZero);
 		else if (VAL(actor, X_SPEED) < FxZero)
-			VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 24576L, FxZero);
+			VAL(actor, X_SPEED)
+				= Fmin(VAL(actor, X_SPEED) + (ANY_INPUT(player, GI_LEFT) ? 18432L : 24576L), FxZero);
 	}
 
-	if (ANY_INPUT(player, GI_JUMP) && VAL(actor, Y_SPEED) < FxZero && actor->pos.y < game_state.water
-		&& !ANY_INPUT(player, GI_DOWN))
+	if (ANY_INPUT(player, GI_JUMP) && VAL(actor, Y_SPEED) < FxZero && actor->pos.y < game_state.water)
 		VAL(actor, Y_SPEED) -= (player->power == POW_LUI)
 		                               ? 39322L
 		                               : ((Fabs(VAL(actor, X_SPEED)) < 40960L) ? 26214L : FxHalf);
 
 	if (jumped) {
 		VAL(actor, PLAYER_SPRING) = 7L;
-		if (actor->pos.y >= game_state.water && !ANY_INPUT(player, GI_DOWN)) {
+		if (actor->pos.y >= game_state.water) {
 			VAL(actor, Y_TOUCH) = 0L;
 			VAL(actor, Y_SPEED) = ((actor->pos.y + actor->box.start.y) > (game_state.water + FfInt(16L))
 						      || ((actor->pos.y + actor->box.end.y) < game_state.water))
@@ -752,15 +752,14 @@ static void tick(GameActor* actor) {
 
 	if (actor->pos.y < game_state.water) {
 		if ((jumped || (ANY_INPUT(player, GI_JUMP) && ANY_FLAG(actor, FLG_PLAYER_JUMP)))
-			&& !ANY_INPUT(player, GI_DOWN) && VAL(actor, PLAYER_GROUND) > 0L)
+			&& VAL(actor, PLAYER_GROUND) > 0L)
 		{
 			VAL(actor, PLAYER_GROUND) = 0L;
 			VAL(actor, Y_SPEED) = FfInt(-13L);
 			FLAG_OFF(actor, FLG_PLAYER_JUMP);
 			play_actor_sound(actor, "jump");
 		}
-		if (!ANY_INPUT(player, GI_JUMP) && !ANY_INPUT(player, GI_DOWN) && VAL(actor, PLAYER_GROUND) > 0L
-			&& ANY_FLAG(actor, FLG_PLAYER_JUMP))
+		if (!ANY_INPUT(player, GI_JUMP) && VAL(actor, PLAYER_GROUND) > 0L && ANY_FLAG(actor, FLG_PLAYER_JUMP))
 			FLAG_OFF(actor, FLG_PLAYER_JUMP);
 	}
 	if (actor->pos.y > game_state.water && (game_state.time % 5L) == 0L)
