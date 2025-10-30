@@ -73,6 +73,10 @@ static void collide_bullet(GameActor* actor, GameActor* from) {
 	case ACT_MISSILE_FIREBALL:
 		block_fireball(from);
 		break;
+
+	case ACT_MISSILE_BEETROOT:
+		hit_beetroot(actor, from, 100L);
+		break;
 	}
 }
 

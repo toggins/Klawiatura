@@ -1,5 +1,6 @@
 #include "actors/K_artillery.h"
 #include "actors/K_enemies.h"
+#include "actors/K_missiles.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 
@@ -87,6 +88,26 @@ void hit_fireball(GameActor* actor, GameActor* from, int32_t points) {
 	give_points(actor, player, points);
 	kill_enemy(actor, true);
 	FLAG_ON(from, FLG_DESTROY);
+}
+
+void block_beetroot(GameActor* actor) {
+	if (actor == NULL || get_owner(actor) == NULL)
+		return;
+	play_actor_sound(actor, "bump");
+	FLAG_ON(actor, FLG_MISSILE_HIT);
+}
+
+void hit_beetroot(GameActor* actor, GameActor* from, int32_t points) {
+	if (actor == NULL || from == NULL)
+		return;
+
+	GamePlayer* player = get_owner(from);
+	if (player == NULL)
+		return;
+
+	give_points(actor, player, points);
+	kill_enemy(actor, true);
+	FLAG_ON(from, FLG_MISSILE_HIT);
 }
 
 // ==========

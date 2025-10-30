@@ -162,6 +162,10 @@ static void collide(GameActor* actor, GameActor* from) {
 	case ACT_MISSILE_FIREBALL:
 		block_fireball(from);
 		break;
+
+	case ACT_MISSILE_BEETROOT:
+		block_beetroot(from);
+		break;
 	}
 }
 

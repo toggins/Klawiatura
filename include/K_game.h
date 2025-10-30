@@ -478,6 +478,7 @@ void list_cell_at(CellList*, const frect);
 void collide_actor(GameActor*);
 Bool touching_solid(const frect, SolidType);
 void displace_actor(GameActor*, fixed, Bool);
+void displace_actor_soft(GameActor*);
 
 void draw_actor(const GameActor*, const char*, GLfloat, const GLubyte[4]);
 void draw_dead(const GameActor*);

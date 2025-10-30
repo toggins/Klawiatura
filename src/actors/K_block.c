@@ -221,15 +221,38 @@ static void draw(const GameActor* actor) {
 }
 
 static void on_bottom(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER)
-		return;
+	switch (from->type) {
+	default:
+		break;
 
-	GamePlayer* player = get_owner(from);
-	bump_block(actor, from, player != NULL && player->power != POW_SMALL);
+	case ACT_MISSILE_BEETROOT:
+		bump_block(actor, from, true);
+		break;
+
+	case ACT_PLAYER: {
+		GamePlayer* player = get_owner(from);
+		bump_block(actor, from, player != NULL && player->power != POW_SMALL);
+		break;
+	}
+	}
+}
+
+static void on_any_other_side(GameActor* actor, GameActor* from) {
+	if (from->type == ACT_MISSILE_BEETROOT)
+		bump_block(actor, from, true);
 }
 
 const GameActorTable TAB_ITEM_BLOCK = {
-	.is_solid = always_solid, .load = load, .create = create, .tick = tick, .draw = draw, .on_bottom = on_bottom};
+	.is_solid = always_solid,
+	.load = load,
+	.create = create,
+	.tick = tick,
+	.draw = draw,
+	.on_top = on_any_other_side,
+	.on_bottom = on_bottom,
+	.on_left = on_any_other_side,
+	.on_right = on_any_other_side,
+};
 
 // ============
 // HIDDEN BLOCK
@@ -308,14 +331,20 @@ const GameActorTable TAB_BRICK_BLOCK = {
 	.create = create,
 	.tick = tick,
 	.draw = draw_brick,
+	.on_top = on_any_other_side,
 	.on_bottom = on_bottom,
+	.on_left = on_any_other_side,
+	.on_right = on_any_other_side,
 }, TAB_PSWITCH_BRICK = {
 	.is_solid = always_solid,
 	.load = load_brick,
 	.create = create,
 	.tick = tick,
 	.draw = draw_brick,
+	.on_top = on_any_other_side,
 	.on_bottom = on_bottom,
+	.on_left = on_any_other_side,
+	.on_right = on_any_other_side,
 };
 
 // ==========
@@ -347,7 +376,10 @@ const GameActorTable TAB_COIN_BLOCK = {
 	.create = create,
 	.tick = tick_coin_block,
 	.draw = draw_coin_block,
+	.on_top = on_any_other_side,
 	.on_bottom = on_bottom,
+	.on_left = on_any_other_side,
+	.on_right = on_any_other_side,
 };
 
 // ==========
@@ -418,38 +450,59 @@ static void draw_note(const GameActor* actor) {
 }
 
 static void note_top(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER)
-		return;
+	switch (from->type) {
+	default:
+		break;
 
-	VAL(from, Y_SPEED) = FfInt((VAL(from, PLAYER_SPRING) > 0L) ? -19L : -10L);
-	if (VAL(actor, BLOCK_BUMP) <= 0L || VAL(actor, Y_TOUCH) != 1L) {
-		VAL(actor, BLOCK_BUMP) = 1L;
-		VAL(actor, X_TOUCH) = 0L, VAL(actor, Y_TOUCH) = 1L;
-		play_actor_sound(actor, "spring");
+	case ACT_PLAYER:
+	case ACT_MISSILE_BEETROOT: {
+		VAL(from, Y_SPEED) = FfInt((VAL(from, PLAYER_SPRING) > 0L) ? -19L : -10L);
+		if (VAL(actor, BLOCK_BUMP) <= 0L || VAL(actor, Y_TOUCH) != 1L) {
+			VAL(actor, BLOCK_BUMP) = 1L;
+			VAL(actor, X_TOUCH) = 0L, VAL(actor, Y_TOUCH) = 1L;
+			play_actor_sound(actor, "spring");
+		}
+
+		break;
+	}
 	}
 }
 
 static void note_left(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER)
-		return;
+	switch (from->type) {
+	default:
+		break;
 
-	VAL(from, X_SPEED) = FfInt(-5L);
-	if (VAL(actor, BLOCK_BUMP) <= 0L || VAL(actor, X_TOUCH) != 1L) {
-		VAL(actor, BLOCK_BUMP) = 1L;
-		VAL(actor, X_TOUCH) = 1L, VAL(actor, Y_TOUCH) = 0L;
-		play_actor_sound(actor, "bump");
+	case ACT_PLAYER:
+	case ACT_MISSILE_BEETROOT: {
+		VAL(from, X_SPEED) = FfInt(-5L);
+		if (VAL(actor, BLOCK_BUMP) <= 0L || VAL(actor, X_TOUCH) != 1L) {
+			VAL(actor, BLOCK_BUMP) = 1L;
+			VAL(actor, X_TOUCH) = 1L, VAL(actor, Y_TOUCH) = 0L;
+			play_actor_sound(actor, "bump");
+		}
+
+		break;
+	}
 	}
 }
 
 static void note_right(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER)
-		return;
+	switch (from->type) {
+	default:
+		break;
 
-	VAL(from, X_SPEED) = FfInt(5L);
-	if (VAL(actor, BLOCK_BUMP) <= 0L || VAL(actor, X_TOUCH) != -1L) {
-		VAL(actor, BLOCK_BUMP) = 1L;
-		VAL(actor, X_TOUCH) = -1L, VAL(actor, Y_TOUCH) = 0L;
-		play_actor_sound(actor, "bump");
+	case ACT_PLAYER:
+	case ACT_MISSILE_BEETROOT: {
+		VAL(from, X_SPEED) = FfInt(5L);
+		if (VAL(actor, BLOCK_BUMP) <= 0L || VAL(actor, X_TOUCH) != -1L) {
+			VAL(actor, BLOCK_BUMP) = 1L;
+			VAL(actor, X_TOUCH) = -1L, VAL(actor, Y_TOUCH) = 0L;
+			play_actor_sound(actor, "bump");
+		}
+
+		break;
+	}
 	}
 }
 

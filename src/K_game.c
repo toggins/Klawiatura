@@ -1750,6 +1750,81 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 	move_actor(actor, (fvec2){x, y});
 }
 
+/// Move the actor with speed and touch solid actors without being pushed away.
+void displace_actor_soft(GameActor* actor) {
+	if (actor == NULL)
+		return;
+
+	VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = 0L;
+	fixed x = actor->pos.x, y = actor->pos.y;
+
+	// Horizontal collision
+	x += VAL(actor, X_SPEED);
+	CellList list = {0};
+	list_cell_at(&list, (frect){
+				    {x + actor->box.start.x, y + actor->box.start.y},
+				    {x + actor->box.end.x,   y + actor->box.end.y  }
+        });
+
+	if (list.num_actors > 0L) {
+		if (VAL(actor, X_SPEED) < FxZero)
+			for (ActorID i = 0; i < list.num_actors; i++) {
+				GameActor* displacer = list.actors[i];
+				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
+					continue;
+
+				ACTOR_CALL2(displacer, on_right, actor);
+				VAL(actor, X_TOUCH) = -1L;
+			}
+		else if (VAL(actor, X_SPEED) > FxZero)
+			for (ActorID i = 0; i < list.num_actors; i++) {
+				GameActor* displacer = list.actors[i];
+				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
+					continue;
+
+				ACTOR_CALL2(displacer, on_left, actor);
+				VAL(actor, X_TOUCH) = 1L;
+			}
+	}
+
+	// Vertical collision
+	y += VAL(actor, Y_SPEED);
+	list_cell_at(&list, (frect){
+				    {x + actor->box.start.x, y + actor->box.start.y},
+				    {x + actor->box.end.x,   y + actor->box.end.y  }
+        });
+
+	if (list.num_actors > 0L) {
+		if (VAL(actor, Y_SPEED) < FxZero)
+			for (ActorID i = 0; i < list.num_actors; i++) {
+				GameActor* displacer = list.actors[i];
+				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
+					continue;
+
+				ACTOR_CALL2(displacer, on_bottom, actor);
+				VAL(actor, Y_TOUCH) = -1L;
+			}
+		else if (VAL(actor, Y_SPEED) > FxZero)
+			for (ActorID i = 0; i < list.num_actors; i++) {
+				GameActor* displacer = list.actors[i];
+				if (actor == displacer)
+					continue;
+
+				const SolidType solid = ACTOR_GET_SOLID(displacer);
+				if (!(solid & SOL_ALL)
+					|| ((solid & SOL_TOP)
+						&& (y + actor->box.end.y - VAL(actor, Y_SPEED))
+							   > (displacer->pos.y + displacer->box.start.y)))
+					continue;
+
+				ACTOR_CALL2(displacer, on_top, actor);
+				VAL(actor, Y_TOUCH) = 1L;
+			}
+	}
+
+	move_actor(actor, (fvec2){x, y});
+}
+
 /// Generic interpolated (not yet) actor drawing function.
 //
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
