@@ -1,7 +1,6 @@
 #include "K_game.h"
 
 #include "actors/K_enemies.h"
-#include "actors/K_player.h"
 
 enum {
 	VAL_THWOMP_Y = VAL_CUSTOM,
@@ -152,13 +151,11 @@ static void collide(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_PLAYER: {
-		if (VAL(from, PLAYER_STARMAN) > 0L)
-			player_starman(from, actor);
-		else if (hit_player(from)) {
-			VAL(actor, THWOMP_FRAME) = FxZero;
-			FLAG_ON(actor, FLG_THWOMP_LAUGH);
-			play_actor_sound(actor, "thwomp");
-		}
+		if (!maybe_hit_player(actor, from))
+			break;
+		VAL(actor, THWOMP_FRAME) = FxZero;
+		FLAG_ON(actor, FLG_THWOMP_LAUGH);
+		play_actor_sound(actor, "thwomp");
 		break;
 	}
 

@@ -1,5 +1,6 @@
 #include "actors/K_artillery.h"
 #include "actors/K_enemies.h"
+#include "actors/K_player.h"
 #include "actors/K_points.h"
 
 // ================
@@ -55,6 +56,16 @@ GameActor* kill_enemy(GameActor* actor, Bool kick) {
 
 	FLAG_ON(actor, FLG_DESTROY);
 	return dead;
+}
+
+Bool maybe_hit_player(GameActor* actor, GameActor* from) {
+	if (actor == NULL || from == NULL || from->type != ACT_PLAYER)
+		return false;
+	if (VAL(from, PLAYER_STARMAN) > 0L) {
+		player_starman(from, actor);
+		return false;
+	}
+	return hit_player(from);
 }
 
 void block_fireball(GameActor* actor) {

@@ -165,18 +165,13 @@ static void collide(GameActor* actor, GameActor* from) {
 	default:
 		break;
 
-	case ACT_PLAYER: {
-		if (VAL(from, PLAYER_STARMAN) > 0L)
-			player_starman(from, actor);
-		else
-			hit_player(from);
+	case ACT_PLAYER:
+		maybe_hit_player(actor, from);
 		break;
-	}
 
-	case ACT_MISSILE_FIREBALL: {
+	case ACT_MISSILE_FIREBALL:
 		hit_fireball(actor, from, 100L);
 		break;
-	}
 	}
 }
 

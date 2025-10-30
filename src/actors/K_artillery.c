@@ -65,7 +65,7 @@ static void collide_bullet(GameActor* actor, GameActor* from) {
 			give_points(actor, player, 100L);
 			kill_enemy(actor, false);
 		} else
-			hit_player(from);
+			maybe_hit_player(actor, from);
 
 		break;
 	}
