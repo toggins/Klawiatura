@@ -552,6 +552,42 @@ void draw_game() {
 		actor = get_actor(actor->previous);
 	}
 
+	const char* tex;
+	switch ((game_state.time / 5L) % 8L) {
+	default:
+		tex = "markers/water";
+		break;
+	case 1L:
+		tex = "markers/water2";
+		break;
+	case 2L:
+		tex = "markers/water3";
+		break;
+	case 3L:
+		tex = "markers/water4";
+		break;
+	case 4L:
+		tex = "markers/water5";
+		break;
+	case 5L:
+		tex = "markers/water6";
+		break;
+	case 6L:
+		tex = "markers/water7";
+		break;
+	case 7L:
+		tex = "markers/water8";
+		break;
+	}
+
+	float wy = FtInt(game_state.water);
+	batch_start(XYZ(0.f, wy, -100.f), 0.f, ALPHA(135));
+	batch_rectangle(tex, XY(FtFloat(game_state.size.x), 16.f));
+	wy += 16.f;
+	batch_cursor(XYZ(0.f, wy, -100.f));
+	batch_color(RGBA(88, 136, 224, 135));
+	batch_rectangle(NULL, XY(FtFloat(game_state.size.x), FtFloat(game_state.size.y) - wy));
+
 	draw_hud();
 	pop_surface();
 
@@ -744,8 +780,10 @@ void dump_game_state() {
 	INFO("	Time: %u", game_state.sequence.time);
 	INFO("");
 	INFO("[PLAYERS]");
+
 	for (PlayerID i = 0; i < num_players; i++) {
 		const GamePlayer* player = &game_state.players[i];
+
 		INFO("	Player %i:", i + 1);
 		INFO("		ID: %i", player->id);
 		INFO("		Input: %u -> %u", player->last_input, player->input);
@@ -754,11 +792,15 @@ void dump_game_state() {
 		INFO("		Power: %u", player->power);
 		INFO("		Actor: %i (%p)", player->actor, get_actor(player->actor));
 		INFO("		Missiles:");
+
 		for (ActorID j = 0; j < MAX_MISSILES; j++)
 			INFO("			%i (%p)", player->missiles[j], get_actor(player->missiles[j]));
+
 		INFO("		Sinking Missiles:");
+
 		for (ActorID j = 0; j < MAX_SINK; j++)
 			INFO("			%i (%p)", player->sink[j], get_actor(player->sink[j]));
+
 		INFO("		Position: (%.2f, %.2f)", FtFloat(player->pos.x), FtFloat(player->pos.y));
 		INFO("		Bounds: (%.2f, %.2f, %.2f, %.2f)", FtFloat(player->bounds.start.x),
 			FtFloat(player->bounds.start.y), FtFloat(player->bounds.end.x), FtFloat(player->bounds.end.y));
@@ -771,6 +813,7 @@ void dump_game_state() {
 		INFO("			(Frames...)");
 		INFO("");
 	}
+
 	INFO("");
 	INFO("Spawn: %i (%p)", game_state.spawn, get_actor(game_state.spawn));
 	INFO("Checkpoint: %i (%p)", game_state.checkpoint, get_actor(game_state.checkpoint));
@@ -789,6 +832,7 @@ void dump_game_state() {
 	INFO("	Latest Actor: %i (%p)", game_state.live_actors, get_actor(game_state.live_actors));
 	INFO("	Next Actor ID: %i", game_state.next_actor);
 	INFO("");
+
 	for (const GameActor* actor = get_actor(game_state.live_actors); actor != NULL;
 		actor = get_actor(actor->previous))
 	{
@@ -805,11 +849,14 @@ void dump_game_state() {
 		INFO("		Depth: %.2f", FtFloat(actor->depth));
 		INFO("		Flags: %u", actor->flags);
 		INFO("		Non-Zero Values:");
+
 		for (ActorValue i = 0; i < MAX_VALUES; i++)
 			if (actor->values[i] != 0L)
 				INFO("			%u: %i", i, actor->values[i]);
+
 		INFO("");
 	}
+
 	INFO("");
 	INFO("	(Grid...)");
 	INFO("");
