@@ -118,7 +118,7 @@ static void tick(GameActor* actor) {
 		GameActor* fire
 			= create_actor(ACT_PIRANHA_FIRE, POS_ADD(actor, FxZero, flip ? FfInt(35L) : FfInt(-35L)));
 		if (fire != NULL) {
-			VAL(fire, X_SPEED) -= FfInt(rng(5L)), VAL(fire, X_SPEED) += FfInt(rng(5L));
+			VAL(fire, X_SPEED) = FfInt(-4L + rng(9L));
 			VAL(fire, Y_SPEED) = FfInt(flip ? rng(6L) : (-3L - rng(9L)));
 			play_actor_sound(fire, "fire");
 		}

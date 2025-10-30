@@ -48,7 +48,8 @@ GameActor* kill_enemy(GameActor* actor, Bool kick) {
 	}
 
 	if (kick) {
-		fixed rnd = FfInt(rng(5L)), dir = 77208L + Fmul(rnd, 12868L);
+		const fixed rnd = FfInt(rng(5L));
+		const fixed dir = 77208L + Fmul(rnd, 12868L);
 		VAL(dead, X_SPEED) = Fmul(Fcos(dir), FfInt(3L));
 		VAL(dead, Y_SPEED) = Fmul(Fsin(dir), FfInt(-3L));
 		play_actor_sound(actor, "kick");
