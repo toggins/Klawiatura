@@ -18,8 +18,8 @@ fvec2 Vsub(register fvec2 a, register fvec2 b) {
 ///
 /// Pythagorean theorem is useless in fixed point math due to overflows.
 fixed Vdist(register fvec2 a, register fvec2 b) {
-	a = Vsub(a, b);
-	return (a.x + a.y) - Fhalf(Fmin(a.x, a.y));
+	const fvec2 d = {Fabs(b.x - a.x), Fabs(b.y - a.y)};
+	return (d.x + d.y) - Fhalf(Fmin(d.x, d.y));
 }
 
 /// Radian angle between two points.
