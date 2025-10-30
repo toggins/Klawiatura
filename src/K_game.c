@@ -1891,7 +1891,9 @@ void align_interp(const GameActor* actor, const GameActor* from) {
 	if (BAD_ACTOR(actor) || BAD_ACTOR(from))
 		return;
 	InterpActor *iactor = &interp.actors[actor->id], *ifrom = &interp.actors[from->id];
-	iactor->from.x = ifrom->pos.x, iactor->from.y = ifrom->pos.y;
+	iactor->from.x = ifrom->from.x, iactor->from.y = ifrom->from.y;
+	iactor->to.x = ifrom->to.x, iactor->to.y = ifrom->to.y;
+	iactor->pos.x = ifrom->pos.x, iactor->pos.y = ifrom->pos.y;
 }
 
 #undef BAD_ACTOR

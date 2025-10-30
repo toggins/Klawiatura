@@ -274,7 +274,7 @@ static void load_lui() {
 
 static void create_lui(GameActor* actor) {
 	actor->box.start.x = FfInt(-15L);
-	actor->box.start.y = FfInt(-30L);
+	actor->box.start.y = FfInt(-31L);
 	actor->box.end.x = FfInt(15L);
 	actor->depth = FxOne;
 

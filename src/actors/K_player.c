@@ -933,17 +933,17 @@ static void tick(GameActor* actor) {
 	}
 
 	case POW_LUI: {
-		if (VAL(actor, PLAYER_GROUND) > 0L)
+		if (VAL(actor, PLAYER_GROUND) > 0L || (game_state.time % 2L) == 0L)
 			break;
 
 		GameActor* effect = create_actor(ACT_PLAYER_EFFECT, actor->pos);
 		if (effect == NULL)
-			return;
-
-		align_interp(effect, actor);
+			break;
 		FLAG_ON(effect, actor->flags & FLG_X_FLIP);
 		VAL(effect, PLAYER_EFFECT_POWER) = player->power;
 		VAL(effect, PLAYER_EFFECT_FRAME) = get_player_frame(actor);
+		align_interp(effect, actor);
+
 		break;
 	}
 	}
@@ -1214,4 +1214,44 @@ const GameActorTable TAB_PLAYER_DEAD = {
 	.tick = tick_corpse,
 	.draw = draw_corpse,
 	.owner = owner,
+};
+
+// =============
+// PLAYER EFFECT
+// =============
+
+static void create_effect(GameActor* actor) {
+	actor->box.start.x = FfInt(-24L);
+	actor->box.start.y = FfInt(-64L);
+	actor->box.end.x = FfInt(24L);
+
+	VAL(actor, PLAYER_EFFECT_INDEX) = (ActorValue)NULLPLAY;
+	VAL(actor, PLAYER_EFFECT_POWER) = POW_SMALL;
+	VAL(actor, PLAYER_EFFECT_FRAME) = PF_IDLE;
+	VAL(actor, PLAYER_EFFECT_ALPHA) = FfInt(255L);
+}
+
+static void tick_effect(GameActor* actor) {
+	actor->depth += 4095L;
+
+	VAL(actor, PLAYER_EFFECT_ALPHA) -= 652800L;
+	if (VAL(actor, PLAYER_EFFECT_ALPHA) <= FxZero)
+		FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_effect(const GameActor* actor) {
+	draw_actor(actor, get_player_texture(VAL(actor, PLAYER_EFFECT_POWER), VAL(actor, PLAYER_EFFECT_FRAME)), 0.f,
+		ALPHA(((localplayer() == get_owner_id(actor)) ? 1.f : 0.75f) * FtInt(VAL(actor, PLAYER_EFFECT_ALPHA))));
+}
+
+static PlayerID effect_owner(const GameActor* actor) {
+	return (PlayerID)VAL(actor, PLAYER_EFFECT_INDEX);
+}
+
+const GameActorTable TAB_PLAYER_EFFECT = {
+	.load = load_player_textures,
+	.create = create_effect,
+	.tick = tick_effect,
+	.draw = draw_effect,
+	.owner = effect_owner,
 };
