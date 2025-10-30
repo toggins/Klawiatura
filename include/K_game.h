@@ -339,13 +339,13 @@ enum BaseActorFlags {
 	})
 #define HITBOX_LEFT(actor)                                                                                             \
 	((frect){                                                                                                      \
-		{(actor)->pos.x + (actor)->box.start.x - FxOne, (actor)->pos.y + (actor)->box.start.y},                \
-		{(actor)->pos.x + (actor)->box.end.x,           (actor)->pos.y + (actor)->box.end.y  },                            \
+		{(actor)->pos.x + (actor)->box.start.x,         (actor)->pos.y + (actor)->box.start.y},                        \
+		{(actor)->pos.x + (actor)->box.start.x + FxOne, (actor)->pos.y + (actor)->box.end.y  },                  \
 	})
 #define HITBOX_RIGHT(actor)                                                                                            \
 	((frect){                                                                                                      \
-		{(actor)->pos.x + (actor)->box.start.x,       (actor)->pos.y + (actor)->box.start.y},                        \
-		{(actor)->pos.x + (actor)->box.end.x + FxOne, (actor)->pos.y + (actor)->box.end.y  },                    \
+		{(actor)->pos.x + (actor)->box.end.x - FxOne, (actor)->pos.y + (actor)->box.start.y},                  \
+		{(actor)->pos.x + (actor)->box.end.x,         (actor)->pos.y + (actor)->box.end.y  },                            \
 	})
 
 typedef struct {
