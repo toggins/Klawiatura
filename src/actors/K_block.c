@@ -24,13 +24,15 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 		break;
 	}
 
-	if ((ANY_FLAG(actor, FLG_BLOCK_EMPTY) && actor->type != ACT_NOTE_BLOCK)
-		|| (VAL(actor, BLOCK_BUMP) > 0L && (actor->type != ACT_NOTE_BLOCK || VAL(actor, Y_TOUCH) == -1L)))
+	if (ANY_FLAG(actor, FLG_BLOCK_EMPTY) && actor->type != ACT_NOTE_BLOCK)
 		return;
 
-	GameActor* bump = create_actor(ACT_BLOCK_BUMP, actor->pos);
-	if (bump != NULL)
-		VAL(bump, BLOCK_PLAYER) = (ActorValue)get_owner_id(from);
+	GamePlayer* player = get_owner(from);
+	if (player != NULL) {
+		GameActor* bump = create_actor(ACT_BLOCK_BUMP, actor->pos);
+		if (bump != NULL)
+			VAL(bump, BLOCK_PLAYER) = (ActorValue)player->id;
+	}
 
 	switch (actor->type) {
 	default:
@@ -67,7 +69,6 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 			FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
 		}
 
-		GamePlayer* player = get_owner(from);
 		if (player != NULL)
 			player->score += 50L;
 
@@ -93,7 +94,6 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 	case ACT_BEETROOT:
 	case ACT_LUI:
 	case ACT_HAMMER_SUIT: {
-		GamePlayer* player = get_owner(from);
 		if (player != NULL && player->power == POW_SMALL)
 			VAL(actor, BLOCK_ITEM) = ACT_MUSHROOM;
 		else
@@ -457,12 +457,9 @@ static void note_top(GameActor* actor, GameActor* from) {
 	case ACT_PLAYER:
 	case ACT_MISSILE_BEETROOT: {
 		VAL(from, Y_SPEED) = FfInt((VAL(from, PLAYER_SPRING) > 0L) ? -19L : -10L);
-		if (VAL(actor, BLOCK_BUMP) <= 0L || VAL(actor, Y_TOUCH) != 1L) {
-			VAL(actor, BLOCK_BUMP) = 1L;
-			VAL(actor, X_TOUCH) = 0L, VAL(actor, Y_TOUCH) = 1L;
-			play_actor_sound(actor, "spring");
-		}
-
+		VAL(actor, BLOCK_BUMP) = 1L;
+		VAL(actor, X_TOUCH) = 0L, VAL(actor, Y_TOUCH) = 1L;
+		play_actor_sound(actor, "spring");
 		break;
 	}
 	}
@@ -476,12 +473,9 @@ static void note_left(GameActor* actor, GameActor* from) {
 	case ACT_PLAYER:
 	case ACT_MISSILE_BEETROOT: {
 		VAL(from, X_SPEED) = FfInt(-5L);
-		if (VAL(actor, BLOCK_BUMP) <= 0L || VAL(actor, X_TOUCH) != 1L) {
-			VAL(actor, BLOCK_BUMP) = 1L;
-			VAL(actor, X_TOUCH) = 1L, VAL(actor, Y_TOUCH) = 0L;
-			play_actor_sound(actor, "bump");
-		}
-
+		VAL(actor, BLOCK_BUMP) = 1L;
+		VAL(actor, X_TOUCH) = 1L, VAL(actor, Y_TOUCH) = 0L;
+		play_actor_sound(actor, "bump");
 		break;
 	}
 	}
@@ -495,12 +489,9 @@ static void note_right(GameActor* actor, GameActor* from) {
 	case ACT_PLAYER:
 	case ACT_MISSILE_BEETROOT: {
 		VAL(from, X_SPEED) = FfInt(5L);
-		if (VAL(actor, BLOCK_BUMP) <= 0L || VAL(actor, X_TOUCH) != -1L) {
-			VAL(actor, BLOCK_BUMP) = 1L;
-			VAL(actor, X_TOUCH) = -1L, VAL(actor, Y_TOUCH) = 0L;
-			play_actor_sound(actor, "bump");
-		}
-
+		VAL(actor, BLOCK_BUMP) = 1L;
+		VAL(actor, X_TOUCH) = -1L, VAL(actor, Y_TOUCH) = 0L;
+		play_actor_sound(actor, "bump");
 		break;
 	}
 	}

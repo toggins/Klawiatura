@@ -1057,26 +1057,44 @@ static void cleanup(GameActor* actor) {
 }
 
 static void collide(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER || get_actor((ActorID)VAL(from, PLAYER_WARP)) != NULL)
+	if (get_actor((ActorID)VAL(actor, PLAYER_WARP)) != NULL)
 		return;
 
-	if (VAL(from, PLAYER_GROUND) <= 0L && VAL(from, Y_SPEED) > FxZero && from->pos.y < (actor->pos.y - FfInt(10L)))
-	{
-		GamePlayer* fplayer = get_owner(from);
-		VAL(from, Y_SPEED) = FfInt((fplayer != NULL && ANY_INPUT(fplayer, GI_JUMP)) ? -13L : -8L);
-		FLAG_ON(from, FLG_PLAYER_STOMP); // In case they overlap an enemy
+	switch (from->type) {
+	default:
+		break;
 
-		VAL(actor, Y_SPEED) = Fmax(VAL(actor, Y_SPEED), FxZero);
-		play_actor_sound(actor, "stomp");
-	} else if (Fabs(VAL(from, X_SPEED)) > Fabs(VAL(actor, X_SPEED)))
-		if ((VAL(from, X_SPEED) > FxZero && from->pos.x < actor->pos.x)
-			|| (VAL(from, X_SPEED) < FxZero && from->pos.x > actor->pos.x))
+	case ACT_PLAYER: {
+		if (VAL(from, PLAYER_GROUND) <= 0L && VAL(from, Y_SPEED) > FxZero
+			&& from->pos.y < (actor->pos.y - FfInt(10L)))
 		{
-			VAL(actor, X_SPEED) += Fhalf(VAL(from, X_SPEED));
-			VAL(from, X_SPEED) = -Fhalf(VAL(from, X_SPEED));
-			if (Fabs(VAL(from, X_SPEED)) > FfInt(2L))
-				play_actor_sound(actor, "bump");
+			GamePlayer* fplayer = get_owner(from);
+			VAL(from, Y_SPEED) = FfInt((fplayer != NULL && ANY_INPUT(fplayer, GI_JUMP)) ? -13L : -8L);
+			FLAG_ON(from, FLG_PLAYER_STOMP); // In case they overlap an enemy
+
+			VAL(actor, Y_SPEED) = Fmax(VAL(actor, Y_SPEED), FxZero);
+			play_actor_sound(actor, "stomp");
+		} else if (Fabs(VAL(from, X_SPEED)) > Fabs(VAL(actor, X_SPEED)))
+			if ((VAL(from, X_SPEED) > FxZero && from->pos.x < actor->pos.x)
+				|| (VAL(from, X_SPEED) < FxZero && from->pos.x > actor->pos.x))
+			{
+				VAL(actor, X_SPEED) += Fhalf(VAL(from, X_SPEED));
+				VAL(from, X_SPEED) = -Fhalf(VAL(from, X_SPEED));
+				if (Fabs(VAL(from, X_SPEED)) > FfInt(2L))
+					play_actor_sound(actor, "bump");
+			}
+
+		break;
+	}
+
+	case ACT_BLOCK_BUMP: {
+		if (get_owner_id(actor) != get_owner_id(from) && VAL(actor, PLAYER_GROUND) > 0L) {
+			VAL(actor, Y_SPEED) = FfInt(-8L);
+			VAL(actor, PLAYER_GROUND) = 0L;
 		}
+		break;
+	}
+	}
 }
 
 static PlayerID owner(const GameActor* actor) {
