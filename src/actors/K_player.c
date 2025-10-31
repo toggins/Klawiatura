@@ -619,9 +619,8 @@ static void create(GameActor* actor) {
 	actor->depth = -FxOne;
 
 	actor->box.start.x = FfInt(-9L);
-	actor->box.start.y = FfInt(-25L);
+	actor->box.start.y = FfInt(-26L);
 	actor->box.end.x = FfInt(10L);
-	actor->box.end.y = FxOne;
 
 	VAL(actor, PLAYER_INDEX) = (ActorValue)NULLPLAY;
 	VAL(actor, PLAYER_GROUND) = GROUND_TIME;
@@ -669,7 +668,8 @@ static void tick(GameActor* actor) {
 		VAL(actor, PLAYER_PLATFORM) = Rcollide(mbox, pbox) ? pfid : NULLACT;
 	}
 
-	const Bool cant_run = (!ANY_INPUT(player, GI_RUN) || actor->pos.y >= game_state.water),
+	fixed foot_y = actor->pos.y - FxOne;
+	const Bool cant_run = (!ANY_INPUT(player, GI_RUN) || foot_y >= game_state.water),
 		   jumped = ANY_PRESSED(player, GI_JUMP);
 
 	if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_TOUCH) <= 0L && !ANY_FLAG(actor, FLG_PLAYER_DUCK)
@@ -716,17 +716,17 @@ static void tick(GameActor* actor) {
 				= Fmin(VAL(actor, X_SPEED) + (ANY_INPUT(player, GI_LEFT) ? 18432L : 24576L), FxZero);
 	}
 
-	if (ANY_INPUT(player, GI_JUMP) && VAL(actor, Y_SPEED) < FxZero && actor->pos.y < game_state.water)
+	if (ANY_INPUT(player, GI_JUMP) && VAL(actor, Y_SPEED) < FxZero && foot_y < game_state.water)
 		VAL(actor, Y_SPEED) -= (player->power == POW_LUI)
 		                               ? 39322L
 		                               : ((Fabs(VAL(actor, X_SPEED)) < 40960L) ? 26214L : FxHalf);
 
 	if (jumped) {
 		VAL(actor, PLAYER_SPRING) = 7L;
-		if (actor->pos.y >= game_state.water) {
+		if (foot_y >= game_state.water) {
 			VAL(actor, Y_TOUCH) = 0L;
-			VAL(actor, Y_SPEED) = ((actor->pos.y + actor->box.start.y) > (game_state.water + FfInt(16L))
-						      || ((actor->pos.y + actor->box.end.y) < game_state.water))
+			VAL(actor, Y_SPEED) = ((foot_y + actor->box.start.y) > (game_state.water + FfInt(16L))
+						      || ((foot_y + actor->box.end.y - FxOne) < game_state.water))
 			                              ? FfInt(-3L)
 			                              : FfInt(-9L);
 			VAL(actor, PLAYER_GROUND) = 0L;
@@ -736,12 +736,12 @@ static void tick(GameActor* actor) {
 	}
 	VAL_TICK(actor, PLAYER_SPRING);
 
-	if (actor->pos.y >= game_state.water) {
+	if (foot_y >= game_state.water) {
 		if (!ANY_FLAG(actor, FLG_PLAYER_SWIM)) {
 			if (Fabs(VAL(actor, X_SPEED)) >= FxHalf)
 				VAL(actor, X_SPEED) -= (VAL(actor, X_SPEED) >= FxZero) ? FxHalf : -FxHalf;
 			VAL(actor, PLAYER_FRAME) = FxZero;
-			if (actor->pos.y < (game_state.water + FfInt(11L)))
+			if (foot_y < (game_state.water + FfInt(11L)))
 				create_actor(ACT_WATER_SPLASH, actor->pos);
 			FLAG_ON(actor, FLG_PLAYER_SWIM);
 		}
@@ -750,7 +750,7 @@ static void tick(GameActor* actor) {
 		FLAG_OFF(actor, FLG_PLAYER_SWIM);
 	}
 
-	if (actor->pos.y < game_state.water) {
+	if (foot_y < game_state.water) {
 		if ((jumped || (ANY_INPUT(player, GI_JUMP) && ANY_FLAG(actor, FLG_PLAYER_JUMP)))
 			&& VAL(actor, PLAYER_GROUND) > 0L)
 		{
@@ -762,7 +762,7 @@ static void tick(GameActor* actor) {
 		if (!ANY_INPUT(player, GI_JUMP) && VAL(actor, PLAYER_GROUND) > 0L && ANY_FLAG(actor, FLG_PLAYER_JUMP))
 			FLAG_OFF(actor, FLG_PLAYER_JUMP);
 	}
-	if (actor->pos.y > game_state.water && (game_state.time % 5L) == 0L)
+	if (foot_y > game_state.water && (game_state.time % 5L) == 0L)
 		if (rng(10L) == 5L)
 			create_actor(
 				ACT_BUBBLE, POS_ADD(actor, FxZero,
@@ -774,7 +774,7 @@ static void tick(GameActor* actor) {
 		FLAG_ON(actor, FLG_PLAYER_JUMP);
 
 	actor->box.start.y
-		= (player->power == POW_SMALL || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? FfInt(-25L) : FfInt(-51L);
+		= (player->power == POW_SMALL || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? FfInt(-26L) : FfInt(-52L);
 
 	VAL_TICK(actor, PLAYER_GROUND);
 
@@ -818,8 +818,9 @@ static void tick(GameActor* actor) {
 		}
 	}
 
+	foot_y = actor->pos.y - FxOne;
 	if (VAL(actor, Y_TOUCH) <= 0L) {
-		if (actor->pos.y >= game_state.water) {
+		if (foot_y >= game_state.water) {
 			if (VAL(actor, Y_SPEED) > FfInt(3L))
 				VAL(actor, Y_SPEED) = Fmin(VAL(actor, Y_SPEED) - FxOne, FfInt(3L));
 			else if (VAL(actor, Y_SPEED) < FfInt(3L))
@@ -894,7 +895,7 @@ static void tick(GameActor* actor) {
 		if (mtype == ACT_NULL)
 			break;
 		GameActor* missile = create_actor(
-			mtype, POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? FfInt(-5L) : FfInt(5L), FfInt(-29L)));
+			mtype, POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? FfInt(-5L) : FfInt(5L), FfInt(-30L)));
 		if (missile == NULL)
 			break;
 
@@ -963,9 +964,8 @@ static void tick(GameActor* actor) {
 		}
 	}
 
-	if (actor->pos.y
-		> (((get_actor(game_state.autoscroll) != NULL) ? game_state.bounds.end.y : player->bounds.end.y)
-			+ FfInt(64L)))
+	if (foot_y > (((get_actor(game_state.autoscroll) != NULL) ? game_state.bounds.end.y : player->bounds.end.y)
+		      + FfInt(64L)))
 	{
 		kill_player(actor);
 		goto sync_pos;

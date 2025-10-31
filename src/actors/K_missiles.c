@@ -104,9 +104,8 @@ static void create_beetroot(GameActor* actor) {
 	VAL(actor, MISSILE_HITS) = 3L;
 
 	actor->box.start.x = FfInt(-11L);
-	actor->box.start.y = FfInt(-31L);
+	actor->box.start.y = FfInt(-32L);
 	actor->box.end.x = FfInt(12L);
-	actor->box.end.y = FxOne;
 }
 
 static void tick_beetroot(GameActor* actor) {
@@ -118,7 +117,7 @@ static void tick_beetroot(GameActor* actor) {
 		return;
 	}
 
-	if ((actor->pos.y + Fmin(VAL(actor, Y_SPEED), FxZero)) > game_state.water) {
+	if ((actor->pos.y + Fmin(VAL(actor, Y_SPEED), FxZero) - FxOne) > game_state.water) {
 		if (!ANY_FLAG(actor, FLG_MISSILE_SINK)) {
 			GamePlayer* player = get_owner(actor);
 			if (player != NULL) {
