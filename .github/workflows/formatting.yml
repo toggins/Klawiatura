@@ -18,4 +18,4 @@ jobs:
             src/
             include/
       - name: Fail on wrong formatting
-        run: clang-format --dry-run -Werror -- **.h **.c
+        run: shopt -s globstar; clang-format --dry-run -Werror -- **/*.{h,c}
