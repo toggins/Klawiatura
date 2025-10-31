@@ -11,21 +11,21 @@ concurrency:
 
 jobs:
   release:
-    name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} binaries for ${{ matrix.os.name }}
+    name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} binaries for ${{ matrix.name }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write
     strategy:
       matrix:
-        os:
+        include:
           - name: Linux
           - name: WinXP
             mingw: 32
           - name: Win64
             mingw: 64
     env:
-      OUTNAME: Klawiatura-${{ matrix.os.name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
-      MINGW_ARCH: ${{ matrix.os.mingw == 32 && 'i686' || 'x86_64' }}
+      OUTNAME: Klawiatura-${{ matrix.name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
+      MINGW_ARCH: ${{ matrix.mingw == 32 && 'i686' || 'x86_64' }}
       MINGW_SHIT: >-
         -D CMAKE_C_COMPILER=${MINGW_ARCH}-w64-mingw32-gcc
         -D CMAKE_CXX_COMPILER=${MINGW_ARCH}-w64-mingw32-g++
@@ -51,10 +51,10 @@ jobs:
             libgl1-mesa-dev python3-jinja2 \
             libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev
       - name: Install MinGW
-        if: matrix.os.mingw
+        if: matrix.mingw
         uses: egor-tensin/setup-mingw@v2.2.0
         with:
-          platform: ${{ matrix.os.mingw == 32 && 'x86' || 'x64' }}
+          platform: ${{ matrix.mingw == 32 && 'x86' || 'x64' }}
           cc: 0
       - name: Cache dependency sources
         uses: actions/cache@v4
@@ -68,18 +68,18 @@ jobs:
           path: |
             build/_deps/*-build
             build/_deps/*-subbuild
-          key: cmake-deps-obj-${{ matrix.os.name }}-${{ hashFiles('**/CMakeLists.txt') }}
-          restore-keys: cmake-deps-obj-${{ matrix.os.name }}-
+          key: cmake-deps-obj-${{ matrix.name }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: cmake-deps-obj-${{ matrix.name }}-
       - name: Configure
         run: |
           cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
-            ${{ matrix.os.mingw && env.MINGW_SHIT || '' }} \
+            ${{ matrix.mingw && env.MINGW_SHIT || '' }} \
             -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
       - name: Build
         run: cmake --build build --target Klawiatura
       - name: Package
         run: cmake --build build --target package
-      - name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} build for ${{ matrix.os.name }}
+      - name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} build for ${{ matrix.name }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
