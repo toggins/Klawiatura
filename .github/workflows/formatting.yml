@@ -1,0 +1,19 @@
+name: Check commit for formatting errors
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    name: Check formatting correctness
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout (code only)
+        uses: actions/checkout@v5
+        with:
+          sparse-checkout: \**/*.{c,h}
+      - name: Fail on wrong formatting
+        run: clang-format --dry-run --Werror .
