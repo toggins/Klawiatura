@@ -14,6 +14,8 @@ jobs:
       - name: Checkout (code only)
         uses: actions/checkout@v5
         with:
-          sparse-checkout: \**/*.{c,h}
+          sparse-checkout: |
+            src/
+            include/
       - name: Fail on wrong formatting
         run: clang-format --dry-run --Werror .
