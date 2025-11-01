@@ -614,7 +614,9 @@ void draw_menu() {
 		const char *suffix = "", *format = opt->format == NULL ? opt->name : opt->format(opt->name);
 		if (opt->edit != NULL && typing_what() == opt->edit && SDL_fmodf(totalticks(), 30.f) < 16.f)
 			suffix = "|";
-		const char* name = fmt("%s%s", format, suffix);
+
+		static char name[512] = {0}; // separate fmt buffer to prevent memory-related bugs
+		SDL_snprintf(name, sizeof(name), "%s%s", format, suffix);
 
 		const GLfloat x = 48.f + (opt->hover * 8.f);
 		const GLfloat y = menu_y + ((GLfloat)i * 24.f);
