@@ -75,9 +75,9 @@ set(NUTPUNCH_BUILD_TESTS OFF CACHE INTERNAL "")
 set(NUTPUNCH_BUILD_SERVER OFF CACHE INTERNAL "")
 set(NUTPUNCH_BUILD_LOBBYIST OFF CACHE INTERNAL "")
 FetchContent_Declare(
-    nutpunch
+    NutPunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG e57a19c2203bba9ebc4ceda03cde8076322c70b1)
+    GIT_TAG 53eb0229c3dcfdaeba738ddee076ab7a80552640)
 
 # yyjson (0.12.0)
 FetchContent_Declare(
@@ -95,14 +95,14 @@ FetchContent_Declare(
 # FMOD Core API (2.03.08)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
 
-FetchContent_MakeAvailable(SDL3 SDL3_image glad cglm S_fixed S_tructures nutpunch yyjson GekkoNet)
+FetchContent_MakeAvailable(SDL3 SDL3_image glad cglm S_fixed S_tructures NutPunch yyjson GekkoNet)
 glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
 
 set(LIBS
     SDL3::SDL3-static SDL3_image::SDL3_image-static
     glad_gl_core_33
     cglm fmod  GekkoNet
-    S_fixed S_tructures nutpunch
+    S_fixed S_tructures NutPunch
     yyjson)
 
 # Build

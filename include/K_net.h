@@ -2,8 +2,8 @@
 
 #include <SDL3/SDL_stdinc.h>
 
+#include <NutPunch.h>
 #include <gekkonet.h>
-#include <nutpunch.h>
 
 #define MAX_PEERS NUTPUNCH_MAX_PLAYERS
 
