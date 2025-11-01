@@ -3,7 +3,6 @@
 #include <SDL3/SDL_stdinc.h>
 
 #include "K_game.h"
-#include "K_net.h"
 
 #define CMD_OPT(ident) cmd_set_##ident
 #define MAKE_FLAG(ident) MAKE_OPTION_PRO(ident, bool, false, true)
@@ -25,6 +24,7 @@ typedef struct {
 
 typedef struct {
 	struct {
+		bool aware;
 		char name[CLIENT_STRING_MAX];
 		char skin[CLIENT_STRING_MAX];
 	} user;

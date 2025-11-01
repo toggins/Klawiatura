@@ -1,3 +1,5 @@
+#include <SDL3/SDL_misc.h>
+
 #include "K_audio.h"
 #include "K_cmd.h"
 #include "K_config.h"
@@ -50,8 +52,22 @@ static void play_singleplayer() {
 	start_game(&ctx);
 }
 
+// Multiplayer Note
+static void open_troubleshooting_url() {
+	SDL_OpenURL("https://github.com/Schwungus/nutpunch?tab=readme-ov-file#troubleshooting");
+}
+
+static void read_multiplayer_note() {
+	CLIENT.user.aware = true;
+	set_menu(MEN_MULTIPLAYER);
+}
+
+static void screw_multiplayer_note() {
+	read_multiplayer_note();
+	save_config();
+}
+
 // Multiplayer
-// TODO
 
 // Host Lobby
 FMT_OPTION(lobby, CLIENT.lobby.name);
@@ -179,7 +195,7 @@ BIND_OPTION(chat, KB_CHAT);
 #undef VOLUME_OPTION
 #undef BIND_OPTION
 
-static void update_intro(), update_find_lobbies(), update_joining_lobby(), update_inlobby();
+static void update_intro(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(), update_inlobby();
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), play_title_fr(MenuType),
 	maybe_play_title(MenuType), maybe_disconnect(MenuType);
 
@@ -192,6 +208,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_INTRO] = {NORETURN, .update = update_intro, .leave = maybe_play_title},
 	[MEN_MAIN] = {"Mario Together", NORETURN},
 	[MEN_SINGLEPLAYER] = {"Singleplayer"},
+	[MEN_MULTIPLAYER_NOTE] = {"Read This First!", GHOST, .enter = enter_multiplayer_note},
 	[MEN_MULTIPLAYER] = {"Multiplayer"},
 	[MEN_HOST_LOBBY] = {"Host Lobby"},
 	[MEN_JOIN_LOBBY] = {"Join a Lobby"},
@@ -226,7 +243,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_RESULTS] = {},
 	[MEN_MAIN] = {
 		{"Singleplayer", .enter = MEN_SINGLEPLAYER},
-		{"Multiplayer", .enter = MEN_MULTIPLAYER},
+		{"Multiplayer", .enter = MEN_MULTIPLAYER_NOTE},
 		{"Options", .enter = MEN_OPTIONS},
 		{"Exit", .button = instaquit},
 	},
@@ -234,6 +251,21 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Level: %s", FORMAT(level), EDIT(CLIENT.game.level)},
 		{},
 		{"Start!", .button = play_singleplayer},
+	},
+	[MEN_MULTIPLAYER_NOTE] = {
+		{"Mario Together uses NutPunch to make peer-to-peer", DISABLE},
+		{"connections through UDP hole-punching.", DISABLE},
+		{"For a smooth experience, make sure that:", DISABLE},
+		{"  1. You and your friends' game is up to date.", DISABLE},
+		{"  2. Your VPN client is off.", DISABLE},
+		{"  3. Your firewall isn't blocking the game.", DISABLE},
+		{},
+		{"If you are able to join lobbies AND see other players in", DISABLE},
+		{"them, then it should be working.", DISABLE},
+		{},
+		{"OK", .button = read_multiplayer_note},
+		{"Don't Show Again", .button = screw_multiplayer_note},
+		{"NutPunch Troubleshooting (opens browser)", .button = open_troubleshooting_url},
 	},
 	[MEN_MULTIPLAYER] = {
 		{"Host Lobby", .enter = MEN_HOST_LOBBY},
@@ -330,6 +362,11 @@ void start_menu(bool skip_intro) {
 	load_track("yi_score");
 
 	set_menu(skip_intro ? MEN_MAIN : MEN_INTRO);
+}
+
+static void enter_multiplayer_note() {
+	if (CLIENT.user.aware)
+		set_menu(MEN_MULTIPLAYER);
 }
 
 static void maybe_save_config(MenuType next) {

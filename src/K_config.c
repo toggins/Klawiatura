@@ -71,8 +71,15 @@ static bool get_background() {
 static void set_background(bool background) {
 	CLIENT.audio.background = background;
 }
+static bool get_aware() {
+	return CLIENT.user.aware;
+}
+static void set_aware(bool aware) {
+	CLIENT.user.aware = aware;
+}
 
 static const ConfigOption OPTIONS[] = {
+	{"aware",        .r_bool = get_aware,         .w_bool = set_aware        },
 	{"name",         .r_string = get_name,        .w_string = set_name       },
 	{"skin",         .r_string = get_skin,        .w_string = set_skin       },
 	{"delay",        .r_int = get_delay,          .w_int = set_delay         },
