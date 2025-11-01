@@ -1,4 +1,4 @@
-name: Check commit for formatting errors
+name: Check commit for formatting & clang-tidy errors
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   check:
-    name: Check formatting correctness
+    name: Lint
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -17,5 +17,7 @@ jobs:
           sparse-checkout: |
             src/
             include/
-      - name: Fail on wrong formatting
+      - name: Fail on clang-tidy warnings
+        run: shopt -s globstar; clang-tidy --warnings-as-errors -- **/*.{h,c}
+      - name: Fail on bad formatting
         run: shopt -s globstar; clang-format --dry-run -Werror -- **/*.{h,c}
