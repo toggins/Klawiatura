@@ -1,5 +1,6 @@
 #include "actors/K_artillery.h"
 #include "actors/K_enemies.h"
+#include "actors/K_koopa.h"
 #include "actors/K_missiles.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
@@ -7,6 +8,70 @@
 // ================
 // HELPER FUNCTIONS
 // ================
+
+void move_enemy(GameActor* actor, fixed speed, Bool edge) {
+	if (below_level(actor)) {
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	if (!ANY_FLAG(actor, FLG_ENEMY_ACTIVE) && in_any_view(actor, FxZero, false)) {
+		VAL(actor, X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -speed : speed;
+		FLAG_ON(actor, FLG_ENEMY_ACTIVE);
+	}
+
+	if (edge) {
+		const fixed x1 = ANY_FLAG(actor, FLG_X_FLIP) ? (actor->pos.x + actor->box.start.x - FxOne)
+		                                             : (actor->pos.x + actor->box.end.x);
+		const fixed y1 = actor->pos.y + actor->box.start.y;
+		const fixed x2 = x1 + FxOne;
+		const fixed y2 = actor->pos.y + actor->box.end.y + FxOne;
+		if (!touching_solid(
+			    (frect){
+				    {x1, y1},
+                                    {x2, y2}
+                },
+			    SOL_ALL))
+		{
+			if (VAL(actor, X_SPEED) < FxZero) {
+				VAL(actor, X_SPEED) = speed;
+				FLAG_OFF(actor, FLG_X_FLIP);
+			} else if (VAL(actor, X_SPEED) > FxZero) {
+				VAL(actor, X_SPEED) = -speed;
+				FLAG_ON(actor, FLG_X_FLIP);
+			}
+		}
+	}
+
+	VAL(actor, Y_SPEED) += 19005L;
+	displace_actor(actor, FfInt(10L), false);
+
+	collide_actor(actor);
+	VAL_TICK(actor, ENEMY_TURN);
+
+	if (VAL(actor, X_TOUCH) != 0L) {
+		VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * -speed;
+		if (VAL(actor, X_SPEED) < FxZero)
+			FLAG_ON(actor, FLG_X_FLIP);
+		else if (VAL(actor, X_SPEED) > FxZero)
+			FLAG_OFF(actor, FLG_X_FLIP);
+	}
+}
+
+void turn_enemy(GameActor* actor) {
+	if (VAL(actor, ENEMY_TURN) > 0L) {
+		++VAL(actor, ENEMY_TURN);
+		return;
+	}
+
+	VAL(actor, X_SPEED) = -VAL(actor, X_SPEED);
+	if (VAL(actor, X_SPEED) < FxZero)
+		FLAG_ON(actor, FLG_X_FLIP);
+	else if (VAL(actor, X_SPEED) > FxZero)
+		FLAG_OFF(actor, FLG_X_FLIP);
+
+	VAL(actor, ENEMY_TURN) = 2L;
+}
 
 GameActor* kill_enemy(GameActor* actor, Bool kick) {
 	if (actor == NULL)
@@ -17,7 +82,8 @@ GameActor* kill_enemy(GameActor* actor, Bool kick) {
 		break;
 
 	case ACT_PIRANHA_PLANT:
-	case ACT_ROTODISC: {
+	case ACT_ROTODISC:
+	case ACT_PODOBOO: {
 		if (kick)
 			play_actor_sound(actor, "kick");
 		FLAG_ON(actor, FLG_DESTROY);
@@ -41,12 +107,7 @@ GameActor* kill_enemy(GameActor* actor, Bool kick) {
 		return NULL;
 
 	VAL(dead, DEAD_TYPE) = actor->type;
-	FLAG_ON(dead, (actor->flags & FLG_X_FLIP) | FLG_Y_FLIP);
-
-	switch (actor->type) {
-	default:
-		break;
-	}
+	dead->flags = (actor->flags & (~(FLG_DESTROY | FLG_FREEZE))) | FLG_Y_FLIP;
 
 	if (kick) {
 		const fixed rnd = FfInt(rng(5L));
@@ -60,6 +121,26 @@ GameActor* kill_enemy(GameActor* actor, Bool kick) {
 	return dead;
 }
 
+Bool check_stomp(GameActor* actor, GameActor* from, int32_t points) {
+	if (actor == NULL || from == NULL || from->type != ACT_PLAYER || VAL(from, PLAYER_STARMAN) > 0L)
+		return false;
+
+	if (from->pos.y < (actor->pos.y - FfInt(16L))
+		&& (VAL(from, Y_SPEED) >= FxZero || ANY_FLAG(from, FLG_PLAYER_STOMP)))
+	{
+		GamePlayer* player = get_owner(from);
+		VAL(from, Y_SPEED) = Fmin(
+			VAL(from, Y_SPEED), (player != NULL && ANY_INPUT(player, GI_JUMP)) ? FfInt(-13L) : FfInt(-8L));
+		FLAG_ON(from, FLG_PLAYER_STOMP);
+
+		give_points(actor, player, points);
+		play_actor_sound(from, "stomp");
+		return true;
+	}
+
+	return false;
+}
+
 Bool maybe_hit_player(GameActor* actor, GameActor* from) {
 	if (actor == NULL || from == NULL || from->type != ACT_PLAYER)
 		return false;
@@ -68,6 +149,62 @@ Bool maybe_hit_player(GameActor* actor, GameActor* from) {
 		return false;
 	}
 	return hit_player(from);
+}
+
+Bool hit_shell(GameActor* actor, GameActor* from) {
+	if (actor == NULL || from == NULL || (from->type != ACT_KOOPA_SHELL && from->type != ACT_BUZZY_SHELL)
+		|| !ANY_FLAG(from, FLG_SHELL_ACTIVE))
+		return false;
+
+	if ((actor->type == ACT_KOOPA_SHELL || actor->type == ACT_BUZZY_SHELL) && ANY_FLAG(actor, FLG_SHELL_ACTIVE)) {
+		VAL(actor, SHELL_COMBO) = VAL(from, SHELL_COMBO) = 0L;
+		give_points(from, get_owner(from), 100L);
+		kill_enemy(from, true);
+	}
+
+	int32_t points;
+	switch (VAL(from, SHELL_COMBO)++) {
+	case 0:
+		points = 100L;
+		break;
+	case 1:
+		points = 200L;
+		break;
+	case 2:
+		points = 500L;
+		break;
+	case 3:
+		points = 1000L;
+		break;
+	case 4:
+		points = 2000L;
+		break;
+	case 5:
+		points = 5000L;
+		break;
+
+	default: {
+		points = -1L;
+		VAL(from, SHELL_COMBO) = 0L;
+		break;
+	}
+	}
+	give_points(actor, get_owner(from), points);
+
+	kill_enemy(actor, true);
+	return true;
+}
+
+void hit_bump(GameActor* actor, GameActor* from, int32_t points) {
+	if (actor == NULL || from == NULL)
+		return;
+
+	GamePlayer* player = get_owner(from);
+	if (player == NULL)
+		return;
+
+	give_points(actor, player, points);
+	kill_enemy(actor, true);
 }
 
 void block_fireball(GameActor* actor) {
@@ -108,6 +245,10 @@ void hit_beetroot(GameActor* actor, GameActor* from, int32_t points) {
 	give_points(actor, player, points);
 	kill_enemy(actor, true);
 	FLAG_ON(from, FLG_MISSILE_HIT);
+}
+
+void hit_hammer(GameActor* actor, GameActor* from, int32_t points) {
+	hit_bump(actor, from, points);
 }
 
 // ==========

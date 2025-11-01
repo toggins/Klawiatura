@@ -64,6 +64,9 @@ void populate_actors_table() {
 	ACTOR(ROTODISC);
 	ACTOR(WATER_SPLASH);
 	ACTOR(BUBBLE);
+	ACTOR(KOOPA);
+	ACTOR(KOOPA_SHELL);
+	ACTOR(PARAKOOPA);
 
 	static const GameActorTable TAB_NULL = {0};
 	ACTORS[ACT_NULL] = &TAB_NULL;
