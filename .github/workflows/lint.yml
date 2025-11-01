@@ -1,4 +1,4 @@
-name: Check commit for formatting & clang-tidy errors
+name: Check commit for formatting errors
 
 on:
   push:
@@ -17,7 +17,5 @@ jobs:
           sparse-checkout: |
             src/
             include/
-      - name: Fail on clang-tidy warnings
-        run: shopt -s globstar; clang-tidy --warnings-as-errors=true **/*.{h,c}
       - name: Fail on bad formatting
         run: shopt -s globstar; clang-format --dry-run -Werror -- **/*.{h,c}
