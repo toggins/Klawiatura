@@ -1,4 +1,4 @@
-#include "K_log.h" // IWYU pragma: keep
+#include "K_log.h"
 
 #define NUTPUNCH_IMPLEMENTATION
 
