@@ -1596,7 +1596,8 @@ Bool touching_solid(const frect rect, SolidType types) {
 		for (int32_t cy = cy1; cy <= cy2; cy++)
 			for (GameActor* actor = get_actor(game_state.grid[cx + (cy * MAX_CELLS)]); actor != NULL;
 				actor = get_actor(actor->previous_cell))
-				if (ACTOR_IS_SOLID(actor, types) && Rcollide(rect, HITBOX(actor)))
+				if (ACTOR_IS_SOLID(actor, types) && actor->type != ACT_SOLID_SLOPE
+					&& Rcollide(rect, HITBOX(actor)))
 					return true;
 
 	return false;
@@ -1649,7 +1650,8 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 		if (VAL(actor, X_SPEED) < FxZero) {
 			for (ActorID i = 0; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
-				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
+				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
+					|| displacer->type == ACT_SOLID_SLOPE)
 					continue;
 
 				if (VAL(actor, Y_SPEED) >= FxZero
@@ -1683,7 +1685,8 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 		} else if (VAL(actor, X_SPEED) > FxZero) {
 			for (ActorID i = 0; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
-				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
+				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
+					|| displacer->type == ACT_SOLID_SLOPE)
 					continue;
 
 				if (VAL(actor, Y_SPEED) >= FxZero
@@ -1732,7 +1735,10 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 		if (VAL(actor, Y_SPEED) < FxZero) {
 			for (ActorID i = 0; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
-				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
+				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
+					|| (displacer->type == ACT_SOLID_SLOPE
+						&& (ANY_FLAG(displacer, FLG_Y_FLIP)
+							|| actor->pos.y < (displacer->pos.y + displacer->box.end.y))))
 					continue;
 
 				ACTOR_CALL2(displacer, on_bottom, actor);
@@ -1745,6 +1751,29 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer)
 					continue;
+
+				if (displacer->type == ACT_SOLID_SLOPE) {
+					const Bool side = ANY_FLAG(displacer, FLG_X_FLIP);
+
+					const fixed sa = displacer->pos.y
+					                 + (side ? displacer->box.start.y : displacer->box.end.y),
+						    sb = displacer->pos.y
+					                 + (side ? displacer->box.end.y : displacer->box.start.y);
+
+					const fixed ax = x + (side ? actor->box.start.x : actor->box.end.x),
+						    sx = displacer->pos.x
+					                 + (side ? displacer->box.end.x : displacer->box.start.x);
+
+					const fixed slope = Flerp(sa, sb,
+						Fclamp(Fdiv(ax - sx, displacer->box.end.x - displacer->box.start.x),
+							FxZero, FxOne));
+
+					if (y >= slope) {
+						y = slope;
+						stop = true;
+					}
+					continue;
+				}
 
 				const SolidType solid = ACTOR_GET_SOLID(displacer);
 				if (!(solid & SOL_ALL)
@@ -1768,6 +1797,7 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 }
 
 /// Move the actor with speed and touch solid actors without being pushed away.
+// FIXME: Implement slope collisions for this variant.
 void displace_actor_soft(GameActor* actor) {
 	if (actor == NULL)
 		return;
