@@ -16,7 +16,8 @@
 #include "K_net.h"
 #include "K_tick.h"
 
-static const char *hostname = NUTPUNCH_DEFAULT_SERVER, *last_error = NULL;
+static char hostname[512];
+static const char* last_error = NULL;
 
 static char cur_lobby[CLIENT_STRING_MAX] = "";
 static enum {
@@ -35,7 +36,7 @@ static const char* MAGIC_KEY = "KLAWIATURA";
 static int player_peers[MAX_PLAYERS] = {MAX_PEERS};
 
 void net_init() {
-	NutPunch_SetServerAddr(hostname);
+	set_hostname(NUTPUNCH_DEFAULT_SERVER);
 }
 
 void net_teardown() {
@@ -67,8 +68,8 @@ const char* get_hostname() {
 }
 
 void set_hostname(const char* hn) {
-	NutPunch_SetServerAddr(hn);
-	hostname = hn;
+	SDL_snprintf(hostname, sizeof(hostname), "%s", hn);
+	NutPunch_SetServerAddr(hostname);
 }
 
 // =========
