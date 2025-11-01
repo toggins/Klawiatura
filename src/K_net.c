@@ -16,7 +16,7 @@
 #include "K_net.h"
 #include "K_tick.h"
 
-static char hostname[512];
+static char hostname[512] = "";
 static const char* last_error = NULL;
 
 static char cur_lobby[CLIENT_STRING_MAX] = "";
@@ -36,7 +36,8 @@ static const char* MAGIC_KEY = "KLAWIATURA";
 static int player_peers[MAX_PLAYERS] = {MAX_PEERS};
 
 void net_init() {
-	set_hostname(NUTPUNCH_DEFAULT_SERVER);
+	if (!hostname[0])
+		set_hostname(NUTPUNCH_DEFAULT_SERVER);
 }
 
 void net_teardown() {
