@@ -7,7 +7,10 @@
 #define KB_VALUE_MAX 32767
 #define MAX_INPUT_DELAY 4
 
-typedef enum {
+#define NULLBIND ((Keybind)(-1))
+
+typedef int8_t Keybind;
+enum {
 	KB_UP,
 	KB_LEFT,
 	KB_DOWN,
@@ -34,7 +37,7 @@ typedef enum {
 	KB_KEVIN_BAIL,
 
 	KB_SIZE,
-} Keybind;
+};
 
 typedef uint32_t KeybindState;
 typedef int16_t KeybindValue;
@@ -60,3 +63,7 @@ void start_typing(char*, size_t);
 void stop_typing();
 const char* typing_what();
 void input_text_input(SDL_TextInputEvent);
+
+void start_scanning(Keybind);
+void stop_scanning();
+Keybind scanning_what();

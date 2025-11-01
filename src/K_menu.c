@@ -28,6 +28,10 @@ static float volume_toggle_impl(float, int);
 	static void toggle_##vname(int flip) {                                                                         \
 		set_##vname(volume_toggle_impl(get_##vname(), flip));                                                  \
 	}
+#define BIND_OPTION(fname, kb)                                                                                         \
+	static void rebind_##fname() {                                                                                 \
+		start_scanning(kb);                                                                                    \
+	}
 
 // Main Menu
 extern bool permadeath;
@@ -150,18 +154,30 @@ static void toggle_background(int flip) {
 
 // Controls
 FMT_OPTION(device, input_device());
-FMT_OPTION(up, kb_label(KB_UP));
-FMT_OPTION(left, kb_label(KB_LEFT));
-FMT_OPTION(down, kb_label(KB_DOWN));
-FMT_OPTION(right, kb_label(KB_RIGHT));
-FMT_OPTION(jump, kb_label(KB_JUMP));
-FMT_OPTION(fire, kb_label(KB_FIRE));
-FMT_OPTION(run, kb_label(KB_RUN));
-FMT_OPTION(chat, kb_label(KB_CHAT));
+
+#define FMT_KEYBIND(fname, kb) FMT_OPTION(fname, (scanning_what() == kb) ? "(Press any key)" : kb_label(kb))
+FMT_KEYBIND(up, KB_UP);
+BIND_OPTION(up, KB_UP);
+FMT_KEYBIND(left, KB_LEFT);
+BIND_OPTION(left, KB_LEFT);
+FMT_KEYBIND(down, KB_DOWN);
+BIND_OPTION(down, KB_DOWN);
+FMT_KEYBIND(right, KB_RIGHT);
+BIND_OPTION(right, KB_RIGHT);
+FMT_KEYBIND(jump, KB_JUMP);
+BIND_OPTION(jump, KB_JUMP);
+FMT_KEYBIND(fire, KB_FIRE);
+BIND_OPTION(fire, KB_FIRE);
+FMT_KEYBIND(run, KB_RUN);
+BIND_OPTION(run, KB_RUN);
+FMT_KEYBIND(chat, KB_CHAT);
+BIND_OPTION(chat, KB_CHAT);
+#undef FMT_KEYBIND
 
 #undef FMT_OPTION
 #undef BOOL_OPTION
 #undef VOLUME_OPTION
+#undef BIND_OPTION
 
 static void update_intro(), update_find_lobbies(), update_joining_lobby(), update_inlobby();
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), play_title_fr(MenuType),
@@ -200,6 +216,7 @@ static void join_found_lobby() {
 #define EDIT(var) .edit = (var), .edit_size = sizeof(var)
 #define TOGGLE(fname) .flip = toggle_##fname
 #define FORMAT(fname) .format = fmt_##fname
+#define REBIND(fname) .button = rebind_##fname
 #define DISABLE .disabled = true
 
 static const char* NO_LOBBIES_FOUND = "No lobbies found";
@@ -243,16 +260,16 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_CONTROLS] = {
 		{"Device: %s", DISABLE, FORMAT(device)},
 		{},
-		{"Up: %s", FORMAT(up)},
-		{"Left: %s", FORMAT(left)},
-		{"Down: %s", FORMAT(down)},
-		{"Right: %s", FORMAT(right)},
+		{"Up: %s", FORMAT(up), REBIND(up)},
+		{"Left: %s", FORMAT(left), REBIND(left)},
+		{"Down: %s", FORMAT(down), REBIND(down)},
+		{"Right: %s", FORMAT(right), REBIND(right)},
 		{},
-		{"Jump: %s", FORMAT(jump)},
-		{"Run: %s", FORMAT(run)},
-		{"Fire: %s", FORMAT(fire)},
+		{"Jump: %s", FORMAT(jump), REBIND(jump)},
+		{"Run: %s", FORMAT(run), REBIND(run)},
+		{"Fire: %s", FORMAT(fire), REBIND(fire)},
 		{},
-		{"Chat: %s", FORMAT(chat)},
+		{"Chat: %s", FORMAT(chat), REBIND(chat)},
 	},
 	[MEN_HOST_LOBBY] = {
 		{"Lobby ID: %s", FORMAT(lobby), EDIT(CLIENT.lobby.name)},

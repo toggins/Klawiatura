@@ -33,6 +33,8 @@ Bindings BINDS[KB_SIZE] = {
 static char* text = NULL;
 static size_t text_size = 0;
 
+static Keybind scanning = NULLBIND;
+
 void input_init() {}
 void input_teardown() {}
 
@@ -43,7 +45,11 @@ void input_newframe() {
 }
 
 void input_keydown(SDL_Scancode key) {
-	if (typing_what() == NULL) {
+	if (scanning_what() != NULLBIND) {
+		if (key != SDL_SCANCODE_ESCAPE)
+			BINDS[scanning].key = key;
+		stop_scanning();
+	} else if (typing_what() == NULL) {
 		for (int i = 0; i < KB_SIZE; i++) {
 			const KeybindState mask = (key == BINDS[i].key) << i;
 			kb_incoming |= mask;
@@ -105,6 +111,7 @@ const char* kb_label(Keybind kb) {
 }
 
 void start_typing(char* ptext, size_t size) {
+	stop_typing();
 	if (window_start_text_input())
 		text = ptext, text_size = size;
 }
@@ -120,4 +127,18 @@ const char* typing_what() {
 void input_text_input(SDL_TextInputEvent event) {
 	if (typing_what())
 		SDL_strlcat(text, event.text, text_size);
+}
+
+void start_scanning(Keybind kb) {
+	stop_scanning();
+	scanning = (Keybind)((kb >= 0 && kb < KB_SIZE) ? kb : NULLBIND);
+}
+
+void stop_scanning() {
+	scanning = NULLBIND;
+	input_wipeout();
+}
+
+Keybind scanning_what() {
+	return scanning;
 }
