@@ -477,7 +477,7 @@ static void draw_hud() {
 	batch_cursor(XYZ(432.f, 16.f, -10000.f));
 	if (video_state.world[0] == '@') {
 		batch_align(FA_CENTER, FA_TOP);
-		batch_string("main", 24, video_state.world + 1);
+		batch_string("hud", 16, video_state.world + 1);
 	} else
 		batch_sprite(video_state.world, NO_FLIP);
 
