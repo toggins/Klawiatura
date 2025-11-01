@@ -961,31 +961,41 @@ void start_game_state(GameContext* ctx) {
 	//
 	//
 	//
-	uint8_t* data = SDL_LoadFile(find_data_file(fmt("data/levels/%s.*", ctx->level), NULL), NULL);
-	ASSUME(data, "Failed to load level \"%s\": %s", ctx->level, SDL_GetError());
+	const char* kla = find_data_file(fmt("data/levels/%s.*", ctx->level), NULL);
+	if (kla == NULL) {
+		show_error("Level \"%s\" not found", ctx->level);
+		goto level_fail;
+	}
+	uint8_t* data = SDL_LoadFile(kla, NULL);
+	if (data == NULL) {
+		show_error("Failed to load level \"%s\"\n%s", ctx->level, SDL_GetError());
+		goto level_fail;
+	}
 	const uint8_t* buf = data;
 
 	// Header
 	if (SDL_strncmp((const char*)buf, "Klawiatura", 10) != 0) {
-		WTF("Invalid level header");
 		SDL_free(data);
-		return;
+		show_error("Invalid header in level \"%s\"", ctx->level);
+		goto level_fail;
 	}
 	buf += 10;
 
 	const uint8_t major = *buf;
 	if (major != MAJOR_LEVEL_VERSION) {
-		WTF("Invalid major version (%u != %u)", major, MAJOR_LEVEL_VERSION);
 		SDL_free(data);
-		return;
+		show_error("Invalid major version in level \"%s\"\nLevel: %u\nGame: %u)", ctx->level, major,
+			MAJOR_LEVEL_VERSION);
+		goto level_fail;
 	}
 	buf++;
 
 	const uint8_t minor = *buf;
 	if (minor != MINOR_LEVEL_VERSION) {
-		WTF("Invalid minor version (%u != %u)", minor, MINOR_LEVEL_VERSION);
 		SDL_free(data);
-		return;
+		show_error("Invalid minor version in level \"%s\"\nLevel: %u\nGame: %u)", ctx->level, minor,
+			MINOR_LEVEL_VERSION);
+		goto level_fail;
 	}
 	buf++;
 
@@ -1037,9 +1047,11 @@ void start_game_state(GameContext* ctx) {
 		buf++;
 
 		switch (marker_type) {
-		default:
-			FATAL("Unknown marker type %u", marker_type);
-			break;
+		default: {
+			SDL_free(data);
+			show_error("Unknown marker type %u", marker_type);
+			goto level_fail;
+		}
 
 		case 1: { // Gradient
 			char texture_name[GAME_STRING_MAX];
@@ -1146,6 +1158,11 @@ void start_game_state(GameContext* ctx) {
 	}
 
 	play_state_track(TS_MAIN, track_name[0], PLAY_LOOPING);
+	return;
+
+level_fail:
+	nuke_game();
+	disconnect();
 }
 #undef FLOAT_OFFS
 #undef BYTE_OFFS
