@@ -734,14 +734,14 @@ void show_error(const char* fmt, ...) {
 	SDL_strlcpy(buf, vfmt(fmt, args), sizeof(buf));
 	va_end(args);
 
-	char idx = 0, *sep = "\n", *state = buf, *token = SDL_strtok_r(buf, sep, &state);
-	for (int i = 0; i < MAX_OPTIONS; i++) {
-		OPTIONS[MEN_ERROR][i].name = "";
-		OPTIONS[MEN_ERROR][i].disabled = true;
+	char linum = 0, *sep = "\n", *state = buf, *line = SDL_strtok_r(buf, sep, &state);
+	for (int k = 0; k < MAX_OPTIONS; k++) {
+		OPTIONS[MEN_ERROR][k].name = "";
+		OPTIONS[MEN_ERROR][k].disabled = true;
 	}
-	while (token) {
-		OPTIONS[MEN_ERROR][idx].name = token, idx++;
-		token = SDL_strtok_r(NULL, sep, &state);
+	while (line) {
+		OPTIONS[MEN_ERROR][linum++].name = line;
+		line = SDL_strtok_r(NULL, sep, &state);
 	}
 
 	set_menu(MEN_ERROR);
