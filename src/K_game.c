@@ -345,7 +345,7 @@ bool update_game() {
 
 					nuke_game();
 					start_game(&ctx);
-					goto break_events;
+					return true;
 				} else if (game_state.flags & GF_RESTART) {
 					GameContext ctx = {0};
 					setup_game_context(
@@ -360,7 +360,7 @@ bool update_game() {
 
 					nuke_game();
 					start_game(&ctx);
-					goto break_events;
+					return true;
 				}
 
 			no_warp:
