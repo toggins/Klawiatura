@@ -159,6 +159,8 @@ static void load() {
 	load_texture("items/empty");
 
 	load_sound("sprout");
+
+	load_actor(ACT_COIN_POP);
 }
 
 static void create(GameActor* actor) {
