@@ -226,6 +226,7 @@ static void on_bottom(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_MISSILE_BEETROOT:
+	case ACT_MISSILE_SILVER_HAMMER:
 		bump_block(actor, from, true);
 		break;
 
@@ -238,7 +239,7 @@ static void on_bottom(GameActor* actor, GameActor* from) {
 }
 
 static void on_any_other_side(GameActor* actor, GameActor* from) {
-	if (from->type == ACT_MISSILE_BEETROOT)
+	if (from->type == ACT_MISSILE_BEETROOT || from->type == ACT_MISSILE_SILVER_HAMMER)
 		bump_block(actor, from, true);
 }
 
@@ -455,7 +456,8 @@ static void note_top(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_PLAYER:
-	case ACT_MISSILE_BEETROOT: {
+	case ACT_MISSILE_BEETROOT:
+	case ACT_MISSILE_SILVER_HAMMER: {
 		VAL(from, Y_SPEED) = FfInt((VAL(from, PLAYER_SPRING) > 0L) ? -19L : -10L);
 		VAL(actor, BLOCK_BUMP) = 1L;
 		VAL(actor, X_TOUCH) = 0L, VAL(actor, Y_TOUCH) = 1L;
@@ -471,7 +473,8 @@ static void note_left(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_PLAYER:
-	case ACT_MISSILE_BEETROOT: {
+	case ACT_MISSILE_BEETROOT:
+	case ACT_MISSILE_SILVER_HAMMER: {
 		VAL(from, X_SPEED) = FfInt(-5L);
 		VAL(actor, BLOCK_BUMP) = 1L;
 		VAL(actor, X_TOUCH) = 1L, VAL(actor, Y_TOUCH) = 0L;
@@ -487,7 +490,8 @@ static void note_right(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_PLAYER:
-	case ACT_MISSILE_BEETROOT: {
+	case ACT_MISSILE_BEETROOT:
+	case ACT_MISSILE_SILVER_HAMMER: {
 		VAL(from, X_SPEED) = FfInt(5L);
 		VAL(actor, BLOCK_BUMP) = 1L;
 		VAL(actor, X_TOUCH) = -1L, VAL(actor, Y_TOUCH) = 0L;

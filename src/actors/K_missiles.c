@@ -1,4 +1,5 @@
 #include "actors/K_missiles.h"
+#include "actors/K_player.h"
 
 static void create(GameActor* actor) {
 	VAL(actor, MISSILE_PLAYER) = (ActorValue)NULLPLAY;
@@ -19,6 +20,11 @@ static void cleanup(GameActor* actor) {
 			player->sink[i] = NULLACT;
 			break;
 		}
+}
+
+static void collide(GameActor* actor, GameActor* from) {
+	if (from->type == ACT_PLAYER && get_owner(actor) == NULL)
+		hit_player(from);
 }
 
 static PlayerID owner(const GameActor* actor) {
@@ -81,6 +87,7 @@ const GameActorTable TAB_MISSILE_FIREBALL = {
 	.tick = tick_fireball,
 	.draw = draw_fireball,
 	.cleanup = cleanup,
+	.collide = collide,
 	.owner = owner,
 };
 
@@ -213,5 +220,135 @@ const GameActorTable TAB_MISSILE_BEETROOT = {
 	.tick = tick_beetroot,
 	.draw = draw_beetroot,
 	.cleanup = cleanup,
+	.collide = collide,
+	.owner = owner,
+};
+
+// ======
+// HAMMER
+// ======
+
+static void load_hammer() {
+	load_texture("missiles/hammer");
+
+	load_sound("kick");
+
+	load_actor(ACT_POINTS);
+}
+
+static void create_hammer(GameActor* actor) {
+	create(actor);
+
+	actor->box.start.x = FfInt(-13L);
+	actor->box.start.y = FfInt(-18L);
+	actor->box.end.x = FfInt(11L);
+	actor->box.end.y = FfInt(15L);
+}
+
+static void tick_hammer(GameActor* actor) {
+	GamePlayer* player = get_owner(actor);
+	if ((player != NULL && !in_player_view(actor, player, FxZero, true))
+		|| (player == NULL && !in_any_view(actor, FfInt(128L), true)))
+	{
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	VAL(actor, MISSILE_ANGLE) += (VAL(actor, X_SPEED) < FxZero) ? -6434L : 6434L;
+	VAL(actor, Y_SPEED) += 18725L;
+	move_actor(actor, POS_SPEED(actor));
+	collide_actor(actor);
+}
+
+static void draw_hammer(const GameActor* actor) {
+	draw_actor(actor, "missiles/hammer", FtFloat(VAL(actor, MISSILE_ANGLE)), WHITE);
+}
+
+const GameActorTable TAB_MISSILE_HAMMER = {
+	.load = load_hammer,
+	.create = create_hammer,
+	.tick = tick_hammer,
+	.draw = draw_hammer,
+	.cleanup = cleanup,
+	.collide = collide,
+	.owner = owner,
+};
+
+// =============
+// SILVER HAMMER
+// =============
+
+static void load_silver() {
+	load_texture("missiles/hammer_silver");
+
+	load_sound("kick");
+
+	load_actor(ACT_EXPLODE);
+	load_actor(ACT_POINTS);
+}
+
+static void create_silver(GameActor* actor) {
+	create_hammer(actor);
+	VAL(actor, MISSILE_HITS) = 2L;
+}
+
+static void tick_silver(GameActor* actor) {
+	GamePlayer* player = get_owner(actor);
+	if ((player != NULL && !in_player_view(actor, player, FxZero, true))
+		|| (player == NULL && !in_any_view(actor, FxZero, true)))
+	{
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	VAL(actor, MISSILE_ANGLE) += (VAL(actor, X_SPEED) < FxZero) ? -45753L : 45753L;
+
+	const fixed vx = VAL(actor, X_SPEED);
+	VAL(actor, Y_SPEED) += 26214L;
+	if (VAL(actor, MISSILE_HITS) > 0L) {
+		if (VAL(actor, MISSILE_COOLDOWN) > 0L) {
+			if (!touching_solid(HITBOX(actor), SOL_SOLID))
+				--VAL(actor, MISSILE_COOLDOWN);
+			VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = 0L;
+			move_actor(actor, POS_SPEED(actor));
+		} else
+			displace_actor_soft(actor);
+
+		collide_actor(actor);
+	} else {
+		move_actor(actor, POS_SPEED(actor));
+		return;
+	}
+
+	if (!ANY_FLAG(actor, FLG_MISSILE_HIT)) {
+		if (VAL(actor, X_TOUCH) != 0L || VAL(actor, Y_TOUCH) != 0L)
+			play_actor_sound(actor, "kick");
+		else
+			return;
+	}
+	FLAG_ON(actor, FLG_MISSILE_HIT);
+	create_actor(ACT_EXPLODE, actor->pos);
+
+	if (vx == VAL(actor, X_SPEED))
+		VAL(actor, X_SPEED) = -VAL(actor, X_SPEED);
+	VAL(actor, Y_SPEED) = FfInt(-5L);
+
+	--VAL(actor, MISSILE_HITS);
+	VAL(actor, MISSILE_COOLDOWN) = 2L;
+
+	FLAG_OFF(actor, FLG_MISSILE_HIT);
+}
+
+static void draw_silver(const GameActor* actor) {
+	draw_actor(actor, "missiles/hammer_silver", FtFloat(VAL(actor, MISSILE_ANGLE)), WHITE);
+}
+
+const GameActorTable TAB_MISSILE_SILVER_HAMMER = {
+	.load = load_silver,
+	.create = create_silver,
+	.tick = tick_silver,
+	.draw = draw_silver,
+	.cleanup = cleanup,
+	.collide = collide,
 	.owner = owner,
 };
