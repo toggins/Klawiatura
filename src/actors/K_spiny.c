@@ -75,7 +75,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
 	case ACT_MISSILE_FIREBALL: {
 		if (ANY_FLAG(actor, FLG_SPINY_GRAY))
-			block_fireball(actor);
+			block_fireball(from);
 		else
 			hit_fireball(actor, from, 100L);
 		break;
@@ -83,7 +83,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
 	case ACT_MISSILE_BEETROOT: {
 		if (ANY_FLAG(actor, FLG_SPINY_GRAY))
-			block_beetroot(actor);
+			block_beetroot(from);
 		else
 			hit_beetroot(actor, from, 100L);
 		break;
