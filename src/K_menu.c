@@ -11,6 +11,30 @@
 #include "K_tick.h"
 #include "K_video.h"
 
+static const char* credits[] = {
+	"Credits",
+	NULL,
+	"[Mario Forever]",
+	"Michal Gdaniec",
+	"Maurycy Zarzycki",
+	NULL,
+	"[Programming]",
+	"toggins",
+	"nonk",
+	NULL,
+	"[Beta Testing]",
+	"CST1229",
+	"LooPeR231",
+	"miyameon",
+	"ReflexGURU",
+	"Usered",
+	NULL,
+	"[Special Thanks]",
+	"HeatXD",
+	"Xykijun",
+};
+static float credits_y = SCREEN_HEIGHT;
+
 static MenuType cur_menu = MEN_NULL;
 static int kevin_state = 0, kevin_time = 0;
 static float kevin_lerp = 0.f;
@@ -195,7 +219,8 @@ BIND_OPTION(chat, KB_CHAT);
 #undef VOLUME_OPTION
 #undef BIND_OPTION
 
-static void update_intro(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(), update_inlobby();
+static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
+	update_inlobby();
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), play_title_fr(MenuType),
 	maybe_play_title(MenuType), maybe_disconnect(MenuType);
 
@@ -206,7 +231,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_ERROR] = {"Error", GHOST},
 	[MEN_RESULTS] = {"", GHOST, .leave = play_title_fr},
 	[MEN_INTRO] = {NORETURN, .update = update_intro, .leave = maybe_play_title},
-	[MEN_MAIN] = {"Mario Together", NORETURN},
+	[MEN_MAIN] = {"Mario Together", NORETURN, .enter = reset_credits},
 	[MEN_SINGLEPLAYER] = {"Singleplayer"},
 	[MEN_MULTIPLAYER_NOTE] = {"Read This First!", GHOST, .enter = enter_multiplayer_note},
 	[MEN_MULTIPLAYER] = {"Multiplayer"},
@@ -220,6 +245,11 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
 };
+
+// Main Menu
+static void reset_credits() {
+	credits_y = SCREEN_HEIGHT;
+}
 
 // Find lobbies
 static void join_found_lobby() {
@@ -698,6 +728,33 @@ void draw_menu() {
 	switch (cur_menu) {
 	default:
 		break;
+
+	case MEN_MAIN: {
+		const int num_lines = sizeof(credits) / sizeof(*credits);
+
+		credits_y -= dt() * 0.5f;
+		if (credits_y <= ((float)num_lines * -18.f))
+			credits_y = SCREEN_HEIGHT;
+
+		for (int i = 0; i < num_lines; i++) {
+			const float y = credits_y + ((float)i * 18.f);
+			if (y >= (SCREEN_HEIGHT - 18.f) || y <= 0.f)
+				continue;
+
+			const float top = 200.f, bottom = SCREEN_HEIGHT - 200.f;
+			if ((y + 18.f) > bottom)
+				batch_color(ALPHA(128 - (GLubyte)(((y + 18.f - bottom) / 200.f) * 128.f)));
+			else if (y < top)
+				batch_color(ALPHA(128 - (GLubyte)(((top - y) / 200.f) * 128.f)));
+			else
+				batch_color(ALPHA(128));
+
+			batch_cursor(XY(SCREEN_WIDTH - 48.f, y));
+			batch_align(FA_RIGHT, FA_TOP);
+			batch_string("main", 18.f, credits[i]);
+		}
+		break;
+	}
 
 	case MEN_FIND_LOBBY: {
 		batch_cursor(XY(SCREEN_WIDTH - 48.f, 24.f));
