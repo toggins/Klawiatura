@@ -5,7 +5,7 @@
 #include <SDL3/SDL_stdinc.h>
 
 #define KB_VALUE_MAX 32767
-#define MAX_INPUT_DELAY 4
+#define MAX_INPUT_DELAY 10L
 
 #define NULLBIND ((Keybind)(-1))
 
