@@ -1906,8 +1906,10 @@ void play_actor_sound(const GameActor* actor, const char* name) {
 // ====
 
 /// Produce an exclusive random number.
+// https://rosettacode.org/wiki/Linear_congruential_generator
 int32_t rng(int32_t x) {
-	// https://rosettacode.org/wiki/Linear_congruential_generator
+	if (x <= 0L)
+		return 0;
 	game_state.seed = (game_state.seed * 1103515245L + 12345L) & 2147483647L;
 	return game_state.seed % x;
 }
