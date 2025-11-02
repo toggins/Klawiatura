@@ -4,6 +4,7 @@
 #include "actors/K_platform.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
+#include "actors/K_warp.h"
 
 #define GROUND_TIME 5L
 
@@ -81,24 +82,24 @@ static void load_player_textures() {
 }
 
 PlayerFrame get_player_frame(const GameActor* actor) {
-	//     const GameActor* warp = get_actor((ActorID)VAL(actor,VAL_PLAYER_WARP));
-	//     if (warp != NULL)
-	//         switch (VAL(warp,VAL_WARP_ANGLE)) {
-	//             case 0:
-	//             case 2:
-	//                 switch (FtInt(VAL(actor,VAL_PLAYER_FRAME)) % 3L) {
-	//                     default:
-	//                         return PF_WALK1;
-	//                     case 1:
-	//                         return PF_WALK2;
-	//                     case 2:
-	//                         return PF_WALK3;
-	//                 }
-	//             case 1:
-	//                 return PF_JUMP;
-	//             default:
-	//                 return PF_DUCK;
-	//         }
+	const GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
+	if (warp != NULL)
+		switch (VAL(warp, WARP_ANGLE)) {
+		case 0L:
+		case 2L:
+			switch (FtInt(VAL(actor, PLAYER_FRAME)) % 3L) {
+			default:
+				return PF_WALK1;
+			case 1L:
+				return PF_WALK2;
+			case 2L:
+				return PF_WALK3;
+			}
+		case 1L:
+			return PF_JUMP;
+		default:
+			return PF_DUCK;
+		}
 
 	if (VAL(actor, PLAYER_POWER) > 0L) {
 		const GamePlayer* player = get_player((PlayerID)VAL(actor, PLAYER_INDEX));
@@ -108,9 +109,9 @@ PlayerFrame get_player_frame(const GameActor* actor) {
 			switch ((VAL(actor, PLAYER_POWER) / 100L) % 3L) {
 			default:
 				return PF_GROW1;
-			case 1:
+			case 1L:
 				return PF_GROW2;
-			case 2:
+			case 2L:
 				return PF_GROW3;
 			}
 			break;
@@ -120,11 +121,11 @@ PlayerFrame get_player_frame(const GameActor* actor) {
 			switch ((VAL(actor, PLAYER_POWER) / 100L) % 4L) {
 			default:
 				return PF_GROW1;
-			case 1:
+			case 1L:
 				return PF_GROW2;
-			case 2:
+			case 2L:
 				return PF_GROW3;
-			case 3:
+			case 3L:
 				return PF_GROW4;
 			}
 			break;
@@ -139,14 +140,14 @@ PlayerFrame get_player_frame(const GameActor* actor) {
 		if (ANY_FLAG(actor, FLG_PLAYER_SWIM)) {
 			const int32_t frame = FtInt(VAL(actor, PLAYER_FRAME));
 			switch (frame) {
-			case 0:
-			case 3:
+			case 0L:
+			case 3L:
 				return PF_SWIM1;
-			case 1:
-			case 4:
+			case 1L:
+			case 4L:
 				return PF_SWIM2;
-			case 2:
-			case 5:
+			case 2L:
+			case 5L:
 				return PF_SWIM3;
 			default:
 				return (frame % 2L) ? PF_SWIM5 : PF_SWIM4;
@@ -162,9 +163,9 @@ PlayerFrame get_player_frame(const GameActor* actor) {
 		switch (FtInt(VAL(actor, PLAYER_FRAME)) % 3L) {
 		default:
 			return PF_WALK1;
-		case 1:
+		case 1L:
 			return PF_WALK2;
-		case 2:
+		case 2L:
 			return PF_WALK3;
 		}
 
@@ -644,7 +645,86 @@ static void tick(GameActor* actor) {
 			FLAG_OFF(actor, FLG_PLAYER_RESPAWN);
 	}
 
-	// TODO: Warp
+	GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
+	if (warp != NULL) {
+		if (ANY_FLAG(actor, FLG_PLAYER_WARP_OUT)) {
+			switch (VAL(warp, WARP_ANGLE_OUT)) {
+			case 0L: {
+				move_actor(actor, POS_ADD(actor, -FxOne, FxZero));
+				VAL(actor, PLAYER_FRAME) += 7864L;
+				FLAG_ON(actor, FLG_X_FLIP);
+				break;
+			}
+
+			case 1L:
+				move_actor(actor, POS_ADD(actor, FxZero, FxOne));
+				break;
+
+			case 2L: {
+				move_actor(actor, POS_ADD(actor, FxOne, FxZero));
+				VAL(actor, PLAYER_FRAME) += 7864L;
+				FLAG_OFF(actor, FLG_X_FLIP);
+				break;
+			}
+
+			default:
+				move_actor(actor, POS_ADD(actor, FxZero, -FxOne));
+				break;
+			}
+
+			if (!touching_solid(HITBOX(actor), SOL_SOLID)) {
+				actor->depth = -FxOne;
+				VAL(actor, PLAYER_GROUND) = 2L;
+				VAL(actor, PLAYER_WARP) = NULLACT;
+				VAL(actor, PLAYER_WARP_STATE) = 0L;
+				FLAG_OFF(actor, FLG_PLAYER_WARP_OUT);
+			}
+		} else {
+			switch (VAL(warp, WARP_ANGLE)) {
+			case 0L: {
+				move_actor(actor, POS_ADD(actor, FxOne, FxZero));
+				VAL(actor, PLAYER_FRAME) += 7864L;
+				FLAG_OFF(actor, FLG_X_FLIP);
+				break;
+			}
+
+			case 1L:
+				move_actor(actor, POS_ADD(actor, FxZero, -FxOne));
+				break;
+
+			case 2L: {
+				move_actor(actor, POS_ADD(actor, -FxOne, FxZero));
+				VAL(actor, PLAYER_FRAME) += 7864L;
+				FLAG_ON(actor, FLG_X_FLIP);
+				break;
+			}
+
+			default:
+				move_actor(actor, POS_ADD(actor, FxZero, FxOne));
+				break;
+			}
+
+			++VAL(actor, PLAYER_WARP_STATE);
+			if (VAL(actor, PLAYER_WARP_STATE) > 60L) {
+				if (VAL(warp, WARP_BOUNDS_X1) != VAL(warp, WARP_BOUNDS_X2)
+					&& VAL(warp, WARP_BOUNDS_Y1) != VAL(warp, WARP_BOUNDS_Y2))
+				{
+					player->bounds.start.x = VAL(warp, WARP_BOUNDS_X1);
+					player->bounds.start.y = VAL(warp, WARP_BOUNDS_Y1);
+					player->bounds.end.x = VAL(warp, WARP_BOUNDS_X2);
+					player->bounds.end.y = VAL(warp, WARP_BOUNDS_Y2);
+				}
+
+				move_actor(actor, (fvec2){VAL(warp, WARP_X), VAL(warp, WARP_Y) + FfInt(50L)});
+				FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
+				skip_interp(actor);
+				play_actor_sound(actor, "warp");
+			}
+		}
+
+		return;
+	} else
+		VAL(actor, PLAYER_WARP) = NULLACT;
 
 	if (game_state.sequence.type == SEQ_WIN) {
 		player->input &= GI_WARP;
