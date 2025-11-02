@@ -242,52 +242,18 @@ static void draw(const GameActor* actor) {
 		switch (VAL(actor, BRO_MISSILE)) {
 		default:
 			break;
-
-		case ACT_MISSILE_HAMMER: {
-			switch (frame) {
-			default:
-				tex = "enemies/bro_hammer";
-				break;
-			case 1L:
-				tex = "enemies/bro_hammer2";
-				break;
-			}
+		case ACT_MISSILE_HAMMER:
+			tex = frame ? "enemies/bro_hammer2" : "enemies/bro_hammer";
 			break;
-		}
-
-		case ACT_MISSILE_FIREBALL: {
-			switch (frame) {
-			default:
-				tex = "enemies/bro_fire";
-				break;
-			case 1L:
-				tex = "enemies/bro_fire2";
-				break;
-			}
+		case ACT_MISSILE_FIREBALL:
+			tex = frame ? "enemies/bro_fire2" : "enemies/bro_fire";
 			break;
-		}
-
-		case ACT_MISSILE_SILVER_HAMMER: {
-			switch (frame) {
-			default:
-				tex = "enemies/bro_silver";
-				break;
-			case 1L:
-				tex = "enemies/bro_silver2";
-				break;
-			}
+		case ACT_MISSILE_SILVER_HAMMER:
+			tex = frame ? "enemies/bro_silver2" : "enemies/bro_silver";
 			break;
-		}
 		}
 	else
-		switch (frame) {
-		default:
-			tex = "enemies/bro";
-			break;
-		case 1L:
-			tex = "enemies/bro2";
-			break;
-		}
+		tex = frame ? "enemies/bro2" : "enemies/bro";
 
 	draw_actor(actor, tex, 0, WHITE);
 }
