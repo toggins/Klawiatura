@@ -1204,6 +1204,11 @@ GameActor* respawn_player(GamePlayer* player) {
 	if (pawn != NULL)
 		FLAG_ON(pawn, FLG_DESTROY);
 
+	GameActor* kevin = get_actor(player->kevin.actor);
+	if (kevin != NULL)
+		FLAG_ON(kevin, FLG_DESTROY);
+	player->kevin.actor = NULLACT;
+
 	GameActor* spawn = get_actor(game_state.autoscroll);
 	if (spawn == NULL)
 		spawn = get_actor(game_state.checkpoint);
@@ -1230,6 +1235,17 @@ GameActor* respawn_player(GamePlayer* player) {
 	if (pawn != NULL) {
 		VAL(pawn, PLAYER_INDEX) = (ActorValue)player->id;
 		player->actor = pawn->id;
+		player->pos.x = player->kevin.start.x = pawn->pos.x;
+		player->pos.y = player->kevin.start.y = pawn->pos.y;
+		player->kevin.delay = 0L;
+
+		FLAG_ON(pawn, spawn->flags & (FLG_X_FLIP | FLG_PLAYER_ASCEND | FLG_PLAYER_DESCEND));
+		if (ANY_FLAG(pawn, FLG_PLAYER_ASCEND))
+			VAL(pawn, Y_SPEED) -= FfInt(22L);
+
+		if (spawn->type == ACT_AUTOSCROLL)
+			FLAG_ON(pawn, FLG_PLAYER_RESPAWN);
+
 		// !!! CLIENT-SIDE !!!
 		if (local_player == player->id)
 			set_view_player(player);

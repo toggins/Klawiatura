@@ -411,7 +411,7 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 
 Bool hit_player(GameActor* actor) {
 	if (actor == NULL || actor->type != ACT_PLAYER || VAL(actor, PLAYER_FLASH) > 0L
-		|| VAL(actor, PLAYER_STARMAN) > 0L || VAL(actor, PLAYER_WARP) > 0L
+		|| VAL(actor, PLAYER_STARMAN) > 0L || get_actor(VAL(actor, PLAYER_WARP)) != NULL
 		|| game_state.sequence.type == SEQ_WIN)
 		return false;
 
@@ -450,10 +450,10 @@ void kill_player(GameActor* actor) {
 		--player->lives;
 		player->power = POW_SMALL;
 
-		GameActor* kpawn = get_actor(player->kevin.actor);
-		if (kpawn != NULL) {
-			align_interp(create_actor(ACT_EXPLODE, POS_ADD(kpawn, FxZero, FfInt(-16L))), kpawn);
-			FLAG_ON(kpawn, FLG_DESTROY);
+		GameActor* kevin = get_actor(player->kevin.actor);
+		if (kevin != NULL) {
+			create_actor(ACT_EXPLODE, POS_ADD(kevin, FxZero, FfInt(-16L)));
+			FLAG_ON(kevin, FLG_DESTROY);
 		}
 		player->kevin.actor = NULLACT;
 	}
@@ -493,13 +493,22 @@ void win_player(GameActor* actor) {
 
 	for (PlayerID i = 0L; i < numplayers(); i++) {
 		GamePlayer* p = get_player(i);
-		if (p == player)
+		if (p == NULL)
 			continue;
 
-		GameActor* pawn = get_actor(p->actor);
-		if (pawn != NULL)
-			FLAG_ON(pawn, FLG_DESTROY);
-		p->actor = NULLACT;
+		if (p != player) {
+			GameActor* pawn = get_actor(p->actor);
+			if (pawn != NULL)
+				FLAG_ON(pawn, FLG_DESTROY);
+			p->actor = NULLACT;
+		}
+
+		GameActor* kevin = get_actor(p->kevin.actor);
+		if (kevin != NULL) {
+			create_actor(ACT_EXPLODE, (fvec2){kevin->pos.x, kevin->pos.y - FfInt(16L)});
+			FLAG_ON(kevin, FLG_DESTROY);
+		}
+		p->kevin.actor = NULLACT;
 	}
 
 	for (ActorID i = 0L; i < MAX_MISSILES; i++) {
@@ -722,7 +731,7 @@ static void tick(GameActor* actor) {
 			}
 		}
 
-		return;
+		goto skip_physics;
 	} else
 		VAL(actor, PLAYER_WARP) = NULLACT;
 
@@ -1051,7 +1060,32 @@ static void tick(GameActor* actor) {
 		goto sync_pos;
 	}
 
-	// TODO: Kevin
+skip_physics:
+	if ((game_state.flags & GF_KEVIN)
+		&& (game_state.sequence.type == SEQ_NONE || game_state.sequence.type == SEQ_AMBUSH
+			|| game_state.sequence.type == SEQ_AMBUSH_END)
+		&& ((player->kevin.delay <= 0L && Vdist(actor->pos, player->kevin.start) > FxOne)
+			|| player->kevin.delay > 0L))
+	{
+		SDL_memmove(player->kevin.frames, player->kevin.frames + 1L,
+			(KEVIN_DELAY - 1L) * sizeof(*player->kevin.frames));
+
+		if (player->kevin.delay < KEVIN_DELAY)
+			if (++(player->kevin.delay) >= KEVIN_DELAY) {
+				GameActor* kevin = create_actor(ACT_KEVIN, player->kevin.frames[0].pos);
+				if (kevin != NULL) {
+					player->kevin.actor = kevin->id;
+					VAL(kevin, KEVIN_PLAYER) = (ActorValue)player->id;
+					play_actor_sound(kevin, "kevin_spawn");
+				}
+			}
+
+		player->kevin.frames[KEVIN_DELAY - 1L].pos.x = actor->pos.x;
+		player->kevin.frames[KEVIN_DELAY - 1L].pos.y = actor->pos.y;
+		player->kevin.frames[KEVIN_DELAY - 1L].flip = ANY_FLAG(actor, FLG_X_FLIP);
+		player->kevin.frames[KEVIN_DELAY - 1L].power = player->power;
+		player->kevin.frames[KEVIN_DELAY - 1L].frame = get_player_frame(actor);
+	}
 
 	collide_actor(actor);
 	FLAG_OFF(actor, FLG_PLAYER_STOMP);
@@ -1062,7 +1096,7 @@ sync_pos:
 }
 
 static void draw(const GameActor* actor) {
-	GamePlayer* player = get_player((PlayerID)VAL(actor, PLAYER_INDEX));
+	GamePlayer* player = get_owner(actor);
 	if (player == NULL || (VAL(actor, PLAYER_FLASH) % 2L) > 0L)
 		return;
 
@@ -1351,4 +1385,82 @@ const GameActorTable TAB_PLAYER_EFFECT = {
 	.tick = tick_effect,
 	.draw = draw_effect,
 	.owner = effect_owner,
+};
+
+// =====
+// KEVIN
+// =====
+
+static void load_kevin() {
+	load_player_textures();
+
+	load_sound("kevin_spawn");
+	load_sound("kevin_kill");
+
+	load_actor(ACT_EXPLODE);
+}
+
+static void create_kevin(GameActor* actor) {
+	actor->depth = -FxOne;
+
+	actor->box.start.x = FfInt(-9L);
+	actor->box.start.y = FfInt(-26L);
+	actor->box.end.x = FfInt(10L);
+
+	VAL(actor, KEVIN_PLAYER) = (ActorValue)NULLPLAY;
+}
+
+static void tick_kevin(GameActor* actor) {
+	GamePlayer* player = get_owner(actor);
+	if (player == NULL) {
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	move_actor(actor, player->kevin.frames[0].pos);
+	if (player->kevin.frames[0].flip)
+		FLAG_ON(actor, FLG_X_FLIP);
+	else
+		FLAG_OFF(actor, FLG_X_FLIP);
+}
+
+static void draw_kevin(const GameActor* actor) {
+	const GamePlayer* player = get_owner(actor);
+	if (player == NULL)
+		return;
+
+	const InterpActor* iactor = get_interp(actor);
+	GLfloat pos[3] = {FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)};
+	GLubyte color[4] = {80, 80, 80, (localplayer() == player->id) ? 255 : 191};
+	const GLboolean flip[2] = {ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)};
+	const char* tex = get_player_texture(player->kevin.frames[0].power, player->kevin.frames[0].frame);
+
+	batch_start(pos, 0.f, color), batch_sprite(tex, flip);
+	// THIS USES SDL_rand(), NOT rng() THAT ONE IS USED FOR THE GAME STATE
+	pos[0] += (float)(-5L + SDL_rand(11L)), pos[1] += (float)(-5L + SDL_rand(11L));
+	color[3] = (GLubyte)((GLfloat)color[3] * 0.75f);
+	batch_cursor(pos), batch_color(color), batch_sprite(tex, flip);
+}
+
+static void collide_kevin(GameActor* actor, GameActor* from) {
+	if (from->type != ACT_PLAYER)
+		return;
+	if (get_owner(actor) == get_owner(from)) {
+		kill_player(from);
+		play_actor_sound(actor, "kevin_kill");
+	} else
+		hit_player(from);
+}
+
+static PlayerID kevin_owner(const GameActor* actor) {
+	return VAL(actor, KEVIN_PLAYER);
+}
+
+const GameActorTable TAB_KEVIN = {
+	.load = load_kevin,
+	.create = create_kevin,
+	.tick = tick_kevin,
+	.draw = draw_kevin,
+	.collide = collide_kevin,
+	.owner = kevin_owner,
 };
