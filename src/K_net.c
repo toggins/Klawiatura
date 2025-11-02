@@ -1,15 +1,13 @@
 #include "K_log.h"
 
 #define NUTPUNCH_IMPLEMENTATION
-
+#define NutPunch_SNPrintF SDL_snprintf
 #define NutPunch_Memcmp SDL_memcmp
 #define NutPunch_Memset SDL_memset
 #define NutPunch_Memcpy SDL_memcpy
 #define NutPunch_Malloc SDL_malloc
 #define NutPunch_Free SDL_free
-
-#define NP_Info INFO
-#define NP_Warn WARN
+#define NutPunch_Log INFO
 
 #include "K_cmd.h"
 #include "K_game.h"
