@@ -78,6 +78,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		if (check_stomp(actor, from, FfInt(-16L), 100L)) {
 			GameActor* shell = create_actor(ACT_KOOPA_SHELL, actor->pos);
 			if (shell != NULL) {
+				VAL(shell, Y_SPEED) = Fmax(VAL(actor, Y_SPEED), FxZero);
 				FLAG_ON(shell, actor->flags & FLG_KOOPA_RED);
 				align_interp(shell, actor);
 			}
