@@ -1873,7 +1873,7 @@ void displace_actor_soft(GameActor* actor) {
 	move_actor(actor, (fvec2){x, y});
 }
 
-/// Generic interpolated (not yet) actor drawing function.
+/// Generic interpolated actor drawing function.
 //
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
