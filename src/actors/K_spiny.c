@@ -19,6 +19,8 @@ static void create(GameActor* actor) {
 	actor->box.start.x = FfInt(-15L);
 	actor->box.start.y = FfInt(-32L);
 	actor->box.end.x = FfInt(15L);
+
+	increase_ambush();
 }
 
 static void tick(GameActor* actor) {
@@ -44,11 +46,14 @@ static void draw_corpse(const GameActor* actor) {
 	draw_actor(actor, ANY_FLAG(actor, FLG_SPINY_GRAY) ? "enemies/spiny_gray2" : "enemies/spiny2", 0.f, WHITE);
 }
 
+static void cleanup(GameActor* actor) {
+	decrease_ambush();
+}
+
 static void collide(GameActor* actor, GameActor* from) {
 	switch (from->type) {
 	default:
 		break;
-
 	case ACT_PLAYER:
 		maybe_hit_player(actor, from);
 		break;
@@ -95,5 +100,12 @@ static void collide(GameActor* actor, GameActor* from) {
 	}
 }
 
-const GameActorTable TAB_SPINY
-	= {.load = load, .create = create, .tick = tick, .draw = draw, .draw_dead = draw_corpse, .collide = collide};
+const GameActorTable TAB_SPINY = {
+	.load = load,
+	.create = create,
+	.tick = tick,
+	.draw = draw,
+	.draw_dead = draw_corpse,
+	.cleanup = cleanup,
+	.collide = collide,
+};

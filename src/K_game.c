@@ -664,6 +664,12 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 	default:
 		break;
 
+	case SEQ_AMBUSH: {
+		if (game_state.sequence.time <= 0L) {
+			game_state.sequence.type = SEQ_AMBUSH_END;
+			break;
+		}
+	}
 	case SEQ_NONE: {
 		if (game_state.clock <= 0L || (game_state.time % 25L) != 0L)
 			break;
@@ -714,11 +720,6 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 
 		if (game_state.sequence.time > (duration + 50L))
 			game_state.flags |= GF_END;
-	}
-
-	case SEQ_AMBUSH: {
-		if (game_state.sequence.time <= 0L)
-			game_state.sequence.type = SEQ_AMBUSH_END;
 		break;
 	}
 

@@ -24,6 +24,8 @@ static void create(GameActor* actor) {
 	actor->box.start.x = FfInt(-15L);
 	actor->box.start.y = FfInt(-32L);
 	actor->box.end.x = FfInt(15L);
+
+	increase_ambush();
 }
 
 static void tick(GameActor* actor) {
@@ -60,6 +62,10 @@ static void draw_corpse(const GameActor* actor) {
 	draw_actor(actor, ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red" : "enemies/shell", 0.f, WHITE);
 }
 
+static void cleanup(GameActor* actor) {
+	decrease_ambush();
+}
+
 static void collide(GameActor* actor, GameActor* from) {
 	switch (from->type) {
 	default:
@@ -69,13 +75,13 @@ static void collide(GameActor* actor, GameActor* from) {
 		if (VAL(actor, KOOPA_MAYDAY) > 0L)
 			break;
 
-		if (check_stomp(actor, from, 100L)) {
+		if (check_stomp(actor, from, FfInt(-16L), 100L)) {
 			GameActor* shell = create_actor(ACT_KOOPA_SHELL, actor->pos);
 			if (shell != NULL) {
 				FLAG_ON(shell, actor->flags & FLG_KOOPA_RED);
 				align_interp(shell, actor);
 			}
-
+			mark_ambush_winner(from);
 			FLAG_ON(actor, FLG_DESTROY);
 		} else
 			maybe_hit_player(actor, from);
@@ -114,8 +120,13 @@ static void collide(GameActor* actor, GameActor* from) {
 	}
 }
 
-const GameActorTable TAB_KOOPA
-	= {.load = load, .create = create, .tick = tick, .draw = draw, .draw_dead = draw_corpse, .collide = collide};
+const GameActorTable TAB_KOOPA = {.load = load,
+	.create = create,
+	.tick = tick,
+	.draw = draw,
+	.draw_dead = draw_corpse,
+	.cleanup = cleanup,
+	.collide = collide};
 
 // ===========
 // KOOPA SHELL
@@ -209,7 +220,7 @@ static void collide_shell(GameActor* actor, GameActor* from) {
 			break;
 		}
 
-		if (check_stomp(actor, from, 100L)) {
+		if (check_stomp(actor, from, FfInt(-16L), 100L)) {
 			VAL(actor, X_SPEED) = FxZero;
 			VAL(actor, SHELL_PLAYER) = (ActorValue)NULLPLAY;
 			VAL(actor, SHELL_HIT) = 6L;
@@ -313,14 +324,14 @@ static void collide_parakoopa(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_PLAYER: {
-		if (check_stomp(actor, from, 100L)) {
+		if (check_stomp(actor, from, FfInt(-16L), 100L)) {
 			GameActor* koopa = create_actor(ACT_KOOPA, actor->pos);
 			if (koopa != NULL) {
 				VAL(koopa, KOOPA_MAYDAY) = 2L;
 				FLAG_ON(koopa, actor->flags & (FLG_X_FLIP | FLG_KOOPA_RED));
 				align_interp(koopa, actor);
 			}
-
+			mark_ambush_winner(from);
 			FLAG_ON(actor, FLG_DESTROY);
 		} else
 			maybe_hit_player(actor, from);
@@ -352,5 +363,6 @@ const GameActorTable TAB_PARAKOOPA = {
 	.tick = tick_parakoopa,
 	.draw = draw_parakoopa,
 	.draw_dead = draw_corpse,
+	.cleanup = cleanup,
 	.collide = collide_parakoopa,
 };

@@ -73,7 +73,7 @@ void turn_enemy(GameActor* actor) {
 	VAL(actor, ENEMY_TURN) = 2L;
 }
 
-GameActor* kill_enemy(GameActor* actor, Bool kick) {
+GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
 	if (actor == NULL)
 		return NULL;
 
@@ -87,6 +87,7 @@ GameActor* kill_enemy(GameActor* actor, Bool kick) {
 		if (kick)
 			play_actor_sound(actor, "kick");
 		FLAG_ON(actor, FLG_DESTROY);
+		mark_ambush_winner(from);
 		return NULL;
 	}
 
@@ -97,7 +98,6 @@ GameActor* kill_enemy(GameActor* actor, Bool kick) {
 
 		if (kick)
 			play_actor_sound(actor, "kick");
-
 		return actor;
 	}
 	}
@@ -118,15 +118,15 @@ GameActor* kill_enemy(GameActor* actor, Bool kick) {
 	}
 
 	FLAG_ON(actor, FLG_DESTROY);
+	mark_ambush_winner(from);
 	return dead;
 }
 
-Bool check_stomp(GameActor* actor, GameActor* from, int32_t points) {
+Bool check_stomp(GameActor* actor, GameActor* from, fixed yoffs, int32_t points) {
 	if (actor == NULL || from == NULL || from->type != ACT_PLAYER || VAL(from, PLAYER_STARMAN) > 0L)
 		return false;
 
-	if (from->pos.y < (actor->pos.y - FfInt(16L))
-		&& (VAL(from, Y_SPEED) >= FxZero || ANY_FLAG(from, FLG_PLAYER_STOMP)))
+	if (from->pos.y < (actor->pos.y + yoffs) && (VAL(from, Y_SPEED) >= FxZero || ANY_FLAG(from, FLG_PLAYER_STOMP)))
 	{
 		GamePlayer* player = get_owner(from);
 		VAL(from, Y_SPEED) = Fmin(
@@ -159,7 +159,7 @@ Bool hit_shell(GameActor* actor, GameActor* from) {
 	if ((actor->type == ACT_KOOPA_SHELL || actor->type == ACT_BUZZY_SHELL) && ANY_FLAG(actor, FLG_SHELL_ACTIVE)) {
 		VAL(actor, SHELL_COMBO) = VAL(from, SHELL_COMBO) = 0L;
 		give_points(from, get_owner(from), 100L);
-		kill_enemy(from, true);
+		kill_enemy(from, from, true);
 	}
 
 	int32_t points;
@@ -191,7 +191,7 @@ Bool hit_shell(GameActor* actor, GameActor* from) {
 	}
 	give_points(actor, get_owner(from), points);
 
-	kill_enemy(actor, true);
+	kill_enemy(actor, from, true);
 	return true;
 }
 
@@ -204,7 +204,7 @@ void hit_bump(GameActor* actor, GameActor* from, int32_t points) {
 		return;
 
 	give_points(actor, player, points);
-	kill_enemy(actor, true);
+	kill_enemy(actor, from, true);
 }
 
 void block_fireball(GameActor* actor) {
@@ -223,7 +223,7 @@ void hit_fireball(GameActor* actor, GameActor* from, int32_t points) {
 		return;
 
 	give_points(actor, player, points);
-	kill_enemy(actor, true);
+	kill_enemy(actor, from, true);
 	FLAG_ON(from, FLG_DESTROY);
 }
 
@@ -243,12 +243,30 @@ void hit_beetroot(GameActor* actor, GameActor* from, int32_t points) {
 		return;
 
 	give_points(actor, player, points);
-	kill_enemy(actor, true);
+	kill_enemy(actor, from, true);
 	FLAG_ON(from, FLG_MISSILE_HIT);
 }
 
 void hit_hammer(GameActor* actor, GameActor* from, int32_t points) {
 	hit_bump(actor, from, points);
+}
+
+void mark_ambush_winner(GameActor* actor) {
+	if (game_state.sequence.type != SEQ_AMBUSH || game_state.sequence.time <= 0L)
+		return;
+	GamePlayer* player = get_owner(actor);
+	if (player != NULL)
+		game_state.sequence.activator = player->id;
+}
+
+void increase_ambush() {
+	if (game_state.sequence.type == SEQ_AMBUSH)
+		++game_state.sequence.time;
+}
+
+void decrease_ambush() {
+	if (game_state.sequence.type == SEQ_AMBUSH && game_state.sequence.time > 0L)
+		--game_state.sequence.time;
 }
 
 // ==========

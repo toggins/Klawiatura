@@ -1,7 +1,6 @@
 #include "actors/K_artillery.h"
 #include "actors/K_enemies.h"
 #include "actors/K_player.h"
-#include "actors/K_points.h"
 
 // ===========
 // BULLET BILL
@@ -49,33 +48,28 @@ static void collide_bullet(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_PLAYER: {
-		if (VAL(from, PLAYER_STARMAN) > 0L) {
-			player_starman(from, actor);
-			break;
-		}
-
-		if (from->pos.y < actor->pos.y && (VAL(from, Y_SPEED) >= FxZero || ANY_FLAG(from, FLG_PLAYER_STOMP))) {
-			GamePlayer* player = get_owner(from);
-
-			VAL(from, Y_SPEED) = Fmin(
-				VAL(from, Y_SPEED), FfInt((player != NULL && ANY_INPUT(player, GI_JUMP)) ? -13L : -8L));
-			FLAG_ON(from, FLG_PLAYER_STOMP);
-
-			play_actor_sound(actor, "stomp");
-			give_points(actor, player, 100L);
-			kill_enemy(actor, false);
-		} else
+		if (check_stomp(actor, from, FxZero, 100L))
+			kill_enemy(actor, from, false);
+		else
 			maybe_hit_player(actor, from);
-
 		break;
 	}
 
+	case ACT_BLOCK_BUMP:
+		hit_bump(actor, from, 100L);
+		break;
+	case ACT_KOOPA_SHELL:
+	case ACT_BUZZY_SHELL:
+		hit_shell(actor, from);
+		break;
 	case ACT_MISSILE_FIREBALL:
 		block_fireball(from);
 		break;
-
 	case ACT_MISSILE_BEETROOT:
 		hit_beetroot(actor, from, 100L);
+		break;
+	case ACT_MISSILE_HAMMER:
+		hit_hammer(actor, from, 100L);
 		break;
 	}
 }

@@ -566,7 +566,7 @@ void player_starman(GameActor* actor, GameActor* from) {
 	create_actor(ACT_EXPLODE,
 		(fvec2){Flerp(Fadd(from->pos.x, from->box.start.x), Fadd(from->pos.x, from->box.end.x), FxHalf),
 			Flerp(Fadd(from->pos.y, from->box.start.y), Fadd(from->pos.y, from->box.end.y), FxHalf)});
-	kill_enemy(from, true);
+	kill_enemy(from, actor, true);
 }
 
 // ============

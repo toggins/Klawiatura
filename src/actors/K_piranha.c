@@ -164,17 +164,24 @@ static void collide(GameActor* actor, GameActor* from) {
 	switch (from->type) {
 	default:
 		break;
-
 	case ACT_PLAYER:
 		maybe_hit_player(actor, from);
 		break;
-
+	case ACT_BLOCK_BUMP:
+		hit_bump(actor, from, 100L);
+		break;
+	case ACT_KOOPA_SHELL:
+	case ACT_BUZZY_SHELL:
+		hit_shell(actor, from);
+		break;
 	case ACT_MISSILE_FIREBALL:
 		hit_fireball(actor, from, 100L);
 		break;
-
 	case ACT_MISSILE_BEETROOT:
 		hit_beetroot(actor, from, 100L);
+		break;
+	case ACT_MISSILE_HAMMER:
+		hit_hammer(actor, from, 100L);
 		break;
 	}
 }
