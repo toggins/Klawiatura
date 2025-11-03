@@ -1,11 +1,11 @@
 #ifdef _WIN32
-#define OS_WINDOSE
-#endif
 
-#ifdef OS_WINDOSE
+#define OS_WINDOSE
+
 #include <stdio.h>
 
 #include <windows.h>
+
 #endif
 
 void fix_stdio() {
