@@ -74,10 +74,11 @@ FetchContent_Declare(
 set(NUTPUNCH_BUILD_TESTS OFF CACHE INTERNAL "")
 set(NUTPUNCH_BUILD_SERVER OFF CACHE INTERNAL "")
 set(NUTPUNCH_BUILD_LOBBYIST OFF CACHE INTERNAL "")
+set(NUTPUNCH_STAGING ON CACHE INTERNAL "")
 FetchContent_Declare(
     NutPunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG c46d20b0729be3a061389462bf0f2b899eb45c86)
+    GIT_TAG a2bd50ab0d4be1380fba9d0ebcc78a9b6a0d4a96)
 
 # yyjson (0.12.0)
 FetchContent_Declare(
