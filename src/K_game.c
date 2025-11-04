@@ -446,7 +446,7 @@ static void draw_hud() {
 	if (!player)
 		return;
 
-	glm_ortho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -16000, 16000, proj);
+	glm_ortho(0.f, SCREEN_WIDTH, 0.f, SCREEN_HEIGHT, -16000.f, 16000.f, proj);
 	set_projection_matrix(proj);
 	apply_matrices();
 
@@ -454,30 +454,30 @@ static void draw_hud() {
 	batch_string("hud", 16, fmt("MARIO * %u", SDL_max(player->lives, 0)));
 	batch_cursor(XYZ(147.f, 34.f, -10000.f));
 	batch_align(FA_RIGHT, FA_TOP);
-	batch_string("hud", 16, fmt("%u", player->score));
+	batch_string("hud", 16.f, fmt("%u", player->score));
 
 	const char* tex;
-	switch ((int)((float)(game_state.time) / 6.25f) % 4) {
+	switch ((int)((float)(game_state.time) / 6.25f) % 4L) {
 	default:
 		tex = "ui/coins";
 		break;
-	case 1:
-	case 3:
+	case 1L:
+	case 3L:
 		tex = "ui/coins2";
 		break;
-	case 2:
+	case 2L:
 		tex = "ui/coins3";
 		break;
 	}
 	batch_cursor(XYZ(224.f, 34.f, -10000.f));
 	batch_sprite(tex, NO_FLIP);
 	batch_cursor(XYZ(288.f, 34.f, -10000.f));
-	batch_string("hud", 16, fmt("%u", player->coins));
+	batch_string("hud", 16.f, fmt("%u", player->coins));
 
 	batch_cursor(XYZ(432.f, 16.f, -10000.f));
 	if (video_state.world[0] == '@') {
 		batch_align(FA_CENTER, FA_TOP);
-		batch_string("hud", 16, video_state.world + 1);
+		batch_string("hud", 16.f, video_state.world + 1L);
 	} else
 		batch_sprite(video_state.world, NO_FLIP);
 
@@ -495,7 +495,7 @@ static void draw_hud() {
 			scale = 1.f;
 
 		const GLfloat x = (float)SCREEN_WIDTH - (32.f * scale);
-		const GLfloat size = 16 * scale;
+		const GLfloat size = 16.f * scale;
 
 		batch_cursor(XYZ(x, 24.f * scale, -10000.f));
 
