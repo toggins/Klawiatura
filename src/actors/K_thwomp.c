@@ -159,6 +159,10 @@ static void collide(GameActor* actor, GameActor* from) {
 		break;
 	}
 
+	case ACT_KOOPA_SHELL:
+	case ACT_BUZZY_SHELL:
+		hit_shell(actor, from);
+		break;
 	case ACT_MISSILE_FIREBALL:
 		block_fireball(from);
 		break;
