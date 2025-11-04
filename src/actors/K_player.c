@@ -1180,16 +1180,9 @@ static void collide(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_PLAYER: {
-		if (VAL(from, PLAYER_GROUND) <= 0L && VAL(from, Y_SPEED) > FxZero
-			&& from->pos.y < (actor->pos.y - FfInt(10L)))
-		{
-			GamePlayer* fplayer = get_owner(from);
-			VAL(from, Y_SPEED) = FfInt((fplayer != NULL && ANY_INPUT(fplayer, GI_JUMP)) ? -13L : -8L);
-			FLAG_ON(from, FLG_PLAYER_STOMP); // In case they overlap an enemy
-
+		if (check_stomp(actor, from, FfInt(-16L), 0))
 			VAL(actor, Y_SPEED) = Fmax(VAL(actor, Y_SPEED), FxZero);
-			play_actor_sound(actor, "stomp");
-		} else if (Fabs(VAL(from, X_SPEED)) > Fabs(VAL(actor, X_SPEED)))
+		else if (Fabs(VAL(from, X_SPEED)) > Fabs(VAL(actor, X_SPEED)))
 			if ((VAL(from, X_SPEED) > FxZero && from->pos.x < actor->pos.x)
 				|| (VAL(from, X_SPEED) < FxZero && from->pos.x > actor->pos.x))
 			{
