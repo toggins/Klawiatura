@@ -3,13 +3,36 @@
 
 #include "K_file.h"
 #include "K_log.h"
+#include "K_os.h"
+#include "K_string.h"
+
+#ifdef K_OS_WINDOSE
+#include <windows.h>
+#endif
+
+void handle_fatal(const char* fmt, ...) {
+#ifdef K_OS_WINDOSE
+	extern HWND get_sdl_hwnd();
+
+	MSGBOXPARAMS msg = {0};
+	msg.cbSize = sizeof(msg), msg.hwndOwner = get_sdl_hwnd();
+	msg.dwStyle = MB_ICONERROR | MB_OK | MB_SYSTEMMODAL;
+	msg.dwLanguageId = LANG_ENGLISH;
+	msg.lpszCaption = "Klawiatura FATAL ERROR";
+
+	va_list args;
+	va_start(args, fmt);
+	msg.lpszText = vfmt(fmt, args);
+	va_end(args);
+
+	MessageBoxIndirect(&msg);
+#endif
+
+	exit(EXIT_FAILURE);
+}
 
 const char* log_basename(const char* path) {
 	return file_basename(path);
-}
-
-void DIE() {
-	exit(EXIT_FAILURE);
 }
 
 static const char* log_levels[SDL_LOG_PRIORITY_COUNT] = {

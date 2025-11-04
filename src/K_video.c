@@ -5,6 +5,7 @@
 #include "K_game.h"
 #include "K_log.h"
 #include "K_memory.h"
+#include "K_os.h"
 #include "K_string.h"
 #include "K_video.h"
 
@@ -50,6 +51,11 @@ void video_init(bool force_shader) {
 	// Window
 	window = SDL_CreateWindow("Klawiatura", SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	EXPECT(window, "Window fail: %s", SDL_GetError());
+
+#ifdef K_OS_WINDOSE
+	extern void set_sdl_hwnd(void*);
+	set_sdl_hwnd(SDL_GetPointerProperty(SDL_GetWindowProperties(window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL));
+#endif
 
 	// OpenGL
 	gpu = SDL_GL_CreateContext(window);
