@@ -434,8 +434,14 @@ static void perform_camera_magic() {
 	} else {
 		glm_vec2_copy(camera->pos, cpos);
 	}
+	if (video_state.quake > 0.f) {
+		const Sint32 quake = (Sint32)video_state.quake + 1L;
+		cpos[0] += (float)(-SDL_rand(quake) + SDL_rand(quake));
+		cpos[1] += (float)(-SDL_rand(quake) + SDL_rand(quake));
+		video_state.quake -= dt();
+	}
 	glm_ortho(cpos[0] - HALF_SCREEN_WIDTH, cpos[0] + HALF_SCREEN_WIDTH, cpos[1] - HALF_SCREEN_HEIGHT,
-		cpos[1] + HALF_SCREEN_HEIGHT, -16000, 16000, proj);
+		cpos[1] + HALF_SCREEN_HEIGHT, -16000.f, 16000.f, proj);
 	set_projection_matrix(proj);
 	apply_matrices();
 	move_ears(camera->pos);
@@ -1908,8 +1914,11 @@ void draw_dead(const GameActor* actor) {
 }
 
 /// Convenience function for quaking at an actor's position.
-void quake_at_actor(const GameActor* actor, float intensity) {
-	// FIXME: Implement screen shake.
+void quake_at_actor(const GameActor* actor, float amount) {
+	const float dist = glm_vec2_distance(video_state.camera.pos, (vec2){FtInt(actor->pos.x), FtInt(actor->pos.y)})
+	                   / (float)SCREEN_HEIGHT;
+	const float quake = amount / SDL_max(dist, 1.f);
+	video_state.quake = SDL_min(video_state.quake + quake, 10.f);
 }
 
 /// Convenience function for playing a sound at an actor's position.
