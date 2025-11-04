@@ -768,6 +768,13 @@ void save_game_state(GameState* gs) {
 
 void load_game_state(const GameState* gs) {
 	SDL_memcpy(&game_state, gs, sizeof(GameState));
+
+	// Fix for being stuck in spectator during rollback
+	const GamePlayer* player = get_player(local_player);
+	if (player != NULL && get_actor(player->actor) != NULL) {
+		view_player = player->id;
+		video_state.camera.lerp_time[1] = 0.f;
+	}
 }
 
 uint32_t check_game_state() {
