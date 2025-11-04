@@ -447,7 +447,8 @@ void kill_player(GameActor* actor) {
 	if (player != NULL) {
 		VAL(dead, PLAYER_INDEX) = (ActorValue)player->id;
 
-		--player->lives;
+		if (player->lives >= 0L)
+			--player->lives;
 		player->power = POW_SMALL;
 
 		GameActor* kevin = get_actor(player->kevin.actor);
@@ -462,7 +463,7 @@ void kill_player(GameActor* actor) {
 	if (game_state.sequence.type == SEQ_NONE && game_state.clock != 0L && !(game_state.flags & GF_SINGLE))
 		for (PlayerID i = 0; i < numplayers(); i++) {
 			GamePlayer* survivor = get_player(i);
-			if (survivor != NULL && survivor->lives >= 0L) {
+			if (survivor != NULL && (survivor->lives >= 0L || (game_state.flags & GF_KEVIN))) {
 				all_dead = false;
 				break;
 			}
@@ -1279,7 +1280,8 @@ static void tick_corpse(GameActor* actor) {
 				stop_state_track(i);
 			play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? "lose2" : "lose", false);
 		} else
-			play_actor_sound(actor, (player->lives >= 0L) ? "lose" : "dead");
+			play_actor_sound(
+				actor, (player->lives >= 0L && !(game_state.flags & GF_KEVIN)) ? "lose" : "dead");
 		break;
 	}
 
@@ -1305,7 +1307,7 @@ static void tick_corpse(GameActor* actor) {
 		if (game_state.sequence.type == SEQ_LOSE)
 			for (PlayerID i = 0; i < numplayers(); i++) {
 				GamePlayer* p = get_player(i);
-				if (p != NULL && p->lives >= 0L) {
+				if (p != NULL && (p->lives >= 0L || (game_state.flags & GF_KEVIN))) {
 					game_state.flags |= GF_RESTART;
 					break;
 				}

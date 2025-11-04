@@ -335,7 +335,7 @@ bool update_game() {
 					ctx.num_players = num_players;
 					for (PlayerID i = 0; i < num_players; i++) {
 						const int8_t lives = game_state.players[i].lives;
-						if (lives < 0L)
+						if (lives < 0L && !(ctx.flags & GF_KEVIN))
 							continue;
 						ctx.players[i].lives = lives;
 						ctx.players[i].power = game_state.players[i].power;
@@ -1185,7 +1185,7 @@ GameActor* respawn_player(GamePlayer* player) {
 	if (player == NULL || game_state.sequence.type == SEQ_WIN)
 		return NULL;
 
-	if (player->lives < 0L) {
+	if (player->lives < 0L && !(game_state.flags & GF_KEVIN)) {
 		// !!! CLIENT-SIDE !!!
 		if (view_player == player->id)
 			for (PlayerID i = 0; i < num_players; i++) {
