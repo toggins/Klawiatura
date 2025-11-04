@@ -1,33 +1,33 @@
 #include <stdlib.h>
 // ^ required for `exit(EXIT_FAILURE)` below. DO NOT TOUCH YOU FUCKER
 
+#include <SDL3/SDL_messagebox.h>
+#include <SDL3/SDL_stdinc.h>
+
 #include "K_file.h"
 #include "K_log.h"
-#include "K_os.h"
 #include "K_string.h"
 
-#ifdef K_OS_WINDOSE
-#include <windows.h>
-#endif
+void handle_fatal(const char* file, int line, const char* func, const char* fmt, ...) {
+	static char buf[512] = "";
+	extern SDL_Window* window;
 
-void handle_fatal(const char* fmt, ...) {
-#ifdef K_OS_WINDOSE
-	extern HWND get_sdl_hwnd();
+	static SDL_MessageBoxButtonData butts[1] = {0};
+	butts[0].text = "Damn it";
+	butts[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT | SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
 
-	MSGBOXPARAMS msg = {0};
-	msg.cbSize = sizeof(msg), msg.hwndOwner = get_sdl_hwnd();
-	msg.dwStyle = MB_ICONERROR | MB_OK | MB_SYSTEMMODAL;
-	msg.dwLanguageId = LANG_ENGLISH;
-	msg.lpszCaption = "Klawiatura FATAL ERROR";
+	SDL_MessageBoxData data = {0};
+	data.window = window, data.message = buf;
+	data.title = "Klawiatura FATAL ERROR", data.flags = SDL_MESSAGEBOX_ERROR;
+	data.buttons = butts, data.numbuttons = sizeof(butts) / sizeof(*butts);
 
 	va_list args;
 	va_start(args, fmt);
-	msg.lpszText = vfmt(fmt, args);
+	SDL_snprintf(
+		buf, sizeof(buf), "File: %s:%d\nFunction: %s()\n\n%s", log_basename(file), line, func, vfmt(fmt, args));
 	va_end(args);
 
-	MessageBoxIndirect(&msg);
-#endif
-
+	SDL_ShowMessageBox(&data, NULL);
 	exit(EXIT_FAILURE);
 }
 

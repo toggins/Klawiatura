@@ -21,18 +21,3 @@ void fix_stdio() {
 	freopen("CONOUT$", "w", stderr);
 #endif
 }
-
-#ifdef K_OS_WINDOSE
-
-static HWND sdl_hwnd = NULL;
-
-HWND get_sdl_hwnd() {
-	return sdl_hwnd;
-}
-
-// Using a `void*` lets us set `sdl_hwnd` without polluting the global namespace with `windows.h` crap
-void set_sdl_hwnd(void* ptr) {
-	sdl_hwnd = (HWND)ptr;
-}
-
-#endif
