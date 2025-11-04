@@ -1445,7 +1445,7 @@ static void draw_kevin(const GameActor* actor) {
 }
 
 static void collide_kevin(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER)
+	if (from->type != ACT_PLAYER || get_actor(VAL(from, PLAYER_WARP)) != NULL)
 		return;
 	if (get_owner(actor) == get_owner(from)) {
 		kill_player(from);
