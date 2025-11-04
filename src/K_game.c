@@ -436,8 +436,9 @@ static void perform_camera_magic() {
 	}
 	if (video_state.quake > 0.f) {
 		const Sint32 quake = (Sint32)video_state.quake + 1L;
-		cpos[0] += (float)(-SDL_rand(quake) + SDL_rand(quake));
-		cpos[1] += (float)(-SDL_rand(quake) + SDL_rand(quake));
+		Uint64 seed = game_state.time;
+		cpos[0] += (float)(-SDL_rand_r(&seed, quake) + SDL_rand_r(&seed, quake));
+		cpos[1] += (float)(-SDL_rand_r(&seed, quake) + SDL_rand_r(&seed, quake));
 		video_state.quake -= dt();
 	}
 	glm_ortho(cpos[0] - HALF_SCREEN_WIDTH, cpos[0] + HALF_SCREEN_WIDTH, cpos[1] - HALF_SCREEN_HEIGHT,
