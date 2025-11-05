@@ -75,6 +75,7 @@ void tick_audio_state();
 void save_audio_state(AudioState*);
 void load_audio_state(const AudioState*);
 void nuke_audio_state();
+void pause_audio_state(bool);
 
 // Assets
 void load_sound(const char*);

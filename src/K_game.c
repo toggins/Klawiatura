@@ -61,6 +61,23 @@ PlayerID local_player = NULLPLAY, view_player = NULLPLAY, num_players = 0L;
 
 static InterpState interp = {0};
 
+static Bool paused = false;
+
+// =====
+// PAUSE
+// =====
+
+static void pause() {
+	paused = true;
+	if (num_players <= 1L)
+		pause_audio_state(true);
+}
+
+static void unpause() {
+	paused = false;
+	pause_audio_state(false);
+}
+
 // ====
 // CHAT
 // ===
@@ -178,6 +195,7 @@ void start_game(GameContext* ctx) {
 	cfg.input_prediction_window = MAX_INPUT_DELAY;
 	cfg.num_players = num_players = ctx->num_players;
 
+	unpause();
 	gekko_start(game_session, &cfg);
 	local_player = view_player = populate_game(game_session);
 	populate_results();
@@ -212,7 +230,7 @@ bool update_game() {
 
 	update_chat_hist();
 	if (!typing_what() && is_connected()) {
-		if (kb_pressed(KB_CHAT))
+		if (kb_pressed(KB_CHAT) && !paused)
 			start_typing(chat_message, sizeof(chat_message));
 		else
 			send_chat_message();
@@ -239,11 +257,29 @@ bool update_game() {
 	}
 
 	while (got_ticks()) {
-		if (kb_pressed(KB_PAUSE))
-			goto byebye_game;
+		if (paused) {
+			if (kb_pressed(KB_UI_ENTER)) {
+				play_generic_sound("select");
+				goto byebye_game;
+			} else if (kb_pressed(KB_PAUSE)) {
+				play_generic_sound("select");
+				unpause();
+			} else
+				goto try_break_events;
+		} else if (kb_pressed(KB_PAUSE) && !typing_what()) {
+			play_generic_sound("pause");
+			pause();
+			goto try_break_events;
+		} else
+			goto dont_break_events;
 
+	try_break_events:
+		if (num_players <= 1L)
+			goto break_events;
+
+	dont_break_events:
 		GameInput input = 0;
-		if (!typing_what()) {
+		if (!paused && !typing_what()) {
 			input |= kb_down(KB_UP) * GI_UP;
 			input |= kb_down(KB_LEFT) * GI_LEFT;
 			input |= kb_down(KB_DOWN) * GI_DOWN;
@@ -457,7 +493,17 @@ static void draw_hud() {
 	set_projection_matrix(proj);
 	apply_matrices();
 
-	batch_start(XYZ(32.f, 16.f, -10000.f), 0.f, WHITE);
+	if (paused) {
+		batch_start(XYZ(0.f, 0.f, -10000.f), 0.f, RGBA(0, 0, 0, 128));
+		batch_rectangle(NULL, XY(SCREEN_WIDTH, SCREEN_HEIGHT));
+		batch_cursor(XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, -10000.f)), batch_color(WHITE);
+		batch_color(RGB(255, 144, 144)), batch_align(FA_CENTER, FA_BOTTOM);
+		batch_string("main", 24, "Paused");
+		batch_color(WHITE), batch_align(FA_CENTER, FA_TOP);
+		batch_string("main", 24, fmt("[%s] Return to Title", kb_label(KB_UI_ENTER)));
+	}
+
+	batch_cursor(XYZ(32.f, 16.f, -10000.f)), batch_color(WHITE), batch_align(FA_LEFT, FA_TOP);
 	batch_string("hud", 16, fmt("MARIO * %u", SDL_max(player->lives, 0)));
 	batch_cursor(XYZ(147.f, 34.f, -10000.f));
 	batch_align(FA_RIGHT, FA_TOP);
@@ -967,6 +1013,8 @@ void start_game_state(GameContext* ctx) {
 
 	load_sound("hurry");
 	load_sound("tick");
+	load_sound("pause");
+	load_sound("select");
 	load_sound("chat");
 
 	load_track("yi_score");

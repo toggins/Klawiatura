@@ -206,6 +206,11 @@ void nuke_audio_state() {
 	SDL_memset(&music_channels, 0, sizeof(music_channels));
 }
 
+void pause_audio_state(bool pause) {
+	FMOD_ChannelGroup_SetPaused(state_sound_group, pause);
+	FMOD_ChannelGroup_SetPaused(state_music_group, pause);
+}
+
 // ======
 // ASSETS
 // ======
