@@ -417,15 +417,12 @@ bool update_game() {
 
 no_tick:
 	// Interpolate outside of the loop for uncapped framerate.
-	register const float ftick = pendingticks();
+	register const fixed ftick = FfFloat(pendingticks());
 	for (const GameActor* actor = get_actor(game_state.live_actors); actor != NULL;
 		actor = get_actor(actor->previous))
 	{
 		InterpActor* iactor = &interp.actors[actor->id];
-		iactor->pos.x
-			= (fixed)((float)iactor->from.x + (((float)actor->pos.x - (float)iactor->from.x) * ftick));
-		iactor->pos.y
-			= (fixed)((float)iactor->from.y + (((float)actor->pos.y - (float)iactor->from.y) * ftick));
+		iactor->pos = Vadd(iactor->from, Vscale(Vsub(actor->pos, iactor->from), ftick));
 	}
 
 	return true;
