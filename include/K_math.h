@@ -14,6 +14,5 @@ typedef struct {
 } frect;
 
 fvec2 Vadd(register fvec2, register fvec2), Vsub(register fvec2, register fvec2);
-fvec2 Vscale(register fvec2, register fixed);
 fixed Vdist(register fvec2, register fvec2), Vtheta(register fvec2, register fvec2);
 Bool Rcollide(frect, frect);
