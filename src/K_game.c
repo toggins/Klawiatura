@@ -388,7 +388,7 @@ bool update_game() {
 		}
 	}
 
-	register const fixed ftick = FfFloat(pendingticks());
+	register const fixed t = dt();
 	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
 		InterpActor* iactor = &interp.actors[actor->id];
 
@@ -398,7 +398,7 @@ bool update_game() {
 		}
 
 		iactor->from = iactor->to, iactor->to = actor->pos;
-		iactor->pos = Vadd(iactor->from, Vscale(Vsub(iactor->to, iactor->from), ftick));
+		iactor->pos = Vadd(iactor->from, Vscale(Vsub(iactor->to, iactor->from), t));
 	}
 
 	return true;
