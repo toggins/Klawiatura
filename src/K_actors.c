@@ -77,6 +77,9 @@ void populate_actors_table() {
 	ACTOR(GOOMBA_FLAT);
 	ACTOR(WARP);
 	ACTOR(LAVA);
+	ACTOR(PODOBOO);
+	ACTOR(PODOBOO_VOLCANO);
+	ACTOR(LAVA_SPLASH);
 
 	static const GameActorTable TAB_NULL = {0};
 	ACTORS[ACT_NULL] = &TAB_NULL;

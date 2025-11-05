@@ -274,3 +274,74 @@ const GameActorTable TAB_BUBBLE = {
 	.tick = tick_bubble,
 	.draw = draw_bubble,
 };
+
+// ===========
+// LAVA SPLASH
+// ===========
+
+static void load_lava() {
+	load_texture("effects/lava");
+	load_texture("effects/lava2");
+	load_texture("effects/lava3");
+	load_texture("effects/lava4");
+	load_texture("effects/lava5");
+	load_texture("effects/lava6");
+	load_texture("effects/lava7");
+	load_texture("effects/lava8");
+	load_texture("effects/lava9");
+	load_texture("effects/lava10");
+	load_texture("effects/lava11");
+}
+
+static void tick_lava(GameActor* actor) {
+	VAL(actor, EFFECT_FRAME) += 49L;
+	if (VAL(actor, EFFECT_FRAME) >= 1100L)
+		FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_lava(const GameActor* actor) {
+	const char* tex;
+	switch (VAL(actor, EFFECT_FRAME) / 100L) {
+	default:
+		tex = "effects/lava";
+		break;
+	case 1L:
+		tex = "effects/lava2";
+		break;
+	case 2L:
+		tex = "effects/lava3";
+		break;
+	case 3L:
+		tex = "effects/lava4";
+		break;
+	case 4L:
+		tex = "effects/lava5";
+		break;
+	case 5L:
+		tex = "effects/lava6";
+		break;
+	case 6L:
+		tex = "effects/lava7";
+		break;
+	case 7L:
+		tex = "effects/lava8";
+		break;
+	case 8L:
+		tex = "effects/lava9";
+		break;
+	case 9L:
+		tex = "effects/lava10";
+		break;
+	case 10L:
+		tex = "effects/lava11";
+		break;
+	}
+
+	draw_actor(actor, tex, 0.f, WHITE);
+}
+
+const GameActorTable TAB_LAVA_SPLASH = {
+	.load = load_lava,
+	.tick = tick_lava,
+	.draw = draw_lava,
+};
