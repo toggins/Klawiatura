@@ -236,14 +236,6 @@ bool update_game() {
 			send_chat_message();
 	}
 
-	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
-		InterpActor* iactor = &interp.actors[actor->id];
-		if (iactor->type == actor->type)
-			iactor->from = iactor->to, iactor->to = actor->pos;
-		else
-			iactor->type = actor->type, iactor->from = iactor->to, iactor->pos = actor->pos;
-	}
-
 	const float ahh = gekko_frames_ahead(game_session), ahead = SDL_clamp(ahh, 0, 2);
 	for (new_frame(ahead); got_ticks(); next_tick()) {
 		GameInput input = 0;
@@ -396,10 +388,17 @@ bool update_game() {
 		}
 	}
 
-	register const fixed t = dt();
+	register const fixed ftick = FfFloat(pendingticks());
 	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
 		InterpActor* iactor = &interp.actors[actor->id];
-		iactor->pos = Vadd(iactor->from, Vscale(Vsub(iactor->to, iactor->from), t));
+
+		if (iactor->type != actor->type) {
+			iactor->type = actor->type, iactor->from = iactor->to, iactor->pos = actor->pos;
+			continue;
+		}
+
+		iactor->from = iactor->to, iactor->to = actor->pos;
+		iactor->pos = Vadd(iactor->from, Vscale(Vsub(iactor->to, iactor->from), ftick));
 	}
 
 	return true;
