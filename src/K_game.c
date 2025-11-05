@@ -230,22 +230,25 @@ bool update_game() {
 
 	update_chat_hist();
 	if (!typing_what() && is_connected()) {
+		// FIXME: Make ESC cancel the message instead of sending it.
 		if (kb_pressed(KB_CHAT) && !paused)
 			start_typing(chat_message, sizeof(chat_message));
 		else
 			send_chat_message();
 	}
 
-	float ftick = 0.f;
+	// No for-loop for this process because of interpolation.
 	const float ahh = gekko_frames_ahead(game_session), ahead = SDL_clamp(ahh, 0, 2);
 	new_frame(ahead);
 
 	if (!got_ticks())
 		goto no_tick;
 
+	// Capture interpolation data from the START of the whole loop
 	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
 		InterpActor* iactor = &interp.actors[actor->id];
 		if (iactor->type != actor->type) {
+			// Actor isn't what interp expected, just snap to tick position. Failsafe for rollback.
 			iactor->type = actor->type;
 			iactor->from = iactor->to = iactor->pos = actor->pos;
 			continue;
@@ -411,7 +414,8 @@ bool update_game() {
 	}
 
 no_tick:
-	ftick = pendingticks();
+	// Interpolate outside of the loop for uncapped framerate.
+	register const float ftick = pendingticks();
 	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
 		InterpActor* iactor = &interp.actors[actor->id];
 		iactor->pos.x
