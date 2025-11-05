@@ -1081,8 +1081,7 @@ skip_physics:
 				}
 			}
 
-		player->kevin.frames[KEVIN_DELAY - 1L].pos.x = actor->pos.x;
-		player->kevin.frames[KEVIN_DELAY - 1L].pos.y = actor->pos.y;
+		player->kevin.frames[KEVIN_DELAY - 1L].pos = actor->pos;
 		player->kevin.frames[KEVIN_DELAY - 1L].flip = ANY_FLAG(actor, FLG_X_FLIP);
 		player->kevin.frames[KEVIN_DELAY - 1L].power = player->power;
 		player->kevin.frames[KEVIN_DELAY - 1L].frame = get_player_frame(actor);
@@ -1092,8 +1091,7 @@ skip_physics:
 	FLAG_OFF(actor, FLG_PLAYER_STOMP);
 
 sync_pos:
-	player->pos.x = actor->pos.x;
-	player->pos.y = actor->pos.y;
+	player->pos = actor->pos;
 }
 
 static void draw(const GameActor* actor) {

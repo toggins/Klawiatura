@@ -247,13 +247,11 @@ bool update_game() {
 		InterpActor* iactor = &interp.actors[actor->id];
 		if (iactor->type != actor->type) {
 			iactor->type = actor->type;
-			iactor->from.x = iactor->to.x = iactor->pos.x = actor->pos.x;
-			iactor->from.y = iactor->to.y = iactor->pos.y = actor->pos.y;
+			iactor->from = iactor->to = iactor->pos = actor->pos;
 			continue;
 		}
 
-		iactor->from.x = iactor->to.x, iactor->from.y = iactor->to.y;
-		iactor->to.x = actor->pos.x, iactor->to.y = actor->pos.y;
+		iactor->from = iactor->to, iactor->to = actor->pos;
 	}
 
 	while (got_ticks()) {
@@ -1299,8 +1297,7 @@ GameActor* respawn_player(GamePlayer* player) {
 	if (pawn != NULL) {
 		VAL(pawn, PLAYER_INDEX) = (ActorValue)player->id;
 		player->actor = pawn->id;
-		player->pos.x = player->kevin.start.x = pawn->pos.x;
-		player->pos.y = player->kevin.start.y = pawn->pos.y;
+		player->pos = player->kevin.start = pawn->pos;
 		player->kevin.delay = 0L;
 
 		FLAG_ON(pawn, spawn->flags & (FLG_X_FLIP | FLG_PLAYER_ASCEND | FLG_PLAYER_DESCEND));
@@ -1430,8 +1427,7 @@ found:
 
 	InterpActor* iactor = &interp.actors[index];
 	iactor->type = type;
-	iactor->from.x = iactor->to.x = iactor->pos.x = pos.x;
-	iactor->from.y = iactor->to.y = iactor->pos.y = pos.y;
+	iactor->from = iactor->to = iactor->pos = pos;
 
 	FLAG_ON(actor, FLG_VISIBLE);
 	ACTOR_CALL(actor, create);
@@ -2015,8 +2011,7 @@ void skip_interp(const GameActor* actor) {
 	if (BAD_ACTOR(actor))
 		return;
 	InterpActor* iactor = &interp.actors[actor->id];
-	iactor->from.x = iactor->to.x = iactor->pos.x = actor->pos.x;
-	iactor->from.y = iactor->to.y = iactor->pos.y = actor->pos.y;
+	iactor->from = iactor->to = iactor->pos = actor->pos;
 }
 
 /// Start interpolating an actor's position from another actor. Used for trails.
@@ -2024,9 +2019,7 @@ void align_interp(const GameActor* actor, const GameActor* from) {
 	if (BAD_ACTOR(actor) || BAD_ACTOR(from))
 		return;
 	InterpActor *iactor = &interp.actors[actor->id], *ifrom = &interp.actors[from->id];
-	iactor->from.x = ifrom->from.x, iactor->from.y = ifrom->from.y;
-	iactor->to.x = ifrom->to.x, iactor->to.y = ifrom->to.y;
-	iactor->pos.x = ifrom->pos.x, iactor->pos.y = ifrom->pos.y;
+	iactor->from = ifrom->from, iactor->to = ifrom->to, iactor->pos = ifrom->pos;
 }
 
 #undef BAD_ACTOR
