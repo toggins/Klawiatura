@@ -295,7 +295,7 @@ static void create_silver(GameActor* actor) {
 static void tick_silver(GameActor* actor) {
 	GamePlayer* player = get_owner(actor);
 	if ((player != NULL && !in_player_view(actor, player, FxZero, true))
-		|| (player == NULL && !in_any_view(actor, FxZero, true)))
+		|| (player == NULL && !in_any_view(actor, FfInt(128L), true)))
 	{
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
