@@ -245,16 +245,18 @@ bool update_game() {
 		goto no_tick;
 
 	// Capture interpolation data from the START of the whole loop
-	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
+	for (const GameActor* actor = get_actor(game_state.live_actors); actor != NULL;
+		actor = get_actor(actor->previous))
+	{
 		InterpActor* iactor = &interp.actors[actor->id];
 		if (iactor->type != actor->type) {
 			// Actor isn't what interp expected, just snap to tick position. Failsafe for rollback.
 			iactor->type = actor->type;
-			iactor->from = iactor->to = iactor->pos = actor->pos;
+			iactor->from = iactor->pos = actor->pos;
 			continue;
 		}
 
-		iactor->from = iactor->to, iactor->to = actor->pos;
+		iactor->from = actor->pos;
 	}
 
 	while (got_ticks()) {
@@ -416,12 +418,14 @@ bool update_game() {
 no_tick:
 	// Interpolate outside of the loop for uncapped framerate.
 	register const float ftick = pendingticks();
-	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
+	for (const GameActor* actor = get_actor(game_state.live_actors); actor != NULL;
+		actor = get_actor(actor->previous))
+	{
 		InterpActor* iactor = &interp.actors[actor->id];
 		iactor->pos.x
-			= (fixed)((float)iactor->from.x + (((float)iactor->to.x - (float)iactor->from.x) * ftick));
+			= (fixed)((float)iactor->from.x + (((float)actor->pos.x - (float)iactor->from.x) * ftick));
 		iactor->pos.y
-			= (fixed)((float)iactor->from.y + (((float)iactor->to.y - (float)iactor->from.y) * ftick));
+			= (fixed)((float)iactor->from.y + (((float)actor->pos.y - (float)iactor->from.y) * ftick));
 	}
 
 	return true;
@@ -1431,7 +1435,7 @@ found:
 
 	InterpActor* iactor = &interp.actors[index];
 	iactor->type = type;
-	iactor->from = iactor->to = iactor->pos = pos;
+	iactor->from = iactor->pos = pos;
 
 	FLAG_ON(actor, FLG_VISIBLE);
 	ACTOR_CALL(actor, create);
@@ -2015,7 +2019,7 @@ void skip_interp(const GameActor* actor) {
 	if (BAD_ACTOR(actor))
 		return;
 	InterpActor* iactor = &interp.actors[actor->id];
-	iactor->from = iactor->to = iactor->pos = actor->pos;
+	iactor->from = iactor->pos = actor->pos;
 }
 
 /// Start interpolating an actor's position from another actor. Used for trails.
@@ -2023,7 +2027,7 @@ void align_interp(const GameActor* actor, const GameActor* from) {
 	if (BAD_ACTOR(actor) || BAD_ACTOR(from))
 		return;
 	InterpActor *iactor = &interp.actors[actor->id], *ifrom = &interp.actors[from->id];
-	iactor->from = ifrom->from, iactor->to = ifrom->to, iactor->pos = ifrom->pos;
+	iactor->from = ifrom->from, iactor->pos = ifrom->pos;
 }
 
 #undef BAD_ACTOR

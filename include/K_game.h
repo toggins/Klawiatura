@@ -396,7 +396,7 @@ typedef struct {
 
 typedef struct {
 	GameActorType type;
-	fvec2 from, to, pos;
+	fvec2 from, pos;
 } InterpActor;
 
 typedef struct {
