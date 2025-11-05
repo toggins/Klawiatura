@@ -2,16 +2,20 @@
 
 /// Add two vectors' components together.
 fvec2 Vadd(register fvec2 a, register fvec2 b) {
-	a.x += b.x;
-	a.y += b.y;
+	a.x += b.x, a.y += b.y;
 	return a;
 }
 
 /// Subtract second vector's components from the first.
 fvec2 Vsub(register fvec2 a, register fvec2 b) {
-	a.x -= b.x;
-	a.y -= b.y;
+	a.x -= b.x, a.y -= b.y;
 	return a;
+}
+
+/// Scale a vector's components by a scalar.
+fvec2 Vscale(register fvec2 v, register fixed s) {
+	v.x = Fmul(v.x, s), v.y = Fmul(v.y, s);
+	return v;
 }
 
 /// Approximate distance between two points.

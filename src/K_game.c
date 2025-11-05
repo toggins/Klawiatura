@@ -236,27 +236,10 @@ bool update_game() {
 			send_chat_message();
 	}
 
-	float ftick = 0.f;
 	const float ahh = gekko_frames_ahead(game_session), ahead = SDL_clamp(ahh, 0, 2);
-	new_frame(ahead);
+	for (new_frame(ahead); got_ticks(); next_tick()) {
+		GameInput input = 0;
 
-	if (!got_ticks())
-		goto no_tick;
-
-	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
-		InterpActor* iactor = &interp.actors[actor->id];
-		if (iactor->type != actor->type) {
-			iactor->type = actor->type;
-			iactor->from.x = iactor->to.x = iactor->pos.x = actor->pos.x;
-			iactor->from.y = iactor->to.y = iactor->pos.y = actor->pos.y;
-			continue;
-		}
-
-		iactor->from.x = iactor->to.x, iactor->from.y = iactor->to.y;
-		iactor->to.x = actor->pos.x, iactor->to.y = actor->pos.y;
-	}
-
-	while (got_ticks()) {
 		if (paused) {
 			if (kb_pressed(KB_UI_ENTER)) {
 				play_generic_sound("select");
@@ -264,21 +247,17 @@ bool update_game() {
 			} else if (kb_pressed(KB_PAUSE)) {
 				play_generic_sound("select");
 				unpause();
-			} else
-				goto try_break_events;
+			}
 		} else if (kb_pressed(KB_PAUSE) && !typing_what()) {
 			play_generic_sound("pause");
 			pause();
-			goto try_break_events;
 		} else
 			goto dont_break_events;
 
-	try_break_events:
 		if (num_players <= 1L)
-			goto break_events;
+			continue;
 
 	dont_break_events:
-		GameInput input = 0;
 		if (!paused && !typing_what()) {
 			input |= kb_down(KB_UP) * GI_UP;
 			input |= kb_down(KB_LEFT) * GI_LEFT;
@@ -407,19 +386,19 @@ bool update_game() {
 				break;
 			}
 		}
-
-	break_events:
-		next_tick();
 	}
 
-no_tick:
-	ftick = pendingticks();
+	register const fixed ftick = FfFloat(pendingticks());
 	for (GameActor* actor = get_actor(game_state.live_actors); actor != NULL; actor = get_actor(actor->previous)) {
 		InterpActor* iactor = &interp.actors[actor->id];
-		iactor->pos.x
-			= (fixed)((float)iactor->from.x + (((float)iactor->to.x - (float)iactor->from.x) * ftick));
-		iactor->pos.y
-			= (fixed)((float)iactor->from.y + (((float)iactor->to.y - (float)iactor->from.y) * ftick));
+
+		if (iactor->type != actor->type) {
+			iactor->type = actor->type, iactor->from = iactor->to, iactor->pos = actor->pos;
+			continue;
+		}
+
+		iactor->from = iactor->to, iactor->to = actor->pos;
+		iactor->pos = Vadd(iactor->from, Vscale(Vsub(iactor->to, iactor->from), ftick));
 	}
 
 	return true;
@@ -1430,8 +1409,7 @@ found:
 
 	InterpActor* iactor = &interp.actors[index];
 	iactor->type = type;
-	iactor->from.x = iactor->to.x = iactor->pos.x = pos.x;
-	iactor->from.y = iactor->to.y = iactor->pos.y = pos.y;
+	iactor->from = iactor->to = iactor->pos = pos;
 
 	FLAG_ON(actor, FLG_VISIBLE);
 	ACTOR_CALL(actor, create);
