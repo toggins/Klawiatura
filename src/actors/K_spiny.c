@@ -24,7 +24,9 @@ static void create(GameActor* actor) {
 }
 
 static void tick(GameActor* actor) {
-	move_enemy(actor, ((game_state.flags & GF_HARDCORE) && !ANY_FLAG(actor, FLG_SPINY_GRAY)) ? FfInt(2L) : FxOne,
+	move_enemy(actor,
+		(fvec2){((game_state.flags & GF_HARDCORE) && !ANY_FLAG(actor, FLG_SPINY_GRAY)) ? FfInt(2L) : FxOne,
+			19005L},
 		false);
 }
 
@@ -56,7 +58,8 @@ static void collide(GameActor* actor, GameActor* from) {
 	case ACT_GOOMBA:
 	case ACT_KOOPA:
 	case ACT_SPINY:
-	case ACT_BUZZY_BEETLE: {
+	case ACT_BUZZY_BEETLE:
+	case ACT_CHEEP_CHEEP_BLUE: {
 		turn_enemy(actor);
 		turn_enemy(from);
 		break;

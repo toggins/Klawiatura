@@ -15,7 +15,7 @@ enum {
 	FLG_ENEMY_ACTIVE = CUSTOM_FLAG(0),
 };
 
-void move_enemy(GameActor*, fixed, Bool), turn_enemy(GameActor*);
+void move_enemy(GameActor*, fvec2, Bool), turn_enemy(GameActor*);
 GameActor* kill_enemy(GameActor*, GameActor*, Bool);
 
 Bool check_stomp(GameActor*, GameActor*, fixed, int32_t), maybe_hit_player(GameActor*, GameActor*);

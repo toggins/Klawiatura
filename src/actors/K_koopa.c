@@ -31,7 +31,7 @@ static void create(GameActor* actor) {
 static void tick(GameActor* actor) {
 	VAL_TICK(actor, KOOPA_MAYDAY);
 	const Bool red = ANY_FLAG(actor, FLG_KOOPA_RED);
-	move_enemy(actor, red ? FfInt(2L) : FxOne, red);
+	move_enemy(actor, (fvec2){red ? FfInt(2L) : FxOne, 19005L}, red);
 }
 
 static void draw(const GameActor* actor) {
@@ -93,7 +93,8 @@ static void collide(GameActor* actor, GameActor* from) {
 	case ACT_GOOMBA:
 	case ACT_KOOPA:
 	case ACT_SPINY:
-	case ACT_BUZZY_BEETLE: {
+	case ACT_BUZZY_BEETLE:
+	case ACT_CHEEP_CHEEP_BLUE: {
 		turn_enemy(actor);
 		turn_enemy(from);
 		break;

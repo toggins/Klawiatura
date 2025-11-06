@@ -93,7 +93,10 @@ static void load_podoboo() {
 	load_texture("enemies/podoboo2");
 	load_texture("enemies/podoboo3");
 
+	load_sound("kick");
+
 	load_actor(ACT_LAVA_SPLASH);
+	load_actor(ACT_POINTS);
 }
 
 static void create_podoboo(GameActor* actor) {

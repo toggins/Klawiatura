@@ -9,14 +9,14 @@
 // HELPER FUNCTIONS
 // ================
 
-void move_enemy(GameActor* actor, fixed speed, Bool edge) {
+void move_enemy(GameActor* actor, fvec2 speed, Bool edge) {
 	if (below_level(actor)) {
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}
 
 	if (!ANY_FLAG(actor, FLG_ENEMY_ACTIVE) && in_any_view(actor, FxZero, false)) {
-		VAL(actor, X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -speed : speed;
+		VAL(actor, X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -speed.x : speed.x;
 		FLAG_ON(actor, FLG_ENEMY_ACTIVE);
 	}
 
@@ -34,23 +34,23 @@ void move_enemy(GameActor* actor, fixed speed, Bool edge) {
 			    SOL_ALL))
 		{
 			if (VAL(actor, X_SPEED) < FxZero) {
-				VAL(actor, X_SPEED) = speed;
+				VAL(actor, X_SPEED) = speed.x;
 				FLAG_OFF(actor, FLG_X_FLIP);
 			} else if (VAL(actor, X_SPEED) > FxZero) {
-				VAL(actor, X_SPEED) = -speed;
+				VAL(actor, X_SPEED) = -speed.x;
 				FLAG_ON(actor, FLG_X_FLIP);
 			}
 		}
 	}
 
-	VAL(actor, Y_SPEED) += 19005L;
+	VAL(actor, Y_SPEED) += speed.y;
 	displace_actor(actor, FfInt(10L), false);
 
 	collide_actor(actor);
 	VAL_TICK(actor, ENEMY_TURN);
 
 	if (VAL(actor, X_TOUCH) != 0L) {
-		VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * -speed;
+		VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * -speed.x;
 		if (VAL(actor, X_SPEED) < FxZero)
 			FLAG_ON(actor, FLG_X_FLIP);
 		else if (VAL(actor, X_SPEED) > FxZero)
