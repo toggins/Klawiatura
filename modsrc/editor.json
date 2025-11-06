@@ -812,6 +812,20 @@
                 },
 
                 {
+                    "def": "Spring",
+                    "type": "object",
+                    "index": 69,
+                    "texture": "markers/spring",
+
+                    "flags": [
+                        {
+                            "name": "Green?",
+                            "bit": 5
+                        }
+                    ]
+                },
+
+                {
                     "def": "Platform",
                     "type": "object",
                     "index": 85,

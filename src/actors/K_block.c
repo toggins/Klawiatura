@@ -460,7 +460,7 @@ static void note_top(GameActor* actor, GameActor* from) {
 	case ACT_PLAYER:
 	case ACT_MISSILE_BEETROOT:
 	case ACT_MISSILE_SILVER_HAMMER: {
-		VAL(from, Y_SPEED) = FfInt((VAL(from, PLAYER_SPRING) > 0L) ? -19L : -10L);
+		VAL(from, Y_SPEED) = (VAL(from, PLAYER_SPRING) > 0L) ? FfInt(-19L) : FfInt(-10L);
 		VAL(actor, BLOCK_BUMP) = 1L;
 		VAL(actor, X_TOUCH) = 0L, VAL(actor, Y_TOUCH) = 1L;
 		play_actor_sound(actor, "spring");

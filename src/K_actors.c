@@ -83,6 +83,7 @@ void populate_actors_table() {
 	ACTOR(CHEEP_CHEEP_BLUE);
 	ACTOR(CHEEP_CHEEP_SPIKY);
 	ACTOR(BOWSER);
+	ACTOR(SPRING);
 
 	static const GameActorTable TAB_NULL = {0};
 	ACTORS[ACT_NULL] = &TAB_NULL;
