@@ -574,7 +574,7 @@ static void draw_hud() {
 		batch_string("hud", size, fmt("%u", game_state.clock));
 	}
 
-	if (game_state.sequence.type == SEQ_LOSE && game_state.sequence.time > 0L) {
+	if (!paused && game_state.sequence.type == SEQ_LOSE && game_state.sequence.time > 0L) {
 		batch_cursor(XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, -10000.f));
 		batch_align(FA_CENTER, FA_MIDDLE);
 		batch_string("hud", 16, (game_state.clock == 0) ? "TIME UP" : "GAME OVER");
@@ -1548,7 +1548,7 @@ void move_actor(GameActor* actor, const fvec2 pos) {
 }
 
 /// Check if the actor's hitbox is below the level.
-Bool below_level(GameActor* actor) {
+Bool below_level(const GameActor* actor) {
 	return actor != NULL && (actor->pos.y + actor->box.start.y) > game_state.size.y;
 }
 
@@ -1562,7 +1562,7 @@ Bool below_level(GameActor* actor) {
 			&& (ignore_top || abox.end.y > cbox.start.y));                                                 \
 	}
 
-Bool in_any_view(GameActor* actor, fixed padding, Bool ignore_top) {
+Bool in_any_view(const GameActor* actor, fixed padding, Bool ignore_top) {
 	if (actor == NULL)
 		return false;
 
@@ -1593,7 +1593,7 @@ Bool in_any_view(GameActor* actor, fixed padding, Bool ignore_top) {
 }
 
 /// Check if the actor is within a player's range.
-Bool in_player_view(GameActor* actor, GamePlayer* player, fixed padding, Bool ignore_top) {
+Bool in_player_view(const GameActor* actor, GamePlayer* player, fixed padding, Bool ignore_top) {
 	if (actor == NULL || player == NULL)
 		return false;
 

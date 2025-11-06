@@ -466,9 +466,9 @@ void replace_actors(GameActorType, GameActorType);
 GameActor* get_actor(ActorID);
 void move_actor(GameActor*, const fvec2);
 
-Bool below_level(GameActor*);
-Bool in_any_view(GameActor*, fixed, Bool);
-Bool in_player_view(GameActor*, GamePlayer*, fixed, Bool);
+Bool below_level(const GameActor*);
+Bool in_any_view(const GameActor*, fixed, Bool);
+Bool in_player_view(const GameActor*, GamePlayer*, fixed, Bool);
 
 typedef struct {
 	GameActor* actors[MAX_ACTORS];
