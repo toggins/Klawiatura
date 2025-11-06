@@ -306,8 +306,9 @@ bool update_game() {
 				show_error("Out of sync with player %i (%s)\n"
 					   "Tick: %i\n"
 					   "Local Checksum: %u\n"
-					   "Remote Checksum: %u",
-					"\n\nGame state has been dumped to console.", desync.remote_handle + 1,
+					   "Remote Checksum: %u\n"
+					   "\nGame state has been dumped to console.",
+					desync.remote_handle + 1,
 					get_peer_name(player_to_peer((PlayerID)desync.remote_handle)), desync.frame,
 					desync.local_checksum, desync.remote_checksum);
 				goto byebye_game;
