@@ -28,7 +28,7 @@ set(SDL_CAMERA OFF CACHE INTERNAL "")
 FetchContent_Declare(
     SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG release-3.2.24)
+    GIT_TAG release-3.2.26)
 
 # SDL_image (3.2.4)
 set(SDLIMAGE_AVIF OFF CACHE INTERNAL "")
@@ -91,7 +91,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 FetchContent_Declare(
     GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG 4d250da933b9cdf79eb29aff63613e34ab7bfd32)
+    GIT_TAG dfabb76e3e4a2857fa7cf7dd6f2da8a81abf95de)
 
 # FMOD Core API (2.03.08)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
