@@ -1261,7 +1261,7 @@ static void tick_corpse(GameActor* actor) {
 	case 0L: {
 		if (ANY_FLAG(actor, FLG_PLAYER_DEAD)) {
 			GameActor* autoscroll = get_actor(game_state.autoscroll);
-			if (autoscroll != NULL && !ANY_FLAG(autoscroll, FLG_SCROLL_TANKS))
+			if (autoscroll != NULL && !ANY_FLAG(autoscroll, FLG_SCROLL_TANKS | FLG_SCROLL_BOWSER))
 				VAL(autoscroll, X_SPEED) = VAL(autoscroll, Y_SPEED) = FxZero;
 
 			if (game_state.flags & GF_HARDCORE)

@@ -11,23 +11,25 @@ static void create(GameActor* actor) {
 static void tick(GameActor* actor) {
 	if (game_state.autoscroll != actor->id && in_any_view(actor, FxZero, false)) {
 		GameActor* autoscroll = get_actor(game_state.autoscroll);
+
 		if (autoscroll != NULL) {
 			VAL(autoscroll, X_SPEED) = VAL(actor, X_SPEED);
 			VAL(autoscroll, Y_SPEED) = VAL(actor, Y_SPEED);
 			FLAG_ON(autoscroll, actor->flags & FLG_SCROLL_TANKS);
 			FLAG_ON(actor, FLG_DESTROY);
 			return;
-		} else {
-			game_state.autoscroll = actor->id;
-			for (PlayerID i = 0; i < numplayers(); i++) {
-				GamePlayer* player = get_player(i);
-				if (player == NULL)
-					continue;
+		}
 
-				GameActor* pawn = get_actor(player->actor);
-				if (pawn != NULL && !in_any_view(pawn, FxZero, false))
-					respawn_player(player);
-			}
+		game_state.autoscroll = actor->id;
+
+		for (PlayerID i = 0; i < numplayers(); i++) {
+			GamePlayer* player = get_player(i);
+			if (player == NULL)
+				continue;
+
+			GameActor* pawn = get_actor(player->actor);
+			if (pawn != NULL && pawn->pos.x < actor->pos.x)
+				move_actor(respawn_player(player), POS_ADD(actor, F_HALF_SCREEN_WIDTH, FxZero));
 		}
 	}
 
