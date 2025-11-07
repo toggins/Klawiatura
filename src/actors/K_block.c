@@ -160,7 +160,7 @@ static void load() {
 	load_sound("sprout");
 }
 
-static void load_special(GameActor* actor) {
+static void load_special(const GameActor* actor) {
 	switch (VAL(actor, BLOCK_ITEM)) {
 	default:
 		break;

@@ -1,7 +1,7 @@
 #include "actors/K_platform.h"
 #include "actors/K_player.h" // IWYU pragma: keep
 
-static void load_special(GameActor* actor) {
+static void load_special(const GameActor* actor) {
 	switch (VAL(actor, PLATFORM_TYPE)) {
 	default:
 		load_texture("markers/platform/big");

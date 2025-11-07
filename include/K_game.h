@@ -176,6 +176,7 @@ enum {
 	ACT_NOTE_BLOCK,
 	ACT_SPINY_EGG,
 	ACT_PIRANHA_HEAD,
+	ACT_ELECTRIC_CORAL,
 
 	ACT_SIZE,
 };
@@ -409,8 +410,8 @@ SolidType always_solid(const GameActor*), always_top(const GameActor*), always_b
 
 typedef struct {
 	SolidType (*is_solid)(const GameActor*);
-	void (*load)();
-	void (*load_special)(GameActor*), (*create)(GameActor*);
+	void (*load)(), (*load_special)(const GameActor*);
+	void (*create)(GameActor*);
 	void (*pre_tick)(GameActor*), (*tick)(GameActor*), (*post_tick)(GameActor*);
 	void (*draw)(const GameActor*), (*draw_dead)(const GameActor*);
 	void (*cleanup)(GameActor*);

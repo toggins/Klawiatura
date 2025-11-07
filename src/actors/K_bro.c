@@ -41,7 +41,7 @@ static void load() {
 	load_actor(ACT_POINTS);
 }
 
-static void load_special(GameActor* actor) {
+static void load_special(const GameActor* actor) {
 	switch (VAL(actor, BRO_MISSILE)) {
 	default:
 		break;
