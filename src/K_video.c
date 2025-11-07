@@ -413,28 +413,30 @@ void load_texture_wild(const char* pattern) {
 	for (int j = i; j < sizeof(buf) - 1; j++)                                                                      \
 		buf[j] = buf[j + 1];
 
-	for (char counter = 0; counter < 9; counter++) {
+	for (char counter = 1; counter < 100; counter++) {
 		SDL_memset(buf, 0, sizeof(buf));
 		SDL_strlcpy(buf, pattern, sizeof(buf));
 
 		for (int i = 0; i < sizeof(buf); i++) {
-			if (buf[i] != '?')
+			if (buf[i] != '?') {
 				continue;
-			if (double_question) {
-				if (!counter) {
+			} else if (double_question) {
+				if (counter == 1) {
 					SHRINK();
 					SHRINK();
 				} else if (counter < 10) {
 					SHRINK();
-					buf[i] = '1' + counter;
+					buf[i] = '0' + counter;
 				} else {
-					buf[i] = '1' + (counter / 10);
+					buf[i] = '0' + (counter / 10);
 					buf[++i] = '0' + (counter % 10);
 				}
-			} else if (counter) {
-				buf[i] = '1' + counter;
-			} else {
+			} else if (counter == 1) {
 				SHRINK();
+			} else if (counter < 10) {
+				buf[i] = '0' + counter;
+			} else {
+				break;
 			}
 		}
 
