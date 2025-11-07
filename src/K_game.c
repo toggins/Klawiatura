@@ -2000,6 +2000,14 @@ const InterpActor* get_interp(const GameActor* actor) {
 	return &interp.actors[actor->id];
 }
 
+/// Skip interpolating an actor's position.
+void skip_interp(const GameActor* actor) {
+	if (BAD_ACTOR(actor))
+		return;
+	InterpActor* iactor = &interp.actors[actor->id];
+	iactor->from = iactor->pos = actor->pos;
+}
+
 /// Start interpolating an actor's position from another actor. Used for trails.
 void align_interp(const GameActor* actor, const GameActor* from) {
 	if (BAD_ACTOR(actor) || BAD_ACTOR(from))

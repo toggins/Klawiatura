@@ -65,10 +65,13 @@ static void pre_tick(GameActor* actor) {
 	VAL(actor, PLATFORM_X_FROM) = actor->pos.x, VAL(actor, PLATFORM_Y_FROM) = actor->pos.y;
 
 	if (ANY_FLAG(actor, FLG_PLATFORM_WRAP) && !ANY_FLAG(actor, FLG_PLATFORM_FALLING)) {
-		if (VAL(actor, Y_SPEED) > FxZero && actor->pos.y > (game_state.size.y + FfInt(10L)))
+		if (VAL(actor, Y_SPEED) > FxZero && actor->pos.y > (game_state.size.y + FfInt(10L))) {
 			move_actor(actor, (fvec2){actor->pos.x, FfInt(-10L)});
-		else if (VAL(actor, Y_SPEED) < FxZero && actor->pos.y < FfInt(-10L))
+			skip_interp(actor);
+		} else if (VAL(actor, Y_SPEED) < FxZero && actor->pos.y < FfInt(-10L)) {
 			move_actor(actor, (fvec2){actor->pos.x, game_state.size.y + FfInt(10L)});
+			skip_interp(actor);
+		}
 	}
 
 	if (actor->pos.y > (game_state.size.y + FfInt(32L))) {
@@ -77,6 +80,7 @@ static void pre_tick(GameActor* actor) {
 			return;
 		} else if (++VAL(actor, PLATFORM_RESPAWN) >= 150L) {
 			move_actor(actor, (fvec2){VAL(actor, PLATFORM_X), VAL(actor, PLATFORM_Y)});
+			skip_interp(actor);
 			VAL(actor, X_SPEED) = VAL(actor, PLATFORM_X_SPEED);
 			VAL(actor, Y_SPEED) = VAL(actor, PLATFORM_Y_SPEED);
 			actor->flags = (ActorFlag)VAL(actor, PLATFORM_FLAGS);

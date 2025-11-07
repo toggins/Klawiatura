@@ -53,6 +53,7 @@ static void tick(GameActor* actor) {
 			move_actor(actor, POS_ADD(actor, FxZero, FfInt(-60L)));
 		} else
 			move_actor(actor, POS_ADD(actor, FxZero, FfInt(60L)));
+		skip_interp(actor);
 		FLAG_ON(actor, FLG_PIRANHA_START);
 	}
 

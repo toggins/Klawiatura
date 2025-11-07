@@ -110,6 +110,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 					 Flerp(actor->box.start.x, actor->box.end.y, FxHalf)
 						 - Flerp(item->box.start.x, item->box.end.x, FxHalf),
 					 -item->box.end.y));
+		skip_interp(item);
 
 		if (item->type == ACT_COIN_POP) {
 			if (from != NULL)

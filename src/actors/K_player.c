@@ -709,6 +709,7 @@ static void tick(GameActor* actor) {
 
 				move_actor(actor, (fvec2){VAL(warp, WARP_X), VAL(warp, WARP_Y) + FfInt(50L)});
 				FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
+				skip_interp(actor);
 				play_actor_sound(actor, "warp");
 			}
 		}
