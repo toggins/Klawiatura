@@ -228,6 +228,9 @@ void nuke_game() {
 bool update_game() {
 	gekko_network_poll(game_session);
 
+	const float ahh = gekko_frames_ahead(game_session), ahead = SDL_clamp(ahh, 0, 2);
+	GameInput input = 0;
+
 	update_chat_hist();
 	if (!typing_what() && is_connected()) {
 		// FIXME: Make ESC cancel the message instead of sending it.
@@ -237,29 +240,21 @@ bool update_game() {
 			send_chat_message();
 	}
 
-	// No for-loop for this process because of interpolation.
-	const float ahh = gekko_frames_ahead(game_session), ahead = SDL_clamp(ahh, 0, 2);
-	new_frame(ahead);
-
-	if (!got_ticks())
-		goto no_tick;
-
-	// Capture interpolation data from the START of the whole loop
-	for (const GameActor* actor = get_actor(game_state.live_actors); actor != NULL;
-		actor = get_actor(actor->previous))
-	{
-		InterpActor* iactor = &interp.actors[actor->id];
-		if (iactor->type != actor->type) {
-			// Actor isn't what interp expected, just snap to tick position. Failsafe for rollback.
-			iactor->type = actor->type;
-			iactor->from = iactor->pos = actor->pos;
-			continue;
+	// nonk: make sure to use these three funcs ONLY in a `for` construct. Behavior is undefined otherwise.
+	for (new_frame(ahead); got_ticks(); next_tick()) {
+		// Capture interpolation data from the START of the current tick, since we're interpolating from the
+		// start of one tick to the next.
+		for (GameActor* actor = get_actor(game_state.live_actors); actor; actor = get_actor(actor->previous)) {
+			InterpActor* iactor = &interp.actors[actor->id];
+			if (iactor->type == actor->type)
+				iactor->from = actor->pos;
+			else {
+				// Actor isn't what interp expected, just snap to tick position. Failsafe for rollback.
+				iactor->type = actor->type;
+				iactor->from = iactor->pos = actor->pos;
+			}
 		}
 
-		iactor->from = actor->pos;
-	}
-
-	while (got_ticks()) {
 		if (paused) {
 			if (kb_pressed(KB_UI_ENTER)) {
 				play_generic_sound("select");
@@ -267,21 +262,18 @@ bool update_game() {
 			} else if (kb_pressed(KB_PAUSE)) {
 				play_generic_sound("select");
 				unpause();
-			} else
-				goto try_break_events;
+			}
 		} else if (kb_pressed(KB_PAUSE) && !typing_what()) {
 			play_generic_sound("pause");
 			pause();
-			goto try_break_events;
 		} else
 			goto dont_break_events;
 
-	try_break_events:
 		if (num_players <= 1L)
-			goto break_events;
+			continue;
 
 	dont_break_events:
-		GameInput input = 0;
+		input = 0; // declaring here spits out a shitass warning...
 		if (!paused && !typing_what()) {
 			input |= kb_down(KB_UP) * GI_UP;
 			input |= kb_down(KB_LEFT) * GI_LEFT;
@@ -364,7 +356,7 @@ bool update_game() {
 
 				for (PlayerID j = 0; j < num_players; j++)
 					if (!(inputs[j] & GI_WARP))
-						goto no_warp;
+						break;
 
 				if (game_state.flags & GF_END) {
 					if (game_state.next[0] == '\0') {
@@ -405,25 +397,17 @@ bool update_game() {
 					return true;
 				}
 
-			no_warp:
 				break;
 			}
-
 			default:
 				break;
 			}
 		}
-
-	break_events:
-		next_tick();
 	}
 
-no_tick:
 	// Interpolate outside of the loop for uncapped framerate.
 	register const fixed ftick = FfFloat(pendingticks());
-	for (const GameActor* actor = get_actor(game_state.live_actors); actor != NULL;
-		actor = get_actor(actor->previous))
-	{
+	for (const GameActor* actor = get_actor(game_state.live_actors); actor; actor = get_actor(actor->previous)) {
 		InterpActor* iactor = &interp.actors[actor->id];
 		iactor->pos = Vadd(iactor->from, Vscale(Vsub(actor->pos, iactor->from), ftick));
 	}
@@ -443,39 +427,40 @@ static void perform_camera_magic() {
 
 	const GamePlayer* player = get_player(view_player);
 	const GameActor* autoscroll = get_actor(game_state.autoscroll);
+	static vec2 cpos = GLM_VEC2_ZERO;
+
 	if (autoscroll) {
 		InterpActor* iautoscroll = &interp.actors[autoscroll->id];
-		camera->pos[0] = FtInt(iautoscroll->pos.x + F_HALF_SCREEN_WIDTH);
-		camera->pos[1] = FtInt(iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT);
+		camera->pos[0] = FtFloat(iautoscroll->pos.x + F_HALF_SCREEN_WIDTH);
+		camera->pos[1] = FtFloat(iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT);
 
-		const float bx1 = HALF_SCREEN_WIDTH, by1 = HALF_SCREEN_HEIGHT,
-			    bx2 = FtInt(game_state.size.x - F_HALF_SCREEN_WIDTH),
-			    by2 = FtInt(game_state.size.y - F_HALF_SCREEN_HEIGHT);
+		const float bx1 = FtFloat(F_HALF_SCREEN_WIDTH), by1 = FtFloat(F_HALF_SCREEN_HEIGHT),
+			    bx2 = FtFloat(game_state.size.x - F_HALF_SCREEN_WIDTH),
+			    by2 = FtFloat(game_state.size.y - F_HALF_SCREEN_HEIGHT);
 		camera->pos[0] = SDL_clamp(camera->pos[0], bx1, bx2);
 		camera->pos[1] = SDL_clamp(camera->pos[1], by1, by2);
 	} else if (player) {
 		const GameActor* pawn = get_actor(player->actor);
-		if (pawn != NULL) {
-			InterpActor* ipawn = &interp.actors[pawn->id];
-			camera->pos[0] = FtInt(ipawn->pos.x);
-			camera->pos[1] = FtInt(ipawn->pos.y);
-
-			const float bx1 = FtInt(player->bounds.start.x + F_HALF_SCREEN_WIDTH),
-				    by1 = FtInt(player->bounds.start.y + F_HALF_SCREEN_HEIGHT),
-				    bx2 = FtInt(player->bounds.end.x - F_HALF_SCREEN_WIDTH),
-				    by2 = FtInt(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
-			camera->pos[0] = SDL_clamp(camera->pos[0], bx1, bx2);
-			camera->pos[1] = SDL_clamp(camera->pos[1], by1, by2);
+		const InterpActor* ipawn = NULL;
+		if (pawn != NULL)
+			ipawn = &interp.actors[pawn->id];
+		if (ipawn != NULL) { // paranoia......
+			const float bx1 = FtFloat(player->bounds.start.x + F_HALF_SCREEN_WIDTH),
+				    by1 = FtFloat(player->bounds.start.y + F_HALF_SCREEN_HEIGHT),
+				    bx2 = FtFloat(player->bounds.end.x - F_HALF_SCREEN_WIDTH),
+				    by2 = FtFloat(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
+			camera->pos[0] = SDL_clamp(FtFloat(ipawn->pos.x), bx1, bx2);
+			camera->pos[1] = SDL_clamp(FtFloat(ipawn->pos.y), by1, by2);
 		}
 	}
 
-	static vec2 cpos = GLM_VEC2_ZERO;
 	if (camera->lerp_time[0] < camera->lerp_time[1]) {
 		glm_vec2_lerp(camera->from, camera->pos, camera->lerp_time[0] / camera->lerp_time[1], cpos);
 		camera->lerp_time[0] += dt();
 	} else {
 		glm_vec2_copy(camera->pos, cpos);
 	}
+
 	if (video_state.quake > 0.f) {
 		const Sint32 quake = (Sint32)video_state.quake + 1L;
 		Uint64 seed = game_state.time;
@@ -483,6 +468,7 @@ static void perform_camera_magic() {
 		cpos[1] += (float)(-SDL_rand_r(&seed, quake) + SDL_rand_r(&seed, quake));
 		video_state.quake -= dt();
 	}
+
 	glm_ortho(cpos[0] - HALF_SCREEN_WIDTH, cpos[0] + HALF_SCREEN_WIDTH, cpos[1] - HALF_SCREEN_HEIGHT,
 		cpos[1] + HALF_SCREEN_HEIGHT, -16000.f, 16000.f, proj);
 	set_projection_matrix(proj);
@@ -807,8 +793,6 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 		win_player(get_actor(winner->actor));
 		break;
 	}
-
-	break;
 	}
 }
 
@@ -1963,9 +1947,8 @@ void displace_actor_soft(GameActor* actor) {
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
 	const InterpActor* iactor = &interp.actors[actor->id];
 	const ActorValue sprout = VAL(actor, SPROUT);
-	batch_start(
-		XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + sprout, (sprout > 0L) ? 21.f : FtFloat(actor->depth)),
-		angle, color);
+	const GLfloat z = (sprout > 0L) ? 21.f : FtFloat(actor->depth);
+	batch_start(XYZ(FtFloat(iactor->pos.x), FtFloat(iactor->pos.y + sprout), z), angle, color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 }
 
@@ -2012,14 +1995,6 @@ const InterpActor* get_interp(const GameActor* actor) {
 	if (BAD_ACTOR(actor))
 		return NULL;
 	return &interp.actors[actor->id];
-}
-
-/// Skip interpolating an actor's position.
-void skip_interp(const GameActor* actor) {
-	if (BAD_ACTOR(actor))
-		return;
-	InterpActor* iactor = &interp.actors[actor->id];
-	iactor->from = iactor->pos = actor->pos;
 }
 
 /// Start interpolating an actor's position from another actor. Used for trails.

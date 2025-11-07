@@ -497,5 +497,4 @@ int32_t rng(int32_t);
 // =============
 
 const InterpActor* get_interp(const GameActor*);
-void skip_interp(const GameActor*);
 void align_interp(const GameActor*, const GameActor*);
