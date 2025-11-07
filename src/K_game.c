@@ -14,7 +14,7 @@
 #include "actors/K_enemies.h"    // IWYU pragma: keep
 #include "actors/K_player.h"
 
-#define ACTOR_TYPE_CALL(type, fn)                                                                                      \
+#define ACTOR_CALL_STATIC(type, fn)                                                                                    \
 	do {                                                                                                           \
 		if (ACTORS[(type)] != NULL && ACTORS[(type)]->fn != NULL)                                              \
 			ACTORS[(type)]->fn();                                                                          \
@@ -1388,7 +1388,7 @@ void load_actor(GameActorType type) {
 	if (type <= ACT_NULL || type >= ACT_SIZE)
 		INFO("Loading invalid actor %u", type);
 	else
-		ACTOR_TYPE_CALL(type, load);
+		ACTOR_CALL_STATIC(type, load);
 }
 
 /// Create an actor.
