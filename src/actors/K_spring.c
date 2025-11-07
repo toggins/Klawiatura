@@ -19,6 +19,8 @@ static void create(GameActor* actor) {
 	actor->box.start.y = FfInt(16L);
 	actor->box.end.x = FfInt(31L);
 	actor->box.end.y = FfInt(64L);
+
+	actor->depth = FfInt(2L);
 }
 
 static void tick(GameActor* actor) {

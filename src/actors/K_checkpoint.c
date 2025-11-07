@@ -15,7 +15,7 @@ static void create(GameActor* actor) {
 	actor->box.end.x = FfInt(21L);
 	actor->box.end.y = FxOne;
 
-	actor->depth = FfInt(2L);
+	actor->depth = FfInt(3L);
 }
 
 static void draw(const GameActor* actor) {
