@@ -431,6 +431,12 @@ static void perform_camera_magic() {
 	const GamePlayer* player = get_player(view_player);
 	const GameActor* autoscroll = get_actor(game_state.autoscroll);
 
+#define MORSEL(pawn)                                                                                                   \
+	do {                                                                                                           \
+		camera_offset_morsel[0] = SDL_clamp(FtFloat((pawn)->pos.x), bx1, bx2) - camera->pos[0];                \
+		camera_offset_morsel[1] = SDL_clamp(FtFloat((pawn)->pos.y), by1, by2) - camera->pos[1];                \
+	} while (0)
+
 	if (autoscroll) {
 		const InterpActor* iautoscroll = get_interp(autoscroll);
 		if (!iautoscroll)
@@ -442,11 +448,10 @@ static void perform_camera_magic() {
 		const float bx1 = FtInt(F_HALF_SCREEN_WIDTH), by1 = FtInt(F_HALF_SCREEN_HEIGHT),
 			    bx2 = FtInt(game_state.size.x - F_HALF_SCREEN_WIDTH),
 			    by2 = FtInt(game_state.size.y - F_HALF_SCREEN_HEIGHT);
+
 		camera->pos[0] = SDL_clamp(camera->pos[0], bx1, bx2);
 		camera->pos[1] = SDL_clamp(camera->pos[1], by1, by2);
-
-		camera_offset_morsel[0] = FtFloat(iautoscroll->pos.x) - FtInt(iautoscroll->pos.x);
-		camera_offset_morsel[1] = FtFloat(iautoscroll->pos.y) - FtInt(iautoscroll->pos.y);
+		MORSEL(iautoscroll);
 	} else if (player) {
 		const InterpActor* ipawn = get_interp(get_actor(player->actor));
 		if (!ipawn)
@@ -459,10 +464,10 @@ static void perform_camera_magic() {
 
 		camera->pos[0] = SDL_clamp(FtInt(ipawn->pos.x), bx1, bx2);
 		camera->pos[1] = SDL_clamp(FtInt(ipawn->pos.y), by1, by2);
-
-		camera_offset_morsel[0] = FtFloat(ipawn->pos.x) - FtInt(ipawn->pos.x);
-		camera_offset_morsel[1] = FtFloat(ipawn->pos.y) - FtInt(ipawn->pos.y);
+		MORSEL(ipawn);
 	}
+
+#undef MORSEL
 
 fuck:
 	if (camera->lerp_time[0] < camera->lerp_time[1]) {
