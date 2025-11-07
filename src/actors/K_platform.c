@@ -152,7 +152,7 @@ static void draw(const GameActor* actor) {
 		break;
 	}
 
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor_no_jitter(actor, tex, 0.f, WHITE);
 }
 
 static void on_top(GameActor* actor, GameActor* from) {

@@ -9,6 +9,7 @@
 #include "K_tick.h"
 #include "K_video.h"
 
+#include "actors/K_autoscroll.h"
 #include "actors/K_block.h"
 #include "actors/K_checkpoint.h" // IWYU pragma: keep
 #include "actors/K_enemies.h"    // IWYU pragma: keep
@@ -421,7 +422,7 @@ byebye_game:
 }
 
 static mat4 proj = GLM_MAT4_IDENTITY;
-vec2 camera_offset_morsel = {0.f, 0.f};
+static vec2 camera_offset_morsel = {0.f, 0.f};
 
 static void perform_camera_magic() {
 	static vec2 cpos = GLM_VEC2_ZERO;
@@ -463,13 +464,7 @@ static void perform_camera_magic() {
 			    by2 = FtInt(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
 		MORSEL();
 	}
-
 #undef MORSEL
-	for (const GameActor* actor = get_actor(game_state.live_actors); actor; actor = get_actor(actor->previous)) {
-		InterpActor* iactor = &interp.actors[actor->id];
-		iactor->pos.x = FfInt(FtFloat(iactor->pos.x) - camera_offset_morsel[0]);
-		iactor->pos.y = FfInt(FtFloat(iactor->pos.y) - camera_offset_morsel[1]);
-	}
 
 fuck:
 	if (camera->lerp_time[0] < camera->lerp_time[1]) {
@@ -1958,8 +1953,28 @@ void displace_actor_soft(GameActor* actor) {
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
 	const InterpActor* iactor = get_interp(actor);
+	const GLfloat sprout = VAL(actor, SPROUT), z = (sprout > FxZero) ? 21.f : FtFloat(actor->depth);
+	batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y + sprout), z), angle, color);
+	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
+}
+
+// Variant of `draw_actor()` that works around some jittering issues (i.e. players on platforms, autoscrolling).
+void draw_actor_no_jitter(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
+	if (actor->type == ACT_PLAYER && get_actor(VAL(actor, PLAYER_PLATFORM)) == NULL) {
+		const GameActor* autoscroll = get_actor(game_state.autoscroll);
+		if (autoscroll == NULL || !ANY_FLAG(autoscroll, FLG_SCROLL_TANKS)
+			|| (VAL(actor, PLAYER_GROUND) > 0L && actor->pos.y < (autoscroll->pos.y + FfInt(415L))))
+		{
+			draw_actor(actor, name, angle, color);
+			return;
+		}
+	}
+
+	const InterpActor* iactor = get_interp(actor);
 	const GLfloat sprout = FtFloat(VAL(actor, SPROUT)), z = sprout > 0.f ? 21.f : FtFloat(actor->depth);
-	batch_start(XYZ(FtInt(iactor->pos.x), (int)(FtFloat(iactor->pos.y) + sprout), z), angle, color);
+	batch_start(XYZ((int)(FtFloat(iactor->pos.x) - camera_offset_morsel[0]),
+			    (int)(FtFloat(iactor->pos.y) + sprout + camera_offset_morsel[1]), z),
+		angle, color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 }
 

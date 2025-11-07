@@ -483,6 +483,7 @@ void displace_actor(GameActor*, fixed, Bool);
 void displace_actor_soft(GameActor*);
 
 void draw_actor(const GameActor*, const char*, GLfloat, const GLubyte[4]);
+void draw_actor_no_jitter(const GameActor*, const char*, GLfloat, const GLubyte[4]);
 void draw_dead(const GameActor*);
 void quake_at_actor(const GameActor*, float);
 
