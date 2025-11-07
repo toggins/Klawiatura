@@ -1097,7 +1097,7 @@ static void draw(const GameActor* actor) {
 	// !!! CLIENT-SIDE !!!
 	const GLfloat a = (localplayer() == player->id) ? 255L : 191L;
 	// !!! CLIENT-SIDE !!!
-	draw_actor_no_jitter(actor, tex, 0.f, ALPHA(a));
+	draw_actor(actor, tex, 0.f, ALPHA(a));
 
 	if (VAL(actor, PLAYER_STARMAN) > 0L) {
 		GLubyte r = 248L, g = 0L, b = 0L;
@@ -1132,7 +1132,7 @@ static void draw(const GameActor* actor) {
 
 		batch_stencil(1.f);
 		batch_blendmode(GL_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA, GL_ONE);
-		draw_actor_no_jitter(actor, tex, 0.f, RGBA(r, g, b, a));
+		draw_actor(actor, tex, 0.f, RGBA(r, g, b, a));
 		batch_blendmode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
 		batch_stencil(0.f);
 	}
@@ -1312,8 +1312,7 @@ static void tick_corpse(GameActor* actor) {
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor_no_jitter(
-		actor, "player/mario/dead", 0.f, ALPHA((localplayer() == get_owner_id(actor)) ? 255L : 191L));
+	draw_actor(actor, "player/mario/dead", 0.f, ALPHA((localplayer() == get_owner_id(actor)) ? 255L : 191L));
 
 	if (!ANY_FLAG(actor, FLG_PLAYER_JACKASS))
 		return;

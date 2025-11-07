@@ -1173,8 +1173,10 @@ static void tile_vertex(TileMap* tilemap, const GLfloat pos[3], const GLubyte co
 			GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * tilemap->vertex_capacity), NULL, GL_STATIC_DRAW);
 	}
 
-	tilemap->vertices[tilemap->vertex_count++]
-		= (Vertex){pos[0], pos[1], pos[2], color[0], color[1], color[2], color[3], uv[0], uv[1]};
+	extern vec2 camera_offset_morsel;
+	tilemap->vertices[tilemap->vertex_count++] = (Vertex){(GLfloat)(int)(pos[0] - camera_offset_morsel[0]),
+		(GLfloat)(int)(pos[1] - camera_offset_morsel[1]), pos[2], color[0], color[1], color[2], color[3], uv[0],
+		uv[1]};
 }
 
 void tile_sprite(const char* name, const GLfloat pos[3], const GLfloat scale[2], const GLubyte color[4]) {
