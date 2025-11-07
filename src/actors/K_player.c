@@ -497,7 +497,7 @@ void win_player(GameActor* actor) {
 	for (ActorID i = 0L; i < MAX_MISSILES; i++) {
 		GameActor* missile = get_actor(player->missiles[i]);
 		if (missile == NULL)
-			continue;
+			goto clear_missile;
 
 		int32_t points;
 		switch (missile->type) {
@@ -513,6 +513,8 @@ void win_player(GameActor* actor) {
 		}
 		give_points(missile, player, points);
 		FLAG_ON(missile, FLG_DESTROY);
+	clear_missile:
+		player->missiles[i] = NULLACT;
 	}
 
 	game_state.pswitch = 0L;
@@ -933,15 +935,14 @@ static void tick(GameActor* actor) {
 		if (!ANY_PRESSED(player, GI_FIRE) || ANY_FLAG(actor, FLG_PLAYER_DUCK))
 			break;
 
-		GameActorType mtype;
-		ActorID midx;
-
+		ActorID midx = 0L;
 		for (; midx < MAX_MISSILES; midx++)
 			if (get_actor(player->missiles[midx]) == NULL)
 				goto new_missile;
 		break;
 
 	new_missile:
+		GameActorType mtype = ACT_NULL;
 		switch (player->power) {
 		default:
 			mtype = ACT_NULL;
