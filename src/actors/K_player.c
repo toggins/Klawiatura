@@ -517,6 +517,12 @@ void win_player(GameActor* actor) {
 		player->missiles[i] = NULLACT;
 	}
 
+	GameActor* autoscroll = get_actor(game_state.autoscroll);
+	if (autoscroll != NULL && !ANY_FLAG(autoscroll, FLG_SCROLL_TANKS | FLG_SCROLL_BOWSER)) {
+		VAL(autoscroll, X_SPEED) = Fmul(VAL(autoscroll, X_SPEED), FfInt(4L));
+		VAL(autoscroll, Y_SPEED) = Fmul(VAL(autoscroll, Y_SPEED), FfInt(4L));
+	}
+
 	game_state.pswitch = 0L;
 	VAL(actor, PLAYER_FLASH) = VAL(actor, PLAYER_STARMAN) = 0L;
 	set_view_player(player);
