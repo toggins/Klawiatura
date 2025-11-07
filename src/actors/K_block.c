@@ -115,7 +115,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 			if (from != NULL)
 				VAL(item, COIN_POP_PLAYER) = (ActorValue)get_owner_id(from);
 		} else {
-			VAL(item, SPROUT) = 32L;
+			VAL(item, SPROUT) = FfInt(32L);
 			switch (item->type) {
 			default:
 				break;

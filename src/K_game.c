@@ -701,7 +701,7 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 	while (actor != NULL) {
 		if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE)) {
 			if (VAL(actor, SPROUT) > 0L)
-				--VAL(actor, SPROUT);
+				VAL(actor, SPROUT) -= FxOne;
 			else
 				ACTOR_CALL(actor, pre_tick);
 		}
@@ -1948,10 +1948,9 @@ void displace_actor_soft(GameActor* actor) {
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
 	const InterpActor* iactor = get_interp(actor);
-	const ActorValue sprout = VAL(actor, SPROUT);
-	const GLfloat z = (sprout > 0L) ? 21.f : FtFloat(actor->depth);
+	const GLfloat sprout = FtFloat(VAL(actor, SPROUT)), z = sprout > 0.f ? 21.f : FtFloat(actor->depth);
 	batch_start(XYZ((int)(FtFloat(iactor->pos.x) - camera_offset_morsel[0]),
-			    (int)(FtFloat(iactor->pos.y) + FtFloat(sprout) + camera_offset_morsel[1]), z),
+			    (int)(FtFloat(iactor->pos.y) + sprout + camera_offset_morsel[1]), z),
 		angle, color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 }
