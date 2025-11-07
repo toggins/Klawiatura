@@ -410,45 +410,43 @@ void load_texture_wild(const char* pattern) {
 		}
 
 #define SHRINK()                                                                                                       \
-	do {                                                                                                           \
-		for (int j = i; j < sizeof(buf) - 1; j++)                                                              \
-			buf[j] = buf[j + 1];                                                                           \
-	} while (0)
+	for (int j = i; j < sizeof(buf) - 1; j++)                                                                      \
+		buf[j] = buf[j + 1];
 
 	for (char counter = 0; counter < 9; counter++) {
 		SDL_memset(buf, 0, sizeof(buf));
 		SDL_strlcpy(buf, pattern, sizeof(buf));
 
-		for (int i = 0; i < sizeof(buf); i++)
-			if (buf[i] == '?') {
-				if (double_question) {
-					if (!counter) {
-						SHRINK();
-						SHRINK();
-					} else if (counter < 10) {
-						SHRINK();
-						buf[i] = '1' + counter;
-					} else {
-						buf[i + 0] = '1' + (counter / 10);
-						buf[i + 1] = '0' + (counter % 10);
-						i += 1;
-					}
-				} else {
+		for (int i = 0; i < sizeof(buf); i++) {
+			if (buf[i] != '?')
+				continue;
+			if (double_question) {
+				if (!counter) {
+					SHRINK();
+					SHRINK();
+				} else if (counter < 10) {
+					SHRINK();
 					buf[i] = '1' + counter;
-					if (buf[i] == '1')
-						SHRINK();
+				} else {
+					buf[i] = '1' + (counter / 10);
+					buf[++i] = '0' + (counter % 10);
 				}
+			} else if (counter) {
+				buf[i] = '1' + counter;
+			} else {
+				SHRINK();
 			}
+		}
 
 		bool loaded = load_texture_impl(buf, false);
-		if (so_far && !loaded)
-			return;
-		else if (!so_far && !loaded) {
-			WTF("Failed to load wildcard texture '%s'", pattern);
+		if (!loaded) {
+			if (!so_far)
+				WTF("Failed to load wildcard texture '%s'", pattern);
 			return;
 		}
 		so_far++;
 	}
+#undef SHRINK
 }
 
 const Texture* get_texture(const char* name) {
