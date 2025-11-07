@@ -951,14 +951,15 @@ static void tick(GameActor* actor) {
 		if (!ANY_PRESSED(player, GI_FIRE) || ANY_FLAG(actor, FLG_PLAYER_DUCK))
 			break;
 
+		GameActorType mtype;
 		ActorID midx;
+
 		for (; midx < MAX_MISSILES; midx++)
 			if (get_actor(player->missiles[midx]) == NULL)
 				goto new_missile;
 		break;
 
 	new_missile:
-		GameActorType mtype;
 		switch (player->power) {
 		default:
 			mtype = ACT_NULL;
