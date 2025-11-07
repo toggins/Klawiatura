@@ -34,21 +34,37 @@ enum {
 static void load() {
 	load_texture("enemies/bro");
 	load_texture("enemies/bro2");
-	load_texture("enemies/bro_hammer");
-	load_texture("enemies/bro_hammer2");
-	load_texture("enemies/bro_fire");
-	load_texture("enemies/bro_fire2");
-	load_texture("enemies/bro_silver");
-	load_texture("enemies/bro_silver2");
 
 	load_sound("hammer");
 	load_sound("stomp");
 	load_sound("kick");
-
-	load_actor(ACT_MISSILE_HAMMER);
-	load_actor(ACT_MISSILE_FIREBALL);
-	load_actor(ACT_MISSILE_SILVER_HAMMER);
 	load_actor(ACT_POINTS);
+}
+
+static void load_special(GameActor* actor) {
+	switch (VAL(actor, BRO_MISSILE)) {
+	default:
+		break;
+
+	case ACT_MISSILE_HAMMER: {
+		load_texture("enemies/bro_hammer");
+		load_texture("enemies/bro_hammer2");
+		break;
+	}
+
+	case ACT_MISSILE_FIREBALL: {
+		load_texture("enemies/bro_fire");
+		load_texture("enemies/bro_fire2");
+		load_sound("fire");
+		break;
+	}
+
+	case ACT_MISSILE_SILVER_HAMMER:
+		load_texture("enemies/bro_silver");
+		load_texture("enemies/bro_silver2");
+		break;
+	}
+	load_actor(VAL(actor, BRO_MISSILE));
 }
 
 static void create(GameActor* actor) {
@@ -241,6 +257,7 @@ static void draw(const GameActor* actor) {
 	if (VAL(actor, BRO_THROW_STATE) > 0L)
 		switch (VAL(actor, BRO_MISSILE)) {
 		default:
+			tex = frame ? "enemies/bro2" : "enemies/bro";
 			break;
 		case ACT_MISSILE_HAMMER:
 			tex = frame ? "enemies/bro_hammer2" : "enemies/bro_hammer";
@@ -300,6 +317,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
 const GameActorTable TAB_BRO = {
 	.load = load,
+	.load_special = load_special,
 	.create = create,
 	.tick = tick,
 	.draw = draw,

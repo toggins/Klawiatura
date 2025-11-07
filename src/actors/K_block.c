@@ -1,7 +1,8 @@
 #include "K_game.h"
 
 #include "actors/K_block.h"
-#include "actors/K_coin.h"   // IWYU pragma: keep
+#include "actors/K_coin.h" // IWYU pragma: keep
+#include "actors/K_koopa.h"
 #include "actors/K_player.h" // IWYU pragma: keep
 #include "actors/K_powerups.h"
 
@@ -157,8 +158,20 @@ static void load() {
 	load_texture("items/empty");
 
 	load_sound("sprout");
+}
 
-	load_actor(ACT_COIN_POP);
+static void load_special(GameActor* actor) {
+	switch (VAL(actor, BLOCK_ITEM)) {
+	default:
+		break;
+	case ACT_FIRE_FLOWER:
+	case ACT_BEETROOT:
+	case ACT_LUI:
+	case ACT_HAMMER_SUIT:
+		load_actor(ACT_MUSHROOM);
+		break;
+	}
+	load_actor(VAL(actor, BLOCK_ITEM));
 }
 
 static void create(GameActor* actor) {
@@ -238,7 +251,25 @@ static void on_bottom(GameActor* actor, GameActor* from) {
 	}
 }
 
-static void on_any_other_side(GameActor* actor, GameActor* from) {
+static void on_side(GameActor* actor, GameActor* from) {
+	switch (from->type) {
+	default:
+		break;
+	case ACT_MISSILE_BEETROOT:
+	case ACT_MISSILE_SILVER_HAMMER:
+		bump_block(actor, from, true);
+		break;
+
+	case ACT_KOOPA_SHELL:
+	case ACT_BUZZY_SHELL: {
+		if (ANY_FLAG(from, FLG_SHELL_ACTIVE))
+			bump_block(actor, from, true);
+		break;
+	}
+	}
+}
+
+static void on_misc_side(GameActor* actor, GameActor* from) {
 	if (from->type == ACT_MISSILE_BEETROOT || from->type == ACT_MISSILE_SILVER_HAMMER)
 		bump_block(actor, from, true);
 }
@@ -246,13 +277,14 @@ static void on_any_other_side(GameActor* actor, GameActor* from) {
 const GameActorTable TAB_ITEM_BLOCK = {
 	.is_solid = always_solid,
 	.load = load,
+	.load_special = load_special,
 	.create = create,
 	.tick = tick,
 	.draw = draw,
-	.on_top = on_any_other_side,
+	.on_top = on_misc_side,
 	.on_bottom = on_bottom,
-	.on_left = on_any_other_side,
-	.on_right = on_any_other_side,
+	.on_left = on_side,
+	.on_right = on_side,
 };
 
 // ============
@@ -280,7 +312,12 @@ static void collide_hidden(GameActor* actor, GameActor* from) {
 	FLAG_ON(actor, FLG_DESTROY);
 }
 
-const GameActorTable TAB_HIDDEN_BLOCK = {.load = load, .create = create, .collide = collide_hidden};
+const GameActorTable TAB_HIDDEN_BLOCK = {
+	.load = load,
+	.load_special = load_special,
+	.create = create,
+	.collide = collide_hidden,
+};
 
 // ===========
 // BRICK BLOCK
@@ -329,23 +366,25 @@ static void draw_brick(const GameActor* actor) {
 const GameActorTable TAB_BRICK_BLOCK = {
 	.is_solid = always_solid,
 	.load = load_brick,
+	.load_special = load_special,
 	.create = create,
 	.tick = tick,
 	.draw = draw_brick,
-	.on_top = on_any_other_side,
+	.on_top = on_misc_side,
 	.on_bottom = on_bottom,
-	.on_left = on_any_other_side,
-	.on_right = on_any_other_side,
+	.on_left = on_side,
+	.on_right = on_side,
 }, TAB_PSWITCH_BRICK = {
 	.is_solid = always_solid,
 	.load = load_brick,
+	.load_special = load_special,
 	.create = create,
 	.tick = tick,
 	.draw = draw_brick,
-	.on_top = on_any_other_side,
+	.on_top = on_misc_side,
 	.on_bottom = on_bottom,
-	.on_left = on_any_other_side,
-	.on_right = on_any_other_side,
+	.on_left = on_side,
+	.on_right = on_side,
 };
 
 // ==========
@@ -374,13 +413,14 @@ static void draw_coin_block(const GameActor* actor) {
 const GameActorTable TAB_COIN_BLOCK = {
 	.is_solid = always_solid,
 	.load = load_coin_block,
+	.load_special = load_special,
 	.create = create,
 	.tick = tick_coin_block,
 	.draw = draw_coin_block,
-	.on_top = on_any_other_side,
+	.on_top = on_misc_side,
 	.on_bottom = on_bottom,
-	.on_left = on_any_other_side,
-	.on_right = on_any_other_side,
+	.on_left = on_side,
+	.on_right = on_side,
 };
 
 // ==========
@@ -531,14 +571,15 @@ static void collide_note(GameActor* actor, GameActor* from) {
 const GameActorTable TAB_NOTE_BLOCK = {
 	.is_solid = note_solid,
 	.load = load_note,
+	.load_special = load_special,
 	.create = create,
 	.tick = tick,
 	.draw = draw_note,
 	.collide = collide_note,
 	.on_top = note_top,
 	.on_bottom = on_bottom,
-	.on_left = note_left,
-	.on_right = note_right,
+	.on_left = on_side,
+	.on_right = on_side,
 };
 
 // ==========

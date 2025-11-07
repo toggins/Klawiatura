@@ -1202,9 +1202,16 @@ void start_game_state(GameContext* ctx) {
 			}
 			FLAG_ON(actor, *((ActorFlag*)buf)), buf += sizeof(ActorFlag);
 
+			// Hidden Block gimmick. Some can despawn when a level is restarted.
 			if (actor->type == ACT_HIDDEN_BLOCK && ANY_FLAG(actor, FLG_BLOCK_ONCE)
 				&& (game_state.flags & GF_REPLAY))
+			{
 				FLAG_ON(actor, FLG_DESTROY);
+				break;
+			}
+
+			load_actor(type);
+			ACTOR_CALL(actor, load_special);
 			break;
 		}
 		}
@@ -1386,8 +1393,8 @@ void set_view_player(GamePlayer* player) {
 
 /// Load an actor.
 void load_actor(GameActorType type) {
-	if (type <= ACT_NULL || type >= ACT_SIZE)
-		INFO("Loading invalid actor %u", type);
+	if (type < ACT_NULL || type >= ACT_SIZE)
+		WARN("Loading invalid actor %u", type);
 	else
 		ACTOR_CALL_STATIC(type, load);
 }
@@ -1412,7 +1419,6 @@ GameActor* create_actor(GameActorType type, const fvec2 pos) {
 	return NULL;
 
 found:
-	load_actor(type);
 	SDL_memset(actor, 0, sizeof(GameActor));
 
 	actor->id = index;

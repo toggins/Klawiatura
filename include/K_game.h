@@ -409,7 +409,7 @@ SolidType always_solid(const GameActor*), always_top(const GameActor*), always_b
 typedef struct {
 	SolidType (*is_solid)(const GameActor*);
 	void (*load)();
-	void (*create)(GameActor*);
+	void (*load_special)(GameActor*), (*create)(GameActor*);
 	void (*pre_tick)(GameActor*), (*tick)(GameActor*), (*post_tick)(GameActor*);
 	void (*draw)(const GameActor*), (*draw_dead)(const GameActor*);
 	void (*cleanup)(GameActor*);

@@ -82,11 +82,13 @@ static void collide_mushroom(GameActor* actor, GameActor* from) {
 	FLAG_ON(actor, FLG_DESTROY);
 }
 
-const GameActorTable TAB_MUSHROOM = {.load = load_mushroom,
+const GameActorTable TAB_MUSHROOM = {
+	.load = load_mushroom,
 	.create = create_mushroom,
 	.tick = tick_mushroom,
 	.draw = draw_mushroom,
-	.collide = collide_mushroom};
+	.collide = collide_mushroom,
+};
 
 // ============
 // 1UP MUSHROOM
@@ -109,11 +111,13 @@ static void collide_1up_mushroom(GameActor* actor, GameActor* from) {
 	FLAG_ON(actor, FLG_DESTROY);
 }
 
-const GameActorTable TAB_MUSHROOM_1UP = {.load = load_1up_mushroom,
+const GameActorTable TAB_MUSHROOM_1UP = {
+	.load = load_1up_mushroom,
 	.create = create_mushroom,
 	.tick = tick_mushroom,
 	.draw = draw_1up_mushroom,
-	.collide = collide_1up_mushroom};
+	.collide = collide_1up_mushroom,
+};
 
 // ===============
 // POISON MUSHROOM
@@ -195,8 +199,12 @@ static void collide_flower(GameActor* actor, GameActor* from) {
 	collide_powerup(actor, from, POW_FIRE);
 }
 
-const GameActorTable TAB_FIRE_FLOWER
-	= {.load = load_flower, .create = create_flower, .draw = draw_flower, .collide = collide_flower};
+const GameActorTable TAB_FIRE_FLOWER = {
+	.load = load_flower,
+	.create = create_flower,
+	.draw = draw_flower,
+	.collide = collide_flower,
+};
 
 // ========
 // BEETROOT
@@ -239,8 +247,12 @@ static void collide_beetroot(GameActor* actor, GameActor* from) {
 	collide_powerup(actor, from, POW_BEETROOT);
 }
 
-const GameActorTable TAB_BEETROOT
-	= {.load = load_beetroot, .create = create_beetroot, .draw = draw_beetroot, .collide = collide_beetroot};
+const GameActorTable TAB_BEETROOT = {
+	.load = load_beetroot,
+	.create = create_beetroot,
+	.draw = draw_beetroot,
+	.collide = collide_beetroot,
+};
 
 // =========
 // GREEN LUI
@@ -342,8 +354,13 @@ static void collide_lui(GameActor* actor, GameActor* from) {
 	collide_powerup(actor, from, POW_LUI);
 }
 
-const GameActorTable TAB_LUI
-	= {.load = load_lui, .create = create_lui, .tick = tick_lui, .draw = draw_lui, .collide = collide_lui};
+const GameActorTable TAB_LUI = {
+	.load = load_lui,
+	.create = create_lui,
+	.tick = tick_lui,
+	.draw = draw_lui,
+	.collide = collide_lui,
+};
 
 // ===========
 // HAMMER SUIT
@@ -374,8 +391,12 @@ static void collide_hammer(GameActor* actor, GameActor* from) {
 	collide_powerup(actor, from, POW_HAMMER);
 }
 
-const GameActorTable TAB_HAMMER_SUIT
-	= {.load = load_hammer, .create = create_hammer, .draw = draw_hammer, .collide = collide_hammer};
+const GameActorTable TAB_HAMMER_SUIT = {
+	.load = load_hammer,
+	.create = create_hammer,
+	.draw = draw_hammer,
+	.collide = collide_hammer,
+};
 
 // =======
 // STARMAN
@@ -445,8 +466,10 @@ static void collide_starman(GameActor* actor, GameActor* from) {
 	FLAG_ON(actor, FLG_DESTROY);
 }
 
-const GameActorTable TAB_STARMAN = {.load = load_starman,
+const GameActorTable TAB_STARMAN = {
+	.load = load_starman,
 	.create = create_starman,
 	.tick = tick_starman,
 	.draw = draw_starman,
-	.collide = collide_starman};
+	.collide = collide_starman,
+};

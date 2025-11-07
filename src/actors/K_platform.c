@@ -1,13 +1,27 @@
 #include "actors/K_platform.h"
 #include "actors/K_player.h" // IWYU pragma: keep
 
-static void load() {
-	load_texture("markers/platform/big");
-	load_texture("markers/platform/small");
-	load_texture_wild("markers/platform/cloud?");
-	load_texture("markers/platform/castle");
-	load_texture("markers/platform/castle_big");
-	load_texture("markers/platform/castle_button");
+static void load_special(GameActor* actor) {
+	switch (VAL(actor, PLATFORM_TYPE)) {
+	default:
+		load_texture("markers/platform/big");
+		break;
+	case PLAT_SMALL:
+		load_texture("markers/platform/small");
+		break;
+	case PLAT_CLOUD:
+		load_texture_wild("markers/platform/cloud?");
+		break;
+	case PLAT_CASTLE:
+		load_texture("markers/platform/castle");
+		break;
+	case PLAT_CASTLE_BIG:
+		load_texture("markers/platform/castle_big");
+		break;
+	case PLAT_CASTLE_BUTTON:
+		load_texture("markers/platform/castle_button");
+		break;
+	}
 }
 
 static void pre_tick(GameActor* actor) {
@@ -153,7 +167,7 @@ static void on_top(GameActor* actor, GameActor* from) {
 
 const GameActorTable TAB_PLATFORM = {
 	.is_solid = always_top,
-	.load = load,
+	.load_special = load_special,
 	.pre_tick = pre_tick,
 	.draw = draw,
 	.on_top = on_top,

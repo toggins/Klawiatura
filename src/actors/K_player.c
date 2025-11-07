@@ -574,6 +574,10 @@ void player_starman(GameActor* actor, GameActor* from) {
 // PLAYER SPAWN
 // ============
 
+static void load_spawn() {
+	load_actor(ACT_PLAYER);
+}
+
 static void create_spawn(GameActor* actor) {
 	game_state.spawn = actor->id;
 }
@@ -583,7 +587,7 @@ static void cleanup_spawn(GameActor* actor) {
 		game_state.spawn = NULLACT;
 }
 
-const GameActorTable TAB_PLAYER_SPAWN = {.create = create_spawn, .cleanup = cleanup_spawn};
+const GameActorTable TAB_PLAYER_SPAWN = {.load = load_spawn, .create = create_spawn, .cleanup = cleanup_spawn};
 
 // ======
 // PLAYER
