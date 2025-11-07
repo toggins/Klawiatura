@@ -164,8 +164,13 @@ static void collide(GameActor* actor, GameActor* from) {
 	}
 }
 
-const GameActorTable TAB_PIRANHA_PLANT
-	= {.load = load, .create = create, .tick = tick, .draw = draw, .collide = collide};
+const GameActorTable TAB_PIRANHA_PLANT = {
+	.load = load,
+	.create = create,
+	.tick = tick,
+	.draw = draw,
+	.collide = collide,
+};
 
 // ============
 // PIRANHA FIRE
@@ -199,5 +204,109 @@ static void collide_fire(GameActor* actor, GameActor* from) {
 	hit_player(from);
 }
 
-const GameActorTable TAB_PIRANHA_FIRE
-	= {.load = load_fire, .create = create_fire, .tick = tick_fire, .draw = draw_fire, .collide = collide_fire};
+const GameActorTable TAB_PIRANHA_FIRE = {
+	.load = load_fire,
+	.create = create_fire,
+	.tick = tick_fire,
+	.draw = draw_fire,
+	.collide = collide_fire,
+};
+
+// ============
+// PIRANHA HEAD
+// ============
+
+static void load_head() {
+	load_texture_wild("enemies/piranha_head?");
+	load_texture_wild("enemies/piranha_head_fire?");
+
+	load_sound("fire");
+
+	load_actor(ACT_PIRANHA_FIRE);
+}
+
+static void create_head(GameActor* actor) {
+	actor->box.start.y = FxOne;
+	actor->box.end.x = FfInt(31L);
+	actor->box.end.y = FfInt(32L);
+
+	actor->depth = FxOne;
+}
+
+static void tick_head(GameActor* actor) {
+	if (!ANY_FLAG(actor, FLG_PIRANHA_START)) {
+		if (ANY_FLAG(actor, FLG_Y_FLIP)) {
+			actor->box.start.y = FfInt(-32L);
+			actor->box.end.y = -FxOne;
+		}
+		FLAG_ON(actor, FLG_PIRANHA_START);
+	}
+
+	if (!ANY_FLAG(actor, FLG_PIRANHA_FIRE))
+		return;
+
+	if (VAL(actor, PIRANHA_FIRE) > 0L && (game_state.time % ((game_state.flags & GF_FUNNY) ? 2L : 10L)) == 0L) {
+		const Bool flip = ANY_FLAG(actor, FLG_Y_FLIP);
+
+		GameActor* fire
+			= create_actor(ACT_PIRANHA_FIRE, POS_ADD(actor, FfInt(15L), flip ? FfInt(-18L) : FfInt(18L)));
+		if (fire != NULL) {
+			VAL(fire, X_SPEED) = FfInt(-4L + rng(9L));
+			VAL(fire, Y_SPEED) = FfInt(flip ? rng(6L) : (-3L - rng(9L)));
+			play_actor_sound(fire, "fire");
+		}
+
+		--VAL(actor, PIRANHA_FIRE);
+	}
+
+	if (in_any_view(actor, FxZero, false))
+		if (++VAL(actor, PIRANHA_WAIT) >= 200L) {
+			VAL(actor, PIRANHA_FIRE) = (game_state.flags & GF_FUNNY) ? 30L : 3L;
+			VAL(actor, PIRANHA_WAIT) = 0L;
+		}
+}
+
+static void draw_head(const GameActor* actor) {
+	const char* tex = NULL;
+	if (ANY_FLAG(actor, FLG_PIRANHA_FIRE))
+		switch ((int)((float)game_state.time / 2.7027027027f) % 4L) {
+		default:
+			tex = "enemies/piranha_head_fire";
+			break;
+		case 1L:
+		case 3L:
+			tex = "enemies/piranha_head_fire2";
+			break;
+		case 2L:
+			tex = "enemies/piranha_head_fire3";
+			break;
+		}
+	else
+		switch ((int)((float)game_state.time / 4.54545454545f) % 4L) {
+		default:
+			tex = "enemies/piranha_head";
+			break;
+		case 1L:
+		case 3L:
+			tex = "enemies/piranha_head2";
+			break;
+		case 2L:
+			tex = "enemies/piranha_head3";
+			break;
+		}
+
+	draw_actor(actor, tex, 0.f, WHITE);
+}
+
+static void collide_head(GameActor* actor, GameActor* from) {
+	if (from->type == ACT_PLAYER)
+		hit_player(from);
+}
+
+const GameActorTable TAB_PIRANHA_HEAD = {
+	.load = load_head,
+	.create = create_head,
+	.tick = tick_head,
+	.draw = draw_head,
+	.collide = collide_head,
+};
