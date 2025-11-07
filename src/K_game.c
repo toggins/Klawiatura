@@ -1960,7 +1960,7 @@ void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const G
 	const ActorValue sprout = VAL(actor, SPROUT);
 	const GLfloat z = (sprout > 0L) ? 21.f : FtFloat(actor->depth);
 	batch_start(XYZ((int)(FtFloat(iactor->pos.x) - camera_offset_morsel[0]),
-			    (int)(FtFloat(iactor->pos.y) + FtFloat(sprout) - camera_offset_morsel[1]), z),
+			    (int)(FtFloat(iactor->pos.y) + FtFloat(sprout) + camera_offset_morsel[1]), z),
 		angle, color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 }
