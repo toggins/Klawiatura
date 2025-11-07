@@ -507,6 +507,10 @@ static void note_left(GameActor* actor, GameActor* from) {
 	default:
 		break;
 
+	case ACT_KOOPA_SHELL:
+	case ACT_BUZZY_SHELL:
+		if (!ANY_FLAG(from, FLG_SHELL_ACTIVE))
+			break;
 	case ACT_PLAYER:
 	case ACT_MISSILE_BEETROOT:
 	case ACT_MISSILE_SILVER_HAMMER: {
@@ -524,6 +528,10 @@ static void note_right(GameActor* actor, GameActor* from) {
 	default:
 		break;
 
+	case ACT_KOOPA_SHELL:
+	case ACT_BUZZY_SHELL:
+		if (!ANY_FLAG(from, FLG_SHELL_ACTIVE))
+			break;
 	case ACT_PLAYER:
 	case ACT_MISSILE_BEETROOT:
 	case ACT_MISSILE_SILVER_HAMMER: {
@@ -575,8 +583,8 @@ const GameActorTable TAB_NOTE_BLOCK = {
 	.collide = collide_note,
 	.on_top = note_top,
 	.on_bottom = on_bottom,
-	.on_left = on_side,
-	.on_right = on_side,
+	.on_left = note_left,
+	.on_right = note_right,
 };
 
 // ==========
