@@ -35,13 +35,19 @@ static void tick(GameActor* actor) {
 
 	if (game_state.autoscroll == actor->id) {
 		move_actor(actor, POS_SPEED(actor));
-		if (ANY_FLAG(actor, FLG_SCROLL_TANKS)) {
-			const fixed end = game_state.size.x - F_SCREEN_WIDTH;
-			if (actor->pos.x > end) {
-				VAL(actor, X_SPEED) = FxZero;
-				move_actor(actor, (fvec2){end, actor->pos.y});
-			}
+
+		Bool clamp = false;
+		if (actor->pos.x < FxZero || actor->pos.x > (game_state.size.x - F_SCREEN_WIDTH)) {
+			VAL(actor, X_SPEED) = FxZero;
+			clamp = true;
 		}
+		if (actor->pos.y < FxZero || actor->pos.x > (game_state.size.y - F_SCREEN_HEIGHT)) {
+			VAL(actor, Y_SPEED) = FxZero;
+			clamp = true;
+		}
+		if (clamp)
+			move_actor(actor, (fvec2){Fclamp(actor->pos.x, FxZero, game_state.size.x - F_SCREEN_WIDTH),
+						  Fclamp(actor->pos.y, FxZero, game_state.size.y - F_SCREEN_HEIGHT)});
 	}
 }
 
