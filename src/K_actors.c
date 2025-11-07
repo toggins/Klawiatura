@@ -86,6 +86,7 @@ void populate_actors_table() {
 	ACTOR(BOWSER);
 	ACTOR(SPRING);
 	ACTOR(ELECTRIC_CORAL);
+	ACTOR(SPIKE);
 
 	static const GameActorTable TAB_NULL = {0};
 	ACTORS[ACT_NULL] = &TAB_NULL;

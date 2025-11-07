@@ -1450,6 +1450,29 @@
                 },
 
                 {
+                    "def": "Spike",
+                    "type": "object",
+                    "index": 47,
+                    "z": 2,
+                    "texture": "enemies/spike",
+
+                    "values": [
+                        {
+                            "name": "Skin",
+                            "index": 5,
+                            "default": 0
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 3
+                        }
+                    ]
+                },
+
+                {
                     "def": "Roto-Disc",
                     "type": "object",
                     "index": 61,
@@ -1515,6 +1538,14 @@
                             "default": true
                         }
                     ]
+                },
+
+                {
+                    "def": "Electric Coral",
+                    "type": "object",
+                    "index": 93,
+                    "texture": "enemies/coral",
+                    "z": 20
                 },
 
                 {
