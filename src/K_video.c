@@ -426,15 +426,15 @@ void load_texture_wild(const char* pattern) {
 					SHRINK();
 				} else if (counter < 10) {
 					SHRINK();
-					buf[i] = '0' + counter;
+					buf[i] = (char)('0' + counter);
 				} else {
-					buf[i] = '0' + (counter / 10);
-					buf[++i] = '0' + (counter % 10);
+					buf[i] = (char)('0' + (counter / 10));
+					buf[++i] = (char)('0' + (counter % 10));
 				}
 			} else if (counter == 1) {
 				SHRINK();
 			} else if (counter < 10) {
-				buf[i] = '0' + counter;
+				buf[i] = (char)('0' + counter);
 			} else {
 				break;
 			}
