@@ -35,7 +35,7 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	if (ANY_FLAG(actor, FLG_KOOPA_RED))
 		switch ((int)((float)game_state.time / 11.11111111111111f) % 2L) {
 		default:
@@ -173,7 +173,7 @@ static void tick_shell(GameActor* actor) {
 }
 
 static void draw_shell(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch (FtInt(VAL(actor, SHELL_FRAME)) % 4L) {
 	default:
 		tex = ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red" : "enemies/shell";
@@ -299,7 +299,7 @@ static void tick_parakoopa(GameActor* actor) {
 }
 
 static void draw_parakoopa(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch ((int)((float)(game_state.time) / 8.333333333333333f) % 2L) {
 	default:
 		tex = ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/parakoopa_red" : "enemies/parakoopa";

@@ -9,7 +9,7 @@ const char* vfmt(const char* fmt_pattern, va_list args) {
 }
 
 const char* fmt(const char* fmt_pattern, ...) {
-	va_list args;
+	va_list args = {0};
 	va_start(args, fmt_pattern);
 	const char* res = vfmt(fmt_pattern, args);
 	va_end(args);

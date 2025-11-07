@@ -139,13 +139,13 @@ static void set_delay(int flip) {
 }
 
 static const char* fmt_resolution(const char* base) {
-	int width, height;
+	int width = 0, height = 0;
 	get_resolution(&width, &height);
 	return fmt(base, width, height);
 }
 
 static void toggle_resolution(int flip) {
-	int width, height;
+	int width = 0, height = 0;
 	get_resolution(&width, &height);
 
 	const float sx = (float)width / (float)SCREEN_WIDTH;
@@ -839,7 +839,7 @@ jobwelldone:
 
 void show_error(const char* fmt, ...) {
 	static char buf[128] = {0};
-	va_list args;
+	va_list args = {0};
 
 	va_start(args, fmt);
 	SDL_strlcpy(buf, vfmt(fmt, args), sizeof(buf));

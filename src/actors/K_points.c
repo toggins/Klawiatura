@@ -72,9 +72,10 @@ static void draw(const GameActor* actor) {
 		return;
 	// !!! CLIENT-SIDE !!!
 
-	const char* tex;
+	const char* tex = NULL;
 	switch (VAL(actor, POINTS)) {
 	default:
+		break;
 	case 100L:
 		tex = "ui/points/100";
 		break;

@@ -230,7 +230,7 @@ void save_config() {
 	}
 	save_kb(json, root, "kbd", kb_serialize_key);
 
-	size_t size;
+	size_t size = 0;
 	yyjson_write_err error;
 
 	char* buffer = yyjson_mut_write_opts(json, JSON_WRITE_FLAGS, NULL, &size, &error);

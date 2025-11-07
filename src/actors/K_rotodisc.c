@@ -85,7 +85,7 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch (game_state.time % 26L) {
 	default:
 		tex = "enemies/rotodisc";

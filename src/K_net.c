@@ -172,14 +172,12 @@ static void find_lobby_mode(const char* id) {
 	NutPunch_Filter filter = {0};
 	SDL_memcpy(filter.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
 
-	uint8_t magic;
+	uint8_t magic = ACTIVE_LOBBY;
 	if (id == NULL) {
 		magic = PUBLIC_LOBBY;
 		filter.comparison = NPF_Eq;
-	} else {
-		magic = ACTIVE_LOBBY;
+	} else
 		filter.comparison = NPF_Greater;
-	}
 	SDL_memcpy(filter.value, &magic, sizeof(magic));
 
 	found_lobby = false;

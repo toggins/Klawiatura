@@ -23,7 +23,7 @@ static void create(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch ((game_state.time / 5L) % 4L) {
 	default:
 		tex = "items/coin";
@@ -137,7 +137,7 @@ static void tick_pop(GameActor* actor) {
 }
 
 static void draw_pop(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	if (ANY_FLAG(actor, FLG_COIN_POP_SPARK))
 		switch (VAL(actor, COIN_POP_FRAME) / 100L) {
 		default:

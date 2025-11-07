@@ -125,34 +125,15 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	if (ANY_FLAG(actor, FLG_PIRANHA_FIRE))
-		switch ((int)((float)game_state.time / 4.166666666666667f) % 2L) {
-		default:
-			tex = "enemies/piranha_fire";
-			break;
-		case 1L:
-			tex = "enemies/piranha_fire2";
-			break;
-		}
+		tex = ((int)((float)game_state.time / 4.166666666666667f) % 2L) ? "enemies/piranha_fire2"
+		                                                                : "enemies/piranha_fire";
 	else if (ANY_FLAG(actor, FLG_PIRANHA_RED))
-		switch ((game_state.time / 7L) % 2L) {
-		default:
-			tex = "enemies/piranha_red";
-			break;
-		case 1L:
-			tex = "enemies/piranha_red2";
-			break;
-		}
+		tex = ((game_state.time / 7L) % 2L) ? "enemies/piranha_red2" : "enemies/piranha_red";
 	else
-		switch ((int)((float)game_state.time / 7.142857142857143f) % 2L) {
-		default:
-			tex = "enemies/piranha";
-			break;
-		case 1L:
-			tex = "enemies/piranha2";
-			break;
-		}
+		tex = ((int)((float)game_state.time / 7.142857142857143f) % 2L) ? "enemies/piranha2"
+		                                                                : "enemies/piranha";
 
 	draw_actor(actor, tex, 0.f, WHITE);
 }

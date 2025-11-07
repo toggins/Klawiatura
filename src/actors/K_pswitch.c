@@ -35,7 +35,7 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	if (VAL(actor, PSWITCH) > 0L)
 		tex = "markers/pswitch_flat";
 	else

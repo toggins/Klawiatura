@@ -499,10 +499,9 @@ void win_player(GameActor* actor) {
 		if (missile == NULL)
 			goto clear_missile;
 
-		int32_t points;
+		int32_t points = 100L;
 		switch (missile->type) {
 		default:
-			points = 100L;
 			break;
 		case ACT_MISSILE_BEETROOT:
 			points = 200L;
@@ -536,24 +535,24 @@ void player_starman(GameActor* actor, GameActor* from) {
 	if (actor == NULL || from == NULL)
 		return;
 
-	int32_t points;
+	int32_t points = 0L;
 	switch (VAL(actor, PLAYER_STARMAN_COMBO)++) {
-	case 0:
+	case 0L:
 		points = 100L;
 		break;
-	case 1:
+	case 1L:
 		points = 200L;
 		break;
-	case 2:
+	case 2L:
 		points = 500L;
 		break;
-	case 3:
+	case 3L:
 		points = 1000L;
 		break;
-	case 4:
+	case 4L:
 		points = 2000L;
 		break;
-	case 5:
+	case 5L:
 		points = 5000L;
 		break;
 	default: {
@@ -1101,33 +1100,29 @@ static void draw(const GameActor* actor) {
 	draw_actor_no_jitter(actor, tex, 0.f, ALPHA(a));
 
 	if (VAL(actor, PLAYER_STARMAN) > 0L) {
-		GLubyte r, g, b;
+		GLubyte r = 248L, g = 0L, b = 0L;
 		switch (game_state.time % 5L) {
-		default: {
-			r = 248L;
-			g = 0L;
-			b = 0L;
+		default:
 			break;
-		}
-		case 1: {
+		case 1L: {
 			r = 192L;
 			g = 152L;
 			b = 0L;
 			break;
 		}
-		case 2: {
+		case 2L: {
 			r = 144L;
 			g = 192L;
 			b = 40L;
 			break;
 		}
-		case 3: {
+		case 3L: {
 			r = 88L;
 			g = 136L;
 			b = 232L;
 			break;
 		}
-		case 4: {
+		case 4L: {
 			r = 192L;
 			g = 120L;
 			b = 200L;

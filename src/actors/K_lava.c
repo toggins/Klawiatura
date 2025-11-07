@@ -26,7 +26,7 @@ static void create(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch ((int)((float)game_state.time / 9.090909090909091f) % 8L) {
 	default:
 		tex = "enemies/lava";
@@ -131,7 +131,7 @@ static void tick_podoboo(GameActor* actor) {
 }
 
 static void draw_podoboo(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch ((int)((float)game_state.time / 1.666666666666667f) % 3L) {
 	default:
 		tex = "enemies/podoboo";

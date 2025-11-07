@@ -522,7 +522,7 @@ static void draw_hud() {
 	batch_align(FA_RIGHT, FA_TOP);
 	batch_string("hud", 16.f, fmt("%u", player->score));
 
-	const char* tex;
+	const char* tex = NULL;
 	switch ((int)((float)(game_state.time) / 6.25f) % 4L) {
 	default:
 		tex = "ui/coins";
@@ -548,7 +548,7 @@ static void draw_hud() {
 		batch_sprite(video_state.world, NO_FLIP);
 
 	if (game_state.clock >= 0L) {
-		GLfloat scale;
+		GLfloat scale = 1.f;
 		if ((game_state.flags & GF_HURRY) && video_state.hurry < 120.f) {
 			video_state.hurry += dt();
 			if (video_state.hurry < 8.f)
@@ -557,20 +557,17 @@ static void draw_hud() {
 				scale = 1.6f;
 			else if (video_state.hurry > 112.f)
 				scale = 1.6f - (((video_state.hurry - 112.f) / 8.f) * 0.6f);
-		} else
-			scale = 1.f;
+		}
 
 		const GLfloat x = (float)SCREEN_WIDTH - (32.f * scale);
 		const GLfloat size = 16.f * scale;
 
 		batch_cursor(XYZ(x, 24.f * scale, -10000.f));
 
-		GLfloat yscale;
-		if (video_state.hurry > 0.f && video_state.hurry < 120.f)
-			yscale = glm_lerp(
-				1.f, 0.8f + (SDL_sinf(video_state.hurry * 0.6f) * 0.2f), (scale - 1.0f) / 0.6f);
-		else
-			yscale = 1.f;
+		const GLfloat yscale = (video_state.hurry > 0.f && video_state.hurry < 120.f)
+		                               ? glm_lerp(1.f, 0.8f + (SDL_sinf(video_state.hurry * 0.6f) * 0.2f),
+							 (scale - 1.0f) / 0.6f)
+		                               : 1.f;
 		batch_scale(XY(1.f, yscale));
 
 		batch_align(FA_RIGHT, FA_MIDDLE);
@@ -618,7 +615,7 @@ void draw_game() {
 		actor = get_actor(actor->previous);
 	}
 
-	const char* tex;
+	const char* tex = NULL;
 	switch ((game_state.time / 5L) % 8L) {
 	default:
 		tex = "markers/water";

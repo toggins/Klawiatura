@@ -177,7 +177,7 @@ static void create_flower(GameActor* actor) {
 }
 
 static void draw_flower(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch ((int)((float)game_state.time / 3.703703703703704f) % 4L) {
 	default:
 		tex = "items/flower";
@@ -226,7 +226,7 @@ static void create_beetroot(GameActor* actor) {
 }
 
 static void draw_beetroot(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch ((int)((float)game_state.time / 12.5f) % 4L) {
 	default:
 		tex = "items/beetroot";
@@ -294,7 +294,7 @@ static void tick_lui(GameActor* actor) {
 }
 
 static void draw_lui(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	if (VAL(actor, LUI_BOUNCE) > 0L)
 		switch (VAL(actor, LUI_BOUNCE) / 100L) {
 		default:
@@ -434,7 +434,7 @@ static void tick_starman(GameActor* actor) {
 }
 
 static void draw_starman(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch ((int)((float)game_state.time / 2.040816326530612f) % 4L) {
 	default:
 		tex = "items/starman";

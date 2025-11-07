@@ -112,10 +112,9 @@ static void pre_tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex;
+	const char* tex = "markers/platform/big";
 	switch (VAL(actor, PLATFORM_TYPE)) {
 	default:
-		tex = "markers/platform/big";
 		break;
 
 	case PLAT_SMALL:
@@ -127,13 +126,13 @@ static void draw(const GameActor* actor) {
 		default:
 			tex = "markers/platform/cloud";
 			break;
-		case 1:
+		case 1L:
 			tex = "markers/platform/cloud2";
 			break;
-		case 2:
+		case 2L:
 			tex = "markers/platform/cloud3";
 			break;
-		case 3:
+		case 3L:
 			tex = "markers/platform/cloud4";
 			break;
 		}

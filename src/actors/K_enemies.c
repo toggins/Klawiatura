@@ -162,24 +162,24 @@ Bool hit_shell(GameActor* actor, GameActor* from) {
 		kill_enemy(from, from, true);
 	}
 
-	int32_t points;
+	int32_t points = 0L;
 	switch (VAL(from, SHELL_COMBO)++) {
-	case 0:
+	case 0L:
 		points = 100L;
 		break;
-	case 1:
+	case 1L:
 		points = 200L;
 		break;
-	case 2:
+	case 2L:
 		points = 500L;
 		break;
-	case 3:
+	case 3L:
 		points = 1000L;
 		break;
-	case 4:
+	case 4L:
 		points = 2000L;
 		break;
-	case 5:
+	case 5L:
 		points = 5000L;
 		break;
 

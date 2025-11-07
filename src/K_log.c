@@ -21,7 +21,7 @@ void handle_fatal(const char* file, int line, const char* func, const char* fmt,
 	data.title = "Klawiatura FATAL ERROR", data.flags = SDL_MESSAGEBOX_ERROR;
 	data.buttons = butts, data.numbuttons = sizeof(butts) / sizeof(*butts);
 
-	va_list args;
+	va_list args = {0};
 	va_start(args, fmt);
 	SDL_snprintf(
 		buf, sizeof(buf), "File: %s:%d\nFunction: %s()\n\n%s", log_basename(file), line, func, vfmt(fmt, args));

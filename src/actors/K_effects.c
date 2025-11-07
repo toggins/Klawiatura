@@ -25,7 +25,7 @@ static void tick_explode(GameActor* actor) {
 }
 
 static void draw_explode(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch (VAL(actor, EFFECT_FRAME) / 100L) {
 	default:
 		tex = "effects/explode";
@@ -98,7 +98,7 @@ static void tick_splash(GameActor* actor) {
 }
 
 static void draw_splash(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch (VAL(actor, EFFECT_FRAME) / 10L) {
 	default:
 		tex = "effects/water";
@@ -197,7 +197,7 @@ static void tick_bubble(GameActor* actor) {
 static void draw_bubble(const GameActor* actor) {
 	float pos[2] = {0.f};
 
-	const char* tex;
+	const char* tex = NULL;
 	if (ANY_FLAG(actor, FLG_EFFECT_POP)) {
 		switch (VAL(actor, EFFECT_FRAME)) {
 		default:
@@ -267,7 +267,7 @@ static void tick_lava(GameActor* actor) {
 }
 
 static void draw_lava(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch (VAL(actor, EFFECT_FRAME) / 100L) {
 	default:
 		tex = "effects/lava";

@@ -189,7 +189,7 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	if (ANY_FLAG(actor, FLG_BLOCK_EMPTY))
 		tex = "items/empty";
 	else
@@ -206,10 +206,9 @@ static void draw(const GameActor* actor) {
 			break;
 		}
 
-	int8_t bump;
+	int8_t bump = 0L;
 	switch (VAL(actor, BLOCK_BUMP)) {
 	default:
-		bump = 0L;
 		break;
 	case 2L:
 	case 9L:
@@ -334,10 +333,9 @@ static void load_brick() {
 }
 
 static void draw_brick(const GameActor* actor) {
-	int8_t bump;
+	int8_t bump = 0L;
 	switch (VAL(actor, BLOCK_BUMP)) {
 	default:
-		bump = 0L;
 		break;
 	case 2L:
 	case 10L:
@@ -443,7 +441,7 @@ static void draw_note(const GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_BLOCK_HIDDEN))
 		return;
 
-	const char* tex;
+	const char* tex = NULL;
 	switch ((int)((float)(game_state.time) / 7.69230769231f) % 4L) {
 	default:
 		tex = "items/note2";
@@ -457,10 +455,9 @@ static void draw_note(const GameActor* actor) {
 		break;
 	}
 
-	int8_t bump;
+	int8_t bump = 0L;
 	switch (VAL(actor, BLOCK_BUMP)) {
 	default:
-		bump = 0L;
 		break;
 	case 2L:
 	case 10L:

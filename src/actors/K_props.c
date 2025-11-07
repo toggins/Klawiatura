@@ -17,7 +17,7 @@ static void load_cloud() {
 }
 
 static void draw_cloud(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch (((int)((float)game_state.time / 12.5f) + VAL(actor, PROP_FRAME)) % 4L) {
 	default:
 		tex = "props/cloud";
@@ -44,7 +44,7 @@ static void load_bush() {
 }
 
 static void draw_bush(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch (((int)((float)game_state.time / 7.142857142857143f) + VAL(actor, PROP_FRAME)) % 4L) {
 	default:
 		tex = "props/bush";

@@ -37,7 +37,7 @@ static void tick_wheel(GameActor* actor) {
 }
 
 static void draw_left_wheel(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch (FtInt(VAL(actor, WHEEL_FRAME)) % 3L) {
 	default:
 		tex = "tiles/wheel_l";
@@ -53,7 +53,7 @@ static void draw_left_wheel(const GameActor* actor) {
 }
 
 static void draw_wheel(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch (FtInt(VAL(actor, WHEEL_FRAME)) % 4L) {
 	default:
 		tex = "tiles/wheel";
@@ -72,7 +72,7 @@ static void draw_wheel(const GameActor* actor) {
 }
 
 static void draw_right_wheel(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch (FtInt(VAL(actor, WHEEL_FRAME)) % 3L) {
 	default:
 		tex = "tiles/wheel_r";

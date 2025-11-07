@@ -41,7 +41,7 @@ void audio_init() {
 	result = FMOD_System_Init(speaker, MAX_SOUNDS * 2, FMOD_INIT_NORMAL, NULL);
 	EXPECT(result == FMOD_OK, "FMOD_System_Init fail: %s", FMOD_ErrorString(result));
 
-	uint32_t version, buildnumber;
+	uint32_t version = 0, buildnumber = 0;
 	FMOD_System_GetVersion(speaker, &version, &buildnumber);
 	INFO("FMOD version: %u.%02u.%02u - Build %u", (version >> 16) & 0xFFFF, (version >> 8) & 0xFF, version & 0xFF,
 		buildnumber);

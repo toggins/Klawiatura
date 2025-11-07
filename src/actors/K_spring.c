@@ -32,7 +32,7 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	switch (VAL(actor, SPRING_FRAME) / 100L) {
 	default:
 		tex = ANY_FLAG(actor, FLG_SPRING_GREEN) ? "markers/spring_green" : "markers/spring";

@@ -136,7 +136,7 @@ bypass:
 	glShaderSource(vertex_shader, 1, &shaders_vertex_glsl, NULL);
 	glCompileShader(vertex_shader);
 
-	GLint success;
+	GLint success = 0;
 	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		GLchar error[1024];
@@ -504,8 +504,8 @@ void load_font(const char* name) {
 	const GLfloat width = (GLfloat)font.texture->size[0];
 	const GLfloat height = (GLfloat)font.texture->size[1];
 
-	size_t i, n;
-	yyjson_val *key, *value;
+	size_t i = 0, n = 0;
+	yyjson_val *key = NULL, *value = NULL;
 	yyjson_obj_foreach(glyphmap, i, n, key, value) {
 		const char* kname = yyjson_get_str(key);
 		if (kname == NULL)
@@ -666,7 +666,7 @@ void batch_rectangle(const char* name, const GLfloat size[2]) {
 	const GLfloat x2 = x1 + (size[0] * batch.scale[0]), y2 = y1 + (size[1] * batch.scale[1]);
 	const GLfloat z = batch.cursor[2];
 
-	GLfloat u, v;
+	GLfloat u = 0.f, v = 0.f;
 	if (texture == NULL)
 		u = 1.f, v = 1.f;
 	else

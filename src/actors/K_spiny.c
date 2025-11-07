@@ -31,7 +31,7 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	if ((int)((float)game_state.time / 7.142857142857143f) % 2L)
 		tex = ANY_FLAG(actor, FLG_SPINY_GRAY) ? "enemies/spiny_gray2" : "enemies/spiny2";
 	else

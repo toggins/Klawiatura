@@ -75,7 +75,7 @@ static void collide_bar(GameActor* actor, GameActor* from) {
 	if (from->type != ACT_PLAYER || game_state.sequence.type == SEQ_WIN)
 		return;
 
-	int32_t points;
+	int32_t points = 200L;
 	const fixed gy = VAL(actor, GOAL_Y);
 	if (actor->pos.y < (gy + FfInt(30L)))
 		points = 10000L;
@@ -87,8 +87,6 @@ static void collide_bar(GameActor* actor, GameActor* from) {
 		points = 1000L;
 	else if (actor->pos.y < (gy + FfInt(200L)))
 		points = 500L;
-	else
-		points = 200L;
 	give_points(actor, get_owner(from), points);
 	win_player(from);
 

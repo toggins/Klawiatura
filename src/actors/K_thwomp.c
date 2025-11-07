@@ -98,7 +98,7 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex;
+	const char* tex = NULL;
 	if (ANY_FLAG(actor, FLG_THWOMP_LAUGH))
 		switch (FtInt(VAL(actor, THWOMP_FRAME)) % 3L) {
 		default:
