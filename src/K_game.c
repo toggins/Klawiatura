@@ -421,39 +421,43 @@ byebye_game:
 }
 
 static mat4 proj = GLM_MAT4_IDENTITY;
+static vec2 camera_offset_morsel = {0.f, 0.f};
 
 static void perform_camera_magic() {
+	static vec2 cpos = GLM_VEC2_ZERO;
 	VideoCamera* camera = &video_state.camera;
 
 	const GamePlayer* player = get_player(view_player);
 	const GameActor* autoscroll = get_actor(game_state.autoscroll);
-	static vec2 cpos = GLM_VEC2_ZERO;
+	const InterpActor* iautoscroll = get_interp(autoscroll);
+	camera_offset_morsel[0] = camera_offset_morsel[1] = 0.f;
 
-	if (autoscroll) {
-		InterpActor* iautoscroll = &interp.actors[autoscroll->id];
-		camera->pos[0] = FtFloat(iautoscroll->pos.x + F_HALF_SCREEN_WIDTH);
-		camera->pos[1] = FtFloat(iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT);
+	if (iautoscroll) {
+		camera->pos[0] = FtInt(iautoscroll->pos.x + F_HALF_SCREEN_WIDTH);
+		camera->pos[1] = FtInt(iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT);
+		camera_offset_morsel[0] = FtFloat(iautoscroll->pos.x) - FtInt(iautoscroll->pos.x);
+		camera_offset_morsel[1] = FtFloat(iautoscroll->pos.x) - FtInt(iautoscroll->pos.x);
 
-		const float bx1 = FtFloat(F_HALF_SCREEN_WIDTH), by1 = FtFloat(F_HALF_SCREEN_HEIGHT),
-			    bx2 = FtFloat(game_state.size.x - F_HALF_SCREEN_WIDTH),
-			    by2 = FtFloat(game_state.size.y - F_HALF_SCREEN_HEIGHT);
+		const float bx1 = FtInt(F_HALF_SCREEN_WIDTH), by1 = FtInt(F_HALF_SCREEN_HEIGHT),
+			    bx2 = FtInt(game_state.size.x - F_HALF_SCREEN_WIDTH),
+			    by2 = FtInt(game_state.size.y - F_HALF_SCREEN_HEIGHT);
 		camera->pos[0] = SDL_clamp(camera->pos[0], bx1, bx2);
 		camera->pos[1] = SDL_clamp(camera->pos[1], by1, by2);
 	} else if (player) {
-		const GameActor* pawn = get_actor(player->actor);
-		const InterpActor* ipawn = NULL;
-		if (pawn != NULL)
-			ipawn = &interp.actors[pawn->id];
-		if (ipawn != NULL) { // paranoia......
-			const float bx1 = FtFloat(player->bounds.start.x + F_HALF_SCREEN_WIDTH),
-				    by1 = FtFloat(player->bounds.start.y + F_HALF_SCREEN_HEIGHT),
-				    bx2 = FtFloat(player->bounds.end.x - F_HALF_SCREEN_WIDTH),
-				    by2 = FtFloat(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
-			camera->pos[0] = SDL_clamp(FtFloat(ipawn->pos.x), bx1, bx2);
-			camera->pos[1] = SDL_clamp(FtFloat(ipawn->pos.y), by1, by2);
-		}
+		const InterpActor* ipawn = get_interp(get_actor(player->actor));
+		if (!ipawn)
+			goto fuck;
+		const float bx1 = FtInt(player->bounds.start.x + F_HALF_SCREEN_WIDTH),
+			    by1 = FtInt(player->bounds.start.y + F_HALF_SCREEN_HEIGHT),
+			    bx2 = FtInt(player->bounds.end.x - F_HALF_SCREEN_WIDTH),
+			    by2 = FtInt(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
+		camera->pos[0] = SDL_clamp(FtInt(ipawn->pos.x), bx1, bx2);
+		camera->pos[1] = SDL_clamp(FtInt(ipawn->pos.y), by1, by2);
+		camera_offset_morsel[0] = FtFloat(ipawn->pos.x) - FtInt(ipawn->pos.x);
+		camera_offset_morsel[1] = FtFloat(ipawn->pos.x) - FtInt(ipawn->pos.x);
 	}
 
+fuck:
 	if (camera->lerp_time[0] < camera->lerp_time[1]) {
 		glm_vec2_lerp(camera->from, camera->pos, camera->lerp_time[0] / camera->lerp_time[1], cpos);
 		camera->lerp_time[0] += dt();
@@ -1945,10 +1949,12 @@ void displace_actor_soft(GameActor* actor) {
 //
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
-	const InterpActor* iactor = &interp.actors[actor->id];
+	const InterpActor* iactor = get_interp(actor);
 	const ActorValue sprout = VAL(actor, SPROUT);
 	const GLfloat z = (sprout > 0L) ? 21.f : FtFloat(actor->depth);
-	batch_start(XYZ(FtFloat(iactor->pos.x), FtFloat(iactor->pos.y + sprout), z), angle, color);
+	batch_start(XYZ((int)(FtFloat(iactor->pos.x) - camera_offset_morsel[0]),
+			    (int)(FtFloat(iactor->pos.y) + FtFloat(sprout) - camera_offset_morsel[1]), z),
+		angle, color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 }
 
