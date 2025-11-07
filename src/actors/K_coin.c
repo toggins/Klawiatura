@@ -6,9 +6,7 @@
 // ====
 
 static void load() {
-	load_texture("items/coin");
-	load_texture("items/coin2");
-	load_texture("items/coin3");
+	load_texture_wild("items/coin?");
 
 	load_sound("coin");
 
@@ -85,14 +83,8 @@ const GameActorTable TAB_PSWITCH_COIN = {.load = load, .create = create, .draw =
 // ========
 
 static void load_pop() {
-	load_texture("items/coin_pop");
-	load_texture("items/coin_pop2");
-	load_texture("items/coin_pop3");
-	load_texture("items/coin_pop4");
-	load_texture("effects/spark");
-	load_texture("effects/spark2");
-	load_texture("effects/spark3");
-	load_texture("effects/spark4");
+	load_texture_wild("items/coin_pop?");
+	load_texture_wild("effects/spark?");
 
 	load_sound("coin");
 

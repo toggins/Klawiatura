@@ -14,14 +14,8 @@ enum {
 };
 
 static void load() {
-	load_texture("enemies/thwomp");
-	load_texture("enemies/thwomp2");
-	load_texture("enemies/thwomp3");
-	load_texture("enemies/thwomp4");
-	load_texture("enemies/thwomp5");
-	load_texture("enemies/thwomp_laugh");
-	load_texture("enemies/thwomp_laugh2");
-	load_texture("enemies/thwomp_laugh3");
+	load_texture_wild("enemies/thwomp?");
+	load_texture_wild("enemies/thwomp_laugh?");
 
 	load_sound("hurt");
 	load_sound("thwomp");

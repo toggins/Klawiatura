@@ -25,12 +25,9 @@ enum {
 // =============
 
 static void load() {
-	load_texture("enemies/piranha");
-	load_texture("enemies/piranha2");
-	load_texture("enemies/piranha_red");
-	load_texture("enemies/piranha_red2");
-	load_texture("enemies/piranha_fire");
-	load_texture("enemies/piranha_fire2");
+	load_texture_wild("enemies/piranha?");
+	load_texture_wild("enemies/piranha_red?");
+	load_texture_wild("enemies/piranha_fire?");
 
 	load_sound("fire");
 	load_sound("kick");

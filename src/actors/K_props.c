@@ -13,9 +13,7 @@ static void create(GameActor* actor) {
 // =====
 
 static void load_cloud() {
-	load_texture("props/cloud");
-	load_texture("props/cloud2");
-	load_texture("props/cloud3");
+	load_texture_wild("props/cloud?");
 }
 
 static void draw_cloud(const GameActor* actor) {
@@ -42,9 +40,7 @@ const GameActorTable TAB_CLOUD = {.load = load_cloud, .create = create, .draw = 
 // ====
 
 static void load_bush() {
-	load_texture("props/bush");
-	load_texture("props/bush2");
-	load_texture("props/bush3");
+	load_texture_wild("props/bush?");
 }
 
 static void draw_bush(const GameActor* actor) {

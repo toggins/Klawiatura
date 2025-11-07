@@ -152,9 +152,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 // ==========
 
 static void load() {
-	load_texture("items/block");
-	load_texture("items/block2");
-	load_texture("items/block3");
+	load_texture_wild("items/block?");
 	load_texture("items/empty");
 
 	load_sound("sprout");
@@ -393,9 +391,7 @@ static Bool note_solid(const GameActor* actor) {
 }
 
 static void load_note() {
-	load_texture("items/note");
-	load_texture("items/note2");
-	load_texture("items/note3");
+	load_texture_wild("items/note?");
 
 	load_sound("bump");
 	load_sound("spring");

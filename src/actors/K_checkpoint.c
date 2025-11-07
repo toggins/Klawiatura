@@ -2,9 +2,7 @@
 #include "actors/K_points.h"
 
 static void load() {
-	load_texture("markers/checkpoint");
-	load_texture("markers/checkpoint2");
-	load_texture("markers/checkpoint3");
+	load_texture_wild("markers/checkpoint?");
 
 	load_sound("sprout");
 

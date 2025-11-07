@@ -16,8 +16,7 @@ static void create(GameActor* actor) {
 // ================
 
 static void load_blue() {
-	load_texture("enemies/cheep_blue");
-	load_texture("enemies/cheep_blue2");
+	load_texture_wild("enemies/cheep_blue?");
 
 	load_sound("stomp");
 	load_sound("kick");
@@ -99,8 +98,7 @@ const GameActorTable TAB_CHEEP_CHEEP_BLUE = {
 // =================
 
 static void load_spiky() {
-	load_texture("enemies/cheep_spiky");
-	load_texture("enemies/cheep_spiky2");
+	load_texture_wild("enemies/cheep_spiky?");
 
 	load_sound("kick");
 

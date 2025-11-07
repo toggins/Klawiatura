@@ -11,9 +11,7 @@ enum {
 };
 
 static void load() {
-	load_texture("markers/pswitch");
-	load_texture("markers/pswitch2");
-	load_texture("markers/pswitch3");
+	load_texture_wild("markers/pswitch?");
 	load_texture("markers/pswitch_flat");
 
 	load_sound("toggle");

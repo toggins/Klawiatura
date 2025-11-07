@@ -327,21 +327,27 @@ static void nuke_texture(void* ptr) {
 	glDeleteTextures(1, &texture->texture);
 }
 
-void load_texture(const char* name) {
+static bool load_texture_impl(const char* name, bool strict) {
 	if (!name || !*name || get_texture(name))
-		return;
+		return true;
 
 	Texture texture = {0};
 
 	const char* file = find_data_file(fmt("data/textures/%s.*", name), ".json");
-	ASSUME(file, "Texture \"%s\" not found", name);
+	if (!file) {
+		if (strict)
+			WTF("Texture \"%s\" not found", name);
+		return false;
+	}
 
 	SDL_Surface* surface = IMG_Load(file);
-	ASSUME(surface, "Texture \"%s\" fail: %s", name, SDL_GetError());
+	if (!surface) {
+		WTF("Texture \"%s\" fail: %s", name, SDL_GetError());
+		return false;
+	}
 
 	texture.name = SDL_strdup(name);
-	texture.size[0] = surface->w;
-	texture.size[1] = surface->h;
+	texture.size[0] = surface->w, texture.size[1] = surface->h;
 
 	glGenTextures(1, &(texture.texture));
 	glBindTexture(GL_TEXTURE_2D, texture.texture);
@@ -376,6 +382,73 @@ eattwodicks:
 	yyjson_doc_free(json);
 eatadick:
 	StMapPut(textures, long_key(name), &texture, sizeof(texture))->cleanup = nuke_texture;
+	return true;
+}
+
+void load_texture(const char* name) {
+	load_texture_impl(name, true);
+}
+
+/// Load a list of textures using a wildcard pattern.
+///
+/// Inside the pattern, `?` is replaced with a number `1` through `9`. This accounts for the fact the number `1` is
+/// omitted from texture name by convention. The loader tries every permutation and quits gracefully if it finds at
+/// least one texture even if it fails on any of the others.
+///
+/// Use `??` in a pattern if you need numbers `1` through `9`.
+//
+// FIXME: only supports a single block of consecutive `?`s.
+void load_texture_wild(const char* pattern) {
+	static char buf[512] = {0};
+	int so_far = 0;
+	bool double_question = false;
+
+	for (int i = 0; i < pattern[i]; i++)
+		if (pattern[i] == '?') {
+			double_question = pattern[i + 1] == '?';
+			break;
+		}
+
+#define SHRINK()                                                                                                       \
+	do {                                                                                                           \
+		for (int j = i; j < sizeof(buf) - 1; j++)                                                              \
+			buf[j] = buf[j + 1];                                                                           \
+	} while (0)
+
+	for (char counter = 0; counter < 9; counter++) {
+		SDL_memset(buf, 0, sizeof(buf));
+		SDL_strlcpy(buf, pattern, sizeof(buf));
+
+		for (int i = 0; i < sizeof(buf); i++)
+			if (buf[i] == '?') {
+				if (double_question) {
+					if (!counter) {
+						SHRINK();
+						SHRINK();
+					} else if (counter < 10) {
+						SHRINK();
+						buf[i] = '1' + counter;
+					} else {
+						buf[i + 0] = '1' + (counter / 10);
+						buf[i + 1] = '0' + (counter % 10);
+						i += 1;
+					}
+				} else {
+					buf[i] = '1' + counter;
+					if (buf[i] == '1')
+						SHRINK();
+				}
+			}
+
+		bool loaded = load_texture_impl(buf, false);
+		if (so_far && !loaded)
+			return;
+		else if (!so_far && !loaded) {
+			WTF("Failed to load wildcard texture '%s'", pattern);
+			return;
+		}
+		so_far++;
+	}
 }
 
 const Texture* get_texture(const char* name) {

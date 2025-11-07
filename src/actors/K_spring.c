@@ -9,12 +9,8 @@ enum {
 };
 
 static void load() {
-	load_texture("markers/spring");
-	load_texture("markers/spring2");
-	load_texture("markers/spring3");
-	load_texture("markers/spring_green");
-	load_texture("markers/spring_green2");
-	load_texture("markers/spring_green3");
+	load_texture_wild("markers/spring?");
+	load_texture_wild("markers/spring_green?");
 
 	load_sound("spring");
 }

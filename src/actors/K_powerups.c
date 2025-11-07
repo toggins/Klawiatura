@@ -94,7 +94,6 @@ const GameActorTable TAB_MUSHROOM = {.load = load_mushroom,
 
 static void load_1up_mushroom() {
 	load_texture("items/mushroom_1up");
-
 	load_actor(ACT_POINTS);
 }
 
@@ -121,9 +120,7 @@ const GameActorTable TAB_MUSHROOM_1UP = {.load = load_1up_mushroom,
 // ===============
 
 static void load_poison_mushroom() {
-	load_texture("items/mushroom_poison");
-	load_texture("items/mushroom_poison2");
-
+	load_texture_wild("items/mushroom_poison?");
 	load_actor(ACT_EXPLODE);
 }
 
@@ -159,10 +156,7 @@ const GameActorTable TAB_MUSHROOM_POISON = {.load = load_poison_mushroom,
 // ===========
 
 static void load_flower() {
-	load_texture("items/flower");
-	load_texture("items/flower2");
-	load_texture("items/flower3");
-	load_texture("items/flower4");
+	load_texture_wild("items/flower?");
 
 	load_sound("grow");
 
@@ -209,12 +203,8 @@ const GameActorTable TAB_FIRE_FLOWER
 // ========
 
 static void load_beetroot() {
-	load_texture("items/beetroot");
-	load_texture("items/beetroot2");
-	load_texture("items/beetroot3");
-
+	load_texture_wild("items/beetroot?");
 	load_sound("grow");
-
 	load_actor(ACT_POINTS);
 }
 
@@ -257,14 +247,8 @@ const GameActorTable TAB_BEETROOT
 // =========
 
 static void load_lui() {
-	load_texture("items/lui");
-	load_texture("items/lui2");
-	load_texture("items/lui3");
-	load_texture("items/lui4");
-	load_texture("items/lui5");
-	load_texture("items/lui_bounce");
-	load_texture("items/lui_bounce2");
-	load_texture("items/lui_bounce3");
+	load_texture_wild("items/lui?");
+	load_texture_wild("items/lui_bounce?");
 
 	load_sound("kick");
 	load_sound("grow");
@@ -398,10 +382,7 @@ const GameActorTable TAB_HAMMER_SUIT
 // =======
 
 static void load_starman() {
-	load_texture("items/starman");
-	load_texture("items/starman2");
-	load_texture("items/starman3");
-	load_texture("items/starman4");
+	load_texture_wild("items/starman?");
 
 	load_sound("grow");
 	load_sound("starman");

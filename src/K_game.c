@@ -997,17 +997,8 @@ void start_game_state(GameContext* ctx) {
 	//
 	//
 	//
-	load_texture("ui/coins");
-	load_texture("ui/coins2");
-	load_texture("ui/coins3");
-	load_texture("markers/water");
-	load_texture("markers/water2");
-	load_texture("markers/water3");
-	load_texture("markers/water4");
-	load_texture("markers/water5");
-	load_texture("markers/water6");
-	load_texture("markers/water7");
-	load_texture("markers/water8");
+	load_texture_wild("ui/coins?");
+	load_texture_wild("markers/water?");
 
 	load_font("hud");
 	load_font("main");

@@ -22,20 +22,14 @@ static void load_player_textures() {
 	load_texture("player/mario/small/walk");
 	load_texture("player/mario/small/walk2");
 	load_texture("player/mario/small/jump");
-	load_texture("player/mario/small/swim");
-	load_texture("player/mario/small/swim2");
-	load_texture("player/mario/small/swim3");
-	load_texture("player/mario/small/swim4");
+	load_texture_wild("player/mario/small/swim?");
 
 	load_texture("player/mario/big/idle");
 	load_texture("player/mario/big/walk");
 	load_texture("player/mario/big/walk2");
 	load_texture("player/mario/big/jump");
 	load_texture("player/mario/big/duck");
-	load_texture("player/mario/big/swim");
-	load_texture("player/mario/big/swim2");
-	load_texture("player/mario/big/swim3");
-	load_texture("player/mario/big/swim4");
+	load_texture_wild("player/mario/big/swim?");
 
 	load_texture("player/mario/fire/idle");
 	load_texture("player/mario/fire/walk");
@@ -43,10 +37,7 @@ static void load_player_textures() {
 	load_texture("player/mario/fire/jump");
 	load_texture("player/mario/fire/duck");
 	load_texture("player/mario/fire/fire");
-	load_texture("player/mario/fire/swim");
-	load_texture("player/mario/fire/swim2");
-	load_texture("player/mario/fire/swim3");
-	load_texture("player/mario/fire/swim4");
+	load_texture_wild("player/mario/fire/swim?");
 
 	load_texture("player/mario/beetroot/idle");
 	load_texture("player/mario/beetroot/walk");
@@ -54,20 +45,14 @@ static void load_player_textures() {
 	load_texture("player/mario/beetroot/jump");
 	load_texture("player/mario/beetroot/duck");
 	load_texture("player/mario/beetroot/fire");
-	load_texture("player/mario/beetroot/swim");
-	load_texture("player/mario/beetroot/swim2");
-	load_texture("player/mario/beetroot/swim3");
-	load_texture("player/mario/beetroot/swim4");
+	load_texture_wild("player/mario/beetroot/swim?");
 
 	load_texture("player/mario/lui/idle");
 	load_texture("player/mario/lui/walk");
 	load_texture("player/mario/lui/walk2");
 	load_texture("player/mario/lui/jump");
 	load_texture("player/mario/lui/duck");
-	load_texture("player/mario/lui/swim");
-	load_texture("player/mario/lui/swim2");
-	load_texture("player/mario/lui/swim3");
-	load_texture("player/mario/lui/swim4");
+	load_texture_wild("player/mario/lui/swim?");
 
 	load_texture("player/mario/hammer/idle");
 	load_texture("player/mario/hammer/walk");
@@ -75,10 +60,7 @@ static void load_player_textures() {
 	load_texture("player/mario/hammer/jump");
 	load_texture("player/mario/hammer/duck");
 	load_texture("player/mario/hammer/fire");
-	load_texture("player/mario/hammer/swim");
-	load_texture("player/mario/hammer/swim2");
-	load_texture("player/mario/hammer/swim3");
-	load_texture("player/mario/hammer/swim4");
+	load_texture_wild("player/mario/hammer/swim?");
 }
 
 PlayerFrame get_player_frame(const GameActor* actor) {

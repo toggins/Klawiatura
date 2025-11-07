@@ -53,32 +53,7 @@ const GameActorTable TAB_ROTODISC_BALL
 // =========
 
 static void load() {
-	load_texture("enemies/rotodisc");
-	load_texture("enemies/rotodisc2");
-	load_texture("enemies/rotodisc3");
-	load_texture("enemies/rotodisc4");
-	load_texture("enemies/rotodisc5");
-	load_texture("enemies/rotodisc6");
-	load_texture("enemies/rotodisc7");
-	load_texture("enemies/rotodisc8");
-	load_texture("enemies/rotodisc9");
-	load_texture("enemies/rotodisc10");
-	load_texture("enemies/rotodisc11");
-	load_texture("enemies/rotodisc12");
-	load_texture("enemies/rotodisc13");
-	load_texture("enemies/rotodisc14");
-	load_texture("enemies/rotodisc15");
-	load_texture("enemies/rotodisc16");
-	load_texture("enemies/rotodisc17");
-	load_texture("enemies/rotodisc18");
-	load_texture("enemies/rotodisc19");
-	load_texture("enemies/rotodisc20");
-	load_texture("enemies/rotodisc21");
-	load_texture("enemies/rotodisc22");
-	load_texture("enemies/rotodisc23");
-	load_texture("enemies/rotodisc24");
-	load_texture("enemies/rotodisc25");
-	load_texture("enemies/rotodisc26");
+	load_texture_wild("enemies/rotodisc??");
 }
 
 static void create(GameActor* actor) {

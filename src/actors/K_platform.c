@@ -4,10 +4,7 @@
 static void load() {
 	load_texture("markers/platform/big");
 	load_texture("markers/platform/small");
-	load_texture("markers/platform/cloud");
-	load_texture("markers/platform/cloud2");
-	load_texture("markers/platform/cloud3");
-	load_texture("markers/platform/cloud4");
+	load_texture_wild("markers/platform/cloud?");
 	load_texture("markers/platform/castle");
 	load_texture("markers/platform/castle_big");
 	load_texture("markers/platform/castle_button");

@@ -18,14 +18,7 @@ enum {
 // ====
 
 static void load() {
-	load_texture("enemies/lava");
-	load_texture("enemies/lava2");
-	load_texture("enemies/lava3");
-	load_texture("enemies/lava4");
-	load_texture("enemies/lava5");
-	load_texture("enemies/lava6");
-	load_texture("enemies/lava7");
-	load_texture("enemies/lava8");
+	load_texture_wild("enemies/lava?");
 }
 
 static void create(GameActor* actor) {
@@ -89,9 +82,7 @@ const GameActorTable TAB_LAVA = {.load = load, .create = create, .draw = draw, .
 // =======
 
 static void load_podoboo() {
-	load_texture("enemies/podoboo");
-	load_texture("enemies/podoboo2");
-	load_texture("enemies/podoboo3");
+	load_texture_wild("enemies/podoboo?");
 
 	load_sound("kick");
 

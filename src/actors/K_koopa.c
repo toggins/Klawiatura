@@ -135,14 +135,8 @@ const GameActorTable TAB_KOOPA = {.load = load,
 // ===========
 
 static void load_shell() {
-	load_texture("enemies/shell");
-	load_texture("enemies/shell2");
-	load_texture("enemies/shell3");
-	load_texture("enemies/shell4");
-	load_texture("enemies/shell_red");
-	load_texture("enemies/shell_red2");
-	load_texture("enemies/shell_red3");
-	load_texture("enemies/shell_red4");
+	load_texture_wild("enemies/shell?");
+	load_texture_wild("enemies/shell_red?");
 
 	load_sound("stomp");
 	load_sound("kick");
@@ -272,11 +266,9 @@ const GameActorTable TAB_KOOPA_SHELL = {
 // =========
 
 static void load_parakoopa() {
-	load_texture("enemies/parakoopa");
-	load_texture("enemies/parakoopa2");
+	load_texture_wild("enemies/parakoopa?");
 	load_texture("enemies/shell");
-	load_texture("enemies/parakoopa_red");
-	load_texture("enemies/parakoopa_red2");
+	load_texture_wild("enemies/parakoopa_red?");
 	load_texture("enemies/shell_red");
 
 	load_sound("stomp");
