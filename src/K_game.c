@@ -435,8 +435,9 @@ static void perform_camera_magic() {
 	if (iautoscroll) {
 		camera->pos[0] = FtInt(iautoscroll->pos.x + F_HALF_SCREEN_WIDTH);
 		camera->pos[1] = FtInt(iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT);
+
 		camera_offset_morsel[0] = FtFloat(iautoscroll->pos.x) - FtInt(iautoscroll->pos.x);
-		camera_offset_morsel[1] = FtFloat(iautoscroll->pos.x) - FtInt(iautoscroll->pos.x);
+		camera_offset_morsel[1] = FtFloat(iautoscroll->pos.y) - FtInt(iautoscroll->pos.y);
 
 		const float bx1 = FtInt(F_HALF_SCREEN_WIDTH), by1 = FtInt(F_HALF_SCREEN_HEIGHT),
 			    bx2 = FtInt(game_state.size.x - F_HALF_SCREEN_WIDTH),
@@ -447,14 +448,17 @@ static void perform_camera_magic() {
 		const InterpActor* ipawn = get_interp(get_actor(player->actor));
 		if (!ipawn)
 			goto fuck;
+
 		const float bx1 = FtInt(player->bounds.start.x + F_HALF_SCREEN_WIDTH),
 			    by1 = FtInt(player->bounds.start.y + F_HALF_SCREEN_HEIGHT),
 			    bx2 = FtInt(player->bounds.end.x - F_HALF_SCREEN_WIDTH),
 			    by2 = FtInt(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
+
 		camera->pos[0] = SDL_clamp(FtInt(ipawn->pos.x), bx1, bx2);
 		camera->pos[1] = SDL_clamp(FtInt(ipawn->pos.y), by1, by2);
+
 		camera_offset_morsel[0] = FtFloat(ipawn->pos.x) - FtInt(ipawn->pos.x);
-		camera_offset_morsel[1] = FtFloat(ipawn->pos.x) - FtInt(ipawn->pos.x);
+		camera_offset_morsel[1] = FtFloat(ipawn->pos.y) - FtInt(ipawn->pos.y);
 	}
 
 fuck:
