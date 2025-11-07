@@ -9,6 +9,7 @@
 #include "K_tick.h"
 #include "K_video.h"
 
+#include "actors/K_autoscroll.h"
 #include "actors/K_block.h"
 #include "actors/K_checkpoint.h" // IWYU pragma: keep
 #include "actors/K_enemies.h"    // IWYU pragma: keep
@@ -1964,6 +1965,16 @@ void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const G
 
 // Variant of `draw_actor()` that works around some jittering issues (i.e. players on platforms, autoscrolling).
 void draw_actor_no_jitter(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
+	if (actor->type == ACT_PLAYER && get_actor(VAL(actor, PLAYER_PLATFORM)) == NULL) {
+		const GameActor* autoscroll = get_actor(game_state.autoscroll);
+		if (autoscroll == NULL || !ANY_FLAG(autoscroll, FLG_SCROLL_TANKS)
+			|| (VAL(actor, PLAYER_GROUND) > 0L && actor->pos.y < (autoscroll->pos.y + FfInt(415L))))
+		{
+			draw_actor(actor, name, angle, color);
+			return;
+		}
+	}
+
 	const InterpActor* iactor = get_interp(actor);
 	const GLfloat sprout = FtFloat(VAL(actor, SPROUT)), z = sprout > 0.f ? 21.f : FtFloat(actor->depth);
 	batch_start(XYZ((int)(FtFloat(iactor->pos.x) - camera_offset_morsel[0]),
