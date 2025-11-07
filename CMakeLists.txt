@@ -153,3 +153,5 @@ install(DIRECTORY .github/assets DESTINATION .github) # has all the README .pngs
 set(CPACK_GENERATOR ZIP)
 set(CPACK_COMPONENTS_GROUPING ALL_COMPONENTS_IN_ONE)
 include(CPack)
+
+# https://youtu.be/dHxLi2D8Sto
