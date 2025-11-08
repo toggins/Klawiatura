@@ -1,6 +1,7 @@
 #include "actors/K_artillery.h"
 #include "actors/K_enemies.h"
 #include "actors/K_koopa.h"
+#include "actors/K_lakitu.h"
 #include "actors/K_missiles.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
@@ -280,6 +281,15 @@ static void create_dead(GameActor* actor) {
 
 static void tick_dead(GameActor* actor) {
 	if (!in_any_view(actor, FxZero, true)) {
+		if (VAL(actor, DEAD_TYPE) == ACT_LAKITU) {
+			if (++VAL(actor, DEAD_RESPAWN) > 300L) {
+				GameActor* lakitu = create_actor(
+					ACT_LAKITU, (fvec2){game_state.size.x + FfInt(200L), FfInt(57L + rng(31L))});
+				if (lakitu != NULL)
+					FLAG_ON(lakitu, actor->flags & FLG_LAKITU_GREEN);
+			} else
+				return;
+		}
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}

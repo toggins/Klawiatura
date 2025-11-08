@@ -71,6 +71,7 @@ void populate_actors_table() {
 	ACTOR(KOOPA);
 	ACTOR(KOOPA_SHELL);
 	ACTOR(PARAKOOPA);
+	ACTOR(SPINY_EGG);
 	ACTOR(SPINY);
 	ACTOR(BRO);
 	ACTOR(BRO_LAYER);
@@ -87,6 +88,7 @@ void populate_actors_table() {
 	ACTOR(SPRING);
 	ACTOR(ELECTRIC_CORAL);
 	ACTOR(SPIKE);
+	ACTOR(LAKITU);
 
 	static const GameActorTable TAB_NULL = {0};
 	ACTORS[ACT_NULL] = &TAB_NULL;

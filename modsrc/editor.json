@@ -1443,6 +1443,21 @@
                 },
 
                 {
+                    "def": "Lakitu",
+                    "type": "object",
+                    "index": 46,
+                    "z": 1,
+                    "texture": "enemies/lakitu",
+
+                    "flags": [
+                        {
+                            "name": "Green Eggs?",
+                            "bit": 5
+                        }
+                    ]
+                },
+
+                {
                     "def": "Bullet Bill",
                     "type": "object",
                     "index": 54,

@@ -9,6 +9,7 @@ enum {
 	VAL_ENEMY_CUSTOM,
 
 	VAL_DEAD_TYPE = VAL_CUSTOM,
+	VAL_DEAD_RESPAWN,
 };
 
 enum {

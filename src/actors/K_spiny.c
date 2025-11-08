@@ -1,8 +1,8 @@
-#include "actors/K_enemies.h"
+#include "actors/K_spiny.h"
 
-enum {
-	FLG_SPINY_GRAY = CUSTOM_ENEMY_FLAG(0),
-};
+// =====
+// SPINY
+// =====
 
 static void load() {
 	load_texture("enemies/spiny");
@@ -58,6 +58,7 @@ static void collide(GameActor* actor, GameActor* from) {
 	case ACT_GOOMBA:
 	case ACT_KOOPA:
 	case ACT_SPINY:
+	case ACT_SPINY_EGG:
 	case ACT_BUZZY_BEETLE:
 	case ACT_CHEEP_CHEEP_BLUE: {
 		turn_enemy(actor);
@@ -105,5 +106,157 @@ const GameActorTable TAB_SPINY = {
 	.draw = draw,
 	.draw_dead = draw_corpse,
 	.cleanup = cleanup,
+	.collide = collide,
+};
+
+// =========
+// SPINY EGG
+// =========
+
+static void load_egg() {
+	load_texture_wild("enemies/spiny_egg?");
+	load_texture("enemies/spiny_egg_green");
+
+	load_sound("kick");
+
+	load_actor(ACT_SPINY);
+	load_actor(ACT_POINTS);
+}
+
+static void create_egg(GameActor* actor) {
+	actor->box.start.x = actor->box.start.y = FfInt(-15L);
+	actor->box.end.x = actor->box.end.y = FfInt(15L);
+}
+
+static void tick_egg(GameActor* actor) {
+	if (below_level(actor)) {
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	if (!ANY_FLAG(actor, FLG_SPINY_HATCH) || ANY_FLAG(actor, FLG_SPINY_GREEN))
+		VAL(actor, SPINY_ANGLE) += (VAL(actor, X_SPEED) < FxZero) ? -25736L : 25736L;
+	if (ALL_FLAG(actor, FLG_SPINY_ROLL)) {
+		move_enemy(actor, (fvec2){FfInt(2L), 19005L}, false);
+		return;
+	}
+
+	if (ANY_FLAG(actor, FLG_SPINY_GREEN))
+		VAL(actor, Y_SPEED) += 19005L;
+	else if (VAL(actor, Y_SPEED) < FfInt(8L))
+		VAL(actor, Y_SPEED) += 8738L;
+
+	const fixed spd = VAL(actor, X_SPEED);
+	if (touching_solid(HITBOX(actor), SOL_SOLID))
+		move_actor(actor, POS_SPEED(actor));
+	else
+		displace_actor(actor, FfInt(10L), false);
+
+	if (!ANY_FLAG(actor, FLG_SPINY_GREEN) && ANY_FLAG(actor, FLG_SPINY_HATCH)) {
+		if (++VAL(actor, SPINY_FRAME) >= 5L) {
+			GameActor* spiny = create_actor(ACT_SPINY, actor->pos);
+			if (spiny != NULL) {
+				align_interp(spiny, actor);
+				GameActor* nearest = nearest_pawn(actor->pos);
+				FLAG_ON(spiny, (nearest != NULL && nearest->pos.x < actor->pos.x) * FLG_X_FLIP);
+			}
+
+			FLAG_ON(actor, FLG_DESTROY);
+		}
+	} else {
+		if (VAL(actor, X_TOUCH) != 0L)
+			VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * -Fabs(spd);
+
+		if (VAL(actor, Y_TOUCH) > 0L) {
+			if (ANY_FLAG(actor, FLG_SPINY_GREEN)) {
+				GameActor* nearest = nearest_pawn(actor->pos);
+
+				if (ANY_FLAG(actor, FLG_SPINY_HATCH)) {
+					if (nearest != NULL) {
+						if (nearest->pos.x < actor->pos.x)
+							FLAG_ON(actor, FLG_X_FLIP);
+						else
+							FLAG_OFF(actor, FLG_X_FLIP);
+					}
+
+					FLAG_ON(actor, FLG_SPINY_ROLL);
+					return;
+				}
+
+				VAL(actor, Y_SPEED) = FfInt(-4L);
+
+				if (nearest != NULL) {
+					if (nearest->pos.x < actor->pos.x) {
+						VAL(actor, X_SPEED) = FfInt(-3L);
+						FLAG_ON(actor, FLG_X_FLIP);
+					} else {
+						VAL(actor, X_SPEED) = FfInt(3L);
+						FLAG_OFF(actor, FLG_X_FLIP);
+					}
+				}
+
+				FLAG_ON(actor, FLG_SPINY_HATCH);
+				return;
+			}
+
+			actor->box.start.y = FfInt(-32L);
+			actor->box.end.y = FxZero;
+
+			move_actor(actor, POS_ADD(actor, FxZero, FfInt(15L)));
+			skip_interp(actor);
+
+			VAL(actor, SPINY_FRAME) = 0L;
+			VAL(actor, SPINY_ANGLE) = FxZero;
+			FLAG_ON(actor, FLG_SPINY_HATCH);
+		}
+	}
+}
+
+static void draw_egg(const GameActor* actor) {
+	if (ANY_FLAG(actor, FLG_SPINY_GREEN)) {
+		draw_actor(actor, "enemies/spiny_egg_green", FtFloat(VAL(actor, SPINY_ANGLE)), WHITE);
+		return;
+	}
+
+	const char* tex = "enemies/spiny_egg";
+	if (ANY_FLAG(actor, FLG_SPINY_HATCH))
+		switch (VAL(actor, SPINY_FRAME)) {
+		default:
+			tex = "enemies/spiny_egg2";
+			break;
+		case 1L:
+			tex = "enemies/spiny_egg3";
+			break;
+		case 2L:
+			tex = "enemies/spiny_egg4";
+			break;
+		case 3L:
+			tex = "enemies/spiny_egg5";
+			break;
+		case 4L:
+			tex = "enemies/spiny_egg6";
+			break;
+		}
+
+	draw_actor(actor, tex, FtFloat(VAL(actor, SPINY_ANGLE)), WHITE);
+}
+
+static void draw_egg_corpse(const GameActor* actor) {
+	if (ANY_FLAG(actor, FLG_SPINY_GREEN)) {
+		const InterpActor* iactor = get_interp(actor);
+		batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + 15.f, actor->depth), 0.f, WHITE);
+		batch_sprite("enemies/spiny_egg_green", NO_FLIP);
+		return;
+	}
+
+	draw_actor(actor, "enemies/spiny2", 0.f, WHITE);
+}
+
+const GameActorTable TAB_SPINY_EGG = {
+	.load = load_egg,
+	.create = create_egg,
+	.tick = tick_egg,
+	.draw = draw_egg,
+	.draw_dead = draw_egg_corpse,
 	.collide = collide,
 };

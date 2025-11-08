@@ -93,6 +93,7 @@ static void collide(GameActor* actor, GameActor* from) {
 	case ACT_GOOMBA:
 	case ACT_KOOPA:
 	case ACT_SPINY:
+	case ACT_SPINY_EGG:
 	case ACT_BUZZY_BEETLE:
 	case ACT_CHEEP_CHEEP_BLUE: {
 		turn_enemy(actor);
