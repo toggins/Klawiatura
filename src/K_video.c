@@ -822,7 +822,7 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 	// Horizontal alignment
 	switch (batch.halign) {
 	case FA_CENTER:
-		ox -= (string_width_fast(font, size, str) / 2.f) * batch.scale[0];
+		ox -= (GLfloat)((GLint)(string_width_fast(font, size, str) / 2.f)) * batch.scale[0];
 		break;
 	case FA_RIGHT:
 		ox -= (string_width_fast(font, size, str)) * batch.scale[0];
@@ -834,7 +834,7 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 	// Vertical alignment
 	switch (batch.valign) {
 	case FA_MIDDLE:
-		oy -= (string_height_fast(font, size, str) / 2.f) * batch.scale[1];
+		oy -= (GLfloat)((GLint)(string_height_fast(font, size, str) / 2.f)) * batch.scale[1];
 		break;
 	case FA_BOTTOM:
 		oy -= (string_height_fast(font, size, str)) * batch.scale[1];
