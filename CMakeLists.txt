@@ -145,13 +145,15 @@ add_custom_target(KlawiaturaPost ALL
     COMMAND_EXPAND_LISTS)
 add_dependencies(KlawiaturaPost Klawiatura)
 
-install(TARGETS Klawiatura RUNTIME DESTINATION .) # TODO: exclude lib/ and include/ somehow
-install(FILES README.md UNLICENSE res/console.bat ${RUNTIME_DLLS} DESTINATION .)
-install(DIRECTORY modsrc/ DESTINATION data)
-install(DIRECTORY .github/assets DESTINATION .github) # has all the README .pngs
+install(TARGETS Klawiatura RUNTIME DESTINATION . COMPONENT Klawiatura)
+install(FILES README.md UNLICENSE res/console.bat ${RUNTIME_DLLS} DESTINATION . COMPONENT Klawiatura)
+install(DIRECTORY modsrc/ DESTINATION data COMPONENT Klawiatura)
+install(DIRECTORY .github/assets DESTINATION .github COMPONENT Klawiatura) # has all the README .pngs
 
 set(CPACK_GENERATOR ZIP)
+set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 set(CPACK_COMPONENTS_GROUPING ALL_COMPONENTS_IN_ONE)
+set(CPACK_COMPONENTS_ALL Klawiatura)
 include(CPack)
 
 # https://youtu.be/dHxLi2D8Sto
