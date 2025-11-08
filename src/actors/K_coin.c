@@ -142,21 +142,10 @@ static void draw_pop(const GameActor* actor) {
 	const char* tex = NULL;
 	if (ANY_FLAG(actor, FLG_COIN_POP_SPARK))
 		tex = fmt("effects/spark%s", txnum((VAL(actor, COIN_POP_FRAME) / 100L)));
-	else
-		switch ((VAL(actor, COIN_POP_FRAME) / 100L) % 5L) {
-		default:
-			tex = "items/coin_pop";
-			break;
-		case 2L:
-			tex = "items/coin_pop2";
-			break;
-		case 3L:
-			tex = "items/coin_pop3";
-			break;
-		case 4L:
-			tex = "items/coin_pop4";
-			break;
-		}
+	else {
+		const uint64_t frame = (VAL(actor, COIN_POP_FRAME) / 100L) % 5L;
+		tex = fmt("items/coin_pop%s", txnum(frame >= 2 ? frame - 1 : 0));
+	}
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
