@@ -94,6 +94,20 @@ static const ConfigOption OPTIONS[] = {
 	{"background",   .r_bool = get_background,    .w_bool = set_background   },
 };
 
+static bool fill_missing_fields() {
+	int modified = 0;
+
+	if (!SDL_strlen(CLIENT.user.name))
+		SDL_snprintf(CLIENT.user.name, CLIENT_STRING_MAX, "Mario #%04d", 1 + SDL_rand(9999)), modified++;
+
+	if (!SDL_strlen(CLIENT.user.skin))
+		SDL_snprintf(CLIENT.user.skin, CLIENT_STRING_MAX, "mario"), modified++;
+
+	if (modified)
+		INFO("Set %d options to their default values", modified);
+	return modified > 0;
+}
+
 static const char* config_path = NULL;
 
 void config_init(const char* path) {
@@ -164,10 +178,7 @@ static void parse_config(yyjson_val* obj) {
 
 void load_config() {
 	const char* config_file = config_path == NULL ? find_user_file("config.json", NULL) : config_path;
-	if (config_file == NULL) {
-		WARN("No config to load");
-		return;
-	}
+	BAKA(config_file, "No config to load");
 
 	yyjson_read_err error;
 	yyjson_doc* json = yyjson_read_file(config_file, JSON_READ_FLAGS, NULL, &error);
@@ -179,6 +190,9 @@ void load_config() {
 	else
 		WARN("Config loading skipped, has to be a key-value mapping (got %s)", yyjson_get_type_desc(root));
 	yyjson_doc_free(json);
+
+	if (fill_missing_fields())
+		save_config();
 }
 
 static yyjson_mut_val* kb_serialize_key(yyjson_mut_doc* json, const Bindings* bind) {
@@ -200,20 +214,16 @@ static void save_kb(yyjson_mut_doc* json, yyjson_mut_val* root, const char* name
 }
 
 void save_config() {
-	if (config_path != NULL) {
-		WARN("Cannot save config outside of user path");
-		return;
-	}
+	fill_missing_fields(); // fill missing after quitting the settings menu
 
+	BAKA(!config_path, "Saving config outside of user path is explicitly prohibited");
 	yyjson_mut_doc* json = yyjson_mut_doc_new(NULL);
 	yyjson_mut_val* root = yyjson_mut_obj(json);
 	yyjson_mut_doc_set_root(json, root);
 
 	for (size_t i = 0; i < sizeof(OPTIONS) / sizeof(*OPTIONS); i++) {
 		const ConfigOption* opt = &OPTIONS[i];
-
-		yyjson_mut_val* key = yyjson_mut_strcpy(json, opt->name);
-		yyjson_mut_val* value = NULL;
+		yyjson_mut_val *key = yyjson_mut_strcpy(json, opt->name), *value = NULL;
 
 		if (opt->r_bool != NULL)
 			value = yyjson_mut_bool(json, opt->r_bool());
@@ -235,12 +245,12 @@ void save_config() {
 
 	char* buffer = yyjson_mut_write_opts(json, JSON_WRITE_FLAGS, NULL, &size, &error);
 	yyjson_mut_doc_free(json);
-	ASSUME(buffer, "save_config fail: %s", error.msg);
+	ASSUME(buffer, "Failed to save config: %s", error.msg);
 
 	const char* path = fmt("%sconfig.json", get_user_path());
-	ASSUME(SDL_SaveFile(path, buffer, size), "save_config fail: %s", SDL_GetError());
-	// FIXME: leaky below if assumption fails....
-
+	if (SDL_SaveFile(path, buffer, size))
+		INFO("Config saved");
+	else
+		WARN("Failed to save config: %s", SDL_GetError());
 	SDL_free(buffer);
-	INFO("Config saved");
 }

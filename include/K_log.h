@@ -24,3 +24,10 @@ const char* log_basename(const char*);
 			return;                                                                                        \
 		}                                                                                                      \
 	} while (0)
+#define BAKA(expr, ...)                                                                                                \
+	do {                                                                                                           \
+		if (!(expr)) {                                                                                         \
+			WARN(__VA_ARGS__);                                                                             \
+			return;                                                                                        \
+		}                                                                                                      \
+	} while (0)

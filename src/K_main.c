@@ -41,7 +41,7 @@ CmdArg CMDLINE[] = {
 };
 
 ClientInfo CLIENT = {
-	.user.name = "Player",
+	.user.name = "", // filled in later in `K_config.c`
 	.user.skin = "",
 	.input.delay = 2,
 	.game.players = 2,
