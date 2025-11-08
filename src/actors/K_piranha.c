@@ -249,7 +249,7 @@ static void tick_head(GameActor* actor) {
 		const Bool flip = ANY_FLAG(actor, FLG_Y_FLIP);
 
 		GameActor* fire
-			= create_actor(ACT_PIRANHA_FIRE, POS_ADD(actor, FfInt(15L), flip ? FfInt(-18L) : FfInt(18L)));
+			= create_actor(ACT_PIRANHA_FIRE, POS_ADD(actor, FfInt(15L), flip ? FfInt(-16L) : FfInt(16L)));
 		if (fire != NULL) {
 			VAL(fire, X_SPEED) = FfInt(-4L + rng(9L));
 			VAL(fire, Y_SPEED) = FfInt(flip ? rng(6L) : (-3L - rng(9L)));
