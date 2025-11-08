@@ -2,8 +2,7 @@
 
 #include "K_audio.h"
 #include "K_math.h"
-#include "K_net.h"   // IWYU pragma: keep
-#include "K_video.h" // IWYU pragma: keep
+#include "K_net.h" // IWYU pragma: keep
 
 #define MAJOR_LEVEL_VERSION 0
 #define MINOR_LEVEL_VERSION 1
@@ -37,6 +36,10 @@ typedef uint32_t ActorFlag;
 #define F_SCREEN_HEIGHT FfInt(SCREEN_HEIGHT)
 #define F_HALF_SCREEN_WIDTH Fhalf(F_SCREEN_WIDTH)
 #define F_HALF_SCREEN_HEIGHT Fhalf(F_SCREEN_HEIGHT)
+
+#ifndef K_VIDEO_H
+#include "K_video.h" // IWYU pragma: keep
+#endif
 
 typedef int8_t PlayerID;
 typedef int16_t ActorID;

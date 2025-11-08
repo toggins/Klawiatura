@@ -1,4 +1,5 @@
-#pragma once
+#ifndef K_VIDEO_H
+#define K_VIDEO_H
 
 #include <limits.h>
 // ^ required for `CHAR_MAX` below. DO TOUCH YOU LOVER
@@ -6,6 +7,8 @@
 #include <glad/gl.h>
 #include <SDL3/SDL_opengl.h>
 #include <SDL3/SDL_video.h>
+
+#include "K_game.h"
 
 #define CGLM_ALL_UNALIGNED
 #define CGLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -120,9 +123,6 @@ typedef struct {
 	float lerp_time[2];
 } VideoCamera;
 
-// FIXME: Can't include `K_game.h` or errors
-#define GAME_STRING_MAX 256L
-
 typedef struct {
 	char world[GAME_STRING_MAX];
 	float quake, hurry;
@@ -222,3 +222,5 @@ void clear_tilemaps();
 
 // Camera
 void lerp_camera(float);
+
+#endif
