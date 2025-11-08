@@ -814,6 +814,7 @@ static void tick(GameActor* actor) {
 			                              : FfInt(-9L);
 			VAL(actor, PLAYER_GROUND) = 0L;
 			VAL(actor, PLAYER_FRAME) = FxZero;
+			FLAG_OFF(actor, FLG_PLAYER_DUCK);
 			play_actor_sound(actor, "swim");
 		}
 	}
@@ -839,7 +840,7 @@ static void tick(GameActor* actor) {
 		{
 			VAL(actor, PLAYER_GROUND) = 0L;
 			VAL(actor, Y_SPEED) = FfInt(-13L);
-			FLAG_OFF(actor, FLG_PLAYER_JUMP);
+			FLAG_OFF(actor, FLG_PLAYER_JUMP | FLG_PLAYER_DUCK);
 			play_actor_sound(actor, "jump");
 		}
 		if (!ANY_INPUT(player, GI_JUMP) && VAL(actor, PLAYER_GROUND) > 0L && ANY_FLAG(actor, FLG_PLAYER_JUMP))
