@@ -103,7 +103,8 @@ static void create_coral(GameActor* actor) {
 }
 
 static void draw_coral(const GameActor* actor) {
-	const char* tex = fmt("enemies/coral%s", txnum((game_state.time / 2L) % 22L));
+	const uint64_t frame = (game_state.time / 2L) % 22L;
+	const char* tex = fmt("enemies/coral%s", frame >= 6 ? "7" : txnum(frame));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
