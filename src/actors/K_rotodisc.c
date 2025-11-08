@@ -1,3 +1,5 @@
+#include "K_string.h"
+
 #include "actors/K_enemies.h"
 #include "actors/K_rotodisc.h"
 
@@ -85,88 +87,7 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex = NULL;
-	switch (game_state.time % 26L) {
-	default:
-		tex = "enemies/rotodisc";
-		break;
-	case 1L:
-		tex = "enemies/rotodisc2";
-		break;
-	case 2L:
-		tex = "enemies/rotodisc3";
-		break;
-	case 3L:
-		tex = "enemies/rotodisc4";
-		break;
-	case 4L:
-		tex = "enemies/rotodisc5";
-		break;
-	case 5L:
-		tex = "enemies/rotodisc6";
-		break;
-	case 6L:
-		tex = "enemies/rotodisc7";
-		break;
-	case 7L:
-		tex = "enemies/rotodisc8";
-		break;
-	case 8L:
-		tex = "enemies/rotodisc9";
-		break;
-	case 9L:
-		tex = "enemies/rotodisc10";
-		break;
-	case 10L:
-		tex = "enemies/rotodisc11";
-		break;
-	case 11L:
-		tex = "enemies/rotodisc12";
-		break;
-	case 12L:
-		tex = "enemies/rotodisc13";
-		break;
-	case 13L:
-		tex = "enemies/rotodisc14";
-		break;
-	case 14L:
-		tex = "enemies/rotodisc15";
-		break;
-	case 15L:
-		tex = "enemies/rotodisc16";
-		break;
-	case 16L:
-		tex = "enemies/rotodisc17";
-		break;
-	case 17L:
-		tex = "enemies/rotodisc18";
-		break;
-	case 18L:
-		tex = "enemies/rotodisc19";
-		break;
-	case 19L:
-		tex = "enemies/rotodisc20";
-		break;
-	case 20L:
-		tex = "enemies/rotodisc21";
-		break;
-	case 21L:
-		tex = "enemies/rotodisc22";
-		break;
-	case 22L:
-		tex = "enemies/rotodisc23";
-		break;
-	case 23L:
-		tex = "enemies/rotodisc24";
-		break;
-	case 24L:
-		tex = "enemies/rotodisc25";
-		break;
-	case 25L:
-		tex = "enemies/rotodisc26";
-		break;
-	}
-
+	const char* tex = fmt("enemies/rotodisc%s", txnum(game_state.time % 26L));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 

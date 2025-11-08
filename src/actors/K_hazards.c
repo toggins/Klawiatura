@@ -1,3 +1,5 @@
+#include "K_string.h"
+
 #include "actors/K_player.h"
 
 enum {
@@ -101,30 +103,7 @@ static void create_coral(GameActor* actor) {
 }
 
 static void draw_coral(const GameActor* actor) {
-	const char* tex = "enemies/coral7";
-	switch ((game_state.time / 2L) % 22L) {
-	default:
-		break;
-	case 0L:
-		tex = "enemies/coral";
-		break;
-	case 1L:
-		tex = "enemies/coral2";
-		break;
-	case 2L:
-		tex = "enemies/coral3";
-		break;
-	case 3L:
-		tex = "enemies/coral4";
-		break;
-	case 4L:
-		tex = "enemies/coral5";
-		break;
-	case 5L:
-		tex = "enemies/coral6";
-		break;
-	}
-
+	const char* tex = fmt("enemies/coral%s", txnum((game_state.time / 2L) % 22L));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 

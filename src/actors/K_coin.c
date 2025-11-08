@@ -1,3 +1,5 @@
+#include "K_string.h"
+
 #include "actors/K_coin.h"
 #include "actors/K_points.h"
 
@@ -139,35 +141,9 @@ static void tick_pop(GameActor* actor) {
 static void draw_pop(const GameActor* actor) {
 	const char* tex = NULL;
 	if (ANY_FLAG(actor, FLG_COIN_POP_SPARK))
-		switch (VAL(actor, COIN_POP_FRAME) / 100L) {
-		default:
-			tex = "effects/spark";
-			break;
-		case 1:
-			tex = "effects/spark2";
-			break;
-		case 2:
-			tex = "effects/spark3";
-			break;
-		case 3:
-			tex = "effects/spark4";
-			break;
-		}
+		tex = fmt("effects/spark%s", txnum((VAL(actor, COIN_POP_FRAME) / 100L)));
 	else
-		switch ((VAL(actor, COIN_POP_FRAME) / 100L) % 5L) {
-		default:
-			tex = "items/coin_pop";
-			break;
-		case 2:
-			tex = "items/coin_pop2";
-			break;
-		case 3:
-			tex = "items/coin_pop3";
-			break;
-		case 4:
-			tex = "items/coin_pop4";
-			break;
-		}
+		tex = fmt("items/coin_pop%s", txnum((VAL(actor, COIN_POP_FRAME) / 100L) % 5L));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 

@@ -1,3 +1,5 @@
+#include "K_string.h"
+
 #include "actors/K_lakitu.h"
 #include "actors/K_player.h"
 #include "actors/K_spiny.h"
@@ -203,78 +205,9 @@ static void draw(const GameActor* actor) {
 			break;
 		}
 	else if (ANY_FLAG(actor, FLG_LAKITU_IN))
-		switch (VAL(actor, LAKITU_FRAME)) {
-		default:
-			tex = "enemies/lakitu_throw";
-			break;
-		case 1L:
-			tex = "enemies/lakitu_throw2";
-			break;
-		case 2L:
-			tex = "enemies/lakitu_throw3";
-			break;
-		case 3L:
-			tex = "enemies/lakitu_throw4";
-			break;
-		case 4L:
-			tex = "enemies/lakitu_throw5";
-			break;
-		case 5L:
-			tex = "enemies/lakitu_throw6";
-			break;
-		case 6L:
-			tex = "enemies/lakitu_throw7";
-			break;
-		case 7L:
-			tex = "enemies/lakitu_throw8";
-			break;
-		case 8L:
-			tex = "enemies/lakitu_throw9";
-			break;
-		case 9L:
-			tex = "enemies/lakitu_throw10";
-			break;
-		case 10L:
-			tex = "enemies/lakitu_throw11";
-			break;
-		}
+		tex = fmt("enemies/lakitu_throw%s", txnum(VAL(actor, LAKITU_FRAME)));
 	else if (ANY_FLAG(actor, FLG_LAKITU_OUT))
-		switch (VAL(actor, LAKITU_FRAME)) {
-		default:
-			tex = "enemies/lakitu_throw11";
-			break;
-		case 1L:
-			tex = "enemies/lakitu_throw10";
-			break;
-		case 2L:
-			tex = "enemies/lakitu_throw9";
-			break;
-		case 3L:
-			tex = "enemies/lakitu_throw8";
-			break;
-		case 4L:
-			tex = "enemies/lakitu_throw7";
-			break;
-		case 5L:
-			tex = "enemies/lakitu_throw6";
-			break;
-		case 6L:
-			tex = "enemies/lakitu_throw5";
-			break;
-		case 7L:
-			tex = "enemies/lakitu_throw4";
-			break;
-		case 8L:
-			tex = "enemies/lakitu_throw3";
-			break;
-		case 9L:
-			tex = "enemies/lakitu_throw2";
-			break;
-		case 10L:
-			tex = "enemies/lakitu_throw";
-			break;
-		}
-
+		tex = fmt("enemies/lakitu_throw%s", txnum(10 - VAL(actor, LAKITU_FRAME)));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 

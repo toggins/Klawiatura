@@ -1,3 +1,5 @@
+#include "K_string.h"
+
 #include "actors/K_enemies.h"
 #include "actors/K_player.h"
 
@@ -26,34 +28,8 @@ static void create(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex = NULL;
-	switch ((int)((float)game_state.time / 9.090909090909091f) % 8L) {
-	default:
-		tex = "enemies/lava";
-		break;
-	case 1L:
-		tex = "enemies/lava2";
-		break;
-	case 2L:
-		tex = "enemies/lava3";
-		break;
-	case 3L:
-		tex = "enemies/lava4";
-		break;
-	case 4L:
-		tex = "enemies/lava5";
-		break;
-	case 5L:
-		tex = "enemies/lava6";
-		break;
-	case 6L:
-		tex = "enemies/lava7";
-		break;
-	case 7L:
-		tex = "enemies/lava8";
-		break;
-	}
-
+	int magic = (int)((float)game_state.time / 9.090909090909091f) % 8L;
+	const char* tex = fmt("enemies/lava%s", txnum(magic));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 

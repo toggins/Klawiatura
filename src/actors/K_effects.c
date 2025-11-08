@@ -1,4 +1,5 @@
 #include "K_game.h"
+#include "K_string.h"
 
 #include "actors/K_block.h"
 
@@ -25,18 +26,7 @@ static void tick_explode(GameActor* actor) {
 }
 
 static void draw_explode(const GameActor* actor) {
-	const char* tex = NULL;
-	switch (VAL(actor, EFFECT_FRAME) / 100L) {
-	default:
-		tex = "effects/explode";
-		break;
-	case 1:
-		tex = "effects/explode2";
-		break;
-	case 2:
-		tex = "effects/explode3";
-		break;
-	}
+	const char* tex = fmt("effects/explode%s", txnum(VAL(actor, EFFECT_FRAME) / 100L));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
@@ -98,55 +88,7 @@ static void tick_splash(GameActor* actor) {
 }
 
 static void draw_splash(const GameActor* actor) {
-	const char* tex = NULL;
-	switch (VAL(actor, EFFECT_FRAME) / 10L) {
-	default:
-		tex = "effects/water";
-		break;
-	case 1L:
-		tex = "effects/water2";
-		break;
-	case 2L:
-		tex = "effects/water3";
-		break;
-	case 3L:
-		tex = "effects/water4";
-		break;
-	case 4L:
-		tex = "effects/water5";
-		break;
-	case 5L:
-		tex = "effects/water6";
-		break;
-	case 6L:
-		tex = "effects/water7";
-		break;
-	case 7L:
-		tex = "effects/water8";
-		break;
-	case 8L:
-		tex = "effects/water9";
-		break;
-	case 9L:
-		tex = "effects/water10";
-		break;
-	case 10L:
-		tex = "effects/water11";
-		break;
-	case 11L:
-		tex = "effects/water12";
-		break;
-	case 12L:
-		tex = "effects/water13";
-		break;
-	case 13L:
-		tex = "effects/water14";
-		break;
-	case 14L:
-		tex = "effects/water15";
-		break;
-	}
-
+	const char* tex = fmt("effects/water%s", txnum(VAL(actor, EFFECT_FRAME) / 10L));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
@@ -199,29 +141,7 @@ static void draw_bubble(const GameActor* actor) {
 
 	const char* tex = NULL;
 	if (ANY_FLAG(actor, FLG_EFFECT_POP)) {
-		switch (VAL(actor, EFFECT_FRAME)) {
-		default:
-			tex = "effects/bubble2";
-			break;
-		case 1L:
-			tex = "effects/bubble3";
-			break;
-		case 2L:
-			tex = "effects/bubble4";
-			break;
-		case 3L:
-			tex = "effects/bubble5";
-			break;
-		case 4L:
-			tex = "effects/bubble6";
-			break;
-		case 5L:
-			tex = "effects/bubble7";
-			break;
-		case 6L:
-			tex = "effects/bubble8";
-			break;
-		}
+		tex = fmt("effects/bubble%s", txnum(1 + VAL(actor, EFFECT_FRAME)));
 	} else {
 		tex = "effects/bubble";
 		switch ((VAL(actor, EFFECT_FRAME) / 2L) % 5L) {
@@ -267,43 +187,7 @@ static void tick_lava(GameActor* actor) {
 }
 
 static void draw_lava(const GameActor* actor) {
-	const char* tex = NULL;
-	switch (VAL(actor, EFFECT_FRAME) / 100L) {
-	default:
-		tex = "effects/lava";
-		break;
-	case 1L:
-		tex = "effects/lava2";
-		break;
-	case 2L:
-		tex = "effects/lava3";
-		break;
-	case 3L:
-		tex = "effects/lava4";
-		break;
-	case 4L:
-		tex = "effects/lava5";
-		break;
-	case 5L:
-		tex = "effects/lava6";
-		break;
-	case 6L:
-		tex = "effects/lava7";
-		break;
-	case 7L:
-		tex = "effects/lava8";
-		break;
-	case 8L:
-		tex = "effects/lava9";
-		break;
-	case 9L:
-		tex = "effects/lava10";
-		break;
-	case 10L:
-		tex = "effects/lava11";
-		break;
-	}
-
+	const char* tex = fmt("effects/lava%s", txnum(VAL(actor, EFFECT_FRAME) / 100L));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
