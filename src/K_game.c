@@ -63,6 +63,7 @@ PlayerID local_player = NULLPLAY, view_player = NULLPLAY, num_players = 0L;
 static InterpState interp = {0};
 
 static Bool paused = false;
+static uint8_t pause_option = 0;
 
 // =====
 // PAUSE
@@ -232,17 +233,6 @@ bool update_game() {
 	const float ahh = gekko_frames_ahead(game_session), ahead = SDL_clamp(ahh, 0, 2);
 	GameInput input = 0;
 
-	if (!is_connected() && kb_pressed(KB_RESTART)) {
-		const GamePlayer* plr = get_player(view_player);
-		if (plr && plr->lives >= 0) {
-			input_newframe();
-			goto restart;
-		} else {
-			show_error("fucking retard");
-			goto byebye_game;
-		}
-	}
-
 	update_chat_hist();
 	if (!typing_what() && is_connected()) {
 		// FIXME: Make ESC cancel the message instead of sending it.
@@ -393,7 +383,6 @@ bool update_game() {
 					start_game(&ctx);
 					return true;
 				} else if (game_state.flags & GF_RESTART) {
-				restart:
 					GameContext ctx = {0};
 					setup_game_context(
 						&ctx, game_state.level, GF_TRY_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
