@@ -53,7 +53,7 @@ typedef struct {
 extern Bindings BINDS[KB_SIZE];
 
 void input_init(), input_teardown(), input_newframe();
-void input_keydown(SDL_Scancode), input_keyup(SDL_Scancode);
+void input_keydown(SDL_KeyboardEvent), input_keyup(SDL_KeyboardEvent);
 void input_wipeout();
 
 const char* input_device();

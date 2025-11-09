@@ -100,10 +100,10 @@ static int realmain() {
 			case SDL_EVENT_QUIT:
 				goto teardown;
 			case SDL_EVENT_KEY_DOWN:
-				input_keydown(event.key.scancode);
+				input_keydown(event.key);
 				break;
 			case SDL_EVENT_KEY_UP:
-				input_keyup(event.key.scancode);
+				input_keyup(event.key);
 				break;
 			case SDL_EVENT_TEXT_INPUT:
 				input_text_input(event.text);

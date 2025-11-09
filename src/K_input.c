@@ -49,28 +49,32 @@ void input_newframe() {
 	kb_repeating = 0;
 }
 
-void input_keydown(SDL_Scancode key) {
-	if (scanning_what() != NULLBIND) {
-		if (key != SDL_SCANCODE_ESCAPE)
-			BINDS[scanning].key = key;
+void input_keydown(SDL_KeyboardEvent event) {
+	if (event.mod & SDL_KMOD_ALT && event.scancode == SDL_SCANCODE_RETURN) {
+		set_fullscreen(!get_fullscreen());
+	} else if (scanning_what() != NULLBIND) {
+		if (event.scancode != SDL_SCANCODE_ESCAPE)
+			BINDS[scanning].key = event.scancode;
 		stop_scanning();
 	} else if (typing_what() == NULL) {
 		for (int i = 0; i < KB_SIZE; i++) {
-			const KeybindState mask = (key == BINDS[i].key) << i;
+			const KeybindState mask = (event.scancode == BINDS[i].key) << i;
 			kb_incoming |= mask;
 			kb_now |= mask;
 			kb_repeating |= mask;
 		}
-	} else if (key == SDL_SCANCODE_BACKSPACE) {
+	} else if (event.scancode == SDL_SCANCODE_BACKSPACE) {
 		char* back = text + SDL_strlen(text);
 		if (SDL_StepBackUTF8(text, (const char**)&back))
 			*back = '\0';
-	} else if (key == SDL_SCANCODE_RETURN || key == SDL_SCANCODE_ESCAPE)
+	} else if (event.scancode == SDL_SCANCODE_RETURN || event.scancode == SDL_SCANCODE_ESCAPE) {
 		stop_typing();
+	}
 }
-void input_keyup(SDL_Scancode key) {
+
+void input_keyup(SDL_KeyboardEvent event) {
 	for (int i = 0; i < KB_SIZE; i++)
-		kb_incoming &= ~((key == BINDS[i].key) << i);
+		kb_incoming &= ~((event.scancode == BINDS[i].key) << i);
 }
 
 void input_wipeout() {
