@@ -11,6 +11,7 @@
 
 typedef int8_t Keybind;
 enum {
+	// Gaming 🔥🔥🔥
 	KB_UP,
 	KB_LEFT,
 	KB_DOWN,
@@ -18,7 +19,10 @@ enum {
 	KB_JUMP,
 	KB_FIRE,
 	KB_RUN,
+
+	// Utility
 	KB_CHAT,
+	KB_RESTART,
 
 	// If you allow rebinding these I will pulverize you
 	KB_PAUSE,

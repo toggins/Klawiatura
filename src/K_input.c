@@ -5,30 +5,35 @@
 
 static KeybindState kb_then = 0, kb_now = 0;           // Tick-specific
 static KeybindState kb_incoming = 0, kb_repeating = 0; // Event-specific
+
+// clang-format off
 Bindings BINDS[KB_SIZE] = {
-	[KB_UP] = {"Up",         SDL_SCANCODE_UP       },
-	[KB_LEFT] = {"Left",       SDL_SCANCODE_LEFT     },
-	[KB_DOWN] = {"Down",       SDL_SCANCODE_DOWN     },
-	[KB_RIGHT] = {"Right",      SDL_SCANCODE_RIGHT    },
-	[KB_JUMP] = {"Jump",       SDL_SCANCODE_Z        },
-	[KB_FIRE] = {"Fire",       SDL_SCANCODE_X        },
-	[KB_RUN] = {"Run",        SDL_SCANCODE_X        },
-	[KB_CHAT] = {"Open chat",  SDL_SCANCODE_T        },
+	[KB_UP] = {"Up", SDL_SCANCODE_UP},
+	[KB_LEFT] = {"Left", SDL_SCANCODE_LEFT},
+	[KB_DOWN] = {"Down", SDL_SCANCODE_DOWN},
+	[KB_RIGHT] = {"Right", SDL_SCANCODE_RIGHT},
+	[KB_JUMP] = {"Jump", SDL_SCANCODE_Z},
+	[KB_FIRE] = {"Fire", SDL_SCANCODE_X},
+	[KB_RUN] = {"Run", SDL_SCANCODE_X},
 
-	[KB_PAUSE] = {"Pause",      SDL_SCANCODE_ESCAPE   },
-	[KB_UI_UP] = {"UI Up",      SDL_SCANCODE_UP       },
-	[KB_UI_LEFT] = {"UI Left",    SDL_SCANCODE_LEFT     },
-	[KB_UI_DOWN] = {"UI Down",    SDL_SCANCODE_DOWN     },
-	[KB_UI_RIGHT] = {"UI Right",   SDL_SCANCODE_RIGHT    },
-	[KB_UI_ENTER] = {"UI Enter",   SDL_SCANCODE_RETURN   },
+	[KB_CHAT] = {"Open Chat", SDL_SCANCODE_T},
+	[KB_RESTART] = {"Quick Restart", SDL_SCANCODE_SLASH},
 
-	[KB_KEVIN_K] = {"K",          SDL_SCANCODE_K        },
-	[KB_KEVIN_E] = {"E",          SDL_SCANCODE_E        },
-	[KB_KEVIN_V] = {"V",          SDL_SCANCODE_V        },
-	[KB_KEVIN_I] = {"I",          SDL_SCANCODE_I        },
-	[KB_KEVIN_N] = {"N",          SDL_SCANCODE_N        },
+	[KB_PAUSE] = {"Pause", SDL_SCANCODE_ESCAPE},
+	[KB_UI_UP] = {"UI Up", SDL_SCANCODE_UP},
+	[KB_UI_LEFT] = {"UI Left", SDL_SCANCODE_LEFT},
+	[KB_UI_DOWN] = {"UI Down", SDL_SCANCODE_DOWN},
+	[KB_UI_RIGHT] = {"UI Right", SDL_SCANCODE_RIGHT},
+	[KB_UI_ENTER] = {"UI Enter", SDL_SCANCODE_RETURN},
+
+	[KB_KEVIN_K] = {"K", SDL_SCANCODE_K},
+	[KB_KEVIN_E] = {"E", SDL_SCANCODE_E},
+	[KB_KEVIN_V] = {"V", SDL_SCANCODE_V},
+	[KB_KEVIN_I] = {"I", SDL_SCANCODE_I},
+	[KB_KEVIN_N] = {"N", SDL_SCANCODE_N},
 	[KB_KEVIN_BAIL] = {"Kevin Bail", SDL_SCANCODE_BACKSPACE},
 };
+// clang-format on
 
 static char* text = NULL;
 static size_t text_size = 0;
