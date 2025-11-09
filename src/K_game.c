@@ -62,12 +62,22 @@ PlayerID local_player = NULLPLAY, view_player = NULLPLAY, num_players = 0L;
 
 static InterpState interp = {0};
 
-static Bool paused = false;
-static uint8_t pause_option = 0;
-
 // =====
 // PAUSE
 // =====
+
+enum {
+	PMO_RESUME,
+	PMO_RESTART,
+	PMO_EXIT,
+	PMO_SIZE,
+};
+
+static Bool paused = false;
+static uint8_t pause_option = 0;
+
+static GLfloat pause_cursor = 0.f;
+static GLfloat pause_hover[PMO_SIZE] = {0.f};
 
 static void pause() {
 	paused = true;
@@ -258,12 +268,58 @@ bool update_game() {
 		}
 
 		if (paused) {
-			if (kb_pressed(KB_UI_ENTER)) {
-				play_generic_sound("select");
-				goto byebye_game;
-			} else if (kb_pressed(KB_PAUSE)) {
+			const int8_t change = (int8_t)kb_repeated(KB_UI_DOWN) - (int8_t)kb_repeated(KB_UI_UP);
+			if (change != 0L) {
+				if (change > 0L)
+					pause_option = (pause_option >= (PMO_SIZE - 1L)) ? 0L : (pause_option + 1L);
+				else if (change < 0L)
+					pause_option = (pause_option <= 0L) ? (PMO_SIZE - 1L) : (pause_option - 1L);
+				play_generic_sound("switch");
+			}
+
+			if (kb_pressed(KB_PAUSE)) {
 				play_generic_sound("select");
 				unpause();
+				goto dont_break_events;
+			}
+
+			if (!kb_pressed(KB_UI_ENTER))
+				goto pause_n_all;
+
+			play_generic_sound("select");
+			switch (pause_option) {
+			default:
+				break;
+			case PMO_RESUME:
+				unpause();
+				break;
+
+			case PMO_RESTART: {
+				// FIXME: Update this if replays are implemented.
+				if (is_connected())
+					goto no_can_restart;
+
+				PlayerID can_restart = num_players;
+				for (PlayerID i = 0; i < num_players; i++) {
+					GamePlayer* player = get_player(i);
+					if (player == NULL)
+						continue;
+					if (player->lives <= 0L)
+						--can_restart;
+					else
+						--player->lives;
+				}
+				if (can_restart <= 0L) {
+				no_can_restart:
+					play_generic_sound("bump");
+					break;
+				}
+
+				goto restart_fr;
+			}
+
+			case PMO_EXIT:
+				goto byebye_game;
 			}
 		} else if (kb_pressed(KB_PAUSE) && !typing_what()) {
 			play_generic_sound("pause");
@@ -271,7 +327,8 @@ bool update_game() {
 		} else
 			goto dont_break_events;
 
-		if (num_players <= 1L)
+	pause_n_all:
+		if (!is_connected())
 			continue;
 
 	dont_break_events:
@@ -383,6 +440,7 @@ bool update_game() {
 					start_game(&ctx);
 					return true;
 				} else if (game_state.flags & GF_RESTART) {
+				restart_fr:
 					GameContext ctx = {0};
 					setup_game_context(
 						&ctx, game_state.level, GF_TRY_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
@@ -502,11 +560,38 @@ static void draw_hud() {
 	if (paused) {
 		batch_start(XYZ(0.f, 0.f, -10000.f), 0.f, RGBA(0, 0, 0, 128));
 		batch_rectangle(NULL, XY(SCREEN_WIDTH, SCREEN_HEIGHT));
-		batch_cursor(XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, -10000.f)), batch_color(WHITE);
-		batch_color(RGB(255, 144, 144)), batch_align(FA_CENTER, FA_BOTTOM);
+		batch_cursor(XYZ(48.f, 128.f, -10000.f)), batch_color(RGB(255, 144, 144));
 		batch_string("main", 24, "Paused");
-		batch_color(WHITE), batch_align(FA_CENTER, FA_TOP);
-		batch_string("main", 24, fmt("[%s] Return to Title", kb_label(KB_UI_ENTER)));
+		batch_color(WHITE);
+
+		float lx = 0.5f * dt();
+		for (uint8_t i = 0; i < (uint8_t)PMO_SIZE; i++) {
+			const char* optname = NULL;
+			switch (i) {
+			default:
+				break;
+			case PMO_RESUME:
+				optname = "Resume Game";
+				break;
+			case PMO_RESTART:
+				optname = is_connected() ? "(Can't restart in multiplayer!)"
+				                         : "Restart Level (-1 Life)";
+				break;
+			case PMO_EXIT:
+				optname = "Return to Title";
+				break;
+			}
+
+			pause_hover[i] = glm_lerp(pause_hover[i], (float)(pause_option == i), SDL_min(lx, 1.f));
+			batch_cursor(XYZ(48.f + (pause_hover[i] * 8.f), 160.f + (i * 24.f), -10000.f));
+			batch_string("main", 24, optname);
+		}
+
+		lx = 0.6f * dt();
+		pause_cursor = glm_lerp(pause_cursor, (float)pause_option, SDL_min(lx, 1.f));
+		batch_cursor(XYZ(44.f + (SDL_sinf(totalticks() / 5.f) * 4.f), 160.f + (pause_cursor * 24.f), -10000.f));
+		batch_align(FA_RIGHT, FA_TOP);
+		batch_string("main", 24.f, ">");
 	}
 
 	batch_cursor(XYZ(32.f, 16.f, -10000.f)), batch_color(WHITE), batch_align(FA_LEFT, FA_TOP);
@@ -1006,7 +1091,9 @@ void start_game_state(GameContext* ctx) {
 	load_sound("hurry");
 	load_sound("tick");
 	load_sound("pause");
+	load_sound("switch");
 	load_sound("select");
+	load_sound("bump");
 	load_sound("chat");
 
 	load_track("yi_score");

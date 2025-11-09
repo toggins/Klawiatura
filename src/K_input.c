@@ -17,7 +17,6 @@ Bindings BINDS[KB_SIZE] = {
 	[KB_RUN] = {"Run", SDL_SCANCODE_X},
 
 	[KB_CHAT] = {"Open Chat", SDL_SCANCODE_T},
-	[KB_RESTART] = {"Quick Restart", SDL_SCANCODE_SLASH},
 
 	[KB_PAUSE] = {"Pause", SDL_SCANCODE_ESCAPE},
 	[KB_UI_UP] = {"UI Up", SDL_SCANCODE_UP},
