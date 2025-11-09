@@ -1,0 +1,4 @@
+Completion:
+  HeaderInsertion: Never
+Diagnostics:
+  Suppress: [-Wc23-extensions]
