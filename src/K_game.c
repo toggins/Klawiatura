@@ -233,8 +233,14 @@ bool update_game() {
 	GameInput input = 0;
 
 	if (!is_connected() && kb_pressed(KB_RESTART)) {
-		input_newframe();
-		goto restart;
+		const GamePlayer* plr = get_player(view_player);
+		if (plr && plr->lives > 0) {
+			input_newframe();
+			goto restart;
+		} else {
+			show_error("fucking retard");
+			goto byebye_game;
+		}
 	}
 
 	update_chat_hist();
