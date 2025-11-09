@@ -48,7 +48,7 @@ typedef struct {
 	} game;
 
 	struct {
-		char name[CLIENT_STRING_MAX];
+		char name[NUTPUNCH_ID_MAX];
 		bool public;
 	} lobby;
 } ClientInfo;

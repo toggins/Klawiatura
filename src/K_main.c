@@ -46,7 +46,7 @@ ClientInfo CLIENT = {
 	.input.delay = 2,
 	.game.players = 2,
 	.game.level = "test",
-	.lobby.name = "Klawiatura",
+	.lobby.name = "", // filled in inside `K_menu.c`
 	.lobby.public = true,
 };
 

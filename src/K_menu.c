@@ -107,6 +107,11 @@ static void do_host_fr() {
 	set_menu(MEN_JOINING_LOBBY);
 }
 
+static void maybe_reset_lobby_name() {
+	if (!SDL_strlen(CLIENT.lobby.name))
+		SDL_snprintf(CLIENT.lobby.name, sizeof(CLIENT.lobby.name), "%s's Lobby", CLIENT.user.name);
+}
+
 // Join a Lobby
 static void do_join_fr() {
 	join_lobby(CLIENT.lobby.name);
@@ -235,7 +240,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_SINGLEPLAYER] = {"Singleplayer"},
 	[MEN_MULTIPLAYER_NOTE] = {"Read This First!", GHOST, .enter = enter_multiplayer_note},
 	[MEN_MULTIPLAYER] = {"Multiplayer"},
-	[MEN_HOST_LOBBY] = {"Host Lobby"},
+	[MEN_HOST_LOBBY] = {"Host Lobby", .enter = maybe_reset_lobby_name},
 	[MEN_JOIN_LOBBY] = {"Join a Lobby"},
 	[MEN_FIND_LOBBY]
 	= {"Find Lobbies", .update = update_find_lobbies, .enter = list_lobbies, .leave = cleanup_lobby_list},
@@ -400,8 +405,11 @@ static void enter_multiplayer_note() {
 }
 
 static void maybe_save_config(MenuType next) {
-	if (next != MEN_OPTIONS && next != MEN_CONTROLS)
+	if (next != MEN_OPTIONS && next != MEN_CONTROLS) {
+		CLIENT.lobby.name[0] = 0; // just in case the player changed their name
+		maybe_reset_lobby_name();
 		save_config();
+	}
 }
 
 static void cleanup_lobby_list(MenuType next) {
