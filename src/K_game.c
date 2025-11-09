@@ -234,7 +234,7 @@ bool update_game() {
 
 	if (!is_connected() && kb_pressed(KB_RESTART)) {
 		const GamePlayer* plr = get_player(view_player);
-		if (plr && plr->lives > 0) {
+		if (plr && plr->lives >= 0) {
 			input_newframe();
 			goto restart;
 		} else {
