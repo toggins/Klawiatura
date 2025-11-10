@@ -212,12 +212,11 @@ int find_lobby() {
 			push_lobby_data();
 		else if (netmode == NET_JOIN)
 			pull_lobby_data();
-
 		return NutPunch_PeerCount() >= 1;
 	}
 
 	for (int i = 0; i < NutPunch_LobbyCount(); i++) {
-		if (SDL_strcmp(cur_lobby, NutPunch_GetLobby(i)))
+		if (SDL_strcmp(cur_lobby, get_lobby(i)->name))
 			continue;
 		if (netmode == NET_HOST) {
 			last_error = "Lobby with this name exists";
@@ -256,7 +255,7 @@ int get_lobby_count() {
 	return NutPunch_LobbyCount();
 }
 
-const char* get_lobby(int idx) {
+const NutPunch_LobbyInfo* get_lobby(int idx) {
 	return NutPunch_GetLobby(idx);
 }
 

@@ -258,7 +258,7 @@ static void reset_credits() {
 
 // Find lobbies
 static void join_found_lobby() {
-	const char* lober = get_lobby((int)MENUS[MEN_FIND_LOBBY].option);
+	const char* lober = get_lobby((int)MENUS[MEN_FIND_LOBBY].option)->name;
 	if (lober != NULL) {
 		join_lobby(lober);
 		set_menu(MEN_JOINING_LOBBY);
@@ -356,8 +356,6 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	},
 	[MEN_FIND_LOBBY] = {
 		{NULL, DISABLE},
-		// FIXME: Display lobbies with player counts!
-		//        Lobby lists return names, but no way to get their count.
 	},
 	[MEN_JOINING_LOBBY] = {
 		{"Joining lobby \"%s\"", DISABLE, FORMAT(active_lobby)},
@@ -437,7 +435,9 @@ static void update_intro() {
 		set_menu(MEN_MAIN);
 }
 
+#define MAX_LEN (64)
 static void update_find_lobbies() {
+	static char block[MAX_OPTIONS][MAX_LEN] = {0};
 	for (int i = 0; i < MAX_OPTIONS; i++) {
 		if (get_lobby_count() <= 0) {
 			OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
@@ -448,12 +448,15 @@ static void update_find_lobbies() {
 			OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
 			OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
 		} else {
-			OPTIONS[MEN_FIND_LOBBY][i].name = get_lobby(i);
+			const NutPunch_LobbyInfo* lobby = get_lobby(i);
+			SDL_snprintf(block[i], MAX_LEN, "%s (%d/%ld)", lobby->name, lobby->players, MAX_PLAYERS);
+			OPTIONS[MEN_FIND_LOBBY][i].name = block[i];
 			OPTIONS[MEN_FIND_LOBBY][i].disabled = false;
 			OPTIONS[MEN_FIND_LOBBY][i].button = join_found_lobby;
 		}
 	}
 }
+#undef MAX_LEN
 
 static void update_joining_lobby() {
 	const int status = find_lobby();
