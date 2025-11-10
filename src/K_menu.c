@@ -270,6 +270,8 @@ static void join_found_lobby() {
 #define FORMAT(fname) .format = fmt_##fname
 #define REBIND(fname) .button = rebind_##fname
 #define DISABLE .disabled = true
+#define VIVID .vivid = true
+#define OINFO DISABLE, VIVID
 
 static const char* NO_LOBBIES_FOUND = "No lobbies found";
 
@@ -288,15 +290,15 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Start!", .button = play_singleplayer},
 	},
 	[MEN_MULTIPLAYER_NOTE] = {
-		{"Mario Together uses NutPunch to make peer-to-peer", DISABLE},
-		{"connections through UDP hole-punching.", DISABLE},
-		{"For a smooth experience, make sure that:", DISABLE},
-		{"  1. You and your friends' game is up to date.", DISABLE},
-		{"  2. Your VPN client is off.", DISABLE},
-		{"  3. Your firewall isn't blocking the game.", DISABLE},
+		{"Mario Together uses NutPunch to make peer-to-peer", OINFO},
+		{"connections through UDP hole-punching.", OINFO},
+		{"For a smooth experience, make sure that:", OINFO},
+		{"  1. You and your friends' game is up to date.", OINFO},
+		{"  2. Your VPN client is off.", OINFO},
+		{"  3. Your firewall isn't blocking the game.", OINFO},
 		{},
-		{"If you are able to join lobbies AND see other players in", DISABLE},
-		{"them, then it should be working.", DISABLE},
+		{"If you are able to join lobbies AND see other players in", OINFO},
+		{"them, then it should be working.", OINFO},
 		{},
 		{"OK", .button = read_multiplayer_note},
 		{"Don't Show Again", .button = screw_multiplayer_note},
@@ -714,7 +716,7 @@ void draw_menu() {
 		const GLfloat y = menu_y + ((GLfloat)i * 24.f);
 
 		batch_cursor(XY(x, y));
-		batch_color(ALPHA(opt->disabled ? 128 : 255));
+		batch_color(ALPHA(opt->disabled && !opt->vivid ? 128 : 255));
 		batch_align(FA_LEFT, FA_TOP);
 		batch_string("main", 24.f, name);
 

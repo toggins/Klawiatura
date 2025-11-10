@@ -29,6 +29,7 @@ typedef struct {
 	void (*button)();
 	void (*flip)(int);
 	const char* (*format)(const char*);
+	bool vivid; /// If true, won't dim the option's text even if it's disabled.
 
 	float hover;
 	MenuType enter;
