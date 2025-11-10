@@ -83,11 +83,13 @@ static void pause() {
 	paused = true;
 	if (num_players <= 1L)
 		pause_audio_state(true);
+	input_wipeout();
 }
 
 static void unpause() {
 	paused = false;
 	pause_audio_state(false);
+	input_wipeout();
 }
 
 // ====
@@ -290,6 +292,7 @@ bool update_game() {
 			switch (pause_option) {
 			default:
 				break;
+
 			case PMO_RESUME:
 				unpause();
 				break;
