@@ -268,7 +268,7 @@ bool update_game() {
 		}
 
 		if (paused) {
-			const int8_t change = (int8_t)kb_repeated(KB_UI_DOWN) - (int8_t)kb_repeated(KB_UI_UP);
+			const int8_t change = (int8_t)((int8_t)kb_repeated(KB_UI_DOWN) - (int8_t)kb_repeated(KB_UI_UP));
 			if (change != 0L) {
 				if (change > 0L)
 					pause_option = (pause_option >= (PMO_SIZE - 1L)) ? 0L : (pause_option + 1L);
