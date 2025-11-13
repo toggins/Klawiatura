@@ -21,6 +21,8 @@ static void tick(GameActor* actor) {
 		}
 
 		game_state.autoscroll = actor->id;
+		game_state.bounds.start = game_state.bounds.end = actor->pos;
+		game_state.bounds.end.x += F_SCREEN_WIDTH, game_state.bounds.end.y += F_SCREEN_HEIGHT;
 
 		for (PlayerID i = 0; i < numplayers(); i++) {
 			GamePlayer* player = get_player(i);
