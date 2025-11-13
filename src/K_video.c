@@ -690,10 +690,12 @@ void batch_sprite(const char* name, const GLboolean flip[2]) {
 	batch_texture(texture->texture);
 
 	// Position
-	const GLfloat x1 = -(flip[0] ? ((GLfloat)(texture->size[0]) - (texture->offset[0])) : (texture->offset[0]));
-	const GLfloat y1 = -(flip[1] ? ((GLfloat)(texture->size[1]) - (texture->offset[1])) : (texture->offset[1]));
-	const GLfloat x2 = x1 + ((GLfloat)texture->size[0] * batch.scale[0]);
-	const GLfloat y2 = y1 + ((GLfloat)texture->size[1] * batch.scale[1]);
+	const GLfloat w = (GLfloat)texture->size[0] * batch.scale[0], h = (GLfloat)texture->size[1] * batch.scale[1];
+	const GLfloat xoffs = texture->offset[0] * batch.scale[0], yoffs = texture->offset[1] * batch.scale[1];
+	const GLfloat x1 = -(flip[0] ? (w - xoffs) : xoffs);
+	const GLfloat y1 = -(flip[1] ? (h - yoffs) : yoffs);
+	const GLfloat x2 = x1 + w;
+	const GLfloat y2 = y1 + h;
 	const GLfloat z = batch.cursor[2];
 
 	vec2 p1 = {x1, y1};
