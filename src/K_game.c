@@ -309,7 +309,7 @@ bool update_game() {
 						continue;
 					if (player->lives <= 0L)
 						--can_restart;
-					else
+					else if (game_state.sequence.type != SEQ_LOSE)
 						--player->lives;
 				}
 				if (can_restart <= 0L) {
