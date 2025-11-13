@@ -1619,7 +1619,105 @@
                     "def": "Bowser",
                     "type": "object",
                     "index": 89,
-                    "texture": "enemies/bowser"
+                    "z": 1,
+                    "texture": "enemies/bowser",
+
+                    "values": [
+                        {
+                            "name": "Health",
+                            "index": 5,
+                            "default": 8
+                        },
+
+                        {
+                            "name": "Speed",
+                            "index": 6,
+                            "default": 131072,
+                            "fixed": true
+                        },
+
+                        {
+                            "name": "Jump Speed",
+                            "index": 7,
+                            "default": -393216,
+                            "fixed": true
+                        },
+
+                        {
+                            "name": "Fire Speed",
+                            "index": 8,
+                            "default": 1
+                        },
+
+                        {
+                            "name": "Missile Speed",
+                            "index": 9,
+                            "default": 65536,
+                            "fixed": true
+                        },
+
+                        {
+                            "name": "Hurt Frames",
+                            "index": 10,
+                            "default": 100
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Triple Flames?",
+                            "bit": 5,
+                            "default": true
+                        },
+
+                        {
+                            "name": "Hammers?",
+                            "bit": 6,
+                            "default": false
+                        },
+
+                        {
+                            "name": "Vomit?",
+                            "bit": 7,
+                            "default": false
+                        },
+
+                        {
+                            "name": "Bill Blaster?",
+                            "bit": 8,
+                            "default": false
+                        },
+
+                        {
+                            "name": "Devastator?",
+                            "bit": 9,
+                            "default": false
+                        },
+
+                        {
+                            "name": "Homing Fire?",
+                            "bit": 10,
+                            "default": false
+                        },
+
+                        {
+                            "name": "Moving Bullets?",
+                            "bit": 11,
+                            "default": false
+                        },
+
+                        {
+                            "name": "Homing Bullets?",
+                            "bit": 12,
+                            "default": false
+                        },
+
+                        {
+                            "name": "Giga?",
+                            "bit": 13,
+                            "default": false
+                        }
+                    ]
                 }
             ]
         ]

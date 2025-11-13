@@ -1,3 +1,6 @@
+#include "K_string.h"
+
+#include "actors/K_enemies.h"
 #include "actors/K_missiles.h"
 #include "actors/K_player.h"
 
@@ -350,5 +353,70 @@ const GameActorTable TAB_MISSILE_SILVER_HAMMER = {
 	.draw = draw_silver,
 	.cleanup = cleanup,
 	.collide = collide,
+	.owner = owner,
+};
+
+// ======
+// NAPALM
+// ======
+
+static void load_napalm() {
+	load_texture_wild("missiles/napalm?");
+}
+
+static void create_napalm(GameActor* actor) {
+	create(actor);
+
+	actor->box.start.x = FfInt(-16L);
+	actor->box.start.y = FfInt(-15L);
+	actor->box.end.x = FfInt(16L);
+	actor->box.end.y = FfInt(15L);
+}
+
+static void tick_napalm(GameActor* actor) {
+	GamePlayer* player = get_owner(actor);
+	if ((player != NULL && !in_player_view(actor, player, FxZero, true))
+		|| (player == NULL && !in_any_view(actor, FxZero, true)))
+	{
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	if (ANY_FLAG(actor, FLG_MISSILE_SHIMMY)) {
+		if (actor->pos.y > VAL(actor, MISSILE_HEIGHT))
+			move_actor(actor,
+				(fvec2){actor->pos.x, Fmax(actor->pos.y - FfInt(4L), VAL(actor, MISSILE_HEIGHT))});
+		else if (actor->pos.y < VAL(actor, MISSILE_HEIGHT))
+			move_actor(actor,
+				(fvec2){actor->pos.x, Fmin(actor->pos.y + FfInt(4L), VAL(actor, MISSILE_HEIGHT))});
+	}
+
+	move_actor(actor, POS_SPEED(actor));
+}
+
+static void draw_napalm(const GameActor* actor) {
+	draw_actor(actor, fmt("missiles/napalm%s", txnum((game_state.time / 2L) % 3L)), 0.f, WHITE);
+}
+
+static void collide_napalm(GameActor* actor, GameActor* from) {
+	switch (from->type) {
+	default:
+		collide(actor, from);
+		break;
+	case ACT_MISSILE_FIREBALL:
+		block_fireball(from);
+		break;
+	case ACT_MISSILE_BEETROOT:
+		block_beetroot(from);
+		break;
+	}
+}
+
+const GameActorTable TAB_MISSILE_NAPALM = {
+	.load = load_napalm,
+	.create = create_napalm,
+	.tick = tick_napalm,
+	.draw = draw_napalm,
+	.collide = collide_napalm,
 	.owner = owner,
 };

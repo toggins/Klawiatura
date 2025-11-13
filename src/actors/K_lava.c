@@ -1,15 +1,21 @@
 #include "K_string.h"
 
+#include "actors/K_bowser.h"
 #include "actors/K_enemies.h"
 #include "actors/K_player.h"
 
 enum {
-	VAL_PODOBOO_Y = VAL_CUSTOM,
+	VAL_LAVA_Y = VAL_CUSTOM,
+	VAL_LAVA_WAVE_LENGTH,
+	VAL_LAVA_WAVE_ANGLE,
 
+	VAL_PODOBOO_Y = VAL_CUSTOM,
 	VAL_PODOBOO_FIRE = VAL_CUSTOM,
 };
 
 enum {
+	FLG_LAVA_WAVE = CUSTOM_FLAG(0),
+
 	FLG_PODOBOO_FAST = CUSTOM_FLAG(0),
 	FLG_PODOBOO_VOLCANO = CUSTOM_FLAG(1),
 	FLG_PODOBOO_START = CUSTOM_FLAG(2),
@@ -21,14 +27,38 @@ enum {
 
 static void load() {
 	load_texture_wild("enemies/lava?");
+	load_texture("tiles/lava");
 }
 
 static void create(GameActor* actor) {
 	actor->box.end.x = actor->box.end.y = FfInt(32L);
+	actor->depth = FfInt(20L);
+}
+
+static void tick(GameActor* actor) {
+	if (!ANY_FLAG(actor, FLG_LAVA_WAVE))
+		return;
+
+	move_actor(actor,
+		(fvec2){actor->pos.x,
+			VAL(actor, LAVA_Y) + Fmul(VAL(actor, LAVA_WAVE_LENGTH), Fcos(VAL(actor, LAVA_WAVE_ANGLE)))});
+	if (VAL(actor, LAVA_WAVE_LENGTH) <= FxZero) {
+		FLAG_OFF(actor, FLG_LAVA_WAVE);
+		return;
+	}
+
+	VAL(actor, LAVA_WAVE_ANGLE) += 5719L;
+	VAL(actor, LAVA_WAVE_LENGTH) = Fmax(VAL(actor, LAVA_WAVE_LENGTH) - 6554L, FxZero);
 }
 
 static void draw(const GameActor* actor) {
-	int magic = (int)((float)game_state.time / 9.090909090909091f) % 8L;
+	if (Fcos(VAL(actor, LAVA_WAVE_ANGLE)) < FxZero) {
+		const GLfloat y = FtInt(actor->pos.y) + 16.f;
+		batch_start(XYZ(FtInt(actor->pos.x), y, FtFloat(actor->depth)), 0.f, WHITE);
+		batch_rectangle("tiles/lava", XY(32.f, (FtInt(VAL(actor, LAVA_Y)) + 33.f) - y));
+	}
+
+	const int magic = (int)((float)game_state.time / 9.090909090909091f) % 8L;
 	const char* tex = fmt("enemies/lava%s", txnum(magic));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
@@ -48,10 +78,37 @@ static void collide(GameActor* actor, GameActor* from) {
 		FLAG_ON(from, FLG_DESTROY);
 		break;
 	}
+
+	case ACT_BOWSER_DEAD: {
+		if (ANY_FLAG(from, FLG_KUPPA_LAVA_LOVE))
+			break;
+
+		from->depth = FfInt(21L);
+		FLAG_ON(from, FLG_KUPPA_LAVA_LOVE);
+		play_actor_sound(from, "bowser_lava");
+
+		for (ActorID i = 0L; i < 2L; i++) {
+			GameActor* laver = create_actor(ACT_BOWSER_LAVA, from->pos);
+			if (i > 0L && laver != NULL)
+				FLAG_ON(laver, FLG_X_FLIP);
+		}
+
+		break;
+	}
+
+	case ACT_BOWSER_LAVA: {
+		if (ANY_FLAG(actor, FLG_LAVA_WAVE))
+			break;
+		VAL(actor, LAVA_Y) = actor->pos.y;
+		VAL(actor, LAVA_WAVE_LENGTH) = VAL(from, KUPPA_LAVER);
+		VAL(from, KUPPA_LAVER) -= FfInt(4L);
+		FLAG_ON(actor, FLG_LAVA_WAVE);
+		break;
+	}
 	}
 }
 
-const GameActorTable TAB_LAVA = {.load = load, .create = create, .draw = draw, .collide = collide};
+const GameActorTable TAB_LAVA = {.load = load, .create = create, .tick = tick, .draw = draw, .collide = collide};
 
 // =======
 // PODOBOO

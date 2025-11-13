@@ -196,3 +196,40 @@ const GameActorTable TAB_LAVA_SPLASH = {
 	.tick = tick_lava,
 	.draw = draw_lava,
 };
+
+// ===========
+// LAVA BUBBLE
+// ===========
+
+static void load_lava_bubble() {
+	load_texture("effects/lava_bubble");
+}
+
+static void create_lava_bubble(GameActor* actor) {
+	actor->box.start.x = FfInt(-7L);
+	actor->box.start.y = FfInt(-6L);
+	actor->box.end.x = FfInt(8L);
+	actor->box.end.y = FfInt(9L);
+}
+
+static void tick_lava_bubble(GameActor* actor) {
+	if (++VAL(actor, EFFECT_FRAME) >= 42L || !in_any_view(actor, FxZero, false))
+		FLAG_ON(actor, FLG_DESTROY);
+	VAL(actor, Y_SPEED) += 6554L;
+	move_actor(actor, POS_SPEED(actor));
+}
+
+static void draw_lava_bubble(const GameActor* actor) {
+	const InterpActor* iactor = get_interp(actor);
+	batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)), 0.f, WHITE);
+	const float scale = 1.f - ((float)VAL(actor, EFFECT_FRAME) / 42.f);
+	batch_scale(XY(scale, scale));
+	batch_sprite("effects/lava_bubble", NO_FLIP);
+}
+
+const GameActorTable TAB_LAVA_BUBBLE = {
+	.load = load_lava_bubble,
+	.create = create_lava_bubble,
+	.tick = tick_lava_bubble,
+	.draw = draw_lava_bubble,
+};
