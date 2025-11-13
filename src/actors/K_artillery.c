@@ -101,24 +101,27 @@ static void tick_blaster(GameActor* actor) {
 		FLAG_OFF(actor, FLG_ARTILLERY_BLOCKED);
 
 	GameActor* nearest = nearest_pawn(POS_ADD(actor, FfInt(16L), FfInt(16L)));
-	if (nearest != NULL && nearest->pos.x > (actor->pos.x - FfInt(64L))
-		&& nearest->pos.x < (actor->pos.x + FfInt(96L)))
-		FLAG_ON(actor, FLG_ARTILLERY_BLOCKED);
+	if (nearest != NULL) {
+		const fixed x = actor->pos.x + FfInt(16L);
+		if (nearest->pos.x < x)
+			FLAG_ON(actor, FLG_X_FLIP);
+		else if (nearest->pos.x > x)
+			FLAG_OFF(actor, FLG_X_FLIP);
+		if (nearest->pos.x > (x - FfInt(80L)) && nearest->pos.x < (x + FfInt(80L)))
+			FLAG_ON(actor, FLG_ARTILLERY_BLOCKED);
+	}
 
 	if (!ANY_FLAG(actor, FLG_ARTILLERY_BLOCKED) && in_any_view(actor, FxZero, false))
 		++VAL(actor, ARTILLERY_TIME);
 
 	if (VAL(actor, ARTILLERY_TIME) <= 25L)
 		return;
-	Bool flip = (nearest == NULL || nearest->pos.x < (actor->pos.x + FfInt(16L)));
-	GameActor* bullet = create_actor(ACT_BULLET_BILL, POS_ADD(actor, flip ? FxZero : FfInt(32L), FfInt(16L)));
+	GameActor* bullet = create_actor(
+		ACT_BULLET_BILL, POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? FxZero : FfInt(32L), FfInt(16L)));
 	if (bullet != NULL) {
-		VAL(bullet, X_SPEED) = (game_state.flags & GF_FUNNY) ? 425984L : 212992L;
-		if (flip) {
-			VAL(bullet, X_SPEED) = Fmul(VAL(bullet, X_SPEED), -FxOne);
-			FLAG_ON(bullet, FLG_X_FLIP);
-		}
-
+		const fixed spd = (game_state.flags & GF_FUNNY) ? 425984L : 212992L;
+		VAL(bullet, X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -spd : spd;
+		FLAG_ON(bullet, actor->flags & FLG_X_FLIP);
 		create_actor(ACT_EXPLODE, bullet->pos);
 		play_actor_sound(bullet, "bang");
 	}
