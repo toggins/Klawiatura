@@ -181,7 +181,10 @@ static void parse_config(yyjson_val* obj) {
 
 void load_config() {
 	const char* config_file = config_path == NULL ? find_user_file("config.json", NULL) : config_path;
-	BAKA(config_file, "No config to load");
+	if (!config_file) {
+		WARN("No config to load; writing a default one...");
+		goto overwrite;
+	}
 
 	yyjson_read_err error;
 	yyjson_doc* json = yyjson_read_file(config_file, JSON_READ_FLAGS, NULL, &error);
@@ -194,6 +197,7 @@ void load_config() {
 		WARN("Config loading skipped, has to be a key-value mapping (got %s)", yyjson_get_type_desc(root));
 	yyjson_doc_free(json);
 
+overwrite:
 	if (fill_missing_fields())
 		save_config();
 }
