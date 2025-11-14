@@ -133,7 +133,7 @@ bypass:
 	batch.filter = false;
 
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &shaders_vertex_glsl, NULL);
+	glShaderSource(vertex_shader, 1, &vertex_glsl, NULL);
 	glCompileShader(vertex_shader);
 
 	GLint success = 0;
@@ -145,7 +145,7 @@ bypass:
 	}
 
 	GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &shaders_fragment_glsl, NULL);
+	glShaderSource(fragment_shader, 1, &fragment_glsl, NULL);
 	glCompileShader(fragment_shader);
 
 	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);

@@ -41,6 +41,12 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
     GIT_TAG release-3.2.4)
 
+# SDL_GameControllerDB
+FetchContent_Declare(
+    SDL_GameControllerDB
+    GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
+    GIT_TAG 958e252520ece96cd1b03d5ff0d835db2f048991)
+
 # GLAD (2.0.8, OpenGL 3.3 Core)
 FetchContent_Declare(
     glad
@@ -96,7 +102,7 @@ FetchContent_Declare(
 # FMOD Core API (2.03.08)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
 
-FetchContent_MakeAvailable(SDL3 SDL3_image glad cglm S_fixed S_tructures NutPunch yyjson GekkoNet)
+FetchContent_MakeAvailable(SDL3 SDL3_image SDL_GameControllerDB glad cglm S_fixed S_tructures NutPunch yyjson GekkoNet)
 glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
 
 set(LIBS
@@ -111,15 +117,17 @@ file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
 file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/include/*.h)
 
 # Thanks <https://stackoverflow.com/a/47801116>
-function(embed_txt FILENAME)
-    file(READ ${CMAKE_SOURCE_DIR}/${FILENAME} CONTENT)
-    string(REGEX REPLACE [./] _ VARNAME ${FILENAME})
-    file(WRITE ${CMAKE_BINARY_DIR}/nested/embeds/${FILENAME}
+function(embed_txt PATH INCLUDE_FILE)
+    cmake_path(GET PATH FILENAME VARNAME)
+    string(REGEX REPLACE [./] _ VARNAME ${VARNAME})
+    file(READ ${PATH} CONTENT)
+    file(WRITE ${CMAKE_BINARY_DIR}/nested/embeds/${INCLUDE_FILE}
         "const char* const ${VARNAME} = R\"(${CONTENT})\";")
 endfunction()
 
-embed_txt(shaders/vertex.glsl)
-embed_txt(shaders/fragment.glsl)
+embed_txt(${CMAKE_SOURCE_DIR}/shaders/vertex.glsl shaders/vertex.glsl)
+embed_txt(${CMAKE_SOURCE_DIR}/shaders/fragment.glsl shaders/fragment.glsl)
+embed_txt(${sdl_gamecontrollerdb_SOURCE_DIR}/gamecontrollerdb.txt gamecontrollerdb.txt)
 
 add_executable(Klawiatura ${SOURCES} ${HEADERS} ${CMAKE_SOURCE_DIR}/res/Klawiatura.rc)
 target_include_directories(Klawiatura PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/nested)
