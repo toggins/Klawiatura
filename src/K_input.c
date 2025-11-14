@@ -30,14 +30,14 @@ Bindings BINDS[KB_SIZE] = {
 	[KB_UI_LEFT] = {"UI Left", KEY(LEFT), BUTTON(DPAD_LEFT), AXIS(LEFTX), NEGATIVE},
 	[KB_UI_DOWN] = {"UI Down", KEY(DOWN), BUTTON(DPAD_DOWN), AXIS(LEFTY)},
 	[KB_UI_RIGHT] = {"UI Right", KEY(RIGHT), BUTTON(DPAD_RIGHT), AXIS(LEFTX)},
-	[KB_UI_ENTER] = {"UI Enter", KEY(RETURN), BUTTON(SOUTH)},
+	[KB_UI_ENTER] = {"UI Enter", KEY(RETURN), BUTTON(SOUTH), NO_AXIS},
 
 	[KB_KEVIN_K] = {"K", KEY(K), NO_GAMEPAD},
 	[KB_KEVIN_E] = {"E", KEY(E), NO_GAMEPAD},
 	[KB_KEVIN_V] = {"V", KEY(V), NO_GAMEPAD},
 	[KB_KEVIN_I] = {"I", KEY(I), NO_GAMEPAD},
 	[KB_KEVIN_N] = {"N", KEY(N), NO_GAMEPAD},
-	[KB_KEVIN_BAIL] = {"Kevin Bail", KEY(BACKSPACE), BUTTON(BACK)},
+	[KB_KEVIN_BAIL] = {"Kevin Bail", KEY(BACKSPACE), BUTTON(BACK), NO_AXIS},
 };
 #undef KEY
 #undef BUTTON
@@ -136,6 +136,34 @@ void input_buttondown(SDL_GamepadButtonEvent event) {
 void input_buttonup(SDL_GamepadButtonEvent event) {
 	for (int i = 0; i < KB_SIZE; i++)
 		kb_incoming &= ~((event.button == BINDS[i].button) << i);
+}
+
+void input_axis(SDL_GamepadAxisEvent event) {
+	cur_controller = event.which;
+
+	if (scanning_what() != NULLBIND) {
+		if (scanning_for == event.which && event.value > 127) {
+			BINDS[scanning].axis = event.axis;
+			BINDS[scanning].negative = event.value < 0;
+			stop_scanning();
+		}
+	} else if (typing_what() == NULL) {
+		for (int i = 0; i < KB_SIZE; i++) {
+			const KeybindState mask = (event.axis == BINDS[i].axis
+							  && ((BINDS[i].negative && event.value < -128)
+								  || (!BINDS[i].negative && event.value > 127)))
+			                          << i;
+			kb_incoming |= mask;
+			kb_now |= mask;
+			kb_repeating |= mask;
+		}
+	}
+
+	for (int i = 0; i < KB_SIZE; i++)
+		kb_incoming &= ~((event.axis == BINDS[i].axis
+					 && ((BINDS[i].negative && event.value >= -128)
+						 || (!BINDS[i].negative && event.value <= 127)))
+				 << i);
 }
 
 void input_wipeout() {

@@ -117,6 +117,9 @@ static int realmain() {
 			case SDL_EVENT_GAMEPAD_BUTTON_UP:
 				input_buttonup(event.gbutton);
 				break;
+			case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+				input_axis(event.gaxis);
+				break;
 			case SDL_EVENT_TEXT_INPUT:
 				input_text_input(event.text);
 				break;
