@@ -515,11 +515,14 @@ static void perform_camera_magic() {
 			    by2 = FtInt(game_state.size.y - F_HALF_SCREEN_HEIGHT);
 		MORSEL();
 	} else if (player) {
-		const InterpActor* ipawn = get_interp(get_actor(player->actor));
-		if (!ipawn)
-			goto fuck;
+		fixed xx = FxZero, yy = FxZero;
 
-		const fixed xx = ipawn->pos.x, yy = ipawn->pos.y;
+		const InterpActor* ipawn = get_interp(get_actor(player->actor));
+		if (ipawn)
+			xx = ipawn->pos.x, yy = ipawn->pos.y;
+		else
+			xx = player->pos.x, yy = player->pos.y;
+
 		const float bx1 = FtInt(player->bounds.start.x + F_HALF_SCREEN_WIDTH),
 			    by1 = FtInt(player->bounds.start.y + F_HALF_SCREEN_HEIGHT),
 			    bx2 = FtInt(player->bounds.end.x - F_HALF_SCREEN_WIDTH),
@@ -677,7 +680,7 @@ void draw_game() {
 		return;
 
 	start_drawing();
-	batch_start(ORIGO, 0, WHITE);
+	batch_start(ORIGO, 0.f, WHITE);
 	batch_sprite("ui/sidebar_l", NO_FLIP);
 	batch_sprite("ui/sidebar_r", NO_FLIP);
 
@@ -688,6 +691,18 @@ void draw_game() {
 	clear_depth(1.f);
 
 	draw_tilemaps();
+
+	const GameActor* wave = get_actor(game_state.wave);
+	if (wave != NULL && ANY_FLAG(wave, FLG_WAVE_SKY)) {
+		batch_cursor(XYZ(0.f, video_state.camera.pos[1] - HALF_SCREEN_HEIGHT, 200.f));
+		batch_colors((GLubyte[4][4]){
+			{59,  123, 163, 255},
+                        {59,  123, 163, 255},
+                        {242, 253, 252, 255},
+                        {242, 253, 252, 255}
+                });
+		batch_rectangle(NULL, XY(FtFloat(game_state.size.x), SCREEN_HEIGHT));
+	}
 
 	const GameActor* actor = get_actor(game_state.live_actors);
 	while (actor != NULL) {
@@ -766,10 +781,23 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 	GameActor* autoscroll = get_actor(game_state.autoscroll);
 	if (autoscroll != NULL) {
 		game_state.bounds.start.x = Fclamp(autoscroll->pos.x, FxZero, game_state.size.x - F_SCREEN_WIDTH);
-		game_state.bounds.start.y = Fclamp(autoscroll->pos.y, FxZero, game_state.size.y - F_SCREEN_HEIGHT);
 		game_state.bounds.end.x = Fclamp(autoscroll->pos.x + F_SCREEN_WIDTH, F_SCREEN_WIDTH, game_state.size.x);
+		game_state.bounds.start.y = Fclamp(autoscroll->pos.y, FxZero, game_state.size.y - F_SCREEN_HEIGHT);
 		game_state.bounds.end.y
 			= Fclamp(autoscroll->pos.y + F_SCREEN_HEIGHT, F_SCREEN_HEIGHT, game_state.size.y);
+	}
+
+	GameActor* wave = get_actor(game_state.wave);
+	if (wave != NULL) {
+		const fixed delta = VAL(wave, WAVE_DELTA);
+
+		game_state.bounds.start.y -= delta, game_state.bounds.end.y -= delta;
+		for (PlayerID i = 0; i < num_players; i++) {
+			GamePlayer* player = get_player(i);
+			player->bounds.start.y -= delta, player->bounds.end.y -= delta;
+		}
+
+		game_state.water -= VAL(wave, WAVE_DELTA);
 	}
 
 	if (game_state.pswitch > 0L) {
@@ -1043,7 +1071,7 @@ void nuke_game_state() {
 	game_state.size.x = game_state.bounds.end.x = F_SCREEN_WIDTH;
 	game_state.size.y = game_state.bounds.end.y = F_SCREEN_HEIGHT;
 
-	game_state.spawn = game_state.checkpoint = game_state.autoscroll = NULLACT;
+	game_state.spawn = game_state.checkpoint = game_state.autoscroll = game_state.wave = NULLACT;
 	game_state.water = FfInt(32767L);
 
 	game_state.clock = -1L;

@@ -1,5 +1,9 @@
 #include "actors/K_autoscroll.h"
 
+// ==========
+// AUTOSCROLL
+// ==========
+
 static void load() {
 	load_texture("markers/platform/tanks");
 }
@@ -68,3 +72,29 @@ static void cleanup(GameActor* actor) {
 }
 
 const GameActorTable TAB_AUTOSCROLL = {.load = load, .create = create, .tick = tick, .draw = draw, .cleanup = cleanup};
+
+// ============
+// WAVING LEVEL
+// ============
+
+static void create_wave(GameActor* actor) {
+	game_state.wave = actor->id;
+}
+
+static void tick_wave(GameActor* actor) {
+	const fixed old_wave = Fmul(VAL(actor, WAVE_LENGTH), Fsin(VAL(actor, WAVE_ANGLE)));
+	if (!ANY_FLAG(actor, FLG_WAVE_START)) {
+		VAL(actor, WAVE_DELTA) = old_wave;
+		FLAG_ON(actor, FLG_WAVE_START);
+	}
+
+	VAL(actor, WAVE_ANGLE) += VAL(actor, WAVE_SPEED);
+	VAL(actor, WAVE_DELTA) = old_wave - Fmul(VAL(actor, WAVE_LENGTH), Fsin(VAL(actor, WAVE_ANGLE)));
+}
+
+static void cleanup_wave(GameActor* actor) {
+	if (game_state.wave == actor->id)
+		game_state.wave = NULLACT;
+}
+
+const GameActorTable TAB_WAVING_LEVEL = {.create = create_wave, .tick = tick_wave, .cleanup = cleanup_wave};

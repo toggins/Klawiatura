@@ -902,6 +902,11 @@ static void tick(GameActor* actor) {
 		}
 	}
 
+	GameActor* wave = get_actor(game_state.wave);
+	if (wave != NULL && VAL(actor, PLAYER_GROUND) <= 0L
+		&& !touching_solid(HITBOX_ADD(actor, FxZero, -VAL(wave, WAVE_DELTA)), SOL_ALL))
+		move_actor(actor, POS_ADD(actor, FxZero, -VAL(wave, WAVE_DELTA)));
+
 	foot_y = actor->pos.y - FxOne;
 	if (VAL(actor, Y_TOUCH) <= 0L) {
 		if (foot_y >= game_state.water) {
@@ -1050,7 +1055,7 @@ static void tick(GameActor* actor) {
 	}
 
 	if (foot_y > (((get_actor(game_state.autoscroll) != NULL) ? game_state.bounds.end.y : player->bounds.end.y)
-		      + FfInt(64L)))
+		      + ((wave != NULL) ? FfInt(48L) : FfInt(64L))))
 	{
 		kill_player(actor);
 		goto sync_pos;
@@ -1239,6 +1244,10 @@ static void tick_corpse(GameActor* actor) {
 	GameActor* autoscroll = get_actor(game_state.autoscroll);
 	if (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS))
 		move_actor(actor, POS_ADD(actor, VAL(autoscroll, X_SPEED), VAL(autoscroll, Y_SPEED)));
+
+	GameActor* wave = get_actor(game_state.wave);
+	if (wave != NULL)
+		move_actor(actor, POS_ADD(actor, FxZero, -VAL(wave, WAVE_DELTA)));
 
 	if (VAL(actor, PLAYER_FRAME) >= 25L) {
 		VAL(actor, Y_SPEED) += 26214L;

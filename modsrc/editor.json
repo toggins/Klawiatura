@@ -1110,6 +1110,37 @@
                             "bit": 5
                         }
                     ]
+                },
+
+                {
+                    "def": "Waving Level",
+                    "type": "object",
+                    "index": 97,
+                    "texture": "markers/water",
+
+                    "values": [
+                        {
+                            "name": "Length",
+                            "index": 5,
+                            "default": 4194304,
+                            "fixed": true
+                        },
+
+                        {
+                            "name": "Speed",
+                            "index": 6,
+                            "default": 1771,
+                            "fixed": true
+                        }
+                    ],
+
+                    "flags": [
+                        {
+                            "name": "Sky?",
+                            "bit": 5,
+                            "default": false
+                        }
+                    ]
                 }
             ]
         ],

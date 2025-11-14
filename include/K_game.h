@@ -184,6 +184,7 @@ enum {
 	ACT_BOWSER_DEAD,
 	ACT_BOWSER_LAVA,
 	ACT_LAVA_BUBBLE,
+	ACT_WAVING_LEVEL,
 
 	ACT_SIZE,
 };
@@ -380,7 +381,7 @@ typedef struct {
 
 	GamePlayer players[MAX_PLAYERS];
 
-	ActorID spawn, checkpoint, autoscroll;
+	ActorID spawn, checkpoint, autoscroll, wave;
 	uint16_t pswitch;
 
 	fvec2 size;
