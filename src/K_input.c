@@ -6,40 +6,58 @@
 static KeybindState kb_then = 0, kb_now = 0;           // Tick-specific
 static KeybindState kb_incoming = 0, kb_repeating = 0; // Event-specific
 
-// clang-format off
+#define KEY(x) .key = SDL_SCANCODE_##x
+#define NO_KEY .key = SDL_SCANCODE_UNKNOWN
+#define BUTTON(x) .button = SDL_GAMEPAD_BUTTON_##x
+#define NO_BUTTON .button = SDL_GAMEPAD_BUTTON_INVALID
+#define AXIS(x) .axis = SDL_GAMEPAD_AXIS_##x
+#define NO_AXIS .axis = SDL_GAMEPAD_AXIS_INVALID
+#define NO_GAMEPAD NO_BUTTON, NO_AXIS
+#define NEGATIVE .negative = true
 Bindings BINDS[KB_SIZE] = {
-	[KB_UP] = {"Up", SDL_SCANCODE_UP, SDL_GAMEPAD_BUTTON_DPAD_UP, SDL_GAMEPAD_AXIS_LEFTY, true},
-	[KB_LEFT] = {"Left", SDL_SCANCODE_LEFT, SDL_GAMEPAD_BUTTON_DPAD_LEFT, SDL_GAMEPAD_AXIS_LEFTX, true},
-	[KB_DOWN] = {"Down", SDL_SCANCODE_DOWN, SDL_GAMEPAD_BUTTON_DPAD_DOWN, SDL_GAMEPAD_AXIS_LEFTY},
-	[KB_RIGHT] = {"Right", SDL_SCANCODE_RIGHT, SDL_GAMEPAD_BUTTON_DPAD_RIGHT, SDL_GAMEPAD_AXIS_LEFTX},
-	[KB_JUMP] = {"Jump", SDL_SCANCODE_Z, SDL_GAMEPAD_BUTTON_SOUTH},
-	[KB_FIRE] = {"Fire", SDL_SCANCODE_X, SDL_GAMEPAD_BUTTON_INVALID, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER},
-	[KB_RUN] = {"Run", SDL_SCANCODE_X, SDL_GAMEPAD_BUTTON_INVALID, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER},
+	[KB_UP] = {"Up", KEY(UP), BUTTON(DPAD_UP), AXIS(LEFTY), NEGATIVE},
+	[KB_LEFT] = {"Left", KEY(LEFT), BUTTON(DPAD_LEFT), AXIS(LEFTX), NEGATIVE},
+	[KB_DOWN] = {"Down", KEY(DOWN), BUTTON(DPAD_DOWN), AXIS(LEFTY)},
+	[KB_RIGHT] = {"Right", KEY(RIGHT), BUTTON(DPAD_RIGHT), AXIS(LEFTX)},
+	[KB_JUMP] = {"Jump", KEY(Z), BUTTON(SOUTH), NO_AXIS},
+	[KB_FIRE] = {"Fire", KEY(X), NO_BUTTON, AXIS(RIGHT_TRIGGER)},
+	[KB_RUN] = {"Run", KEY(X), NO_BUTTON, AXIS(RIGHT_TRIGGER)},
 
-	[KB_CHAT] = {"Open Chat", SDL_SCANCODE_T},
+	[KB_CHAT] = {"Open Chat", KEY(T), NO_GAMEPAD},
 
-	[KB_PAUSE] = {"Pause", SDL_SCANCODE_ESCAPE, SDL_GAMEPAD_BUTTON_START},
-	[KB_UI_UP] = {"UI Up", SDL_SCANCODE_UP, SDL_GAMEPAD_BUTTON_DPAD_UP, SDL_GAMEPAD_AXIS_LEFTY, true},
-	[KB_UI_LEFT] = {"UI Left", SDL_SCANCODE_LEFT, SDL_GAMEPAD_BUTTON_DPAD_LEFT, SDL_GAMEPAD_AXIS_LEFTX, true},
-	[KB_UI_DOWN] = {"UI Down", SDL_SCANCODE_DOWN, SDL_GAMEPAD_BUTTON_DPAD_DOWN, SDL_GAMEPAD_AXIS_LEFTY},
-	[KB_UI_RIGHT] = {"UI Right", SDL_SCANCODE_RIGHT, SDL_GAMEPAD_BUTTON_DPAD_RIGHT, SDL_GAMEPAD_AXIS_LEFTX},
-	[KB_UI_ENTER] = {"UI Enter", SDL_SCANCODE_RETURN, SDL_GAMEPAD_BUTTON_SOUTH},
+	[KB_PAUSE] = {"Pause", KEY(ESCAPE), BUTTON(START), NO_AXIS},
+	[KB_UI_UP] = {"UI Up", KEY(UP), BUTTON(DPAD_UP), AXIS(LEFTY), NEGATIVE},
+	[KB_UI_LEFT] = {"UI Left", KEY(LEFT), BUTTON(DPAD_LEFT), AXIS(LEFTX), NEGATIVE},
+	[KB_UI_DOWN] = {"UI Down", KEY(DOWN), BUTTON(DPAD_DOWN), AXIS(LEFTY)},
+	[KB_UI_RIGHT] = {"UI Right", KEY(RIGHT), BUTTON(DPAD_RIGHT), AXIS(LEFTX)},
+	[KB_UI_ENTER] = {"UI Enter", KEY(RETURN), BUTTON(SOUTH)},
 
-	[KB_KEVIN_K] = {"K", SDL_SCANCODE_K},
-	[KB_KEVIN_E] = {"E", SDL_SCANCODE_E},
-	[KB_KEVIN_V] = {"V", SDL_SCANCODE_V},
-	[KB_KEVIN_I] = {"I", SDL_SCANCODE_I},
-	[KB_KEVIN_N] = {"N", SDL_SCANCODE_N},
-	[KB_KEVIN_BAIL] = {"Kevin Bail", SDL_SCANCODE_BACKSPACE, SDL_GAMEPAD_BUTTON_BACK},
+	[KB_KEVIN_K] = {"K", KEY(K), NO_GAMEPAD},
+	[KB_KEVIN_E] = {"E", KEY(E), NO_GAMEPAD},
+	[KB_KEVIN_V] = {"V", KEY(V), NO_GAMEPAD},
+	[KB_KEVIN_I] = {"I", KEY(I), NO_GAMEPAD},
+	[KB_KEVIN_N] = {"N", KEY(N), NO_GAMEPAD},
+	[KB_KEVIN_BAIL] = {"Kevin Bail", KEY(BACKSPACE), BUTTON(BACK)},
 };
-// clang-format on
+#undef KEY
+#undef BUTTON
+#undef NO_BUTTON
+#undef AXIS
+#undef NO_AXIS
+#undef NO_GAMEPAD
+#undef NEGATIVE
+
+static SDL_JoystickID cur_controller = 0;
 
 static char* text = NULL;
 static size_t text_size = 0;
 
+static SDL_JoystickID scanning_for = 0;
 static Keybind scanning = NULLBIND;
 
-void input_init() {}
+void input_init() {
+	// FIXME: Add SDL_GameControllerDB through CMakeLists then use `SDL_AddGamepadMappingsFromFile()` here.
+}
 void input_teardown() {}
 
 void input_newframe() {
@@ -49,12 +67,17 @@ void input_newframe() {
 }
 
 void input_keydown(SDL_KeyboardEvent event) {
+	cur_controller = 0;
+
 	if (event.mod & SDL_KMOD_ALT && event.scancode == SDL_SCANCODE_RETURN) {
 		set_fullscreen(!get_fullscreen());
 	} else if (scanning_what() != NULLBIND) {
-		if (event.scancode != SDL_SCANCODE_ESCAPE)
+		if (event.scancode == SDL_SCANCODE_ESCAPE)
+			stop_scanning();
+		else if (!scanning_for) {
 			BINDS[scanning].key = event.scancode;
-		stop_scanning();
+			stop_scanning();
+		}
 	} else if (typing_what() == NULL) {
 		for (int i = 0; i < KB_SIZE; i++) {
 			const KeybindState mask = (event.scancode == BINDS[i].key) << i;
@@ -76,6 +99,45 @@ void input_keyup(SDL_KeyboardEvent event) {
 		kb_incoming &= ~((event.scancode == BINDS[i].key) << i);
 }
 
+void input_gamepadon(SDL_GamepadDeviceEvent event) {
+	struct SDL_Gamepad* gamepad = SDL_OpenGamepad(event.which);
+	if (gamepad != NULL)
+		cur_controller = SDL_GetGamepadID(gamepad);
+}
+
+void input_gamepadoff(SDL_GamepadDeviceEvent event) {
+	SDL_CloseGamepad(SDL_GetGamepadFromID(event.which));
+	if (cur_controller == event.which)
+		cur_controller = 0;
+	if (scanning_for == event.which)
+		stop_scanning();
+}
+
+void input_buttondown(SDL_GamepadButtonEvent event) {
+	cur_controller = event.which;
+
+	if (scanning_what() != NULLBIND) {
+		if (event.button == SDL_GAMEPAD_BUTTON_BACK)
+			stop_scanning();
+		else if (scanning_for == event.which) {
+			BINDS[scanning].button = event.button;
+			stop_scanning();
+		}
+	} else if (typing_what() == NULL) {
+		for (int i = 0; i < KB_SIZE; i++) {
+			const KeybindState mask = (event.button == BINDS[i].button) << i;
+			kb_incoming |= mask;
+			kb_now |= mask;
+			kb_repeating |= mask;
+		}
+	}
+}
+
+void input_buttonup(SDL_GamepadButtonEvent event) {
+	for (int i = 0; i < KB_SIZE; i++)
+		kb_incoming &= ~((event.button == BINDS[i].button) << i);
+}
+
 void input_wipeout() {
 	kb_then = 0;
 	kb_now = 0;
@@ -84,8 +146,8 @@ void input_wipeout() {
 }
 
 const char* input_device() {
-	// TODO
-	return "Keyboard";
+	const SDL_JoystickID target = (scanning == NULLBIND) ? cur_controller : scanning_for;
+	return target ? SDL_GetGamepadNameForID(target) : "Keyboard";
 }
 
 #define CHECK_KB(table, kb) (((table) & (1 << (kb))) != 0)
@@ -115,7 +177,20 @@ float kb_axis(Keybind neg, Keybind pos) {
 }
 
 const char* kb_label(Keybind kb) {
-	return SDL_GetScancodeName(BINDS[kb].key);
+	const SDL_JoystickID target = (scanning == NULLBIND) ? cur_controller : scanning_for;
+	if (!target) {
+		if (BINDS[kb].key != SDL_SCANCODE_UNKNOWN)
+			return SDL_GetScancodeName(BINDS[kb].key);
+		goto not_bound;
+	}
+
+	if (BINDS[kb].axis != SDL_GAMEPAD_AXIS_INVALID)
+		return SDL_GetGamepadStringForAxis(BINDS[kb].axis);
+	if (BINDS[kb].button != SDL_GAMEPAD_BUTTON_INVALID)
+		return SDL_GetGamepadStringForButton(BINDS[kb].button);
+
+not_bound:
+	return "<Not bound>";
 }
 
 void start_typing(char* ptext, size_t size) {
@@ -140,10 +215,12 @@ void input_text_input(SDL_TextInputEvent event) {
 void start_scanning(Keybind kb) {
 	stop_scanning();
 	scanning = (Keybind)((kb >= 0 && kb < KB_SIZE) ? kb : NULLBIND);
+	scanning_for = cur_controller;
 }
 
 void stop_scanning() {
 	scanning = NULLBIND;
+	scanning_for = 0;
 	input_wipeout();
 }
 

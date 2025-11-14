@@ -105,6 +105,18 @@ static int realmain() {
 			case SDL_EVENT_KEY_UP:
 				input_keyup(event.key);
 				break;
+			case SDL_EVENT_GAMEPAD_ADDED:
+				input_gamepadon(event.gdevice);
+				break;
+			case SDL_EVENT_GAMEPAD_REMOVED:
+				input_gamepadoff(event.gdevice);
+				break;
+			case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+				input_buttondown(event.gbutton);
+				break;
+			case SDL_EVENT_GAMEPAD_BUTTON_UP:
+				input_buttonup(event.gbutton);
+				break;
 			case SDL_EVENT_TEXT_INPUT:
 				input_text_input(event.text);
 				break;

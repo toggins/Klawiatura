@@ -56,6 +56,8 @@ extern Bindings BINDS[KB_SIZE];
 
 void input_init(), input_teardown(), input_newframe();
 void input_keydown(SDL_KeyboardEvent), input_keyup(SDL_KeyboardEvent);
+void input_gamepadon(SDL_GamepadDeviceEvent), input_gamepadoff(SDL_GamepadDeviceEvent);
+void input_buttondown(SDL_GamepadButtonEvent), input_buttonup(SDL_GamepadButtonEvent);
 void input_wipeout();
 
 const char* input_device();
