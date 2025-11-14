@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL_events.h>
+#include <SDL3/SDL_gamepad.h>
 #include <SDL3/SDL_keycode.h>
 #include <SDL3/SDL_stdinc.h>
 
@@ -47,6 +48,9 @@ typedef int16_t KeybindValue;
 typedef struct {
 	const char* name;
 	SDL_Keycode key;
+	SDL_GamepadButton button;
+	SDL_GamepadAxis axis;
+	bool negative;
 } Bindings;
 extern Bindings BINDS[KB_SIZE];
 

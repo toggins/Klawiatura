@@ -141,7 +141,10 @@ static void parse_kb(yyjson_val* obj, void (*load)(Bindings*, yyjson_val*)) {
 }
 
 static void kb_load_key(Bindings* bind, yyjson_val* value) {
-	bind->key = yyjson_get_int(value);
+	bind->key = yyjson_get_int(yyjson_obj_get(value, "key"));
+	bind->button = yyjson_get_int(yyjson_obj_get(value, "button"));
+	bind->axis = yyjson_get_int(yyjson_obj_get(value, "axis"));
+	bind->negative = yyjson_get_bool(yyjson_obj_get(value, "negative"));
 }
 
 #define HANDLE_OPT(fn, conversion)                                                                                     \
@@ -196,7 +199,12 @@ void load_config() {
 }
 
 static yyjson_mut_val* kb_serialize_key(yyjson_mut_doc* json, const Bindings* bind) {
-	return yyjson_mut_int(json, bind->key);
+	yyjson_mut_val* obj = yyjson_mut_obj(json);
+	yyjson_mut_obj_add(obj, yyjson_mut_str(json, "key"), yyjson_mut_int(json, bind->key));
+	yyjson_mut_obj_add(obj, yyjson_mut_str(json, "button"), yyjson_mut_int(json, bind->button));
+	yyjson_mut_obj_add(obj, yyjson_mut_str(json, "axis"), yyjson_mut_int(json, bind->axis));
+	yyjson_mut_obj_add(obj, yyjson_mut_str(json, "negative"), yyjson_mut_int(json, bind->negative));
+	return obj;
 }
 
 static void save_kb(yyjson_mut_doc* json, yyjson_mut_val* root, const char* name,
