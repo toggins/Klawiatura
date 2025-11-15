@@ -420,6 +420,8 @@ void kill_player(GameActor* actor) {
 		return;
 	if (!ANY_FLAG(actor, FLG_VISIBLE) && ANY_FLAG(actor, FLG_FREEZE))
 		FLAG_OFF(dead, FLG_VISIBLE);
+	align_interp(dead, actor);
+	lerp_camera(1.f);
 
 	// !!! CLIENT-SIDE !!!
 	if (localplayer() == VAL(actor, PLAYER_INDEX) && VAL(actor, PLAYER_STARMAN) > 0L)
