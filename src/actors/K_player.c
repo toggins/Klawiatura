@@ -14,9 +14,7 @@
 
 static void load_player_textures() {
 	load_texture("player/mario/dead");
-	load_texture("player/mario/grow");
-	load_texture("player/mario/grow2");
-	load_texture("player/mario/grow3");
+	load_texture_wild("player/mario/grow?");
 
 	load_texture("player/mario/small/idle");
 	load_texture("player/mario/small/walk");
