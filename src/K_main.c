@@ -45,7 +45,7 @@ ClientInfo CLIENT = {
 	.user.skin = "",
 	.input.delay = 2,
 	.game.players = 2,
-	.game.level = "troll",
+	.game.level = "test",
 	.lobby.name = "", // filled in inside `K_menu.c`
 	.lobby.public = true,
 };
