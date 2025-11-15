@@ -281,15 +281,33 @@ static void create_dead(GameActor* actor) {
 
 static void tick_dead(GameActor* actor) {
 	if (!in_any_view(actor, FxZero, true)) {
-		if (VAL(actor, DEAD_TYPE) == ACT_LAKITU) {
-			if (++VAL(actor, DEAD_RESPAWN) > 300L) {
-				GameActor* lakitu = create_actor(
-					ACT_LAKITU, (fvec2){game_state.size.x + FfInt(200L), FfInt(57L + rng(31L))});
-				if (lakitu != NULL)
-					FLAG_ON(lakitu, actor->flags & FLG_LAKITU_GREEN);
-			} else
+		switch (VAL(actor, DEAD_TYPE)) {
+		default:
+			break;
+
+		case ACT_LAKITU: {
+			if (++VAL(actor, DEAD_RESPAWN) <= 300L)
 				return;
+			GameActor* lakitu = create_actor(
+				ACT_LAKITU, (fvec2){game_state.size.x + FfInt(200L), FfInt(57L + rng(31L))});
+			if (lakitu != NULL) {
+				FLAG_ON(lakitu, actor->flags & FLG_LAKITU_GREEN);
+				break;
+			}
+			return;
 		}
+
+		case ACT_BOSS_BASS: {
+			if (++VAL(actor, DEAD_RESPAWN) <= 300L)
+				return;
+			if (create_actor(ACT_BOSS_BASS,
+				    (fvec2){game_state.size.x + FfInt(200L), game_state.water + FfInt(32L)})
+				!= NULL)
+				break;
+			return;
+		}
+		}
+
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}

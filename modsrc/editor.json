@@ -1587,6 +1587,21 @@
                 },
 
                 {
+                    "def": "Boss Bass",
+                    "type": "object",
+                    "index": 98,
+                    "texture": "enemies/bass",
+
+                    "flags": [
+                        {
+                            "name": "Flip?",
+                            "bit": 2,
+                            "default": true
+                        }
+                    ]
+                },
+
+                {
                     "def": "Electric Coral",
                     "type": "object",
                     "index": 93,

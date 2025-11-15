@@ -418,7 +418,8 @@ void kill_player(GameActor* actor) {
 	GameActor* dead = create_actor(ACT_PLAYER_DEAD, actor->pos);
 	if (dead == NULL)
 		return;
-	align_interp(dead, actor);
+	if (!ANY_FLAG(actor, FLG_VISIBLE) && ANY_FLAG(actor, FLG_FREEZE))
+		FLAG_OFF(dead, FLG_VISIBLE);
 
 	// !!! CLIENT-SIDE !!!
 	if (localplayer() == VAL(actor, PLAYER_INDEX) && VAL(actor, PLAYER_STARMAN) > 0L)

@@ -94,6 +94,7 @@ void populate_actors_table() {
 	ACTOR(BOWSER_LAVA);
 	ACTOR(LAVA_BUBBLE);
 	ACTOR(WAVING_LEVEL);
+	ACTOR(BOSS_BASS);
 
 	static const GameActorTable TAB_NULL = {0};
 	ACTORS[ACT_NULL] = &TAB_NULL;
