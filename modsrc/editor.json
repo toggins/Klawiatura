@@ -1488,178 +1488,255 @@
                     ]
                 },
 
-                {
-                    "def": "Bullet Bill",
-                    "type": "object",
-                    "index": 54,
-                    "texture": "markers/solid_top"
-                },
-
-                {
-                    "def": "Spike",
-                    "type": "object",
-                    "index": 47,
-                    "z": 2,
-                    "texture": "enemies/spike",
-
-                    "values": [
+                [
+                    "Artillery",
+                    [
                         {
-                            "name": "Skin",
-                            "index": 5,
-                            "default": 0
-                        }
-                    ],
-
-                    "flags": [
-                        {
-                            "name": "Flip?",
-                            "bit": 3
-                        }
-                    ]
-                },
-
-                {
-                    "def": "Roto-Disc",
-                    "type": "object",
-                    "index": 61,
-                    "z": 19,
-                    "texture": "enemies/rotodisc_ball",
-
-                    "values": [
-                        {
-                            "name": "Length",
-                            "index": 6,
-                            "default": 9830400,
-                            "fixed": true
+                            "def": "Bullet Bill",
+                            "type": "object",
+                            "index": 54,
+                            "texture": "markers/solid_top"
                         },
 
                         {
-                            "name": "Angle",
-                            "index": 7,
-                            "default": 0,
-                            "fixed": true
+                            "def": "Spike Cannon",
+                            "type": "object",
+                            "index": 81,
+                            "z": 20,
+                            "texture": "enemies/spike_cannon",
+
+                            "flags": [
+                                {
+                                    "name": "Flip?",
+                                    "bit": 3
+                                }
+                            ]
+                        }
+                    ]
+                ],
+
+                [
+                    "Hazards",
+                    [
+                        {
+                            "def": "Spike",
+                            "type": "object",
+                            "index": 47,
+                            "z": 2,
+                            "texture": "enemies/spike",
+
+                            "values": [
+                                {
+                                    "name": "Skin",
+                                    "index": 5,
+                                    "default": 0
+                                }
+                            ],
+
+                            "flags": [
+                                {
+                                    "name": "Flip?",
+                                    "bit": 3
+                                }
+                            ]
                         },
 
                         {
-                            "name": "Speed",
-                            "index": 8,
-                            "default": 1144,
-                            "fixed": true
-                        }
-                    ],
+                            "def": "Roto-Disc",
+                            "type": "object",
+                            "index": 61,
+                            "z": 19,
+                            "texture": "enemies/rotodisc_ball",
 
-                    "flags": [
+                            "values": [
+                                {
+                                    "name": "Length",
+                                    "index": 6,
+                                    "default": 9830400,
+                                    "fixed": true
+                                },
+
+                                {
+                                    "name": "Angle",
+                                    "index": 7,
+                                    "default": 0,
+                                    "fixed": true
+                                },
+
+                                {
+                                    "name": "Speed",
+                                    "index": 8,
+                                    "default": 1144,
+                                    "fixed": true
+                                }
+                            ],
+
+                            "flags": [
+                                {
+                                    "name": "Flower?",
+                                    "bit": 6
+                                }
+                            ]
+                        },
+
                         {
-                            "name": "Flower?",
-                            "bit": 6
+                            "def": "Thwomp",
+                            "type": "object",
+                            "index": 63,
+                            "texture": "enemies/thwomp"
+                        },
+
+                        {
+                            "def": "Fake Cloud",
+                            "type": "object",
+                            "index": 99,
+                            "z": 26,
+                            "texture": "enemies/fake_cloud",
+
+                            "values": [
+                                {
+                                    "name": "Length",
+                                    "index": 6,
+                                    "default": 9830400,
+                                    "fixed": true
+                                },
+
+                                {
+                                    "name": "Angle",
+                                    "index": 7,
+                                    "default": 0,
+                                    "fixed": true
+                                },
+
+                                {
+                                    "name": "Speed",
+                                    "index": 8,
+                                    "default": 1144,
+                                    "fixed": true
+                                }
+                            ],
+
+                            "flags": [
+                                {
+                                    "name": "Hidden?",
+                                    "bit": 5,
+                                    "default": false
+                                },
+
+                                {
+                                    "name": "Translucent?",
+                                    "bit": 6,
+                                    "default": false
+                                },
+
+                                {
+                                    "name": "Troll?",
+                                    "bit": 7,
+                                    "default": false
+                                },
+
+                                {
+                                    "name": "Friendly?",
+                                    "bit": 8,
+                                    "default": false
+                                }
+                            ]
                         }
                     ]
-                },
+                ],
 
-                {
-                    "def": "Cheep Cheep Blue",
-                    "type": "object",
-                    "index": 58,
-                    "texture": "enemies/cheep_blue",
-
-                    "flags": [
+                [
+                    "Underwater",
+                    [
                         {
-                            "name": "Flip?",
-                            "bit": 2,
-                            "default": true
+                            "def": "Cheep Cheep Blue",
+                            "type": "object",
+                            "index": 58,
+                            "texture": "enemies/cheep_blue",
+
+                            "flags": [
+                                {
+                                    "name": "Flip?",
+                                    "bit": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Cheep Cheep Spiky",
+                            "type": "object",
+                            "index": 59,
+                            "texture": "enemies/cheep_spiky",
+
+                            "flags": [
+                                {
+                                    "name": "Flip?",
+                                    "bit": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Boss Bass",
+                            "type": "object",
+                            "index": 98,
+                            "texture": "enemies/bass",
+
+                            "flags": [
+                                {
+                                    "name": "Flip?",
+                                    "bit": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Electric Coral",
+                            "type": "object",
+                            "index": 93,
+                            "texture": "enemies/coral",
+                            "z": 20
                         }
                     ]
-                },
+                ],
 
-                {
-                    "def": "Cheep Cheep Spiky",
-                    "type": "object",
-                    "index": 59,
-                    "texture": "enemies/cheep_spiky",
-
-                    "flags": [
+                [
+                    "Lava",
+                    [
                         {
-                            "name": "Flip?",
-                            "bit": 2,
-                            "default": true
+                            "def": "Lava",
+                            "type": "object",
+                            "index": 66,
+                            "z": 20,
+                            "texture": "enemies/lava"
+                        },
+
+                        {
+                            "def": "Lava Body",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/lava",
+                            "stretch": true
+                        },
+
+                        {
+                            "def": "Podoboo",
+                            "type": "object",
+                            "index": 67,
+                            "texture": "enemies/podoboo"
+                        },
+
+                        {
+                            "def": "Podoboo Volcano",
+                            "type": "object",
+                            "index": 88,
+                            "texture": "M_SOLIDT"
                         }
                     ]
-                },
-
-                {
-                    "def": "Boss Bass",
-                    "type": "object",
-                    "index": 98,
-                    "texture": "enemies/bass",
-
-                    "flags": [
-                        {
-                            "name": "Flip?",
-                            "bit": 2,
-                            "default": true
-                        }
-                    ]
-                },
-
-                {
-                    "def": "Electric Coral",
-                    "type": "object",
-                    "index": 93,
-                    "texture": "enemies/coral",
-                    "z": 20
-                },
-
-                {
-                    "def": "Thwomp",
-                    "type": "object",
-                    "index": 63,
-                    "texture": "enemies/thwomp"
-                },
-
-                {
-                    "def": "Spike Cannon",
-                    "type": "object",
-                    "index": 81,
-                    "z": 20,
-                    "texture": "enemies/spike_cannon",
-
-                    "flags": [
-                        {
-                            "name": "Flip?",
-                            "bit": 3
-                        }
-                    ]
-                },
-
-                {
-                    "def": "Lava",
-                    "type": "object",
-                    "index": 66,
-                    "z": 20,
-                    "texture": "enemies/lava"
-                },
-
-                {
-                    "def": "Lava Body",
-                    "type": "backdrop",
-                    "z": 20,
-                    "texture": "tiles/lava",
-                    "stretch": true
-                },
-
-                {
-                    "def": "Podoboo",
-                    "type": "object",
-                    "index": 67,
-                    "texture": "enemies/podoboo"
-                },
-
-                {
-                    "def": "Podoboo Volcano",
-                    "type": "object",
-                    "index": 88,
-                    "texture": "M_SOLIDT"
-                },
+                ],
 
                 {
                     "def": "Bowser",
