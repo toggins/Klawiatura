@@ -72,6 +72,142 @@
                 ],
 
                 [
+                    "Swamp",
+                    [
+                        {
+                            "def": "Swamp TL",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/swamp"
+                        },
+
+                        {
+                            "def": "Swamp T",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/swamp2"
+                        },
+
+                        {
+                            "def": "Swamp TR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/swamp3"
+                        },
+
+                        {
+                            "def": "Swamp ML",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/swamp4"
+                        },
+
+                        {
+                            "def": "Swamp M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/swamp5"
+                        },
+
+                        {
+                            "def": "Swamp MR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/swamp6"
+                        },
+
+                        {
+                            "def": "Swamp BL",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/swamp7"
+                        },
+
+                        {
+                            "def": "Swamp B",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/swamp8"
+                        },
+
+                        {
+                            "def": "Swamp BR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/swamp9"
+                        }
+                    ]
+                ],
+
+                [
+                    "Snow",
+                    [
+                        {
+                            "def": "Snow TL",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/snow"
+                        },
+
+                        {
+                            "def": "Snow T",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/snow2"
+                        },
+
+                        {
+                            "def": "Snow TR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/snow3"
+                        },
+
+                        {
+                            "def": "Snow ML",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/snow4"
+                        },
+
+                        {
+                            "def": "Snow M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/snow5"
+                        },
+
+                        {
+                            "def": "Snow MR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/snow6"
+                        },
+
+                        {
+                            "def": "Snow BL",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/snow7"
+                        },
+
+                        {
+                            "def": "Snow B",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/snow8"
+                        },
+
+                        {
+                            "def": "Snow BR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/snow9"
+                        }
+                    ]
+                ],
+
+                [
                     "Blocks",
                     [
                         {
@@ -659,7 +795,8 @@
                             "def": "Tree Back",
                             "type": "backdrop",
                             "texture": "props/tree2_b",
-                            "z": 26
+                            "z": 26,
+                            "color": [255, 255, 255, 155]
                         },
 
                         {
