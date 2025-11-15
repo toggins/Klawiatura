@@ -228,8 +228,7 @@ static void draw(const GameActor* actor) {
 		break;
 	}
 
-	batch_start(XYZ(FtInt(actor->pos.x), FtInt(actor->pos.y) - bump, FtFloat(actor->depth)), 0.f, WHITE);
-	batch_sprite(tex, NO_FLIP);
+	draw_actor_offset(actor, tex, XY(0.f, -bump), 0.f, WHITE);
 }
 
 static void on_bottom(GameActor* actor, GameActor* from) {
@@ -357,8 +356,9 @@ static void draw_brick(const GameActor* actor) {
 		bump = 11L;
 		break;
 	}
-	batch_start(XYZ(FtInt(actor->pos.x), FtInt(actor->pos.y) - bump, FtFloat(actor->depth)), 0.f, WHITE);
-	batch_sprite(ANY_FLAG(actor, FLG_BLOCK_GRAY) ? "items/brick_gray" : "items/brick", NO_FLIP);
+
+	draw_actor_offset(actor, ANY_FLAG(actor, FLG_BLOCK_GRAY) ? "items/brick_gray" : "items/brick", XY(0.f, -bump),
+		0.f, WHITE);
 }
 
 const GameActorTable TAB_BRICK_BLOCK = {
@@ -481,8 +481,7 @@ static void draw_note(const GameActor* actor) {
 	}
 
 	const int8_t bx = (int8_t)(VAL(actor, X_TOUCH) * bump), by = (int8_t)(VAL(actor, Y_TOUCH) * bump);
-	batch_start(XYZ(FtInt(actor->pos.x) + bx, FtInt(actor->pos.y) + by, FtFloat(actor->depth)), 0.f, WHITE);
-	batch_sprite(tex, NO_FLIP);
+	draw_actor_offset(actor, tex, XY(bx, by), 0.f, WHITE);
 }
 
 static void note_top(GameActor* actor, GameActor* from) {
