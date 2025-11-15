@@ -998,6 +998,7 @@ void dump_game_state() {
 	INFO("Spawn: %i (%p)", game_state.spawn, get_actor(game_state.spawn));
 	INFO("Checkpoint: %i (%p)", game_state.checkpoint, get_actor(game_state.checkpoint));
 	INFO("Autoscroll: %i (%p)", game_state.autoscroll, get_actor(game_state.autoscroll));
+	INFO("Wave: %i (%p)", game_state.wave, get_actor(game_state.wave));
 	INFO("P-Switch: %u", game_state.pswitch);
 	INFO("Size: (%.2f, %.2f)", FtFloat(game_state.size.x), FtFloat(game_state.size.y));
 	INFO("Bounds: (%.2f, %.2f, %.2f, %.2f)", FtFloat(game_state.bounds.start.x), FtFloat(game_state.bounds.start.y),
