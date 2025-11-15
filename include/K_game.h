@@ -400,7 +400,7 @@ typedef struct {
 	GameActor actors[MAX_ACTORS];
 	ActorID grid[GRID_SIZE];
 
-	char level[GAME_STRING_MAX], next[GAME_STRING_MAX];
+	char next[GAME_STRING_MAX];
 } GameState;
 
 typedef struct {

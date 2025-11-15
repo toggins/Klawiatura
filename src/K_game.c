@@ -59,6 +59,7 @@ static GekkoSession* game_session = NULL;
 GameState game_state = {0};
 
 PlayerID local_player = NULLPLAY, view_player = NULLPLAY, num_players = 0L;
+static char cur_level[GAME_STRING_MAX] = {'\0'};
 
 static InterpState interp = {0};
 
@@ -445,8 +446,7 @@ bool update_game() {
 				} else if (game_state.flags & GF_RESTART) {
 				restart_fr:
 					GameContext ctx = {0};
-					setup_game_context(
-						&ctx, game_state.level, GF_TRY_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
+					setup_game_context(&ctx, cur_level, GF_TRY_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
 					ctx.num_players = num_players;
 					for (PlayerID i = 0; i < num_players; i++) {
 						ctx.players[i].lives = game_state.players[i].lives;
@@ -1042,7 +1042,6 @@ void dump_game_state() {
 	INFO("	(Grid...)");
 	INFO("");
 	INFO("[STRINGS]");
-	INFO("	Level: %s", game_state.level);
 	INFO("	Next Level: %s", game_state.next);
 	INFO("====================");
 }
@@ -1103,7 +1102,7 @@ void start_game_state(GameContext* ctx) {
 	for (PlayerID i = 0; i < num_players; i++)
 		game_state.players[i].id = i;
 
-	SDL_strlcpy(game_state.level, ctx->level, sizeof(game_state.level));
+	SDL_strlcpy(cur_level, ctx->level, sizeof(cur_level));
 	game_state.flags |= ctx->flags;
 	game_state.checkpoint = ctx->checkpoint;
 
