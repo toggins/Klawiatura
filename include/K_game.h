@@ -5,7 +5,7 @@
 #include "K_net.h" // IWYU pragma: keep
 
 #define MAJOR_LEVEL_VERSION 0
-#define MINOR_LEVEL_VERSION 1
+#define MINOR_LEVEL_VERSION 2
 
 #define MAX_PLAYERS 4L
 #define DEFAULT_LIVES 4L

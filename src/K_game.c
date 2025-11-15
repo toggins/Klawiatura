@@ -1166,7 +1166,7 @@ void start_game_state(GameContext* ctx) {
 	buf++;
 
 	const uint8_t minor = *buf;
-	if (minor != MINOR_LEVEL_VERSION) {
+	if (minor < 1) {
 		SDL_free(data);
 		show_error("Invalid minor version in level \"%s\"\nLevel: %u\nGame: %u)", ctx->level, minor,
 			MINOR_LEVEL_VERSION);
@@ -1186,8 +1186,10 @@ void start_game_state(GameContext* ctx) {
 
 	read_string((const char**)(&buf), game_state.next, sizeof(game_state.next));
 
-	char track_name[2][GAME_STRING_MAX];
-	for (int i = 0; i < 2; i++) {
+	char track_name[3][GAME_STRING_MAX];
+	for (int i = 0; i < 3; i++) {
+		if (i == 2 && minor < 2)
+			continue;
 		read_string((const char**)(&buf), track_name[i], sizeof(track_name));
 		load_track(track_name[i]);
 	}
