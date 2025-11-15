@@ -57,8 +57,7 @@ static SDL_JoystickID scanning_for = 0;
 static Keybind scanning = NULLBIND;
 
 void input_init() {
-	SDL_IOStream* io = SDL_IOFromFile("gamecontrollerdb.txt", "r");
-	if (!io || SDL_AddGamepadMappingsFromIO(io, true) < 0)
+	if (SDL_AddGamepadMappingsFromFile("gamecontrollerdb.txt") < 0)
 		WARN("Failed to load gamecontrollerdb.txt: %s", SDL_GetError());
 }
 
