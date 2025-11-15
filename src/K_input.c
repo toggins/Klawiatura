@@ -4,8 +4,6 @@
 #include "K_log.h"
 #include "K_video.h"
 
-#include "embeds/gamecontrollerdb.txt"
-
 static KeybindState kb_then = 0, kb_now = 0;           // Tick-specific
 static KeybindState kb_incoming = 0, kb_repeating = 0; // Event-specific
 
@@ -59,9 +57,9 @@ static SDL_JoystickID scanning_for = 0;
 static Keybind scanning = NULLBIND;
 
 void input_init() {
-	SDL_IOStream* io = SDL_IOFromConstMem(gamecontrollerdb_txt, SDL_strlen(gamecontrollerdb_txt));
-	if (!io || SDL_AddGamepadMappingsFromIO(io, false) < 0)
-		WARN("%s", SDL_GetError());
+	SDL_IOStream* io = SDL_IOFromFile("gamecontrollerdb.txt", "r");
+	if (!io || SDL_AddGamepadMappingsFromIO(io, true) < 0)
+		WARN("Failed to load gamecontrollerdb.txt: %s", SDL_GetError());
 }
 
 void input_teardown() {}

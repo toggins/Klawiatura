@@ -127,7 +127,7 @@ endfunction()
 
 embed_txt(${CMAKE_SOURCE_DIR}/shaders/vertex.glsl shaders/vertex.glsl)
 embed_txt(${CMAKE_SOURCE_DIR}/shaders/fragment.glsl shaders/fragment.glsl)
-embed_txt(${sdl_gamecontrollerdb_SOURCE_DIR}/gamecontrollerdb.txt gamecontrollerdb.txt)
+set(CONTROLLER_DB ${sdl_gamecontrollerdb_SOURCE_DIR}/gamecontrollerdb.txt)
 
 add_executable(Klawiatura ${SOURCES} ${HEADERS} ${CMAKE_SOURCE_DIR}/res/Klawiatura.rc)
 target_include_directories(Klawiatura PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/nested)
@@ -147,14 +147,14 @@ if(LINUX)
 endif()
 
 add_custom_target(KlawiaturaPost ALL
-    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:Klawiatura> ${RUNTIME_DLLS}
+    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:Klawiatura> ${RUNTIME_DLLS} ${CONTROLLER_DB}
     COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE_DIR:Klawiatura>/data
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/modsrc $<TARGET_FILE_DIR:Klawiatura>/data
     COMMAND_EXPAND_LISTS)
 add_dependencies(KlawiaturaPost Klawiatura)
 
 install(TARGETS Klawiatura RUNTIME DESTINATION . COMPONENT Klawiatura)
-install(FILES README.md UNLICENSE res/console.bat ${RUNTIME_DLLS} DESTINATION . COMPONENT Klawiatura)
+install(FILES README.md UNLICENSE res/console.bat ${CONTROLLER_DB} ${RUNTIME_DLLS} DESTINATION . COMPONENT Klawiatura)
 install(DIRECTORY modsrc/ DESTINATION data COMPONENT Klawiatura)
 install(DIRECTORY .github/assets DESTINATION .github COMPONENT Klawiatura) # has all the README .pngs
 
