@@ -303,6 +303,8 @@ bool update_game() {
 				if (is_connected())
 					goto no_can_restart;
 
+				if (game_state.flags & GF_KEVIN)
+					goto restart_fr;
 				PlayerID can_restart = num_players;
 				for (PlayerID i = 0; i < num_players; i++) {
 					GamePlayer* player = get_player(i);
