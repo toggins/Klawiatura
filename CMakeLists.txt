@@ -74,7 +74,7 @@ set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
 FetchContent_Declare(
     S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
-    GIT_TAG bc38cdbf86ec87a738c4218e0a705e4afb7eac7e)
+    GIT_TAG f0d69ec149a0b89a93fe27f84ff47a2c61b27678)
 
 # NutPunch
 set(NUTPUNCH_BUILD_TESTS OFF CACHE INTERNAL "")

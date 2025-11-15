@@ -5,7 +5,7 @@
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
-#include "K_memory.h"
+#include "K_memory.h" // IWYU pragma: keep
 #include "K_string.h"
 #include "K_video.h"
 
@@ -238,11 +238,11 @@ void load_sound(const char* name) {
 	sound.sound = data;
 	FMOD_Sound_GetLength(data, &(sound.length), FMOD_TIMEUNIT_MS);
 
-	StMapPut(sounds, long_key(name), &sound, sizeof(sound))->cleanup = nuke_sound;
+	StMapPut(sounds, StHashStr(name), &sound, sizeof(sound))->cleanup = nuke_sound;
 }
 
 const Sound* get_sound(const char* name) {
-	return StMapGet(sounds, long_key(name));
+	return StMapGet(sounds, StHashStr(name));
 }
 
 static void nuke_track(void* ptr) {
@@ -285,11 +285,11 @@ void load_track(const char* name) {
 		}
 	}
 
-	StMapPut(tracks, long_key(name), &track, sizeof(track))->cleanup = nuke_track;
+	StMapPut(tracks, StHashStr(name), &track, sizeof(track))->cleanup = nuke_track;
 }
 
 const Track* get_track(const char* name) {
-	return StMapGet(tracks, long_key(name));
+	return StMapGet(tracks, StHashStr(name));
 }
 
 // ==============

@@ -4,7 +4,7 @@
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
-#include "K_memory.h"
+#include "K_memory.h" // IWYU pragma: keep
 #include "K_string.h"
 #include "K_video.h"
 
@@ -381,7 +381,7 @@ static bool load_texture_impl(const char* name, bool strict) {
 eattwodicks:
 	yyjson_doc_free(json);
 eatadick:
-	StMapPut(textures, long_key(name), &texture, sizeof(texture))->cleanup = nuke_texture;
+	StMapPut(textures, StHashStr(name), &texture, sizeof(texture))->cleanup = nuke_texture;
 	return true;
 }
 
@@ -452,7 +452,7 @@ void load_texture_wild(const char* pattern) {
 }
 
 const Texture* get_texture(const char* name) {
-	return !name ? NULL : StMapGet(textures, long_key(name));
+	return StMapGet(textures, StHashStr(name));
 }
 
 // =====
@@ -543,11 +543,11 @@ void load_font(const char* name) {
 eatadick:
 	yyjson_doc_free(json);
 
-	StMapPut(fonts, long_key(name), &font, sizeof(font))->cleanup = nuke_texture;
+	StMapPut(fonts, StHashStr(name), &font, sizeof(font))->cleanup = nuke_texture;
 }
 
 const Font* get_font(const char* name) {
-	return (name == NULL) ? NULL : StMapGet(fonts, long_key(name));
+	return StMapGet(fonts, StHashStr(name));
 }
 
 // =====
@@ -1113,7 +1113,7 @@ static void nuke_tilemap(void* ptr) {
 }
 
 static TileMap* fetch_tilemap(const char* name) {
-	const StTinyKey key = long_key(name == NULL ? "" : name);
+	const StTinyKey key = StHashStr(name);
 	TileMap* ptr = StMapGet(tilemaps, key);
 	if (ptr != NULL)
 		return ptr;
