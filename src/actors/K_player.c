@@ -1017,10 +1017,6 @@ static void tick(GameActor* actor) {
 		}
 		}
 
-		// transfer player's velocity too because i'm cool.
-		VAL(missile, X_SPEED) += VAL(actor, X_SPEED);
-		VAL(missile, Y_SPEED) += VAL(actor, Y_SPEED);
-
 		if (VAL(actor, PLAYER_GROUND) > 0L)
 			VAL(actor, PLAYER_FIRE) = 2L;
 		play_actor_sound(actor, "fire");
