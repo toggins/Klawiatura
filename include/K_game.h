@@ -185,6 +185,7 @@ enum {
 	ACT_BOWSER_LAVA,
 	ACT_LAVA_BUBBLE,
 	ACT_WAVING_LEVEL,
+	ACT_BOSS_BASS,
 
 	ACT_SIZE,
 };
@@ -492,6 +493,7 @@ void displace_actor(GameActor*, fixed, Bool);
 void displace_actor_soft(GameActor*);
 
 void draw_actor(const GameActor*, const char*, GLfloat, const GLubyte[4]);
+void draw_actor_offset(const GameActor*, const char*, const GLfloat[3], GLfloat, const GLubyte[4]);
 void draw_actor_no_jitter(const GameActor*, const char*, GLfloat, const GLubyte[4]);
 void draw_dead(const GameActor*);
 void quake_at_actor(const GameActor*, float);

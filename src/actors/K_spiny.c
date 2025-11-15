@@ -242,14 +242,10 @@ static void draw_egg(const GameActor* actor) {
 }
 
 static void draw_egg_corpse(const GameActor* actor) {
-	if (ANY_FLAG(actor, FLG_SPINY_GREEN)) {
-		const InterpActor* iactor = get_interp(actor);
-		batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + 15.f, actor->depth), 0.f, WHITE);
-		batch_sprite("enemies/spiny_egg_green", NO_FLIP);
-		return;
-	}
-
-	draw_actor(actor, "enemies/spiny2", 0.f, WHITE);
+	if (ANY_FLAG(actor, FLG_SPINY_GREEN))
+		draw_actor_offset(actor, "enemies/spiny_egg_green", XY(0.f, 31.f), 0.f, WHITE);
+	else
+		draw_actor(actor, "enemies/spiny2", 0.f, WHITE);
 }
 
 const GameActorTable TAB_SPINY_EGG = {

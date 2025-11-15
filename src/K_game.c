@@ -2072,9 +2072,16 @@ void displace_actor_soft(GameActor* actor) {
 //
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
+	draw_actor_offset(actor, name, ORIGO, angle, color);
+}
+
+// Variant of `draw_actor()` with an offset.
+void draw_actor_offset(
+	const GameActor* actor, const char* name, const GLfloat offs[3], GLfloat angle, const GLubyte color[4]) {
 	const InterpActor* iactor = get_interp(actor);
 	const GLfloat sprout = VAL(actor, SPROUT), z = (sprout > FxZero) ? 21.f : FtFloat(actor->depth);
-	batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y + sprout), z), angle, color);
+	batch_start(XYZ(FtInt(iactor->pos.x) + offs[0], FtInt(iactor->pos.y + sprout) + offs[1], z + offs[2]), angle,
+		color);
 	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 }
 
