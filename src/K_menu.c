@@ -370,7 +370,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	},
 };
 
-void start_menu(bool skip_intro) {
+void menu_init() {
 	from_scratch();
 
 	load_texture("ui/disclaimer");
@@ -395,8 +395,6 @@ void start_menu(bool skip_intro) {
 	load_track("title");
 	load_track("human_like_predator");
 	load_track("yi_score");
-
-	set_menu(skip_intro ? MEN_MAIN : MEN_INTRO);
 }
 
 static void enter_multiplayer_note() {
@@ -869,6 +867,10 @@ void show_error(const char* fmt, ...) {
 	}
 
 	set_menu(MEN_ERROR);
+
+	extern bool quickstart;
+	if (quickstart)
+		MENUS[MEN_ERROR].from = MEN_EXIT;
 }
 
 void populate_results() {
@@ -934,6 +936,11 @@ void show_results() {
 }
 
 bool set_menu(MenuType next_menu) {
+	if (next_menu == MEN_EXIT) {
+		permadeath = true;
+		return true;
+	}
+
 	if (cur_menu == next_menu || next_menu <= MEN_NULL || next_menu >= MEN_SIZE)
 		return false;
 

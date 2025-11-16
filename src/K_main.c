@@ -84,14 +84,15 @@ static int realmain() {
 	populate_actors_table();
 
 	file_init(data_path), video_init(force_shader), audio_init();
-	input_init(), config_init(config_path), net_init();
+	input_init(), config_init(config_path), net_init(), menu_init();
 
 	if (quickstart) {
 		GameContext ctx;
 		setup_game_context(&ctx, CLIENT.game.level, GF_SINGLE | GF_TRY_KEVIN);
 		start_game(&ctx);
-	} else
-		start_menu(skip_intro);
+	} else {
+		set_menu(skip_intro ? MEN_MAIN : MEN_INTRO);
+	}
 
 	while (!permadeath) {
 		SDL_Event event;
@@ -133,8 +134,6 @@ static int realmain() {
 		if (game_exists()) {
 			if (update_game())
 				draw_game();
-			else if (quickstart)
-				goto teardown;
 			else
 				input_wipeout();
 		} else {

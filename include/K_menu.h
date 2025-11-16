@@ -5,6 +5,7 @@
 #define MAX_OPTIONS 16
 
 typedef enum {
+	MEN_EXIT, // going "back" to this menu exits the game
 	MEN_NULL,
 	MEN_ERROR,
 	MEN_RESULTS,
@@ -47,7 +48,7 @@ typedef struct {
 	float cursor;
 } Menu;
 
-void start_menu(bool);
+void menu_init();
 void update_menu();
 void draw_menu();
 

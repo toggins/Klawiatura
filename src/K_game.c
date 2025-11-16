@@ -176,6 +176,8 @@ static void draw_chat_message() {
 // GAME
 // ====
 
+static bool show_error_immediately = false; // funi testing flag
+
 /// Initializes a GameContext struct with a clean 1-player preset.
 void setup_game_context(GameContext* ctx, const char* level, GameFlag flags) {
 	SDL_memset(ctx, 0, sizeof(GameContext));
@@ -186,6 +188,9 @@ void setup_game_context(GameContext* ctx, const char* level, GameFlag flags) {
 		ctx->players[i].power = POW_SMALL;
 		ctx->players[i].lives = DEFAULT_LIVES;
 	}
+
+	if (!SDL_strcmp(level, "show_error"))
+		level = "test", show_error_immediately = true;
 
 	SDL_strlcpy(ctx->level, level, sizeof(ctx->level));
 	ctx->checkpoint = NULLACT;
@@ -325,13 +330,16 @@ bool update_game() {
 			}
 
 			case PMO_EXIT:
+				extern bool quickstart, permadeath;
+				permadeath |= quickstart;
 				goto byebye_game;
 			}
 		} else if (kb_pressed(KB_PAUSE) && !typing_what()) {
 			play_generic_sound("pause");
 			pause();
-		} else
+		} else {
 			goto dont_break_events;
+		}
 
 	pause_n_all:
 		if (!is_connected())
@@ -475,6 +483,11 @@ bool update_game() {
 	for (const GameActor* actor = get_actor(game_state.live_actors); actor; actor = get_actor(actor->previous)) {
 		InterpActor* iactor = &interp.actors[actor->id];
 		iactor->pos = Vadd(iactor->from, Vscale(Vsub(actor->pos, iactor->from), ftick));
+	}
+
+	if (show_error_immediately) { // funi...
+		show_error("testing...");
+		goto byebye_game;
 	}
 
 	return true;
