@@ -1,3 +1,5 @@
+#include "K_string.h"
+
 #include "actors/K_enemies.h"
 
 enum {
@@ -9,8 +11,7 @@ enum {
 // ======
 
 static void load() {
-	load_texture("enemies/goomba");
-	load_texture("enemies/goomba2");
+	load_texture_num("enemies/goomba%u", 2L);
 
 	load_sound("stomp");
 	load_sound("kick");
@@ -32,13 +33,11 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	draw_actor(actor,
-		((int)((float)game_state.time / 9.090909090909091f) % 2L) ? "enemies/goomba2" : "enemies/goomba", 0.f,
-		WHITE);
+	draw_actor(actor, fmt("enemies/goomba%u", (int)((float)game_state.time / 9.090909090909091f) % 2L), 0.f, WHITE);
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, "enemies/goomba", 0.f, WHITE);
+	draw_actor(actor, "enemies/goomba0", 0.f, WHITE);
 }
 
 static void cleanup(GameActor* actor) {

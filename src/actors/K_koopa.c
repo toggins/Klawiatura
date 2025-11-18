@@ -1,3 +1,5 @@
+#include "K_string.h"
+
 #include "actors/K_koopa.h"
 #include "actors/K_player.h"
 
@@ -6,12 +8,10 @@
 // =====
 
 static void load() {
-	load_texture("enemies/koopa");
-	load_texture("enemies/koopa2");
-	load_texture("enemies/shell");
-	load_texture("enemies/koopa_red");
-	load_texture("enemies/koopa_red2");
-	load_texture("enemies/shell_red");
+	load_texture_num("enemies/koopa%u", 2L);
+	load_texture("enemies/shell0");
+	load_texture_num("enemies/koopa_red%u", 2L);
+	load_texture("enemies/shell_red0");
 
 	load_sound("stomp");
 	load_sound("kick");
@@ -35,31 +35,14 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex = NULL;
-	if (ANY_FLAG(actor, FLG_KOOPA_RED))
-		switch ((int)((float)game_state.time / 11.11111111111111f) % 2L) {
-		default:
-			tex = "enemies/koopa_red";
-			break;
-		case 1L:
-			tex = "enemies/koopa_red2";
-			break;
-		}
-	else
-		switch ((int)((float)game_state.time / 16.66666666666667f) % 2L) {
-		default:
-			tex = "enemies/koopa";
-			break;
-		case 1L:
-			tex = "enemies/koopa2";
-			break;
-		}
-
+	const char* tex = ANY_FLAG(actor, FLG_KOOPA_RED)
+	                          ? fmt("enemies/koopa_red%u", (int)((float)game_state.time / 11.11111111111111f) % 2L)
+	                          : fmt("enemies/koopa%u", (int)((float)game_state.time / 16.66666666666667f) % 2L);
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red" : "enemies/shell", 0.f, WHITE);
+	draw_actor(actor, ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red0" : "enemies/shell0", 0.f, WHITE);
 }
 
 static void cleanup(GameActor* actor) {
@@ -136,8 +119,8 @@ const GameActorTable TAB_KOOPA = {.load = load,
 // ===========
 
 static void load_shell() {
-	load_texture_wild("enemies/shell?");
-	load_texture_wild("enemies/shell_red?");
+	load_texture_num("enemies/shell%u", 4L);
+	load_texture_num("enemies/shell_red%u", 4L);
 
 	load_sound("stomp");
 	load_sound("kick");
@@ -174,22 +157,8 @@ static void tick_shell(GameActor* actor) {
 }
 
 static void draw_shell(const GameActor* actor) {
-	const char* tex = NULL;
-	switch (FtInt(VAL(actor, SHELL_FRAME)) % 4L) {
-	default:
-		tex = ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red" : "enemies/shell";
-		break;
-	case 1L:
-		tex = ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red2" : "enemies/shell2";
-		break;
-	case 2L:
-		tex = ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red3" : "enemies/shell3";
-		break;
-	case 3L:
-		tex = ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red4" : "enemies/shell4";
-		break;
-	}
-
+	const char* tex = fmt(ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red%u" : "enemies/shell%u",
+		FtInt(VAL(actor, SHELL_FRAME)) % 4L);
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
@@ -267,10 +236,10 @@ const GameActorTable TAB_KOOPA_SHELL = {
 // =========
 
 static void load_parakoopa() {
-	load_texture_wild("enemies/parakoopa?");
-	load_texture("enemies/shell");
-	load_texture_wild("enemies/parakoopa_red?");
-	load_texture("enemies/shell_red");
+	load_texture_num("enemies/parakoopa%u", 2L);
+	load_texture("enemies/shell0");
+	load_texture_num("enemies/parakoopa_red%u", 2L);
+	load_texture("enemies/shell_red0");
 
 	load_sound("stomp");
 	load_sound("kick");
@@ -300,16 +269,8 @@ static void tick_parakoopa(GameActor* actor) {
 }
 
 static void draw_parakoopa(const GameActor* actor) {
-	const char* tex = NULL;
-	switch ((int)((float)(game_state.time) / 8.333333333333333f) % 2L) {
-	default:
-		tex = ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/parakoopa_red" : "enemies/parakoopa";
-		break;
-	case 1L:
-		tex = ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/parakoopa_red2" : "enemies/parakoopa2";
-		break;
-	}
-
+	const char* tex = fmt(ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/parakoopa_red%u" : "enemies/parakoopa%u",
+		(int)((float)(game_state.time) / 8.333333333333333f) % 2L);
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 

@@ -8,7 +8,7 @@
 // ====
 
 static void load() {
-	load_texture_wild("items/coin?");
+	load_texture_num("items/coin%u", 3L);
 
 	load_sound("coin");
 
@@ -28,14 +28,14 @@ static void draw(const GameActor* actor) {
 	const char* tex = NULL;
 	switch ((game_state.time / 5L) % 4L) {
 	default:
-		tex = "items/coin";
+		tex = "items/coin0";
 		break;
 	case 1L:
 	case 3L:
-		tex = "items/coin2";
+		tex = "items/coin1";
 		break;
 	case 2L:
-		tex = "items/coin3";
+		tex = "items/coin2";
 		break;
 	}
 	draw_actor(actor, tex, 0.f, WHITE);
@@ -85,8 +85,8 @@ const GameActorTable TAB_PSWITCH_COIN = {.load = load, .create = create, .draw =
 // ========
 
 static void load_pop() {
-	load_texture_wild("items/coin_pop?");
-	load_texture_wild("effects/spark?");
+	load_texture_num("items/coin_pop%u", 4L);
+	load_texture_num("effects/spark%u", 4L);
 
 	load_sound("coin");
 
@@ -141,10 +141,10 @@ static void tick_pop(GameActor* actor) {
 static void draw_pop(const GameActor* actor) {
 	const char* tex = NULL;
 	if (ANY_FLAG(actor, FLG_COIN_POP_SPARK))
-		tex = fmt("effects/spark%s", txnum((VAL(actor, COIN_POP_FRAME) / 100L)));
+		tex = fmt("effects/spark%u", (VAL(actor, COIN_POP_FRAME) / 100L));
 	else {
-		const uint64_t frame = (VAL(actor, COIN_POP_FRAME) / 100L) % 5L;
-		tex = fmt("items/coin_pop%s", txnum(frame >= 2 ? frame - 1 : 0));
+		const uint32_t frame = (VAL(actor, COIN_POP_FRAME) / 100L) % 5L;
+		tex = fmt("items/coin_pop%u", (frame >= 2L) ? (frame - 1L) : 0L);
 	}
 	draw_actor(actor, tex, 0.f, WHITE);
 }

@@ -1,3 +1,5 @@
+#include "K_string.h"
+
 #include "actors/K_spiny.h"
 
 // =====
@@ -5,10 +7,8 @@
 // =====
 
 static void load() {
-	load_texture("enemies/spiny");
-	load_texture("enemies/spiny2");
-	load_texture("enemies/spiny_gray");
-	load_texture("enemies/spiny_gray2");
+	load_texture_num("enemies/spiny%u", 2L);
+	load_texture_num("enemies/spiny_gray%u", 2L);
 
 	load_sound("kick");
 
@@ -31,16 +31,13 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex = NULL;
-	if ((int)((float)game_state.time / 7.142857142857143f) % 2L)
-		tex = ANY_FLAG(actor, FLG_SPINY_GRAY) ? "enemies/spiny_gray2" : "enemies/spiny2";
-	else
-		tex = ANY_FLAG(actor, FLG_SPINY_GRAY) ? "enemies/spiny_gray" : "enemies/spiny";
+	const char* tex = fmt(ANY_FLAG(actor, FLG_SPINY_GRAY) ? "enemies/spiny_gray%u" : "enemies/spiny%u",
+		(int)((float)game_state.time / 7.142857142857143f) % 2L);
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, ANY_FLAG(actor, FLG_SPINY_GRAY) ? "enemies/spiny_gray2" : "enemies/spiny2", 0.f, WHITE);
+	draw_actor(actor, ANY_FLAG(actor, FLG_SPINY_GRAY) ? "enemies/spiny_gray1" : "enemies/spiny1", 0.f, WHITE);
 }
 
 static void cleanup(GameActor* actor) {
@@ -114,7 +111,7 @@ const GameActorTable TAB_SPINY = {
 // =========
 
 static void load_egg() {
-	load_texture_wild("enemies/spiny_egg?");
+	load_texture_num("enemies/spiny_egg%u", 6L);
 	load_texture("enemies/spiny_egg_green");
 
 	load_sound("kick");
@@ -218,26 +215,8 @@ static void draw_egg(const GameActor* actor) {
 		return;
 	}
 
-	const char* tex = "enemies/spiny_egg";
-	if (ANY_FLAG(actor, FLG_SPINY_HATCH))
-		switch (VAL(actor, SPINY_FRAME)) {
-		default:
-			tex = "enemies/spiny_egg2";
-			break;
-		case 1L:
-			tex = "enemies/spiny_egg3";
-			break;
-		case 2L:
-			tex = "enemies/spiny_egg4";
-			break;
-		case 3L:
-			tex = "enemies/spiny_egg5";
-			break;
-		case 4L:
-			tex = "enemies/spiny_egg6";
-			break;
-		}
-
+	const char* tex = ANY_FLAG(actor, FLG_SPINY_HATCH) ? fmt("enemies/spiny_egg%u", 1L + VAL(actor, SPINY_FRAME))
+	                                                   : "enemies/spiny_egg0";
 	draw_actor(actor, tex, FtFloat(VAL(actor, SPINY_ANGLE)), WHITE);
 }
 
@@ -245,7 +224,7 @@ static void draw_egg_corpse(const GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_SPINY_GREEN))
 		draw_actor_offset(actor, "enemies/spiny_egg_green", XY(0.f, 31.f), 0.f, WHITE);
 	else
-		draw_actor(actor, "enemies/spiny2", 0.f, WHITE);
+		draw_actor(actor, "enemies/spiny1", 0.f, WHITE);
 }
 
 const GameActorTable TAB_SPINY_EGG = {

@@ -1,3 +1,5 @@
+#include "K_string.h"
+
 #include "actors/K_player.h" // IWYU pragma: keep
 
 enum {
@@ -9,8 +11,8 @@ enum {
 };
 
 static void load() {
-	load_texture_wild("markers/spring?");
-	load_texture_wild("markers/spring_green?");
+	load_texture_num("markers/spring%u", 3L);
+	load_texture_num("markers/spring_green%u", 3L);
 
 	load_sound("spring");
 }
@@ -32,20 +34,8 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex = NULL;
-	switch (VAL(actor, SPRING_FRAME) / 100L) {
-	default:
-		tex = ANY_FLAG(actor, FLG_SPRING_GREEN) ? "markers/spring_green" : "markers/spring";
-		break;
-	case 1L:
-	case 3L:
-		tex = ANY_FLAG(actor, FLG_SPRING_GREEN) ? "markers/spring_green2" : "markers/spring2";
-		break;
-	case 2L:
-		tex = ANY_FLAG(actor, FLG_SPRING_GREEN) ? "markers/spring_green3" : "markers/spring3";
-		break;
-	}
-
+	const char* tex = fmt(ANY_FLAG(actor, FLG_SPRING_GREEN) ? "markers/spring_green%u" : "markers/spring%u",
+		VAL(actor, SPRING_FRAME) / 100L);
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 

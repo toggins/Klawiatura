@@ -154,7 +154,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 // ==========
 
 static void load() {
-	load_texture_wild("items/block?");
+	load_texture_num("items/block%u", 3L);
 	load_texture("items/empty");
 
 	load_sound("sprout");
@@ -189,20 +189,18 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex = NULL;
-	if (ANY_FLAG(actor, FLG_BLOCK_EMPTY))
-		tex = "items/empty";
-	else
+	const char* tex = "items/empty";
+	if (!ANY_FLAG(actor, FLG_BLOCK_EMPTY))
 		switch ((int)((float)(game_state.time) / 11.11111111111111f) % 4L) {
 		default:
-			tex = "items/block";
+			tex = "items/block0";
 			break;
 		case 1L:
 		case 3L:
-			tex = "items/block2";
+			tex = "items/block1";
 			break;
 		case 2L:
-			tex = "items/block3";
+			tex = "items/block2";
 			break;
 		}
 
@@ -430,7 +428,7 @@ static Bool note_solid(const GameActor* actor) {
 }
 
 static void load_note() {
-	load_texture_wild("items/note?");
+	load_texture_num("items/note%u", 3L);
 
 	load_sound("bump");
 	load_sound("spring");
@@ -444,14 +442,14 @@ static void draw_note(const GameActor* actor) {
 	const char* tex = NULL;
 	switch ((int)((float)(game_state.time) / 7.69230769231f) % 4L) {
 	default:
-		tex = "items/note2";
+		tex = "items/note1";
 		break;
 	case 1L:
 	case 3L:
-		tex = "items/note";
+		tex = "items/note0";
 		break;
 	case 2L:
-		tex = "items/note3";
+		tex = "items/note2";
 		break;
 	}
 

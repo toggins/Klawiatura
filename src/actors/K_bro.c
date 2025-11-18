@@ -1,3 +1,5 @@
+#include "K_string.h"
+
 #include "actors/K_enemies.h"
 
 enum {
@@ -32,8 +34,7 @@ enum {
 // ===
 
 static void load() {
-	load_texture("enemies/bro");
-	load_texture("enemies/bro2");
+	load_texture_num("enemies/bro%u", 2L);
 
 	load_sound("hammer");
 	load_sound("stomp");
@@ -46,22 +47,18 @@ static void load_special(const GameActor* actor) {
 	default:
 		break;
 
-	case ACT_MISSILE_HAMMER: {
-		load_texture("enemies/bro_hammer");
-		load_texture("enemies/bro_hammer2");
+	case ACT_MISSILE_HAMMER:
+		load_texture_num("enemies/bro_hammer%u", 2L);
 		break;
-	}
 
 	case ACT_MISSILE_FIREBALL: {
-		load_texture("enemies/bro_fire");
-		load_texture("enemies/bro_fire2");
+		load_texture_num("enemies/bro_fire%u", 2L);
 		load_sound("fire");
 		break;
 	}
 
 	case ACT_MISSILE_SILVER_HAMMER:
-		load_texture("enemies/bro_silver");
-		load_texture("enemies/bro_silver2");
+		load_texture_num("enemies/bro_silver%u", 2L);
 		break;
 	}
 	load_actor(VAL(actor, BRO_MISSILE));
@@ -252,31 +249,26 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex = NULL;
-	const uint8_t frame = (int)((float)game_state.time / 7.142857142857143f) % 2L;
+	const char* tex = "enemies/bro%u";
 	if (VAL(actor, BRO_THROW_STATE) > 0L)
 		switch (VAL(actor, BRO_MISSILE)) {
 		default:
-			tex = frame ? "enemies/bro2" : "enemies/bro";
 			break;
 		case ACT_MISSILE_HAMMER:
-			tex = frame ? "enemies/bro_hammer2" : "enemies/bro_hammer";
+			tex = "enemies/bro_hammer%u";
 			break;
 		case ACT_MISSILE_FIREBALL:
-			tex = frame ? "enemies/bro_fire2" : "enemies/bro_fire";
+			tex = "enemies/bro_fire%u";
 			break;
 		case ACT_MISSILE_SILVER_HAMMER:
-			tex = frame ? "enemies/bro_silver2" : "enemies/bro_silver";
+			tex = "enemies/bro_silver%u";
 			break;
 		}
-	else
-		tex = frame ? "enemies/bro2" : "enemies/bro";
-
-	draw_actor(actor, tex, 0, WHITE);
+	draw_actor(actor, fmt(tex, (int)((float)game_state.time / 7.142857142857143f) % 2L), 0, WHITE);
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, "enemies/bro", 0.f, WHITE);
+	draw_actor(actor, "enemies/bro0", 0.f, WHITE);
 }
 
 static void cleanup(GameActor* actor) {

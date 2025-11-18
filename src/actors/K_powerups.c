@@ -1,3 +1,5 @@
+#include "K_string.h"
+
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 #include "actors/K_powerups.h"
@@ -124,7 +126,7 @@ const GameActorTable TAB_MUSHROOM_1UP = {
 // ===============
 
 static void load_poison_mushroom() {
-	load_texture_wild("items/mushroom_poison?");
+	load_texture_num("items/mushroom_poison%u", 2L);
 	load_actor(ACT_EXPLODE);
 }
 
@@ -134,10 +136,8 @@ static void create_poison_mushroom(GameActor* actor) {
 }
 
 static void draw_poison_mushroom(const GameActor* actor) {
-	draw_actor(actor,
-		((int)((float)game_state.time / 11.11111111111111f) % 2L) ? "items/mushroom_poison2"
-									  : "items/mushroom_poison",
-		0.f, WHITE);
+	draw_actor(actor, fmt("items/mushroom_poison%u", (int)((float)game_state.time / 11.11111111111111f) % 2L), 0.f,
+		WHITE);
 }
 
 static void collide_poison_mushroom(GameActor* actor, GameActor* from) {
@@ -160,7 +160,7 @@ const GameActorTable TAB_MUSHROOM_POISON = {.load = load_poison_mushroom,
 // ===========
 
 static void load_flower() {
-	load_texture_wild("items/flower?");
+	load_texture_num("items/flower%u", 4L);
 
 	load_sound("grow");
 
@@ -177,21 +177,7 @@ static void create_flower(GameActor* actor) {
 }
 
 static void draw_flower(const GameActor* actor) {
-	const char* tex = NULL;
-	switch ((int)((float)game_state.time / 3.703703703703704f) % 4L) {
-	default:
-		tex = "items/flower";
-		break;
-	case 1L:
-		tex = "items/flower2";
-		break;
-	case 2L:
-		tex = "items/flower3";
-		break;
-	case 3L:
-		tex = "items/flower4";
-		break;
-	}
+	const char* tex = fmt("items/flower%u", (int)((float)game_state.time / 3.703703703703704f) % 4L);
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
@@ -211,7 +197,7 @@ const GameActorTable TAB_FIRE_FLOWER = {
 // ========
 
 static void load_beetroot() {
-	load_texture_wild("items/beetroot?");
+	load_texture_num("items/beetroot%u", 3L);
 	load_sound("grow");
 	load_actor(ACT_POINTS);
 }
@@ -229,14 +215,14 @@ static void draw_beetroot(const GameActor* actor) {
 	const char* tex = NULL;
 	switch ((int)((float)game_state.time / 12.5f) % 4L) {
 	default:
-		tex = "items/beetroot";
+		tex = "items/beetroot0";
 		break;
 	case 1L:
 	case 3L:
-		tex = "items/beetroot2";
+		tex = "items/beetroot1";
 		break;
 	case 2L:
-		tex = "items/beetroot3";
+		tex = "items/beetroot2";
 		break;
 	}
 
@@ -259,8 +245,8 @@ const GameActorTable TAB_BEETROOT = {
 // =========
 
 static void load_lui() {
-	load_texture_wild("items/lui?");
-	load_texture_wild("items/lui_bounce?");
+	load_texture_num("items/lui%u", 5L);
+	load_texture_num("items/lui_bounce%u", 3L);
 
 	load_sound("kick");
 	load_sound("grow");
@@ -299,21 +285,18 @@ static void draw_lui(const GameActor* actor) {
 		switch (VAL(actor, LUI_BOUNCE) / 100L) {
 		default:
 		case 0L:
-			tex = "items/lui2";
+			tex = "items/lui1";
 			break;
-
 		case 1L:
 		case 5L:
-			tex = "items/lui_bounce";
+			tex = "items/lui_bounce0";
 			break;
-
 		case 2L:
 		case 4L:
-			tex = "items/lui_bounce2";
+			tex = "items/lui_bounce1";
 			break;
-
 		case 3L:
-			tex = "items/lui_bounce3";
+			tex = "items/lui_bounce2";
 			break;
 		}
 	else
@@ -321,29 +304,25 @@ static void draw_lui(const GameActor* actor) {
 		default:
 		case 10L:
 		case 11L:
-			tex = "items/lui";
+			tex = "items/lui0";
 			break;
-
 		case 0L:
-			tex = "items/lui2";
+			tex = "items/lui1";
 			break;
-
 		case 1L:
 		case 8L:
 		case 9L:
-			tex = "items/lui3";
+			tex = "items/lui2";
 			break;
-
 		case 2L:
 		case 6L:
 		case 7L:
-			tex = "items/lui4";
+			tex = "items/lui3";
 			break;
-
 		case 3L:
 		case 4L:
 		case 5L:
-			tex = "items/lui5";
+			tex = "items/lui4";
 			break;
 		}
 
@@ -403,7 +382,7 @@ const GameActorTable TAB_HAMMER_SUIT = {
 // =======
 
 static void load_starman() {
-	load_texture_wild("items/starman?");
+	load_texture_num("items/starman%u", 4L);
 
 	load_sound("grow");
 	load_sound("starman");
@@ -434,21 +413,7 @@ static void tick_starman(GameActor* actor) {
 }
 
 static void draw_starman(const GameActor* actor) {
-	const char* tex = NULL;
-	switch ((int)((float)game_state.time / 2.040816326530612f) % 4L) {
-	default:
-		tex = "items/starman";
-		break;
-	case 1:
-		tex = "items/starman2";
-		break;
-	case 2:
-		tex = "items/starman3";
-		break;
-	case 3:
-		tex = "items/starman4";
-		break;
-	}
+	const char* tex = fmt("items/starman%u", (int)((float)game_state.time / 2.040816326530612f) % 4L);
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 

@@ -14,51 +14,45 @@
 
 static void load_player_textures() {
 	load_texture("player/mario/dead");
-	load_texture_wild("player/mario/grow?");
+	load_texture_num("player/mario/grow%u", 3L);
 
 	load_texture("player/mario/small/idle");
-	load_texture("player/mario/small/walk");
-	load_texture("player/mario/small/walk2");
+	load_texture_num("player/mario/small/walk%u", 2L);
 	load_texture("player/mario/small/jump");
-	load_texture_wild("player/mario/small/swim?");
+	load_texture_num("player/mario/small/swim%u", 4L);
 
 	load_texture("player/mario/big/idle");
-	load_texture("player/mario/big/walk");
-	load_texture("player/mario/big/walk2");
+	load_texture_num("player/mario/big/walk%u", 2L);
 	load_texture("player/mario/big/jump");
 	load_texture("player/mario/big/duck");
-	load_texture_wild("player/mario/big/swim?");
+	load_texture_num("player/mario/big/swim%u", 4L);
 
 	load_texture("player/mario/fire/idle");
-	load_texture("player/mario/fire/walk");
-	load_texture("player/mario/fire/walk2");
+	load_texture_num("player/mario/fire/walk%u", 2L);
 	load_texture("player/mario/fire/jump");
 	load_texture("player/mario/fire/duck");
 	load_texture("player/mario/fire/fire");
-	load_texture_wild("player/mario/fire/swim?");
+	load_texture_num("player/mario/fire/swim%u", 4L);
 
 	load_texture("player/mario/beetroot/idle");
-	load_texture("player/mario/beetroot/walk");
-	load_texture("player/mario/beetroot/walk2");
+	load_texture_num("player/mario/beetroot/walk%u", 2L);
 	load_texture("player/mario/beetroot/jump");
 	load_texture("player/mario/beetroot/duck");
 	load_texture("player/mario/beetroot/fire");
-	load_texture_wild("player/mario/beetroot/swim?");
+	load_texture_num("player/mario/beetroot/swim%u", 4L);
 
 	load_texture("player/mario/lui/idle");
-	load_texture("player/mario/lui/walk");
-	load_texture("player/mario/lui/walk2");
+	load_texture_num("player/mario/lui/walk%u", 2L);
 	load_texture("player/mario/lui/jump");
 	load_texture("player/mario/lui/duck");
-	load_texture_wild("player/mario/lui/swim?");
+	load_texture_num("player/mario/lui/swim%u", 4L);
 
 	load_texture("player/mario/hammer/idle");
-	load_texture("player/mario/hammer/walk");
-	load_texture("player/mario/hammer/walk2");
+	load_texture_num("player/mario/hammer/walk%u", 2L);
 	load_texture("player/mario/hammer/jump");
 	load_texture("player/mario/hammer/duck");
 	load_texture("player/mario/hammer/fire");
-	load_texture_wild("player/mario/hammer/swim?");
+	load_texture_num("player/mario/hammer/swim%u", 4L);
 }
 
 PlayerFrame get_player_frame(const GameActor* actor) {
@@ -164,9 +158,9 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 			return "player/mario/small/idle";
 
 		case PF_WALK1:
-			return "player/mario/small/walk";
+			return "player/mario/small/walk0";
 		case PF_WALK2:
-			return "player/mario/small/walk2";
+			return "player/mario/small/walk1";
 
 		case PF_JUMP:
 		case PF_FALL:
@@ -174,18 +168,18 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 
 		case PF_SWIM1:
 		case PF_SWIM4:
-			return "player/mario/small/swim";
+			return "player/mario/small/swim0";
 		case PF_SWIM2:
-			return "player/mario/small/swim2";
+			return "player/mario/small/swim1";
 		case PF_SWIM3:
-			return "player/mario/small/swim3";
+			return "player/mario/small/swim2";
 		case PF_SWIM5:
-			return "player/mario/small/swim4";
+			return "player/mario/small/swim3";
 
 		case PF_GROW2:
-			return "player/mario/grow";
+			return "player/mario/grow0";
 		case PF_GROW3:
-			return "player/mario/big/walk2";
+			return "player/mario/big/walk1";
 		}
 		break;
 	}
@@ -196,10 +190,10 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 			return "player/mario/big/idle";
 
 		case PF_WALK1:
-			return "player/mario/big/walk";
+			return "player/mario/big/walk0";
 		case PF_WALK2:
 		case PF_GROW1:
-			return "player/mario/big/walk2";
+			return "player/mario/big/walk1";
 
 		case PF_JUMP:
 		case PF_FALL:
@@ -210,16 +204,16 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 
 		case PF_SWIM1:
 		case PF_SWIM4:
-			return "player/mario/big/swim";
+			return "player/mario/big/swim0";
 		case PF_SWIM2:
-			return "player/mario/big/swim2";
+			return "player/mario/big/swim1";
 		case PF_SWIM3:
-			return "player/mario/big/swim3";
+			return "player/mario/big/swim2";
 		case PF_SWIM5:
-			return "player/mario/big/swim4";
+			return "player/mario/big/swim3";
 
 		case PF_GROW2:
-			return "player/mario/grow";
+			return "player/mario/grow0";
 		case PF_GROW3:
 			return "player/mario/small/idle";
 		}
@@ -232,10 +226,10 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 			return "player/mario/fire/idle";
 
 		case PF_WALK1:
-			return "player/mario/fire/walk";
+			return "player/mario/fire/walk0";
 		case PF_WALK2:
 		case PF_GROW3:
-			return "player/mario/fire/walk2";
+			return "player/mario/fire/walk1";
 
 		case PF_JUMP:
 		case PF_FALL:
@@ -249,20 +243,20 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 
 		case PF_SWIM1:
 		case PF_SWIM4:
-			return "player/mario/fire/swim";
+			return "player/mario/fire/swim0";
 		case PF_SWIM2:
-			return "player/mario/fire/swim2";
+			return "player/mario/fire/swim1";
 		case PF_SWIM3:
-			return "player/mario/fire/swim3";
+			return "player/mario/fire/swim2";
 		case PF_SWIM5:
-			return "player/mario/fire/swim4";
+			return "player/mario/fire/swim3";
 
 		case PF_GROW1:
-			return "player/mario/big/walk2";
+			return "player/mario/big/walk1";
 		case PF_GROW2:
-			return "player/mario/grow2";
+			return "player/mario/grow1";
 		case PF_GROW4:
-			return "player/mario/grow3";
+			return "player/mario/grow2";
 		}
 		break;
 	}
@@ -273,10 +267,10 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 			return "player/mario/beetroot/idle";
 
 		case PF_WALK1:
-			return "player/mario/beetroot/walk";
+			return "player/mario/beetroot/walk0";
 		case PF_WALK2:
 		case PF_GROW3:
-			return "player/mario/beetroot/walk2";
+			return "player/mario/beetroot/walk1";
 
 		case PF_JUMP:
 		case PF_FALL:
@@ -290,20 +284,20 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 
 		case PF_SWIM1:
 		case PF_SWIM4:
-			return "player/mario/beetroot/swim";
+			return "player/mario/beetroot/swim0";
 		case PF_SWIM2:
-			return "player/mario/beetroot/swim2";
+			return "player/mario/beetroot/swim1";
 		case PF_SWIM3:
-			return "player/mario/beetroot/swim3";
+			return "player/mario/beetroot/swim2";
 		case PF_SWIM5:
-			return "player/mario/beetroot/swim4";
+			return "player/mario/beetroot/swim3";
 
 		case PF_GROW1:
-			return "player/mario/big/walk2";
+			return "player/mario/big/walk1";
 		case PF_GROW2:
-			return "player/mario/grow2";
+			return "player/mario/grow1";
 		case PF_GROW4:
-			return "player/mario/grow3";
+			return "player/mario/grow2";
 		}
 		break;
 	}
@@ -314,10 +308,10 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 			return "player/mario/lui/idle";
 
 		case PF_WALK1:
-			return "player/mario/lui/walk";
+			return "player/mario/lui/walk0";
 		case PF_WALK2:
 		case PF_GROW3:
-			return "player/mario/lui/walk2";
+			return "player/mario/lui/walk1";
 
 		case PF_JUMP:
 		case PF_FALL:
@@ -328,20 +322,20 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 
 		case PF_SWIM1:
 		case PF_SWIM4:
-			return "player/mario/lui/swim";
+			return "player/mario/lui/swim0";
 		case PF_SWIM2:
-			return "player/mario/lui/swim2";
+			return "player/mario/lui/swim1";
 		case PF_SWIM3:
-			return "player/mario/lui/swim3";
+			return "player/mario/lui/swim2";
 		case PF_SWIM5:
-			return "player/mario/lui/swim4";
+			return "player/mario/lui/swim3";
 
 		case PF_GROW1:
-			return "player/mario/big/walk2";
+			return "player/mario/big/walk1";
 		case PF_GROW2:
-			return "player/mario/grow2";
+			return "player/mario/grow1";
 		case PF_GROW4:
-			return "player/mario/grow3";
+			return "player/mario/grow2";
 		}
 		break;
 	}
@@ -352,10 +346,10 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 			return "player/mario/hammer/idle";
 
 		case PF_WALK1:
-			return "player/mario/hammer/walk";
+			return "player/mario/hammer/walk0";
 		case PF_WALK2:
 		case PF_GROW3:
-			return "player/mario/hammer/walk2";
+			return "player/mario/hammer/walk1";
 
 		case PF_JUMP:
 		case PF_FALL:
@@ -369,20 +363,20 @@ const char* get_player_texture(PlayerPower power, PlayerFrame frame) {
 
 		case PF_SWIM1:
 		case PF_SWIM4:
-			return "player/mario/hammer/swim";
+			return "player/mario/hammer/swim0";
 		case PF_SWIM2:
-			return "player/mario/hammer/swim2";
+			return "player/mario/hammer/swim1";
 		case PF_SWIM3:
-			return "player/mario/hammer/swim3";
+			return "player/mario/hammer/swim2";
 		case PF_SWIM5:
-			return "player/mario/hammer/swim4";
+			return "player/mario/hammer/swim3";
 
 		case PF_GROW1:
-			return "player/mario/big/walk2";
+			return "player/mario/big/walk1";
 		case PF_GROW2:
-			return "player/mario/grow2";
+			return "player/mario/grow1";
 		case PF_GROW4:
-			return "player/mario/grow3";
+			return "player/mario/grow2";
 		}
 		break;
 	}

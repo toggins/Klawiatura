@@ -28,7 +28,7 @@ static void create(GameActor* actor) {
 // ================
 
 static void load_blue() {
-	load_texture_wild("enemies/cheep_blue?");
+	load_texture_num("enemies/cheep_blue%u", 2L);
 
 	load_sound("stomp");
 	load_sound("kick");
@@ -41,14 +41,12 @@ static void tick_blue(GameActor* actor) {
 }
 
 static void draw_blue(const GameActor* actor) {
-	draw_actor(actor,
-		((int)((float)game_state.time / 11.11111111111111f) % 2L) ? "enemies/cheep_blue2"
-									  : "enemies/cheep_blue",
-		0.f, WHITE);
+	draw_actor(actor, fmt("enemies/cheep_blue%u", (int)((float)game_state.time / 11.11111111111111f) % 2L), 0.f,
+		WHITE);
 }
 
 static void draw_blue_corpse(const GameActor* actor) {
-	draw_actor(actor, "enemies/cheep_blue", 0.f, WHITE);
+	draw_actor(actor, "enemies/cheep_blue0", 0.f, WHITE);
 }
 
 static void collide_blue(GameActor* actor, GameActor* from) {
@@ -111,7 +109,7 @@ const GameActorTable TAB_CHEEP_CHEEP_BLUE = {
 // =================
 
 static void load_spiky() {
-	load_texture_wild("enemies/cheep_spiky?");
+	load_texture_num("enemies/cheep_spiky%u", 2L);
 
 	load_sound("kick");
 
@@ -156,12 +154,11 @@ static void tick_spiky(GameActor* actor) {
 }
 
 static void draw_spiky(const GameActor* actor) {
-	draw_actor(actor, ((int)((float)game_state.time / 6.25f) % 2L) ? "enemies/cheep_spiky2" : "enemies/cheep_spiky",
-		0.f, WHITE);
+	draw_actor(actor, fmt("enemies/cheep_spiky%u", (int)((float)game_state.time / 6.25f) % 2L), 0.f, WHITE);
 }
 
 static void draw_spiky_corpse(const GameActor* actor) {
-	draw_actor(actor, "enemies/cheep_blue", 0.f, WHITE);
+	draw_actor(actor, "enemies/cheep_blue0", 0.f, WHITE);
 }
 
 static void collide_spiky(GameActor* actor, GameActor* from) {
@@ -204,7 +201,7 @@ const GameActorTable TAB_CHEEP_CHEEP_SPIKY = {
 // =========
 
 static void load_bass() {
-	load_texture_wild("enemies/bass?");
+	load_texture_num("enemies/bass%u", 4L);
 
 	load_actor(ACT_WATER_SPLASH);
 	load_actor(ACT_POINTS);
@@ -297,13 +294,13 @@ static void tick_bass(GameActor* actor) {
 }
 
 static void draw_bass(const GameActor* actor) {
-	const char* tex = fmt("enemies/bass%s",
-		txnum(((int)((float)game_state.time / 3.f) % 2L) + (ANY_FLAG(actor, FLG_BASS_ATTACK) * 2L)));
+	const char* tex = fmt(
+		"enemies/bass%u", ((int)((float)game_state.time / 3.f) % 2L) + (ANY_FLAG(actor, FLG_BASS_ATTACK) * 2L));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
 static void draw_bass_corpse(const GameActor* actor) {
-	draw_actor_offset(actor, "enemies/bass", XY(0.f, -32.f), 0.f, WHITE);
+	draw_actor_offset(actor, "enemies/bass0", XY(0.f, -32.f), 0.f, WHITE);
 }
 
 static void cleanup_bass(GameActor* actor) {

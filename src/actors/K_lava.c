@@ -26,7 +26,7 @@ enum {
 // ====
 
 static void load() {
-	load_texture_wild("enemies/lava?");
+	load_texture_num("enemies/lava%u", 8L);
 	load_texture("tiles/lava");
 }
 
@@ -58,8 +58,7 @@ static void draw(const GameActor* actor) {
 		batch_rectangle("tiles/lava", XY(32.f, (FtInt(VAL(actor, LAVA_Y)) + 33.f) - y));
 	}
 
-	const int magic = (int)((float)game_state.time / 9.090909090909091f) % 8L;
-	const char* tex = fmt("enemies/lava%s", txnum(magic));
+	const char* tex = fmt("enemies/lava%u", (int)((float)game_state.time / 9.090909090909091f) % 8L);
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
@@ -115,7 +114,7 @@ const GameActorTable TAB_LAVA = {.load = load, .create = create, .tick = tick, .
 // =======
 
 static void load_podoboo() {
-	load_texture_wild("enemies/podoboo?");
+	load_texture_num("enemies/podoboo%u", 3L);
 
 	load_sound("kick");
 
@@ -164,19 +163,7 @@ static void tick_podoboo(GameActor* actor) {
 }
 
 static void draw_podoboo(const GameActor* actor) {
-	const char* tex = NULL;
-	switch ((int)((float)game_state.time / 1.666666666666667f) % 3L) {
-	default:
-		tex = "enemies/podoboo";
-		break;
-	case 1L:
-		tex = "enemies/podoboo2";
-		break;
-	case 2L:
-		tex = "enemies/podoboo3";
-		break;
-	}
-
+	const char* tex = fmt("enemies/podoboo%u", (int)((float)game_state.time / 1.666666666666667f) % 3L);
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 

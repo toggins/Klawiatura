@@ -1,8 +1,10 @@
-#include "actors/K_checkpoint.h"
+#include "K_string.h"
+
+#include "actors/K_checkpoint.h" // IWYU pragma: keep???
 #include "actors/K_points.h"
 
 static void load() {
-	load_texture_wild("markers/checkpoint?");
+	load_texture_num("markers/checkpoint%u", 3L);
 
 	load_sound("sprout");
 
@@ -19,11 +21,10 @@ static void create(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	draw_actor(actor,
-		(game_state.checkpoint == actor->id)
-			? (((game_state.time / 10L) % 2L) ? "markers/checkpoint3" : "markers/checkpoint2")
-			: "markers/checkpoint",
-		0.f, ALPHA(actor->id >= game_state.checkpoint ? 255 : 128));
+	const char* tex = "markers/checkpoint0";
+	if (game_state.checkpoint == actor->id)
+		tex = fmt("markers/checkpoint%u", 1L + ((game_state.time / 10L) % 2L));
+	draw_actor(actor, tex, 0.f, ALPHA((actor->id >= game_state.checkpoint) ? 255L : 128L));
 }
 
 static void collide(GameActor* actor, GameActor* from) {

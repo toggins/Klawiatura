@@ -159,7 +159,7 @@ void clear_color(GLfloat, GLfloat, GLfloat, GLfloat);
 void clear_depth(GLfloat);
 
 // Textures
-void load_texture(const char*), load_texture_wild(const char*);
+void load_texture(const char*), load_texture_num(const char*, uint32_t);
 const Texture* get_texture(const char*);
 
 // Fonts

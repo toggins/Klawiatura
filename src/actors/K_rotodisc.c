@@ -55,7 +55,7 @@ const GameActorTable TAB_ROTODISC_BALL
 // =========
 
 static void load() {
-	load_texture_wild("enemies/rotodisc??");
+	load_texture_num("enemies/rotodisc%u", 26L);
 }
 
 static void create(GameActor* actor) {
@@ -87,8 +87,7 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex = fmt("enemies/rotodisc%s", txnum(game_state.time % 26L));
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, fmt("enemies/rotodisc%u", game_state.time % 26L), 0.f, WHITE);
 }
 
 static void cleanup(GameActor* actor) {

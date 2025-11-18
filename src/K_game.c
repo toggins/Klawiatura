@@ -624,14 +624,14 @@ static void draw_hud() {
 	const char* tex = NULL;
 	switch ((int)((float)(game_state.time) / 6.25f) % 4L) {
 	default:
-		tex = "ui/coins";
+		tex = "ui/coins0";
 		break;
 	case 1L:
 	case 3L:
-		tex = "ui/coins2";
+		tex = "ui/coins1";
 		break;
 	case 2L:
-		tex = "ui/coins3";
+		tex = "ui/coins2";
 		break;
 	}
 	batch_cursor(XYZ(224.f, 34.f, -10000.f));
@@ -726,37 +726,9 @@ void draw_game() {
 		actor = get_actor(actor->previous);
 	}
 
-	const char* tex = NULL;
-	switch ((game_state.time / 5L) % 8L) {
-	default:
-		tex = "markers/water";
-		break;
-	case 1L:
-		tex = "markers/water2";
-		break;
-	case 2L:
-		tex = "markers/water3";
-		break;
-	case 3L:
-		tex = "markers/water4";
-		break;
-	case 4L:
-		tex = "markers/water5";
-		break;
-	case 5L:
-		tex = "markers/water6";
-		break;
-	case 6L:
-		tex = "markers/water7";
-		break;
-	case 7L:
-		tex = "markers/water8";
-		break;
-	}
-
 	float wy = FtInt(game_state.water);
 	batch_start(XYZ(0.f, wy, -100.f), 0.f, ALPHA(135));
-	batch_rectangle(tex, XY(FtFloat(game_state.size.x), 16.f));
+	batch_rectangle(fmt("markers/water%u", (game_state.time / 5L) % 8L), XY(FtFloat(game_state.size.x), 16.f));
 	wy += 16.f;
 	batch_cursor(XYZ(0.f, wy, -100.f));
 	batch_color(RGBA(88, 136, 224, 135));
@@ -1128,8 +1100,8 @@ void start_game_state(GameContext* ctx) {
 	//
 	//
 	//
-	load_texture_wild("ui/coins?");
-	load_texture_wild("markers/water?");
+	load_texture_num("ui/coins%u", 3L);
+	load_texture_num("markers/water%u", 8L);
 
 	load_font("hud");
 	load_font("main");

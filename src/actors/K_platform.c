@@ -1,3 +1,5 @@
+#include "K_string.h"
+
 #include "actors/K_platform.h"
 #include "actors/K_player.h" // IWYU pragma: keep
 
@@ -10,7 +12,7 @@ static void load_special(const GameActor* actor) {
 		load_texture("markers/platform/small");
 		break;
 	case PLAT_CLOUD:
-		load_texture_wild("markers/platform/cloud?");
+		load_texture_num("markers/platform/cloud%u", 4L);
 		break;
 	case PLAT_CASTLE:
 		load_texture("markers/platform/castle");
@@ -116,37 +118,18 @@ static void draw(const GameActor* actor) {
 	switch (VAL(actor, PLATFORM_TYPE)) {
 	default:
 		break;
-
 	case PLAT_SMALL:
 		tex = "markers/platform/small";
 		break;
-
-	case PLAT_CLOUD: {
-		switch ((VAL(actor, PLATFORM_FRAME) / 100L) % 4L) {
-		default:
-			tex = "markers/platform/cloud";
-			break;
-		case 1L:
-			tex = "markers/platform/cloud2";
-			break;
-		case 2L:
-			tex = "markers/platform/cloud3";
-			break;
-		case 3L:
-			tex = "markers/platform/cloud4";
-			break;
-		}
+	case PLAT_CLOUD:
+		tex = fmt("markers/platform/cloud%u", (VAL(actor, PLATFORM_FRAME) / 100L) % 4L);
 		break;
-	}
-
 	case PLAT_CASTLE:
 		tex = "markers/platform/castle";
 		break;
-
 	case PLAT_CASTLE_BIG:
 		tex = "markers/platform/castle_big";
 		break;
-
 	case PLAT_CASTLE_BUTTON:
 		tex = "markers/platform/castle_button";
 		break;

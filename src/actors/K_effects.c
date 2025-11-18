@@ -16,7 +16,7 @@ enum {
 // =========
 
 static void load_explode() {
-	load_texture_wild("effects/explode?");
+	load_texture_num("effects/explode%u", 3L);
 }
 
 static void tick_explode(GameActor* actor) {
@@ -26,7 +26,7 @@ static void tick_explode(GameActor* actor) {
 }
 
 static void draw_explode(const GameActor* actor) {
-	const char* tex = fmt("effects/explode%s", txnum(VAL(actor, EFFECT_FRAME) / 100L));
+	const char* tex = fmt("effects/explode%u", VAL(actor, EFFECT_FRAME) / 100L);
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
@@ -74,7 +74,7 @@ const GameActorTable TAB_BRICK_SHARD = {
 // ============
 
 static void load_splash() {
-	load_texture_wild("effects/water??");
+	load_texture_num("effects/water%u", 15L);
 }
 
 static void create_splash(GameActor* actor) {
@@ -88,7 +88,7 @@ static void tick_splash(GameActor* actor) {
 }
 
 static void draw_splash(const GameActor* actor) {
-	const char* tex = fmt("effects/water%s", txnum(VAL(actor, EFFECT_FRAME) / 10L));
+	const char* tex = fmt("effects/water%u", VAL(actor, EFFECT_FRAME) / 10L);
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
@@ -104,7 +104,7 @@ const GameActorTable TAB_WATER_SPLASH = {
 // ======
 
 static void load_bubble() {
-	load_texture_wild("effects/bubble?");
+	load_texture_num("effects/bubble%u", 8L);
 }
 
 static void create_bubble(GameActor* actor) {
@@ -139,11 +139,10 @@ static void tick_bubble(GameActor* actor) {
 static void draw_bubble(const GameActor* actor) {
 	float pos[2] = {0.f};
 
-	const char* tex = NULL;
-	if (ANY_FLAG(actor, FLG_EFFECT_POP)) {
-		tex = fmt("effects/bubble%s", txnum(1 + VAL(actor, EFFECT_FRAME)));
-	} else {
-		tex = "effects/bubble";
+	const char* tex = "effects/bubble0";
+	if (ANY_FLAG(actor, FLG_EFFECT_POP))
+		tex = fmt("effects/bubble%u", 1L + VAL(actor, EFFECT_FRAME));
+	else
 		switch ((VAL(actor, EFFECT_FRAME) / 2L) % 5L) {
 		default:
 			break;
@@ -157,7 +156,6 @@ static void draw_bubble(const GameActor* actor) {
 			pos[1] -= 2.f;
 			break;
 		}
-	}
 
 	const InterpActor* iactor = get_interp(actor);
 	batch_start(
@@ -177,7 +175,7 @@ const GameActorTable TAB_BUBBLE = {
 // ===========
 
 static void load_lava() {
-	load_texture_wild("effects/lava??");
+	load_texture_num("effects/lava%u", 11L);
 }
 
 static void tick_lava(GameActor* actor) {
@@ -187,8 +185,7 @@ static void tick_lava(GameActor* actor) {
 }
 
 static void draw_lava(const GameActor* actor) {
-	const char* tex = fmt("effects/lava%s", txnum(VAL(actor, EFFECT_FRAME) / 100L));
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, fmt("effects/lava%u", VAL(actor, EFFECT_FRAME) / 100L), 0.f, WHITE);
 }
 
 const GameActorTable TAB_LAVA_SPLASH = {

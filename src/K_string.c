@@ -15,12 +15,3 @@ const char* fmt(const char* fmt_pattern, ...) {
 	va_end(args);
 	return res;
 }
-
-const char* txnum(uint64_t num) {
-	static char buf[4] = "";
-	if (num)
-		SDL_snprintf(buf, sizeof(buf), "%lld", num + 1);
-	else
-		SDL_memset(buf, 0, sizeof(buf));
-	return buf;
-}

@@ -1,4 +1,5 @@
 #include "K_game.h"
+#include "K_string.h"
 
 #include "actors/K_enemies.h"
 
@@ -14,8 +15,8 @@ enum {
 };
 
 static void load() {
-	load_texture_wild("enemies/thwomp?");
-	load_texture_wild("enemies/thwomp_laugh?");
+	load_texture_num("enemies/thwomp%u", 5L);
+	load_texture_num("enemies/thwomp_laugh%u", 3L);
 
 	load_sound("hurt");
 	load_sound("thwomp");
@@ -100,35 +101,25 @@ static void tick(GameActor* actor) {
 static void draw(const GameActor* actor) {
 	const char* tex = NULL;
 	if (ANY_FLAG(actor, FLG_THWOMP_LAUGH))
-		switch (FtInt(VAL(actor, THWOMP_FRAME)) % 3L) {
-		default:
-			tex = "enemies/thwomp_laugh";
-			break;
-		case 1L:
-			tex = "enemies/thwomp_laugh2";
-			break;
-		case 2L:
-			tex = "enemies/thwomp_laugh3";
-			break;
-		}
+		tex = fmt("enemies/thwomp_laugh%u", FtInt(VAL(actor, THWOMP_FRAME)) % 3L);
 	else
 		switch (FtInt(VAL(actor, THWOMP_FRAME)) % 7L) {
 		default:
-			tex = "enemies/thwomp";
+			tex = "enemies/thwomp0";
 			break;
 		case 1L:
-			tex = "enemies/thwomp2";
+			tex = "enemies/thwomp1";
 			break;
 		case 2L:
 		case 6L:
-			tex = "enemies/thwomp3";
+			tex = "enemies/thwomp2";
 			break;
 		case 3L:
 		case 5L:
-			tex = "enemies/thwomp4";
+			tex = "enemies/thwomp3";
 			break;
 		case 4L:
-			tex = "enemies/thwomp5";
+			tex = "enemies/thwomp4";
 			break;
 		}
 
@@ -136,7 +127,7 @@ static void draw(const GameActor* actor) {
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, "enemies/thwomp", 0.f, WHITE);
+	draw_actor(actor, "enemies/thwomp0", 0.f, WHITE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {

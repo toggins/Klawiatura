@@ -389,66 +389,13 @@ void load_texture(const char* name) {
 	load_texture_impl(name, true);
 }
 
-/// Load a list of textures using a wildcard pattern.
-///
-/// Inside the pattern, `?` is replaced with a number `1` through `9`. This accounts for the fact the number `1` is
-/// omitted from texture name by convention. The loader tries every permutation and quits gracefully if it finds at
-/// least one texture even if it fails on any of the others.
-///
-/// Use `??` in a pattern if you need numbers `1` through `9`.
-//
-// FIXME: only supports a single block of consecutive `?`s.
-void load_texture_wild(const char* pattern) {
-	static char buf[512] = {0};
-	int so_far = 0;
-	bool double_question = false;
-
-	for (int i = 0; i < pattern[i]; i++)
-		if (pattern[i] == '?') {
-			double_question = pattern[i + 1] == '?';
-			break;
-		}
-
-#define SHRINK()                                                                                                       \
-	for (int j = i; j < sizeof(buf) - 1; j++)                                                                      \
-		buf[j] = buf[j + 1];
-
-	for (char counter = 1; counter < 100; counter++) {
-		SDL_memset(buf, 0, sizeof(buf));
-		SDL_strlcpy(buf, pattern, sizeof(buf));
-
-		for (int i = 0; i < sizeof(buf); i++) {
-			if (buf[i] != '?') {
-				continue;
-			} else if (double_question) {
-				if (counter == 1) {
-					SHRINK();
-					SHRINK();
-				} else if (counter < 10) {
-					SHRINK();
-					buf[i] = (char)('0' + counter);
-				} else {
-					buf[i] = (char)('0' + (counter / 10));
-					buf[++i] = (char)('0' + (counter % 10));
-				}
-			} else if (counter == 1) {
-				SHRINK();
-			} else if (counter < 10) {
-				buf[i] = (char)('0' + counter);
-			} else {
-				break;
-			}
-		}
-
-		bool loaded = load_texture_impl(buf, false);
-		if (!loaded) {
-			if (!so_far)
-				WTF("Failed to load wildcard texture '%s'", pattern);
-			return;
-		}
-		so_far++;
+/// Load a number of frame-indexed textures, starting at 0.
+void load_texture_num(const char* pattern, uint32_t n) {
+	static char buf[256] = "";
+	for (uint32_t i = 0; i < n; i++) {
+		SDL_snprintf(buf, sizeof(buf), pattern, i);
+		load_texture(buf);
 	}
-#undef SHRINK
 }
 
 const Texture* get_texture(const char* name) {

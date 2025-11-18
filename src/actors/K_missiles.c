@@ -361,7 +361,7 @@ const GameActorTable TAB_MISSILE_SILVER_HAMMER = {
 // ======
 
 static void load_napalm() {
-	load_texture_wild("missiles/napalm?");
+	load_texture_num("missiles/napalm%u", 3L);
 }
 
 static void create_napalm(GameActor* actor) {
@@ -395,7 +395,7 @@ static void tick_napalm(GameActor* actor) {
 }
 
 static void draw_napalm(const GameActor* actor) {
-	draw_actor(actor, fmt("missiles/napalm%s", txnum((game_state.time / 2L) % 3L)), 0.f, WHITE);
+	draw_actor(actor, fmt("missiles/napalm%u", (game_state.time / 2L) % 3L), 0.f, WHITE);
 }
 
 static void collide_napalm(GameActor* actor, GameActor* from) {

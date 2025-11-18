@@ -10,10 +10,10 @@
 // ======
 
 static void load() {
-	load_texture_wild("enemies/bowser?");
-	load_texture_wild("enemies/bowser_jump?");
-	load_texture_wild("enemies/bowser_fire?");
-	load_texture_wild("enemies/bowser_charge?");
+	load_texture_num("enemies/bowser%u", 3L);
+	load_texture_num("enemies/bowser_jump%u", 2L);
+	load_texture_num("enemies/bowser_fire%u", 2L);
+	load_texture_num("enemies/bowser_charge%u", 8L);
 	load_texture("enemies/bowser_gun");
 
 	load_sound("bowser_fire");
@@ -227,43 +227,43 @@ static void draw(const GameActor* actor) {
 		switch (frame % 4L) {
 		default:
 		case 2L:
-			tex = "enemies/bowser";
+			tex = "enemies/bowser0";
 			break;
 		case 1L:
-			tex = "enemies/bowser2";
+			tex = "enemies/bowser1";
 			break;
 		case 3L:
-			tex = "enemies/bowser3";
+			tex = "enemies/bowser2";
 			break;
 		}
 	else if (ANY_FLAG(actor, FLG_BOWSER_ANIM_JUMP))
 		switch (frame) {
 		default:
-			tex = "enemies/bowser2";
+			tex = "enemies/bowser1";
 			break;
 		case 1L:
-			tex = "enemies/bowser_jump";
+			tex = "enemies/bowser_jump0";
 			break;
 		case 2L:
-			tex = "enemies/bowser_jump2";
+			tex = "enemies/bowser_jump1";
 			break;
 		}
 	else if (ANY_FLAG(actor, FLG_BOWSER_ANIM_FIRE_START))
 		switch (frame) {
 		case 0L:
-			tex = "enemies/bowser2";
+			tex = "enemies/bowser1";
 			break;
 		case 1L:
-			tex = "enemies/bowser_fire";
+			tex = "enemies/bowser_fire0";
 			break;
 		default:
-			tex = "enemies/bowser_fire2";
+			tex = "enemies/bowser_fire1";
 			break;
 		}
 	else if (ANY_FLAG(actor, FLG_BOWSER_ANIM_FIRE_START2))
-		tex = fmt("enemies/bowser_charge%s", txnum((frame >= 8L) ? (5L + ((frame - 5L) % 3L)) : frame));
+		tex = fmt("enemies/bowser_charge%u", (frame >= 8L) ? (5L + ((frame - 5L) % 3L)) : frame);
 	else if (ANY_FLAG(actor, FLG_BOWSER_ANIM_FIRE))
-		tex = "enemies/bowser_fire";
+		tex = "enemies/bowser_fire0";
 
 	GLubyte a = 255L;
 	if (VAL(actor, BOWSER_HURT) > 0L) {
@@ -387,7 +387,7 @@ const GameActorTable TAB_BOWSER = {
 // ============
 
 static void load_corpse() {
-	load_texture_wild("enemies/bowser_dead?");
+	load_texture_num("enemies/bowser_dead%u", 2L);
 
 	load_sound("bowser_dead");
 	load_sound("bowser_fall");
@@ -437,7 +437,7 @@ static void tick_corpse(GameActor* actor) {
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, ((game_state.time / 2L) % 2L) ? "enemies/bowser_dead2" : "enemies/bowser_dead", 0.f, WHITE);
+	draw_actor(actor, fmt("enemies/bowser_dead%u", (game_state.time / 2L) % 2L), 0.f, WHITE);
 }
 
 const GameActorTable TAB_BOWSER_DEAD = {

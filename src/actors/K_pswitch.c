@@ -1,4 +1,5 @@
 #include "K_game.h"
+#include "K_string.h"
 
 #include "actors/K_player.h"
 
@@ -11,7 +12,7 @@ enum {
 };
 
 static void load() {
-	load_texture_wild("markers/pswitch?");
+	load_texture_num("markers/pswitch%u", 3L);
 	load_texture("markers/pswitch_flat");
 
 	load_sound("toggle");
@@ -35,22 +36,9 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex = NULL;
-	if (VAL(actor, PSWITCH) > 0L)
-		tex = "markers/pswitch_flat";
-	else
-		switch ((int)((float)game_state.time / 3.703703703703704f) % 3L) {
-		default:
-			tex = "markers/pswitch";
-			break;
-		case 1L:
-			tex = "markers/pswitch2";
-			break;
-		case 2L:
-			tex = "markers/pswitch3";
-			break;
-		}
-
+	const char* tex = (VAL(actor, PSWITCH) > 0L)
+	                          ? "markers/pswitch_flat"
+	                          : fmt("markers/pswitch%u", (int)((float)game_state.time / 3.703703703703704f) % 3L);
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 

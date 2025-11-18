@@ -1,4 +1,5 @@
 #include "K_game.h"
+#include "K_string.h"
 
 #include "actors/K_enemies.h"
 #include "actors/K_missiles.h" // IWYU pragma: keep
@@ -25,9 +26,9 @@ enum {
 // =============
 
 static void load() {
-	load_texture_wild("enemies/piranha?");
-	load_texture_wild("enemies/piranha_red?");
-	load_texture_wild("enemies/piranha_fire?");
+	load_texture_num("enemies/piranha%u", 2L);
+	load_texture_num("enemies/piranha_red%u", 2L);
+	load_texture_num("enemies/piranha_fire%u", 2L);
 
 	load_sound("fire");
 	load_sound("kick");
@@ -127,13 +128,11 @@ static void tick(GameActor* actor) {
 static void draw(const GameActor* actor) {
 	const char* tex = NULL;
 	if (ANY_FLAG(actor, FLG_PIRANHA_FIRE))
-		tex = ((int)((float)game_state.time / 4.166666666666667f) % 2L) ? "enemies/piranha_fire2"
-		                                                                : "enemies/piranha_fire";
+		tex = fmt("enemies/piranha_fire%u", (int)((float)game_state.time / 4.166666666666667f) % 2L);
 	else if (ANY_FLAG(actor, FLG_PIRANHA_RED))
-		tex = ((game_state.time / 7L) % 2L) ? "enemies/piranha_red2" : "enemies/piranha_red";
+		tex = fmt("enemies/piranha_red%u", (game_state.time / 7L) % 2L);
 	else
-		tex = ((int)((float)game_state.time / 7.142857142857143f) % 2L) ? "enemies/piranha2"
-		                                                                : "enemies/piranha";
+		tex = fmt("enemies/piranha%u", (int)((float)game_state.time / 7.142857142857143f) % 2L);
 
 	draw_actor(actor, tex, 0.f, WHITE);
 }
@@ -217,8 +216,8 @@ const GameActorTable TAB_PIRANHA_FIRE = {
 // ============
 
 static void load_head() {
-	load_texture_wild("enemies/piranha_head?");
-	load_texture_wild("enemies/piranha_head_fire?");
+	load_texture_num("enemies/piranha_head%u", 3L);
+	load_texture_num("enemies/piranha_head_fire%u", 3L);
 
 	load_sound("fire");
 
@@ -271,27 +270,27 @@ static void draw_head(const GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_PIRANHA_FIRE))
 		switch ((int)((float)game_state.time / 2.7027027027f) % 4L) {
 		default:
-			tex = "enemies/piranha_head_fire";
+			tex = "enemies/piranha_head_fire0";
 			break;
 		case 1L:
 		case 3L:
-			tex = "enemies/piranha_head_fire2";
+			tex = "enemies/piranha_head_fire1";
 			break;
 		case 2L:
-			tex = "enemies/piranha_head_fire3";
+			tex = "enemies/piranha_head_fire2";
 			break;
 		}
 	else
 		switch ((int)((float)game_state.time / 4.54545454545f) % 4L) {
 		default:
-			tex = "enemies/piranha_head";
+			tex = "enemies/piranha_head0";
 			break;
 		case 1L:
 		case 3L:
-			tex = "enemies/piranha_head2";
+			tex = "enemies/piranha_head1";
 			break;
 		case 2L:
-			tex = "enemies/piranha_head3";
+			tex = "enemies/piranha_head2";
 			break;
 		}
 

@@ -1,4 +1,5 @@
 #include "K_game.h"
+#include "K_string.h"
 
 #include "actors/K_autoscroll.h"
 
@@ -19,15 +20,15 @@ enum {
 };
 
 static void load_left_wheel(GameActor* actor) {
-	load_texture_wild("tiles/wheel_l?");
+	load_texture_num("tiles/wheel_l%u", 3L);
 }
 
 static void load_wheel(GameActor* actor) {
-	load_texture_wild("tiles/wheel?");
+	load_texture_num("tiles/wheel%u", 4L);
 }
 
 static void load_right_wheel(GameActor* actor) {
-	load_texture_wild("tiles/wheel_r?");
+	load_texture_num("tiles/wheel_r%u", 3L);
 }
 
 static void tick_wheel(GameActor* actor) {
@@ -37,54 +38,15 @@ static void tick_wheel(GameActor* actor) {
 }
 
 static void draw_left_wheel(const GameActor* actor) {
-	const char* tex = NULL;
-	switch (FtInt(VAL(actor, WHEEL_FRAME)) % 3L) {
-	default:
-		tex = "tiles/wheel_l";
-		break;
-	case 1L:
-		tex = "tiles/wheel_l2";
-		break;
-	case 2L:
-		tex = "tiles/wheel_l3";
-		break;
-	}
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, fmt("tiles/wheel_l%u", FtInt(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, WHITE);
 }
 
 static void draw_wheel(const GameActor* actor) {
-	const char* tex = NULL;
-	switch (FtInt(VAL(actor, WHEEL_FRAME)) % 4L) {
-	default:
-		tex = "tiles/wheel";
-		break;
-	case 1L:
-		tex = "tiles/wheel2";
-		break;
-	case 2L:
-		tex = "tiles/wheel3";
-		break;
-	case 3L:
-		tex = "tiles/wheel4";
-		break;
-	}
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, fmt("tiles/wheel%u", FtInt(VAL(actor, WHEEL_FRAME)) % 4L), 0.f, WHITE);
 }
 
 static void draw_right_wheel(const GameActor* actor) {
-	const char* tex = NULL;
-	switch (FtInt(VAL(actor, WHEEL_FRAME)) % 3L) {
-	default:
-		tex = "tiles/wheel_r";
-		break;
-	case 1L:
-		tex = "tiles/wheel_r2";
-		break;
-	case 2L:
-		tex = "tiles/wheel_r3";
-		break;
-	}
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, fmt("tiles/wheel_r%u", FtInt(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, WHITE);
 }
 
 const GameActorTable TAB_WHEEL_LEFT = {

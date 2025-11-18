@@ -5,9 +5,9 @@
 #include "actors/K_spiny.h"
 
 static void load() {
-	load_texture_wild("enemies/lakitu??");
-	load_texture_wild("enemies/lakitu_cloud?");
-	load_texture_wild("enemies/lakitu_throw??");
+	load_texture_num("enemies/lakitu%u", 10L);
+	load_texture_num("enemies/lakitu_cloud%u", 7L);
+	load_texture_num("enemies/lakitu_throw%u", 11L);
 
 	load_sound("lakitu");
 	load_sound("lakitu2");
@@ -137,82 +137,82 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex = "enemies/lakitu";
+	const char* tex = "enemies/lakitu0";
 	if (ANY_FLAG(actor, FLG_LAKITU_BLINK))
 		switch (VAL(actor, LAKITU_FRAME)) {
 		default:
-			tex = "enemies/lakitu2";
+			tex = "enemies/lakitu1";
 			break;
 		case 1L:
 		case 15L:
-			tex = "enemies/lakitu3";
+			tex = "enemies/lakitu2";
 			break;
 		case 2L:
 		case 14L:
-			tex = "enemies/lakitu4";
+			tex = "enemies/lakitu3";
 			break;
 		case 3L:
 		case 13L:
-			tex = "enemies/lakitu5";
+			tex = "enemies/lakitu4";
 			break;
 		case 4L:
 		case 12L:
-			tex = "enemies/lakitu6";
+			tex = "enemies/lakitu5";
 			break;
 		case 5L:
 		case 11L:
-			tex = "enemies/lakitu7";
+			tex = "enemies/lakitu6";
 			break;
 		case 6L:
 		case 10L:
-			tex = "enemies/lakitu8";
+			tex = "enemies/lakitu7";
 			break;
 		case 7L:
 		case 9L:
-			tex = "enemies/lakitu9";
+			tex = "enemies/lakitu8";
 			break;
 		case 8L:
-			tex = "enemies/lakitu10";
+			tex = "enemies/lakitu9";
 			break;
 		}
 	else if (ANY_FLAG(actor, FLG_LAKITU_CLOUD))
 		switch (VAL(actor, LAKITU_FRAME)) {
 		default:
-			tex = "enemies/lakitu_cloud";
+			tex = "enemies/lakitu_cloud0";
 			break;
 		case 1L:
 		case 11L:
-			tex = "enemies/lakitu_cloud2";
+			tex = "enemies/lakitu_cloud1";
 			break;
 		case 2L:
 		case 10L:
-			tex = "enemies/lakitu_cloud3";
+			tex = "enemies/lakitu_cloud2";
 			break;
 		case 3L:
 		case 9L:
-			tex = "enemies/lakitu_cloud4";
+			tex = "enemies/lakitu_cloud3";
 			break;
 		case 4L:
 		case 8L:
-			tex = "enemies/lakitu_cloud5";
+			tex = "enemies/lakitu_cloud4";
 			break;
 		case 5L:
 		case 7L:
-			tex = "enemies/lakitu_cloud6";
+			tex = "enemies/lakitu_cloud5";
 			break;
 		case 6L:
-			tex = "enemies/lakitu_cloud7";
+			tex = "enemies/lakitu_cloud6";
 			break;
 		}
 	else if (ANY_FLAG(actor, FLG_LAKITU_IN))
-		tex = fmt("enemies/lakitu_throw%s", txnum(VAL(actor, LAKITU_FRAME)));
+		tex = fmt("enemies/lakitu_throw%u", VAL(actor, LAKITU_FRAME));
 	else if (ANY_FLAG(actor, FLG_LAKITU_OUT))
-		tex = fmt("enemies/lakitu_throw%s", txnum(10 - VAL(actor, LAKITU_FRAME)));
+		tex = fmt("enemies/lakitu_throw%u", 10L - VAL(actor, LAKITU_FRAME));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, "enemies/lakitu", 0.f, WHITE);
+	draw_actor(actor, "enemies/lakitu0", 0.f, WHITE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {

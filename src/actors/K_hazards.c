@@ -99,7 +99,7 @@ const GameActorTable TAB_SPIKE = {
 // ==============
 
 static void load_coral() {
-	load_texture_wild("enemies/coral?");
+	load_texture_num("enemies/coral%u", 7L);
 }
 
 static void create_coral(GameActor* actor) {
@@ -111,7 +111,7 @@ static void create_coral(GameActor* actor) {
 
 static void draw_coral(const GameActor* actor) {
 	const uint64_t frame = (game_state.time / 2L) % 22L;
-	const char* tex = fmt("enemies/coral%s", frame >= 6 ? "7" : txnum(frame));
+	const char* tex = fmt("enemies/coral%u", SDL_min(frame, 6L));
 	draw_actor(actor, tex, 0.f, WHITE);
 }
 
@@ -136,8 +136,8 @@ const GameActorTable TAB_ELECTRIC_CORAL = {
 // ==========
 
 static void load_cloud() {
-	load_texture_wild("enemies/fake_cloud?");
-	load_texture_wild("props/cloud?");
+	load_texture_num("enemies/fake_cloud%u", 3L);
+	load_texture_num("props/cloud%u", 3L);
 
 	load_sound("fake_cloud");
 }
@@ -154,8 +154,7 @@ static void draw_cloud(const GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_CLOUD_HIDDEN))
 		return;
 	const int frame = ((int)((float)game_state.time / 12.5f) + VAL(actor, CLOUD_FRAME)) % 3L;
-	const char* tex
-		= fmt(ANY_FLAG(actor, FLG_CLOUD_TROLL) ? "props/cloud%s" : "enemies/fake_cloud%s", txnum(frame));
+	const char* tex = fmt(ANY_FLAG(actor, FLG_CLOUD_TROLL) ? "props/cloud%u" : "enemies/fake_cloud%u", frame);
 	draw_actor(actor, tex, 0.f, ALPHA(ANY_FLAG(actor, FLG_CLOUD_TRANSLUCENT) ? 64L : 255L));
 }
 
