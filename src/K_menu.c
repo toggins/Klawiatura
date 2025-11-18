@@ -123,10 +123,9 @@ FMT_OPTION(active_lobby, get_lobby_id(), in_public_lobby() ? "" : " (Private)");
 FMT_OPTION(lobby_start, is_host() ? "Start!" : "Waiting for host");
 
 static void set_players(int flip) {
-	if (flip >= 0)
-		CLIENT.game.players = (int8_t)(CLIENT.game.players >= MAX_PLAYERS ? 2 : (CLIENT.game.players + 1));
-	else
-		CLIENT.game.players = (int8_t)(CLIENT.game.players <= 2 ? MAX_PLAYERS : (CLIENT.game.players - 1));
+	CLIENT.game.players
+		= (PlayerID)((flip >= 0) ? ((CLIENT.game.players >= MAX_PLAYERS) ? 2 : (CLIENT.game.players + 1))
+					 : ((CLIENT.game.players <= 2) ? MAX_PLAYERS : (CLIENT.game.players - 1)));
 }
 
 FMT_OPTION(waiting, (get_peer_count() >= CLIENT.game.players) ? "Starting!" : "Waiting for players");
@@ -137,10 +136,9 @@ FMT_OPTION(skin, CLIENT.user.skin);
 
 FMT_OPTION(delay, CLIENT.input.delay);
 static void set_delay(int flip) {
-	if (flip >= 0)
-		CLIENT.input.delay = (uint8_t)(CLIENT.input.delay >= MAX_INPUT_DELAY ? 0 : (CLIENT.input.delay + 1));
-	else
-		CLIENT.input.delay = (uint8_t)(CLIENT.input.delay <= 0 ? MAX_INPUT_DELAY : (CLIENT.input.delay - 1));
+	CLIENT.input.delay
+		= (flip >= 0) ? (uint8_t)((CLIENT.input.delay >= MAX_INPUT_DELAY) ? 0 : (CLIENT.input.delay + 1))
+	                      : (uint8_t)((CLIENT.input.delay <= 0) ? MAX_INPUT_DELAY : (CLIENT.input.delay - 1));
 }
 
 static const char* fmt_resolution(const char* base) {
@@ -728,8 +726,11 @@ void draw_menu() {
 	}
 
 	if (menu->from != MEN_NULL) {
-		const char *btn = (cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY) ? "Disconnect" : "Back",
-			   *indicator = fmt("[%s] %s", kb_label(KB_PAUSE), btn);
+		const char *btn
+			= (MENUS[cur_menu].from == MEN_EXIT)
+		                  ? "Exit"
+		                  : ((cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY) ? "Disconnect" : "Back"),
+			*indicator = fmt("[%s] %s", kb_label(KB_PAUSE), btn);
 		batch_cursor(XY(48.f, SCREEN_HEIGHT - 24.f));
 		batch_color(ALPHA(128));
 		batch_align(FA_LEFT, FA_BOTTOM);
@@ -820,7 +821,10 @@ void draw_menu() {
 	batch_cursor(XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 48.f));
 	batch_color(RGB(255, 96, 96));
 	batch_align(FA_CENTER, FA_BOTTOM);
-	batch_string("main", 24.f + ((16.f + SDL_sinf(totalticks() / 32.f) * 4.f) * kevin_lerp), kevinstr);
+	const float kscale = 1.f + ((0.84f + SDL_sinf(totalticks() / 32.f) * 0.16f) * kevin_lerp);
+	batch_scale(XY(kscale, kscale));
+	batch_string("main", 24.f, kevinstr);
+	batch_scale(XY(1.f, 1.f));
 	if (cur_menu != MEN_JOINING_LOBBY && cur_menu != MEN_LOBBY) {
 		batch_color(ALPHA(128 * kevin_lerp));
 		batch_align(FA_CENTER, FA_TOP);
