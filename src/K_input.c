@@ -1,5 +1,6 @@
 #include <SDL3/SDL_keyboard.h>
 
+#include "K_file.h"
 #include "K_input.h"
 #include "K_log.h"
 #include "K_video.h"
@@ -57,7 +58,7 @@ static SDL_JoystickID scanning_for = 0;
 static Keybind scanning = NULLBIND;
 
 void input_init() {
-	if (SDL_AddGamepadMappingsFromFile("gamecontrollerdb.txt") < 0)
+	if (SDL_AddGamepadMappingsFromFile(find_data_file("gamecontrollerdb.txt", NULL)) < 0)
 		WARN("Failed to load gamecontrollerdb.txt: %s", SDL_GetError());
 }
 
