@@ -39,7 +39,7 @@ static void draw(const GameActor* actor) {
 	const char* tex = (VAL(actor, PSWITCH) > 0L)
 	                          ? "markers/pswitch_flat"
 	                          : fmt("markers/pswitch%u", (int)((float)game_state.time / 3.703703703703704f) % 3L);
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {

@@ -54,12 +54,12 @@ static void tick(GameActor* actor) {
 static void draw(const GameActor* actor) {
 	if (Fcos(VAL(actor, LAVA_WAVE_ANGLE)) < FxZero) {
 		const GLfloat y = FtInt(actor->pos.y) + 16.f;
-		batch_start(XYZ(FtInt(actor->pos.x), y, FtFloat(actor->depth)), 0.f, WHITE);
-		batch_rectangle("tiles/lava", XY(32.f, (FtInt(VAL(actor, LAVA_Y)) + 33.f) - y));
+		batch_reset(), batch_pos(B_XYZ(FtInt(actor->pos.x), y, FtFloat(actor->depth)));
+		batch_rectangle("tiles/lava", B_XY(32.f, (FtInt(VAL(actor, LAVA_Y)) + 33.f) - y));
 	}
 
 	const char* tex = fmt("enemies/lava%u", (int)((float)game_state.time / 9.090909090909091f) % 8L);
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {
@@ -164,7 +164,7 @@ static void tick_podoboo(GameActor* actor) {
 
 static void draw_podoboo(const GameActor* actor) {
 	const char* tex = fmt("enemies/podoboo%u", (int)((float)game_state.time / 1.666666666666667f) % 3L);
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void collide_podoboo(GameActor* actor, GameActor* from) {

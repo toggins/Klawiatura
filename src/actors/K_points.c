@@ -105,7 +105,7 @@ static void draw(const GameActor* actor) {
 		break;
 	}
 
-	draw_actor_no_jitter(actor, tex, 0.f, WHITE);
+	draw_actor_no_jitter(actor, tex, 0.f, B_WHITE);
 }
 
 static PlayerID owner(const GameActor* actor) {

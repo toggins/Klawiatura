@@ -27,7 +27,7 @@ static void tick_explode(GameActor* actor) {
 
 static void draw_explode(const GameActor* actor) {
 	const char* tex = fmt("effects/explode%u", VAL(actor, EFFECT_FRAME) / 100L);
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 const GameActorTable TAB_EXPLODE = {.load = load_explode, .tick = tick_explode, .draw = draw_explode};
@@ -59,7 +59,7 @@ static void tick_shard(GameActor* actor) {
 
 static void draw_shard(const GameActor* actor) {
 	draw_actor(actor, ANY_FLAG(actor, FLG_BLOCK_GRAY) ? "effects/shard_gray" : "effects/shard",
-		FtFloat(VAL(actor, BRICK_SHARD_ANGLE)), WHITE);
+		FtFloat(VAL(actor, BRICK_SHARD_ANGLE)), B_WHITE);
 }
 
 const GameActorTable TAB_BRICK_SHARD = {
@@ -89,7 +89,7 @@ static void tick_splash(GameActor* actor) {
 
 static void draw_splash(const GameActor* actor) {
 	const char* tex = fmt("effects/water%u", VAL(actor, EFFECT_FRAME) / 10L);
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 const GameActorTable TAB_WATER_SPLASH = {
@@ -158,9 +158,9 @@ static void draw_bubble(const GameActor* actor) {
 		}
 
 	const InterpActor* iactor = get_interp(actor);
-	batch_start(
-		XYZ(FtInt(iactor->pos.x) + pos[0], FtInt(iactor->pos.y) + pos[1], FtFloat(actor->depth)), 0.f, WHITE);
-	batch_sprite(tex, NO_FLIP);
+	batch_reset();
+	batch_pos(B_XYZ(FtInt(iactor->pos.x) + pos[0], FtInt(iactor->pos.y) + pos[1], FtFloat(actor->depth)));
+	batch_sprite(tex);
 }
 
 const GameActorTable TAB_BUBBLE = {
@@ -185,7 +185,7 @@ static void tick_lava(GameActor* actor) {
 }
 
 static void draw_lava(const GameActor* actor) {
-	draw_actor(actor, fmt("effects/lava%u", VAL(actor, EFFECT_FRAME) / 100L), 0.f, WHITE);
+	draw_actor(actor, fmt("effects/lava%u", VAL(actor, EFFECT_FRAME) / 100L), 0.f, B_WHITE);
 }
 
 const GameActorTable TAB_LAVA_SPLASH = {
@@ -218,10 +218,10 @@ static void tick_lava_bubble(GameActor* actor) {
 
 static void draw_lava_bubble(const GameActor* actor) {
 	const InterpActor* iactor = get_interp(actor);
-	batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)), 0.f, WHITE);
+	batch_reset(), batch_pos(B_XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)));
 	const float scale = 1.f - ((float)VAL(actor, EFFECT_FRAME) / 42.f);
-	batch_scale(XY(scale, scale));
-	batch_sprite("effects/lava_bubble", NO_FLIP);
+	batch_scale(B_SCALE(scale));
+	batch_sprite("effects/lava_bubble");
 }
 
 const GameActorTable TAB_LAVA_BUBBLE = {

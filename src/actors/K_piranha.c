@@ -134,7 +134,7 @@ static void draw(const GameActor* actor) {
 	else
 		tex = fmt("enemies/piranha%u", (int)((float)game_state.time / 7.142857142857143f) % 2L);
 
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {
@@ -196,7 +196,7 @@ static void tick_fire(GameActor* actor) {
 }
 
 static void draw_fire(const GameActor* actor) {
-	draw_actor(actor, "missiles/fireball", FtFloat(VAL(actor, MISSILE_ANGLE)), WHITE);
+	draw_actor(actor, "missiles/fireball", FtFloat(VAL(actor, MISSILE_ANGLE)), B_WHITE);
 }
 
 static void collide_fire(GameActor* actor, GameActor* from) {
@@ -294,7 +294,7 @@ static void draw_head(const GameActor* actor) {
 			break;
 		}
 
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void collide_head(GameActor* actor, GameActor* from) {

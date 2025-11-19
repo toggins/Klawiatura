@@ -264,11 +264,11 @@ static void draw(const GameActor* actor) {
 			tex = "enemies/bro_silver%u";
 			break;
 		}
-	draw_actor(actor, fmt(tex, (int)((float)game_state.time / 7.142857142857143f) % 2L), 0, WHITE);
+	draw_actor(actor, fmt(tex, (int)((float)game_state.time / 7.142857142857143f) % 2L), 0, B_WHITE);
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, "enemies/bro0", 0.f, WHITE);
+	draw_actor(actor, "enemies/bro0", 0.f, B_WHITE);
 }
 
 static void cleanup(GameActor* actor) {

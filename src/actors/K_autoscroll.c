@@ -62,8 +62,9 @@ static void draw(const GameActor* actor) {
 		return;
 
 	const InterpActor* iactor = get_interp(actor);
-	batch_start(XYZ(FtInt(iactor->pos.x) - 32.f, FtInt(iactor->pos.y + F_SCREEN_HEIGHT) - 64.f, 20.f), 0.f, WHITE);
-	batch_rectangle("markers/platform/tanks", XY(SCREEN_WIDTH + 64.f, 64.f));
+	batch_reset();
+	batch_pos(B_XYZ(FtInt(iactor->pos.x) - 32.f, FtInt(iactor->pos.y + F_SCREEN_HEIGHT) - 64.f, 20.f));
+	batch_rectangle("markers/platform/tanks", B_XY(SCREEN_WIDTH + 64.f, 64.f));
 }
 
 static void cleanup(GameActor* actor) {

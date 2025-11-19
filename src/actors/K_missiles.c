@@ -81,7 +81,7 @@ static void tick_fireball(GameActor* actor) {
 }
 
 static void draw_fireball(const GameActor* actor) {
-	draw_actor(actor, "missiles/fireball", FtFloat(VAL(actor, MISSILE_ANGLE)), WHITE);
+	draw_actor(actor, "missiles/fireball", FtFloat(VAL(actor, MISSILE_ANGLE)), B_WHITE);
 }
 
 const GameActorTable TAB_MISSILE_FIREBALL = {
@@ -214,7 +214,7 @@ static void tick_beetroot(GameActor* actor) {
 }
 
 static void draw_beetroot(const GameActor* actor) {
-	draw_actor(actor, "missiles/beetroot", 0.f, WHITE);
+	draw_actor(actor, "missiles/beetroot", 0.f, B_WHITE);
 }
 
 const GameActorTable TAB_MISSILE_BEETROOT = {
@@ -264,7 +264,7 @@ static void tick_hammer(GameActor* actor) {
 }
 
 static void draw_hammer(const GameActor* actor) {
-	draw_actor(actor, "missiles/hammer", FtFloat(VAL(actor, MISSILE_ANGLE)), WHITE);
+	draw_actor(actor, "missiles/hammer", FtFloat(VAL(actor, MISSILE_ANGLE)), B_WHITE);
 }
 
 const GameActorTable TAB_MISSILE_HAMMER = {
@@ -343,7 +343,7 @@ static void tick_silver(GameActor* actor) {
 }
 
 static void draw_silver(const GameActor* actor) {
-	draw_actor(actor, "missiles/hammer_silver", FtFloat(VAL(actor, MISSILE_ANGLE)), WHITE);
+	draw_actor(actor, "missiles/hammer_silver", FtFloat(VAL(actor, MISSILE_ANGLE)), B_WHITE);
 }
 
 const GameActorTable TAB_MISSILE_SILVER_HAMMER = {
@@ -395,7 +395,7 @@ static void tick_napalm(GameActor* actor) {
 }
 
 static void draw_napalm(const GameActor* actor) {
-	draw_actor(actor, fmt("missiles/napalm%u", (game_state.time / 2L) % 3L), 0.f, WHITE);
+	draw_actor(actor, fmt("missiles/napalm%u", (game_state.time / 2L) % 3L), 0.f, B_WHITE);
 }
 
 static void collide_napalm(GameActor* actor, GameActor* from) {

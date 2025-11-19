@@ -38,15 +38,15 @@ static void tick_wheel(GameActor* actor) {
 }
 
 static void draw_left_wheel(const GameActor* actor) {
-	draw_actor(actor, fmt("tiles/wheel_l%u", FtInt(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, WHITE);
+	draw_actor(actor, fmt("tiles/wheel_l%u", FtInt(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, B_WHITE);
 }
 
 static void draw_wheel(const GameActor* actor) {
-	draw_actor(actor, fmt("tiles/wheel%u", FtInt(VAL(actor, WHEEL_FRAME)) % 4L), 0.f, WHITE);
+	draw_actor(actor, fmt("tiles/wheel%u", FtInt(VAL(actor, WHEEL_FRAME)) % 4L), 0.f, B_WHITE);
 }
 
 static void draw_right_wheel(const GameActor* actor) {
-	draw_actor(actor, fmt("tiles/wheel_r%u", FtInt(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, WHITE);
+	draw_actor(actor, fmt("tiles/wheel_r%u", FtInt(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, B_WHITE);
 }
 
 const GameActorTable TAB_WHEEL_LEFT = {

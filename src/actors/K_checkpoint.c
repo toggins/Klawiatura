@@ -24,7 +24,7 @@ static void draw(const GameActor* actor) {
 	const char* tex = "markers/checkpoint0";
 	if (game_state.checkpoint == actor->id)
 		tex = fmt("markers/checkpoint%u", 1L + ((game_state.time / 10L) % 2L));
-	draw_actor(actor, tex, 0.f, ALPHA((actor->id >= game_state.checkpoint) ? 255L : 128L));
+	draw_actor(actor, tex, 0.f, B_ALPHA((actor->id >= game_state.checkpoint) ? 255L : 128L));
 }
 
 static void collide(GameActor* actor, GameActor* from) {

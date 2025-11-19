@@ -38,7 +38,7 @@ static void tick_ball(GameActor* actor) {
 }
 
 static void draw_ball(const GameActor* actor) {
-	draw_actor(actor, "enemies/rotodisc_ball", 0.f, WHITE);
+	draw_actor(actor, "enemies/rotodisc_ball", 0.f, B_WHITE);
 }
 
 static void cleanup_ball(GameActor* actor) {
@@ -87,7 +87,7 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	draw_actor(actor, fmt("enemies/rotodisc%u", game_state.time % 26L), 0.f, WHITE);
+	draw_actor(actor, fmt("enemies/rotodisc%u", game_state.time % 26L), 0.f, B_WHITE);
 }
 
 static void cleanup(GameActor* actor) {

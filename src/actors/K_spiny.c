@@ -33,11 +33,11 @@ static void tick(GameActor* actor) {
 static void draw(const GameActor* actor) {
 	const char* tex = fmt(ANY_FLAG(actor, FLG_SPINY_GRAY) ? "enemies/spiny_gray%u" : "enemies/spiny%u",
 		(int)((float)game_state.time / 7.142857142857143f) % 2L);
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, ANY_FLAG(actor, FLG_SPINY_GRAY) ? "enemies/spiny_gray1" : "enemies/spiny1", 0.f, WHITE);
+	draw_actor(actor, ANY_FLAG(actor, FLG_SPINY_GRAY) ? "enemies/spiny_gray1" : "enemies/spiny1", 0.f, B_WHITE);
 }
 
 static void cleanup(GameActor* actor) {
@@ -211,20 +211,20 @@ static void tick_egg(GameActor* actor) {
 
 static void draw_egg(const GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_SPINY_GREEN)) {
-		draw_actor(actor, "enemies/spiny_egg_green", FtFloat(VAL(actor, SPINY_ANGLE)), WHITE);
+		draw_actor(actor, "enemies/spiny_egg_green", FtFloat(VAL(actor, SPINY_ANGLE)), B_WHITE);
 		return;
 	}
 
 	const char* tex = ANY_FLAG(actor, FLG_SPINY_HATCH) ? fmt("enemies/spiny_egg%u", 1L + VAL(actor, SPINY_FRAME))
 	                                                   : "enemies/spiny_egg0";
-	draw_actor(actor, tex, FtFloat(VAL(actor, SPINY_ANGLE)), WHITE);
+	draw_actor(actor, tex, FtFloat(VAL(actor, SPINY_ANGLE)), B_WHITE);
 }
 
 static void draw_egg_corpse(const GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_SPINY_GREEN))
-		draw_actor_offset(actor, "enemies/spiny_egg_green", XY(0.f, 31.f), 0.f, WHITE);
+		draw_actor_offset(actor, "enemies/spiny_egg_green", B_XY(0.f, 31.f), 0.f, B_WHITE);
 	else
-		draw_actor(actor, "enemies/spiny1", 0.f, WHITE);
+		draw_actor(actor, "enemies/spiny1", 0.f, B_WHITE);
 }
 
 const GameActorTable TAB_SPINY_EGG = {

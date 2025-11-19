@@ -154,10 +154,8 @@ static void draw_chat_hist() {
 		if (chat_hist[i].lifetime <= 0.f)
 			break;
 		const float fade = chat_hist[i].lifetime / TICKRATE;
-		batch_color(ALPHA(SDL_min(1.f, fade) * a));
-
-		batch_align(FA_LEFT, FA_BOTTOM);
-		batch_cursor(XYZ(12.f, y - (i * chat_fs), -10000.f));
+		batch_pos(B_XYZ(12.f, y - (i * chat_fs), -10000.f));
+		batch_color(B_ALPHA(SDL_min(1.f, fade) * a)), batch_align(B_BOTTOM_LEFT);
 		batch_string("main", chat_fs, chat_hist[i].text);
 	}
 }
@@ -165,18 +163,13 @@ static void draw_chat_hist() {
 static void draw_chat_message() {
 	if (typing_what() != chat_message)
 		return;
-
-	batch_align(FA_LEFT, FA_BOTTOM);
-	batch_cursor(XYZ(12.f, SCREEN_HEIGHT - 12.f, -10000.f));
-	batch_color(WHITE);
+	batch_pos(B_XYZ(12.f, SCREEN_HEIGHT - 12.f, -10000.f)), batch_color(B_WHITE), batch_align(B_BOTTOM_LEFT);
 	batch_string("main", chat_fs, fmt("> %s%s", chat_message, SDL_fmodf(totalticks(), 30.f) < 16.f ? "|" : ""));
 }
 
 // ====
 // GAME
 // ====
-
-static bool show_error_immediately = false; // funi testing flag
 
 /// Initializes a GameContext struct with a clean 1-player preset.
 void setup_game_context(GameContext* ctx, const char* level, GameFlag flags) {
@@ -188,9 +181,6 @@ void setup_game_context(GameContext* ctx, const char* level, GameFlag flags) {
 		ctx->players[i].power = POW_SMALL;
 		ctx->players[i].lives = DEFAULT_LIVES;
 	}
-
-	if (!SDL_strcmp(level, "show_error"))
-		level = "test", show_error_immediately = true;
 
 	SDL_strlcpy(ctx->level, level, sizeof(ctx->level));
 	ctx->checkpoint = NULLACT;
@@ -485,11 +475,6 @@ bool update_game() {
 		iactor->pos = Vadd(iactor->from, Vscale(Vsub(actor->pos, iactor->from), ftick));
 	}
 
-	if (show_error_immediately) { // funi...
-		show_error("testing...");
-		goto byebye_game;
-	}
-
 	return true;
 
 byebye_game:
@@ -579,11 +564,11 @@ static void draw_hud() {
 	apply_matrices();
 
 	if (paused) {
-		batch_start(XYZ(0.f, 0.f, -10000.f), 0.f, RGBA(0, 0, 0, 128));
-		batch_rectangle(NULL, XY(SCREEN_WIDTH, SCREEN_HEIGHT));
-		batch_cursor(XYZ(48.f, 128.f, -10000.f)), batch_color(RGB(255, 144, 144));
+		batch_reset(), batch_pos(B_XYZ(0.f, 0.f, -10000.f)), batch_color(B_RGBA(0, 0, 0, 128));
+		batch_rectangle(NULL, B_XY(SCREEN_WIDTH, SCREEN_HEIGHT));
+		batch_pos(B_XYZ(48.f, 128.f, -10000.f)), batch_color(B_RGB(255, 144, 144));
 		batch_string("main", 24, "Paused");
-		batch_color(WHITE);
+		batch_color(B_WHITE);
 
 		float lx = 0.5f * dt();
 		for (uint8_t i = 0; i < (uint8_t)PMO_SIZE; i++) {
@@ -604,21 +589,21 @@ static void draw_hud() {
 			}
 
 			pause_hover[i] = glm_lerp(pause_hover[i], (float)(pause_option == i), SDL_min(lx, 1.f));
-			batch_cursor(XYZ(48.f + (pause_hover[i] * 8.f), 160.f + (i * 24.f), -10000.f));
+			batch_pos(B_XYZ(48.f + (pause_hover[i] * 8.f), 160.f + (i * 24.f), -10000.f));
 			batch_string("main", 24, optname);
 		}
 
 		lx = 0.6f * dt();
 		pause_cursor = glm_lerp(pause_cursor, (float)pause_option, SDL_min(lx, 1.f));
-		batch_cursor(XYZ(44.f + (SDL_sinf(totalticks() / 5.f) * 4.f), 160.f + (pause_cursor * 24.f), -10000.f));
-		batch_align(FA_RIGHT, FA_TOP);
+		batch_pos(B_XYZ(44.f + (SDL_sinf(totalticks() / 5.f) * 4.f), 160.f + (pause_cursor * 24.f), -10000.f));
+		batch_align(B_TOP_RIGHT);
 		batch_string("main", 24.f, ">");
 	}
 
-	batch_cursor(XYZ(32.f, 16.f, -10000.f)), batch_color(WHITE), batch_align(FA_LEFT, FA_TOP);
+	batch_pos(B_XYZ(32.f, 16.f, -10000.f)), batch_color(B_WHITE), batch_align(B_TOP_LEFT);
 	batch_string("hud", 16, fmt("MARIO * %u", SDL_max(player->lives, 0)));
-	batch_cursor(XYZ(147.f, 34.f, -10000.f));
-	batch_align(FA_RIGHT, FA_TOP);
+	batch_pos(B_XYZ(147.f, 34.f, -10000.f));
+	batch_align(B_TOP_RIGHT);
 	batch_string("hud", 16.f, fmt("%u", player->score));
 
 	const char* tex = NULL;
@@ -634,17 +619,17 @@ static void draw_hud() {
 		tex = "ui/coins2";
 		break;
 	}
-	batch_cursor(XYZ(224.f, 34.f, -10000.f));
-	batch_sprite(tex, NO_FLIP);
-	batch_cursor(XYZ(288.f, 34.f, -10000.f));
+	batch_pos(B_XYZ(224.f, 34.f, -10000.f));
+	batch_sprite(tex);
+	batch_pos(B_XYZ(288.f, 34.f, -10000.f));
 	batch_string("hud", 16.f, fmt("%u", player->coins));
 
-	batch_cursor(XYZ(432.f, 16.f, -10000.f));
+	batch_pos(B_XYZ(432.f, 16.f, -10000.f));
 	if (video_state.world[0] == '@') {
-		batch_align(FA_CENTER, FA_TOP);
+		batch_align(B_ALIGN(FA_CENTER, FA_TOP));
 		batch_string("hud", 16.f, video_state.world + 1L);
 	} else
-		batch_sprite(video_state.world, NO_FLIP);
+		batch_sprite(video_state.world);
 
 	if (game_state.clock >= 0L) {
 		GLfloat scale = 1.f;
@@ -661,31 +646,24 @@ static void draw_hud() {
 		const GLfloat x = (float)SCREEN_WIDTH - (32.f * scale);
 		const GLfloat size = 16.f * scale;
 
-		batch_cursor(XYZ(x, 24.f * scale, -10000.f));
-
+		batch_pos(B_XYZ(x, 24.f * scale, -10000.f));
 		const GLfloat yscale = (video_state.hurry > 0.f && video_state.hurry < 120.f)
 		                               ? glm_lerp(1.f, 0.8f + (SDL_sinf(video_state.hurry * 0.6f) * 0.2f),
 							 (scale - 1.0f) / 0.6f)
 		                               : 1.f;
-		batch_scale(XY(1.f, yscale));
-
-		batch_align(FA_RIGHT, FA_MIDDLE);
+		batch_scale(B_XY(1.f, yscale)), batch_align(B_ALIGN(FA_RIGHT, FA_MIDDLE));
 		batch_string("hud", size, "TIME");
-		batch_scale(XY(1.f, 1.f));
+		batch_scale(B_SCALE(1.f));
 
-		batch_cursor(XYZ(x, 34.f * scale, -10000.f));
-		batch_align(FA_RIGHT, FA_TOP);
+		batch_pos(B_XYZ(x, 34.f * scale, -10000.f)), batch_align(B_TOP_RIGHT);
 		batch_string("hud", size, fmt("%u", game_state.clock));
 	}
 
 	if (!paused && game_state.sequence.type == SEQ_LOSE && game_state.sequence.time > 0L) {
-		batch_cursor(XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, -10000.f));
-		batch_align(FA_CENTER, FA_MIDDLE);
+		batch_pos(B_XYZ(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, -10000.f)), batch_align(B_CENTER);
 		batch_string("hud", 16, (game_state.clock == 0) ? "TIME UP" : "GAME OVER");
 	} else if (local_player != view_player) {
-		batch_cursor(XYZ(32, 64, -10000.f));
-		batch_color(ALPHA(160));
-		batch_align(FA_LEFT, FA_TOP);
+		batch_pos(B_XYZ(32, 64, -10000.f)), batch_color(B_ALPHA(160)), batch_align(B_TOP_LEFT);
 		batch_string("main", 24, fmt("Spectating: %s", get_peer_name(player_to_peer(view_player))));
 	}
 }
@@ -695,9 +673,8 @@ void draw_game() {
 		return;
 
 	start_drawing();
-	batch_start(ORIGO, 0.f, WHITE);
-	batch_sprite("ui/sidebar_l", NO_FLIP);
-	batch_sprite("ui/sidebar_r", NO_FLIP);
+	batch_reset();
+	batch_sprite("ui/sidebar_l"), batch_sprite("ui/sidebar_r");
 
 	push_surface(game_surface);
 
@@ -709,14 +686,14 @@ void draw_game() {
 
 	const GameActor* wave = get_actor(game_state.wave);
 	if (wave != NULL && ANY_FLAG(wave, FLG_WAVE_SKY)) {
-		batch_cursor(XYZ(0.f, video_state.camera.pos[1] - HALF_SCREEN_HEIGHT, 200.f));
+		batch_pos(B_XYZ(0.f, video_state.camera.pos[1] - HALF_SCREEN_HEIGHT, 200.f));
 		batch_colors((GLubyte[4][4]){
 			{59,  123, 163, 255},
                         {59,  123, 163, 255},
                         {242, 253, 252, 255},
                         {242, 253, 252, 255}
                 });
-		batch_rectangle(NULL, XY(FtFloat(game_state.size.x), SCREEN_HEIGHT));
+		batch_rectangle(NULL, B_XY(FtFloat(game_state.size.x), SCREEN_HEIGHT));
 	}
 
 	const GameActor* actor = get_actor(game_state.live_actors);
@@ -727,17 +704,23 @@ void draw_game() {
 	}
 
 	float wy = FtInt(game_state.water);
-	batch_start(XYZ(0.f, wy, -100.f), 0.f, ALPHA(135));
-	batch_rectangle(fmt("markers/water%u", (game_state.time / 5L) % 8L), XY(FtFloat(game_state.size.x), 16.f));
-	wy += 16.f;
-	batch_cursor(XYZ(0.f, wy, -100.f));
-	batch_color(RGBA(88, 136, 224, 135));
-	batch_rectangle(NULL, XY(FtFloat(game_state.size.x), FtFloat(game_state.size.y) - wy));
+	const float lh = FtFloat(game_state.size.y);
+	if (wy < lh) {
+		const float lw = FtFloat(game_state.size.x);
+		batch_reset(), batch_pos(B_XYZ(0.f, wy, -100.f)), batch_color(B_ALPHA(135));
+		batch_tile(B_TILE(true, false));
+		batch_rectangle(fmt("markers/water%u", (game_state.time / 5L) % 8L), B_XY(lw, 16.f));
+		wy += 16.f;
+		if (wy < lh) {
+			batch_pos(B_XYZ(0.f, wy, -100.f)), batch_color(B_RGBA(88, 136, 224, 135));
+			batch_rectangle(NULL, B_XY(lw, lh - wy));
+		}
+	}
 
 	draw_hud();
 	pop_surface();
 
-	batch_start(ORIGO, 0, WHITE);
+	batch_reset();
 	batch_surface(game_surface);
 	draw_chat_hist();
 	draw_chat_message();
@@ -2060,7 +2043,7 @@ void displace_actor_soft(GameActor* actor) {
 //
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
 void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
-	draw_actor_offset(actor, name, ORIGO, angle, color);
+	draw_actor_offset(actor, name, B_ORIGIN, angle, color);
 }
 
 // Variant of `draw_actor()` with an offset.
@@ -2068,9 +2051,11 @@ void draw_actor_offset(
 	const GameActor* actor, const char* name, const GLfloat offs[3], GLfloat angle, const GLubyte color[4]) {
 	const InterpActor* iactor = get_interp(actor);
 	const GLfloat sprout = VAL(actor, SPROUT), z = (sprout > FxZero) ? 21.f : FtFloat(actor->depth);
-	batch_start(XYZ(FtInt(iactor->pos.x) + offs[0], FtInt(iactor->pos.y + sprout) + offs[1], z + offs[2]), angle,
-		color);
-	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
+	batch_reset();
+	batch_pos(B_XYZ(FtInt(iactor->pos.x) + offs[0], FtInt(iactor->pos.y + sprout) + offs[1], z + offs[2]));
+	batch_angle(angle), batch_color(color);
+	batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
+	batch_sprite(name);
 }
 
 // Variant of `draw_actor()` that works around some jittering issues (i.e. players on platforms, autoscrolling).
@@ -2087,10 +2072,12 @@ void draw_actor_no_jitter(const GameActor* actor, const char* name, GLfloat angl
 
 	const InterpActor* iactor = get_interp(actor);
 	const GLfloat sprout = FtFloat(VAL(actor, SPROUT)), z = sprout > 0.f ? 21.f : FtFloat(actor->depth);
-	batch_start(XYZ((int)(FtFloat(iactor->pos.x) - camera_offset_morsel[0]),
-			    (int)(FtFloat(iactor->pos.y) + sprout + camera_offset_morsel[1]), z),
-		angle, color);
-	batch_sprite(name, FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
+	batch_reset();
+	batch_pos(B_XYZ((int)(FtFloat(iactor->pos.x) - camera_offset_morsel[0]),
+		(int)(FtFloat(iactor->pos.y) + sprout + camera_offset_morsel[1]), z));
+	batch_angle(angle), batch_color(color);
+	batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
+	batch_sprite(name);
 }
 
 void draw_dead(const GameActor* actor) {

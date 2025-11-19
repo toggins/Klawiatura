@@ -11,23 +11,19 @@
 SDL_Window* window = NULL;
 static SDL_GLContext gpu = NULL;
 
-static int screen_width = SCREEN_WIDTH;
-static int screen_height = SCREEN_HEIGHT;
+static int window_width = SCREEN_WIDTH, window_height = SCREEN_HEIGHT;
 
 static GLuint shader = 0;
 static Uniforms uniforms = {-1};
 
 static GLuint blank_texture = 0;
-static StTinyMap* textures = NULL;
-static StTinyMap* fonts = NULL;
+static StTinyMap *textures = NULL, *fonts = NULL;
 
 static VertexBatch batch = {0};
 static Surface* current_surface = NULL;
 
-static mat4 model_matrix = GLM_MAT4_IDENTITY;
-static mat4 view_matrix = GLM_MAT4_IDENTITY;
-static mat4 projection_matrix = GLM_MAT4_IDENTITY;
-static mat4 mvp_matrix = GLM_MAT4_IDENTITY;
+static mat4 model_matrix = GLM_MAT4_IDENTITY, view_matrix = GLM_MAT4_IDENTITY, projection_matrix = GLM_MAT4_IDENTITY,
+	    mvp_matrix = GLM_MAT4_IDENTITY;
 
 static StTinyMap* tilemaps = NULL;
 static TileMap* last_tilemap = NULL;
@@ -86,7 +82,7 @@ bypass:
 	// Blank texture
 	glGenTextures(1, &blank_texture);
 	glBindTexture(GL_TEXTURE_2D, blank_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, WHITE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, B_WHITE);
 
 	// Vertex batch
 	glGenVertexArrays(1, &batch.vao);
@@ -109,28 +105,10 @@ bypass:
 
 	glEnableVertexAttribArray(VATT_POSITION);
 	glVertexAttribPointer(VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-
 	glEnableVertexAttribArray(VATT_COLOR);
 	glVertexAttribPointer(VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-
 	glEnableVertexAttribArray(VATT_UV);
 	glVertexAttribPointer(VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
-
-	batch.scale[0] = batch.scale[1] = 1;
-	batch.color[0][0] = batch.color[0][1] = batch.color[0][2] = batch.color[0][3] = batch.color[1][0]
-		= batch.color[1][1] = batch.color[1][2] = batch.color[1][3] = batch.color[2][0] = batch.color[2][1]
-		= batch.color[2][2] = batch.color[2][3] = batch.color[3][0] = batch.color[3][1] = batch.color[3][2]
-		= batch.color[3][3] = 1;
-	batch.tint[0] = batch.tint[1] = batch.tint[2] = batch.tint[3] = 1;
-	batch.stencil = 0;
-	batch.texture = blank_texture;
-	batch.alpha_test = 0.5f;
-
-	batch.blend_src[0] = batch.blend_src[1] = GL_SRC_ALPHA;
-	batch.blend_dest[0] = GL_ONE_MINUS_SRC_ALPHA;
-	batch.blend_dest[1] = GL_ONE;
-
-	batch.filter = false;
 
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &vertex_glsl, NULL);
@@ -156,8 +134,7 @@ bypass:
 	}
 
 	shader = glCreateProgram();
-	glAttachShader(shader, vertex_shader);
-	glAttachShader(shader, fragment_shader);
+	glAttachShader(shader, vertex_shader), glAttachShader(shader, fragment_shader);
 	glBindAttribLocation(shader, VATT_POSITION, "i_position");
 	glBindAttribLocation(shader, VATT_COLOR, "i_color");
 	glBindAttribLocation(shader, VATT_UV, "i_uv");
@@ -170,8 +147,7 @@ bypass:
 		FATAL("Shader fail:\n%s", error);
 	}
 
-	glDeleteShader(vertex_shader);
-	glDeleteShader(fragment_shader);
+	glDeleteShader(vertex_shader), glDeleteShader(fragment_shader);
 
 	uniforms.mvp = glGetUniformLocation(shader, "u_mvp");
 	uniforms.texture = glGetUniformLocation(shader, "u_texture");
@@ -179,9 +155,7 @@ bypass:
 	uniforms.stencil = glGetUniformLocation(shader, "u_stencil");
 
 	glEnable(GL_BLEND);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
-	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	glEnable(GL_CULL_FACE), glCullFace(GL_FRONT);
 	glUseProgram(shader);
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(uniforms.texture, 0);
@@ -190,9 +164,10 @@ bypass:
 	glm_ortho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, -16000, 16000, projection_matrix);
 	glm_mat4_mul(view_matrix, model_matrix, mvp_matrix);
 	glm_mat4_mul(projection_matrix, mvp_matrix, mvp_matrix);
+	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	textures = NewTinyMap();
-	fonts = NewTinyMap();
+	textures = NewTinyMap(), fonts = NewTinyMap();
+	batch_reset_hard();
 }
 
 #undef CHECK_GL_EXTENSION
@@ -203,8 +178,7 @@ void video_teardown() {
 	SDL_free(batch.vertices);
 
 	glDeleteTextures(1, &blank_texture);
-	FreeTinyMap(textures);
-	FreeTinyMap(fonts);
+	FreeTinyMap(textures), FreeTinyMap(fonts);
 	FreeTinyMap(tilemaps);
 
 	glDeleteProgram(shader);
@@ -214,19 +188,19 @@ void video_teardown() {
 }
 
 void start_drawing() {
-	const float scalew = (float)screen_width / (float)SCREEN_WIDTH;
-	const float scaleh = (float)screen_height / (float)SCREEN_HEIGHT;
+	const float ww = (float)window_width, wh = (float)window_height;
+
+	const float scalew = ww / (float)SCREEN_WIDTH, scaleh = wh / (float)SCREEN_HEIGHT;
 	const float scale = SDL_min(scalew, scaleh);
 
-	const float left = (((float)screen_width - (SCREEN_WIDTH * scale)) / -2.f) / scale;
-	const float top = (((float)screen_height - (SCREEN_HEIGHT * scale)) / -2.f) / scale;
-	const float right = left + ((float)screen_width / scale);
-	const float bottom = top + ((float)screen_height / scale);
+	const float left = ((ww - ((float)SCREEN_WIDTH * scale)) / -2.f) / scale,
+		    top = ((wh - ((float)SCREEN_HEIGHT * scale)) / -2.f) / scale;
+	const float right = left + (ww / scale), bottom = top + (wh / scale);
 
 	glm_ortho(left, right, bottom, top, -16000, 16000, projection_matrix);
 	glm_mat4_mul(view_matrix, model_matrix, mvp_matrix);
 	glm_mat4_mul(projection_matrix, mvp_matrix, mvp_matrix);
-	glViewport(0, 0, screen_width, screen_height);
+	glViewport(0, 0, window_width, window_height);
 }
 
 void stop_drawing() {
@@ -278,7 +252,7 @@ void set_resolution(int width, int height) {
 	SDL_SetWindowSize(window, width <= 0 ? SCREEN_WIDTH : width, height <= 0 ? SCREEN_HEIGHT : height);
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	SDL_SyncWindow(window);
-	get_resolution(&screen_width, &screen_height);
+	get_resolution(&window_width, &window_height);
 }
 
 bool get_fullscreen() {
@@ -288,13 +262,13 @@ bool get_fullscreen() {
 void set_fullscreen(bool fullscreen) {
 	SDL_SetWindowFullscreen(window, fullscreen);
 	SDL_SyncWindow(window);
-	SDL_GetWindowSizeInPixels(window, &screen_width, &screen_height);
+	SDL_GetWindowSizeInPixels(window, &window_width, &window_height);
 }
 
 bool get_vsync() {
 	int interval = 0;
 	SDL_GL_GetSwapInterval(&interval);
-	return interval != 0;
+	return (interval != 0);
 }
 
 void set_vsync(bool vsync) {
@@ -307,14 +281,12 @@ void set_vsync(bool vsync) {
 
 /// Clears the current render target's color buffer.
 void clear_color(GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
-	glClearColor(r, g, b, a);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(r, g, b, a), glClear(GL_COLOR_BUFFER_BIT);
 }
 
 /// Clears the current render target's depth buffer.
 void clear_depth(GLfloat depth) {
-	glClearDepthf(depth);
-	glClear(GL_DEPTH_BUFFER_BIT);
+	glClearDepthf(depth), glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 // ========
@@ -327,23 +299,22 @@ static void nuke_texture(void* ptr) {
 	glDeleteTextures(1, &texture->texture);
 }
 
-static bool load_texture_impl(const char* name, bool strict) {
+void load_texture(const char* name) {
 	if (!name || !*name || get_texture(name))
-		return true;
+		return;
 
 	Texture texture = {0};
 
 	const char* file = find_data_file(fmt("data/textures/%s.*", name), ".json");
 	if (!file) {
-		if (strict)
-			WTF("Texture \"%s\" not found", name);
-		return false;
+		WTF("Texture \"%s\" not found", name);
+		return;
 	}
 
 	SDL_Surface* surface = IMG_Load(file);
 	if (!surface) {
 		WTF("Texture \"%s\" fail: %s", name, SDL_GetError());
-		return false;
+		return;
 	}
 
 	texture.name = SDL_strdup(name);
@@ -365,28 +336,24 @@ static bool load_texture_impl(const char* name, bool strict) {
 
 	file = find_data_file(fmt("data/textures/%s.json", name), NULL);
 	if (file == NULL)
-		goto eatadick;
+		goto tex_no_json;
 
 	yyjson_doc* json = yyjson_read_file(file, JSON_READ_FLAGS, NULL, NULL);
 	if (json == NULL)
-		goto eatadick;
+		goto tex_no_json;
 
 	yyjson_val* root = yyjson_doc_get_root(json);
 	if (!yyjson_is_obj(root))
-		goto eattwodicks;
+		goto tex_no_obj;
 
 	texture.offset[0] = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "x_offset"));
 	texture.offset[1] = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "y_offset"));
 
-eattwodicks:
+tex_no_obj:
 	yyjson_doc_free(json);
-eatadick:
+tex_no_json:
 	StMapPut(textures, StHashStr(name), &texture, sizeof(texture))->cleanup = nuke_texture;
-	return true;
-}
-
-void load_texture(const char* name) {
-	load_texture_impl(name, true);
+	return;
 }
 
 /// Load a number of frame-indexed textures, starting at 0.
@@ -501,46 +468,124 @@ const Font* get_font(const char* name) {
 // BATCH
 // =====
 
+/// Dumps the vertex batch on your screen.
+void submit_batch() {
+	if (batch.vertex_count <= 0)
+		return;
+
+	glBindVertexArray(batch.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_count), batch.vertices);
+
+	// Apply texture
+	glBindTexture(GL_TEXTURE_2D, batch.texture);
+	const GLint filter = (batch.filter || CLIENT.video.filter) ? GL_LINEAR : GL_NEAREST;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+	glUniform1f(uniforms.alpha_test, batch.alpha_test);
+	glUniform4fv(uniforms.stencil, 1, batch.stencil);
+	glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)get_mvp_matrix());
+
+	// Apply blend mode
+	glBlendFuncSeparate(batch.blend[0][0], batch.blend[0][1], batch.blend[1][0], batch.blend[1][1]);
+
+	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)batch.vertex_count);
+	batch.vertex_count = 0;
+}
+
+void batch_pos(const GLfloat pos[3]) {
+	batch.pos[0] = pos[0];
+	batch.pos[1] = pos[1];
+	batch.pos[2] = pos[2];
+}
+
+void batch_offset(const GLfloat offset[3]) {
+	batch.offset[0] = offset[0];
+	batch.offset[1] = offset[1];
+	batch.offset[2] = offset[2];
+}
+
+void batch_scale(const GLfloat scale[3]) {
+	batch.scale[0] = scale[0];
+	batch.scale[1] = scale[1];
+	batch.scale[2] = scale[2];
+}
+
+void batch_angle(const GLfloat angle) {
+	batch.angle = angle;
+}
+
+void batch_color(const GLubyte color[4]) {
+	SDL_memcpy(batch.color[0], color, sizeof(batch.color[0]));
+	SDL_memcpy(batch.color[1], color, sizeof(batch.color[1]));
+	SDL_memcpy(batch.color[2], color, sizeof(batch.color[2]));
+	SDL_memcpy(batch.color[3], color, sizeof(batch.color[3]));
+}
+
+void batch_colors(const GLubyte colors[4][4]) {
+	SDL_memcpy(batch.color, colors, sizeof(batch.color));
+}
+
+void batch_stencil(const GLfloat stencil[4]) {
+	if (SDL_memcmp(batch.stencil, stencil, sizeof(batch.stencil)))
+		submit_batch();
+	SDL_memcpy(batch.stencil, stencil, sizeof(batch.stencil));
+}
+
+void batch_flip(const GLboolean flip[2]) {
+	batch.flip[0] = flip[0];
+	batch.flip[1] = flip[1];
+}
+
+void batch_tile(const GLboolean tile[2]) {
+	batch.tile[0] = tile[0];
+	batch.tile[1] = tile[1];
+}
+
+void batch_align(const FontAlignment align[2]) {
+	batch.align[0] = align[0];
+	batch.align[1] = align[1];
+}
+
+static void batch_texture(GLuint texture) {
+	if (batch.texture != texture)
+		submit_batch();
+	batch.texture = texture;
+}
+
 void batch_filter(bool filter) {
-	if (batch.filter != filter) {
+	if (batch.filter != filter)
 		submit_batch();
-		batch.filter = filter;
-	}
+	batch.filter = filter;
 }
 
-void batch_alpha_test(GLfloat threshold) {
-	if (batch.alpha_test != threshold) {
+void batch_alpha_test(GLfloat alpha_test) {
+	if (batch.alpha_test != alpha_test)
 		submit_batch();
-		batch.alpha_test = threshold;
-	}
+	batch.alpha_test = alpha_test;
 }
 
-void batch_stencil(GLfloat stencil) {
-	if (batch.stencil != stencil) {
+void batch_blend(const GLenum blend[2][2]) {
+	if (SDL_memcmp(batch.blend, blend, sizeof(batch.blend)))
 		submit_batch();
-		batch.stencil = stencil;
-	}
+	SDL_memcpy(batch.blend, blend, sizeof(batch.blend));
 }
 
-void batch_blendmode(GLenum src, GLenum dest, GLenum asrc, GLenum adest) {
-	if (batch.blend_src[0] != src || batch.blend_dest[0] != dest || batch.blend_src[1] != asrc
-		|| batch.blend_dest[1] != adest)
-	{
-		submit_batch();
-		batch.blend_src[0] = src;
-		batch.blend_dest[0] = dest;
-		batch.blend_src[1] = asrc;
-		batch.blend_dest[1] = adest;
-	}
+/// Resets the batch.
+void batch_reset() {
+	batch_pos(B_ORIGIN), batch_offset(B_ORIGIN), batch_scale(B_XYZ(1.f, 1.f, 1.f)), batch_angle(0.f);
+	batch_color(B_WHITE);
+	batch_flip(B_NO_FLIP), batch_tile(B_NO_TILE), batch_align(B_TOP_LEFT);
 }
 
-static void batch_texture(GLuint tex) {
-	if (batch.texture != tex) {
-		submit_batch();
-		batch.texture = tex;
-	}
+/// Fully resets the batch, slower since it can break batches.
+void batch_reset_hard() {
+	batch_reset();
+	batch_texture(blank_texture), batch_filter(true), batch_alpha_test(0.5f);
+	batch_stencil(B_NO_STENCIL), batch_blend(B_BLEND_NORMAL);
 }
 
+/// Adds a vertex to the batch.
 static void batch_vertex(const GLfloat pos[3], const GLubyte color[4], const GLfloat uv[2]) {
 	if (batch.vertex_count < batch.vertex_capacity)
 		goto just_push;
@@ -558,78 +603,15 @@ static void batch_vertex(const GLfloat pos[3], const GLubyte color[4], const GLf
 	glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_capacity), NULL, GL_DYNAMIC_DRAW);
 
 just_push:
-#define CLR(idx) (GLubyte)(batch.tint[idx] * (GLfloat)color[idx])
 	batch.vertices[batch.vertex_count++] = (Vertex){
 		.position = {pos[0], pos[1], pos[2]},
-		.color = {CLR(0), CLR(1), CLR(2), CLR(3)},
+		.color = {color[0], color[1], color[2], color[3]},
 		.uv = {uv[0], uv[1]},
 	};
-#undef CLR
 }
 
-void batch_cursor(const GLfloat pos[3]) {
-	batch.cursor[0] = pos[0];
-	batch.cursor[1] = pos[1];
-	batch.cursor[2] = pos[2];
-}
-
-void batch_scale(const GLfloat scale[2]) {
-	batch.scale[0] = scale[0];
-	batch.scale[1] = scale[1];
-}
-
-void batch_color(const GLubyte color[4]) {
-	SDL_memcpy(batch.color[0], color, sizeof(batch.color[0]));
-	SDL_memcpy(batch.color[1], color, sizeof(batch.color[1]));
-	SDL_memcpy(batch.color[2], color, sizeof(batch.color[2]));
-	SDL_memcpy(batch.color[3], color, sizeof(batch.color[3]));
-}
-
-void batch_colors(const GLubyte colors[4][4]) {
-	SDL_memcpy(batch.color, colors, sizeof(batch.color));
-}
-
-void batch_angle(const GLfloat angle) {
-	batch.angle = angle;
-}
-
-void batch_align(const FontAlignment h, const FontAlignment v) {
-	batch.halign = h;
-	batch.valign = v;
-}
-
-void batch_start(const GLfloat pos[3], const GLfloat angle, const GLubyte color[4]) {
-	batch_cursor(pos), batch_scale(XY(1.f, 1.f)), batch_angle(angle), batch_color(color),
-		batch_align(FA_LEFT, FA_TOP);
-}
-
-/// Adds a (textured) rectangle to the vertex batch.
-void batch_rectangle(const char* name, const GLfloat size[2]) {
-	const Texture* texture = get_texture(name);
-	batch_texture(texture == NULL ? blank_texture : texture->texture);
-
-	// Position
-	const GLfloat x1 = batch.cursor[0], y1 = batch.cursor[1];
-	const GLfloat x2 = x1 + (size[0] * batch.scale[0]), y2 = y1 + (size[1] * batch.scale[1]);
-	const GLfloat z = batch.cursor[2];
-
-	GLfloat u = 0.f, v = 0.f;
-	if (texture == NULL)
-		u = 1.f, v = 1.f;
-	else
-		u = size[0] / (GLfloat)texture->size[0], v = size[1] / (GLfloat)texture->size[1];
-
-	// Vertices
-	batch_vertex(XYZ(x1, y2, z), batch.color[2], UV(0, v));
-	batch_vertex(XYZ(x1, y1, z), batch.color[0], UV(0, 0));
-	batch_vertex(XYZ(x2, y1, z), batch.color[1], UV(u, 0));
-	batch_vertex(XYZ(x2, y1, z), batch.color[1], UV(u, 0));
-	batch_vertex(XYZ(x2, y2, z), batch.color[3], UV(u, v));
-	batch_vertex(XYZ(x1, y2, z), batch.color[2], UV(0, v));
-}
-
-/// Adds a texture as a sprite to the vertex batch.
-void batch_sprite(const char* name, const GLboolean flip[2]) {
+/// Adds a sprite to the batch.
+void batch_sprite(const char* name) {
 	const Texture* texture = get_texture(name);
 	if (texture == NULL)
 		return;
@@ -638,41 +620,32 @@ void batch_sprite(const char* name, const GLboolean flip[2]) {
 
 	// Position
 	const GLfloat w = (GLfloat)texture->size[0] * batch.scale[0], h = (GLfloat)texture->size[1] * batch.scale[1];
-	const GLfloat xoffs = texture->offset[0] * batch.scale[0], yoffs = texture->offset[1] * batch.scale[1];
-	const GLfloat x1 = -(flip[0] ? (w - xoffs) : xoffs);
-	const GLfloat y1 = -(flip[1] ? (h - yoffs) : yoffs);
-	const GLfloat x2 = x1 + w;
-	const GLfloat y2 = y1 + h;
-	const GLfloat z = batch.cursor[2];
 
-	vec2 p1 = {x1, y1};
-	vec2 p2 = {x2, y1};
-	vec2 p3 = {x1, y2};
-	vec2 p4 = {x2, y2};
-	if (batch.angle != 0) {
-		glm_vec2_rotate(p1, batch.angle, p1);
-		glm_vec2_rotate(p2, batch.angle, p2);
-		glm_vec2_rotate(p3, batch.angle, p3);
-		glm_vec2_rotate(p4, batch.angle, p4);
-	}
-	glm_vec2_add((GLfloat*)batch.cursor, p1, p1);
-	glm_vec2_add((GLfloat*)batch.cursor, p2, p2);
-	glm_vec2_add((GLfloat*)batch.cursor, p3, p3);
-	glm_vec2_add((GLfloat*)batch.cursor, p4, p4);
+	const GLfloat xoffs = (texture->offset[0] + batch.offset[0]) * batch.scale[0],
+		      yoffs = (texture->offset[1] + batch.offset[1]) * batch.scale[1];
+
+	const GLfloat x1 = -(batch.flip[0] ? (w - xoffs) : xoffs), y1 = -(batch.flip[1] ? (h - yoffs) : yoffs);
+	const GLfloat x2 = x1 + w, y2 = y1 + h;
+	const GLfloat z = batch.offset[2] * batch.scale[2];
+
+	vec3 p1 = {x1, y1, z}, p2 = {x2, y1, z}, p3 = {x1, y2, z}, p4 = {x2, y2, z};
+	if (batch.angle != 0.f)
+		glm_vec2_rotate(p1, batch.angle, p1), glm_vec2_rotate(p2, batch.angle, p2),
+			glm_vec2_rotate(p3, batch.angle, p3), glm_vec2_rotate(p4, batch.angle, p4);
+	glm_vec3_add(batch.pos, p1, p1), glm_vec3_add(batch.pos, p2, p2), glm_vec3_add(batch.pos, p3, p3),
+		glm_vec3_add(batch.pos, p4, p4);
 
 	// UVs
-	const GLfloat u1 = flip[0];
-	const GLfloat v1 = flip[1];
-	const GLfloat u2 = (GLfloat)(!flip[0]);
-	const GLfloat v2 = (GLfloat)(!flip[1]);
+	const GLfloat u1 = batch.flip[0], v1 = batch.flip[1];
+	const GLfloat u2 = (GLfloat)(!batch.flip[0]), v2 = (GLfloat)(!batch.flip[1]);
 
 	// Vertices
-	batch_vertex(XYZ(p3[0], p3[1], z), batch.color[2], UV(u1, v2));
-	batch_vertex(XYZ(p1[0], p1[1], z), batch.color[0], UV(u1, v1));
-	batch_vertex(XYZ(p2[0], p2[1], z), batch.color[1], UV(u2, v1));
-	batch_vertex(XYZ(p2[0], p2[1], z), batch.color[1], UV(u2, v1));
-	batch_vertex(XYZ(p4[0], p4[1], z), batch.color[3], UV(u2, v2));
-	batch_vertex(XYZ(p3[0], p3[1], z), batch.color[2], UV(u1, v2));
+	batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
+	batch_vertex(B_XYZ(p1[0], p1[1], p1[2]), batch.color[0], B_UV(u1, v1));
+	batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
+	batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
+	batch_vertex(B_XYZ(p4[0], p4[1], p4[2]), batch.color[3], B_UV(u2, v2));
+	batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
 }
 
 /// Adds a surface to the vertex batch.
@@ -686,19 +659,75 @@ void batch_surface(Surface* surface) {
 	batch_texture(surface->texture[SURF_COLOR]);
 
 	// Position
-	const GLfloat x1 = batch.cursor[0];
-	const GLfloat y1 = batch.cursor[1];
-	const GLfloat x2 = x1 + ((GLfloat)surface->size[0] * batch.scale[0]);
-	const GLfloat y2 = y1 + ((GLfloat)surface->size[1] * batch.scale[1]);
-	const GLfloat z = batch.cursor[2];
+	const GLfloat w = (GLfloat)surface->size[0] * batch.scale[0], h = (GLfloat)surface->size[1] * batch.scale[1];
+
+	const GLfloat xoffs = batch.offset[0] * batch.scale[0], yoffs = batch.offset[1] * batch.scale[1];
+
+	const GLfloat x1 = -(batch.flip[0] ? (w - xoffs) : xoffs), y1 = -(batch.flip[1] ? (h - yoffs) : yoffs);
+	const GLfloat x2 = x1 + w, y2 = y1 + h;
+	const GLfloat z = batch.offset[2] * batch.scale[2];
+
+	vec3 p1 = {x1, y1, z}, p2 = {x2, y1, z}, p3 = {x1, y2, z}, p4 = {x2, y2, z};
+	if (batch.angle != 0.f)
+		glm_vec2_rotate(p1, batch.angle, p1), glm_vec2_rotate(p2, batch.angle, p2),
+			glm_vec2_rotate(p3, batch.angle, p3), glm_vec2_rotate(p4, batch.angle, p4);
+	glm_vec3_add(batch.pos, p1, p1), glm_vec3_add(batch.pos, p2, p2), glm_vec3_add(batch.pos, p3, p3),
+		glm_vec3_add(batch.pos, p4, p4);
+
+	// UVs
+	const GLfloat u1 = batch.flip[0], v1 = batch.flip[1];
+	const GLfloat u2 = (GLfloat)(!batch.flip[0]), v2 = (GLfloat)(!batch.flip[1]);
 
 	// Vertices
-	batch_vertex(XYZ(x1, y2, z), batch.color[2], UV(0, 1));
-	batch_vertex(XYZ(x1, y1, z), batch.color[0], UV(0, 0));
-	batch_vertex(XYZ(x2, y1, z), batch.color[1], UV(1, 0));
-	batch_vertex(XYZ(x2, y1, z), batch.color[1], UV(1, 0));
-	batch_vertex(XYZ(x2, y2, z), batch.color[3], UV(1, 1));
-	batch_vertex(XYZ(x1, y2, z), batch.color[2], UV(0, 1));
+	batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
+	batch_vertex(B_XYZ(p1[0], p1[1], p1[2]), batch.color[0], B_UV(u1, v1));
+	batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
+	batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
+	batch_vertex(B_XYZ(p4[0], p4[1], p4[2]), batch.color[3], B_UV(u2, v2));
+	batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
+}
+
+/// Adds a rectangle to the batch.
+void batch_rectangle(const char* name, const GLfloat size[2]) {
+	const Texture* texture = get_texture(name);
+	batch_texture(texture == NULL ? blank_texture : texture->texture);
+
+	GLfloat tw = 1.f, th = 1.f;
+	if (texture != NULL)
+		tw = (GLfloat)texture->size[0] * batch.scale[0], th = (GLfloat)texture->size[1] * batch.scale[1];
+
+	// Position
+	const GLfloat w = size[0] * batch.scale[0], h = size[1] * batch.scale[1];
+	const GLfloat xoffs = batch.offset[0] * batch.scale[0], yoffs = batch.offset[1] * batch.scale[1];
+	const GLfloat x1 = -(batch.flip[0] ? (w - xoffs) : xoffs), y1 = -(batch.flip[1] ? (h - yoffs) : yoffs);
+	const GLfloat x2 = x1 + w, y2 = y1 + h;
+	const GLfloat z = batch.offset[2] * batch.scale[2];
+
+	vec3 p1 = {x1, y1, z}, p2 = {x2, y1, z}, p3 = {x1, y2, z}, p4 = {x2, y2, z};
+	if (batch.angle != 0.f)
+		glm_vec2_rotate(p1, batch.angle, p1), glm_vec2_rotate(p2, batch.angle, p2),
+			glm_vec2_rotate(p3, batch.angle, p3), glm_vec2_rotate(p4, batch.angle, p4);
+	glm_vec3_add(batch.pos, p1, p1), glm_vec3_add(batch.pos, p2, p2), glm_vec3_add(batch.pos, p3, p3),
+		glm_vec3_add(batch.pos, p4, p4);
+
+	// UVs
+	GLfloat u1 = 0.f, v1 = 0.f, u2 = 1.f, v2 = 1.f;
+	if (batch.tile[0])
+		u2 = (batch.flip[0] ? -1.f : 1.f) * ((x2 - x1) / tw);
+	else
+		u1 = batch.flip[0], u2 = (GLfloat)(!batch.flip[0]);
+	if (batch.tile[1])
+		v2 = (batch.flip[1] ? -1.f : 1.f) * ((y2 - y1) / th);
+	else
+		v1 = batch.flip[1], v2 = (GLfloat)(!batch.flip[1]);
+
+	// Vertices
+	batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
+	batch_vertex(B_XYZ(p1[0], p1[1], p1[2]), batch.color[0], B_UV(u1, v1));
+	batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
+	batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
+	batch_vertex(B_XYZ(p4[0], p4[1], p4[2]), batch.color[3], B_UV(u2, v2));
+	batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
 }
 
 static GLfloat string_width_fast(const Font* font, GLfloat size, const char* str) {
@@ -765,11 +794,12 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 	batch_texture(font->texture->texture);
 
 	// Origin
-	GLfloat ox = batch.cursor[0];
-	GLfloat oy = batch.cursor[1];
+	GLfloat ox = batch.pos[0] + (batch.offset[0] * batch.scale[0]);
+	GLfloat oy = batch.pos[1] + (batch.offset[1] * batch.scale[1]);
+	GLfloat oz = batch.pos[2] + (batch.offset[2] * batch.scale[2]);
 
 	// Horizontal alignment
-	switch (batch.halign) {
+	switch (batch.align[0]) {
 	case FA_CENTER:
 		ox -= (GLfloat)((GLint)(string_width_fast(font, size, str) / 2.f)) * batch.scale[0];
 		break;
@@ -781,7 +811,7 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 	}
 
 	// Vertical alignment
-	switch (batch.valign) {
+	switch (batch.align[1]) {
 	case FA_MIDDLE:
 		oy -= (GLfloat)((GLint)(string_height_fast(font, size, str) / 2.f)) * batch.scale[1];
 		break;
@@ -793,9 +823,8 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 	}
 
 	GLfloat cx = ox, cy = oy;
-	const GLfloat scale = size / font->height;
-	const GLfloat spacing = font->spacing * scale * batch.scale[0];
-	const GLfloat height = size * batch.scale[1];
+	const GLfloat scale = size / font->height, spacing = font->spacing * scale * batch.scale[0],
+		      height = size * batch.scale[1];
 
 	size_t bytes = SDL_strlen(str);
 	while (bytes > 0) {
@@ -822,42 +851,17 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 		const GLfloat y1 = cy;
 		const GLfloat x2 = x1 + width;
 		const GLfloat y2 = y1 + height;
-		batch_vertex(XYZ(x1, y2, batch.cursor[2]), batch.color[2], UV(glyph->uvs[0], glyph->uvs[3]));
-		batch_vertex(XYZ(x1, y1, batch.cursor[2]), batch.color[0], UV(glyph->uvs[0], glyph->uvs[1]));
-		batch_vertex(XYZ(x2, y1, batch.cursor[2]), batch.color[1], UV(glyph->uvs[2], glyph->uvs[1]));
-		batch_vertex(XYZ(x2, y1, batch.cursor[2]), batch.color[1], UV(glyph->uvs[2], glyph->uvs[1]));
-		batch_vertex(XYZ(x2, y2, batch.cursor[2]), batch.color[3], UV(glyph->uvs[2], glyph->uvs[3]));
-		batch_vertex(XYZ(x1, y2, batch.cursor[2]), batch.color[2], UV(glyph->uvs[0], glyph->uvs[3]));
+		batch_vertex(B_XYZ(x1, y2, oz), batch.color[2], B_UV(glyph->uvs[0], glyph->uvs[3]));
+		batch_vertex(B_XYZ(x1, y1, oz), batch.color[0], B_UV(glyph->uvs[0], glyph->uvs[1]));
+		batch_vertex(B_XYZ(x2, y1, oz), batch.color[1], B_UV(glyph->uvs[2], glyph->uvs[1]));
+		batch_vertex(B_XYZ(x2, y1, oz), batch.color[1], B_UV(glyph->uvs[2], glyph->uvs[1]));
+		batch_vertex(B_XYZ(x2, y2, oz), batch.color[3], B_UV(glyph->uvs[2], glyph->uvs[3]));
+		batch_vertex(B_XYZ(x1, y2, oz), batch.color[2], B_UV(glyph->uvs[0], glyph->uvs[3]));
 
 		cx += width;
 		if (bytes > 0)
 			cx += spacing;
 	}
-}
-
-/// Dumps the vertex batch on your screen.
-void submit_batch() {
-	if (batch.vertex_count <= 0)
-		return;
-
-	glBindVertexArray(batch.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_count), batch.vertices);
-
-	// Apply texture
-	glBindTexture(GL_TEXTURE_2D, batch.texture);
-	const GLint filter = (batch.filter || CLIENT.video.filter) ? GL_LINEAR : GL_NEAREST;
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-	glUniform1f(uniforms.alpha_test, batch.alpha_test);
-	glUniform1f(uniforms.stencil, batch.stencil);
-	glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)get_mvp_matrix());
-
-	// Apply blend mode
-	glBlendFuncSeparate(batch.blend_src[0], batch.blend_dest[0], batch.blend_src[1], batch.blend_dest[1]);
-
-	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)batch.vertex_count);
-	batch.vertex_count = 0;
 }
 
 // ========
@@ -1032,7 +1036,7 @@ void pop_surface() {
 
 	if (surface == NULL) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, screen_width, screen_height);
+		glViewport(0, 0, window_width, window_height);
 		glDisable(GL_DEPTH_TEST);
 		glCullFace(GL_FRONT);
 	} else {
@@ -1138,12 +1142,12 @@ void tile_sprite(const char* name, const GLfloat pos[3], const GLfloat scale[2],
 	const GLfloat y2 = y1 + ((GLfloat)texture->size[1] * scale[1]);
 	const GLfloat z = pos[2];
 
-	tile_vertex(tilemap, XYZ(x1, y2, z), color, UV(0, 1));
-	tile_vertex(tilemap, XYZ(x1, y1, z), color, UV(0, 0));
-	tile_vertex(tilemap, XYZ(x2, y1, z), color, UV(1, 0));
-	tile_vertex(tilemap, XYZ(x2, y1, z), color, UV(1, 0));
-	tile_vertex(tilemap, XYZ(x2, y2, z), color, UV(1, 1));
-	tile_vertex(tilemap, XYZ(x1, y2, z), color, UV(0, 1));
+	tile_vertex(tilemap, B_XYZ(x1, y2, z), color, B_UV(0, 1));
+	tile_vertex(tilemap, B_XYZ(x1, y1, z), color, B_UV(0, 0));
+	tile_vertex(tilemap, B_XYZ(x2, y1, z), color, B_UV(1, 0));
+	tile_vertex(tilemap, B_XYZ(x2, y1, z), color, B_UV(1, 0));
+	tile_vertex(tilemap, B_XYZ(x2, y2, z), color, B_UV(1, 1));
+	tile_vertex(tilemap, B_XYZ(x1, y2, z), color, B_UV(0, 1));
 
 	if (color[3] < 255)
 		tilemap->translucent = true;
@@ -1155,12 +1159,12 @@ void tile_rectangle(const char* name, const GLfloat rect[2][2], GLfloat z, const
 	const GLfloat u = (texture != NULL) ? ((rect[1][0] - rect[0][0]) / (GLfloat)(texture->size[0])) : 1;
 	const GLfloat v = (texture != NULL) ? ((rect[1][1] - rect[0][1]) / (GLfloat)(texture->size[1])) : 1;
 
-	tile_vertex(tilemap, XYZ(rect[0][0], rect[1][1], z), color[2], UV(0, v));
-	tile_vertex(tilemap, XYZ(rect[0][0], rect[0][1], z), color[0], UV(0, 0));
-	tile_vertex(tilemap, XYZ(rect[1][0], rect[0][1], z), color[1], UV(u, 0));
-	tile_vertex(tilemap, XYZ(rect[1][0], rect[0][1], z), color[1], UV(u, 0));
-	tile_vertex(tilemap, XYZ(rect[1][0], rect[1][1], z), color[3], UV(u, v));
-	tile_vertex(tilemap, XYZ(rect[0][0], rect[1][1], z), color[2], UV(0, v));
+	tile_vertex(tilemap, B_XYZ(rect[0][0], rect[1][1], z), color[2], B_UV(0, v));
+	tile_vertex(tilemap, B_XYZ(rect[0][0], rect[0][1], z), color[0], B_UV(0, 0));
+	tile_vertex(tilemap, B_XYZ(rect[1][0], rect[0][1], z), color[1], B_UV(u, 0));
+	tile_vertex(tilemap, B_XYZ(rect[1][0], rect[0][1], z), color[1], B_UV(u, 0));
+	tile_vertex(tilemap, B_XYZ(rect[1][0], rect[1][1], z), color[3], B_UV(u, v));
+	tile_vertex(tilemap, B_XYZ(rect[0][0], rect[1][1], z), color[2], B_UV(0, v));
 
 	if (color[0][3] < 255 || color[1][3] < 255 || color[2][3] < 255 || color[3][3] < 255)
 		tilemap->translucent = true;

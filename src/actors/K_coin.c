@@ -38,7 +38,7 @@ static void draw(const GameActor* actor) {
 		tex = "items/coin2";
 		break;
 	}
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {
@@ -146,7 +146,7 @@ static void draw_pop(const GameActor* actor) {
 		const uint32_t frame = (VAL(actor, COIN_POP_FRAME) / 100L) % 5L;
 		tex = fmt("items/coin_pop%u", (frame >= 2L) ? (frame - 1L) : 0L);
 	}
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static PlayerID pop_owner(const GameActor* actor) {

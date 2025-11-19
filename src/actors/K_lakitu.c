@@ -208,11 +208,11 @@ static void draw(const GameActor* actor) {
 		tex = fmt("enemies/lakitu_throw%u", VAL(actor, LAKITU_FRAME));
 	else if (ANY_FLAG(actor, FLG_LAKITU_OUT))
 		tex = fmt("enemies/lakitu_throw%u", 10L - VAL(actor, LAKITU_FRAME));
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, "enemies/lakitu0", 0.f, WHITE);
+	draw_actor(actor, "enemies/lakitu0", 0.f, B_WHITE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {

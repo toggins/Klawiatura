@@ -68,7 +68,7 @@ static void tick_bar(GameActor* actor) {
 }
 
 static void draw_bar(const GameActor* actor) {
-	draw_actor(actor, "markers/goal_bar", 0.f, WHITE);
+	draw_actor(actor, "markers/goal_bar", 0.f, B_WHITE);
 }
 
 static void collide_bar(GameActor* actor, GameActor* from) {
@@ -126,7 +126,7 @@ static void tick_fly(GameActor* actor) {
 }
 
 static void draw_fly(const GameActor* actor) {
-	draw_actor(actor, "markers/goal_bar2", FtFloat(VAL(actor, GOAL_ANGLE)), WHITE);
+	draw_actor(actor, "markers/goal_bar2", FtFloat(VAL(actor, GOAL_ANGLE)), B_WHITE);
 }
 
 const GameActorTable TAB_GOAL_BAR_FLY = {

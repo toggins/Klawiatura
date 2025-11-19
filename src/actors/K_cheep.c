@@ -42,11 +42,11 @@ static void tick_blue(GameActor* actor) {
 
 static void draw_blue(const GameActor* actor) {
 	draw_actor(actor, fmt("enemies/cheep_blue%u", (int)((float)game_state.time / 11.11111111111111f) % 2L), 0.f,
-		WHITE);
+		B_WHITE);
 }
 
 static void draw_blue_corpse(const GameActor* actor) {
-	draw_actor(actor, "enemies/cheep_blue0", 0.f, WHITE);
+	draw_actor(actor, "enemies/cheep_blue0", 0.f, B_WHITE);
 }
 
 static void collide_blue(GameActor* actor, GameActor* from) {
@@ -154,11 +154,11 @@ static void tick_spiky(GameActor* actor) {
 }
 
 static void draw_spiky(const GameActor* actor) {
-	draw_actor(actor, fmt("enemies/cheep_spiky%u", (int)((float)game_state.time / 6.25f) % 2L), 0.f, WHITE);
+	draw_actor(actor, fmt("enemies/cheep_spiky%u", (int)((float)game_state.time / 6.25f) % 2L), 0.f, B_WHITE);
 }
 
 static void draw_spiky_corpse(const GameActor* actor) {
-	draw_actor(actor, "enemies/cheep_blue0", 0.f, WHITE);
+	draw_actor(actor, "enemies/cheep_blue0", 0.f, B_WHITE);
 }
 
 static void collide_spiky(GameActor* actor, GameActor* from) {
@@ -296,11 +296,11 @@ static void tick_bass(GameActor* actor) {
 static void draw_bass(const GameActor* actor) {
 	const char* tex = fmt(
 		"enemies/bass%u", ((int)((float)game_state.time / 3.f) % 2L) + (ANY_FLAG(actor, FLG_BASS_ATTACK) * 2L));
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void draw_bass_corpse(const GameActor* actor) {
-	draw_actor_offset(actor, "enemies/bass0", XY(0.f, -32.f), 0.f, WHITE);
+	draw_actor_offset(actor, "enemies/bass0", B_XY(0.f, -32.f), 0.f, B_WHITE);
 }
 
 static void cleanup_bass(GameActor* actor) {

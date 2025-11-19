@@ -1098,44 +1098,43 @@ static void draw(const GameActor* actor) {
 	// !!! CLIENT-SIDE !!!
 	const GLfloat a = (localplayer() == player->id) ? 255L : 191L;
 	// !!! CLIENT-SIDE !!!
-	draw_actor_no_jitter(actor, tex, 0.f, ALPHA(a));
+	draw_actor_no_jitter(actor, tex, 0.f, B_ALPHA(a));
 
 	if (VAL(actor, PLAYER_STARMAN) > 0L) {
-		GLubyte r = 248L, g = 0L, b = 0L;
+		GLfloat r = 248L, g = 0L, b = 0L;
 		switch (game_state.time % 5L) {
 		default:
 			break;
 		case 1L: {
-			r = 192L;
-			g = 152L;
-			b = 0L;
+			r = 0.7529411764705882f;
+			g = 0.596078431372549f;
+			b = 0.f;
 			break;
 		}
 		case 2L: {
-			r = 144L;
-			g = 192L;
-			b = 40L;
+			r = 0.5647058823529412f;
+			g = 0.7529411764705882f;
+			b = 0.1568627450980392f;
 			break;
 		}
 		case 3L: {
-			r = 88L;
-			g = 136L;
-			b = 232L;
+			r = 0.3450980392156863f;
+			g = 0.5333333333333333f;
+			b = 0.9098039215686275f;
 			break;
 		}
 		case 4L: {
-			r = 192L;
-			g = 120L;
-			b = 200L;
+			r = 0.7529411764705882f;
+			g = 0.4705882352941176f;
+			b = 0.7843137254901961f;
 			break;
 		}
 		}
 
-		batch_stencil(1.f);
-		batch_blendmode(GL_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA, GL_ONE);
-		draw_actor_no_jitter(actor, tex, 0.f, RGBA(r, g, b, a));
-		batch_blendmode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
-		batch_stencil(0.f);
+		batch_stencil(B_STENCIL(r, g, b, 1.f));
+		batch_blend(B_BLEND(GL_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA, GL_ONE));
+		draw_actor_no_jitter(actor, tex, 0.f, B_ALPHA(a));
+		batch_blend(B_BLEND_NORMAL), batch_stencil(B_NO_STENCIL);
 	}
 
 	// !!! CLIENT-SIDE !!!
@@ -1145,9 +1144,9 @@ static void draw(const GameActor* actor) {
 	if (name == NULL)
 		return;
 	const InterpActor* iactor = get_interp(actor);
-	batch_cursor(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + FtFloat(actor->box.start.y) - 10.f, -1000.f));
-	batch_color(ALPHA(160L));
-	batch_align(FA_CENTER, FA_BOTTOM);
+	batch_pos(B_XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + FtFloat(actor->box.start.y) - 10.f, -1000.f));
+	batch_color(B_ALPHA(160L));
+	batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
 	batch_string("main", 20, name);
 	// !!! CLIENT-SIDE !!!
 }
@@ -1318,13 +1317,14 @@ static void tick_corpse(GameActor* actor) {
 
 static void draw_corpse(const GameActor* actor) {
 	draw_actor_no_jitter(
-		actor, "player/mario/dead", 0.f, ALPHA((localplayer() == get_owner_id(actor)) ? 255L : 191L));
+		actor, "player/mario/dead", 0.f, B_ALPHA((localplayer() == get_owner_id(actor)) ? 255L : 191L));
 
 	if (!ANY_FLAG(actor, FLG_PLAYER_JACKASS))
 		return;
 	const InterpActor* iactor = get_interp(actor);
-	batch_start(XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y + actor->box.start.y) - 32.f, -1000.f), 0.f, WHITE);
-	batch_align(FA_CENTER, FA_BOTTOM);
+	batch_reset();
+	batch_pos(B_XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y + actor->box.start.y) - 32.f, -1000.f));
+	batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
 	batch_string("main", 24, "Jackass");
 }
 
@@ -1361,7 +1361,8 @@ static void tick_effect(GameActor* actor) {
 
 static void draw_effect(const GameActor* actor) {
 	draw_actor(actor, get_player_texture(VAL(actor, PLAYER_EFFECT_POWER), VAL(actor, PLAYER_EFFECT_FRAME)), 0.f,
-		ALPHA(((localplayer() == get_owner_id(actor)) ? 1.f : 0.75f) * FtInt(VAL(actor, PLAYER_EFFECT_ALPHA))));
+		B_ALPHA(((localplayer() == get_owner_id(actor)) ? 1.f : 0.75f)
+			* FtInt(VAL(actor, PLAYER_EFFECT_ALPHA))));
 }
 
 static PlayerID effect_owner(const GameActor* actor) {
@@ -1424,11 +1425,11 @@ static void draw_kevin(const GameActor* actor) {
 	const GLboolean flip[2] = {ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)};
 	const char* tex = get_player_texture(player->kevin.frames[0].power, player->kevin.frames[0].frame);
 
-	batch_start(pos, 0.f, color), batch_sprite(tex, flip);
+	batch_reset(), batch_pos(pos), batch_color(color), batch_flip(flip), batch_sprite(tex);
 	// THIS USES SDL_rand(), NOT rng() THAT ONE IS USED FOR THE GAME STATE
 	pos[0] += (float)(-5L + SDL_rand(11L)), pos[1] += (float)(-5L + SDL_rand(11L));
 	color[3] = (GLubyte)((GLfloat)color[3] * 0.75f);
-	batch_cursor(pos), batch_color(color), batch_sprite(tex, flip);
+	batch_pos(pos), batch_color(color), batch_sprite(tex);
 }
 
 static void collide_kevin(GameActor* actor, GameActor* from) {

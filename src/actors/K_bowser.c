@@ -277,13 +277,13 @@ static void draw(const GameActor* actor) {
 		else if (hurt < 10.f)
 			a = (GLubyte)glm_lerp(255.f, (float)a, hurt / 10.f);
 	}
-	draw_actor(actor, tex, 0.f, ALPHA(a));
+	draw_actor(actor, tex, 0.f, B_ALPHA(a));
 
 	if (ANY_FLAG(actor, FLG_BOWSER_GUN)) {
 		const InterpActor* iactor = get_interp(actor);
-		batch_cursor(XYZ(FtInt(iactor->pos.x) + (ANY_FLAG(actor, FLG_X_FLIP) ? -23L : 23L),
+		batch_pos(B_XYZ(FtInt(iactor->pos.x) + (ANY_FLAG(actor, FLG_X_FLIP) ? -23L : 23L),
 			FtInt(iactor->pos.y) - 23L, FtFloat(actor->depth)));
-		batch_sprite("enemies/bowser_gun", NO_FLIP);
+		batch_sprite("enemies/bowser_gun");
 	}
 }
 
@@ -437,7 +437,7 @@ static void tick_corpse(GameActor* actor) {
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, fmt("enemies/bowser_dead%u", (game_state.time / 2L) % 2L), 0.f, WHITE);
+	draw_actor(actor, fmt("enemies/bowser_dead%u", (game_state.time / 2L) % 2L), 0.f, B_WHITE);
 }
 
 const GameActorTable TAB_BOWSER_DEAD = {

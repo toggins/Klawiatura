@@ -36,7 +36,7 @@ static void tick(GameActor* actor) {
 static void draw(const GameActor* actor) {
 	const char* tex = fmt(ANY_FLAG(actor, FLG_SPRING_GREEN) ? "markers/spring_green%u" : "markers/spring%u",
 		VAL(actor, SPRING_FRAME) / 100L);
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {

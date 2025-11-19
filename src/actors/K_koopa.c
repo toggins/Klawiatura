@@ -38,11 +38,11 @@ static void draw(const GameActor* actor) {
 	const char* tex = ANY_FLAG(actor, FLG_KOOPA_RED)
 	                          ? fmt("enemies/koopa_red%u", (int)((float)game_state.time / 11.11111111111111f) % 2L)
 	                          : fmt("enemies/koopa%u", (int)((float)game_state.time / 16.66666666666667f) % 2L);
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red0" : "enemies/shell0", 0.f, WHITE);
+	draw_actor(actor, ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red0" : "enemies/shell0", 0.f, B_WHITE);
 }
 
 static void cleanup(GameActor* actor) {
@@ -159,7 +159,7 @@ static void tick_shell(GameActor* actor) {
 static void draw_shell(const GameActor* actor) {
 	const char* tex = fmt(ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red%u" : "enemies/shell%u",
 		FtInt(VAL(actor, SHELL_FRAME)) % 4L);
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void collide_shell(GameActor* actor, GameActor* from) {
@@ -271,7 +271,7 @@ static void tick_parakoopa(GameActor* actor) {
 static void draw_parakoopa(const GameActor* actor) {
 	const char* tex = fmt(ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/parakoopa_red%u" : "enemies/parakoopa%u",
 		(int)((float)(game_state.time) / 8.333333333333333f) % 2L);
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void collide_parakoopa(GameActor* actor, GameActor* from) {

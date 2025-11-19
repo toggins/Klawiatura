@@ -78,7 +78,7 @@ static void draw_spike(const GameActor* actor) {
 		break;
 	}
 
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void collide_spike(GameActor* actor, GameActor* from) {
@@ -112,7 +112,7 @@ static void create_coral(GameActor* actor) {
 static void draw_coral(const GameActor* actor) {
 	const uint64_t frame = (game_state.time / 2L) % 22L;
 	const char* tex = fmt("enemies/coral%u", SDL_min(frame, 6L));
-	draw_actor(actor, tex, 0.f, WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
 static void on_coral(GameActor* actor, GameActor* from) {
@@ -155,7 +155,7 @@ static void draw_cloud(const GameActor* actor) {
 		return;
 	const int frame = ((int)((float)game_state.time / 12.5f) + VAL(actor, CLOUD_FRAME)) % 3L;
 	const char* tex = fmt(ANY_FLAG(actor, FLG_CLOUD_TROLL) ? "props/cloud%u" : "enemies/fake_cloud%u", frame);
-	draw_actor(actor, tex, 0.f, ALPHA(ANY_FLAG(actor, FLG_CLOUD_TRANSLUCENT) ? 64L : 255L));
+	draw_actor(actor, tex, 0.f, B_ALPHA(ANY_FLAG(actor, FLG_CLOUD_TRANSLUCENT) ? 64L : 255L));
 }
 
 static void collide_cloud(GameActor* actor, GameActor* from) {
