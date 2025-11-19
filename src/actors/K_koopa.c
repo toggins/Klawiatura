@@ -172,8 +172,11 @@ static void collide_shell(GameActor* actor, GameActor* from) {
 			player_starman(from, actor);
 			break;
 		}
-		if (VAL(actor, SHELL_HIT) > 0L)
+		if (VAL(actor, SHELL_HIT) > 0L) {
+			if (VAL(actor, SHELL_HIT) < 2L && VAL(actor, SHELL_PLAYER) == get_owner_id(from))
+				++VAL(actor, SHELL_HIT);
 			break;
+		}
 
 		if (!ANY_FLAG(actor, FLG_SHELL_ACTIVE)) {
 			play_actor_sound(actor, "kick");
