@@ -581,7 +581,7 @@ void batch_reset() {
 /// Fully resets the batch, slower since it can break batches.
 void batch_reset_hard() {
 	batch_reset();
-	batch_texture(blank_texture), batch_filter(true), batch_alpha_test(0.5f);
+	batch_texture(blank_texture), batch_filter(false), batch_alpha_test(0.5f);
 	batch_stencil(B_NO_STENCIL), batch_blend(B_BLEND_NORMAL);
 }
 
