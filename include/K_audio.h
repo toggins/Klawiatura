@@ -57,9 +57,7 @@ typedef struct {
 
 extern AudioState audio_state;
 
-void audio_init();
-void audio_update();
-void audio_teardown();
+void audio_init(), audio_update(), audio_teardown();
 
 float get_volume();
 void set_volume(float);
@@ -72,8 +70,7 @@ void move_ears(const float[2]);
 // State
 void start_audio_state();
 void tick_audio_state();
-void save_audio_state(AudioState*);
-void load_audio_state(const AudioState*);
+void save_audio_state(AudioState*), load_audio_state(const AudioState*);
 void nuke_audio_state();
 void pause_audio_state(bool);
 
