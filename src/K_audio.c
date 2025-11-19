@@ -13,25 +13,14 @@ extern ClientInfo CLIENT;
 
 static FMOD_SYSTEM* speaker = NULL;
 
-// Internal noise
-static FMOD_CHANNELGROUP* master_group = NULL;
-static FMOD_CHANNELGROUP* sound_group = NULL;
-static FMOD_CHANNELGROUP* music_group = NULL;
-
-// Generic noise
-static FMOD_CHANNELGROUP* generic_sound_group = NULL;
-static FMOD_CHANNELGROUP* generic_music_group = NULL;
-
-// Game state noise
-static FMOD_CHANNELGROUP* state_sound_group = NULL;
-static FMOD_CHANNELGROUP* state_music_group = NULL;
+static FMOD_CHANNELGROUP *master_group = NULL, *sound_group = NULL, *music_group = NULL;
+static FMOD_CHANNELGROUP *generic_sound_group = NULL, *generic_music_group = NULL;
+static FMOD_CHANNELGROUP *state_sound_group = NULL, *state_music_group = NULL;
 
 AudioState audio_state = {0};
-static FMOD_CHANNEL* sound_channels[MAX_SOUNDS] = {NULL};
-static FMOD_CHANNEL* music_channels[TS_SIZE] = {NULL};
+static FMOD_CHANNEL *sound_channels[MAX_SOUNDS] = {NULL}, *music_channels[TS_SIZE] = {NULL};
 
-static StTinyMap* sounds = NULL;
-static StTinyMap* tracks = NULL;
+static StTinyMap *sounds = NULL, *tracks = NULL;
 
 void audio_init() {
 	FMOD_Debug_Initialize(FMOD_DEBUG_LEVEL_WARNING, FMOD_DEBUG_MODE_TTY, NULL, NULL);
@@ -67,19 +56,16 @@ void audio_init() {
 void audio_update() {
 	FMOD_ChannelGroup_SetMute(master_group, !(window_focused() || CLIENT.audio.background));
 	FMOD_ChannelGroup_SetMute(generic_music_group, game_exists());
-
 	FMOD_System_Update(speaker);
 }
 
 void audio_teardown() {
-	FreeTinyMap(sounds);
-	FreeTinyMap(tracks);
-
+	FreeTinyMap(sounds), FreeTinyMap(tracks);
 	FMOD_System_Release(speaker);
 }
 
 float get_volume() {
-	float volume = 1;
+	float volume = 1.f;
 	FMOD_ChannelGroup_GetVolume(master_group, &volume);
 	return volume;
 }
@@ -89,7 +75,7 @@ void set_volume(float volume) {
 }
 
 float get_sound_volume() {
-	float volume = 1;
+	float volume = 1.f;
 	FMOD_ChannelGroup_GetVolume(sound_group, &volume);
 	return volume;
 }
@@ -362,8 +348,7 @@ void play_state_sound_at(const char* name, const float pos[2]) {
 	sobj->offset = 0;
 
 	sobj->flags = PLAY_PAN;
-	sobj->pos[0] = pos[0];
-	sobj->pos[1] = pos[1];
+	sobj->pos[0] = pos[0], sobj->pos[1] = pos[1];
 
 	if (sound_channels[idx] != NULL)
 		FMOD_Channel_Stop(sound_channels[idx]);
