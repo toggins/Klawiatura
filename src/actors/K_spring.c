@@ -1,5 +1,3 @@
-#include "K_string.h"
-
 #include "actors/K_player.h" // IWYU pragma: keep
 
 enum {
@@ -34,8 +32,20 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	const char* tex = fmt(ANY_FLAG(actor, FLG_SPRING_GREEN) ? "markers/spring_green%u" : "markers/spring%u",
-		VAL(actor, SPRING_FRAME) / 100L);
+	const char* tex = NULL;
+	switch (VAL(actor, SPRING_FRAME) / 100L) {
+	default:
+	case 0L:
+		tex = ANY_FLAG(actor, FLG_SPRING_GREEN) ? "markers/spring_green0" : "markers/spring0";
+		break;
+	case 1L:
+	case 3L:
+		tex = ANY_FLAG(actor, FLG_SPRING_GREEN) ? "markers/spring_green1" : "markers/spring1";
+		break;
+	case 2L:
+		tex = ANY_FLAG(actor, FLG_SPRING_GREEN) ? "markers/spring_green2" : "markers/spring2";
+		break;
+	}
 	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
