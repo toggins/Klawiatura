@@ -64,6 +64,7 @@ static void draw(const GameActor* actor) {
 	const InterpActor* iactor = get_interp(actor);
 	batch_reset();
 	batch_pos(B_XYZ(FtInt(iactor->pos.x) - 32.f, FtInt(iactor->pos.y + F_SCREEN_HEIGHT) - 64.f, 20.f));
+	batch_tile(B_TILE(true, false));
 	batch_rectangle("markers/platform/tanks", B_XY(SCREEN_WIDTH + 64.f, 64.f));
 }
 
