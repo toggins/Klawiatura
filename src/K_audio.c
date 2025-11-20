@@ -19,6 +19,7 @@ static FMOD_CHANNELGROUP *state_sound_group = NULL, *state_music_group = NULL;
 
 AudioState audio_state = {0};
 static FMOD_CHANNEL *sound_channels[MAX_SOUNDS] = {NULL}, *music_channels[TS_SIZE] = {NULL};
+static const Track* generic_track = NULL;
 
 static StTinyMap *sounds = NULL, *tracks = NULL;
 
@@ -299,16 +300,20 @@ void play_generic_track(const char* name, PlayFlags flags) {
 		return;
 	}
 
+	if (generic_track == track)
+		return;
 	stop_generic_track();
 
 	FMOD_CHANNEL* channel = NULL;
-	FMOD_System_PlaySound(speaker, track->stream, generic_music_group, true, &channel);
+	const FMOD_RESULT result = FMOD_System_PlaySound(speaker, track->stream, generic_music_group, true, &channel);
 	FMOD_Channel_SetMode(channel, (flags & PLAY_LOOPING ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
 	FMOD_Channel_SetPaused(channel, false);
+	generic_track = (result == FMOD_OK) ? track : NULL;
 }
 
 void stop_generic_track() {
 	FMOD_ChannelGroup_Stop(generic_music_group);
+	generic_track = NULL;
 }
 
 // ============
