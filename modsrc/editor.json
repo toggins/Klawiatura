@@ -438,7 +438,7 @@
                             "type": "object",
                             "index": 78,
                             "z": 20,
-                            "texture": "tiles/wheel_l"
+                            "texture": "tiles/wheel_l0"
                         },
 
                         {
@@ -446,7 +446,7 @@
                             "type": "object",
                             "index": 79,
                             "z": 20,
-                            "texture": "tiles/wheel"
+                            "texture": "tiles/wheel0"
                         },
 
                         {
@@ -454,7 +454,7 @@
                             "type": "object",
                             "index": 80,
                             "z": 20,
-                            "texture": "tiles/wheel_r"
+                            "texture": "tiles/wheel_r0"
                         }
                     ]
                 ],
@@ -635,7 +635,7 @@
                             "type": "object",
                             "z": 56,
                             "index": 50,
-                            "texture": "bg/cloud_face"
+                            "texture": "bg/cloud_face0"
                         },
 
                         {
@@ -749,7 +749,7 @@
                             "def": "Cloud",
                             "type": "object",
                             "index": 73,
-                            "texture": "props/cloud",
+                            "texture": "props/cloud0",
                             "z": 26
                         },
 
@@ -757,7 +757,7 @@
                             "def": "Cloud Dark",
                             "type": "object",
                             "index": 74,
-                            "texture": "props/cloud_dark",
+                            "texture": "props/cloud_dark0",
                             "z": 26
                         },
 
@@ -765,7 +765,7 @@
                             "def": "Bush",
                             "type": "object",
                             "index": 75,
-                            "texture": "props/bush",
+                            "texture": "props/bush0",
                             "z": 25
                         },
 
@@ -773,7 +773,7 @@
                             "def": "Bush Snow",
                             "type": "object",
                             "index": 76,
-                            "texture": "props/bush_snow",
+                            "texture": "props/bush_snow0",
                             "z": 25
                         },
 
@@ -912,7 +912,7 @@
                     "type": "object",
                     "index": 31,
                     "z": 3,
-                    "texture": "markers/checkpoint",
+                    "texture": "markers/checkpoint0",
 
                     "values": [
                         {
@@ -953,7 +953,7 @@
                     "type": "object",
                     "index": 69,
                     "z": 2,
-                    "texture": "markers/spring",
+                    "texture": "markers/spring0",
 
                     "flags": [
                         {
@@ -1253,7 +1253,7 @@
                     "def": "Waving Level",
                     "type": "object",
                     "index": 97,
-                    "texture": "markers/water",
+                    "texture": "markers/water0",
 
                     "values": [
                         {
@@ -1293,7 +1293,7 @@
                             "type": "object",
                             "index": 26,
                             "z": 20,
-                            "texture": "items/block",
+                            "texture": "items/block0",
                             "values": [
                                 {
                                     "name": "Object Index",
@@ -1308,7 +1308,7 @@
                             "type": "object",
                             "index": 27,
                             "z": 20,
-                            "texture": "items/block3",
+                            "texture": "items/block2",
 
                             "values": [
                                 {
@@ -1377,7 +1377,7 @@
                             "type": "object",
                             "index": 90,
                             "z": 20,
-                            "texture": "items/note",
+                            "texture": "items/note0",
 
                             "values": [
                                 {
@@ -1422,7 +1422,7 @@
                             "type": "object",
                             "index": 13,
                             "z": 1,
-                            "texture": "items/mushroom_poison"
+                            "texture": "items/mushroom_poison0"
                         },
 
                         {
@@ -1430,7 +1430,7 @@
                             "type": "object",
                             "index": 14,
                             "z": 1,
-                            "texture": "items/flower"
+                            "texture": "items/flower0"
                         },
 
                         {
@@ -1438,7 +1438,7 @@
                             "type": "object",
                             "index": 15,
                             "z": 1,
-                            "texture": "items/beetroot"
+                            "texture": "items/beetroot0"
                         },
 
                         {
@@ -1446,7 +1446,7 @@
                             "type": "object",
                             "index": 16,
                             "z": 1,
-                            "texture": "items/lui"
+                            "texture": "items/lui0"
                         },
 
                         {
@@ -1454,7 +1454,7 @@
                             "type": "object",
                             "index": 17,
                             "z": 1,
-                            "texture": "items/hammer"
+                            "texture": "items/hammer_suit"
                         },
 
                         {
@@ -1462,7 +1462,7 @@
                             "type": "object",
                             "index": 18,
                             "z": 1,
-                            "texture": "items/starman"
+                            "texture": "items/starman0"
                         }
                     ]
                 ],
@@ -1472,7 +1472,7 @@
                     "type": "object",
                     "index": 9,
                     "z": 2,
-                    "texture": "items/coin"
+                    "texture": "items/coin0"
                 }
             ]
         ],
@@ -1484,7 +1484,7 @@
                     "def": "Goomba",
                     "type": "object",
                     "index": 38,
-                    "texture": "enemies/goomba",
+                    "texture": "enemies/goomba0",
 
                     "flags": [
                         {
@@ -1499,7 +1499,7 @@
                     "def": "Koopa",
                     "type": "object",
                     "index": 40,
-                    "texture": "enemies/koopa",
+                    "texture": "enemies/koopa0",
 
                     "flags": [
                         {
@@ -1519,7 +1519,7 @@
                     "def": "Parakoopa",
                     "type": "object",
                     "index": 42,
-                    "texture": "enemies/parakoopa",
+                    "texture": "enemies/parakoopa0",
 
                     "flags": [
                         {
@@ -1533,7 +1533,7 @@
                     "def": "Spiny",
                     "type": "object",
                     "index": 45,
-                    "texture": "enemies/spiny",
+                    "texture": "enemies/spiny0",
 
                     "flags": [
                         {
@@ -1555,7 +1555,7 @@
                     "type": "object",
                     "index": 48,
                     "z": 21,
-                    "texture": "enemies/piranha",
+                    "texture": "enemies/piranha0",
 
                     "flags": [
                         {
@@ -1580,7 +1580,7 @@
                     "type": "object",
                     "index": 92,
                     "z": 2,
-                    "texture": "enemies/piranha_head",
+                    "texture": "enemies/piranha_head0",
 
                     "flags": [
                         {
@@ -1599,7 +1599,7 @@
                     "def": "Bro",
                     "type": "object",
                     "index": 49,
-                    "texture": "enemies/bro",
+                    "texture": "enemies/bro0",
 
                     "values": [
                         {
@@ -1615,7 +1615,7 @@
                     "type": "object",
                     "index": 46,
                     "z": 1,
-                    "texture": "enemies/lakitu",
+                    "texture": "enemies/lakitu0",
 
                     "flags": [
                         {
@@ -1720,7 +1720,7 @@
                             "def": "Thwomp",
                             "type": "object",
                             "index": 63,
-                            "texture": "enemies/thwomp"
+                            "texture": "enemies/thwomp0"
                         },
 
                         {
@@ -1728,7 +1728,7 @@
                             "type": "object",
                             "index": 99,
                             "z": 26,
-                            "texture": "enemies/fake_cloud",
+                            "texture": "enemies/fake_cloud0",
 
                             "values": [
                                 {
@@ -1789,7 +1789,7 @@
                             "def": "Cheep Cheep Blue",
                             "type": "object",
                             "index": 58,
-                            "texture": "enemies/cheep_blue",
+                            "texture": "enemies/cheep_blue0",
 
                             "flags": [
                                 {
@@ -1804,7 +1804,7 @@
                             "def": "Cheep Cheep Spiky",
                             "type": "object",
                             "index": 59,
-                            "texture": "enemies/cheep_spiky",
+                            "texture": "enemies/cheep_spiky0",
 
                             "flags": [
                                 {
@@ -1819,7 +1819,7 @@
                             "def": "Boss Bass",
                             "type": "object",
                             "index": 98,
-                            "texture": "enemies/bass",
+                            "texture": "enemies/bass0",
 
                             "flags": [
                                 {
@@ -1834,7 +1834,7 @@
                             "def": "Electric Coral",
                             "type": "object",
                             "index": 93,
-                            "texture": "enemies/coral",
+                            "texture": "enemies/coral0",
                             "z": 20
                         }
                     ]
@@ -1848,7 +1848,7 @@
                             "type": "object",
                             "index": 66,
                             "z": 20,
-                            "texture": "enemies/lava"
+                            "texture": "enemies/lava0"
                         },
 
                         {
@@ -1863,14 +1863,14 @@
                             "def": "Podoboo",
                             "type": "object",
                             "index": 67,
-                            "texture": "enemies/podoboo"
+                            "texture": "enemies/podoboo0"
                         },
 
                         {
                             "def": "Podoboo Volcano",
                             "type": "object",
                             "index": 88,
-                            "texture": "M_SOLIDT"
+                            "texture": "markers/solid_top"
                         }
                     ]
                 ],
@@ -1880,7 +1880,7 @@
                     "type": "object",
                     "index": 89,
                     "z": 1,
-                    "texture": "enemies/bowser",
+                    "texture": "enemies/bowser0",
 
                     "values": [
                         {
