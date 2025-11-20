@@ -3,13 +3,18 @@
 #include "K_audio.h"
 #include "K_cmd.h"
 #include "K_config.h"
-#include "K_game.h"
-#include "K_input.h"
 #include "K_menu.h"
 #include "K_net.h"
 #include "K_string.h"
 #include "K_tick.h"
 #include "K_video.h"
+
+extern bool permadeath;
+const extern bool quickstart;
+
+// =======
+// CREDITS
+// =======
 
 static const char* credits[] = {
 	"Credits",
@@ -23,8 +28,11 @@ static const char* credits[] = {
 	"nonk",
 	NULL,
 	"[Beta Testing]",
+	"Collin",
 	"CST1229",
+	"Jaydex",
 	"LooPeR231",
+	"Mightcer",
 	"miyameon",
 	"ReflexGURU",
 	"Usered",
@@ -35,11 +43,119 @@ static const char* credits[] = {
 };
 static float credits_y = SCREEN_HEIGHT;
 
+// =======
+// SECRETS
+// =======
+
+static Secret SECRETS[SECR_SIZE] = {
+	[SECR_KEVIN] = {
+		.name = "KEVIN",
+		.inputs = {KB_SECRET_K, KB_SECRET_E, KB_SECRET_V, KB_SECRET_I, KB_SECRET_N, NULLBIND},
+		.cmd = &CLIENT.game.kevin,
+		.sound = "kevin_on", .track = "human_like_predator",
+	},
+	[SECR_FRED] = {
+		.name = "FRED",
+		.inputs = {KB_SECRET_F, KB_SECRET_R, KB_SECRET_E, KB_SECRET_D, NULLBIND},
+		.cmd = &CLIENT.game.fred,
+		.sound = "fred_on", .track = "bassbin_bangin",
+	},
+};
+
+static int secret_state = 0;
+static float secret_lerp = 0.f;
+static int last_secret = -1;
+
+static void load_secrets() {
+	for (SecretType i = 0; i < SECR_SIZE; i++) {
+		load_sound(SECRETS[i].sound);
+		load_track(SECRETS[i].track);
+	}
+
+	load_sound("type");
+	load_sound("thwomp");
+	load_track("it_makes_me_burn");
+}
+
+static void update_menu_track();
+static void activate_secret(SecretType idx) {
+	SECRETS[idx].active = true;
+	SECRETS[idx].state = SECRETS[idx].type_time = 0;
+	*(SECRETS[idx].cmd) = true;
+
+	if (last_secret == idx)
+		last_secret = -1;
+	play_generic_sound(SECRETS[idx].sound);
+	update_menu_track();
+}
+
+static void deactivate_secret(SecretType idx) {
+	SECRETS[idx].active = false;
+	SECRETS[idx].state = SECRETS[idx].type_time = 0;
+	*(SECRETS[idx].cmd) = false;
+
+	if (last_secret == idx)
+		last_secret = -1;
+	update_menu_track();
+}
+
+static MenuType cur_menu;
+static void update_secrets() {
+	const bool in_lobby = is_connected() || cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY;
+	for (SecretType i = 0; i < SECR_SIZE; i++) {
+		Secret* secret = &SECRETS[i];
+
+		if (secret->active) {
+			if (!(*(secret->cmd)))
+				deactivate_secret(i);
+			continue;
+		} else if (*(secret->cmd)) {
+			activate_secret(i);
+			continue;
+		}
+
+		if (secret->type_time > 0)
+			if (--secret->type_time <= 0) {
+				secret->state = 0;
+				if (last_secret == i)
+					last_secret = -1;
+				continue;
+			}
+
+		if (in_lobby || (last_secret >= 0 && last_secret != i) || !kb_pressed(secret->inputs[secret->state]))
+			continue;
+		if (secret->inputs[++secret->state] != NULLBIND) {
+			last_secret = i;
+			secret->type_time = TICKRATE;
+			play_generic_sound("type");
+			continue;
+		}
+
+		activate_secret(i);
+	}
+
+	if (in_lobby || !kb_pressed(KB_SECRET_BAIL))
+		return;
+
+	int cancelled = 0;
+	for (SecretType i = 0; i < SECR_SIZE; i++) {
+		if (!SECRETS[i].active)
+			continue;
+		deactivate_secret(i);
+		++cancelled;
+	}
+	if (cancelled > 0)
+		play_generic_sound("thwomp");
+}
+
+// ===========================================================
+// THE ACTUAL THING WE'RE SUPPOSED TO IMPLEMENT IN THIS SOURCE
+// ===========================================================
+
 static MenuType cur_menu = MEN_NULL;
-static int kevin_state = 0, kevin_time = 0;
-static float kevin_lerp = 0.f;
 
 static GameWinner winners[MAX_PLAYERS] = {0};
+static bool losers = false;
 
 static float volume_toggle_impl(float, int);
 #define FMT_OPTION(fname, ...)                                                                                         \
@@ -60,7 +176,6 @@ static float volume_toggle_impl(float, int);
 	}
 
 // Main Menu
-extern bool permadeath;
 static void instaquit() {
 	permadeath = true;
 }
@@ -72,7 +187,7 @@ static void play_singleplayer() {
 	play_generic_sound("enter");
 
 	GameContext ctx;
-	setup_game_context(&ctx, CLIENT.game.level, GF_SINGLE | GF_TRY_KEVIN);
+	setup_game_context(&ctx, CLIENT.game.level, GF_SINGLE | GF_TRY_HELL);
 	start_game(&ctx);
 }
 
@@ -224,16 +339,15 @@ BIND_OPTION(chat, KB_CHAT);
 
 static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
 	update_inlobby();
-static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), play_title_fr(MenuType),
-	maybe_play_title(MenuType), maybe_disconnect(MenuType);
+static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType);
 
 #define GHOST .ghost = true
 #define NORETURN .noreturn = true
 static Menu MENUS[MEN_SIZE] = {
-	[MEN_NULL] = {NORETURN, .leave = maybe_play_title},
+	[MEN_NULL] = {NORETURN},
 	[MEN_ERROR] = {"Error", GHOST},
-	[MEN_RESULTS] = {"", GHOST, .leave = play_title_fr},
-	[MEN_INTRO] = {NORETURN, .update = update_intro, .leave = maybe_play_title},
+	[MEN_RESULTS] = {"", GHOST},
+	[MEN_INTRO] = {NORETURN, .update = update_intro},
 	[MEN_MAIN] = {"Mario Together", NORETURN, .enter = reset_credits},
 	[MEN_SINGLEPLAYER] = {"Singleplayer"},
 	[MEN_MULTIPLAYER_NOTE] = {"Read This First!", GHOST, .enter = enter_multiplayer_note},
@@ -248,6 +362,41 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
 };
+
+static void update_menu_track() {
+	const char* track = NULL;
+	switch (cur_menu) {
+	default: {
+		if (CLIENT.game.kevin && CLIENT.game.fred) {
+			track = "it_makes_me_burn";
+			break;
+		}
+
+		for (SecretType i = 0; i < SECR_SIZE; i++)
+			if (SECRETS[i].active && SECRETS[i].track != NULL)
+				track = SECRETS[i].track;
+
+		if (track == NULL)
+			track = "title";
+		break;
+	}
+
+	case MEN_INTRO:
+	case MEN_ERROR:
+		break;
+
+	case MEN_RESULTS: {
+		if (!losers)
+			track = "yi_score";
+		break;
+	}
+	}
+
+	if (track != NULL)
+		play_generic_track(track, PLAY_LOOPING);
+	else
+		stop_generic_track();
+}
 
 // Main Menu
 static void reset_credits() {
@@ -384,15 +533,13 @@ void menu_init() {
 	load_sound("enter");
 	load_sound("on");
 	load_sound("off");
-	load_sound("kevin_type");
-	load_sound("kevin_on");
-	load_sound("thwomp");
 	load_sound("connect");
 	load_sound("disconnect");
 
 	load_track("title");
-	load_track("human_like_predator");
 	load_track("yi_score");
+
+	load_secrets();
 }
 
 static void enter_multiplayer_note() {
@@ -415,15 +562,6 @@ static void cleanup_lobby_list(MenuType next) {
 		OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
 		OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
 	}
-}
-
-static void play_title_fr(MenuType next) {
-	play_generic_track(CLIENT.game.kevin ? "human_like_predator" : "title", PLAY_LOOPING);
-}
-
-static void maybe_play_title(MenuType next) {
-	if (next == MEN_MAIN && !CLIENT.game.kevin)
-		play_title_fr(next);
 }
 
 static void update_intro() {
@@ -485,7 +623,7 @@ static void update_inlobby() {
 	make_lobby_active();
 
 	GameContext ctx;
-	setup_game_context(&ctx, CLIENT.game.level, GF_TRY_KEVIN);
+	setup_game_context(&ctx, CLIENT.game.level, GF_TRY_HELL);
 	ctx.num_players = CLIENT.game.players;
 	start_game(&ctx);
 }
@@ -503,42 +641,21 @@ static void run_disableif() {
 	}
 }
 
-static const char* kevinstr = "";
-static void keve() {
-	switch (kevin_state) {
-	default:
-		kevinstr = "";
-		break;
-	case 1:
-		kevinstr = "K";
-		break;
-	case 2:
-		kevinstr = "KE";
-		break;
-	case 3:
-		kevinstr = "KEV";
-		break;
-	case 4:
-		kevinstr = "KEVI";
-		break;
-	case 5:
-		kevinstr = "KEVIN";
-		break;
+static const char* keve() {
+	if (last_secret >= 0) {
+		static char buf[MAX_SECRET_INPUTS + 1] = "";
+		SDL_strlcpy(buf, SECRETS[last_secret].name, SECRETS[last_secret].state + 1);
+		return buf;
 	}
-}
 
-static void type_kevin(Keybind kb) {
-	if (!kb_pressed(kb))
-		return;
+	if (CLIENT.game.kevin && CLIENT.game.fred)
+		return "NOSTALIGA";
 
-	if (kevin_state >= 4)
-		CLIENT.game.kevin = true;
-	else {
-		play_generic_sound("kevin_type");
-		++kevin_state;
-		kevin_time = TICKRATE;
-	}
-	keve();
+	const char* str = NULL;
+	for (SecretType i = 0; i < SECR_SIZE; i++)
+		if (SECRETS[i].active)
+			str = SECRETS[i].name;
+	return str;
 }
 
 void update_menu() {
@@ -550,52 +667,7 @@ void update_menu() {
 			continue;
 		run_disableif();
 
-		if (kevin_state < 5 && kevin_time > 0) {
-			--kevin_time;
-			if (kevin_time <= 0) {
-				kevin_state = 0;
-				keve();
-			}
-		}
-
-		if (CLIENT.game.kevin && kevin_state < 5) {
-			play_generic_sound("kevin_on");
-			if (cur_menu != MEN_RESULTS)
-				play_generic_track("human_like_predator", PLAY_LOOPING);
-			kevin_state = 5;
-			kevin_time = 0;
-			keve();
-		} else if (!CLIENT.game.kevin && kevin_state >= 5) {
-			play_generic_sound("thwomp");
-			if (cur_menu != MEN_RESULTS)
-				play_generic_track("title", PLAY_LOOPING);
-			kevin_state = 0;
-			kevin_time = 0;
-			keve();
-		}
-
-		if (!is_connected() && (cur_menu != MEN_JOINING_LOBBY && cur_menu != MEN_LOBBY))
-			switch (kevin_state) {
-			default:
-				type_kevin(KB_KEVIN_K);
-				break;
-			case 1:
-				type_kevin(KB_KEVIN_E);
-				break;
-			case 2:
-				type_kevin(KB_KEVIN_V);
-				break;
-			case 3:
-				type_kevin(KB_KEVIN_I);
-				break;
-			case 4:
-				type_kevin(KB_KEVIN_N);
-				break;
-			case 5:
-				if (kb_pressed(KB_KEVIN_BAIL))
-					CLIENT.game.kevin = false;
-				break;
-			}
+		update_secrets();
 
 		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
 		if (!change)
@@ -667,15 +739,24 @@ void draw_menu() {
 	batch_reset();
 	batch_sprite("ui/background");
 
+	bool has_secret = false;
+	for (SecretType i = 0; i < SECR_SIZE; i++)
+		if (SECRETS[i].active) {
+			has_secret = true;
+			break;
+		}
+
 	const float lk = 0.125f * dt();
-	kevin_lerp = glm_lerp(kevin_lerp, CLIENT.game.kevin, SDL_min(lk, 1.f));
-	const GLubyte fade_alpha = (GLubyte)(kevin_lerp * 255.f);
+	secret_lerp = glm_lerp(secret_lerp, has_secret, SDL_min(lk, 1.f));
+
+	const GLubyte fade_red = (CLIENT.game.kevin && CLIENT.game.fred) ? 255 : 32;
+	const GLubyte fade_alpha = (GLubyte)(secret_lerp * 255.f);
 	batch_pos(B_XY(-SCREEN_WIDTH, 0));
 	batch_colors((GLubyte[4][4]){
-		{32, 0, 0, 0         },
-                {32, 0, 0, 0         },
-                {0,  0, 0, fade_alpha},
-                {0,  0, 0, fade_alpha}
+		{fade_red, 0, 0, 0         },
+                {fade_red, 0, 0, 0         },
+                {0,        0, 0, fade_alpha},
+                {0,        0, 0, fade_alpha}
         });
 	batch_rectangle(NULL, B_XY(SCREEN_WIDTH * 3, SCREEN_HEIGHT));
 	batch_color(B_WHITE);
@@ -807,15 +888,18 @@ void draw_menu() {
 	}
 	}
 
-	batch_pos(B_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 48.f)), batch_color(B_RGB(255, 96, 96));
+	batch_pos(B_XY(HALF_SCREEN_WIDTH + ((fade_red >= 255) ? (SDL_rand(3) - SDL_rand(3)) : 0.f),
+		SCREEN_HEIGHT - 48.f - ((fade_red >= 255) ? SDL_rand(5) : 0.f)));
+	batch_color(B_RGB(255, 96, 96));
 	batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-	const float kscale = 1.f + ((0.84f + SDL_sinf(totalticks() / 32.f) * 0.16f) * kevin_lerp);
+	const float kscale = 1.f + ((0.84f + SDL_sinf(totalticks() / 32.f) * 0.16f) * secret_lerp);
 	batch_scale(B_SCALE(kscale));
-	batch_string("main", 24.f, kevinstr);
-	batch_scale(B_SCALE(1.f));
+	batch_string("main", 24.f, keve());
+
 	if (cur_menu != MEN_JOINING_LOBBY && cur_menu != MEN_LOBBY) {
-		batch_color(B_ALPHA(128 * kevin_lerp)), batch_align(B_ALIGN(FA_CENTER, FA_TOP));
-		batch_string("main", 24, fmt("[%s] Deactivate", kb_label(KB_KEVIN_BAIL)));
+		batch_pos(B_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 48.f)), batch_scale(B_SCALE(1.f));
+		batch_color(B_ALPHA(128 * secret_lerp)), batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+		batch_string("main", 24, fmt("[%s] Deactivate", kb_label(KB_SECRET_BAIL)));
 	}
 
 	goto jobwelldone;
@@ -858,7 +942,6 @@ void show_error(const char* fmt, ...) {
 
 	set_menu(MEN_ERROR);
 
-	extern bool quickstart;
 	if (quickstart)
 		MENUS[MEN_ERROR].from = MEN_EXIT;
 }
@@ -880,19 +963,22 @@ void show_results() {
 	char idx = 0;
 
 	// Endgame reason
-	bool all_dead = true;
+	losers = true;
 	for (PlayerID i = 0; i < numplayers(); i++) {
 		const GamePlayer* player = get_player(i);
 		if (player->lives >= 0L) {
-			all_dead = false;
+			losers = false;
 			break;
 		}
 	}
 
-	MENUS[MEN_RESULTS].name = all_dead ? "Game Over" : "World Completed";
+	MENUS[MEN_RESULTS].name = losers ? "Game Over" : "World Completed";
 	OPTIONS[MEN_RESULTS][idx++].name
-		= all_dead ? ((game_state.flags & GF_KEVIN) ? "Nobody escaped Kevin..." : "No players remaining")
-	                   : ((game_state.flags & GF_KEVIN) ? "Kevin will be back..." : "All levels cleared");
+		= losers ? "No players remaining"
+	                 : ((game_state.flags & GF_KEVIN) ? ((game_state.flags & GF_FRED) ? "They will be back..."
+											  : "Kevin will be back...")
+							  : ((game_state.flags & GF_FRED) ? "Fred will be back..."
+											  : "All levels cleared"));
 
 	idx++;
 
@@ -918,10 +1004,6 @@ void show_results() {
 			SDL_memcpy(&winners[j + 1], &cmp[0], sizeof(cmp[0]));
 		}
 
-	if (all_dead)
-		stop_generic_track();
-	else
-		play_generic_track("yi_score", PLAY_LOOPING);
 	set_menu(MEN_RESULTS);
 }
 
@@ -962,6 +1044,7 @@ bool set_menu(MenuType next_menu) {
 		new_option = (new_option + 1) % MAX_OPTIONS;
 	}
 
+	update_menu_track();
 	return true;
 }
 

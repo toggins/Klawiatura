@@ -71,6 +71,9 @@ enum {
 	GF_REPLAY = 1 << 10,
 	GF_SINGLE = 1 << 11,
 	GF_RESTART = 1 << 12,
+	GF_FRED = 1 << 13,
+
+	GF_HELL = GF_KEVIN | GF_FRED,
 #define GF_TRY_SINGLE (((game_state.flags & GF_SINGLE) == GF_SINGLE) * GF_SINGLE)
 };
 
@@ -188,6 +191,7 @@ enum {
 	ACT_BOSS_BASS,
 	ACT_FAKE_CLOUD,
 	ACT_FAKE_BLOCK,
+	ACT_FRED,
 
 	ACT_SIZE,
 };

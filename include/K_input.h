@@ -23,7 +23,7 @@ enum {
 	// Utility
 	KB_CHAT,
 
-	// If you allow rebinding these I will pulverize you
+	// If you allow rebinding anything below this comment I will pulverize you
 	KB_PAUSE,
 	KB_UI_UP,
 	KB_UI_LEFT,
@@ -31,13 +31,15 @@ enum {
 	KB_UI_RIGHT,
 	KB_UI_ENTER,
 
-	// If you allow rebinding these then that's not Kevin
-	KB_KEVIN_K,
-	KB_KEVIN_E,
-	KB_KEVIN_V,
-	KB_KEVIN_I,
-	KB_KEVIN_N,
-	KB_KEVIN_BAIL,
+	KB_SECRET_D,
+	KB_SECRET_E,
+	KB_SECRET_F,
+	KB_SECRET_I,
+	KB_SECRET_K,
+	KB_SECRET_N,
+	KB_SECRET_R,
+	KB_SECRET_V,
+	KB_SECRET_BAIL,
 
 	KB_SIZE,
 };

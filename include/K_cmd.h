@@ -20,7 +20,23 @@ typedef struct {
 } CmdArg;
 
 #define CLIENT_STRING_MAX (NUTPUNCH_FIELD_DATA_MAX)
+
+// !!! !!! !!!
+// !!! !!! !!!
+// !!! !!! !!!
+
+/// CLIENT-SIDE FLAG FOR CONTEXT. DO NOT USE IN STATE!
 #define GF_TRY_KEVIN (CLIENT.game.kevin * GF_KEVIN)
+
+/// CLIENT-SIDE FLAG FOR CONTEXT. DO NOT USE IN STATE!
+#define GF_TRY_FRED (CLIENT.game.fred * GF_FRED)
+
+/// CLIENT-SIDE FLAG FOR CONTEXT. DO NOT USE IN STATE!
+#define GF_TRY_HELL (GF_TRY_KEVIN | GF_TRY_FRED)
+
+// !!! !!! !!!
+// !!! !!! !!!
+// !!! !!! !!!
 
 typedef struct {
 	struct {
@@ -43,7 +59,7 @@ typedef struct {
 
 	struct {
 		PlayerID players;
-		bool kevin;
+		bool kevin, fred;
 		char level[CLIENT_STRING_MAX];
 	} game;
 

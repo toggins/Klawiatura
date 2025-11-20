@@ -298,7 +298,7 @@ bool update_game() {
 				if (is_connected())
 					goto no_can_restart;
 
-				if (game_state.flags & GF_KEVIN)
+				if (game_state.flags & GF_HELL)
 					goto restart_fr;
 				PlayerID can_restart = num_players;
 				for (PlayerID i = 0; i < num_players; i++) {
@@ -428,11 +428,11 @@ bool update_game() {
 					}
 
 					GameContext ctx = {0};
-					setup_game_context(&ctx, game_state.next, GF_TRY_SINGLE | GF_TRY_KEVIN);
+					setup_game_context(&ctx, game_state.next, GF_TRY_SINGLE | GF_TRY_HELL);
 					ctx.num_players = num_players;
 					for (PlayerID i = 0; i < num_players; i++) {
 						const int8_t lives = game_state.players[i].lives;
-						if (lives < 0L && !(ctx.flags & GF_KEVIN))
+						if (lives < 0L && !(ctx.flags & GF_HELL))
 							continue;
 						ctx.players[i].lives = lives;
 						ctx.players[i].power = game_state.players[i].power;
@@ -446,7 +446,7 @@ bool update_game() {
 				} else if (game_state.flags & GF_RESTART) {
 				restart_fr:
 					GameContext ctx = {0};
-					setup_game_context(&ctx, cur_level, GF_TRY_SINGLE | GF_REPLAY | GF_TRY_KEVIN);
+					setup_game_context(&ctx, cur_level, GF_TRY_SINGLE | GF_REPLAY | GF_TRY_HELL);
 					ctx.num_players = num_players;
 					for (PlayerID i = 0; i < num_players; i++) {
 						ctx.players[i].lives = game_state.players[i].lives;
@@ -1338,7 +1338,7 @@ GameActor* respawn_player(GamePlayer* player) {
 	if (player == NULL || game_state.sequence.type == SEQ_WIN)
 		return NULL;
 
-	if (player->lives < 0L && !(game_state.flags & GF_KEVIN)) {
+	if (player->lives < 0L && !(game_state.flags & GF_HELL)) {
 		// !!! CLIENT-SIDE !!!
 		if (view_player == player->id)
 			for (PlayerID i = 0; i < num_players; i++) {

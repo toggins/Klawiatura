@@ -27,6 +27,7 @@ You can adjust Klawiatura with these launch options:
 | `-d`, `-data`         | `<path>`  | Path of the data folder to load assets from.                                                                                                                                                      |
 | `-c`, `-config`       | `<path>`  | Path of the config file. Disables config saving.                                                                                                                                                  |
 | `-K`, `-kevin`        |           | Awakens Kevin.                                                                                                                                                                                    |
+| `-F`, `-fred`        |           | Awakens Fred.                                                                                                                                                                                    |
 | `-a`, `-ip`           | `<ip>`    | IP address of the [NutPuncher](https://github.com/Schwungus/nutpunch) server. (Default: [the public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance)) |
 | `-l`, `-level`        | `<name>`  | Level file to load. Quickstarts the game in singleplayer.                                                                                                                                         |
 

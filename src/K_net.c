@@ -268,12 +268,14 @@ bool in_public_lobby() {
 void push_lobby_data() {
 	np_lobby_set("PLAYERS", sizeof(CLIENT.game.players), &CLIENT.game.players);
 	np_lobby_set("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
+	np_lobby_set("FRED", sizeof(CLIENT.game.fred), &CLIENT.game.fred);
 	np_lobby_set_string("LEVEL", CLIENT.game.level);
 }
 
 void pull_lobby_data() {
 	np_lobby_get_i8("PLAYERS", &CLIENT.game.players);
 	np_lobby_get_bool("KEVIN", &CLIENT.game.kevin);
+	np_lobby_get_bool("FRED", &CLIENT.game.fred);
 	np_lobby_get_string("LEVEL", CLIENT.game.level);
 }
 

@@ -23,7 +23,7 @@
 #include "K_os.h"
 #include "K_video.h"
 
-static void cmd_ip(), cmd_level(), cmd_kevin(), cmd_console();
+static void cmd_ip(), cmd_level(), cmd_kevin(), cmd_fred(), cmd_console();
 MAKE_OPTION(data_path, NULL);
 MAKE_OPTION(config_path, NULL);
 MAKE_FLAG(force_shader);
@@ -35,6 +35,7 @@ CmdArg CMDLINE[] = {
 	{"-d", "-data",         CMD_OPT(data_path)   },
 	{"-c", "-config",       CMD_OPT(config_path) },
 	{"-K", "-kevin",        cmd_kevin            },
+	{"-F", "-fred",         cmd_fred             },
 	{"-a", "-ip",           cmd_ip               },
 	{"-l", "-level",        cmd_level            },
 	{NULL, NULL,            NULL                 },
@@ -88,7 +89,7 @@ static int realmain() {
 
 	if (quickstart) {
 		GameContext ctx;
-		setup_game_context(&ctx, CLIENT.game.level, GF_SINGLE | GF_TRY_KEVIN);
+		setup_game_context(&ctx, CLIENT.game.level, GF_SINGLE | GF_TRY_HELL);
 		start_game(&ctx);
 	} else {
 		set_menu(skip_intro ? MEN_MAIN : MEN_INTRO);
@@ -157,9 +158,23 @@ static void cmd_ip() {
 }
 
 static void cmd_level() {
-	SDL_strlcpy(CLIENT.game.level, next_arg(), sizeof(CLIENT.game.level)), quickstart = true;
+	SDL_strlcpy(CLIENT.game.level, next_arg(), sizeof(CLIENT.game.level));
+	if (!quickstart) {
+		quickstart = true;
+		INFO("Running in quickstart mode");
+	}
 }
 
 static void cmd_kevin() {
-	CLIENT.game.kevin = true;
+	if (!CLIENT.game.kevin) {
+		CLIENT.game.kevin = true;
+		INFO("Kevin mode activated. Good luck...");
+	}
+}
+
+static void cmd_fred() {
+	if (!CLIENT.game.fred) {
+		CLIENT.game.fred = true;
+		INFO("Fred mode activated. Good luck...");
+	}
 }

@@ -1,3 +1,6 @@
+
+#include "K_string.h"
+
 #include "actors/K_autoscroll.h"
 #include "actors/K_enemies.h"
 #include "actors/K_missiles.h" // IWYU pragma: keep
@@ -440,7 +443,7 @@ void kill_player(GameActor* actor) {
 	if (game_state.sequence.type == SEQ_NONE && game_state.clock != 0L && !(game_state.flags & GF_SINGLE))
 		for (PlayerID i = 0; i < numplayers(); i++) {
 			GamePlayer* survivor = get_player(i);
-			if (survivor != NULL && (survivor->lives >= 0L || (game_state.flags & GF_KEVIN))) {
+			if (survivor != NULL && (survivor->lives >= 0L || (game_state.flags & GF_HELL))) {
 				all_dead = false;
 				break;
 			}
@@ -576,12 +579,34 @@ static void create_spawn(GameActor* actor) {
 	game_state.spawn = actor->id;
 }
 
+static void tick_spawn(GameActor* actor) {
+	if (!(game_state.flags & GF_FRED) || ANY_FLAG(actor, FLG_PLAYER_FRED))
+		return;
+	if (++VAL(actor, PLAYER_SPAWN_FRED) < 50L)
+		return;
+
+	fvec2 pos = actor->pos;
+	if (game_state.spawn == actor->id) {
+		GameActor* checkpoint = get_actor(game_state.checkpoint);
+		if (checkpoint != NULL)
+			pos = checkpoint->pos;
+	}
+
+	create_actor(ACT_FRED, pos);
+	FLAG_ON(actor, FLG_PLAYER_FRED);
+}
+
 static void cleanup_spawn(GameActor* actor) {
 	if (game_state.spawn == actor->id)
 		game_state.spawn = NULLACT;
 }
 
-const GameActorTable TAB_PLAYER_SPAWN = {.load = load_spawn, .create = create_spawn, .cleanup = cleanup_spawn};
+const GameActorTable TAB_PLAYER_SPAWN = {
+	.load = load_spawn,
+	.create = create_spawn,
+	.tick = tick_spawn,
+	.cleanup = cleanup_spawn,
+};
 
 // ======
 // PLAYER
@@ -611,7 +636,11 @@ static void load() {
 	load_actor(ACT_MISSILE_BEETROOT);
 	load_actor(ACT_MISSILE_HAMMER);
 	load_actor(ACT_POINTS);
-	load_actor(ACT_KEVIN);
+
+	if (game_state.flags & GF_KEVIN)
+		load_actor(ACT_KEVIN);
+	if (game_state.flags & GF_FRED)
+		load_actor(ACT_FRED);
 }
 
 static void create(GameActor* actor) {
@@ -1266,7 +1295,7 @@ static void tick_corpse(GameActor* actor) {
 			play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? "lose2" : "lose", false);
 		} else
 			play_actor_sound(
-				actor, (player->lives >= 0L && !(game_state.flags & GF_KEVIN)) ? "lose" : "dead");
+				actor, (player->lives >= 0L || (game_state.flags & GF_HELL)) ? "lose" : "dead");
 		break;
 	}
 
@@ -1292,7 +1321,7 @@ static void tick_corpse(GameActor* actor) {
 		if (game_state.sequence.type == SEQ_LOSE)
 			for (PlayerID i = 0; i < numplayers(); i++) {
 				GamePlayer* p = get_player(i);
-				if (p != NULL && (p->lives >= 0L || (game_state.flags & GF_KEVIN))) {
+				if (p != NULL && (p->lives >= 0L || (game_state.flags & GF_HELL))) {
 					game_state.flags |= GF_RESTART;
 					break;
 				}
@@ -1453,4 +1482,69 @@ const GameActorTable TAB_KEVIN = {
 	.draw = draw_kevin,
 	.collide = collide_kevin,
 	.owner = kevin_owner,
+};
+
+// ====
+// FRED
+// ====
+
+static void load_fred() {
+	load_texture_num("enemies/fred/%u", 175L);
+
+	load_actor(ACT_EXPLODE);
+}
+
+static void create_fred(GameActor* actor) {
+	actor->box.start.x = actor->box.start.y = FfInt(-30L);
+	actor->box.end.x = actor->box.end.y = FfInt(30L);
+}
+
+static void tick_fred(GameActor* actor) {
+	if (VAL(actor, FRED_ALPHA) < FfInt(255L)) {
+		VAL(actor, FRED_ALPHA) += 278528L;
+		if (VAL(actor, FRED_ALPHA) >= FfInt(255L))
+			VAL(actor, FRED_ALPHA) = FfInt(255L);
+		else
+			return;
+	}
+
+	if (game_state.sequence.type == SEQ_WIN || game_state.sequence.type == SEQ_LOSE) {
+		create_actor(ACT_EXPLODE, actor->pos);
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	VAL(actor, X_SPEED) = Fmul(VAL(actor, X_SPEED), 64881L);
+	VAL(actor, Y_SPEED) = Fmul(VAL(actor, Y_SPEED), 64881L);
+
+	GameActor* nearest = nearest_pawn(actor->pos);
+	if (nearest != NULL) {
+		const fixed dir = Vtheta(actor->pos, POS_ADD(nearest, FxZero, FfInt(-16L)));
+		VAL(actor, X_SPEED) += Fmul(Fcos(dir), 10000L);
+		VAL(actor, Y_SPEED) += Fmul(Fsin(dir), 10000L);
+	} else
+		VAL(actor, X_SPEED) += (VAL(actor, X_SPEED) >= FxZero) ? 10000L : -10000L;
+
+	move_actor(actor, POS_SPEED(actor));
+}
+
+static void draw_fred(const GameActor* actor) {
+	batch_reset();
+	const InterpActor* iactor = get_interp(actor);
+	batch_pos(B_XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)));
+	batch_offset(B_XY(43.f, 43.f)), batch_color(B_ALPHA(FtInt(VAL(actor, FRED_ALPHA))));
+	batch_sprite(fmt("enemies/fred/%u", game_state.time % 175L));
+}
+
+static void collide_fred(GameActor* actor, GameActor* from) {
+	if (from->type == ACT_PLAYER && VAL(actor, FRED_ALPHA) >= FfInt(255L))
+		kill_player(from);
+}
+
+const GameActorTable TAB_FRED = {
+	.load = load_fred,
+	.create = create_fred,
+	.tick = tick_fred,
+	.draw = draw_fred,
+	.collide = collide_fred,
 };
