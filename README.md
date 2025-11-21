@@ -62,8 +62,17 @@ py -m pip install jinja2
 
 ### [FMOD Engine 2.03.09](https://www.fmod.com/download#fmodengine)
 
-Move everything from `C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core`
-to `include\fmod\windows` on Windows. Same for the Linux version.
+**Windows:** Move everything in `C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core`
+to `external\fmod\windows`.
+
+**Linux:** Move everything in `fmodstudioapi20309linux` to `external/fmod/linux`.
+
+### [Discord Social SDK 1.7.12739](https://discord.com/developers/social-sdk) (OPTIONAL)
+
+> [!NOTE]
+> If the SDK is not present or the build environment is 32-bit, most of the functions in `K_discord` will be no-ops.
+
+Move the `discord_social_sdk` folder from the ZIP to `external/discord`.
 
 ### Compiling
 

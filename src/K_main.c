@@ -17,6 +17,7 @@
 #include "K_audio.h"
 #include "K_cmd.h"
 #include "K_config.h"
+#include "K_discord.h"
 #include "K_file.h"
 #include "K_input.h"
 #include "K_menu.h"
@@ -85,7 +86,7 @@ static int realmain() {
 	populate_actors_table();
 
 	file_init(data_path), video_init(force_shader), audio_init();
-	input_init(), config_init(config_path), net_init(), menu_init();
+	input_init(), config_init(config_path), discord_init(), net_init(), menu_init();
 
 	if (quickstart) {
 		GameContext ctx;
@@ -146,7 +147,7 @@ static int realmain() {
 	}
 
 teardown:
-	nuke_game(), net_teardown(), config_teardown(), input_teardown();
+	nuke_game(), net_teardown(), discord_teardown(), config_teardown(), input_teardown();
 	audio_teardown(), video_teardown(), file_teardown();
 	SDL_Quit();
 

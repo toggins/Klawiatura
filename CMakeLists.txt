@@ -102,13 +102,17 @@ FetchContent_Declare(
 # FMOD Core API (2.03.08)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
 
+# Discord Social SDK (1.7.12739)
+set(KLAW_DISCORD OFF CACHE INTERNAL "Use Discord Social SDK")
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/discord)
+
 FetchContent_MakeAvailable(SDL3 SDL3_image SDL_GameControllerDB glad cglm S_fixed S_tructures NutPunch yyjson GekkoNet)
 glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
 
 set(LIBS
     SDL3::SDL3-static SDL3_image::SDL3_image-static
     glad_gl_core_33
-    cglm fmod  GekkoNet
+    cglm fmod discord GekkoNet
     S_fixed S_tructures NutPunch
     yyjson)
 
@@ -133,6 +137,9 @@ add_executable(Klawiatura ${SOURCES} ${HEADERS} ${CMAKE_SOURCE_DIR}/res/Klawiatu
 target_include_directories(Klawiatura PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/nested)
 target_link_libraries(Klawiatura PRIVATE ${LIBS})
 target_compile_definitions(Klawiatura PUBLIC _POSIX_C_SOURCE=200112L _WIN32_WINNT=0x0501 WINVER=0x0501)
+if (KLAW_DISCORD)
+    add_compile_definitions(K_DISCORD)
+endif()
 if(MSVC AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo) # you're sus my guy...
     target_compile_options(GekkoNet PRIVATE /fsanitize=address)
 endif()
@@ -143,7 +150,7 @@ endif()
 set(RUNTIME_DLLS $<TARGET_RUNTIME_DLLS:Klawiatura>)
 if(LINUX)
     target_link_options(Klawiatura PRIVATE -Wl,-rpath,./)
-    set(RUNTIME_DLLS "$<LIST:APPEND,${RUNTIME_DLLS},$<TARGET_PROPERTY:fmod,IMPORTED_LOCATION>>")
+    set(RUNTIME_DLLS "$<LIST:APPEND,${RUNTIME_DLLS},$<TARGET_PROPERTY:fmod,IMPORTED_LOCATION>,$<TARGET_PROPERTY:discord,IMPORTED_LOCATION>>")
 endif()
 
 add_custom_target(KlawiaturaPost ALL
@@ -156,7 +163,7 @@ add_dependencies(KlawiaturaPost Klawiatura)
 install(TARGETS Klawiatura RUNTIME DESTINATION . COMPONENT Klawiatura)
 install(FILES README.md UNLICENSE res/console.bat ${CONTROLLER_DB} ${RUNTIME_DLLS} DESTINATION . COMPONENT Klawiatura)
 install(DIRECTORY modsrc/ DESTINATION data COMPONENT Klawiatura)
-install(DIRECTORY .github/assets DESTINATION .github COMPONENT Klawiatura) # has all the README .pngs
+# install(DIRECTORY .github/assets DESTINATION .github COMPONENT Klawiatura) # has all the README .pngs
 
 set(CPACK_GENERATOR ZIP)
 set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
