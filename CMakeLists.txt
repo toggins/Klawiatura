@@ -112,9 +112,12 @@ glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
 set(LIBS
     SDL3::SDL3-static SDL3_image::SDL3_image-static
     glad_gl_core_33
-    cglm fmod discord GekkoNet
+    cglm fmod GekkoNet
     S_fixed S_tructures NutPunch
     yyjson)
+if (KLAW_DISCORD)
+    list(APPEND LIBS discord)
+endif()
 
 # Build
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)

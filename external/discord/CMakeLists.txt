@@ -1,7 +1,5 @@
 project(discord)
 add_library(discord SHARED IMPORTED GLOBAL)
-set_property(TARGET discord APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-set_property(TARGET discord APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 
 # FIXME: Add support for ARM64 builds.
 if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk")
