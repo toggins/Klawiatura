@@ -3,6 +3,7 @@
 #include "K_audio.h"
 #include "K_cmd.h"
 #include "K_config.h"
+#include "K_discord.h"
 #include "K_menu.h"
 #include "K_net.h"
 #include "K_string.h"
@@ -339,7 +340,7 @@ BIND_OPTION(chat, KB_CHAT);
 #undef BIND_OPTION
 
 static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
-	update_inlobby();
+	enter_lobby(), update_inlobby();
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType);
 
 #define GHOST .ghost = true
@@ -359,7 +360,8 @@ static Menu MENUS[MEN_SIZE] = {
 	= {"Find Lobbies", .update = update_find_lobbies, .enter = list_lobbies, .leave = cleanup_lobby_list},
 	[MEN_JOINING_LOBBY] = {"Please wait...", .update = update_joining_lobby, .back_sound = "disconnect",
 		      .leave = maybe_disconnect, GHOST},
-	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .update = update_inlobby, .leave = disconnect, GHOST},
+	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .enter = enter_lobby, .update = update_inlobby,
+		      .leave = disconnect, GHOST},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
 };
@@ -519,8 +521,6 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 };
 
 void menu_init() {
-	from_scratch();
-
 	load_texture("ui/disclaimer");
 	load_texture("ui/background");
 	load_texture("ui/shortcut");
@@ -541,6 +541,9 @@ void menu_init() {
 	load_track("yi_score");
 
 	load_secrets();
+
+	update_discord_status(NULL);
+	from_scratch();
 }
 
 static void enter_multiplayer_note() {
@@ -602,6 +605,10 @@ static void update_joining_lobby() {
 		set_menu(MEN_LOBBY);
 		play_generic_sound("connect");
 	}
+}
+
+static void enter_lobby() {
+	update_discord_status(NULL);
 }
 
 static void update_inlobby() {

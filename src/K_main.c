@@ -144,6 +144,7 @@ static int realmain() {
 		}
 
 		audio_update();
+		discord_update();
 	}
 
 teardown:

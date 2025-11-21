@@ -1,4 +1,5 @@
 #include "K_cmd.h"
+#include "K_discord.h"
 #include "K_file.h"
 #include "K_game.h"
 #include "K_input.h"
@@ -233,6 +234,8 @@ void nuke_game() {
 	game_session = NULL;
 	destroy_surface(game_surface);
 	game_surface = NULL;
+
+	update_discord_status(NULL);
 }
 
 bool update_game() {
@@ -1145,9 +1148,10 @@ void start_game_state(GameContext* ctx) {
 	buf++;
 
 	// Level
-	char level_name[32];
+	char level_name[32 + 1];
 	SDL_memcpy(level_name, buf, 32);
 	INFO("Level: %s (%s)", ctx->level, level_name);
+	update_discord_status(level_name);
 	buf += 32;
 
 	read_string((const char**)(&buf), video_state.world, sizeof(video_state.world));

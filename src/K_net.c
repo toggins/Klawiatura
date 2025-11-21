@@ -10,6 +10,7 @@
 #define NutPunch_Log INFO
 
 #include "K_cmd.h"
+#include "K_discord.h"
 #include "K_game.h"
 #include "K_net.h"
 #include "K_tick.h"
@@ -140,6 +141,7 @@ void disconnect() {
 	found_lobby = false;
 	if (net_error())
 		WARN("Net error: %s", net_error());
+	update_discord_status(NULL);
 }
 
 bool is_host() {
