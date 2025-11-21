@@ -580,7 +580,9 @@ static void create_spawn(GameActor* actor) {
 }
 
 static void tick_spawn(GameActor* actor) {
-	if (!(game_state.flags & GF_FRED) || ANY_FLAG(actor, FLG_PLAYER_FRED))
+	if (!(game_state.flags & GF_FRED) || ANY_FLAG(actor, FLG_PLAYER_FRED)
+		|| (VAL(actor, PLAYER_SPAWN_FRED) <= 0L
+			&& !(game_state.spawn == actor->id || in_any_view(actor, FxZero, false))))
 		return;
 	if (++VAL(actor, PLAYER_SPAWN_FRED) < 50L)
 		return;
@@ -1519,9 +1521,21 @@ static void tick_fred(GameActor* actor) {
 
 	GameActor* nearest = nearest_pawn(actor->pos);
 	if (nearest != NULL) {
-		const fixed dir = Vtheta(actor->pos, POS_ADD(nearest, FxZero, FfInt(-16L)));
-		VAL(actor, X_SPEED) += Fmul(Fcos(dir), 10000L);
-		VAL(actor, Y_SPEED) += Fmul(Fsin(dir), 10000L);
+		if (!in_any_view(actor, FxZero, false)) {
+			GamePlayer* player = get_owner(nearest);
+			if (player != NULL && !Rcollide(HITBOX(actor), player->bounds)
+				&& get_actor(VAL(nearest, PLAYER_WARP)) == NULL)
+			{
+				VAL(actor, X_SPEED) = VAL(actor, Y_SPEED) = VAL(actor, FRED_ALPHA) = FxZero;
+				move_actor(actor, nearest->pos);
+				skip_interp(actor);
+			}
+		}
+		if (get_actor(VAL(nearest, PLAYER_WARP)) == NULL) {
+			const fixed dir = Vtheta(actor->pos, POS_ADD(nearest, FxZero, FfInt(-16L)));
+			VAL(actor, X_SPEED) += Fmul(Fcos(dir), 10000L);
+			VAL(actor, Y_SPEED) += Fmul(Fsin(dir), 10000L);
+		}
 	} else
 		VAL(actor, X_SPEED) += (VAL(actor, X_SPEED) >= FxZero) ? 10000L : -10000L;
 
@@ -1537,7 +1551,8 @@ static void draw_fred(const GameActor* actor) {
 }
 
 static void collide_fred(GameActor* actor, GameActor* from) {
-	if (from->type == ACT_PLAYER && VAL(actor, FRED_ALPHA) >= FfInt(255L))
+	if (from->type == ACT_PLAYER && VAL(actor, FRED_ALPHA) >= FfInt(255L)
+		&& get_actor(VAL(from, PLAYER_WARP)) == NULL)
 		kill_player(from);
 }
 
