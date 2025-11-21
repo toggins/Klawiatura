@@ -101,7 +101,8 @@ static void deactivate_secret(SecretType idx) {
 
 static MenuType cur_menu;
 static void update_secrets() {
-	const bool in_lobby = is_connected() || cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY;
+	const bool handicapped
+		= is_connected() || cur_menu == MEN_INTRO || cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY;
 	for (SecretType i = 0; i < SECR_SIZE; i++) {
 		Secret* secret = &SECRETS[i];
 
@@ -122,7 +123,7 @@ static void update_secrets() {
 				continue;
 			}
 
-		if (in_lobby || (last_secret >= 0 && last_secret != i) || !kb_pressed(secret->inputs[secret->state]))
+		if (handicapped || (last_secret >= 0 && last_secret != i) || !kb_pressed(secret->inputs[secret->state]))
 			continue;
 		if (secret->inputs[++secret->state] != NULLBIND) {
 			last_secret = i;
@@ -134,7 +135,7 @@ static void update_secrets() {
 		activate_secret(i);
 	}
 
-	if (in_lobby || !kb_pressed(KB_SECRET_BAIL))
+	if (handicapped || !kb_pressed(KB_SECRET_BAIL))
 		return;
 
 	int cancelled = 0;
