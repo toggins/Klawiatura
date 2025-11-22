@@ -757,7 +757,10 @@ static void tick(GameActor* actor) {
 
 	if (game_state.sequence.type == SEQ_WIN) {
 		player->input &= GI_WARP;
-		VAL(actor, X_SPEED) = 163840L;
+		if (VAL(actor, X_SPEED) < FxZero)
+			player->input |= GI_RIGHT;
+		else
+			VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED), 163840L);
 	}
 
 	const ActorID pfid = (ActorID)VAL(actor, PLAYER_PLATFORM);
