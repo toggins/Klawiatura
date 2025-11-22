@@ -141,7 +141,7 @@ target_include_directories(Klawiatura PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAK
 target_link_libraries(Klawiatura PRIVATE ${LIBS})
 target_compile_definitions(Klawiatura PUBLIC _POSIX_C_SOURCE=200112L _WIN32_WINNT=0x0501 WINVER=0x0501)
 if (KLAW_DISCORD)
-    add_compile_definitions(K_DISCORD)
+    target_compile_definitions(Klawiatura PUBLIC K_DISCORD)
 endif()
 if(MSVC AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo) # you're sus my guy...
     target_compile_options(GekkoNet PRIVATE /fsanitize=address)
