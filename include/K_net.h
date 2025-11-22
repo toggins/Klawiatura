@@ -11,6 +11,7 @@ void net_init(), net_teardown();
 
 const char* get_hostname();
 void set_hostname(const char*);
+bool in_public_server();
 
 // Interface
 void net_newframe();

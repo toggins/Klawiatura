@@ -72,6 +72,10 @@ void set_hostname(const char* hn) {
 	NutPunch_SetServerAddr(hostname);
 }
 
+bool in_public_server() {
+	return !SDL_strcmp(hostname, NUTPUNCH_DEFAULT_SERVER);
+}
+
 // =========
 // INTERFACE
 // =========
