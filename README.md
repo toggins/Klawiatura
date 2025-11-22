@@ -16,6 +16,8 @@ Mario Forever with rollback netcode.
 
 The main kicker of this project. Networking is purely peer-to-peer. You can host and find lobbies through the public NutPunch server. Lobbies can hold up to 4 players. For custom servers, host a [NutPuncher](https://github.com/Schwungus/nutpunch) server and connect to it using `-ip`.
 
+When using the public NutPuncher, you can also invite players to your lobby through Discord. **(This only works in 64-bit builds)**
+
 ## Launch options
 
 You can adjust Klawiatura with these launch options:
