@@ -12,11 +12,12 @@ Mario Forever with rollback netcode.
 ## Multiplayer
 
 > [!TIP]
+> **Discord integration!** You can invite others to your lobbies through Discord, as long as you're using the public NutPuncher instance. Behavior is undefined otherwise.
+
+> [!NOTE]
 > If you're unable to connect to other players, check [NutPunch's troubleshooting section](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#troubleshooting).
 
-The main kicker of this project. Networking is purely peer-to-peer. You can host and find lobbies through the public NutPunch server. Lobbies can hold up to 4 players. For custom servers, host a [NutPuncher](https://github.com/Schwungus/nutpunch) server and connect to it using `-ip`.
-
-When using the public NutPuncher, you can also invite players to your lobby through Discord. **(This only works in 64-bit builds)**
+Multiplayer is the main kicker of this project. Networking is purely peer-to-peer. You can host and find lobbies through the public NutPunch server. Lobbies can hold up to 4 players. For custom servers, host a [NutPuncher](https://github.com/Schwungus/nutpunch) server and connect to it using `-ip`.
 
 ## Launch options
 
@@ -29,7 +30,7 @@ You can adjust Klawiatura with these launch options:
 | `-d`, `-data`         | `<path>`  | Path of the data folder to load assets from.                                                                                                                                                      |
 | `-c`, `-config`       | `<path>`  | Path of the config file. Disables config saving.                                                                                                                                                  |
 | `-K`, `-kevin`        |           | Awakens Kevin.                                                                                                                                                                                    |
-| `-F`, `-fred`        |           | Awakens Fred.                                                                                                                                                                                    |
+| `-F`, `-fred`         |           | Awakens Fred.                                                                                                                                                                                    |
 | `-a`, `-ip`           | `<ip>`    | IP address of the [NutPuncher](https://github.com/Schwungus/nutpunch) server. (Default: [the public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance)) |
 | `-l`, `-level`        | `<name>`  | Level file to load. Quickstarts the game in singleplayer.                                                                                                                                         |
 
@@ -50,7 +51,7 @@ Or you can just use a batch file with the following contents:
 start cmd /c ./Klawiatura.exe <your launch options here> ^& pause
 ```
 
-## Building from Sources
+## Building This Yourself
 
 In order to build this, you will need a C/C++ compiler, [CMake](https://cmake.org/download), and [Python 3.13.x](https://www.python.org/downloads) installed on your computer, as well as the libraries listed below. Make sure to download, install, and familiarize yourself with the aforementioned tools before you proceed.
 
@@ -64,17 +65,16 @@ py -m pip install jinja2
 
 ### [FMOD Engine 2.03.09](https://www.fmod.com/download#fmodengine)
 
-**Windows:** Move everything in `C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core`
-to `external\fmod\windows`.
+**Windows**: move everything in `C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core` to `external\fmod\windows`.
 
-**Linux:** Move everything in `fmodstudioapi20309linux` to `external/fmod/linux`.
+**Linux**: move everything in `fmodstudioapi20309linux` to `external/fmod/linux`.
 
-### [Discord Social SDK 1.7.12739](https://discord.com/developers/social-sdk) (OPTIONAL)
+### [Discord Social SDK 1.7.12739](https://discord.com/developers/social-sdk) (Optional)
 
 > [!NOTE]
-> If the SDK is not present or the build environment is 32-bit, most of the functions in `K_discord` will be no-ops.
+> If the SDK is not present or the build environment is 32-bit, most of the functions in `K_discord.c` will become no-ops.
 
-Move the `discord_social_sdk` folder from the ZIP to `external/discord`.
+Move the `discord_social_sdk` folder from their ZIP download to `external/discord`.
 
 ### Compiling
 
