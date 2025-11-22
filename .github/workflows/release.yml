@@ -45,6 +45,13 @@ jobs:
           token: ${{ secrets.FMOD_TOKEN }}
           path: external/fmod
           ref: master
+      - name: Source discord legally
+        uses: actions/checkout@v5
+        with:
+          repository: toggins/discord
+          token: ${{ secrets.DISCORD_TOKEN }}
+          path: external/discord
+          ref: master
       - name: Install deps
         run: |
           sudo apt-get update && sudo apt-get install --yes \
