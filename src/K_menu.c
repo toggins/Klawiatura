@@ -245,7 +245,7 @@ static void set_players(int flip) {
 					 : ((CLIENT.game.players <= 2) ? MAX_PLAYERS : (CLIENT.game.players - 1)));
 }
 
-FMT_OPTION(waiting, (get_peer_count() >= CLIENT.game.players) ? "Starting!" : "Waiting for players");
+FMT_OPTION(waiting, (get_peer_count() >= get_max_peers()) ? "Starting!" : "Waiting for players");
 
 // Options
 FMT_OPTION(name, CLIENT.user.name);
@@ -633,7 +633,7 @@ static void update_inlobby() {
 
 	GameContext ctx;
 	setup_game_context(&ctx, CLIENT.game.level, GF_TRY_HELL);
-	ctx.num_players = CLIENT.game.players;
+	ctx.num_players = (PlayerID)max_peers;
 	start_game(&ctx);
 }
 
@@ -862,7 +862,7 @@ void draw_menu() {
 		batch_pos(B_XY(SCREEN_WIDTH - 48.f, 24.f)), batch_color(B_RGBA(255, 144, 144, 192));
 		batch_align(B_TOP_RIGHT);
 		int num_peers = get_peer_count();
-		batch_string("main", 24.f, fmt("Players (%i / %i)", num_peers, CLIENT.game.players));
+		batch_string("main", 24.f, fmt("Players (%i / %i)", num_peers, get_max_peers()));
 
 		batch_color(B_ALPHA(128));
 		GLfloat y = 60.f;
