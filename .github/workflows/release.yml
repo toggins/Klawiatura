@@ -44,14 +44,14 @@ jobs:
           repository: toggins/fmod
           token: ${{ secrets.FMOD_TOKEN }}
           path: external/fmod
-          clean: false
+          sparse-checkout: .
       - name: Source Discord SDK legally
         uses: actions/checkout@v5
         with:
           repository: toggins/discord
           token: ${{ secrets.DISCORD_TOKEN }}
           path: external/discord
-          clean: false
+          sparse-checkout: .
       - name: Install deps
         run: |
           sudo apt-get update && sudo apt-get install --yes \
