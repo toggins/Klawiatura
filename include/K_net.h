@@ -34,7 +34,7 @@ const NutPunch_LobbyInfo* get_lobby(int);
 bool in_public_lobby();
 
 // Peers
-int get_peer_count();
+int get_peer_count(), get_max_peers();
 bool peer_exists(int);
 int player_to_peer(int8_t);
 const char* get_peer_name(int);

@@ -294,6 +294,10 @@ int get_peer_count() {
 	return NutPunch_PeerCount();
 }
 
+int get_max_peers() {
+	return NutPunch_GetMaxPlayers();
+}
+
 bool peer_exists(int idx) {
 	return NutPunch_PeerAlive(idx);
 }

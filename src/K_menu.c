@@ -625,7 +625,8 @@ static void update_inlobby() {
 	int num_peers = 0;
 	for (int i = 0; i < MAX_PEERS; i++)
 		num_peers += get_peer_name(i) != NULL;
-	if (num_peers < CLIENT.game.players)
+	const int max_peers = get_max_peers();
+	if (num_peers <= 1 || max_peers <= 1 || num_peers < max_peers)
 		return;
 	play_generic_sound("enter");
 	make_lobby_active();
