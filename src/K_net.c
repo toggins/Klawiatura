@@ -18,7 +18,7 @@
 static char hostname[512] = "";
 static const char* last_error = NULL;
 
-static char cur_lobby[CLIENT_STRING_MAX] = "";
+static char cur_lobby[NUTPUNCH_ID_MAX] = "";
 static enum {
 	NET_NULL,
 	NET_HOST,
@@ -172,7 +172,7 @@ static void find_lobby_mode(const char* id) {
 		SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
 
 	NutPunch_Filter filter = {0};
-	SDL_memcpy(filter.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
+	SDL_memcpy(filter.field.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
 
 	uint8_t magic = ACTIVE_LOBBY;
 	if (id == NULL) {
@@ -180,7 +180,7 @@ static void find_lobby_mode(const char* id) {
 		filter.comparison = NPF_Eq;
 	} else
 		filter.comparison = NPF_Greater;
-	SDL_memcpy(filter.value, &magic, sizeof(magic));
+	SDL_memcpy(filter.field.value, &magic, sizeof(magic));
 
 	found_lobby = false;
 	find_lobby_timeout = 5 * TICKRATE;
@@ -232,7 +232,7 @@ int find_lobby() {
 	}
 
 	if (netmode == NET_HOST) {
-		NutPunch_Host(cur_lobby);
+		NutPunch_Host(cur_lobby, CLIENT.game.players);
 
 		push_user_data();
 		const uint8_t magic = CLIENT.lobby.public ? PUBLIC_LOBBY : PRIVATE_LOBBY;

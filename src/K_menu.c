@@ -587,7 +587,7 @@ static void update_find_lobbies() {
 			OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
 		} else {
 			const NutPunch_LobbyInfo* lobby = get_lobby(i);
-			SDL_snprintf(block[i], MAX_LEN, "%s (%d/%ld)", lobby->name, lobby->players, MAX_PLAYERS);
+			SDL_snprintf(block[i], MAX_LEN, "%s (%d/%d)", lobby->name, lobby->players, lobby->capacity);
 			OPTIONS[MEN_FIND_LOBBY][i].name = block[i];
 			OPTIONS[MEN_FIND_LOBBY][i].disabled = false;
 			OPTIONS[MEN_FIND_LOBBY][i].button = join_found_lobby;
