@@ -7,7 +7,7 @@
 
 #ifdef K_DISCORD
 
-#define DSTR(str) ((Discord_String){(uint8_t*)(str), sizeof(str)})
+#define DSTR(str) ((Discord_String){.ptr = (uint8_t*)(str), .size = sizeof(str)})
 
 static Discord_Client discord = {0};
 
@@ -104,8 +104,8 @@ void update_discord_status(const char* level_name) {
 		if (!game_exists()) {
 			const char* lobby_id = get_lobby_id();
 			if (lobby_id != NULL && !game_exists()) {
-				Discord_ActivitySecrets_SetJoin(
-					&secrets, (Discord_String){(uint8_t*)lobby_id, SDL_strlen(lobby_id)});
+				Discord_ActivitySecrets_SetJoin(&secrets,
+					(Discord_String){.ptr = (uint8_t*)lobby_id, .size = SDL_strlen(lobby_id)});
 				Discord_Activity_SetSecrets(&activity, &secrets);
 			}
 		}
