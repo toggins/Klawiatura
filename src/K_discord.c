@@ -11,16 +11,22 @@
 
 static Discord_Client discord = {0};
 
+static const char* d2cstr(Discord_String dstr) {
+	static char buf[256] = "";
+	SDL_strlcpy(buf, (char*)dstr.ptr, SDL_min(dstr.size + 1, sizeof(buf)));
+	return buf;
+}
+
 static void log_callback(Discord_String dstr, Discord_LoggingSeverity level, void* userdata) {
 	switch (level) {
 	default:
-		INFO("%s", dstr.ptr);
+		INFO("%s", d2cstr(dstr));
 		break;
 	case Discord_LoggingSeverity_Warning:
-		WARN("%s", dstr.ptr);
+		WARN("%s", d2cstr(dstr));
 		break;
 	case Discord_LoggingSeverity_Error:
-		WTF("%s", dstr.ptr);
+		WTF("%s", d2cstr(dstr));
 		break;
 	}
 }
@@ -29,7 +35,7 @@ static void rpc_callback(Discord_ClientResult* result, void* userdata) {}
 
 static void invite_callback(Discord_String secret, void* userdata) {
 	nuke_game(), disconnect();
-	join_lobby((char*)secret.ptr);
+	join_lobby(d2cstr(secret));
 	set_menu(MEN_JOINING_LOBBY);
 }
 
