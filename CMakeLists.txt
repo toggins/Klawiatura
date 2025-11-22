@@ -153,7 +153,9 @@ endif()
 set(RUNTIME_DLLS $<TARGET_RUNTIME_DLLS:Klawiatura>)
 if(LINUX)
     target_link_options(Klawiatura PRIVATE -Wl,-rpath,./)
-    set(RUNTIME_DLLS "$<LIST:APPEND,${RUNTIME_DLLS},$<TARGET_PROPERTY:fmod,IMPORTED_LOCATION>,$<TARGET_PROPERTY:discord,IMPORTED_LOCATION>>")
+    set(FMOD_DLL "$<TARGET_PROPERTY:fmod,IMPORTED_LOCATION>")
+    set(DISCORD_DLL "$<TARGET_PROPERTY:discord,IMPORTED_LOCATION>")
+    set(RUNTIME_DLLS "$<LIST:APPEND,${RUNTIME_DLLS},${FMOD_DLL},${DISCORD_DLL}>")
 endif()
 
 add_custom_target(KlawiaturaPost ALL
