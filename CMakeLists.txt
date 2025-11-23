@@ -84,7 +84,7 @@ set(NUTPUNCH_STAGING ON CACHE INTERNAL "")
 FetchContent_Declare(
     NutPunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG 3d2e6db90c3e8bc949bd1fe72fa036df0ceb7acf)
+    GIT_TAG fa15b1af12d42f01681f54f97aec8a3c2bdfa4c0)
 
 # yyjson (0.12.0)
 FetchContent_Declare(
