@@ -106,7 +106,12 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
 set(KLAW_DISCORD OFF CACHE INTERNAL "Use Discord Social SDK")
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/discord)
 
-FetchContent_MakeAvailable(SDL3 SDL3_image SDL_GameControllerDB glad cglm S_fixed S_tructures NutPunch yyjson GekkoNet)
+FetchContent_MakeAvailable(
+    SDL3 SDL3_image SDL_GameControllerDB
+    glad cglm
+    S_fixed S_tructures
+    NutPunch GekkoNet
+    yyjson)
 glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
 
 set(LIBS
@@ -115,7 +120,7 @@ set(LIBS
     cglm fmod GekkoNet
     S_fixed S_tructures NutPunch
     yyjson)
-if (KLAW_DISCORD)
+if(KLAW_DISCORD)
     list(APPEND LIBS discord)
 endif()
 
@@ -124,11 +129,12 @@ file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
 file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/include/*.h)
 
 # Thanks <https://stackoverflow.com/a/47801116>
+set(NESTED ${CMAKE_BINARY_DIR}/nested)
 function(embed_txt PATH INCLUDE_FILE)
     cmake_path(GET PATH FILENAME VARNAME)
     string(REGEX REPLACE [./] _ VARNAME ${VARNAME})
     file(READ ${PATH} CONTENT)
-    file(WRITE ${CMAKE_BINARY_DIR}/nested/embeds/${INCLUDE_FILE}
+    file(WRITE ${NESTED}/embeds/${INCLUDE_FILE}
         "const char* const ${VARNAME} = R\"(${CONTENT})\";")
 endfunction()
 
@@ -136,39 +142,58 @@ embed_txt(${CMAKE_SOURCE_DIR}/shaders/vertex.glsl shaders/vertex.glsl)
 embed_txt(${CMAKE_SOURCE_DIR}/shaders/fragment.glsl shaders/fragment.glsl)
 set(CONTROLLER_DB ${sdl_gamecontrollerdb_SOURCE_DIR}/gamecontrollerdb.txt)
 
-add_executable(Klawiatura ${SOURCES} ${HEADERS} ${CMAKE_SOURCE_DIR}/res/Klawiatura.rc)
-target_include_directories(Klawiatura PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/nested)
+set(RESFILE ${CMAKE_SOURCE_DIR}/res/Klawiatura.rc)
+add_executable(Klawiatura ${SOURCES} ${HEADERS} ${RESFILE})
+
+target_include_directories(Klawiatura
+    PRIVATE ${CMAKE_SOURCE_DIR}/include ${NESTED})
 target_link_libraries(Klawiatura PRIVATE ${LIBS})
-target_compile_definitions(Klawiatura PUBLIC _POSIX_C_SOURCE=200112L _WIN32_WINNT=0x0501 WINVER=0x0501)
-if (KLAW_DISCORD)
-    target_compile_definitions(Klawiatura PUBLIC K_DISCORD)
-endif()
-if(MSVC AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo) # you're sus my guy...
-    target_compile_options(GekkoNet PRIVATE /fsanitize=address)
-endif()
-if(WIN32)
-    target_link_options(Klawiatura PRIVATE $<IF:$<BOOL:${MSVC}>,/SUBSYSTEM:WINDOWS,-mwindows>)
+target_compile_definitions(Klawiatura
+    PUBLIC _POSIX_C_SOURCE=200112L _WIN32_WINNT=0x0501 WINVER=0x0501)
+
+if(KLAW_DISCORD)
+    target_compile_definitions(Klawiatura PUBLIC K_DISCORD=1)
 endif()
 
-set(RUNTIME_DLLS $<TARGET_RUNTIME_DLLS:Klawiatura>)
+if(WIN32)
+    set(FLAG "$<IF:$<BOOL:${MSVC}>,/SUBSYSTEM:WINDOWS,-mwindows>")
+    target_link_options(Klawiatura PRIVATE ${FLAG})
+endif()
+
+set(RUNTIME_DLLS "$<TARGET_RUNTIME_DLLS:Klawiatura>")
+function(append_dll TARGET)
+    set(DLL "$<TARGET_PROPERTY:${TARGET},IMPORTED_LOCATION>")
+    set(RUNTIME_DLLS "$<LIST:APPEND,${RUNTIME_DLLS},${DLL}>")
+endfunction()
+
 if(LINUX)
     target_link_options(Klawiatura PRIVATE -Wl,-rpath,./)
-    set(FMOD_DLL "$<TARGET_PROPERTY:fmod,IMPORTED_LOCATION>")
-    set(DISCORD_DLL "$<TARGET_PROPERTY:discord,IMPORTED_LOCATION>")
-    set(RUNTIME_DLLS "$<LIST:APPEND,${RUNTIME_DLLS},${FMOD_DLL},${DISCORD_DLL}>")
+    append_dll(fmod)
+    if(KLAW_DISCORD)
+        append_dll(discord)
+    endif()
 endif()
 
-add_custom_target(KlawiaturaPost ALL
-    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:Klawiatura> ${RUNTIME_DLLS} ${CONTROLLER_DB}
-    COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE_DIR:Klawiatura>/data
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/modsrc $<TARGET_FILE_DIR:Klawiatura>/data
+add_custom_command(TARGET Klawiatura POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:Klawiatura>
+    ${RUNTIME_DLLS} ${CONTROLLER_DB}
+
+    COMMAND ${CMAKE_COMMAND} -E remove_directory
+    $<TARGET_FILE_DIR:Klawiatura>/data
+
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/modsrc $<TARGET_FILE_DIR:Klawiatura>/data
+
     COMMAND_EXPAND_LISTS)
-add_dependencies(KlawiaturaPost Klawiatura)
 
 install(TARGETS Klawiatura RUNTIME DESTINATION . COMPONENT Klawiatura)
-install(FILES README.md UNLICENSE res/console.bat ${CONTROLLER_DB} ${RUNTIME_DLLS} DESTINATION . COMPONENT Klawiatura)
+install(FILES
+    README.md UNLICENSE res/console.bat ${CONTROLLER_DB} ${RUNTIME_DLLS}
+    DESTINATION . COMPONENT Klawiatura)
 install(DIRECTORY modsrc/ DESTINATION data COMPONENT Klawiatura)
-# install(DIRECTORY .github/assets DESTINATION .github COMPONENT Klawiatura) # has all the README .pngs
+# Has all the README .pngs:
+# install(DIRECTORY .github/assets
+#     DESTINATION .github COMPONENT Klawiatura)
 
 set(CPACK_GENERATOR ZIP)
 set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
