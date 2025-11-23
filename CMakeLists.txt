@@ -160,10 +160,10 @@ if(WIN32)
     target_link_options(Klawiatura PRIVATE ${FLAG})
 endif()
 
-set(RUNTIME_DLLS "$<TARGET_RUNTIME_DLLS:Klawiatura>")
+set(RUNTIME_DLLS "$<TARGET_RUNTIME_DLLS:Klawiatura>" CACHE INTERNAL "")
 function(append_dll TARGET)
     set(DLL "$<TARGET_PROPERTY:${TARGET},IMPORTED_LOCATION>")
-    set(RUNTIME_DLLS "$<LIST:APPEND,${RUNTIME_DLLS},${DLL}>")
+    set(RUNTIME_DLLS "$<LIST:APPEND,${RUNTIME_DLLS},${DLL}>" CACHE INTERNAL "")
 endfunction()
 
 if(LINUX)
