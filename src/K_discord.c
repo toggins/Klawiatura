@@ -95,7 +95,7 @@ void update_discord_status(const char* level_name) {
 
 	// Multiplayer info
 	if (in_public_server() && is_connected()) {
-		Uint32 id = SDL_rand_bits(); // FIXME: Generate a better UUID.
+		Uint32 id = get_lobby_party();
 		Discord_ActivityParty_SetId(&party, (Discord_String){(uint8_t*)(&id), sizeof(id)});
 		Discord_ActivityParty_SetCurrentSize(&party, get_peer_count());
 		Discord_ActivityParty_SetMaxSize(&party, get_max_peers());

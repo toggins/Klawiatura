@@ -212,7 +212,7 @@ static void screw_multiplayer_note() {
 
 // Host Lobby
 FMT_OPTION(lobby, CLIENT.lobby.name);
-FMT_OPTION(lobby_public, CLIENT.lobby.public ? "Public" : "Private");
+FMT_OPTION(lobby_public, CLIENT.lobby.public ? "Public" : "Unlisted");
 FMT_OPTION(players, CLIENT.game.players);
 
 static void toggle_lobby_public(int flip) {
@@ -236,7 +236,7 @@ static void do_join_fr() {
 }
 
 // Lobby
-FMT_OPTION(active_lobby, get_lobby_id(), in_public_lobby() ? "" : " (Private)");
+FMT_OPTION(active_lobby, get_lobby_id(), in_public_lobby() ? "" : " (Unlisted)");
 FMT_OPTION(lobby_start, is_host() ? "Start!" : "Waiting for host");
 
 static void set_players(int flip) {

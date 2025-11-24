@@ -1151,7 +1151,6 @@ void start_game_state(GameContext* ctx) {
 	char level_name[32 + 1];
 	SDL_memcpy(level_name, buf, 32);
 	INFO("Level: %s (%s)", ctx->level, level_name);
-	update_discord_status(level_name);
 	buf += 32;
 
 	read_string((const char**)(&buf), video_state.world, sizeof(video_state.world));
@@ -1316,6 +1315,8 @@ void start_game_state(GameContext* ctx) {
 	}
 
 	play_state_track(TS_MAIN, track_name[0], PLAY_LOOPING);
+
+	update_discord_status(level_name);
 	return;
 
 level_fail:

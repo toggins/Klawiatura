@@ -7,6 +7,13 @@
 
 #define MAX_PEERS NUTPUNCH_MAX_PLAYERS
 
+typedef uint8_t LobbyVisibility;
+enum {
+	VIS_INVALID = 0,
+	VIS_PUBLIC = 1,
+	VIS_UNLISTED = 2,
+};
+
 void net_init(), net_teardown();
 
 const char* get_hostname();
@@ -33,6 +40,7 @@ void list_lobbies();
 int get_lobby_count();
 const NutPunch_LobbyInfo* get_lobby(int);
 bool in_public_lobby();
+uint32_t get_lobby_party();
 
 // Peers
 int get_peer_count(), get_max_peers();

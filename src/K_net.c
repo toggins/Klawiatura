@@ -28,9 +28,7 @@ static enum {
 static bool found_lobby = false;
 
 static const char* MAGIC_KEY = "KLAWIATURA";
-#define PUBLIC_LOBBY 127
-#define PRIVATE_LOBBY 126
-#define ACTIVE_LOBBY 0
+static const uint8_t MAGIC_VALUE = 127;
 
 static int player_peers[MAX_PLAYERS] = {MAX_PEERS};
 
@@ -104,6 +102,7 @@ static void np_peer_set_string(const char* name, const char* str) {
 	}
 MAKE_LOBBY_GETTER(bool, bool);
 MAKE_LOBBY_GETTER(u8, uint8_t);
+MAKE_LOBBY_GETTER(u32, uint32_t);
 MAKE_LOBBY_GETTER(i8, int8_t);
 #undef MAKE_LOBBY_GETTER
 
@@ -175,20 +174,19 @@ static void find_lobby_mode(const char* id) {
 	else
 		SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
 
-	NutPunch_Filter filter = {0};
-	SDL_memcpy(filter.field.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
+	NutPunch_Filter filter[2] = {0};
+	SDL_memcpy(filter[0].field.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
+	SDL_memcpy(filter[0].field.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
+	filter[0].comparison = NPF_Eq;
 
-	uint8_t magic = ACTIVE_LOBBY;
-	if (id == NULL) {
-		magic = PUBLIC_LOBBY;
-		filter.comparison = NPF_Eq;
-	} else
-		filter.comparison = NPF_Greater;
-	SDL_memcpy(filter.field.value, &magic, sizeof(magic));
+	SDL_memcpy(filter[1].field.name, "VISIBLE", SDL_strnlen("VISIBLE", NUTPUNCH_FIELD_NAME_MAX));
+	const LobbyVisibility visible = (id == NULL) ? VIS_PUBLIC : VIS_INVALID;
+	SDL_memcpy(filter[1].field.value, &visible, sizeof(visible));
+	filter[1].comparison = (id == NULL) ? NPF_Eq : NPF_Greater;
 
 	found_lobby = false;
 	find_lobby_timeout = 5 * TICKRATE;
-	NutPunch_FindLobbies(1, &filter);
+	NutPunch_FindLobbies(2, filter);
 }
 
 void host_lobby(const char* id) {
@@ -239,8 +237,11 @@ int find_lobby() {
 		NutPunch_Host(cur_lobby, CLIENT.game.players);
 
 		push_user_data();
-		const uint8_t magic = CLIENT.lobby.public ? PUBLIC_LOBBY : PRIVATE_LOBBY;
-		np_lobby_set(MAGIC_KEY, sizeof(magic), &magic);
+		np_lobby_set(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
+		const uint32_t party = SDL_rand_bits(); // Generate a better UUID.
+		np_lobby_set("PARTY", sizeof(party), &party);
+		const LobbyVisibility visible = CLIENT.lobby.public ? VIS_PUBLIC : VIS_UNLISTED;
+		np_lobby_set("VISIBLE", sizeof(visible), &visible);
 		push_lobby_data();
 
 		found_lobby = true;
@@ -249,7 +250,7 @@ int find_lobby() {
 		if (!NutPunch_LobbyCount() && find_lobby_timeout > 0)
 			find_lobby_timeout--;
 		if (!find_lobby_timeout) {
-			last_error = "Lobby doesn't exist";
+			last_error = "Lobby not found";
 			return -1;
 		}
 	}
@@ -266,9 +267,9 @@ const NutPunch_LobbyInfo* get_lobby(int idx) {
 }
 
 bool in_public_lobby() {
-	uint8_t magic = 0;
-	np_lobby_get_u8(MAGIC_KEY, &magic);
-	return magic == PUBLIC_LOBBY;
+	LobbyVisibility visible = 0;
+	np_lobby_get_u8("VISIBLE", &visible);
+	return visible == VIS_PUBLIC;
 }
 
 void push_lobby_data() {
@@ -284,8 +285,14 @@ void pull_lobby_data() {
 }
 
 void make_lobby_active() {
-	const uint8_t magic = ACTIVE_LOBBY;
-	np_lobby_set(MAGIC_KEY, sizeof(magic), &magic);
+	const LobbyVisibility visible = VIS_INVALID;
+	np_lobby_set("VISIBLE", sizeof(visible), &visible);
+}
+
+uint32_t get_lobby_party() {
+	uint32_t party = 0;
+	np_lobby_get_u32("PARTY", &party);
+	return party;
 }
 
 // =====
