@@ -78,6 +78,7 @@ jobs:
         run: |
           cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
             ${{ matrix.mingw && env.MINGW_SHIT || '' }} \
+            ${{ github.ref_name == 'tracing' && '-D NUTPUNCH_TRACING=1' || '' }} \
             -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
       - name: Build
         run: cmake --build build --target Klawiatura
