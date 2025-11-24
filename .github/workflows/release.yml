@@ -3,7 +3,7 @@ name: Build and release binaries
 on:
   push:
     branches: [master]
-    tags: [stable]
+    tags: [stable, tracing]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
