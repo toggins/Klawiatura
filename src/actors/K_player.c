@@ -956,8 +956,6 @@ static void tick(GameActor* actor) {
 	else if (VAL(actor, X_SPEED) < FxZero && (ANY_INPUT(player, GI_LEFT) || game_state.sequence.type == SEQ_WIN))
 		FLAG_ON(actor, FLG_X_FLIP);
 
-	if (VAL(actor, PLAYER_POWER) > 0L)
-		VAL(actor, PLAYER_POWER) -= 91L;
 	VAL_TICK(actor, PLAYER_FIRE);
 
 	if (VAL(actor, PLAYER_GROUND) > 0L)
@@ -1092,6 +1090,9 @@ static void tick(GameActor* actor) {
 	}
 
 skip_physics:
+	if (VAL(actor, PLAYER_POWER) > 0L)
+		VAL(actor, PLAYER_POWER) -= 91L;
+
 	if ((game_state.flags & GF_KEVIN)
 		&& (game_state.sequence.type == SEQ_NONE || game_state.sequence.type == SEQ_AMBUSH
 			|| game_state.sequence.type == SEQ_AMBUSH_END)
