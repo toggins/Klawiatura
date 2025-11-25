@@ -409,6 +409,10 @@ Bool hit_player(GameActor* actor) {
 void kill_player(GameActor* actor) {
 	if (actor->type != ACT_PLAYER)
 		return;
+	if (game_state.flags & GF_HUB) {
+		respawn_player(get_owner(actor));
+		return;
+	}
 
 	GameActor* dead = create_actor(ACT_PLAYER_DEAD, actor->pos);
 	if (dead == NULL)
@@ -581,7 +585,7 @@ static void create_spawn(GameActor* actor) {
 }
 
 static void tick_spawn(GameActor* actor) {
-	if (!(game_state.flags & GF_FRED) || ANY_FLAG(actor, FLG_PLAYER_FRED)
+	if ((game_state.flags & GF_HUB) || !(game_state.flags & GF_FRED) || ANY_FLAG(actor, FLG_PLAYER_FRED)
 		|| (VAL(actor, PLAYER_SPAWN_FRED) <= 0L
 			&& !(game_state.spawn == actor->id || in_any_view(actor, FxZero, false))))
 		return;
@@ -1093,7 +1097,7 @@ skip_physics:
 	if (VAL(actor, PLAYER_POWER) > 0L)
 		VAL(actor, PLAYER_POWER) -= 91L;
 
-	if ((game_state.flags & GF_KEVIN)
+	if ((game_state.flags & GF_KEVIN) && !(game_state.flags & GF_HUB)
 		&& (game_state.sequence.type == SEQ_NONE || game_state.sequence.type == SEQ_AMBUSH
 			|| game_state.sequence.type == SEQ_AMBUSH_END)
 		&& ((player->kevin.delay <= 0L && Vdist(actor->pos, player->kevin.start) > FxOne)
@@ -1127,7 +1131,7 @@ sync_pos:
 
 static void draw(const GameActor* actor) {
 	GamePlayer* player = get_owner(actor);
-	if (player == NULL || (VAL(actor, PLAYER_FLASH) % 2L) > 0L)
+	if (player == NULL || (VAL(actor, PLAYER_FLASH) > 0L && (game_state.time % 2L)))
 		return;
 
 	const char* tex = get_player_texture(player->power, get_player_frame(actor));

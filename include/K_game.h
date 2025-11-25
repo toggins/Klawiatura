@@ -72,6 +72,7 @@ enum {
 	GF_SINGLE = 1 << 11,
 	GF_RESTART = 1 << 12,
 	GF_FRED = 1 << 13,
+	GF_HUB = 1 << 14,
 
 	GF_HELL = GF_KEVIN | GF_FRED,
 #define GF_TRY_SINGLE (game_state.flags & GF_SINGLE)
