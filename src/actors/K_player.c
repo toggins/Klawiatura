@@ -468,6 +468,7 @@ void win_player(GameActor* actor) {
 	if (player == NULL)
 		return;
 
+	const Bool was_bowser = (game_state.sequence.type == SEQ_BOWSER_END);
 	game_state.sequence.type = SEQ_WIN;
 	game_state.sequence.time = 1L;
 	game_state.sequence.activator = player->id;
@@ -526,7 +527,7 @@ void win_player(GameActor* actor) {
 
 	for (TrackSlots i = 0L; i < (TrackSlots)TS_SIZE; i++)
 		stop_state_track(i);
-	play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? "win2" : "win", false);
+	play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? (was_bowser ? "win3" : "win2") : "win", false);
 }
 
 void player_starman(GameActor* actor, GameActor* from) {

@@ -13,21 +13,41 @@ static void load() {
 	load_texture_num("enemies/bowser%u", 3L);
 	load_texture_num("enemies/bowser_jump%u", 2L);
 	load_texture_num("enemies/bowser_fire%u", 2L);
-	load_texture_num("enemies/bowser_charge%u", 8L);
-	load_texture("enemies/bowser_gun");
 
 	load_sound("bowser_fire");
 	load_sound("bowser_hurt");
 	load_sound("kick");
-	load_sound("bang");
-	load_sound("bang4");
-
-	load_track("smrpg_bowser");
 
 	load_actor(ACT_MISSILE_NAPALM);
 	load_actor(ACT_BOWSER_DEAD);
-	load_actor(ACT_BULLET_BILL);
-	load_actor(ACT_EXPLODE);
+}
+
+static void load_special(const GameActor* actor) {
+	if (ANY_FLAG(actor, FLG_BOWSER_CHARGE))
+		load_texture_num("enemies/bowser_charge%u", 8L);
+
+	if (ANY_FLAG(actor, FLG_BOWSER_GUN)) {
+		load_texture("enemies/bowser_gun");
+
+		load_sound("bang");
+		load_sound("bang4");
+
+		load_actor(ACT_BULLET_BILL);
+		load_actor(ACT_EXPLODE);
+	}
+
+	if (ANY_FLAG(actor, FLG_BOWSER_GIGA))
+		load_track("smrpg_smithy");
+	else if (ANY_FLAG(actor, FLG_BOWSER_DEVASTATOR)
+		 || ALL_FLAG(actor, FLG_BOWSER_CHARGE | FLG_BOWSER_VOMIT | FLG_BOWSER_HAMMER))
+		load_track("yi_bowser");
+	else if (game_state.flags & GF_LOST)
+		load_track("smb3_bowser");
+	else
+		load_track("smrpg_bowser");
+
+	if (game_state.flags & GF_LOST)
+		load_track("win3");
 }
 
 static void create(GameActor* actor) {
@@ -82,7 +102,16 @@ static void tick(GameActor* actor) {
 			if (autoscroll != NULL) {
 				VAL(autoscroll, X_SPEED) = FxOne;
 				FLAG_ON(autoscroll, FLG_SCROLL_BOWSER);
-				play_state_track(TS_MAIN, "smrpg_bowser", PLAY_LOOPING);
+
+				const char* track = "smrpg_bowser";
+				if (ANY_FLAG(actor, FLG_BOWSER_GIGA))
+					track = "smrpg_smithy";
+				else if (ANY_FLAG(actor, FLG_BOWSER_DEVASTATOR)
+					 || ALL_FLAG(actor, FLG_BOWSER_CHARGE | FLG_BOWSER_VOMIT | FLG_BOWSER_HAMMER))
+					track = "yi_bowser";
+				else if (game_state.flags & GF_LOST)
+					track = "smb3_bowser";
+				play_state_track(TS_MAIN, track, PLAY_LOOPING);
 			}
 		}
 	}
@@ -376,6 +405,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
 const GameActorTable TAB_BOWSER = {
 	.load = load,
+	.load_special = load_special,
 	.create = create,
 	.tick = tick,
 	.draw = draw,
