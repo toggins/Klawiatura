@@ -74,7 +74,7 @@ enum {
 	GF_FRED = 1 << 13,
 
 	GF_HELL = GF_KEVIN | GF_FRED,
-#define GF_TRY_SINGLE (((game_state.flags & GF_SINGLE) == GF_SINGLE) * GF_SINGLE)
+#define GF_TRY_SINGLE (game_state.flags & GF_SINGLE)
 };
 
 typedef uint8_t GameSequenceType;
