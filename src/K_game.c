@@ -632,7 +632,12 @@ static void draw_hud() {
 	batch_string("hud", 16.f, fmt("%u", player->coins));
 
 	batch_pos(B_XYZ(432.f, 16.f, -10000.f));
-	if (video_state.world[0] == '@') {
+	if (video_state.world[0] == ')') {
+		batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+		batch_string("hud", 16.f, "WORLD");
+		batch_pos(B_XYZ(432.f, 34.f, -10000.f));
+		batch_string("hud", 16.f, video_state.world + 1L);
+	} else if (video_state.world[0] == ']') {
 		batch_align(B_ALIGN(FA_CENTER, FA_TOP));
 		batch_string("hud", 16.f, video_state.world + 1L);
 	} else
