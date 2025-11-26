@@ -1,4 +1,5 @@
 #include "K_string.h"
+#include "K_tick.h"
 
 #include "actors/K_autoscroll.h"
 #include "actors/K_bowser.h"
@@ -13,6 +14,7 @@ static void load() {
 	load_texture_num("enemies/bowser%u", 3L);
 	load_texture_num("enemies/bowser_jump%u", 2L);
 	load_texture_num("enemies/bowser_fire%u", 2L);
+	load_texture_num("ui/bowser%u", 3L);
 
 	load_sound("bowser_fire");
 	load_sound("bowser_hurt");
@@ -312,7 +314,30 @@ static void draw(const GameActor* actor) {
 		const InterpActor* iactor = get_interp(actor);
 		batch_pos(B_XYZ(FtInt(iactor->pos.x) + (ANY_FLAG(actor, FLG_X_FLIP) ? -23L : 23L),
 			FtInt(iactor->pos.y) - 23L, FtFloat(actor->depth)));
-		batch_sprite("enemies/bowser_gun");
+		batch_flip(B_NO_FLIP), batch_sprite("enemies/bowser_gun");
+	}
+}
+
+static void draw_hud(const GameActor* actor) {
+	if (!ANY_FLAG(actor, FLG_BOWSER_ACTIVE))
+		return;
+
+	if (video_state.boss < 64.f) {
+		video_state.boss += dt() * 4.f;
+		if (video_state.boss > 64.f)
+			video_state.boss = 64.f;
+	}
+	if (video_state.boss < -47.f)
+		return;
+
+	batch_reset();
+	GLfloat pos[3] = {SCREEN_WIDTH - 16.f, video_state.boss, -10000.f};
+	batch_pos(pos), batch_sprite("ui/bowser0");
+
+	pos[0] -= 64.f;
+	for (ActorValue i = 0; i < VAL(actor, BOWSER_HEALTH); i++) {
+		batch_pos(pos), batch_sprite("ui/bowser1");
+		pos[0] -= 9.f;
 	}
 }
 
@@ -409,6 +434,7 @@ const GameActorTable TAB_BOWSER = {
 	.create = create,
 	.tick = tick,
 	.draw = draw,
+	.draw_hud = draw_hud,
 	.collide = collide,
 };
 
@@ -470,11 +496,25 @@ static void draw_corpse(const GameActor* actor) {
 	draw_actor(actor, fmt("enemies/bowser_dead%u", (game_state.time / 2L) % 2L), 0.f, B_WHITE);
 }
 
+static void draw_corpse_hud(const GameActor* actor) {
+	if (video_state.boss > -48.f) {
+		video_state.boss -= dt() * 4.f;
+		if (video_state.boss < -48.f)
+			video_state.boss = -48.f;
+	}
+	if (video_state.boss < -47.f)
+		return;
+
+	batch_reset();
+	batch_pos(B_XYZ(SCREEN_WIDTH - 16.f, video_state.boss, -10000.f)), batch_sprite("ui/bowser0");
+}
+
 const GameActorTable TAB_BOWSER_DEAD = {
 	.load = load_corpse,
 	.create = create_corpse,
 	.tick = tick_corpse,
 	.draw = draw_corpse,
+	.draw_hud = draw_corpse_hud,
 };
 
 // =============

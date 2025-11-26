@@ -429,7 +429,7 @@ typedef struct {
 	void (*load)(), (*load_special)(const GameActor*);
 	void (*create)(GameActor*);
 	void (*pre_tick)(GameActor*), (*tick)(GameActor*), (*post_tick)(GameActor*);
-	void (*draw)(const GameActor*), (*draw_dead)(const GameActor*);
+	void (*draw)(const GameActor*), (*draw_dead)(const GameActor*), (*draw_hud)(const GameActor*);
 	void (*cleanup)(GameActor*);
 	void (*collide)(GameActor*, GameActor*);
 	void (*on_top)(GameActor*, GameActor*), (*on_bottom)(GameActor*, GameActor*);

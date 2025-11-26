@@ -603,6 +603,10 @@ static void draw_hud() {
 		batch_string("main", 24.f, ">");
 	}
 
+	for (const GameActor* actor = get_actor(game_state.live_actors); actor != NULL;
+		actor = get_actor(actor->previous))
+		ACTOR_CALL(actor, draw_hud);
+
 	batch_pos(B_XYZ(32.f, 16.f, -10000.f)), batch_color(B_WHITE), batch_align(B_TOP_LEFT);
 	batch_string("hud", 16, fmt("MARIO * %u", SDL_max(player->lives, 0)));
 	batch_pos(B_XYZ(147.f, 34.f, -10000.f));

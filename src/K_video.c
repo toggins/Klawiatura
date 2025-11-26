@@ -238,6 +238,7 @@ void start_video_state() {
 
 void nuke_video_state() {
 	SDL_memset(&video_state, 0, sizeof(video_state));
+	video_state.boss = -48.f;
 }
 
 // =======
