@@ -1163,7 +1163,7 @@ void start_game_state(GameContext* ctx) {
 	buf += 32;
 
 	read_string((const char**)(&buf), video_state.world, sizeof(video_state.world));
-	if (video_state.world[0] != '@')
+	if (video_state.world[0] != ')' && video_state.world[0] != ']')
 		load_texture(video_state.world);
 
 	read_string((const char**)(&buf), game_state.next, sizeof(game_state.next));
