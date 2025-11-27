@@ -56,6 +56,9 @@ static void tick_mushroom(GameActor* actor) {
 		return;
 	}
 
+	if (ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+		return;
+
 	VAL(actor, Y_SPEED) += 19005L;
 	displace_actor(actor, FfInt(10L), false);
 	if (VAL(actor, X_TOUCH) != 0L)
@@ -63,11 +66,12 @@ static void tick_mushroom(GameActor* actor) {
 }
 
 static void draw_mushroom(const GameActor* actor) {
-	draw_actor(actor, "items/mushroom", 0.f, B_WHITE);
+	if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+		draw_actor(actor, "items/mushroom", 0.f, B_WHITE);
 }
 
 static void collide_mushroom(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER)
+	if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
 		return;
 
 	GamePlayer* player = get_owner(from);
@@ -102,11 +106,12 @@ static void load_1up_mushroom() {
 }
 
 static void draw_1up_mushroom(const GameActor* actor) {
-	draw_actor(actor, "items/mushroom_1up", 0.f, B_WHITE);
+	if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+		draw_actor(actor, "items/mushroom_1up", 0.f, B_WHITE);
 }
 
 static void collide_1up_mushroom(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER)
+	if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
 		return;
 
 	give_points(actor, get_owner(from), -1L);
@@ -136,12 +141,14 @@ static void create_poison_mushroom(GameActor* actor) {
 }
 
 static void draw_poison_mushroom(const GameActor* actor) {
-	draw_actor(actor, fmt("items/mushroom_poison%u", (int)((float)game_state.time / 11.11111111111111f) % 2L), 0.f,
-		B_WHITE);
+	if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+		draw_actor(actor,
+			fmt("items/mushroom_poison%u", (int)((float)game_state.time / 11.11111111111111f) % 2L), 0.f,
+			B_WHITE);
 }
 
 static void collide_poison_mushroom(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER || VAL(from, PLAYER_STARMAN) > 0L)
+	if (from->type != ACT_PLAYER || VAL(from, PLAYER_STARMAN) > 0L || ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
 		return;
 
 	kill_player(from);

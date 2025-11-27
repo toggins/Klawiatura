@@ -15,6 +15,8 @@
 #include "actors/K_checkpoint.h" // IWYU pragma: keep
 #include "actors/K_enemies.h"    // IWYU pragma: keep
 #include "actors/K_player.h"
+#include "actors/K_powerups.h"
+#include "actors/K_warp.h"
 
 #define ACTOR_CALL_STATIC(type, fn)                                                                                    \
 	do {                                                                                                           \
@@ -606,6 +608,22 @@ static void draw_hud() {
 	for (const GameActor* actor = get_actor(game_state.live_actors); actor != NULL;
 		actor = get_actor(actor->previous))
 		ACTOR_CALL(actor, draw_hud);
+
+	if (video_state.message != NULL) {
+		const GLfloat ease = 1.f - (SDL_min(video_state.message_time, 30.f) / 30.f);
+		GLfloat my = glm_lerp(-24.f, 88.f, 1.f - (ease * ease));
+
+		batch_reset();
+		batch_pos(B_XYZ(HALF_SCREEN_WIDTH, my, -10000.f)), batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+		batch_color(B_ALPHA((1.f - (SDL_max(video_state.message_time - 200.f, 0.f) / 50.f)) * 255L));
+		batch_string("main", 24.f, video_state.message);
+
+		video_state.message_time += dt();
+		if (video_state.message_time >= 250.f) {
+			video_state.message = NULL;
+			video_state.message_time = 0.f;
+		}
+	}
 
 	batch_pos(B_XYZ(32.f, 16.f, -10000.f)), batch_color(B_WHITE), batch_align(B_TOP_LEFT);
 	batch_string("hud", 16, fmt("MARIO * %u", SDL_max(player->lives, 0)));
@@ -1294,12 +1312,29 @@ void start_game_state(GameContext* ctx) {
 			}
 			FLAG_ON(actor, *((ActorFlag*)buf)), buf += sizeof(ActorFlag);
 
-			// Hidden Block gimmick. Some can despawn when a level is restarted.
-			if (actor->type == ACT_HIDDEN_BLOCK && ANY_FLAG(actor, FLG_BLOCK_ONCE)
-				&& (game_state.flags & GF_REPLAY))
-			{
-				FLAG_ON(actor, FLG_DESTROY);
+			switch (actor->type) {
+			default:
 				break;
+
+			case ACT_HIDDEN_BLOCK: {
+				if (ANY_FLAG(actor, FLG_BLOCK_ONCE) && (game_state.flags & GF_REPLAY))
+					FLAG_ON(actor, FLG_DESTROY);
+				break;
+			}
+
+			case ACT_WARP: {
+				if (ANY_FLAG(actor, FLG_WARP_CALAMITY) && (game_state.flags & GF_REPLAY))
+					FLAG_ON(actor, FLG_DESTROY);
+				break;
+			}
+
+			case ACT_MUSHROOM:
+			case ACT_MUSHROOM_1UP:
+			case ACT_MUSHROOM_POISON: {
+				if (ANY_FLAG(actor, FLG_POWERUP_CALAMITY) && (game_state.flags & GF_REPLAY))
+					FLAG_ON(actor, FLG_DESTROY);
+				break;
+			}
 			}
 
 			load_actor(type);

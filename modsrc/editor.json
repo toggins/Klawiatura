@@ -1171,6 +1171,11 @@
                         {
                             "name": "Secret?",
                             "bit": 6
+                        },
+
+                        {
+                            "name": "Calamity?",
+                            "bit": 7
                         }
                     ]
                 },
@@ -1465,7 +1470,15 @@
                             "type": "object",
                             "index": 11,
                             "z": 1,
-                            "texture": "items/mushroom"
+                            "texture": "items/mushroom",
+
+                            "flags": [
+                                {
+                                    "name": "Calamity?",
+                                    "bit": 6,
+                                    "default": false
+                                }
+                            ]
                         },
 
                         {
@@ -1473,7 +1486,15 @@
                             "type": "object",
                             "index": 12,
                             "z": 1,
-                            "texture": "items/mushroom_1up"
+                            "texture": "items/mushroom_1up",
+
+                            "flags": [
+                                {
+                                    "name": "Calamity?",
+                                    "bit": 6,
+                                    "default": false
+                                }
+                            ]
                         },
 
                         {
@@ -1481,7 +1502,15 @@
                             "type": "object",
                             "index": 13,
                             "z": 1,
-                            "texture": "items/mushroom_poison0"
+                            "texture": "items/mushroom_poison0",
+
+                            "flags": [
+                                {
+                                    "name": "Calamity?",
+                                    "bit": 6,
+                                    "default": false
+                                }
+                            ]
                         },
 
                         {

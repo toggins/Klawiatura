@@ -161,7 +161,8 @@ typedef struct {
 
 typedef struct {
 	char world[GAME_STRING_MAX];
-	float quake, hurry, boss;
+	float quake, hurry, boss, message_time;
+	const char* message;
 	VideoCamera camera;
 } VideoState;
 

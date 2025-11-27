@@ -1,5 +1,11 @@
 #include "actors/K_player.h"
+#include "actors/K_powerups.h"
 #include "actors/K_warp.h"
+
+static void load_special(const GameActor* actor) {
+	if (ANY_FLAG(actor, FLG_WARP_CALAMITY))
+		load_sound("clone_dead2");
+}
 
 static void create(GameActor* actor) {
 	actor->box.start.x = FfInt(-8L);
@@ -10,6 +16,7 @@ static void create(GameActor* actor) {
 static void collide(GameActor* actor, GameActor* from) {
 	if (from->type != ACT_PLAYER || get_actor(VAL(from, PLAYER_WARP)) != NULL)
 		return;
+
 	GamePlayer* player = get_owner(from);
 	if (player == NULL)
 		return;
@@ -56,7 +63,28 @@ static void collide(GameActor* actor, GameActor* from) {
 		VAL(from, PLAYER_WARP_STATE) = 0L;
 		FLAG_OFF(from, FLG_PLAYER_WARP_OUT);
 		play_actor_sound(actor, "warp");
+
+		if (!ANY_FLAG(actor, FLG_WARP_CALAMITY))
+			return;
+
+		// !!! CLIENT-SIDE !!!!
+		video_state.message = "MUSHROOM CALAMITY ACTIVATED!!!";
+		video_state.message_time = 0.f;
+		// !!! CLIENT-SIDE !!!!
+
+		for (GameActor* act = get_actor(game_state.live_actors); act != NULL; act = get_actor(act->previous)) {
+			if ((act->type != ACT_MUSHROOM && act->type != ACT_MUSHROOM_1UP
+				    && act->type != ACT_MUSHROOM_POISON)
+				|| !ANY_FLAG(act, FLG_POWERUP_CALAMITY))
+				continue;
+			VAL(act, X_SPEED) = FfInt(2L);
+			VAL(act, SPROUT) = FfInt(32L);
+			FLAG_OFF(act, FLG_POWERUP_CALAMITY);
+		}
+
+		play_state_sound("clone_dead2");
+		FLAG_OFF(actor, FLG_WARP_CALAMITY);
 	}
 }
 
-const GameActorTable TAB_WARP = {.create = create, .collide = collide};
+const GameActorTable TAB_WARP = {.load_special = load_special, .create = create, .collide = collide};
