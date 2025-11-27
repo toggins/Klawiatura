@@ -1,4 +1,5 @@
 #include "K_game.h"
+#include "K_tick.h"
 
 enum {
 	VAL_PROP_FRAME = VAL_CUSTOM,
@@ -156,3 +157,21 @@ static void draw_face(const GameActor* actor) {
 }
 
 const GameActorTable TAB_CLOUD_FACE = {.load = load_face, .create = create_face, .tick = tick_face, .draw = draw_face};
+
+// =============
+// MOVING CLOUDS
+// =============
+
+static void load_clouds() {
+	load_texture("bg/clouds");
+}
+
+static void draw_clouds(const GameActor* actor) {
+	batch_reset();
+	batch_pos(B_XYZ(-64.f + SDL_fmodf(totalticks() * FtFloat(VAL(actor, X_SPEED)), 64.f), FtInt(actor->pos.y),
+		FtFloat(actor->depth)));
+	batch_tile(B_TILE(true, false));
+	batch_rectangle("bg/clouds", B_XY(FtFloat(game_state.size.x) + 128.f, 64.f));
+}
+
+const GameActorTable TAB_CLOUDS = {.load = load_clouds, .draw = draw_clouds};

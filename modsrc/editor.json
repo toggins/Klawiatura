@@ -215,6 +215,13 @@
                             "type": "backdrop",
                             "z": 20,
                             "texture": "tiles/block"
+                        },
+
+                        {
+                            "def": "Block Cave",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/block_cave"
                         }
                     ]
                 ],
@@ -607,6 +614,58 @@
                             "stretch": true,
                             "max_stretch": [65535, 28],
                             "texture": "bg/clouds2"
+                        },
+
+                        {
+                            "def": "Moving Clouds",
+                            "type": "object",
+                            "z": -50,
+                            "index": 67,
+                            "texture": "bg/clouds",
+
+                            "values": [
+                                {
+                                    "name": "Speed",
+                                    "index": 0,
+                                    "default": -131072,
+                                    "fixed": true
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Moving Clouds 2",
+                            "type": "object",
+                            "z": 75,
+                            "index": 67,
+                            "texture": "bg/clouds",
+
+                            "values": [
+                                {
+                                    "name": "Speed",
+                                    "index": 0,
+                                    "default": -65536,
+                                    "fixed": true
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Cave BG",
+                            "type": "gradient",
+                            "z": 190,
+                            "stretch": true,
+                            "max_stretch": [65535, 480],
+                            "texture": "bg/cave"
+                        },
+
+                        {
+                            "def": "Cave BG 2",
+                            "type": "gradient",
+                            "z": 190,
+                            "stretch": true,
+                            "max_stretch": [65535, 65535],
+                            "texture": "bg/cave2"
                         },
 
                         {

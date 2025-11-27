@@ -98,6 +98,7 @@ void populate_actors_table() {
 	ACTOR(FAKE_CLOUD);
 	ACTOR(FRED);
 	ACTOR(CLOUD_FACE);
+	ACTOR(CLOUDS);
 
 	static const GameActorTable TAB_NULL = {0};
 	ACTORS[ACT_NULL] = &TAB_NULL;
