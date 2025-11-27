@@ -1427,7 +1427,7 @@ GameActor* respawn_player(GamePlayer* player) {
 		player->bounds.end.x = VAL(spawn, CHECKPOINT_BOUNDS_X2),
 		player->bounds.end.y = VAL(spawn, CHECKPOINT_BOUNDS_Y2);
 	} else
-		SDL_memcpy(&player->bounds, &game_state.bounds, sizeof(game_state.bounds));
+		player->bounds = game_state.bounds;
 
 	pawn = create_actor(
 		ACT_PLAYER, (spawn->type == ACT_AUTOSCROLL)

@@ -684,6 +684,9 @@ static void tick(GameActor* actor) {
 	GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
 	if (warp != NULL) {
 		if (ANY_FLAG(actor, FLG_PLAYER_WARP_OUT)) {
+			if (ANY_FLAG(warp, FLG_WARP_EXIT))
+				goto skip_physics;
+
 			switch (VAL(warp, WARP_ANGLE_OUT)) {
 			case 0L: {
 				move_actor(actor, POS_ADD(actor, -FxOne, FxZero));
@@ -742,6 +745,12 @@ static void tick(GameActor* actor) {
 
 			++VAL(actor, PLAYER_WARP_STATE);
 			if (VAL(actor, PLAYER_WARP_STATE) > 60L) {
+				if (ANY_FLAG(warp, FLG_WARP_EXIT)) {
+					win_player(actor);
+					FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
+					goto skip_physics;
+				}
+
 				if (VAL(warp, WARP_BOUNDS_X1) != VAL(warp, WARP_BOUNDS_X2)
 					&& VAL(warp, WARP_BOUNDS_Y1) != VAL(warp, WARP_BOUNDS_Y2))
 				{
@@ -1114,8 +1123,13 @@ skip_physics:
 		&& ((player->kevin.delay <= 0L && Vdist(actor->pos, player->kevin.start) > FxOne)
 			|| player->kevin.delay > 0L))
 	{
-		SDL_memmove(player->kevin.frames, player->kevin.frames + 1L,
-			(KEVIN_DELAY - 1L) * sizeof(*player->kevin.frames));
+		for (uint32_t i = 0L; i < (KEVIN_DELAY - 1L); i++) {
+			const uint32_t j = i + 1L;
+			player->kevin.frames[i].pos = player->kevin.frames[j].pos;
+			player->kevin.frames[i].power = player->kevin.frames[j].power;
+			player->kevin.frames[i].frame = player->kevin.frames[j].frame;
+			player->kevin.frames[i].flip = player->kevin.frames[j].flip;
+		}
 
 		if (player->kevin.delay < KEVIN_DELAY)
 			if (++(player->kevin.delay) >= KEVIN_DELAY) {
