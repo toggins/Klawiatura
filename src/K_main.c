@@ -24,7 +24,7 @@
 #include "K_os.h"
 #include "K_video.h"
 
-static void cmd_ip(), cmd_level(), cmd_kevin(), cmd_fred(), cmd_console();
+static void cmd_ip(), cmd_level(), cmd_kevin(), cmd_fred(), cmd_string();
 MAKE_OPTION(data_path, NULL);
 MAKE_OPTION(config_path, NULL);
 MAKE_FLAG(force_shader);
@@ -39,6 +39,7 @@ CmdArg CMDLINE[] = {
 	{"-F", "-fred",         cmd_fred             },
 	{"-a", "-ip",           cmd_ip               },
 	{"-l", "-level",        cmd_level            },
+	{"-S", "-string",       cmd_string           },
 	{NULL, NULL,            NULL                 },
 };
 
@@ -179,4 +180,14 @@ static void cmd_fred() {
 		CLIENT.game.fred = true;
 		INFO("Fred mode activated. Good luck...");
 	}
+}
+
+static void cmd_string() {
+	int8_t in[ACTOR_STRING_MAX + 1] = "";
+	GameActor out = {0};
+
+	SDL_strlcpy((char*)in, next_arg(), sizeof(in));
+	encode_actor_string(&out, 0, in);
+
+	FATAL("String \"%s\" encoded to [%i,%i,%i,%i]", in, out.values[0], out.values[1], out.values[2], out.values[3]);
 }

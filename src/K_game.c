@@ -433,7 +433,7 @@ bool update_game() {
 					}
 
 					GameContext ctx = {0};
-					setup_game_context(&ctx, game_state.next, GF_TRY_SINGLE | GF_TRY_HELL);
+					setup_game_context(&ctx, (char*)game_state.next, GF_TRY_SINGLE | GF_TRY_HELL);
 					ctx.num_players = num_players;
 					for (PlayerID i = 0; i < num_players; i++) {
 						const int8_t lives = game_state.players[i].lives;
@@ -1184,7 +1184,7 @@ void start_game_state(GameContext* ctx) {
 	if (video_state.world[0] != ')' && video_state.world[0] != ']')
 		load_texture(video_state.world);
 
-	read_string((const char**)(&buf), game_state.next, sizeof(game_state.next));
+	read_string((const char**)(&buf), (char*)game_state.next, sizeof(game_state.next));
 
 	char track_name[3][GAME_STRING_MAX];
 	for (int i = 0; i < 3; i++) {
@@ -2086,6 +2086,32 @@ void displace_actor_soft(GameActor* actor) {
 	}
 
 	move_actor(actor, (fvec2){x, y});
+}
+
+/// Encodes a 16-character string into an actor.
+void encode_actor_string(GameActor* actor, ActorValue offset, const int8_t src[ACTOR_STRING_MAX]) {
+	if (actor == NULL)
+		return;
+	ActorValue* dst = actor->values + offset;
+	for (ActorValue i = 0L; i < 4L; i++) {
+		const ActorValue j = i * 4L;
+		dst[i] = ((ActorValue)(int8_t)src[j + 0L]) | ((ActorValue)(int8_t)src[j + 1L] << 8L)
+		         | ((ActorValue)(int8_t)src[j + 2L] << 16L) | ((ActorValue)(int8_t)src[j + 3L] << 24L);
+	}
+}
+
+/// Decodes a 16-character string from an actor.
+void decode_actor_string(const GameActor* actor, ActorValue offset, int8_t dst[ACTOR_STRING_MAX]) {
+	if (actor == NULL)
+		return;
+	const ActorValue* src = actor->values + offset;
+	for (ActorValue i = 0L; i < 4L; i++) {
+		const ActorValue j = i * 4L, k = (ActorValue)src[i];
+		dst[j + 0L] = (int8_t)(k & 255L);
+		dst[j + 1L] = (int8_t)((k >> 8L) & 255L);
+		dst[j + 2L] = (int8_t)((k >> 16L) & 255L);
+		dst[j + 3L] = (int8_t)((k >> 24L) & 255L);
+	}
 }
 
 /// Generic interpolated actor drawing function.

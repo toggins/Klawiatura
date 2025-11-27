@@ -1159,6 +1159,30 @@
                             "name": "Bound Y2",
                             "index": 11,
                             "default": 0
+                        },
+
+                        {
+                            "name": "String 1",
+                            "index": 13,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "String 2",
+                            "index": 14,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "String 3",
+                            "index": 15,
+                            "default": 0
+                        },
+
+                        {
+                            "name": "String 4",
+                            "index": 16,
+                            "default": 0
                         }
                     ],
 

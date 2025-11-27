@@ -20,6 +20,7 @@
 
 #define MAX_VALUES 32L
 #define GAME_STRING_MAX 256L
+#define ACTOR_STRING_MAX 16L
 
 typedef fixed ActorValue;
 typedef uint32_t ActorFlag;
@@ -405,7 +406,7 @@ typedef struct {
 	GameActor actors[MAX_ACTORS];
 	ActorID grid[GRID_SIZE];
 
-	char next[GAME_STRING_MAX];
+	int8_t next[GAME_STRING_MAX];
 } GameState;
 
 typedef struct {
@@ -498,6 +499,9 @@ void collide_actor(GameActor*);
 Bool touching_solid(const frect, SolidType);
 void displace_actor(GameActor*, fixed, Bool);
 void displace_actor_soft(GameActor*);
+
+void encode_actor_string(GameActor*, ActorValue, const int8_t[ACTOR_STRING_MAX]);
+void decode_actor_string(const GameActor*, ActorValue, int8_t[ACTOR_STRING_MAX]);
 
 void draw_actor(const GameActor*, const char*, GLfloat, const GLubyte[4]);
 void draw_actor_offset(const GameActor*, const char*, const GLfloat[3], GLfloat, const GLubyte[4]);

@@ -749,7 +749,8 @@ static void tick(GameActor* actor) {
 					win_player(actor);
 					FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
 					goto skip_physics;
-				}
+				} else if (VAL(warp, WARP_STRING) != 0L)
+					game_state.flags |= GF_END;
 
 				if (VAL(warp, WARP_BOUNDS_X1) != VAL(warp, WARP_BOUNDS_X2)
 					&& VAL(warp, WARP_BOUNDS_Y1) != VAL(warp, WARP_BOUNDS_Y2))

@@ -64,26 +64,33 @@ static void collide(GameActor* actor, GameActor* from) {
 		FLAG_OFF(from, FLG_PLAYER_WARP_OUT);
 		play_actor_sound(actor, "warp");
 
-		if (!ANY_FLAG(actor, FLG_WARP_CALAMITY))
-			return;
-
-		// !!! CLIENT-SIDE !!!!
-		video_state.message = "MUSHROOM CALAMITY ACTIVATED!!!";
-		video_state.message_time = 0.f;
-		// !!! CLIENT-SIDE !!!!
-
-		for (GameActor* act = get_actor(game_state.live_actors); act != NULL; act = get_actor(act->previous)) {
-			if ((act->type != ACT_MUSHROOM && act->type != ACT_MUSHROOM_1UP
-				    && act->type != ACT_MUSHROOM_POISON)
-				|| !ANY_FLAG(act, FLG_POWERUP_CALAMITY))
-				continue;
-			VAL(act, X_SPEED) = FfInt(2L);
-			VAL(act, SPROUT) = FfInt(32L);
-			FLAG_OFF(act, FLG_POWERUP_CALAMITY);
+		if (VAL(actor, WARP_STRING) != 0L) {
+			int8_t lvl[ACTOR_STRING_MAX + 1] = "";
+			decode_actor_string(actor, VAL_WARP_STRING, lvl);
+			SDL_strlcpy((char*)game_state.next, (char*)lvl, sizeof(game_state.next));
 		}
 
-		play_state_sound("clone_dead2");
-		FLAG_OFF(actor, FLG_WARP_CALAMITY);
+		if (ANY_FLAG(actor, FLG_WARP_CALAMITY)) {
+			// !!! CLIENT-SIDE !!!
+			video_state.message = "MUSHROOM CALAMITY ACTIVATED!!!";
+			video_state.message_time = 0.f;
+			// !!! CLIENT-SIDE !!!
+
+			for (GameActor* act = get_actor(game_state.live_actors); act != NULL;
+				act = get_actor(act->previous))
+			{
+				if ((act->type != ACT_MUSHROOM && act->type != ACT_MUSHROOM_1UP
+					    && act->type != ACT_MUSHROOM_POISON)
+					|| !ANY_FLAG(act, FLG_POWERUP_CALAMITY))
+					continue;
+				VAL(act, X_SPEED) = FfInt(2L);
+				VAL(act, SPROUT) = FfInt(32L);
+				FLAG_OFF(act, FLG_POWERUP_CALAMITY);
+			}
+
+			play_state_sound("clone_dead2");
+			FLAG_OFF(actor, FLG_WARP_CALAMITY);
+		}
 	}
 }
 
