@@ -87,6 +87,7 @@ enum {
 	SEQ_AMBUSH,
 	SEQ_AMBUSH_END,
 	SEQ_BOWSER_END,
+	SEQ_SECRET,
 };
 
 typedef uint16_t GameActorType;

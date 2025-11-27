@@ -5,6 +5,9 @@
 static void load_special(const GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_WARP_CALAMITY))
 		load_sound("clone_dead2");
+
+	if (ANY_FLAG(actor, FLG_WARP_SECRET))
+		load_track("warp");
 }
 
 static void create(GameActor* actor) {
@@ -68,6 +71,36 @@ static void collide(GameActor* actor, GameActor* from) {
 			int8_t lvl[ACTOR_STRING_MAX + 1] = "";
 			decode_actor_string(actor, VAL_WARP_STRING, lvl);
 			SDL_strlcpy((char*)game_state.next, (char*)lvl, sizeof(game_state.next));
+
+			GamePlayer* warper = get_owner(from);
+			for (PlayerID i = 0; i < numplayers(); i++) {
+				GamePlayer* player = get_player(i);
+				if (player == NULL || warper == player)
+					continue;
+
+				GameActor* pawn = get_actor(player->actor);
+				if (pawn != NULL)
+					FLAG_ON(pawn, FLG_DESTROY);
+			}
+
+			// !!! CLIENT-SIDE !!!
+			set_view_player(warper);
+			// !!! CLIENT-SIDE !!!
+
+			if (ANY_FLAG(actor, FLG_WARP_SECRET)) {
+				game_state.sequence.type = SEQ_SECRET;
+				game_state.sequence.time = 0L;
+				game_state.sequence.activator = NULLPLAY;
+
+				// !!! CLIENT-SIDE !!!
+				video_state.message = "You found a secret!";
+				video_state.message_time = 0.f;
+				// !!! CLIENT-SIDE !!!
+
+				for (TrackSlots i = 0L; i < (TrackSlots)TS_SIZE; i++)
+					stop_state_track(i);
+				play_state_track(TS_FANFARE, "warp", 0L);
+			}
 		}
 
 		if (ANY_FLAG(actor, FLG_WARP_CALAMITY)) {

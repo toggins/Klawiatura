@@ -684,7 +684,7 @@ static void tick(GameActor* actor) {
 	GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
 	if (warp != NULL) {
 		if (ANY_FLAG(actor, FLG_PLAYER_WARP_OUT)) {
-			if (ANY_FLAG(warp, FLG_WARP_EXIT))
+			if (ANY_FLAG(warp, FLG_WARP_EXIT | FLG_WARP_SECRET) || VAL(warp, WARP_STRING) != 0L)
 				goto skip_physics;
 
 			switch (VAL(warp, WARP_ANGLE_OUT)) {
@@ -745,12 +745,18 @@ static void tick(GameActor* actor) {
 
 			++VAL(actor, PLAYER_WARP_STATE);
 			if (VAL(actor, PLAYER_WARP_STATE) > 60L) {
-				if (ANY_FLAG(warp, FLG_WARP_EXIT)) {
+				if (game_state.sequence.type == SEQ_SECRET) {
+					FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
+					goto skip_physics;
+				} else if (ANY_FLAG(warp, FLG_WARP_EXIT)) {
 					win_player(actor);
 					FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
 					goto skip_physics;
-				} else if (VAL(warp, WARP_STRING) != 0L)
+				} else if (VAL(warp, WARP_STRING) != 0L) {
 					game_state.flags |= GF_END;
+					FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
+					goto skip_physics;
+				}
 
 				if (VAL(warp, WARP_BOUNDS_X1) != VAL(warp, WARP_BOUNDS_X2)
 					&& VAL(warp, WARP_BOUNDS_Y1) != VAL(warp, WARP_BOUNDS_Y2))

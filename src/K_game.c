@@ -611,7 +611,7 @@ static void draw_hud() {
 
 	if (video_state.message != NULL) {
 		const GLfloat ease = 1.f - (SDL_min(video_state.message_time, 30.f) / 30.f);
-		GLfloat my = glm_lerp(-24.f, 88.f, 1.f - (ease * ease));
+		const GLfloat my = glm_lerp(-24.f, 112.f, 1.f - (ease * ease));
 
 		batch_reset();
 		batch_pos(B_XYZ(HALF_SCREEN_WIDTH, my, -10000.f)), batch_align(B_ALIGN(FA_CENTER, FA_TOP));
@@ -918,6 +918,12 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 
 	youre_winner:
 		win_player(get_actor(winner->actor));
+		break;
+	}
+
+	case SEQ_SECRET: {
+		if (++game_state.sequence.time > 250L)
+			game_state.flags |= GF_END;
 		break;
 	}
 	}
