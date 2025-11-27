@@ -26,7 +26,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
 	case 1L: {
 		if (VAL(from, Y_TOUCH) < 0L && ANY_INPUT(player, GI_UP)) {
-			move_actor(from, POS_ADD(actor, FxZero, from->box.start.y - actor->box.start.y));
+			move_actor(from, POS_ADD(actor, FxZero, actor->box.start.y - from->box.start.y));
 			warped = true;
 		}
 		break;

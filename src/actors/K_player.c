@@ -59,6 +59,40 @@ static void load_player_textures() {
 }
 
 PlayerFrame get_player_frame(const GameActor* actor) {
+	if (VAL(actor, PLAYER_POWER) > 0L) {
+		const GamePlayer* player = get_owner(actor);
+		const ActorValue frame = VAL(actor, PLAYER_POWER) / 100L;
+
+		switch ((player == NULL) ? POW_SMALL : player->power) {
+		case POW_SMALL:
+		case POW_BIG: {
+			switch (frame % 3L) {
+			default:
+				return PF_GROW1;
+			case 1L:
+				return PF_GROW2;
+			case 2L:
+				return PF_GROW3;
+			}
+			break;
+		}
+
+		default: {
+			switch (frame % 4L) {
+			default:
+				return PF_GROW1;
+			case 1L:
+				return PF_GROW2;
+			case 2L:
+				return PF_GROW3;
+			case 3L:
+				return PF_GROW4;
+			}
+			break;
+		}
+		}
+	}
+
 	const GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
 	if (warp != NULL)
 		switch (VAL(warp, WARP_ANGLE)) {
@@ -77,38 +111,6 @@ PlayerFrame get_player_frame(const GameActor* actor) {
 		default:
 			return PF_DUCK;
 		}
-
-	if (VAL(actor, PLAYER_POWER) > 0L) {
-		const GamePlayer* player = get_player((PlayerID)VAL(actor, PLAYER_INDEX));
-		switch ((player == NULL) ? POW_SMALL : player->power) {
-		case POW_SMALL:
-		case POW_BIG: {
-			switch ((VAL(actor, PLAYER_POWER) / 100L) % 3L) {
-			default:
-				return PF_GROW1;
-			case 1L:
-				return PF_GROW2;
-			case 2L:
-				return PF_GROW3;
-			}
-			break;
-		}
-
-		default: {
-			switch ((VAL(actor, PLAYER_POWER) / 100L) % 4L) {
-			default:
-				return PF_GROW1;
-			case 1L:
-				return PF_GROW2;
-			case 2L:
-				return PF_GROW3;
-			case 3L:
-				return PF_GROW4;
-			}
-			break;
-		}
-		}
-	}
 
 	if (ANY_FLAG(actor, FLG_PLAYER_DUCK))
 		return PF_DUCK;
@@ -749,7 +751,16 @@ static void tick(GameActor* actor) {
 					player->bounds.end.y = VAL(warp, WARP_BOUNDS_Y2);
 				}
 
-				move_actor(actor, (fvec2){VAL(warp, WARP_X), VAL(warp, WARP_Y) + FfInt(50L)});
+				fvec2 wpos = {VAL(warp, WARP_X), VAL(warp, WARP_Y)};
+				switch (VAL(warp, WARP_ANGLE)) {
+				default:
+					break;
+				case 3L:
+					wpos.y += FfInt(50L);
+					break;
+				}
+				move_actor(actor, wpos);
+
 				FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
 				skip_interp(actor);
 				play_actor_sound(actor, "warp");
