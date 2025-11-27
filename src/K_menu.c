@@ -59,7 +59,7 @@ static Secret SECRETS[SECR_SIZE] = {
 		.name = "FRED",
 		.inputs = {KB_SECRET_F, KB_SECRET_R, KB_SECRET_E, KB_SECRET_D, NULLBIND},
 		.cmd = &CLIENT.game.fred,
-		.sound = "fred_on", .track = "bassbin_bangin",
+		.sound = "clone_dead2", .track = "bassbin_bangin",
 	},
 };
 
