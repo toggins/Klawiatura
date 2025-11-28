@@ -253,3 +253,72 @@ static void draw_waterfall(const GameActor* actor) {
 }
 
 const GameActorTable TAB_WATERFALL = {.load = load_waterfall, .create = create, .draw = draw_waterfall};
+
+// ========
+// LAVAFALL
+// ========
+
+static void load_lavafall() {
+	load_texture_num("bg/lavafall%u", 6L);
+}
+
+static void draw_lavafall(const GameActor* actor) {
+	const float tt = totalticks();
+	const char* tex = NULL;
+	switch ((int)tt % 10L) {
+	default:
+		tex = "bg/lavafall0";
+		break;
+	case 1L:
+	case 9L:
+		tex = "bg/lavafall1";
+		break;
+	case 2L:
+	case 8L:
+		tex = "bg/lavafall2";
+		break;
+	case 3L:
+	case 7L:
+		tex = "bg/lavafall3";
+		break;
+	case 4L:
+	case 6L:
+		tex = "bg/lavafall4";
+		break;
+	case 5L:
+		tex = "bg/lavafall5";
+		break;
+	}
+
+	batch_reset();
+	batch_pos(B_XYZ(FtInt(actor->pos.x), -32.f + SDL_fmodf(((float)VAL(actor, PROP_FRAME) + tt) * 6.25f, 32.f),
+		FtFloat(actor->depth)));
+	batch_tile(B_TILE(false, true)), batch_rectangle(tex, B_XY(54.f, FtFloat(game_state.size.y) + 32.f));
+}
+
+const GameActorTable TAB_LAVAFALL = {.load = load_lavafall, .create = create, .draw = draw_lavafall};
+
+// ===================
+// LAVA BUBBLE SPAWNER
+// ===================
+
+static void load_laver() {
+	load_actor(ACT_LAVA_BUBBLE);
+}
+
+static void create_laver(GameActor* actor) {
+	actor->box.end.x = actor->box.end.y = FfInt(32L);
+}
+
+static void tick_laver(GameActor* actor) {
+	if (((game_state.time * 2L) % 5L) >= 2L || !in_any_view(actor, FxZero, false))
+		return;
+
+	GameActor* bubble = create_actor(ACT_LAVA_BUBBLE, POS_ADD(actor, FfInt(-7L + rng(48L)), FxZero));
+	if (bubble == NULL)
+		return;
+	VAL(bubble, X_SPEED) = FfInt(-2L + rng(5L));
+	VAL(bubble, Y_SPEED) = FfInt(-2L - rng(4L));
+}
+
+const GameActorTable TAB_LAVA_BUBBLE_SPAWNER = {.load = load_laver, .create = create_laver, .tick = tick_laver};

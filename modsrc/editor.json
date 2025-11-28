@@ -872,6 +872,43 @@
                         },
 
                         {
+                            "def": "Lavafall",
+                            "type": "object",
+                            "z": 49,
+                            "index": 106,
+                            "texture": "bg/lavafall0"
+                        },
+
+                        {
+                            "def": "Lava Bubble Spawner",
+                            "type": "object",
+                            "z": 19,
+                            "index": 107,
+                            "texture": "markers/solid_top"
+                        },
+
+                        {
+                            "def": "Pillar",
+                            "type": "backdrop",
+                            "z": 55,
+                            "texture": "bg/pillar"
+                        },
+
+                        {
+                            "def": "Pillar Body",
+                            "type": "backdrop",
+                            "z": 55,
+                            "texture": "bg/pillar2"
+                        },
+
+                        {
+                            "def": "Pillar Big",
+                            "type": "backdrop",
+                            "z": 55,
+                            "texture": "bg/pillar3"
+                        },
+
+                        {
                             "def": "Pyramid",
                             "type": "backdrop",
                             "z": 50,
