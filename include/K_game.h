@@ -315,6 +315,7 @@ typedef struct {
 	uint16_t time;
 } GameSequence;
 
+#define VAL_STRING(ident) ident, ident##_END = ident + ((ACTOR_STRING_MAX * 2) / sizeof(ActorValue))
 enum BaseActorValues {
 	VAL_X_SPEED,
 	VAL_Y_SPEED,
