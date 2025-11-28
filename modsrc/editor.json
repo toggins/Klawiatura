@@ -266,7 +266,9 @@
                             "def": "Pipe V M",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "tiles/pipe2"
+                            "texture": "tiles/pipe2",
+                            "stretch": true,
+                            "max_stretch": [64, 65535]
                         },
 
                         {
@@ -274,6 +276,29 @@
                             "type": "backdrop",
                             "z": 20,
                             "texture": "tiles/pipe3"
+                        },
+
+                        {
+                            "def": "Pipe Blue V T",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/pipe_blue"
+                        },
+
+                        {
+                            "def": "Pipe Blue V M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/pipe_blue2",
+                            "stretch": true,
+                            "max_stretch": [64, 65535]
+                        },
+
+                        {
+                            "def": "Pipe Blue V B",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/pipe_blue3"
                         },
 
                         {
@@ -287,7 +312,9 @@
                             "def": "Pipe Gray V M",
                             "type": "backdrop",
                             "z": 20,
-                            "texture": "tiles/pipe_gray2"
+                            "texture": "tiles/pipe_gray2",
+                            "stretch": true,
+                            "max_stretch": [64, 65535]
                         },
 
                         {
@@ -768,6 +795,13 @@
                             "Signs",
                             [
                                 {
+                                    "def": "Hardcore Hint",
+                                    "type": "backdrop",
+                                    "texture": "props/sign/hardcore_hint",
+                                    "z": 25
+                                },
+
+                                {
                                     "def": "Sign Up",
                                     "type": "backdrop",
                                     "texture": "props/sign/up",
@@ -884,6 +918,46 @@
                             "type": "backdrop",
                             "texture": "props/fence_r",
                             "z": 25
+                        },
+
+                        {
+                            "def": "Lamp",
+                            "type": "backdrop",
+                            "z": 50,
+                            "texture": "props/lamp"
+                        },
+
+                        {
+                            "def": "Lamp Broken",
+                            "type": "backdrop",
+                            "z": 50,
+                            "texture": "props/lamp2"
+                        },
+
+                        {
+                            "def": "Lamp Light",
+                            "type": "object",
+                            "z": 49,
+                            "index": 102,
+                            "texture": "effects/lamp_light0"
+                        },
+
+                        {
+                            "def": "Tube",
+                            "type": "backdrop",
+                            "z": 50,
+                            "texture": "props/tube",
+                            "color": [255, 255, 255, 95],
+                            "stretch": true,
+                            "max_stretch": [64, 65535]
+                        },
+
+                        {
+                            "def": "Tube Bubbles",
+                            "type": "object",
+                            "z": 51,
+                            "index": 103,
+                            "texture": "markers/solid_top"
                         },
 
                         {

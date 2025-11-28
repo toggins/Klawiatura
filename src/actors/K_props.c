@@ -175,3 +175,64 @@ static void draw_clouds(const GameActor* actor) {
 }
 
 const GameActorTable TAB_CLOUDS = {.load = load_clouds, .draw = draw_clouds};
+
+// ==========
+// LAMP LIGHT
+// ==========
+
+static void load_lamp_light() {
+	load_texture_num("effects/lamp_light%u", 4L);
+}
+
+static void draw_lamp_light(const GameActor* actor) {
+	const char* tex = NULL;
+	switch (((int)((float)game_state.time / 2.5f) + VAL(actor, PROP_FRAME)) % 6L) {
+	default:
+		tex = "effects/lamp_light0";
+		break;
+	case 1L:
+	case 5L:
+		tex = "effects/lamp_light1";
+		break;
+	case 2L:
+	case 4L:
+		tex = "effects/lamp_light2";
+		break;
+	case 3L:
+		tex = "effects/lamp_light3";
+		break;
+	}
+
+	batch_reset();
+	const InterpActor* iactor = get_interp(actor);
+	batch_pos(B_XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)));
+	batch_color(B_ALPHA(155L)), batch_blend(B_BLEND(GL_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA, GL_ONE));
+	batch_sprite(tex);
+	batch_blend(B_BLEND_NORMAL);
+}
+
+const GameActorTable TAB_LAMP_LIGHT = {.load = load_lamp_light, .create = create, .draw = draw_lamp_light};
+
+// ===========
+// BUBBLE TUBE
+// ===========
+
+static void load_tube() {
+	load_actor(ACT_TUBE_BUBBLE);
+}
+
+static void create_tube(GameActor* actor) {
+	actor->box.end.x = actor->box.end.y = FfInt(32L);
+}
+
+static void tick_tube(GameActor* actor) {
+	if ((game_state.time % 5L) != 0L || !in_any_view(actor, FxZero, false) || rng(11L) != 10L)
+		return;
+	GameActor* bubble = create_actor(ACT_TUBE_BUBBLE, POS_ADD(actor, FfInt(9L + rng(16L)), -FxOne));
+	if (bubble == NULL)
+		return;
+	bubble->depth = actor->depth + FxOne;
+	VAL(bubble, Y_SPEED) = (1L + rng(60L)) * -8192L;
+}
+
+const GameActorTable TAB_BUBBLE_TUBE = {.load = load_tube, .create = create_tube, .tick = tick_tube};

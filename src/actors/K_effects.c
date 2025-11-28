@@ -230,3 +230,51 @@ const GameActorTable TAB_LAVA_BUBBLE = {
 	.tick = tick_lava_bubble,
 	.draw = draw_lava_bubble,
 };
+
+// ===========
+// TUBE BUBBLE
+// ===========
+
+static void load_tube_bubble() {
+	load_texture("effects/bubble0");
+}
+
+static void tick_tube_bubble(GameActor* actor) {
+	if (!in_any_view(actor, FxZero, false)) {
+		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	++VAL(actor, EFFECT_FRAME);
+	move_actor(actor, POS_SPEED(actor));
+}
+
+static void draw_tube_bubble(const GameActor* actor) {
+	float pos[2] = {0.f};
+	switch ((VAL(actor, EFFECT_FRAME) / 2L) % 5L) {
+	default:
+		break;
+	case 1L:
+		pos[0] -= 1.f;
+		break;
+	case 2L:
+		pos[0] += 1.f;
+		break;
+	case 4L:
+		pos[1] -= 2.f;
+		break;
+	}
+
+	const InterpActor* iactor = get_interp(actor);
+	batch_reset();
+	batch_pos(B_XYZ(FtInt(iactor->pos.x) + pos[0], FtInt(iactor->pos.y) + pos[1], FtFloat(actor->depth)));
+	batch_color(B_ALPHA(57L));
+	batch_sprite("effects/bubble0");
+}
+
+const GameActorTable TAB_TUBE_BUBBLE = {
+	.load = load_tube_bubble,
+	.create = create_bubble,
+	.tick = tick_tube_bubble,
+	.draw = draw_tube_bubble,
+};
