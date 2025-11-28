@@ -140,6 +140,81 @@
                 ],
 
                 [
+                    "Tree",
+                    [
+                        {
+                            "def": "Tree TL",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/tree"
+                        },
+
+                        {
+                            "def": "Tree T",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/tree2"
+                        },
+
+                        {
+                            "def": "Tree TR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/tree3"
+                        },
+
+                        {
+                            "def": "Tree ML",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/tree4"
+                        },
+
+                        {
+                            "def": "Tree M",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/tree5"
+                        },
+
+                        {
+                            "def": "Tree MR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/tree6"
+                        },
+
+                        {
+                            "def": "Tree BL",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/tree7"
+                        },
+
+                        {
+                            "def": "Tree B",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/tree8"
+                        },
+
+                        {
+                            "def": "Tree BR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/tree9"
+                        },
+
+                        {
+                            "def": "Tree MLR",
+                            "type": "backdrop",
+                            "z": 20,
+                            "texture": "tiles/tree10"
+                        }
+                    ]
+                ],
+
+                [
                     "Snow",
                     [
                         {
@@ -678,6 +753,23 @@
                         },
 
                         {
+                            "def": "Cliff",
+                            "type": "gradient",
+                            "z": 190,
+                            "stretch": true,
+                            "max_stretch": [65535, 102],
+                            "texture": "bg/cliff"
+                        },
+
+                        {
+                            "def": "Waterfall",
+                            "type": "object",
+                            "index": 105,
+                            "z": 189,
+                            "texture": "bg/waterfall0"
+                        },
+
+                        {
                             "def": "Cave BG",
                             "type": "gradient",
                             "z": 190,
@@ -918,6 +1010,20 @@
                             "type": "backdrop",
                             "texture": "props/fence_r",
                             "z": 25
+                        },
+
+                        {
+                            "def": "Castle",
+                            "type": "backdrop",
+                            "texture": "props/castle",
+                            "z": 27
+                        },
+
+                        {
+                            "def": "Castle Bottom",
+                            "type": "backdrop",
+                            "texture": "props/castle2",
+                            "z": 27
                         },
 
                         {

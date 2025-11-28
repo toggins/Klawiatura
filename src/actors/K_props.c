@@ -1,4 +1,5 @@
 #include "K_game.h"
+#include "K_string.h"
 #include "K_tick.h"
 
 enum {
@@ -236,3 +237,19 @@ static void tick_tube(GameActor* actor) {
 }
 
 const GameActorTable TAB_BUBBLE_TUBE = {.load = load_tube, .create = create_tube, .tick = tick_tube};
+
+// =========
+// WATERFALL
+// =========
+
+static void load_waterfall() {
+	load_texture_num("bg/waterfall%u", 4L);
+}
+
+static void draw_waterfall(const GameActor* actor) {
+	const char* tex = fmt(
+		"bg/waterfall%u", ((int)((float)game_state.time / 2.439024390243902f) + VAL(actor, PROP_FRAME)) % 4L);
+	draw_actor(actor, tex, 0.f, B_WHITE);
+}
+
+const GameActorTable TAB_WATERFALL = {.load = load_waterfall, .create = create, .draw = draw_waterfall};
