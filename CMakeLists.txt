@@ -128,18 +128,6 @@ endif()
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
 file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/include/*.h)
 
-# Thanks <https://stackoverflow.com/a/47801116>
-set(NESTED ${CMAKE_BINARY_DIR}/nested)
-function(embed_txt PATH INCLUDE_FILE)
-    cmake_path(GET PATH FILENAME VARNAME)
-    string(REGEX REPLACE [./] _ VARNAME ${VARNAME})
-    file(READ ${PATH} CONTENT)
-    file(WRITE ${NESTED}/embeds/${INCLUDE_FILE}
-        "const char* const ${VARNAME} = R\"(${CONTENT})\";")
-endfunction()
-
-embed_txt(${CMAKE_SOURCE_DIR}/shaders/vertex.glsl shaders/vertex.glsl)
-embed_txt(${CMAKE_SOURCE_DIR}/shaders/fragment.glsl shaders/fragment.glsl)
 set(CONTROLLER_DB ${sdl_gamecontrollerdb_SOURCE_DIR}/gamecontrollerdb.txt)
 
 set(RESFILE ${CMAKE_SOURCE_DIR}/res/Klawiatura.rc)

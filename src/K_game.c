@@ -564,12 +564,8 @@ static void draw_hud() {
 	if (!player)
 		return;
 
-	glm_ortho(0.f, SCREEN_WIDTH, 0.f, SCREEN_HEIGHT, -16000.f, 16000.f, proj);
-	set_projection_matrix(proj);
-	apply_matrices();
-
 	if (paused) {
-		batch_reset(), batch_pos(B_XYZ(0.f, 0.f, -10000.f)), batch_color(B_RGBA(0, 0, 0, 128));
+		batch_pos(B_XYZ(0.f, 0.f, -10000.f)), batch_color(B_RGBA(0, 0, 0, 128));
 		batch_rectangle(NULL, B_XY(SCREEN_WIDTH, SCREEN_HEIGHT));
 		batch_pos(B_XYZ(48.f, 128.f, -10000.f)), batch_color(B_RGB(255, 144, 144));
 		batch_string("main", 24, "Paused");
@@ -747,11 +743,21 @@ void draw_game() {
 		}
 	}
 
-	draw_hud();
 	pop_surface();
 
 	batch_reset();
-	batch_surface(game_surface);
+	if (game_state.sequence.type == SEQ_SECRET) {
+		set_shader(SH_WAVE);
+		set_float_uniform(UNI_TIME, totalticks() * 0.05f);
+		set_vec2_uniform(UNI_WAVE, B_XY(game_state.sequence.time * 0.00075f, 20.f));
+		const GLfloat t = SDL_min((GLfloat)game_state.sequence.time, 100.f) / 100.f;
+		batch_color(B_RGB(glm_lerp(255.f, 50.f, t), glm_lerp(255.f, 80.f, t), glm_lerp(255.f, 200.f, t)));
+		batch_surface(game_surface);
+		set_shader(SH_MAIN);
+	} else
+		batch_surface(game_surface);
+
+	draw_hud();
 	draw_chat_hist();
 	draw_chat_message();
 

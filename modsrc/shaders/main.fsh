@@ -11,12 +11,12 @@ uniform float u_stencil;
 
 void main() {
 	vec4 sample = texture(u_texture, v_uv);
-	if (u_alpha_test > 0.0) {
+	if (u_alpha_test > 0.) {
 		if (sample.a < u_alpha_test)
 			discard;
-		sample.a = 1.0;
+		sample.a = 1.;
 	}
 
-	o_color.rgb = v_color.rgb * mix(sample.rgb, vec3(1.0), u_stencil);
+	o_color.rgb = v_color.rgb * mix(sample.rgb, vec3(1.), u_stencil);
 	o_color.a = v_color.a * sample.a;
 }

@@ -71,12 +71,28 @@ typedef struct {
 	GLfloat uv[2];
 } Vertex;
 
+typedef uint8_t ShaderType;
+enum {
+	SH_MAIN,
+	SH_WAVE,
+	SH_SIZE,
+};
+
+typedef uint8_t UniformType;
+enum {
+	UNI_MVP,
+	UNI_TEXTURE,
+	UNI_ALPHA_TEST,
+	UNI_STENCIL,
+	UNI_WAVE,
+	UNI_TIME,
+	UNI_SIZE,
+};
+
 typedef struct {
-	GLint mvp;
-	GLint texture;
-	GLint alpha_test;
-	GLint stencil;
-} Uniforms;
+	const char* name;
+	GLint shader, uniforms[UNI_SIZE];
+} Shader;
 
 typedef struct {
 	char* name;
@@ -187,6 +203,16 @@ void window_stop_text_input();
 
 // Basic
 void clear_color(GLfloat, GLfloat, GLfloat, GLfloat), clear_depth(GLfloat);
+
+// Shaders
+void set_shader(ShaderType);
+
+void set_int_uniform(UniformType, GLint);
+void set_float_uniform(UniformType, GLfloat);
+void set_vec2_uniform(UniformType, const GLfloat[2]);
+void set_vec3_uniform(UniformType, const GLfloat[3]);
+void set_vec4_uniform(UniformType, const GLfloat[4]);
+void set_mat4_uniform(UniformType, const GLfloat[4][4]);
 
 // Textures
 void load_texture(const char*), load_texture_num(const char*, uint32_t);

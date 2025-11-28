@@ -13,8 +13,13 @@ static SDL_GLContext gpu = NULL;
 
 static int window_width = SCREEN_WIDTH, window_height = SCREEN_HEIGHT;
 
-static GLuint shader = 0;
-static Uniforms uniforms = {-1};
+#define SHD(idx, nm) [idx] = {.name = nm, -1}
+static Shader SHADERS[SH_SIZE] = {
+	SHD(SH_MAIN, "main"),
+	SHD(SH_WAVE, "wave"),
+};
+#undef SHD
+static Shader* cur_shader = NULL;
 
 static GLuint blank_texture = 0;
 static StTinyMap *textures = NULL, *fonts = NULL;
@@ -27,9 +32,6 @@ static mat4 model_matrix = GLM_MAT4_IDENTITY, view_matrix = GLM_MAT4_IDENTITY, p
 
 static StTinyMap* tilemaps = NULL;
 static TileMap* last_tilemap = NULL;
-
-#include "embeds/shaders/fragment.glsl"
-#include "embeds/shaders/vertex.glsl"
 
 VideoState video_state = {0};
 
@@ -110,55 +112,77 @@ bypass:
 	glEnableVertexAttribArray(VATT_UV);
 	glVertexAttribPointer(VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
-	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_glsl, NULL);
-	glCompileShader(vertex_shader);
+	// Shaders
+	for (size_t i = 0; i < SH_SIZE; i++) {
+		Shader* shader = &SHADERS[i];
 
-	GLint success = 0;
-	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		GLchar error[1024];
-		glGetShaderInfoLog(vertex_shader, sizeof(error), NULL, error);
-		FATAL("Vertex shader fail: %s", error);
+		// Vertex
+		const char* vertex_src
+			= SDL_LoadFile(find_data_file(fmt("data/shaders/%s.vsh", shader->name), NULL), NULL);
+		EXPECT(vertex_src, "Failed to read vertex shader for \"%s\": %s", shader->name, SDL_GetError());
+
+		GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertex_shader, 1, &vertex_src, NULL);
+		glCompileShader(vertex_shader);
+
+		GLint success = 0;
+		glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			GLchar error[1024];
+			glGetShaderInfoLog(vertex_shader, sizeof(error), NULL, error);
+			FATAL("Failed to compile vertex shader for \"%s\": %s", shader->name, error);
+		}
+		SDL_free((void*)vertex_src);
+
+		// Fragment
+		const char* fragment_src
+			= SDL_LoadFile(find_data_file(fmt("data/shaders/%s.fsh", shader->name), NULL), NULL);
+		EXPECT(fragment_src, "Failed to read fragment shader for \"%s\": %s", shader->name, SDL_GetError());
+
+		GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragment_shader, 1, &fragment_src, NULL);
+		glCompileShader(fragment_shader);
+
+		glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			GLchar error[1024];
+			glGetShaderInfoLog(fragment_shader, sizeof(error), NULL, error);
+			FATAL("Failed to compile fragment shader for \"%s\": %s", shader->name, error);
+		}
+		SDL_free((void*)fragment_src);
+
+		// Program
+		shader->shader = glCreateProgram();
+		glAttachShader(shader->shader, vertex_shader), glAttachShader(shader->shader, fragment_shader);
+		glBindAttribLocation(shader->shader, VATT_POSITION, "i_position");
+		glBindAttribLocation(shader->shader, VATT_COLOR, "i_color");
+		glBindAttribLocation(shader->shader, VATT_UV, "i_uv");
+		glLinkProgram(shader->shader);
+
+		glGetProgramiv(shader->shader, GL_LINK_STATUS, &success);
+		if (!success) {
+			GLchar error[1024];
+			glGetProgramInfoLog(shader->shader, sizeof(error), NULL, error);
+			FATAL("Failed to link shaders for \"%s\": %s", shader->name, error);
+		}
+
+		glDeleteShader(vertex_shader), glDeleteShader(fragment_shader);
+
+// Uniforms
+#define GET_UNIFORM(idx, name) shader->uniforms[idx] = glGetUniformLocation(shader->shader, name)
+		GET_UNIFORM(UNI_MVP, "u_mvp");
+		GET_UNIFORM(UNI_TEXTURE, "u_texture");
+		GET_UNIFORM(UNI_ALPHA_TEST, "u_alpha_test");
+		GET_UNIFORM(UNI_STENCIL, "u_stencil");
+		GET_UNIFORM(UNI_WAVE, "u_wave");
+		GET_UNIFORM(UNI_TIME, "u_time");
+#undef GET_UNIFORM
 	}
-
-	GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_glsl, NULL);
-	glCompileShader(fragment_shader);
-
-	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		GLchar error[1024];
-		glGetShaderInfoLog(fragment_shader, sizeof(error), NULL, error);
-		FATAL("Fragment shader fail: %s", error);
-	}
-
-	shader = glCreateProgram();
-	glAttachShader(shader, vertex_shader), glAttachShader(shader, fragment_shader);
-	glBindAttribLocation(shader, VATT_POSITION, "i_position");
-	glBindAttribLocation(shader, VATT_COLOR, "i_color");
-	glBindAttribLocation(shader, VATT_UV, "i_uv");
-	glLinkProgram(shader);
-
-	glGetProgramiv(shader, GL_LINK_STATUS, &success);
-	if (!success) {
-		GLchar error[1024];
-		glGetProgramInfoLog(shader, sizeof(error), NULL, error);
-		FATAL("Shader fail:\n%s", error);
-	}
-
-	glDeleteShader(vertex_shader), glDeleteShader(fragment_shader);
-
-	uniforms.mvp = glGetUniformLocation(shader, "u_mvp");
-	uniforms.texture = glGetUniformLocation(shader, "u_texture");
-	uniforms.alpha_test = glGetUniformLocation(shader, "u_alpha_test");
-	uniforms.stencil = glGetUniformLocation(shader, "u_stencil");
 
 	glEnable(GL_BLEND);
 	glEnable(GL_CULL_FACE), glCullFace(GL_FRONT);
-	glUseProgram(shader);
 	glActiveTexture(GL_TEXTURE0);
-	glUniform1i(uniforms.texture, 0);
+	set_shader(SH_MAIN);
 	glDepthFunc(GL_LEQUAL);
 
 	glm_ortho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, -16000, 16000, projection_matrix);
@@ -181,7 +205,8 @@ void video_teardown() {
 	FreeTinyMap(textures), FreeTinyMap(fonts);
 	FreeTinyMap(tilemaps);
 
-	glDeleteProgram(shader);
+	for (size_t i = 0; i < SH_SIZE; i++)
+		glDeleteProgram(SHADERS[i].shader);
 
 	SDL_GL_DestroyContext(gpu);
 	SDL_DestroyWindow(window);
@@ -288,6 +313,45 @@ void clear_color(GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
 /// Clears the current render target's depth buffer.
 void clear_depth(GLfloat depth) {
 	glClearDepthf(depth), glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+// =======
+// SHADERS
+// =======
+
+void set_shader(ShaderType idx) {
+	Shader* new_shader = &SHADERS[idx];
+	if (cur_shader == new_shader)
+		return;
+
+	submit_batch();
+	cur_shader = new_shader;
+	glUseProgram(cur_shader->shader);
+	set_int_uniform(UNI_TEXTURE, 0);
+}
+
+void set_int_uniform(UniformType idx, GLint x) {
+	glUniform1i(cur_shader->uniforms[idx], x);
+}
+
+void set_float_uniform(UniformType idx, GLfloat x) {
+	glUniform1f(cur_shader->uniforms[idx], x);
+}
+
+void set_vec2_uniform(UniformType idx, const GLfloat x[2]) {
+	glUniform2fv(cur_shader->uniforms[idx], 1, x);
+}
+
+void set_vec3_uniform(UniformType idx, const GLfloat x[3]) {
+	glUniform3fv(cur_shader->uniforms[idx], 1, x);
+}
+
+void set_vec4_uniform(UniformType idx, const GLfloat x[4]) {
+	glUniform4fv(cur_shader->uniforms[idx], 1, x);
+}
+
+void set_mat4_uniform(UniformType idx, const GLfloat x[4][4]) {
+	glUniformMatrix4fv(cur_shader->uniforms[idx], 1, GL_FALSE, (const GLfloat*)x);
 }
 
 // ========
@@ -483,9 +547,9 @@ void submit_batch() {
 	const GLint filter = (batch.filter || CLIENT.video.filter) ? GL_LINEAR : GL_NEAREST;
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-	glUniform1f(uniforms.alpha_test, batch.alpha_test);
-	glUniform4fv(uniforms.stencil, 1, batch.stencil);
-	glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)get_mvp_matrix());
+	set_float_uniform(UNI_ALPHA_TEST, batch.alpha_test);
+	set_vec4_uniform(UNI_STENCIL, batch.stencil);
+	set_mat4_uniform(UNI_MVP, (const GLfloat(*)[4])get_mvp_matrix());
 
 	// Apply blend mode
 	glBlendFuncSeparate(batch.blend[0][0], batch.blend[0][1], batch.blend[1][0], batch.blend[1][1]);
@@ -1177,8 +1241,9 @@ void draw_tilemaps() {
 		return;
 
 	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
-	glUniform1f(uniforms.alpha_test, 0.5f);
-	glUniformMatrix4fv(uniforms.mvp, 1, GL_FALSE, (const GLfloat*)get_mvp_matrix());
+	set_float_uniform(UNI_ALPHA_TEST, 0.5f);
+	set_mat4_uniform(UNI_MVP, (const GLfloat(*)[4])get_mvp_matrix());
+
 	while (tilemap != NULL) {
 		glDepthMask(tilemap->translucent ? GL_FALSE : GL_TRUE);
 		glBindVertexArray(tilemap->vao);

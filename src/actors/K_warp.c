@@ -86,21 +86,6 @@ static void collide(GameActor* actor, GameActor* from) {
 			// !!! CLIENT-SIDE !!!
 			set_view_player(warper);
 			// !!! CLIENT-SIDE !!!
-
-			if (ANY_FLAG(actor, FLG_WARP_SECRET)) {
-				game_state.sequence.type = SEQ_SECRET;
-				game_state.sequence.time = 0L;
-				game_state.sequence.activator = NULLPLAY;
-
-				// !!! CLIENT-SIDE !!!
-				video_state.message = "You found a secret!";
-				video_state.message_time = 0.f;
-				// !!! CLIENT-SIDE !!!
-
-				for (TrackSlots i = 0L; i < (TrackSlots)TS_SIZE; i++)
-					stop_state_track(i);
-				play_state_track(TS_FANFARE, "warp", 0L);
-			}
 		}
 
 		if (ANY_FLAG(actor, FLG_WARP_CALAMITY)) {

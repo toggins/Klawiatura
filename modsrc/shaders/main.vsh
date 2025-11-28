@@ -10,7 +10,7 @@ out vec2 v_uv;
 uniform mat4 u_mvp;
 
 void main() {
-	gl_Position = u_mvp * vec4(i_position, 1.0);
+	gl_Position = u_mvp * vec4(i_position, 1.);
 	v_color = i_color;
 	v_uv = i_uv;
 }

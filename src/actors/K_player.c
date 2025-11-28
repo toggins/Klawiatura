@@ -745,15 +745,26 @@ static void tick(GameActor* actor) {
 
 			++VAL(actor, PLAYER_WARP_STATE);
 			if (VAL(actor, PLAYER_WARP_STATE) > 60L) {
-				if (game_state.sequence.type == SEQ_SECRET) {
-					FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
-					goto skip_physics;
-				} else if (ANY_FLAG(warp, FLG_WARP_EXIT)) {
+				if (ANY_FLAG(warp, FLG_WARP_EXIT)) {
 					win_player(actor);
 					FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
 					goto skip_physics;
 				} else if (VAL(warp, WARP_STRING) != 0L) {
-					game_state.flags |= GF_END;
+					if (ANY_FLAG(warp, FLG_WARP_SECRET)) {
+						game_state.sequence.type = SEQ_SECRET;
+						game_state.sequence.time = 0L;
+
+						// !!! CLIENT-SIDE !!!
+						video_state.message = "You found a secret!";
+						video_state.message_time = 0.f;
+						// !!! CLIENT-SIDE !!!
+
+						for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++)
+							stop_state_track(i);
+						play_state_track(TS_FANFARE, "warp", 0);
+					} else
+						game_state.flags |= GF_END;
+
 					FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
 					goto skip_physics;
 				}
