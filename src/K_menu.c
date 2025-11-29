@@ -597,13 +597,12 @@ static void update_find_lobbies() {
 #undef MAX_LEN
 
 static void update_joining_lobby() {
-	const int status = find_lobby();
-	if (status < 0) {
-		show_error("Failed to join lobby\n%s", net_error());
+	if (net_error()) {
 		play_generic_sound("disconnect");
-	} else if (status > 0) {
-		set_menu(MEN_LOBBY);
+		show_error("Failed to join lobby\n%s", net_error());
+	} else if (is_connected()) {
 		play_generic_sound("connect");
+		set_menu(MEN_LOBBY);
 	}
 }
 

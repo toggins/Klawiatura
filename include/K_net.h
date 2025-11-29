@@ -35,7 +35,6 @@ void host_lobby(const char*), join_lobby(const char*);
 void push_lobby_data(), pull_lobby_data();
 void make_lobby_active();
 
-int find_lobby();
 void list_lobbies();
 int get_lobby_count();
 const NutPunch_LobbyInfo* get_lobby(int);

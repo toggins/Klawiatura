@@ -25,7 +25,6 @@ static enum {
 	NET_JOIN,
 	NET_LIST,
 } netmode = NET_NULL;
-static bool found_lobby = false;
 
 static const char* MAGIC_KEY = "KLAWIATURA";
 static const uint8_t MAGIC_VALUE = 127;
@@ -141,7 +140,6 @@ void disconnect() {
 	NutPunch_Disconnect();
 	SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
 	netmode = NET_NULL;
-	found_lobby = false;
 	if (net_error())
 		WARN("Net error: %s", net_error());
 	update_discord_status(NULL);
@@ -167,12 +165,29 @@ const char* get_lobby_id() {
 	return cur_lobby[0] == '\0' ? NULL : cur_lobby;
 }
 
-static int find_lobby_timeout = 0;
-static void find_lobby_mode(const char* id) {
-	if (id == NULL)
-		SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
-	else
-		SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
+void host_lobby(const char* id) {
+	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
+	NutPunch_Host(cur_lobby, CLIENT.game.players);
+	netmode = NET_HOST;
+	push_user_data();
+
+	np_lobby_set(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
+	const uint32_t party = SDL_rand_bits(); // Generate a better UUID.
+	np_lobby_set("PARTY", sizeof(party), &party);
+	const LobbyVisibility visible = CLIENT.lobby.public ? VIS_PUBLIC : VIS_UNLISTED;
+	np_lobby_set("VISIBLE", sizeof(visible), &visible);
+	push_lobby_data();
+}
+
+void join_lobby(const char* id) {
+	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
+	NutPunch_Join(cur_lobby);
+	netmode = NET_JOIN;
+	push_user_data();
+}
+
+void list_lobbies() {
+	SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
 
 	NutPunch_Filter filter[2] = {0};
 	SDL_memcpy(filter[0].field.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
@@ -180,82 +195,12 @@ static void find_lobby_mode(const char* id) {
 	filter[0].comparison = NPF_Eq;
 
 	SDL_memcpy(filter[1].field.name, "VISIBLE", SDL_strnlen("VISIBLE", NUTPUNCH_FIELD_NAME_MAX));
-	const LobbyVisibility visible = (id == NULL) ? VIS_PUBLIC : VIS_INVALID;
+	const LobbyVisibility visible = VIS_PUBLIC;
 	SDL_memcpy(filter[1].field.value, &visible, sizeof(visible));
-	filter[1].comparison = (id == NULL) ? NPF_Eq : NPF_Greater;
+	filter[1].comparison = NPF_Eq;
 
-	found_lobby = false;
-	find_lobby_timeout = 5 * TICKRATE;
 	NutPunch_FindLobbies(2, filter);
-}
-
-void host_lobby(const char* id) {
-	find_lobby_mode(id);
-	netmode = NET_HOST;
-}
-
-void join_lobby(const char* id) {
-	find_lobby_mode(id);
-	netmode = NET_JOIN;
-}
-
-void list_lobbies() {
-	find_lobby_mode(NULL);
 	netmode = NET_LIST;
-}
-
-int find_lobby() {
-	if (netmode == NET_NULL) {
-		last_error = "Not connected to network";
-		return -1;
-	} else if (netmode == NET_LIST)
-		return 0;
-	else if (found_lobby) {
-		push_user_data();
-		if (netmode == NET_HOST)
-			push_lobby_data();
-		else if (netmode == NET_JOIN)
-			pull_lobby_data();
-		return NutPunch_PeerCount() >= 1;
-	}
-
-	for (int i = 0; i < NutPunch_LobbyCount(); i++) {
-		if (SDL_strcmp(cur_lobby, get_lobby(i)->name))
-			continue;
-		if (netmode == NET_HOST) {
-			last_error = "Lobby with this name exists";
-			return -1;
-		} else if (netmode == NET_JOIN) {
-			NutPunch_Join(cur_lobby);
-			pull_lobby_data();
-			found_lobby = true;
-			return 0;
-		}
-	}
-
-	if (netmode == NET_HOST) {
-		NutPunch_Host(cur_lobby, CLIENT.game.players);
-
-		push_user_data();
-		np_lobby_set(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
-		const uint32_t party = SDL_rand_bits(); // Generate a better UUID.
-		np_lobby_set("PARTY", sizeof(party), &party);
-		const LobbyVisibility visible = CLIENT.lobby.public ? VIS_PUBLIC : VIS_UNLISTED;
-		np_lobby_set("VISIBLE", sizeof(visible), &visible);
-		push_lobby_data();
-
-		found_lobby = true;
-		return 0;
-	} else if (!found_lobby && netmode == NET_JOIN) {
-		if (!NutPunch_LobbyCount() && find_lobby_timeout > 0)
-			find_lobby_timeout--;
-		if (!find_lobby_timeout) {
-			last_error = "Lobby not found";
-			return -1;
-		}
-	}
-
-	return 0;
 }
 
 int get_lobby_count() {
