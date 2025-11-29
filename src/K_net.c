@@ -121,6 +121,8 @@ void net_newframe() {
 	if (NutPunch_Update() == NPS_Error) {
 		last_error = NutPunch_GetLastError();
 		disconnect();
+	} else {
+		last_error = NULL;
 	}
 
 	if (is_connected() && is_client())
