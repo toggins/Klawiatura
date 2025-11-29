@@ -447,13 +447,7 @@ void kill_player(GameActor* actor) {
 
 	Bool all_dead = true;
 	switch (game_state.sequence.type) {
-	default:
-		break;
-
-	case SEQ_NONE:
-	case SEQ_AMBUSH:
-	case SEQ_AMBUSH_END:
-	case SEQ_BOWSER_END: {
+	default: {
 		if (game_state.clock == 0L || (game_state.flags & GF_SINGLE))
 			break;
 
@@ -471,6 +465,11 @@ void kill_player(GameActor* actor) {
 		}
 		break;
 	}
+
+	case SEQ_LOSE:
+	case SEQ_WIN:
+	case SEQ_SECRET:
+		break;
 	}
 	if (all_dead) {
 		FLAG_ON(dead, FLG_PLAYER_DEAD);
@@ -1427,8 +1426,7 @@ static void draw_corpse(const GameActor* actor) {
 	const InterpActor* iactor = get_interp(actor);
 	batch_reset();
 	batch_pos(B_XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y + actor->box.start.y) - 32.f, -1000.f));
-	batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-	batch_string("main", 24, "Jackass");
+	batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM)), batch_string("main", 24, "JACKASS");
 }
 
 const GameActorTable TAB_PLAYER_DEAD = {
