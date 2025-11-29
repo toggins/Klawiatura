@@ -379,7 +379,9 @@ PlayerID populate_game(GekkoSession* session) {
 			gekko_set_local_delay(session, local, CLIENT.input.delay);
 			INFO("You are player %i", local + 1);
 		} else {
-			GekkoNetAddress addr = {.data = &(player_peers[counter]), .size = sizeof(*player_peers)};
+			GekkoNetAddress addr = {0};
+			addr.size = sizeof(*player_peers);
+			addr.data = &player_peers[counter];
 			gekko_add_actor(session, RemotePlayer, &addr);
 		}
 
