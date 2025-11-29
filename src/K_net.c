@@ -372,17 +372,16 @@ PlayerID populate_game(GekkoSession* session) {
 		if (!NutPunch_PeerAlive(i))
 			continue;
 
+		player_peers[counter] = i;
 		if (NutPunch_LocalPeer() == i) {
 			local = counter;
 			gekko_add_actor(session, LocalPlayer, NULL);
 			gekko_set_local_delay(session, local, CLIENT.input.delay);
 			INFO("You are player %i", local + 1);
 		} else {
-			GekkoNetAddress addr = {0};
-			addr.size = sizeof(i), addr.data = SDL_malloc(sizeof(i)); // probably leaks
+			GekkoNetAddress addr = {.data = &(player_peers[counter]), .size = sizeof(*player_peers)};
 			gekko_add_actor(session, RemotePlayer, &addr);
 		}
-		player_peers[counter] = i;
 
 		if (++counter >= num_peers)
 			break;
