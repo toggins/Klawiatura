@@ -262,6 +262,8 @@ void start_video_state() {
 }
 
 void nuke_video_state() {
+	if (video_state.fred_surface != NULL)
+		destroy_surface(video_state.fred_surface);
 	SDL_memset(&video_state, 0, sizeof(video_state));
 	video_state.boss = -48.f;
 }
@@ -973,16 +975,13 @@ Surface* create_surface(GLuint width, GLuint height, bool color, bool depth) {
 	EXPECT(surface, "create_surface fail");
 	SDL_memset(surface, 0, sizeof(*surface));
 
-	glm_mat4_identity(surface->model_matrix);
-	glm_mat4_identity(surface->view_matrix);
+	glm_mat4_identity(surface->model_matrix), glm_mat4_identity(surface->view_matrix);
 	glm_ortho(0, (float)width, 0, (float)height, -16000, 16000, surface->projection_matrix);
 	glm_mat4_mul(surface->view_matrix, surface->model_matrix, surface->mvp_matrix);
 	glm_mat4_mul(surface->projection_matrix, surface->mvp_matrix, surface->mvp_matrix);
 
-	surface->enabled[SURF_COLOR] = color;
-	surface->enabled[SURF_DEPTH] = depth;
-	surface->size[0] = SDL_max(width, 1);
-	surface->size[1] = SDL_max(height, 1);
+	surface->enabled[SURF_COLOR] = color, surface->enabled[SURF_DEPTH] = depth;
+	surface->size[0] = SDL_max(width, 1), surface->size[1] = SDL_max(height, 1);
 
 	return surface;
 }

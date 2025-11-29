@@ -1,5 +1,5 @@
 
-#include "K_string.h"
+#include "K_tick.h"
 
 #include "actors/K_autoscroll.h"
 #include "actors/K_enemies.h"
@@ -1543,9 +1543,12 @@ const GameActorTable TAB_KEVIN = {
 // ====
 
 static void load_fred() {
-	load_texture_num("enemies/fred/%u", 175L);
+	load_texture("enemies/fred");
 
 	load_actor(ACT_EXPLODE);
+
+	if (video_state.fred_surface == NULL)
+		video_state.fred_surface = create_surface(86L, 86L, true, false);
 }
 
 static void create_fred(GameActor* actor) {
@@ -1595,11 +1598,32 @@ static void tick_fred(GameActor* actor) {
 }
 
 static void draw_fred(const GameActor* actor) {
+	push_surface(video_state.fred_surface);
+	clear_color(0.f, 0.f, 0.f, 0.f);
+
+	mat4 view = GLM_MAT4_IDENTITY_INIT, proj = GLM_MAT4_IDENTITY_INIT;
+	glm_lookat(B_XYZ(-198.f, 0.f, -98.f), B_ORIGIN, GLM_ZUP, view);
+	glm_perspective(0.78539816339f, 1.f, 0.f, 1000.f, proj);
+	set_view_matrix(view), set_projection_matrix(proj), apply_matrices();
+
 	batch_reset();
+	batch_angle(totalticks() * 0.03590391604f), batch_sprite("enemies/fred");
+
+	pop_surface();
+
 	const InterpActor* iactor = get_interp(actor);
-	batch_pos(B_XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)));
-	batch_offset(B_XY(43.f, 43.f)), batch_color(B_ALPHA(FtInt(VAL(actor, FRED_ALPHA))));
-	batch_sprite(fmt("enemies/fred/%u", game_state.time % 175L));
+	const GLfloat ax = FtInt(iactor->pos.x), ay = FtInt(iactor->pos.y), az = FtFloat(actor->depth);
+	GLubyte col[4] = {255L, 255L, 255L, FtInt(VAL(actor, FRED_ALPHA))};
+
+	batch_reset();
+	batch_pos(B_XYZ(ax, ay, az)), batch_offset(B_XY(43.f, 43.f)), batch_color(col);
+	batch_surface(video_state.fred_surface);
+
+	col[0] = col[1] = col[2] = 0L, batch_color(col);
+	batch_rectangle(NULL, B_XY(86.f, 1.f));
+	batch_rectangle(NULL, B_XY(1.f, 86.f));
+	batch_pos(B_XYZ(ax, ay + 85.f, az)), batch_rectangle(NULL, B_XY(86.f, 1.f));
+	batch_pos(B_XYZ(ax + 85.f, ay, az)), batch_rectangle(NULL, B_XY(1.f, 86.f));
 }
 
 static void collide_fred(GameActor* actor, GameActor* from) {
