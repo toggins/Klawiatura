@@ -446,7 +446,22 @@ void kill_player(GameActor* actor) {
 	}
 
 	Bool all_dead = true;
-	if (game_state.sequence.type == SEQ_NONE && game_state.clock != 0L && !(game_state.flags & GF_SINGLE))
+	switch (game_state.sequence.type) {
+	default:
+		break;
+
+	case SEQ_NONE:
+	case SEQ_AMBUSH:
+	case SEQ_AMBUSH_END:
+	case SEQ_BOWSER_END: {
+		if (game_state.clock == 0L || (game_state.flags & GF_SINGLE))
+			break;
+
+		// Check specific warps since these cause players to despawn and spectate the warper.
+		GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
+		if (warp != NULL && (ANY_FLAG(warp, FLG_WARP_EXIT) || VAL(warp, WARP_STRING) != 0L))
+			break;
+
 		for (PlayerID i = 0; i < numplayers(); i++) {
 			GamePlayer* survivor = get_player(i);
 			if (survivor != NULL && (survivor->lives >= 0L || (game_state.flags & GF_HELL))) {
@@ -454,9 +469,14 @@ void kill_player(GameActor* actor) {
 				break;
 			}
 		}
+		break;
+	}
+	}
 	if (all_dead) {
 		FLAG_ON(dead, FLG_PLAYER_DEAD);
-		if (!(game_state.flags & GF_SINGLE) && game_state.sequence.type == SEQ_WIN && rng(100L) == 0L)
+		if (!(game_state.flags & GF_SINGLE)
+			&& (game_state.sequence.type == SEQ_WIN || game_state.sequence.type == SEQ_SECRET)
+			&& rng(100L) == 0L)
 			FLAG_ON(dead, FLG_PLAYER_JACKASS);
 
 		game_state.sequence.type = SEQ_LOSE;
