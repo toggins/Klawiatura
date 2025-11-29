@@ -33,6 +33,8 @@ static void load() {
 static void create(GameActor* actor) {
 	actor->box.end.x = actor->box.end.y = FfInt(32L);
 	actor->depth = FfInt(20L);
+
+	VAL(actor, LAVA_Y) = actor->pos.y;
 }
 
 static void tick(GameActor* actor) {
@@ -52,10 +54,11 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	if (Fcos(VAL(actor, LAVA_WAVE_ANGLE)) < FxZero) {
-		const GLfloat y = FtInt(actor->pos.y) + 16.f;
-		batch_reset(), batch_pos(B_XYZ(FtInt(actor->pos.x), y, FtFloat(actor->depth)));
-		batch_rectangle("tiles/lava", B_XY(32.f, (FtInt(VAL(actor, LAVA_Y)) + 33.f) - y));
+	const InterpActor* iactor = get_interp(actor);
+	if (iactor->pos.y != VAL(actor, LAVA_Y)) {
+		batch_reset();
+		batch_pos(B_XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y) + 16.f, FtFloat(actor->depth)));
+		batch_rectangle("tiles/lava", B_XY(32.f, 48.f));
 	}
 
 	const char* tex = fmt("enemies/lava%u", (int)((float)game_state.time / 9.090909090909091f) % 8L);
@@ -98,7 +101,6 @@ static void collide(GameActor* actor, GameActor* from) {
 	case ACT_BOWSER_LAVA: {
 		if (ANY_FLAG(actor, FLG_LAVA_WAVE))
 			break;
-		VAL(actor, LAVA_Y) = actor->pos.y;
 		VAL(actor, LAVA_WAVE_LENGTH) = VAL(from, KUPPA_LAVER);
 		VAL(from, KUPPA_LAVER) -= FfInt(4L);
 		FLAG_ON(actor, FLG_LAVA_WAVE);

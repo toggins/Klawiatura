@@ -453,6 +453,9 @@ static void load_corpse() {
 }
 
 static void create_corpse(GameActor* actor) {
+	actor->box.start.x = FfInt(-30L);
+	actor->box.start.y = FfInt(-70L);
+	actor->box.end.x = FfInt(30L);
 	actor->depth = FxOne;
 
 	play_actor_sound(actor, "bowser_dead");
