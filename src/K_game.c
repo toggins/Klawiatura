@@ -368,8 +368,7 @@ bool update_game() {
 					   "Local Checksum: %u\n"
 					   "Remote Checksum: %u\n"
 					   "\nGame state has been dumped to console.",
-					desync.remote_handle + 1,
-					get_peer_name(player_to_peer((PlayerID)desync.remote_handle)), desync.frame,
+					desync.remote_handle + 1, who_is_winner(desync.remote_handle), desync.frame,
 					desync.local_checksum, desync.remote_checksum);
 				goto byebye_game;
 			}
@@ -383,7 +382,7 @@ bool update_game() {
 			case PlayerDisconnected: {
 				struct Disconnected disconnect = event->data.disconnected;
 				show_error("Lost connection to player %i (%s)", disconnect.handle + 1,
-					get_peer_name(player_to_peer((PlayerID)disconnect.handle)));
+					who_is_winner(disconnect.handle));
 				goto byebye_game;
 			}
 

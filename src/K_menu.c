@@ -1016,6 +1016,10 @@ void show_results() {
 	set_menu(MEN_RESULTS);
 }
 
+const char* who_is_winner(int idx) {
+	return (idx < 0 || idx >= (sizeof(winners) / sizeof(*winners))) ? NULL : winners[idx].name;
+}
+
 bool set_menu(MenuType next_menu) {
 	if (next_menu == MEN_EXIT) {
 		permadeath = true;
