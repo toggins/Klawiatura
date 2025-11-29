@@ -111,7 +111,15 @@ static void np_lobby_get_string(const char* name, char dest[NUTPUNCH_FIELD_DATA_
 		SDL_memcpy(dest, str, NUTPUNCH_FIELD_DATA_MAX);
 }
 
+static const char* verb = "join";
+
+const char* net_verb() {
+	return verb;
+}
+
 void net_newframe() {
+	verb = netmode == NET_HOST ? "host" : "join";
+
 	if (is_connected()) {
 		push_user_data();
 		if (is_host())

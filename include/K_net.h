@@ -23,7 +23,7 @@ bool in_public_server();
 // Interface
 void net_newframe();
 bool is_connected();
-const char* net_error();
+const char *net_error(), *net_verb();
 void disconnect();
 
 bool is_host(), is_client();

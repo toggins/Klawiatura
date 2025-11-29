@@ -599,7 +599,7 @@ static void update_find_lobbies() {
 static void update_joining_lobby() {
 	if (net_error()) {
 		play_generic_sound("disconnect");
-		show_error("Failed to join lobby\n%s", net_error());
+		show_error("Failed to %s lobby:\n\n%s", net_verb(), net_error());
 	} else if (is_connected()) {
 		play_generic_sound("connect");
 		set_menu(MEN_LOBBY);
