@@ -231,6 +231,10 @@ static void maybe_reset_lobby_name() {
 
 // Join a Lobby
 static void do_join_fr() {
+	if (CLIENT.lobby.name[0] == '\0') {
+		play_generic_sound("bump");
+		return;
+	}
 	join_lobby(CLIENT.lobby.name);
 	set_menu(MEN_JOINING_LOBBY);
 }
@@ -534,6 +538,7 @@ void menu_init() {
 	load_sound("enter");
 	load_sound("on");
 	load_sound("off");
+	load_sound("bump");
 	load_sound("connect");
 	load_sound("disconnect");
 

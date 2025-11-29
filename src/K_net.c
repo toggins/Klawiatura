@@ -111,15 +111,12 @@ static void np_lobby_get_string(const char* name, char dest[NUTPUNCH_FIELD_DATA_
 		SDL_memcpy(dest, str, NUTPUNCH_FIELD_DATA_MAX);
 }
 
-static const char* verb = "join";
-
+static const char* verb = NULL;
 const char* net_verb() {
 	return verb;
 }
 
 void net_newframe() {
-	verb = netmode == NET_HOST ? "host" : "join";
-
 	if (is_connected()) {
 		push_user_data();
 		if (is_host())
@@ -175,9 +172,10 @@ const char* get_lobby_id() {
 }
 
 void host_lobby(const char* id) {
+
 	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
 	NutPunch_Host(cur_lobby, CLIENT.game.players);
-	netmode = NET_HOST;
+	netmode = NET_HOST, verb = "host";
 	push_user_data();
 
 	np_lobby_set(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
@@ -191,7 +189,7 @@ void host_lobby(const char* id) {
 void join_lobby(const char* id) {
 	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
 	NutPunch_Join(cur_lobby);
-	netmode = NET_JOIN;
+	netmode = NET_JOIN, verb = "join";
 	push_user_data();
 }
 
