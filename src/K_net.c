@@ -13,7 +13,6 @@
 #include "K_discord.h"
 #include "K_game.h"
 #include "K_net.h"
-#include "K_tick.h"
 
 static char hostname[512] = "";
 static const char* last_error = NULL;
