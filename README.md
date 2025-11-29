@@ -33,6 +33,7 @@ You can adjust Klawiatura with these launch options:
 | `-F`, `-fred`         |           | Awakens Fred.                                                                                                                                                                                    |
 | `-a`, `-ip`           | `<ip>`    | IP address of the [NutPuncher](https://github.com/Schwungus/nutpunch) server. (Default: [the public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance)) |
 | `-l`, `-level`        | `<name>`  | Level file to load. Quickstarts the game in singleplayer.                                                                                                                                         |
+| `-S`, `-string`        | `<string>`  | Converts a 16-character string into `int32_t[4]` and closes the application. Only used for debugging and level editing.                                                                                                                                         |
 
 You can add these options to a desktop shortcut:
 
@@ -98,6 +99,14 @@ Listing some of the things we learned the hard way that you should consider:
 
 **This project's source code is public-domain under the terms of [the Unlicense](https://unlicense.org). Refer to [the provided copy](/UNLICENSE) of the license for more info.**
 
-All of the assets belong to Nintendo. This is a free, open-source project not created for any sort of profit. We do not condone any commercial use of this project. ~~Don't go buying Klawiatura NFTs anywhere please.~~
+All of the assets belong to Nintendo. This is a free, open-source project not created for any sort of profit. We do not condone any commercial use of this project.
+
+- [SDL](https://github.com/libsdl-org/SDL), [SDL_image](https://github.com/libsdl-org/SDL_image), [SDL_GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB) © Sam Lantinga ([Zlib License](https://github.com/libsdl-org/SDL_mixer/blob/main/LICENSE.txt))
+- [GLAD](https://github.com/Dav1dde/glad) © David Herberth ([MIT License](https://github.com/Dav1dde/glad/blob/glad2/LICENSE)). Currently used for OpenGL.
+- [cglm](https://github.com/recp/cglm) © Recep Aslantas ([MIT License](https://github.com/recp/cglm/blob/master/LICENSE))
+- [yyjson](https://github.com/ibireme/yyjson) © Yaoyuan Guo ([MIT License](https://github.com/ibireme/yyjson/blob/master/LICENSE))
+- [GekkoNet](https://github.com/HeatXD/GekkoNet) © Jamie Meyer ([BSD-2-Clause License](https://github.com/HeatXD/GekkoNet/blob/main/LICENSE))
+- [FMOD Core](https://www.fmod.com/) © Firelight Technologies Pty Ltd. ([FMOD License](https://www.fmod.com/licensing)) Currently used for audio.
+- [Discord Social SDK](https://discord.com/developers/social-sdk) © Discord
 
 Module music provided by [modarchive.org](https://modarchive.org).
