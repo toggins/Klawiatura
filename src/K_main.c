@@ -24,15 +24,14 @@
 #include "K_os.h"
 #include "K_video.h"
 
-static void cmd_ip(), cmd_level(), cmd_kevin(), cmd_fred(), cmd_string();
+static void cmd_skip_intro(), cmd_ip(), cmd_level(), cmd_kevin(), cmd_fred(), cmd_string(), cmd_host(), cmd_join();
 MAKE_OPTION(data_path, NULL);
 MAKE_OPTION(config_path, NULL);
 MAKE_FLAG(force_shader);
-MAKE_FLAG(skip_intro);
 
 CmdArg CMDLINE[] = {
 	{"-s", "-force_shader", CMD_OPT(force_shader)},
-	{"-i", "-skip_intro",   CMD_OPT(skip_intro)  },
+	{"-i", "-skip_intro",   cmd_skip_intro       },
 	{"-d", "-data",         CMD_OPT(data_path)   },
 	{"-c", "-config",       CMD_OPT(config_path) },
 	{"-K", "-kevin",        cmd_kevin            },
@@ -40,6 +39,8 @@ CmdArg CMDLINE[] = {
 	{"-a", "-ip",           cmd_ip               },
 	{"-l", "-level",        cmd_level            },
 	{"-S", "-string",       cmd_string           },
+	{"-h", "-host",         cmd_host             },
+	{"-j", "-join",         cmd_join             },
 	{NULL, NULL,            NULL                 },
 };
 
@@ -54,6 +55,7 @@ ClientInfo CLIENT = {
 };
 
 bool quickstart = false, permadeath = false;
+static MenuType starting_menu = MEN_INTRO;
 static int realmain();
 
 static void show_disclaimer() {
@@ -94,7 +96,23 @@ static int realmain() {
 		setup_game_context(&ctx, CLIENT.game.level, GF_SINGLE | GF_TRY_HELL);
 		start_game(&ctx);
 	} else {
-		set_menu(skip_intro ? MEN_MAIN : MEN_INTRO);
+		switch (starting_menu) {
+		default:
+			break;
+
+		case MEN_HOST_LOBBY: {
+			host_lobby(CLIENT.lobby.name);
+			starting_menu = MEN_JOINING_LOBBY;
+			break;
+		}
+
+		case MEN_JOIN_LOBBY: {
+			join_lobby(CLIENT.lobby.name);
+			starting_menu = MEN_JOINING_LOBBY;
+			break;
+		}
+		}
+		set_menu(starting_menu);
 	}
 
 	while (!permadeath) {
@@ -156,6 +174,11 @@ teardown:
 	return EXIT_SUCCESS;
 }
 
+static void cmd_skip_intro() {
+	if (starting_menu == MEN_INTRO)
+		starting_menu = MEN_MAIN;
+}
+
 static void cmd_ip() {
 	set_hostname(next_arg());
 }
@@ -190,4 +213,18 @@ static void cmd_string() {
 	encode_actor_string(&out, 0, in);
 
 	FATAL("String \"%s\" encoded to [%i,%i,%i,%i]", in, out.values[0], out.values[1], out.values[2], out.values[3]);
+}
+
+static void cmd_host() {
+	SDL_strlcpy(CLIENT.lobby.name, next_arg(), sizeof(CLIENT.lobby.name));
+	CLIENT.lobby.public = (bool)SDL_strtoul(next_arg(), NULL, 10);
+	CLIENT.game.players = (PlayerID)SDL_strtoul(next_arg(), NULL, 10);
+	SDL_clamp(CLIENT.game.players, 2, MAX_PLAYERS);
+	SDL_strlcpy(CLIENT.game.level, next_arg(), sizeof(CLIENT.game.level));
+	starting_menu = MEN_HOST_LOBBY;
+}
+
+static void cmd_join() {
+	SDL_strlcpy(CLIENT.lobby.name, next_arg(), sizeof(CLIENT.lobby.name));
+	starting_menu = MEN_JOIN_LOBBY;
 }

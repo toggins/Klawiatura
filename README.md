@@ -34,6 +34,8 @@ You can adjust Klawiatura with these launch options:
 | `-a`, `-ip`           | `<ip>`    | IP address of the [NutPuncher](https://github.com/Schwungus/nutpunch) server. (Default: [the public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance)) |
 | `-l`, `-level`        | `<name>`  | Level file to load. Quickstarts the game in singleplayer.                                                                                                                                         |
 | `-S`, `-string`        | `<string>`  | Converts a 16-character string into `int32_t[4]` and closes the application. Only used for debugging and level editing.                                                                                                                                         |
+| `-h`, `-host`        | `<id> <public> <players> <level>`  | Hosts a lobby on launch.                                                                                                                                         |
+| `-j`, `-join`        | `<id>`  | Joins the specified lobby on launch.                                                                                                                                         |
 
 You can add these options to a desktop shortcut:
 
