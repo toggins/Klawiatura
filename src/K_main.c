@@ -101,12 +101,14 @@ static int realmain() {
 			break;
 
 		case MEN_HOST_LOBBY: {
+			set_menu(MEN_MAIN), set_menu(MEN_MULTIPLAYER), set_menu(MEN_HOST_LOBBY);
 			host_lobby(CLIENT.lobby.name);
 			starting_menu = MEN_JOINING_LOBBY;
 			break;
 		}
 
 		case MEN_JOIN_LOBBY: {
+			set_menu(MEN_MAIN), set_menu(MEN_MULTIPLAYER), set_menu(MEN_JOIN_LOBBY);
 			join_lobby(CLIENT.lobby.name);
 			starting_menu = MEN_JOINING_LOBBY;
 			break;
