@@ -89,11 +89,6 @@ static void collide(GameActor* actor, GameActor* from) {
 		}
 
 		if (ANY_FLAG(actor, FLG_WARP_CALAMITY)) {
-			// !!! CLIENT-SIDE !!!
-			video_state.message = "MUSHROOM CALAMITY ACTIVATED!!!";
-			video_state.message_time = 0.f;
-			// !!! CLIENT-SIDE !!!
-
 			for (GameActor* act = get_actor(game_state.live_actors); act != NULL;
 				act = get_actor(act->previous))
 			{
@@ -105,9 +100,10 @@ static void collide(GameActor* actor, GameActor* from) {
 				VAL(act, SPROUT) = FfInt(32L);
 				FLAG_OFF(act, FLG_POWERUP_CALAMITY);
 			}
-
-			play_state_sound("clone_dead2");
 			FLAG_OFF(actor, FLG_WARP_CALAMITY);
+
+			hud_message("MUSHROOM CALAMITY ACTIVATED!!!");
+			play_state_sound("clone_dead2");
 		}
 	}
 }

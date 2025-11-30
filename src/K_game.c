@@ -174,6 +174,8 @@ static void draw_chat_message() {
 // GAME
 // ====
 
+static bool rolling_back = false;
+
 /// Initializes a GameContext struct with a clean 1-player preset.
 void setup_game_context(GameContext* ctx, const char* level, GameFlag flags) {
 	SDL_memset(ctx, 0, sizeof(GameContext));
@@ -415,6 +417,8 @@ bool update_game() {
 			}
 
 			case AdvanceEvent: {
+				rolling_back = event->data.adv.rolling_back;
+
 				GameInput inputs[MAX_PLAYERS] = {0};
 				for (PlayerID j = 0; j < num_players; j++)
 					inputs[j] = ((GameInput*)(event->data.adv.inputs))[j];
@@ -604,7 +608,7 @@ static void draw_hud() {
 		actor = get_actor(actor->previous))
 		ACTOR_CALL(actor, draw_hud);
 
-	if (video_state.message != NULL) {
+	if (video_state.message[0] != '\0') {
 		const GLfloat ease = 1.f - (SDL_min(video_state.message_time, 30.f) / 30.f);
 		const GLfloat my = glm_lerp(-24.f, 112.f, 1.f - (ease * ease));
 
@@ -615,7 +619,7 @@ static void draw_hud() {
 
 		video_state.message_time += dt();
 		if (video_state.message_time >= 250.f) {
-			video_state.message = NULL;
+			video_state.message[0] = '\0';
 			video_state.message_time = 0.f;
 		}
 	}
@@ -842,11 +846,18 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 		break;
 
 	case SEQ_AMBUSH: {
-		if (game_state.sequence.time <= 0L) {
-			game_state.sequence.type = SEQ_AMBUSH_END;
+		if (game_state.sequence.time > 0L)
 			break;
+
+		if (num_players > 1L) {
+			GamePlayer* player = get_player(game_state.sequence.activator);
+			if (player != NULL)
+				hud_message(fmt("%s got the last kill!", get_player_name(player->id)));
 		}
+		game_state.sequence.type = SEQ_AMBUSH_END;
+		break;
 	}
+
 	case SEQ_NONE: {
 		if (game_state.clock <= 0L || (game_state.time % 25L) != 0L)
 			break;
@@ -1381,6 +1392,13 @@ level_fail:
 #undef FLOAT_OFFS
 #undef BYTE_OFFS
 
+void hud_message(const char* str) {
+	if (rolling_back)
+		return;
+	SDL_strlcpy(video_state.message, str, sizeof(video_state.message));
+	video_state.message_time = 0.f;
+}
+
 // =======
 // PLAYERS
 // =======
@@ -1525,6 +1543,10 @@ void set_view_player(GamePlayer* player) {
 		lerp_camera(25.f);
 
 	view_player = player->id;
+}
+
+const char* get_player_name(PlayerID pid) {
+	return get_peer_name(player_to_peer(pid));
 }
 
 // ======

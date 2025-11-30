@@ -356,7 +356,10 @@ static void hit_bowser(GameActor* actor, GameActor* from) {
 			game_state.sequence.type = SEQ_BOWSER_END;
 			game_state.sequence.activator = (PlayerID)((player == NULL) ? NULLPLAY : player->id);
 
+			if (numplayers() > 1L && player != NULL)
+				hud_message(fmt("%s has defeated Bowser!", get_player_name(player->id)));
 			stop_state_track(TS_MAIN);
+
 			FLAG_ON(actor, FLG_DESTROY);
 			return;
 		}

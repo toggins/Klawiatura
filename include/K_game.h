@@ -466,6 +466,8 @@ uint32_t check_game_state();
 void dump_game_state();
 void nuke_game_state();
 
+void hud_message(const char*);
+
 // ====
 // CHAT
 // ====
@@ -482,6 +484,8 @@ GameActor *respawn_player(GamePlayer*), *nearest_pawn(const fvec2);
 
 PlayerID localplayer(), viewplayer(), numplayers();
 void set_view_player(GamePlayer*);
+
+const char* get_player_name(PlayerID);
 
 // ======
 // ACTORS

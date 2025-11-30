@@ -1,4 +1,5 @@
 
+#include "K_string.h"
 #include "K_tick.h"
 
 #include "actors/K_autoscroll.h"
@@ -443,6 +444,9 @@ void kill_player(GameActor* actor) {
 			FLAG_ON(kevin, FLG_DESTROY);
 		}
 		player->kevin.actor = NULLACT;
+
+		if (numplayers() > 1L && player->lives < 0L)
+			hud_message(fmt("%s is out of lives!", get_player_name(player->id)));
 	}
 
 	Bool all_dead = true;
@@ -773,11 +777,8 @@ static void tick(GameActor* actor) {
 						game_state.sequence.type = SEQ_SECRET;
 						game_state.sequence.time = 0L;
 
-						// !!! CLIENT-SIDE !!!
-						video_state.message = "You found a secret!";
-						video_state.message_time = 0.f;
-						// !!! CLIENT-SIDE !!!
-
+						hud_message(fmt("%s found a secret!",
+							(numplayers() <= 1L) ? "You" : get_player_name(player->id)));
 						for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++)
 							stop_state_track(i);
 						play_state_track(TS_FANFARE, "warp", 0);
@@ -1242,7 +1243,7 @@ static void draw(const GameActor* actor) {
 	// !!! CLIENT-SIDE !!!
 	if (viewplayer() == player->id)
 		return;
-	const char* name = get_peer_name(player_to_peer(player->id));
+	const char* name = get_player_name(player->id);
 	if (name == NULL)
 		return;
 	const InterpActor* iactor = get_interp(actor);
