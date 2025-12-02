@@ -4,11 +4,15 @@
 #include "K_log.h"
 
 #define S_TRUCTURES_IMPLEMENTATION
+#define S_TRUCTURES_NOSTD
+
 #define StAlloc SDL_malloc
 #define StFree SDL_free
 #define StMemset SDL_memset
 #define StMemcpy SDL_memcpy
-#define StLog FATAL
+#define StLog WARN
+#define StDie() handle_fatal(__FILE__, __LINE__, __func__, "Out of memory!!!")
+
 #include <S_tructures.h>
 
 #define FIX_IMPLEMENTATION
