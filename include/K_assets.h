@@ -1,6 +1,13 @@
 #pragma once
 
+#include <S_tructures.h>
+
 #include "K_memory.h" // IWYU pragma: keep
+
+typedef struct {
+	const char* name;
+	bool transient;
+} AssetBase;
 
 #define ASSET_HEAD(M, T, A)                                                                                            \
 	void load_##A(const char*, bool);                                                                              \
@@ -18,21 +25,8 @@
 	}                                                                                                              \
                                                                                                                        \
 	void clear_##M() {                                                                                             \
-		StTinyMap* M##_new = NewTinyMap();                                                                     \
-                                                                                                                       \
-		StTinyMapIter it = StMapIter(M);                                                                       \
-		while (StMapNext(&it)) {                                                                               \
-			StTinyBucket* bucket = it.at;                                                                  \
-                                                                                                                       \
-			T* asset = bucket->data;                                                                       \
-			if (!asset->transient)                                                                         \
-				continue;                                                                              \
-			StMapPut(M##_new, bucket->key, asset, bucket->size)->cleanup = nuke_##A;                       \
-			bucket->cleanup = NULL;                                                                        \
-		}                                                                                                      \
-                                                                                                                       \
-		FreeTinyMap(M);                                                                                        \
-		M = M##_new;                                                                                           \
+		clear_asset_map_PRO(&M, nuke_##A);                                                                     \
 	}
 
+void clear_asset_map_PRO(StTinyMap** target, void (*nuke)(void*));
 void clear_assets();
