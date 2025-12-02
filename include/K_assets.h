@@ -1,6 +1,6 @@
 #pragma once
 
-#include <S_tructures.h>
+#include "K_memory.h" // IWYU pragma: keep
 
 #define ASSET_HEAD(M, T, A)                                                                                            \
 	void load_##A(const char*, bool);                                                                              \
