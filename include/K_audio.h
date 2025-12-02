@@ -4,6 +4,8 @@
 
 #include <fmod.h>
 
+#include "K_assets.h"
+
 #define MAX_SOUNDS 16
 
 typedef struct {
@@ -79,13 +81,8 @@ void nuke_audio_state();
 void pause_audio_state(bool);
 
 // Assets
-void clear_sounds();
-void load_sound(const char*, bool);
-const Sound* get_sound(const char*);
-
-void clear_tracks();
-void load_track(const char*, bool);
-const Track* get_track(const char*);
+ASSET_HEAD(sounds, Sound, sound);
+ASSET_HEAD(tracks, Track, track);
 
 // Generic Sounds
 void play_generic_sound(const char*);

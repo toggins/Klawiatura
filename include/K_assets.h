@@ -1,25 +1,38 @@
 #pragma once
 
-#define CLEAR_ASSETS_IMPL(m, t, n)                                                                                     \
-	void clear_##m() {                                                                                             \
-		StTinyMap* m##_new = NewTinyMap();                                                                     \
+#include <S_tructures.h>
+
+#define ASSET_HEAD(M, T, A)                                                                                            \
+	void load_##A(const char*, bool);                                                                              \
+	const T* get_##A(const char*);                                                                                 \
+	const T* get_##A##_key(StTinyKey);                                                                             \
+	void clear_##M();
+
+#define ASSET_SRC(M, T, A)                                                                                             \
+	const T* get_##A(const char* name) {                                                                           \
+		return get_##A##_key(StHashStr(name));                                                                 \
+	}                                                                                                              \
                                                                                                                        \
-		StTinyMapIter it = StMapIter(m);                                                                       \
+	const T* get_##A##_key(StTinyKey key) {                                                                        \
+		return StMapGet(M, key);                                                                               \
+	}                                                                                                              \
+                                                                                                                       \
+	void clear_##M() {                                                                                             \
+		StTinyMap* M##_new = NewTinyMap();                                                                     \
+                                                                                                                       \
+		StTinyMapIter it = StMapIter(M);                                                                       \
 		while (StMapNext(&it)) {                                                                               \
 			StTinyBucket* bucket = it.at;                                                                  \
                                                                                                                        \
-			t* asset = bucket->data;                                                                       \
+			T* asset = bucket->data;                                                                       \
 			if (!asset->transient)                                                                         \
 				continue;                                                                              \
-			StMapPut(m##_new, bucket->key, asset, bucket->size)->cleanup = nuke_##n;                       \
+			StMapPut(M##_new, bucket->key, asset, bucket->size)->cleanup = nuke_##A;                       \
 			bucket->cleanup = NULL;                                                                        \
 		}                                                                                                      \
                                                                                                                        \
-		FreeTinyMap(m);                                                                                        \
-		m = m##_new;                                                                                           \
+		FreeTinyMap(M);                                                                                        \
+		M = M##_new;                                                                                           \
 	}
-
-#include "K_audio.h" // IWYU pragma: keep
-#include "K_video.h" // IWYU pragma: keep
 
 void clear_assets();

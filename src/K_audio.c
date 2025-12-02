@@ -1,6 +1,6 @@
 #include <fmod_errors.h>
 
-#include "K_assets.h"
+#include "K_audio.h"
 #include "K_cmd.h"
 #include "K_file.h"
 #include "K_game.h"
@@ -207,7 +207,7 @@ static void nuke_sound(void* ptr) {
 	SDL_free(sound->name);
 }
 
-CLEAR_ASSETS_IMPL(sounds, Sound, sound);
+ASSET_SRC(sounds, Sound, sound);
 
 void load_sound(const char* name, bool transient) {
 	if (!name || !*name || get_sound(name))
@@ -230,17 +230,13 @@ void load_sound(const char* name, bool transient) {
 	StMapPut(sounds, StHashStr(name), &sound, sizeof(sound))->cleanup = nuke_sound;
 }
 
-const Sound* get_sound(const char* name) {
-	return StMapGet(sounds, StHashStr(name));
-}
-
 static void nuke_track(void* ptr) {
 	Track* track = ptr;
 	FMOD_Sound_Release(track->stream);
 	SDL_free(track->name);
 }
 
-CLEAR_ASSETS_IMPL(tracks, Track, track);
+ASSET_SRC(tracks, Track, track);
 
 void load_track(const char* name, bool transient) {
 	if (!name || !*name || get_track(name))
@@ -278,10 +274,6 @@ void load_track(const char* name, bool transient) {
 	}
 
 	StMapPut(tracks, StHashStr(name), &track, sizeof(track))->cleanup = nuke_track;
-}
-
-const Track* get_track(const char* name) {
-	return StMapGet(tracks, StHashStr(name));
 }
 
 // ==============

@@ -7,6 +7,7 @@
 #include "K_log.h"
 #include "K_memory.h" // IWYU pragma: keep
 #include "K_string.h"
+#include "K_video.h"
 
 SDL_Window* window = NULL;
 static SDL_GLContext gpu = NULL;
@@ -357,7 +358,7 @@ void set_mat4_uniform(UniformType idx, const GLfloat x[4][4]) {
 }
 
 // ========
-// TEXTURES
+// ASSETS
 // ========
 
 static void nuke_texture(void* ptr) {
@@ -366,7 +367,7 @@ static void nuke_texture(void* ptr) {
 	glDeleteTextures(1, &texture->texture);
 }
 
-CLEAR_ASSETS_IMPL(textures, Texture, texture);
+ASSET_SRC(textures, Texture, texture);
 
 void load_texture(const char* name, bool transient) {
 	if (!name || !*name || get_texture(name))
@@ -435,20 +436,12 @@ void load_texture_num(const char* pattern, uint32_t n, bool transient) {
 	}
 }
 
-const Texture* get_texture(const char* name) {
-	return StMapGet(textures, StHashStr(name));
-}
-
-// =====
-// FONTS
-// =====
-
 static void nuke_font(void* ptr) {
 	Font* font = ptr;
 	SDL_free(font->name);
 }
 
-CLEAR_ASSETS_IMPL(fonts, Font, font);
+ASSET_SRC(fonts, Font, font);
 
 void load_font(const char* name, bool transient) {
 	if (name == NULL || get_font(name) != NULL)
@@ -543,10 +536,6 @@ eatadick:
 	yyjson_doc_free(json);
 
 	StMapPut(fonts, StHashStr(name), &font, sizeof(font))->cleanup = nuke_font;
-}
-
-const Font* get_font(const char* name) {
-	return StMapGet(fonts, StHashStr(name));
 }
 
 // =====

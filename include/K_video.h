@@ -220,13 +220,10 @@ void set_vec4_uniform(UniformType, const GLfloat[4]);
 void set_mat4_uniform(UniformType, const GLfloat[4][4]);
 
 // Assets
-void clear_textures();
-void load_texture(const char*, bool), load_texture_num(const char*, uint32_t, bool);
-const Texture* get_texture(const char*);
+ASSET_HEAD(textures, Texture, texture);
+void load_texture_num(const char*, uint32_t, bool);
 
-void clear_fonts();
-void load_font(const char*, bool);
-const Font* get_font(const char*);
+ASSET_HEAD(fonts, Font, font);
 
 // Batch
 void batch_pos(const GLfloat[3]), batch_offset(const GLfloat[3]), batch_scale(const GLfloat[2]),
