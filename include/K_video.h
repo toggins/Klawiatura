@@ -109,7 +109,7 @@ typedef struct {
 typedef struct {
 	AssetBase base;
 
-	GLuint texture;
+	StTinyKey texture_key;
 	GLfloat height, spacing;
 	Glyph glyphs[CHAR_MAX + 1];
 } Font;
@@ -143,7 +143,7 @@ typedef struct {
 
 typedef struct TileMap {
 	struct TileMap* next;
-	const Texture* texture;
+	StTinyKey texture_key;
 	bool translucent;
 
 	GLuint vao, vbo;

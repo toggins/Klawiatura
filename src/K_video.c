@@ -486,7 +486,7 @@ void load_font(const char* name, bool transient) {
 
 	font.base.name = SDL_strdup(name);
 	font.base.transient = transient;
-	font.texture = tex->texture;
+	font.texture_key = tkey;
 	font.height = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "height"));
 	font.spacing = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "spacing"));
 
@@ -865,7 +865,8 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 	if (font == NULL || str == NULL)
 		return;
 
-	batch_texture(font->texture);
+	const Texture* texture = get_texture_key(font->texture_key);
+	batch_texture((texture == NULL) ? blank_texture : texture->texture);
 
 	// Origin
 	GLfloat ox = batch.pos[0] + (batch.offset[0] * batch.scale[0]);
@@ -1143,11 +1144,9 @@ static TileMap* fetch_tilemap(const char* name) {
 	TileMap tilemap = {0};
 
 	tilemap.next = last_tilemap;
-	if (name == NULL)
-		tilemap.texture = NULL;
-	else {
+	if (name != NULL) {
 		load_texture(name, false);
-		tilemap.texture = get_texture(name);
+		tilemap.texture_key = key;
 	}
 	tilemap.translucent = false;
 
@@ -1203,7 +1202,7 @@ static void tile_vertex(TileMap* tilemap, const GLfloat pos[3], const GLubyte co
 
 void tile_sprite(const char* name, const GLfloat pos[3], const GLfloat scale[2], const GLubyte color[4]) {
 	TileMap* tilemap = fetch_tilemap(name);
-	const Texture* texture = tilemap->texture;
+	const Texture* texture = get_texture_key(tilemap->texture_key);
 	if (texture == NULL)
 		return;
 
@@ -1226,7 +1225,7 @@ void tile_sprite(const char* name, const GLfloat pos[3], const GLfloat scale[2],
 
 void tile_rectangle(const char* name, const GLfloat rect[2][2], GLfloat z, const GLubyte color[4][4]) {
 	TileMap* tilemap = fetch_tilemap(name);
-	const Texture* texture = tilemap->texture;
+	const Texture* texture = get_texture_key(tilemap->texture_key);
 	const GLfloat u = (texture != NULL) ? ((rect[1][0] - rect[0][0]) / (GLfloat)(texture->size[0])) : 1;
 	const GLfloat v = (texture != NULL) ? ((rect[1][1] - rect[0][1]) / (GLfloat)(texture->size[1])) : 1;
 
@@ -1257,9 +1256,11 @@ void draw_tilemaps() {
 		glBufferSubData(
 			GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(Vertex) * tilemap->vertex_count), tilemap->vertices);
 
-		glBindTexture(GL_TEXTURE_2D, (tilemap->texture == NULL) ? blank_texture : tilemap->texture->texture);
+		const Texture* texture = get_texture_key(tilemap->texture_key);
+		glBindTexture(GL_TEXTURE_2D, (texture == NULL) ? blank_texture : texture->texture);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 		glDrawArrays(GL_TRIANGLES, 0, (GLsizei)tilemap->vertex_count);
 
 		tilemap = tilemap->next;
