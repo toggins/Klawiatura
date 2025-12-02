@@ -1,7 +1,5 @@
 #pragma once
 
-#include <S_tructures.h>
-
 #include "K_memory.h" // IWYU pragma: keep
 
 typedef struct {
