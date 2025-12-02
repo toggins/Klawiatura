@@ -18,7 +18,7 @@ static FMOD_CHANNELGROUP *state_sound_group = NULL, *state_music_group = NULL;
 
 AudioState audio_state = {0};
 static FMOD_CHANNEL *sound_channels[MAX_SOUNDS] = {NULL}, *music_channels[TS_SIZE] = {NULL};
-static FMOD_SOUND* generic_track = NULL;
+static StTinyKey generic_track = 0;
 
 static StTinyMap *sounds = NULL, *tracks = NULL;
 
@@ -110,21 +110,23 @@ void start_audio_state() {
 void tick_audio_state() {
 	for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++) {
 		TrackObject* track = &audio_state.tracks[i];
-		if (track->track == NULL)
+		const Track* asset = get_track_key(track->track_key);
+		if (asset == NULL)
 			continue;
 
 		track->offset += 20;
-		if (!(track->flags & PLAY_LOOPING) && track->offset >= track->track->length)
+		if (!(track->flags & PLAY_LOOPING) && track->offset >= asset->length)
 			stop_state_track(i);
 	}
 
 	for (size_t i = 0; i < MAX_SOUNDS; i++) {
 		SoundObject* sound = &audio_state.sounds[i];
-		if (sound->sound == NULL)
+		const Sound* asset = get_sound_key(sound->sound_key);
+		if (asset == NULL)
 			continue;
 
 		sound->offset += 20;
-		if (!(sound->flags & PLAY_LOOPING) && sound->offset >= sound->sound->length)
+		if (!(sound->flags & PLAY_LOOPING) && sound->offset >= asset->length)
 			sound_channels[i] = NULL;
 	}
 }
@@ -138,15 +140,16 @@ void load_audio_state(const AudioState* as) {
 	for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++) {
 		const TrackObject* new_track = &as->tracks[i];
 		TrackObject* old_track = &audio_state.tracks[i];
-		if (old_track->track == new_track->track && old_track->flags == new_track->flags)
+		if (old_track->track_key == new_track->track_key && old_track->flags == new_track->flags)
 			continue;
 
 		stop_state_track(i);
-		if (new_track->track == NULL
-			|| (!(new_track->flags & PLAY_LOOPING) && new_track->offset >= new_track->track->length))
+
+		const Track* new_asset = get_track_key(new_track->track_key);
+		if (new_asset == NULL || (!(new_track->flags & PLAY_LOOPING) && new_track->offset >= new_asset->length))
 			continue;
 
-		FMOD_System_PlaySound(speaker, new_track->track->stream, state_music_group, true, &music_channels[i]);
+		FMOD_System_PlaySound(speaker, new_asset->stream, state_music_group, true, &music_channels[i]);
 		FMOD_Channel_SetMode(music_channels[i],
 			((new_track->flags & PLAY_LOOPING) ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
 		FMOD_Channel_SetMute(music_channels[i], i < as->top_track);
@@ -162,15 +165,16 @@ void load_audio_state(const AudioState* as) {
 	for (size_t i = 0; i < MAX_SOUNDS; i++) {
 		const SoundObject* new_sound = &as->sounds[i];
 		SoundObject* old_sound = &audio_state.sounds[i];
-		if (old_sound->sound == new_sound->sound && old_sound->flags == new_sound->flags)
+		if (old_sound->sound_key == new_sound->sound_key && old_sound->flags == new_sound->flags)
 			continue;
 
 		stop_state_sound(i);
-		if (new_sound->sound == NULL
-			|| (!(new_sound->flags & PLAY_LOOPING) && new_sound->offset >= new_sound->sound->length))
+
+		const Sound* new_asset = get_sound_key(new_sound->sound_key);
+		if (new_asset == NULL || (!(new_sound->flags & PLAY_LOOPING) && new_sound->offset >= new_asset->length))
 			continue;
 
-		FMOD_System_PlaySound(speaker, new_sound->sound->sound, state_sound_group, true, &sound_channels[i]);
+		FMOD_System_PlaySound(speaker, new_asset->sound, state_sound_group, true, &sound_channels[i]);
 		if (new_sound->flags & PLAY_PAN) {
 			FMOD_Channel_SetMode(sound_channels[i], FMOD_3D | FMOD_3D_LINEARROLLOFF);
 			FMOD_Channel_Set3DMinMaxDistance(sound_channels[i], 320, 640);
@@ -291,13 +295,14 @@ void play_generic_sound(const char* name) {
 }
 
 void play_generic_track(const char* name, PlayFlags flags) {
-	const Track* track = get_track(name);
+	const StTinyKey key = StHashStr(name);
+	const Track* track = get_track_key(key);
 	if (track == NULL) {
 		WARN("Unknown track \"%s\"", name);
 		return;
 	}
 
-	if (generic_track == track->stream)
+	if (generic_track == key)
 		return;
 	stop_generic_track();
 
@@ -305,12 +310,12 @@ void play_generic_track(const char* name, PlayFlags flags) {
 	const FMOD_RESULT result = FMOD_System_PlaySound(speaker, track->stream, generic_music_group, true, &channel);
 	FMOD_Channel_SetMode(channel, (flags & PLAY_LOOPING ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
 	FMOD_Channel_SetPaused(channel, false);
-	generic_track = (result == FMOD_OK) ? track->stream : NULL;
+	generic_track = (result == FMOD_OK) ? key : 0;
 }
 
 void stop_generic_track() {
 	FMOD_ChannelGroup_Stop(generic_music_group);
-	generic_track = NULL;
+	generic_track = 0;
 }
 
 // ============
@@ -318,7 +323,8 @@ void stop_generic_track() {
 // ============
 
 void play_state_sound(const char* name) {
-	const Sound* sound = get_sound(name);
+	const StTinyKey key = StHashStr(name);
+	const Sound* sound = get_sound_key(key);
 	if (sound == NULL) {
 		WARN("Unknown sound \"%s\"", name);
 		return;
@@ -326,7 +332,7 @@ void play_state_sound(const char* name) {
 
 	const size_t idx = audio_state.next_sound;
 	SoundObject* sobj = &audio_state.sounds[idx];
-	sobj->sound = sound;
+	sobj->sound_key = key;
 	sobj->offset = 0;
 	sobj->flags = 0;
 
@@ -338,7 +344,8 @@ void play_state_sound(const char* name) {
 }
 
 void play_state_sound_at(const char* name, const float pos[2]) {
-	const Sound* sound = get_sound(name);
+	const StTinyKey key = StHashStr(name);
+	const Sound* sound = get_sound_key(key);
 	if (sound == NULL) {
 		WARN("Unknown sound \"%s\"", name);
 		return;
@@ -346,7 +353,7 @@ void play_state_sound_at(const char* name, const float pos[2]) {
 
 	const size_t idx = audio_state.next_sound;
 	SoundObject* sobj = &audio_state.sounds[idx];
-	sobj->sound = sound;
+	sobj->sound_key = key;
 	sobj->offset = 0;
 
 	sobj->flags = PLAY_PAN;
@@ -365,7 +372,7 @@ void play_state_sound_at(const char* name, const float pos[2]) {
 
 void stop_state_sound(size_t idx) {
 	SoundObject* sound = &audio_state.sounds[idx];
-	sound->sound = NULL;
+	sound->sound_key = 0;
 
 	if (sound_channels[idx] != NULL) {
 		FMOD_Channel_Stop(sound_channels[idx]);
@@ -374,14 +381,15 @@ void stop_state_sound(size_t idx) {
 }
 
 void play_state_track(TrackSlots slot, const char* name, PlayFlags flags) {
-	const Track* track = get_track(name);
+	const StTinyKey key = StHashStr(name);
+	const Track* track = get_track_key(key);
 	if (track == NULL) {
 		WARN("Unknown track \"%s\"", name);
 		return;
 	}
 
 	TrackObject* tobj = &audio_state.tracks[slot];
-	tobj->track = track;
+	tobj->track_key = key;
 	tobj->offset = 0;
 	tobj->flags = flags;
 
@@ -403,7 +411,7 @@ void play_state_track(TrackSlots slot, const char* name, PlayFlags flags) {
 
 void stop_state_track(TrackSlots slot) {
 	TrackObject* track = &audio_state.tracks[slot];
-	track->track = NULL;
+	track->track_key = 0;
 
 	if (music_channels[slot] != NULL) {
 		FMOD_Channel_Stop(music_channels[slot]);

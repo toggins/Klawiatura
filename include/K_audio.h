@@ -39,13 +39,13 @@ enum {
 };
 
 typedef struct {
-	const Track* track;
+	StTinyKey track_key;
 	uint32_t offset;
 	PlayFlags flags;
 } TrackObject;
 
 typedef struct {
-	const Sound* sound;
+	StTinyKey sound_key;
 	uint32_t offset;
 	PlayFlags flags;
 	float pos[2];
