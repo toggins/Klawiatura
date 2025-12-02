@@ -363,7 +363,7 @@ void set_mat4_uniform(UniformType idx, const GLfloat x[4][4]) {
 
 static void nuke_texture(void* ptr) {
 	Texture* texture = ptr;
-	SDL_free(texture->name);
+	SDL_free(texture->base.name);
 	glDeleteTextures(1, &texture->texture);
 }
 
@@ -387,8 +387,8 @@ void load_texture(const char* name, bool transient) {
 		return;
 	}
 
-	texture.name = SDL_strdup(name);
-	texture.transient = transient;
+	texture.base.name = SDL_strdup(name);
+	texture.base.transient = transient;
 	texture.size[0] = surface->w, texture.size[1] = surface->h;
 
 	glGenTextures(1, &(texture.texture));
@@ -438,7 +438,7 @@ void load_texture_num(const char* pattern, uint32_t n, bool transient) {
 
 static void nuke_font(void* ptr) {
 	Font* font = ptr;
-	SDL_free(font->name);
+	SDL_free(font->base.name);
 }
 
 ASSET_SRC(fonts, Font, font);
@@ -473,7 +473,7 @@ void load_font(const char* name, bool transient) {
 	const StTinyKey tkey = StHashStr(tname);
 	Texture* tex = StMapGet(textures, tkey);
 	if (tex != NULL)
-		tex->transient |= transient;
+		tex->base.transient |= transient;
 	else {
 		load_texture(tname, transient);
 		tex = StMapGet(textures, tkey);
@@ -484,8 +484,8 @@ void load_font(const char* name, bool transient) {
 		return;
 	}
 
-	font.name = SDL_strdup(name);
-	font.transient = transient;
+	font.base.name = SDL_strdup(name);
+	font.base.transient = transient;
 	font.texture = tex->texture;
 	font.height = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "height"));
 	font.spacing = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "spacing"));

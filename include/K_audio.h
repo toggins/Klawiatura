@@ -9,16 +9,14 @@
 #define MAX_SOUNDS 16
 
 typedef struct {
-	char* name;
-	bool transient;
+	AssetBase base;
 
 	FMOD_SOUND* sound;
 	uint32_t length;
 } Sound;
 
 typedef struct {
-	char* name;
-	bool transient;
+	AssetBase base;
 
 	FMOD_SOUND* stream;
 	uint32_t length, loop[2];

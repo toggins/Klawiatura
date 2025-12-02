@@ -95,8 +95,7 @@ typedef struct {
 } Shader;
 
 typedef struct {
-	char* name;
-	bool transient;
+	AssetBase base;
 
 	GLuint texture, size[2];
 	GLfloat offset[2];
@@ -108,8 +107,7 @@ typedef struct {
 } Glyph;
 
 typedef struct {
-	char* name;
-	bool transient;
+	AssetBase base;
 
 	GLuint texture;
 	GLfloat height, spacing;

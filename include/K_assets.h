@@ -3,7 +3,7 @@
 #include "K_memory.h" // IWYU pragma: keep
 
 typedef struct {
-	const char* name;
+	char* name;
 	bool transient;
 } AssetBase;
 

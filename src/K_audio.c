@@ -204,7 +204,7 @@ void pause_audio_state(bool pause) {
 static void nuke_sound(void* ptr) {
 	Sound* sound = ptr;
 	FMOD_Sound_Release(sound->sound);
-	SDL_free(sound->name);
+	SDL_free(sound->base.name);
 }
 
 ASSET_SRC(sounds, Sound, sound);
@@ -222,8 +222,8 @@ void load_sound(const char* name, bool transient) {
 	FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESAMPLE, NULL, &data);
 	ASSUME(result == FMOD_OK, "Sound \"%s\" fail: %s", name, FMOD_ErrorString(result));
 
-	sound.name = SDL_strdup(name);
-	sound.transient = transient;
+	sound.base.name = SDL_strdup(name);
+	sound.base.transient = transient;
 	sound.sound = data;
 	FMOD_Sound_GetLength(data, &(sound.length), FMOD_TIMEUNIT_MS);
 
@@ -233,7 +233,7 @@ void load_sound(const char* name, bool transient) {
 static void nuke_track(void* ptr) {
 	Track* track = ptr;
 	FMOD_Sound_Release(track->stream);
-	SDL_free(track->name);
+	SDL_free(track->base.name);
 }
 
 ASSET_SRC(tracks, Track, track);
@@ -251,8 +251,8 @@ void load_track(const char* name, bool transient) {
 	FMOD_RESULT result = FMOD_System_CreateSound(speaker, file, FMOD_CREATESTREAM | FMOD_ACCURATETIME, NULL, &data);
 	ASSUME(result == FMOD_OK, "Track \"%s\" fail: %s", name, FMOD_ErrorString(result));
 
-	track.name = SDL_strdup(name);
-	track.transient = transient;
+	track.base.name = SDL_strdup(name);
+	track.base.transient = transient;
 	track.stream = data;
 	FMOD_Sound_GetLength(data, &(track.length), FMOD_TIMEUNIT_MS);
 
