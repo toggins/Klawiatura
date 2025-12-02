@@ -12,13 +12,13 @@ enum {
 };
 
 static void load() {
-	load_texture_num("markers/pswitch%u", 3L);
-	load_texture("markers/pswitch_flat");
+	load_texture_num("markers/pswitch%u", 3L, false);
+	load_texture("markers/pswitch_flat", false);
 
-	load_sound("toggle");
-	load_sound("starman");
+	load_sound("toggle", false);
+	load_sound("starman", false);
 
-	load_track("pswitch");
+	load_track("pswitch", false);
 
 	load_actor(ACT_PSWITCH_COIN);
 	load_actor(ACT_PSWITCH_BRICK);

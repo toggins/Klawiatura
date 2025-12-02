@@ -6,22 +6,22 @@
 static void load_special(const GameActor* actor) {
 	switch (VAL(actor, PLATFORM_TYPE)) {
 	default:
-		load_texture("markers/platform/big");
+		load_texture("markers/platform/big", false);
 		break;
 	case PLAT_SMALL:
-		load_texture("markers/platform/small");
+		load_texture("markers/platform/small", false);
 		break;
 	case PLAT_CLOUD:
-		load_texture_num("markers/platform/cloud%u", 4L);
+		load_texture_num("markers/platform/cloud%u", 4L, false);
 		break;
 	case PLAT_CASTLE:
-		load_texture("markers/platform/castle");
+		load_texture("markers/platform/castle", false);
 		break;
 	case PLAT_CASTLE_BIG:
-		load_texture("markers/platform/castle_big");
+		load_texture("markers/platform/castle_big", false);
 		break;
 	case PLAT_CASTLE_BUTTON:
-		load_texture("markers/platform/castle_button");
+		load_texture("markers/platform/castle_button", false);
 		break;
 	}
 }

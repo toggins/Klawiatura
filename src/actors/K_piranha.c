@@ -26,12 +26,12 @@ enum {
 // =============
 
 static void load() {
-	load_texture_num("enemies/piranha%u", 2L);
-	load_texture_num("enemies/piranha_red%u", 2L);
-	load_texture_num("enemies/piranha_fire%u", 2L);
+	load_texture_num("enemies/piranha%u", 2L, false);
+	load_texture_num("enemies/piranha_red%u", 2L, false);
+	load_texture_num("enemies/piranha_fire%u", 2L, false);
 
-	load_sound("fire");
-	load_sound("kick");
+	load_sound("fire", false);
+	load_sound("kick", false);
 
 	load_actor(ACT_PIRANHA_FIRE);
 	load_actor(ACT_POINTS);
@@ -176,7 +176,7 @@ const GameActorTable TAB_PIRANHA_PLANT = {
 // ============
 
 static void load_fire() {
-	load_texture("missiles/fireball");
+	load_texture("missiles/fireball", false);
 }
 
 static void create_fire(GameActor* actor) {
@@ -216,10 +216,10 @@ const GameActorTable TAB_PIRANHA_FIRE = {
 // ============
 
 static void load_head() {
-	load_texture_num("enemies/piranha_head%u", 3L);
-	load_texture_num("enemies/piranha_head_fire%u", 3L);
+	load_texture_num("enemies/piranha_head%u", 3L, false);
+	load_texture_num("enemies/piranha_head_fire%u", 3L, false);
 
-	load_sound("fire");
+	load_sound("fire", false);
 
 	load_actor(ACT_PIRANHA_FIRE);
 }

@@ -4,10 +4,10 @@
 
 static void load_special(const GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_WARP_CALAMITY))
-		load_sound("clone_dead2");
+		load_sound("clone_dead2", false);
 
 	if (ANY_FLAG(actor, FLG_WARP_SECRET))
-		load_track("warp");
+		load_track("warp", false);
 }
 
 static void create(GameActor* actor) {

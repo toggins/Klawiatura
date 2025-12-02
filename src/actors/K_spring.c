@@ -9,10 +9,10 @@ enum {
 };
 
 static void load() {
-	load_texture_num("markers/spring%u", 3L);
-	load_texture_num("markers/spring_green%u", 3L);
+	load_texture_num("markers/spring%u", 3L, false);
+	load_texture_num("markers/spring_green%u", 3L, false);
 
-	load_sound("spring");
+	load_sound("spring", false);
 }
 
 static void create(GameActor* actor) {

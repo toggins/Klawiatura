@@ -5,7 +5,7 @@
 // ==========
 
 static void load() {
-	load_texture("markers/platform/tanks");
+	load_texture("markers/platform/tanks", false);
 }
 
 static void create(GameActor* actor) {

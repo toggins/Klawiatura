@@ -14,7 +14,6 @@
 #define FIX_IMPLEMENTATION
 #include <S_fixed.h>
 
-#include "K_audio.h"
 #include "K_cmd.h"
 #include "K_config.h"
 #include "K_discord.h"
@@ -22,7 +21,6 @@
 #include "K_input.h"
 #include "K_menu.h"
 #include "K_os.h"
-#include "K_video.h"
 
 static void cmd_skip_intro(), cmd_ip(), cmd_level(), cmd_kevin(), cmd_fred(), cmd_string(), cmd_host(), cmd_join();
 MAKE_OPTION(data_path, NULL);

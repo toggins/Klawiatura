@@ -33,17 +33,17 @@ void give_points(GameActor* actor, GamePlayer* player, int32_t points) {
 // ======
 
 static void load() {
-	load_texture("ui/points/100");
-	load_texture("ui/points/200");
-	load_texture("ui/points/500");
-	load_texture("ui/points/1000");
-	load_texture("ui/points/2000");
-	load_texture("ui/points/5000");
-	load_texture("ui/points/10000");
-	load_texture("ui/points/1000000");
-	load_texture("ui/points/1up");
+	load_texture("ui/points/100", false);
+	load_texture("ui/points/200", false);
+	load_texture("ui/points/500", false);
+	load_texture("ui/points/1000", false);
+	load_texture("ui/points/2000", false);
+	load_texture("ui/points/5000", false);
+	load_texture("ui/points/10000", false);
+	load_texture("ui/points/1000000", false);
+	load_texture("ui/points/1up", false);
 
-	load_sound("1up");
+	load_sound("1up", false);
 }
 
 static void create(GameActor* actor) {

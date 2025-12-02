@@ -39,10 +39,10 @@ static PlayerID owner(const GameActor* actor) {
 // ========
 
 static void load_fireball() {
-	load_texture("missiles/fireball");
+	load_texture("missiles/fireball", false);
 
-	load_sound("bump");
-	load_sound("kick");
+	load_sound("bump", false);
+	load_sound("kick", false);
 
 	load_actor(ACT_EXPLODE);
 }
@@ -99,11 +99,11 @@ const GameActorTable TAB_MISSILE_FIREBALL = {
 // ========
 
 static void load_beetroot() {
-	load_texture("missiles/beetroot");
+	load_texture("missiles/beetroot", false);
 
-	load_sound("hurt");
-	load_sound("bump");
-	load_sound("kick");
+	load_sound("hurt", false);
+	load_sound("bump", false);
+	load_sound("kick", false);
 
 	load_actor(ACT_EXPLODE);
 	load_actor(ACT_POINTS);
@@ -232,9 +232,9 @@ const GameActorTable TAB_MISSILE_BEETROOT = {
 // ======
 
 static void load_hammer() {
-	load_texture("missiles/hammer");
+	load_texture("missiles/hammer", false);
 
-	load_sound("kick");
+	load_sound("kick", false);
 
 	load_actor(ACT_POINTS);
 }
@@ -282,9 +282,9 @@ const GameActorTable TAB_MISSILE_HAMMER = {
 // =============
 
 static void load_silver() {
-	load_texture("missiles/hammer_silver");
+	load_texture("missiles/hammer_silver", false);
 
-	load_sound("kick");
+	load_sound("kick", false);
 
 	load_actor(ACT_EXPLODE);
 	load_actor(ACT_POINTS);
@@ -361,7 +361,7 @@ const GameActorTable TAB_MISSILE_SILVER_HAMMER = {
 // ======
 
 static void load_napalm() {
-	load_texture_num("missiles/napalm%u", 3L);
+	load_texture_num("missiles/napalm%u", 3L, false);
 }
 
 static void create_napalm(GameActor* actor) {

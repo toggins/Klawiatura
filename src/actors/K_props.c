@@ -19,7 +19,7 @@ static void create(GameActor* actor) {
 // =====
 
 static void load_cloud() {
-	load_texture_num("props/cloud%u", 3L);
+	load_texture_num("props/cloud%u", 3L, false);
 }
 
 static void draw_cloud(const GameActor* actor) {
@@ -46,7 +46,7 @@ const GameActorTable TAB_CLOUD = {.load = load_cloud, .create = create, .draw = 
 // ====
 
 static void load_bush() {
-	load_texture_num("props/bush%u", 3L);
+	load_texture_num("props/bush%u", 3L, false);
 }
 
 static void draw_bush(const GameActor* actor) {
@@ -73,7 +73,7 @@ const GameActorTable TAB_BUSH = {.load = load_bush, .create = create, .draw = dr
 // ================
 
 static void load_face() {
-	load_texture_num("bg/cloud_face%u", 10L);
+	load_texture_num("bg/cloud_face%u", 10L, false);
 }
 
 static void create_face(GameActor* actor) {
@@ -164,7 +164,7 @@ const GameActorTable TAB_CLOUD_FACE = {.load = load_face, .create = create_face,
 // =============
 
 static void load_clouds() {
-	load_texture("bg/clouds");
+	load_texture("bg/clouds", false);
 }
 
 static void draw_clouds(const GameActor* actor) {
@@ -182,7 +182,7 @@ const GameActorTable TAB_CLOUDS = {.load = load_clouds, .draw = draw_clouds};
 // ==========
 
 static void load_lamp_light() {
-	load_texture_num("effects/lamp_light%u", 4L);
+	load_texture_num("effects/lamp_light%u", 4L, false);
 }
 
 static void draw_lamp_light(const GameActor* actor) {
@@ -243,7 +243,7 @@ const GameActorTable TAB_BUBBLE_TUBE = {.load = load_tube, .create = create_tube
 // =========
 
 static void load_waterfall() {
-	load_texture_num("bg/waterfall%u", 4L);
+	load_texture_num("bg/waterfall%u", 4L, false);
 }
 
 static void draw_waterfall(const GameActor* actor) {
@@ -259,7 +259,7 @@ const GameActorTable TAB_WATERFALL = {.load = load_waterfall, .create = create, 
 // ========
 
 static void load_lavafall() {
-	load_texture_num("bg/lavafall%u", 6L);
+	load_texture_num("bg/lavafall%u", 6L, false);
 }
 
 static void draw_lavafall(const GameActor* actor) {

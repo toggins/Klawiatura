@@ -202,13 +202,18 @@ void pause_audio_state(bool pause) {
 // ASSETS
 // ======
 
+void clear_sounds() {
+	FreeTinyMap(sounds);
+	sounds = NewTinyMap();
+}
+
 static void nuke_sound(void* ptr) {
 	Sound* sound = ptr;
 	FMOD_Sound_Release(sound->sound);
 	SDL_free(sound->name);
 }
 
-void load_sound(const char* name) {
+void load_sound(const char* name, bool transient) {
 	if (!name || !*name || get_sound(name))
 		return;
 
@@ -222,6 +227,7 @@ void load_sound(const char* name) {
 	ASSUME(result == FMOD_OK, "Sound \"%s\" fail: %s", name, FMOD_ErrorString(result));
 
 	sound.name = SDL_strdup(name);
+	sound.transient = transient;
 	sound.sound = data;
 	FMOD_Sound_GetLength(data, &(sound.length), FMOD_TIMEUNIT_MS);
 
@@ -232,13 +238,18 @@ const Sound* get_sound(const char* name) {
 	return StMapGet(sounds, StHashStr(name));
 }
 
+void clear_tracks() {
+	FreeTinyMap(tracks);
+	tracks = NewTinyMap();
+}
+
 static void nuke_track(void* ptr) {
 	Track* track = ptr;
 	FMOD_Sound_Release(track->stream);
 	SDL_free(track->name);
 }
 
-void load_track(const char* name) {
+void load_track(const char* name, bool transient) {
 	if (!name || !*name || get_track(name))
 		return;
 
@@ -252,6 +263,7 @@ void load_track(const char* name) {
 	ASSUME(result == FMOD_OK, "Track \"%s\" fail: %s", name, FMOD_ErrorString(result));
 
 	track.name = SDL_strdup(name);
+	track.transient = transient;
 	track.stream = data;
 	FMOD_Sound_GetLength(data, &(track.length), FMOD_TIMEUNIT_MS);
 

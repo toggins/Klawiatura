@@ -7,10 +7,10 @@
 // =====
 
 static void load() {
-	load_texture_num("enemies/spiny%u", 2L);
-	load_texture_num("enemies/spiny_gray%u", 2L);
+	load_texture_num("enemies/spiny%u", 2L, false);
+	load_texture_num("enemies/spiny_gray%u", 2L, false);
 
-	load_sound("kick");
+	load_sound("kick", false);
 
 	load_actor(ACT_POINTS);
 }
@@ -111,10 +111,10 @@ const GameActorTable TAB_SPINY = {
 // =========
 
 static void load_egg() {
-	load_texture_num("enemies/spiny_egg%u", 6L);
-	load_texture("enemies/spiny_egg_green");
+	load_texture_num("enemies/spiny_egg%u", 6L, false);
+	load_texture("enemies/spiny_egg_green", false);
 
-	load_sound("kick");
+	load_sound("kick", false);
 
 	load_actor(ACT_SPINY);
 	load_actor(ACT_POINTS);

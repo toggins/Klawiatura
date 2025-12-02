@@ -69,13 +69,13 @@ static int last_secret = -1;
 
 static void load_secrets() {
 	for (SecretType i = 0; i < SECR_SIZE; i++) {
-		load_sound(SECRETS[i].sound);
-		load_track(SECRETS[i].track);
+		load_sound(SECRETS[i].sound, false);
+		load_track(SECRETS[i].track, true);
 	}
 
-	load_sound("type");
-	load_sound("thwomp");
-	load_track("it_makes_me_burn");
+	load_sound("type", false);
+	load_sound("thwomp", false);
+	load_track("it_makes_me_burn", true);
 }
 
 static void update_menu_track();
@@ -524,29 +524,31 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	},
 };
 
-void menu_init() {
-	load_texture("ui/disclaimer");
-	load_texture("ui/background");
-	load_texture("ui/shortcut");
+void load_menu() {
+	load_texture("ui/disclaimer", false);
+	load_texture("ui/background", false);
+	load_texture("ui/shortcut", false);
 
-	load_font("main");
-	load_font("hud");
+	load_font("main", true);
 
-	load_sound("switch");
-	load_sound("select");
-	load_sound("toggle");
-	load_sound("enter");
-	load_sound("on");
-	load_sound("off");
-	load_sound("bump");
-	load_sound("connect");
-	load_sound("disconnect");
+	load_sound("switch", false);
+	load_sound("select", true);
+	load_sound("toggle", false);
+	load_sound("enter", true);
+	load_sound("on", false);
+	load_sound("off", false);
+	load_sound("bump", false);
+	load_sound("connect", false);
+	load_sound("disconnect", true);
 
-	load_track("title");
-	load_track("yi_score");
+	load_track("title", true);
+	load_track("yi_score", true);
 
 	load_secrets();
+}
 
+void menu_init() {
+	load_menu();
 	update_discord_status(NULL);
 	from_scratch();
 }

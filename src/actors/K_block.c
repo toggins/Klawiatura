@@ -154,10 +154,10 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 // ==========
 
 static void load() {
-	load_texture_num("items/block%u", 3L);
-	load_texture("items/empty");
+	load_texture_num("items/block%u", 3L, false);
+	load_texture("items/empty", false);
 
-	load_sound("sprout");
+	load_sound("sprout", false);
 }
 
 static void load_special(const GameActor* actor) {
@@ -320,11 +320,11 @@ const GameActorTable TAB_HIDDEN_BLOCK = {
 // ===========
 
 static void load_brick() {
-	load_texture("items/brick");
-	load_texture("items/brick_gray");
+	load_texture("items/brick", false);
+	load_texture("items/brick_gray", false);
 
-	load_sound("bump");
-	load_sound("break");
+	load_sound("bump", false);
+	load_sound("break", false);
 
 	load_actor(ACT_BRICK_SHARD);
 }
@@ -388,9 +388,9 @@ const GameActorTable TAB_BRICK_BLOCK = {
 // ==========
 
 static void load_coin_block() {
-	load_texture("items/brick");
-	load_texture("items/brick_gray");
-	load_texture("items/empty");
+	load_texture("items/brick", false);
+	load_texture("items/brick_gray", false);
+	load_texture("items/empty", false);
 }
 
 static void tick_coin_block(GameActor* actor) {
@@ -428,11 +428,11 @@ static Bool note_solid(const GameActor* actor) {
 }
 
 static void load_note() {
-	load_texture_num("items/note%u", 3L);
+	load_texture_num("items/note%u", 3L, false);
 
-	load_sound("bump");
-	load_sound("spring");
-	load_sound("sprout");
+	load_sound("bump", false);
+	load_sound("spring", false);
+	load_sound("sprout", false);
 }
 
 static void draw_note(const GameActor* actor) {

@@ -5,15 +5,15 @@
 #include "actors/K_spiny.h"
 
 static void load() {
-	load_texture_num("enemies/lakitu%u", 10L);
-	load_texture_num("enemies/lakitu_cloud%u", 7L);
-	load_texture_num("enemies/lakitu_throw%u", 11L);
+	load_texture_num("enemies/lakitu%u", 10L, false);
+	load_texture_num("enemies/lakitu_cloud%u", 7L, false);
+	load_texture_num("enemies/lakitu_throw%u", 11L, false);
 
-	load_sound("lakitu");
-	load_sound("lakitu2");
-	load_sound("lakitu3");
-	load_sound("stomp");
-	load_sound("kick");
+	load_sound("lakitu", false);
+	load_sound("lakitu2", false);
+	load_sound("lakitu3", false);
+	load_sound("stomp", false);
+	load_sound("kick", false);
 
 	load_actor(ACT_SPINY_EGG);
 	load_actor(ACT_POINTS);

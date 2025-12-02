@@ -11,10 +11,10 @@ enum {
 // ======
 
 static void load() {
-	load_texture_num("enemies/goomba%u", 2L);
+	load_texture_num("enemies/goomba%u", 2L, false);
 
-	load_sound("stomp");
-	load_sound("kick");
+	load_sound("stomp", false);
+	load_sound("kick", false);
 
 	load_actor(ACT_GOOMBA_FLAT);
 	load_actor(ACT_POINTS);
@@ -112,7 +112,7 @@ const GameActorTable TAB_GOOMBA = {
 // ===========
 
 static void load_flat() {
-	load_texture("enemies/goomba_flat");
+	load_texture("enemies/goomba_flat", false);
 }
 
 static void create_flat(GameActor* actor) {

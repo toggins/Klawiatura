@@ -69,6 +69,8 @@ typedef struct {
 	bool active;
 } Secret;
 
+void load_menu();
+
 void menu_init();
 void update_menu();
 void draw_menu();

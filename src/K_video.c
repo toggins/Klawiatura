@@ -360,13 +360,18 @@ void set_mat4_uniform(UniformType idx, const GLfloat x[4][4]) {
 // TEXTURES
 // ========
 
+void clear_textures() {
+	FreeTinyMap(textures);
+	textures = NewTinyMap();
+}
+
 static void nuke_texture(void* ptr) {
 	Texture* texture = ptr;
 	SDL_free(texture->name);
 	glDeleteTextures(1, &texture->texture);
 }
 
-void load_texture(const char* name) {
+void load_texture(const char* name, bool transient) {
 	if (!name || !*name || get_texture(name))
 		return;
 
@@ -385,6 +390,7 @@ void load_texture(const char* name) {
 	}
 
 	texture.name = SDL_strdup(name);
+	texture.transient = transient;
 	texture.size[0] = surface->w, texture.size[1] = surface->h;
 
 	glGenTextures(1, &(texture.texture));
@@ -424,11 +430,11 @@ tex_no_json:
 }
 
 /// Load a number of frame-indexed textures, starting at 0.
-void load_texture_num(const char* pattern, uint32_t n) {
+void load_texture_num(const char* pattern, uint32_t n, bool transient) {
 	static char buf[256] = "";
 	for (uint32_t i = 0; i < n; i++) {
 		SDL_snprintf(buf, sizeof(buf), pattern, i);
-		load_texture(buf);
+		load_texture(buf, transient);
 	}
 }
 
@@ -440,12 +446,17 @@ const Texture* get_texture(const char* name) {
 // FONTS
 // =====
 
+void clear_fonts() {
+	FreeTinyMap(fonts);
+	fonts = NewTinyMap();
+}
+
 static void nuke_font(void* ptr) {
 	Font* font = ptr;
 	SDL_free(font->name);
 }
 
-void load_font(const char* name) {
+void load_font(const char* name, bool transient) {
 	if (name == NULL || get_font(name) != NULL)
 		return;
 
@@ -466,8 +477,15 @@ void load_font(const char* name) {
 	}
 
 	const char* tname = yyjson_get_str(yyjson_obj_get(root, "texture"));
-	load_texture(tname);
-	font.texture = get_texture(tname);
+	Texture* tex = StMapGet(textures, StHashStr(tname));
+	if (tex != NULL) {
+		tex->transient |= transient;
+		font.texture = tex;
+	} else {
+		load_texture(tname, transient);
+		font.texture = get_texture(tname);
+	}
+
 	if (font.texture == NULL) {
 		WTF("Font \"%s\" has invalid texture \"%s\"", name, tname);
 		yyjson_doc_free(json);
@@ -475,6 +493,7 @@ void load_font(const char* name) {
 	}
 
 	font.name = SDL_strdup(name);
+	font.transient = transient;
 	font.height = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "height"));
 	font.spacing = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "spacing"));
 
@@ -1139,7 +1158,7 @@ static TileMap* fetch_tilemap(const char* name) {
 	if (name == NULL)
 		tilemap.texture = NULL;
 	else {
-		load_texture(name);
+		load_texture(name, false);
 		tilemap.texture = get_texture(name);
 	}
 	tilemap.translucent = false;

@@ -96,6 +96,8 @@ typedef struct {
 
 typedef struct {
 	char* name;
+	bool transient;
+
 	GLuint texture;
 	GLuint size[2];
 	GLfloat offset[2];
@@ -108,10 +110,10 @@ typedef struct {
 
 typedef struct {
 	char* name;
-	const Texture* texture;
+	bool transient;
 
-	GLfloat height;
-	GLfloat spacing;
+	const Texture* texture;
+	GLfloat height, spacing;
 	Glyph glyphs[CHAR_MAX + 1];
 } Font;
 
@@ -218,12 +220,13 @@ void set_vec3_uniform(UniformType, const GLfloat[3]);
 void set_vec4_uniform(UniformType, const GLfloat[4]);
 void set_mat4_uniform(UniformType, const GLfloat[4][4]);
 
-// Textures
-void load_texture(const char*), load_texture_num(const char*, uint32_t);
+// Assets
+void clear_textures();
+void load_texture(const char*, bool), load_texture_num(const char*, uint32_t, bool);
 const Texture* get_texture(const char*);
 
-// Fonts
-void load_font(const char*);
+void clear_fonts();
+void load_font(const char*, bool);
 const Font* get_font(const char*);
 
 // Batch

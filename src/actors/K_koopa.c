@@ -8,13 +8,13 @@
 // =====
 
 static void load() {
-	load_texture_num("enemies/koopa%u", 2L);
-	load_texture("enemies/shell0");
-	load_texture_num("enemies/koopa_red%u", 2L);
-	load_texture("enemies/shell_red0");
+	load_texture_num("enemies/koopa%u", 2L, false);
+	load_texture("enemies/shell0", false);
+	load_texture_num("enemies/koopa_red%u", 2L, false);
+	load_texture("enemies/shell_red0", false);
 
-	load_sound("stomp");
-	load_sound("kick");
+	load_sound("stomp", false);
+	load_sound("kick", false);
 
 	load_actor(ACT_KOOPA_SHELL);
 	load_actor(ACT_POINTS);
@@ -119,11 +119,11 @@ const GameActorTable TAB_KOOPA = {.load = load,
 // ===========
 
 static void load_shell() {
-	load_texture_num("enemies/shell%u", 4L);
-	load_texture_num("enemies/shell_red%u", 4L);
+	load_texture_num("enemies/shell%u", 4L, false);
+	load_texture_num("enemies/shell_red%u", 4L, false);
 
-	load_sound("stomp");
-	load_sound("kick");
+	load_sound("stomp", false);
+	load_sound("kick", false);
 
 	load_actor(ACT_POINTS);
 }
@@ -239,13 +239,13 @@ const GameActorTable TAB_KOOPA_SHELL = {
 // =========
 
 static void load_parakoopa() {
-	load_texture_num("enemies/parakoopa%u", 2L);
-	load_texture("enemies/shell0");
-	load_texture_num("enemies/parakoopa_red%u", 2L);
-	load_texture("enemies/shell_red0");
+	load_texture_num("enemies/parakoopa%u", 2L, false);
+	load_texture("enemies/shell0", false);
+	load_texture_num("enemies/parakoopa_red%u", 2L, false);
+	load_texture("enemies/shell_red0", false);
 
-	load_sound("stomp");
-	load_sound("kick");
+	load_sound("stomp", false);
+	load_sound("kick", false);
 
 	load_actor(ACT_KOOPA);
 	load_actor(ACT_POINTS);

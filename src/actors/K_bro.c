@@ -34,11 +34,11 @@ enum {
 // ===
 
 static void load() {
-	load_texture_num("enemies/bro%u", 2L);
+	load_texture_num("enemies/bro%u", 2L, false);
 
-	load_sound("hammer");
-	load_sound("stomp");
-	load_sound("kick");
+	load_sound("hammer", false);
+	load_sound("stomp", false);
+	load_sound("kick", false);
 	load_actor(ACT_POINTS);
 }
 
@@ -48,17 +48,17 @@ static void load_special(const GameActor* actor) {
 		break;
 
 	case ACT_MISSILE_HAMMER:
-		load_texture_num("enemies/bro_hammer%u", 2L);
+		load_texture_num("enemies/bro_hammer%u", 2L, false);
 		break;
 
 	case ACT_MISSILE_FIREBALL: {
-		load_texture_num("enemies/bro_fire%u", 2L);
-		load_sound("fire");
+		load_texture_num("enemies/bro_fire%u", 2L, false);
+		load_sound("fire", false);
 		break;
 	}
 
 	case ACT_MISSILE_SILVER_HAMMER:
-		load_texture_num("enemies/bro_silver%u", 2L);
+		load_texture_num("enemies/bro_silver%u", 2L, false);
 		break;
 	}
 	load_actor(VAL(actor, BRO_MISSILE));

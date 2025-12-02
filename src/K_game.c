@@ -1,3 +1,4 @@
+#include "K_assets.h"
 #include "K_cmd.h"
 #include "K_discord.h"
 #include "K_file.h"
@@ -8,7 +9,6 @@
 #include "K_net.h"
 #include "K_string.h"
 #include "K_tick.h"
-#include "K_video.h"
 
 #include "actors/K_autoscroll.h"
 #include "actors/K_block.h"
@@ -193,10 +193,12 @@ void setup_game_context(GameContext* ctx, const char* level, GameFlag flags) {
 
 void start_game(GameContext* ctx) {
 	if (game_session != NULL)
-		return;
+		nuke_game();
+	else
+		clear_assets();
 
-	load_texture("ui/sidebar_l");
-	load_texture("ui/sidebar_r");
+	load_texture("ui/sidebar_l", false);
+	load_texture("ui/sidebar_r", false);
 
 	game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, true, true);
 
@@ -240,6 +242,12 @@ void nuke_game() {
 	game_surface = NULL;
 
 	update_discord_status(NULL);
+}
+
+static void nuke_game_to_menu() {
+	nuke_game();
+	disconnect();
+	clear_assets(), load_menu();
 }
 
 bool update_game() {
@@ -448,7 +456,6 @@ bool update_game() {
 						ctx.players[i].score = game_state.players[i].score;
 					}
 
-					nuke_game();
 					start_game(&ctx);
 					return true;
 				} else if (game_state.flags & GF_RESTART) {
@@ -463,7 +470,6 @@ bool update_game() {
 					}
 					ctx.checkpoint = game_state.checkpoint;
 
-					nuke_game();
 					start_game(&ctx);
 					return true;
 				}
@@ -486,8 +492,7 @@ bool update_game() {
 	return true;
 
 byebye_game:
-	nuke_game();
-	disconnect();
+	nuke_game_to_menu();
 	return false;
 }
 
@@ -1135,21 +1140,19 @@ void start_game_state(GameContext* ctx) {
 	//
 	//
 	//
-	load_texture_num("ui/coins%u", 3L);
-	load_texture_num("markers/water%u", 8L);
+	load_texture_num("ui/coins%u", 3L, false);
+	load_texture_num("markers/water%u", 8L, false);
 
-	load_font("hud");
-	load_font("main");
+	load_font("hud", false);
+	load_font("main", false);
 
-	load_sound("hurry");
-	load_sound("tick");
-	load_sound("pause");
-	load_sound("switch");
-	load_sound("select");
-	load_sound("bump");
-	load_sound("chat");
-
-	load_track("yi_score");
+	load_sound("hurry", false);
+	load_sound("tick", false);
+	load_sound("pause", false);
+	load_sound("switch", false);
+	load_sound("select", false);
+	load_sound("bump", false);
+	load_sound("chat", false);
 
 	//
 	//
@@ -1204,7 +1207,7 @@ void start_game_state(GameContext* ctx) {
 
 	read_string((const char**)(&buf), video_state.world, sizeof(video_state.world));
 	if (video_state.world[0] != ')' && video_state.world[0] != ']')
-		load_texture(video_state.world);
+		load_texture(video_state.world, false);
 
 	read_string((const char**)(&buf), (char*)game_state.next, sizeof(game_state.next));
 
@@ -1213,7 +1216,7 @@ void start_game_state(GameContext* ctx) {
 		if (i == 2 && minor < 2)
 			continue;
 		read_string((const char**)(&buf), track_name[i], sizeof(track_name));
-		load_track(track_name[i]);
+		load_track(track_name[i], false);
 	}
 
 	game_state.flags |= *((GameFlag*)buf), buf += sizeof(GameFlag);
@@ -1386,8 +1389,7 @@ void start_game_state(GameContext* ctx) {
 	return;
 
 level_fail:
-	nuke_game();
-	disconnect();
+	nuke_game_to_menu();
 }
 #undef FLOAT_OFFS
 #undef BYTE_OFFS

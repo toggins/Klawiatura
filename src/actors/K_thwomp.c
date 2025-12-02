@@ -15,11 +15,11 @@ enum {
 };
 
 static void load() {
-	load_texture_num("enemies/thwomp%u", 5L);
-	load_texture_num("enemies/thwomp_laugh%u", 3L);
+	load_texture_num("enemies/thwomp%u", 5L, false);
+	load_texture_num("enemies/thwomp_laugh%u", 3L, false);
 
-	load_sound("hurt");
-	load_sound("thwomp");
+	load_sound("hurt", false);
+	load_sound("thwomp", false);
 
 	load_actor(ACT_EXPLODE);
 	load_actor(ACT_POINTS);

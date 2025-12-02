@@ -20,15 +20,15 @@ enum {
 };
 
 static void load_left_wheel(GameActor* actor) {
-	load_texture_num("tiles/wheel_l%u", 3L);
+	load_texture_num("tiles/wheel_l%u", 3L, false);
 }
 
 static void load_wheel(GameActor* actor) {
-	load_texture_num("tiles/wheel%u", 4L);
+	load_texture_num("tiles/wheel%u", 4L, false);
 }
 
 static void load_right_wheel(GameActor* actor) {
-	load_texture_num("tiles/wheel_r%u", 3L);
+	load_texture_num("tiles/wheel_r%u", 3L, false);
 }
 
 static void tick_wheel(GameActor* actor) {

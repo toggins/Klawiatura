@@ -16,7 +16,7 @@ enum {
 // =========
 
 static void load_explode() {
-	load_texture_num("effects/explode%u", 3L);
+	load_texture_num("effects/explode%u", 3L, false);
 }
 
 static void tick_explode(GameActor* actor) {
@@ -37,8 +37,8 @@ const GameActorTable TAB_EXPLODE = {.load = load_explode, .tick = tick_explode, 
 // ===========
 
 static void load_shard() {
-	load_texture("effects/shard");
-	load_texture("effects/shard_gray");
+	load_texture("effects/shard", false);
+	load_texture("effects/shard_gray", false);
 }
 
 static void create_shard(GameActor* actor) {
@@ -74,7 +74,7 @@ const GameActorTable TAB_BRICK_SHARD = {
 // ============
 
 static void load_splash() {
-	load_texture_num("effects/water%u", 15L);
+	load_texture_num("effects/water%u", 15L, false);
 }
 
 static void create_splash(GameActor* actor) {
@@ -104,7 +104,7 @@ const GameActorTable TAB_WATER_SPLASH = {
 // ======
 
 static void load_bubble() {
-	load_texture_num("effects/bubble%u", 8L);
+	load_texture_num("effects/bubble%u", 8L, false);
 }
 
 static void create_bubble(GameActor* actor) {
@@ -175,7 +175,7 @@ const GameActorTable TAB_BUBBLE = {
 // ===========
 
 static void load_lava() {
-	load_texture_num("effects/lava%u", 11L);
+	load_texture_num("effects/lava%u", 11L, false);
 }
 
 static void tick_lava(GameActor* actor) {
@@ -199,7 +199,7 @@ const GameActorTable TAB_LAVA_SPLASH = {
 // ===========
 
 static void load_lava_bubble() {
-	load_texture("effects/lava_bubble");
+	load_texture("effects/lava_bubble", false);
 }
 
 static void create_lava_bubble(GameActor* actor) {
@@ -236,7 +236,7 @@ const GameActorTable TAB_LAVA_BUBBLE = {
 // ===========
 
 static void load_tube_bubble() {
-	load_texture("effects/bubble0");
+	load_texture("effects/bubble0", false);
 }
 
 static void tick_tube_bubble(GameActor* actor) {

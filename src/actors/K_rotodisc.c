@@ -8,7 +8,7 @@
 // ==============
 
 static void load_ball() {
-	load_texture("enemies/rotodisc_ball");
+	load_texture("enemies/rotodisc_ball", false);
 
 	load_actor(ACT_ROTODISC);
 }
@@ -55,7 +55,7 @@ const GameActorTable TAB_ROTODISC_BALL
 // =========
 
 static void load() {
-	load_texture_num("enemies/rotodisc%u", 26L);
+	load_texture_num("enemies/rotodisc%u", 26L, false);
 }
 
 static void create(GameActor* actor) {

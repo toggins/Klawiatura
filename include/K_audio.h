@@ -8,12 +8,16 @@
 
 typedef struct {
 	char* name;
+	bool transient;
+
 	FMOD_SOUND* sound;
 	uint32_t length;
 } Sound;
 
 typedef struct {
 	char* name;
+	bool transient;
+
 	FMOD_SOUND* stream;
 	uint32_t length, loop[2];
 } Track;
@@ -48,11 +52,11 @@ typedef struct {
 } SoundObject;
 
 typedef struct {
-	TrackObject tracks[TS_SIZE];
+	uint8_t next_sound;
 	TrackSlots top_track;
 
 	SoundObject sounds[MAX_SOUNDS];
-	uint8_t next_sound;
+	TrackObject tracks[TS_SIZE];
 } AudioState;
 
 extern AudioState audio_state;
@@ -75,10 +79,12 @@ void nuke_audio_state();
 void pause_audio_state(bool);
 
 // Assets
-void load_sound(const char*);
+void clear_sounds();
+void load_sound(const char*, bool);
 const Sound* get_sound(const char*);
 
-void load_track(const char*);
+void clear_tracks();
+void load_track(const char*, bool);
 const Track* get_track(const char*);
 
 // Generic Sounds

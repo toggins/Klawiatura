@@ -39,7 +39,7 @@ const GameActorTable TAB_GOAL_MARK = {.load = load_mark, .create = create_mark, 
 // ========
 
 static void load_bar() {
-	load_texture("markers/goal_bar");
+	load_texture("markers/goal_bar", false);
 
 	load_actor(ACT_GOAL_BAR_FLY);
 	load_actor(ACT_POINTS);
@@ -106,7 +106,7 @@ const GameActorTable TAB_GOAL_BAR
 // ===============
 
 static void load_fly() {
-	load_texture("markers/goal_bar2");
+	load_texture("markers/goal_bar2", false);
 }
 
 static void create_fly(GameActor* actor) {
