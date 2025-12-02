@@ -98,8 +98,7 @@ typedef struct {
 	char* name;
 	bool transient;
 
-	GLuint texture;
-	GLuint size[2];
+	GLuint texture, size[2];
 	GLfloat offset[2];
 } Texture;
 
@@ -112,7 +111,7 @@ typedef struct {
 	char* name;
 	bool transient;
 
-	const Texture* texture;
+	GLuint texture;
 	GLfloat height, spacing;
 	Glyph glyphs[CHAR_MAX + 1];
 } Font;

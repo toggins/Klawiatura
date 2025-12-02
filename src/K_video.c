@@ -1,12 +1,12 @@
 #include <SDL3_image/SDL_image.h>
 
+#include "K_assets.h"
 #include "K_cmd.h"
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
 #include "K_memory.h" // IWYU pragma: keep
 #include "K_string.h"
-#include "K_video.h"
 
 SDL_Window* window = NULL;
 static SDL_GLContext gpu = NULL;
@@ -360,16 +360,13 @@ void set_mat4_uniform(UniformType idx, const GLfloat x[4][4]) {
 // TEXTURES
 // ========
 
-void clear_textures() {
-	FreeTinyMap(textures);
-	textures = NewTinyMap();
-}
-
 static void nuke_texture(void* ptr) {
 	Texture* texture = ptr;
 	SDL_free(texture->name);
 	glDeleteTextures(1, &texture->texture);
 }
+
+CLEAR_ASSETS_IMPL(textures, Texture, texture);
 
 void load_texture(const char* name, bool transient) {
 	if (!name || !*name || get_texture(name))
@@ -446,15 +443,12 @@ const Texture* get_texture(const char* name) {
 // FONTS
 // =====
 
-void clear_fonts() {
-	FreeTinyMap(fonts);
-	fonts = NewTinyMap();
-}
-
 static void nuke_font(void* ptr) {
 	Font* font = ptr;
 	SDL_free(font->name);
 }
+
+CLEAR_ASSETS_IMPL(fonts, Font, font);
 
 void load_font(const char* name, bool transient) {
 	if (name == NULL || get_font(name) != NULL)
@@ -477,16 +471,21 @@ void load_font(const char* name, bool transient) {
 	}
 
 	const char* tname = yyjson_get_str(yyjson_obj_get(root, "texture"));
-	Texture* tex = StMapGet(textures, StHashStr(tname));
-	if (tex != NULL) {
-		tex->transient |= transient;
-		font.texture = tex;
-	} else {
-		load_texture(tname, transient);
-		font.texture = get_texture(tname);
+	if (tname == NULL) {
+		WTF("Invalid texture name for font \"%s\"", name);
+		yyjson_doc_free(json);
+		return;
 	}
 
-	if (font.texture == NULL) {
+	const StTinyKey tkey = StHashStr(tname);
+	Texture* tex = StMapGet(textures, tkey);
+	if (tex != NULL)
+		tex->transient |= transient;
+	else {
+		load_texture(tname, transient);
+		tex = StMapGet(textures, tkey);
+	}
+	if (tex == NULL) {
 		WTF("Font \"%s\" has invalid texture \"%s\"", name, tname);
 		yyjson_doc_free(json);
 		return;
@@ -494,6 +493,7 @@ void load_font(const char* name, bool transient) {
 
 	font.name = SDL_strdup(name);
 	font.transient = transient;
+	font.texture = tex->texture;
 	font.height = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "height"));
 	font.spacing = (GLfloat)yyjson_get_num(yyjson_obj_get(root, "spacing"));
 
@@ -501,8 +501,7 @@ void load_font(const char* name, bool transient) {
 	if (!yyjson_is_obj(glyphmap))
 		goto eatadick;
 
-	const GLfloat width = (GLfloat)font.texture->size[0];
-	const GLfloat height = (GLfloat)font.texture->size[1];
+	const GLfloat width = (GLfloat)tex->size[0], height = (GLfloat)tex->size[1];
 
 	size_t i = 0, n = 0;
 	yyjson_val *key = NULL, *value = NULL;
@@ -543,7 +542,7 @@ void load_font(const char* name, bool transient) {
 eatadick:
 	yyjson_doc_free(json);
 
-	StMapPut(fonts, StHashStr(name), &font, sizeof(font))->cleanup = nuke_texture;
+	StMapPut(fonts, StHashStr(name), &font, sizeof(font))->cleanup = nuke_font;
 }
 
 const Font* get_font(const char* name) {
@@ -877,7 +876,7 @@ void batch_string(const char* font_name, GLfloat size, const char* str) {
 	if (font == NULL || str == NULL)
 		return;
 
-	batch_texture(font->texture->texture);
+	batch_texture(font->texture);
 
 	// Origin
 	GLfloat ox = batch.pos[0] + (batch.offset[0] * batch.scale[0]);
