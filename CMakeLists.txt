@@ -67,7 +67,7 @@ set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
 FetchContent_Declare(
     S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
-    GIT_TAG 0eceb7db9a8f4b501cf3d9c9ab656b008ab82ddf)
+    GIT_TAG 8171508bb7729d94aa98f6ee391a5f30d84ec328)
 
 # S_tructures
 set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
