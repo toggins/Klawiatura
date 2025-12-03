@@ -17,7 +17,7 @@ set(BUILD_SHARED_LIBS OFF)
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
-# SDL3 (3.2.26)
+# SDL3 (3.2.28)
 set(SDL_SHARED OFF CACHE INTERNAL "")
 set(SDL_STATIC ON CACHE INTERNAL "")
 set(SDL_TEST_LIBRARY OFF CACHE INTERNAL "")
@@ -28,7 +28,7 @@ set(SDL_CAMERA OFF CACHE INTERNAL "")
 FetchContent_Declare(
     SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG release-3.2.26)
+    GIT_TAG release-3.2.28)
 
 # SDL_image (3.2.4)
 set(SDLIMAGE_AVIF OFF CACHE INTERNAL "")
@@ -45,7 +45,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG 958e252520ece96cd1b03d5ff0d835db2f048991)
+    GIT_TAG cbfc87488e446c446d5b5ded1d99a0df2273d499)
 
 # GLAD (2.0.8, OpenGL 3.3 Core)
 FetchContent_Declare(
@@ -97,7 +97,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 FetchContent_Declare(
     GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG dfabb76e3e4a2857fa7cf7dd6f2da8a81abf95de)
+    GIT_TAG 460481c7ef428c234cdfcaa5155221ed5c5e5972)
 
 # FMOD Core API (2.03.08)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
