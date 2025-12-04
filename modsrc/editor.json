@@ -831,6 +831,13 @@
                         },
 
                         {
+                            "def": "Hill Down",
+                            "type": "backdrop",
+                            "z": 54,
+                            "texture": "bg/hill_down"
+                        },
+
+                        {
                             "def": "Forest",
                             "type": "backdrop",
                             "z": 50,
@@ -1494,6 +1501,11 @@
                                 {
                                     "name": "Flip?",
                                     "bit": 2
+                                },
+
+                                {
+                                    "name": "Jackpot?",
+                                    "bit": 6
                                 }
                             ]
                         },
@@ -2105,6 +2117,28 @@
                                     "name": "Friendly?",
                                     "bit": 8,
                                     "default": false
+                                }
+                            ]
+                        },
+
+                        {
+                            "def": "Party",
+                            "type": "object",
+                            "index": 108,
+                            "texture": "markers/solid_top",
+
+                            "values": [
+                                {
+                                    "name": "Type",
+                                    "index": 5,
+                                    "default": 38
+                                },
+
+                                {
+                                    "name": "Speed",
+                                    "index": 6,
+                                    "default": 65536,
+                                    "fixed": true
                                 }
                             ]
                         }
