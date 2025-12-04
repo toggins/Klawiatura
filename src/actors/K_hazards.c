@@ -13,6 +13,10 @@ enum {
 	VAL_SPIKE_TYPE = VAL_CUSTOM,
 
 	VAL_CLOUD_FRAME = VAL_CUSTOM,
+
+	VAL_PARTY_TYPE = VAL_CUSTOM,
+	VAL_PARTY_SPEED,
+	VAL_PARTY_TIME,
 };
 
 enum {
@@ -172,3 +176,31 @@ const GameActorTable TAB_FAKE_CLOUD = {
 	.draw = draw_cloud,
 	.collide = collide_cloud,
 };
+
+// =====
+// PARTY
+// =====
+
+void load_party_special(const GameActor* actor) {
+	load_actor(VAL(actor, PARTY_TYPE));
+}
+
+void tick_party(GameActor* actor) {
+	if (game_state.sequence.type != SEQ_NONE && game_state.sequence.type != SEQ_AMBUSH)
+		return;
+
+	VAL(actor, PARTY_TIME) += VAL(actor, PARTY_SPEED);
+	while (VAL(actor, PARTY_TIME) >= FfInt(50L)) {
+		GameActor* nearest = nearest_pawn((fvec2){game_state.size.x, FxZero});
+		if (nearest != NULL) {
+			GameActor* drop = create_actor(
+				VAL(actor, PARTY_TYPE), POS_ADD(nearest, FfInt(201L + rng(200L)), FfInt(-498L)));
+			if (drop != NULL)
+				FLAG_ON(drop, FLG_X_FLIP);
+		}
+
+		VAL(actor, PARTY_TIME) -= FfInt(50L);
+	}
+}
+
+const GameActorTable TAB_PARTY = {.load_special = load_party_special, .tick = tick_party};

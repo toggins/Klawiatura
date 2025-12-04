@@ -10,6 +10,7 @@ enum {
 
 enum {
 	FLG_GOAL_START = CUSTOM_FLAG(0),
+	FLG_GOAL_JACKPOT = CUSTOM_FLAG(1),
 };
 
 // =========
@@ -76,17 +77,21 @@ static void collide_bar(GameActor* actor, GameActor* from) {
 		return;
 
 	int32_t points = 200L;
-	const fixed gy = VAL(actor, GOAL_Y);
-	if (actor->pos.y < (gy + FfInt(30L)))
-		points = 10000L;
-	else if (actor->pos.y < (gy + FfInt(60L)))
-		points = 5000L;
-	else if (actor->pos.y < (gy + FfInt(100L)))
-		points = 2000L;
-	else if (actor->pos.y < (gy + FfInt(150L)))
-		points = 1000L;
-	else if (actor->pos.y < (gy + FfInt(200L)))
-		points = 500L;
+	if (ANY_FLAG(actor, FLG_GOAL_JACKPOT)) {
+		points = 1000000L;
+	} else {
+		const fixed gy = VAL(actor, GOAL_Y);
+		if (actor->pos.y < (gy + FfInt(30L)))
+			points = 10000L;
+		else if (actor->pos.y < (gy + FfInt(60L)))
+			points = 5000L;
+		else if (actor->pos.y < (gy + FfInt(100L)))
+			points = 2000L;
+		else if (actor->pos.y < (gy + FfInt(150L)))
+			points = 1000L;
+		else if (actor->pos.y < (gy + FfInt(200L)))
+			points = 500L;
+	}
 	give_points(actor, get_owner(from), points);
 	win_player(from);
 
