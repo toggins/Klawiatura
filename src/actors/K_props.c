@@ -169,8 +169,8 @@ static void load_clouds() {
 
 static void draw_clouds(const GameActor* actor) {
 	batch_reset();
-	batch_pos(B_XYZ(-64.f + SDL_fmodf(totalticks() * FtFloat(VAL(actor, X_SPEED)), 64.f), FtInt(actor->pos.y),
-		FtFloat(actor->depth)));
+	batch_pos(B_XYZ(-64.f + SDL_floorf(SDL_fmodf(totalticks() * FtFloat(VAL(actor, X_SPEED)), 64.f)),
+		FtInt(actor->pos.y), FtFloat(actor->depth)));
 	batch_tile(B_TILE(true, false));
 	batch_rectangle("bg/clouds", B_XY(FtFloat(game_state.size.x) + 128.f, 64.f));
 }

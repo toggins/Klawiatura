@@ -16,7 +16,7 @@ void move_enemy(GameActor* actor, fvec2 speed, Bool edge) {
 		return;
 	}
 
-	if (!ANY_FLAG(actor, FLG_ENEMY_ACTIVE) && in_any_view(actor, FxZero, false)) {
+	if (!ANY_FLAG(actor, FLG_ENEMY_ACTIVE) && in_any_view(actor, FxOne, false)) {
 		VAL(actor, X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -speed.x : speed.x;
 		FLAG_ON(actor, FLG_ENEMY_ACTIVE);
 	}
