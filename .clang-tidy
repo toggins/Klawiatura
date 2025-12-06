@@ -5,7 +5,6 @@ Checks: |
   -bugprone-easily-swappable-parameters,
   -bugprone-reserved-identifier,
   -bugprone-macro-parentheses,
-  -bugprone-assignment-in-if-condition,
   performance-*,
   -performance-no-int-to-ptr,
   portability-*,
