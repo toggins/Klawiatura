@@ -38,15 +38,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Source fmod legally
+      - name: Source FMOD Core API
         run: |
           cd external/fmod; git init
-          git remote add origin https://${{ secrets.FMOD_TOKEN }}@github.com/Schwungus/fmod.git
+          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/Schwungus/fmod.git
           git pull origin master
-      - name: Source Discord SDK legally
+      - name: Source Discord Social SDK
         run: |
           cd external/discord; git init
-          git remote add origin https://${{ secrets.DISCORD_TOKEN }}@github.com/Schwungus/discord.git
+          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/Schwungus/discord.git
           git pull origin master
       - name: Install deps
         run: |
