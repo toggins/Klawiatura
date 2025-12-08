@@ -1000,14 +1000,13 @@ void destroy_surface(Surface* surface) {
 	SDL_free(surface);
 }
 
-static void make_surface_buffer(Surface* surface, size_t idx) {
+static void make_surface_buffer(Surface* surface, SurfaceAttribute idx) {
 	glGenTextures(1, &surface->texture[idx]);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
 	glBindTexture(GL_TEXTURE_2D, surface->texture[idx]);
 
-	const GLsizei width = (GLsizei)surface->size[0];
-	const GLsizei height = (GLsizei)surface->size[1];
+	const GLsizei width = (GLsizei)surface->size[0], height = (GLsizei)surface->size[1];
 	if (idx == SURF_COLOR)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	else
