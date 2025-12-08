@@ -41,12 +41,12 @@ jobs:
       - name: Source fmod legally
         run: |
           cd external/fmod; git init
-          git remote add origin https://${{ secrets.FMOD_TOKEN }}@github.com/toggins/fmod.git
+          git remote add origin https://${{ secrets.FMOD_TOKEN }}@github.com/Schwungus/fmod.git
           git pull origin master
       - name: Source Discord SDK legally
         run: |
           cd external/discord; git init
-          git remote add origin https://${{ secrets.DISCORD_TOKEN }}@github.com/toggins/discord.git
+          git remote add origin https://${{ secrets.DISCORD_TOKEN }}@github.com/Schwungus/discord.git
           git pull origin master
       - name: Install deps
         run: |
