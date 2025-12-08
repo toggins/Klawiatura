@@ -32,8 +32,7 @@ void audio_init() {
 
 	uint32_t version = 0, buildnumber = 0;
 	FMOD_System_GetVersion(speaker, &version, &buildnumber);
-	INFO("FMOD version: %u.%02u.%02u - Build %u", (version >> 16) & 0xFFFF, (version >> 8) & 0xFF, version & 0xFF,
-		buildnumber);
+	INFO("FMOD version: %08x - Build %u", version, buildnumber);
 
 	FMOD_System_GetMasterChannelGroup(speaker, &master_group);
 	FMOD_System_CreateChannelGroup(speaker, "sound", &sound_group);
