@@ -319,7 +319,7 @@ static void toggle_background(int flip) {
 // Controls
 FMT_OPTION(device, input_device());
 
-#define FMT_KEYBIND(fname, kb) FMT_OPTION(fname, (scanning_what() == kb) ? "(Press any key)" : kb_label(kb))
+#define FMT_KEYBIND(fname, kb) FMT_OPTION(fname, (scanning_what() == (kb)) ? "(Press any key)" : kb_label(kb))
 FMT_KEYBIND(up, KB_UP);
 BIND_OPTION(up, KB_UP);
 FMT_KEYBIND(left, KB_LEFT);

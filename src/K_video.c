@@ -14,7 +14,7 @@ static SDL_GLContext gpu = NULL;
 
 static int window_width = SCREEN_WIDTH, window_height = SCREEN_HEIGHT;
 
-#define SHD(idx, nm) [idx] = {.name = nm, -1}
+#define SHD(idx, nm) [idx] = {.name = (nm), -1}
 static Shader SHADERS[SH_SIZE] = {
 	SHD(SH_MAIN, "main"),
 	SHD(SH_WAVE, "wave"),

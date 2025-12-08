@@ -23,7 +23,7 @@ typedef struct {
 	}                                                                                                              \
                                                                                                                        \
 	void clear_##M() {                                                                                             \
-		clear_asset_map_PRO(&M, nuke_##A);                                                                     \
+		clear_asset_map_PRO(&(M), nuke_##A);                                                                   \
 	}
 
 void clear_asset_map_PRO(StTinyMap** target, void (*nuke)(void*));

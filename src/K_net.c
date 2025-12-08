@@ -91,6 +91,7 @@ static void np_peer_set_string(const char* name, const char* str) {
 	return np_set_string(np_peer_set, name, str);
 }
 
+// NOLINTBEGIN(bugprone-macro-parentheses)
 #define MAKE_LOBBY_GETTER(suffix, type)                                                                                \
 	static void np_lobby_get_##suffix(const char* name, type* dest) {                                              \
 		int size = 0;                                                                                          \
@@ -98,6 +99,7 @@ static void np_peer_set_string(const char* name, const char* str) {
 		if (value != NULL && size == sizeof(type))                                                             \
 			*dest = *value;                                                                                \
 	}
+// NOLINTEND(bugprone-macro-parentheses)
 MAKE_LOBBY_GETTER(bool, bool);
 MAKE_LOBBY_GETTER(u8, uint8_t);
 MAKE_LOBBY_GETTER(u32, uint32_t);
