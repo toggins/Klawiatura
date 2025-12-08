@@ -180,8 +180,8 @@ install(FILES
     DESTINATION . COMPONENT Klawiatura)
 install(DIRECTORY modsrc/ DESTINATION data COMPONENT Klawiatura)
 # Has all the README .pngs:
-# install(DIRECTORY .github/assets
-#     DESTINATION .github COMPONENT Klawiatura)
+install(DIRECTORY .github/assets
+    DESTINATION .github COMPONENT Klawiatura)
 
 set(CPACK_GENERATOR ZIP)
 set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
