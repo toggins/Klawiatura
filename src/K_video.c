@@ -1023,7 +1023,7 @@ static void make_surface_buffer(Surface* surface, SurfaceAttribute idx) {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, surface->texture[idx], 0);
 }
 
-static void check_surface_buffer(Surface* surface, size_t idx) {
+static void check_surface_buffer(Surface* surface, SurfaceAttribute idx) {
 	if (surface->enabled[idx]) {
 		if (!surface->texture[idx])
 			make_surface_buffer(surface, idx);
