@@ -1,11 +1,15 @@
+#ifdef K_DISCORD
+#include <cdiscord.h>
+#endif
+
 #include "K_discord.h"
 #include "K_game.h"
 #include "K_log.h" // IWYU pragma: keep
 #include "K_menu.h"
 
-#define DISCORD_APPID 1441442128445181963
-
 #ifdef K_DISCORD
+
+#define DISCORD_APPID 1441442128445181963
 
 #define DSTR(str) ((Discord_String){.ptr = (uint8_t*)(str), .size = sizeof(str)})
 
