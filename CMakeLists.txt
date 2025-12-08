@@ -99,10 +99,10 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
     GIT_TAG 460481c7ef428c234cdfcaa5155221ed5c5e5972)
 
-# FMOD Core API (2.03.08)
+# FMOD Core API (2.03.11)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
 
-# Discord Social SDK (1.7.12739)
+# Discord Social SDK (1.7.13152)
 set(KLAW_DISCORD OFF CACHE INTERNAL "Use Discord Social SDK")
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/discord)
 

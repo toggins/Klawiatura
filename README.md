@@ -66,13 +66,13 @@ You will need a system-wide install of the `jinja2` Python module for our depend
 py -m pip install jinja2
 ```
 
-### [FMOD Engine 2.03.09](https://www.fmod.com/download#fmodengine)
+### [FMOD Engine 2.03.11](https://www.fmod.com/download#fmodengine)
 
 **Windows**: move everything in `C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core` to `external\fmod\windows`.
 
-**Linux**: move everything in `fmodstudioapi20309linux` to `external/fmod/linux`.
+**Linux**: move everything in `fmodstudioapi20311linux` to `external/fmod/linux`.
 
-### [Discord Social SDK 1.7.12739](https://discord.com/developers/social-sdk) (Optional)
+### [Discord Social SDK 1.7.13152](https://discord.com/developers/social-sdk) (Optional)
 
 > [!NOTE]
 > If the SDK is not present or the build environment is 32-bit, most of the functions in `K_discord.c` will become no-ops.
