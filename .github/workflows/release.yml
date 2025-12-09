@@ -41,14 +41,14 @@ jobs:
       - name: Source FMOD Core API
         run: |
           cd external/fmod; git init
-          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/Schwungus/fmod.git
+          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/fmod.git
           git pull origin master
       - name: Source Discord Social SDK
         run: |
           cd external/discord; git init
-          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/Schwungus/discord.git
+          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/discord.git
           git pull origin master
-      - name: Install deps
+      - name: Install dependencies
         run: |
           sudo apt-get update && sudo apt-get install --yes \
             libgl1-mesa-dev python3-jinja2 \
