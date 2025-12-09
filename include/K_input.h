@@ -73,6 +73,7 @@ const char* kb_label(Keybind);
 void start_typing(char*, size_t);
 void stop_typing();
 const char* typing_what();
+bool typing_input_confirmed();
 void input_text_input(SDL_TextInputEvent);
 
 void start_scanning(Keybind);

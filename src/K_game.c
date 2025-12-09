@@ -261,8 +261,10 @@ bool update_game() {
 		// FIXME: Make ESC cancel the message instead of sending it.
 		if (kb_pressed(KB_CHAT) && !paused)
 			start_typing(chat_message, sizeof(chat_message));
-		else
+		else if (typing_input_confirmed())
 			send_chat_message();
+		else
+			chat_message[0] = 0;
 	}
 
 	// nonk: make sure to use these three funcs ONLY in a `for` construct. Behavior is undefined otherwise.

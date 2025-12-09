@@ -57,6 +57,7 @@ static SDL_JoystickID cur_controller = 0;
 
 static char* text = NULL;
 static size_t text_size = 0;
+static bool typing_confirmation = false;
 
 static SDL_JoystickID scanning_for = 0;
 static Keybind scanning = NULLBIND;
@@ -98,6 +99,7 @@ void input_keydown(SDL_KeyboardEvent event) {
 		if (SDL_StepBackUTF8(text, (const char**)&back))
 			*back = '\0';
 	} else if (event.scancode == SDL_SCANCODE_RETURN || event.scancode == SDL_SCANCODE_ESCAPE) {
+		typing_confirmation |= event.scancode == SDL_SCANCODE_RETURN;
 		stop_typing();
 	}
 }
@@ -229,8 +231,17 @@ not_bound:
 	return "<Not bound>";
 }
 
+/// True if the typed input was confirmed with the Enter key; false if cancelled with the Esc key.
+bool typing_input_confirmed() {
+	bool value = typing_confirmation;
+	typing_confirmation = 0;
+	return value;
+}
+
 void start_typing(char* ptext, size_t size) {
+	typing_confirmation = false;
 	stop_typing();
+
 	if (window_start_text_input())
 		text = ptext, text_size = size;
 }
