@@ -1,4 +1,18 @@
 {
     "printWidth": 120,
-    "useTabs": false
+    "useTabs": false,
+    "overrides": [
+        {
+            "files": "*.json",
+            "options": {
+                "tabWidth": 4
+            }
+        },
+        {
+            "files": [".clang*", "*.yml"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
 }
