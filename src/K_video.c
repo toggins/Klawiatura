@@ -279,6 +279,7 @@ void get_resolution(int* width, int* height) {
 
 void set_resolution(int width, int height) {
 	SDL_SetWindowSize(window, width <= 0 ? SCREEN_WIDTH : width, height <= 0 ? SCREEN_HEIGHT : height);
+	SDL_SyncWindow(window);
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	SDL_SyncWindow(window);
 	get_resolution(&window_width, &window_height);
@@ -289,9 +290,9 @@ bool get_fullscreen() {
 }
 
 void set_fullscreen(bool fullscreen) {
-	SDL_SetWindowFullscreen(window, fullscreen);
-	SDL_SyncWindow(window);
-	SDL_GetWindowSizeInPixels(window, &window_width, &window_height);
+	SDL_SetWindowFullscreen(window, fullscreen), SDL_SyncWindow(window);
+	SDL_RestoreWindow(window), SDL_SyncWindow(window);
+	get_resolution(&window_width, &window_height);
 }
 
 bool get_vsync() {
