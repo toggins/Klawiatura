@@ -177,10 +177,7 @@ void input_axis(SDL_GamepadAxisEvent event) {
 }
 
 void input_wipeout() {
-	kb_then = 0;
-	kb_now = 0;
-	kb_incoming = 0;
-	kb_repeating = 0;
+	kb_then = kb_now = kb_incoming = kb_repeating = 0;
 }
 
 const char* input_device() {
