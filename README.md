@@ -11,8 +11,8 @@ Mario Forever with rollback netcode.
 
 ## Multiplayer
 
-> [!TIP]
-> **Discord integration is here!** You can invite other players to your lobbies through Discord, as long as you're using the public NutPuncher instance; otherwise, the integration is implicitly disabled.
+> [!NOTE]
+> Discord integration is currently disabled on GitHub builds.
 
 > [!NOTE]
 > If you're unable to connect to other players, check [NutPunch's troubleshooting section](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#troubleshooting).
