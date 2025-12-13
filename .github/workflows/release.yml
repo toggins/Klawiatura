@@ -43,6 +43,11 @@ jobs:
           cd external/fmod; git init
           git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/fmod.git
           git pull origin master
+      - name: Source Discord Social SDK
+        run: |
+          cd external/discord; git init
+          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/discord.git
+          git pull origin master
       - name: Install dependencies
         run: |
           sudo apt-get update && sudo apt-get install --yes \
