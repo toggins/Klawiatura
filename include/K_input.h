@@ -2,7 +2,7 @@
 
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_gamepad.h>
-#include <SDL3/SDL_keycode.h>
+#include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_stdinc.h>
 
 #define KB_VALUE_MAX 32767
@@ -49,7 +49,7 @@ typedef int16_t KeybindValue;
 
 typedef struct {
 	const char* name;
-	SDL_Keycode key;
+	SDL_Scancode key;
 	SDL_GamepadButton button;
 	SDL_GamepadAxis axis;
 	bool negative;
@@ -66,8 +66,6 @@ void input_wipeout();
 const char* input_device();
 
 bool kb_pressed(Keybind), kb_down(Keybind), kb_released(Keybind), kb_repeated(Keybind);
-KeybindValue kb_value(Keybind);
-float kb_axis(Keybind, Keybind);
 const char* kb_label(Keybind);
 
 void start_typing(char*, size_t);

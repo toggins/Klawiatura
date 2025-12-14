@@ -1,5 +1,3 @@
-#include <SDL3/SDL_keyboard.h>
-
 #include "K_file.h"
 #include "K_input.h"
 #include "K_log.h"
@@ -201,14 +199,6 @@ bool kb_repeated(Keybind kb) {
 
 bool kb_released(Keybind kb) {
 	return !CHECK_KB(kb_now, kb) && CHECK_KB(kb_then, kb);
-}
-
-KeybindValue kb_value(Keybind kb) {
-	return CHECK_KB(kb_now, kb) ? KB_VALUE_MAX : 0;
-}
-
-float kb_axis(Keybind neg, Keybind pos) {
-	return (float)(kb_value(pos) - kb_value(neg)) / (float)KB_VALUE_MAX;
 }
 
 const char* kb_label(Keybind kb) {
