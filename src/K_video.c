@@ -90,12 +90,6 @@ bypass:
 	// Vertex batch
 	glGenVertexArrays(1, &batch.vao);
 	glBindVertexArray(batch.vao);
-	glEnableVertexArrayAttrib(batch.vao, VATT_POSITION);
-	glVertexArrayAttribFormat(batch.vao, VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3);
-	glEnableVertexArrayAttrib(batch.vao, VATT_COLOR);
-	glVertexArrayAttribFormat(batch.vao, VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GLubyte) * 4);
-	glEnableVertexArrayAttrib(batch.vao, VATT_UV);
-	glVertexArrayAttribFormat(batch.vao, VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2);
 
 	batch.vertex_count = 0;
 	batch.vertex_capacity = 3;
@@ -1152,12 +1146,6 @@ static TileMap* fetch_tilemap(const char* name) {
 
 	glGenVertexArrays(1, &(tilemap.vao));
 	glBindVertexArray(tilemap.vao);
-	glEnableVertexArrayAttrib(tilemap.vao, VATT_POSITION);
-	glVertexArrayAttribFormat(tilemap.vao, VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3);
-	glEnableVertexArrayAttrib(tilemap.vao, VATT_COLOR);
-	glVertexArrayAttribFormat(tilemap.vao, VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GLubyte) * 4);
-	glEnableVertexArrayAttrib(tilemap.vao, VATT_UV);
-	glVertexArrayAttribFormat(tilemap.vao, VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2);
 
 	tilemap.vertex_count = 0;
 	tilemap.vertex_capacity = 6;
