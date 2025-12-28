@@ -45,7 +45,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG cbfc87488e446c446d5b5ded1d99a0df2273d499)
+    GIT_TAG 5e686a3e781937e7f43138440a032f47140d0624)
 
 # GLAD (2.0.8, OpenGL 3.3 Core)
 FetchContent_Declare(
@@ -74,7 +74,7 @@ set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
 FetchContent_Declare(
     S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
-    GIT_TAG d21e6ba8f3a168f9ea8e3bf87c053eb5081b040e)
+    GIT_TAG 71c959ad0056e33ce4264714461d5cfb7211fec9)
 
 # NutPunch
 set(NUTPUNCH_BUILD_TESTS OFF CACHE INTERNAL "")
@@ -84,7 +84,7 @@ set(NUTPUNCH_STAGING ON CACHE INTERNAL "")
 FetchContent_Declare(
     NutPunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG 5a06cf9581ac2a22390b13bf3bf28b87a54fdd67)
+    GIT_TAG dd6120cce46aaf2a57a26692fdf0f92e1931c010)
 
 # yyjson (0.12.0)
 FetchContent_Declare(
@@ -97,7 +97,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 FetchContent_Declare(
     GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG 460481c7ef428c234cdfcaa5155221ed5c5e5972)
+    GIT_TAG 2bf3cb4ed0a11297c3a002a66b9d650052da62cd)
 
 # FMOD Core API (2.03.11)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
