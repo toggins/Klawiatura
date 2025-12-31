@@ -150,7 +150,7 @@ void input_axis(SDL_GamepadAxisEvent event) {
 	cur_controller = event.which;
 
 	if (scanning_what() != NULLBIND) {
-		if (scanning_for == event.which && event.value > 127) {
+		if (scanning_for == event.which && (event.value < -8192 || event.value > 8192)) {
 			BINDS[scanning].axis = event.axis;
 			BINDS[scanning].negative = event.value < 0;
 			stop_scanning();
@@ -158,8 +158,8 @@ void input_axis(SDL_GamepadAxisEvent event) {
 	} else if (typing_what() == NULL) {
 		for (int i = 0; i < KB_SIZE; i++) {
 			const KeybindState mask = (event.axis == BINDS[i].axis
-							  && ((BINDS[i].negative && event.value < -128)
-								  || (!BINDS[i].negative && event.value > 127)))
+							  && ((BINDS[i].negative && event.value < -8192)
+								  || (!BINDS[i].negative && event.value > 8192)))
 			                          << i;
 			kb_incoming |= mask;
 			kb_now |= mask;
@@ -169,8 +169,8 @@ void input_axis(SDL_GamepadAxisEvent event) {
 
 	for (int i = 0; i < KB_SIZE; i++)
 		kb_incoming &= ~((event.axis == BINDS[i].axis
-					 && ((BINDS[i].negative && event.value >= -128)
-						 || (!BINDS[i].negative && event.value <= 127)))
+					 && ((BINDS[i].negative && event.value >= -8192)
+						 || (!BINDS[i].negative && event.value <= 8192)))
 				 << i);
 }
 
