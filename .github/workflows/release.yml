@@ -36,6 +36,8 @@ jobs:
         -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY
         -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
     steps:
+      - name: Silence `git init` warning
+        run: git config --global init.defaultBranch master
       - name: Checkout
         uses: actions/checkout@v6
       - name: Source FMOD Core API
