@@ -67,7 +67,6 @@ jobs:
           path: build
           key: ${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            ${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
             ${{ matrix.name }}-${{ github.ref_name }}-
       - name: Configure
         run: |
