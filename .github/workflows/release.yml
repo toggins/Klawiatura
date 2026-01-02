@@ -70,6 +70,7 @@ jobs:
           key: ${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
             ${{ matrix.name }}-${{ github.ref_name }}-
+            ${{ matrix.name }}-
       - name: Configure
         run: |
           cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
