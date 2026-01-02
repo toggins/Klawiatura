@@ -60,21 +60,18 @@ jobs:
         with:
           platform: ${{ matrix.mingw == 32 && 'x86' || 'x64' }}
           cc: 0
-      - name: Cache dependency sources
+      - name: Cache build dir
+        id: cache-build
         uses: actions/cache@v5
         with:
-          path: build/_deps/*-src
-          key: cmake-deps-src-${{ hashFiles('**/CMakeLists.txt') }}
-          restore-keys: cmake-deps-src-
-      - name: Cache build artifacts
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          variant: sccache
-          key: ${{ github.job }}-${{ matrix.os }}
+          path: build
+          key: ${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: |
+            ${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
+            ${{ matrix.name }}-${{ github.ref_name }}-
       - name: Configure
         run: |
           cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
-            -D CMAKE_C_COMPILER_LAUNCHER=sccache -D CMAKE_CXX_COMPILER_LAUNCHER=sccache \
             ${{ matrix.mingw && env.MINGW_SHIT || '' }} \
             ${{ github.ref_name == 'tracing' && '-D NUTPUNCH_TRACING=1' || '' }} \
             -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
