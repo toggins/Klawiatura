@@ -58,7 +58,7 @@ jobs:
             libpulse-dev
       - name: Install MinGW
         if: matrix.mingw
-        uses: egor-tensin/setup-mingw@v2.2.0
+        uses: egor-tensin/setup-mingw@v3
         with:
           platform: ${{ matrix.mingw == 32 && 'x86' || 'x64' }}
           cc: 0
