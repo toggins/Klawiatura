@@ -51,14 +51,14 @@ CmdArg CMDLINE[] = {
 ClientInfo CLIENT = {
 	.user.name = "", // filled in later in `K_config.c`
 	.user.skin = "",
-	.input.delay = 2,
+	.input.delay = 1,
 	.game.players = 2,
 	.game.level = "test",
-	.lobby.name = "", // filled in inside `K_menu.c`
-	.lobby.public = true,
+	.lobby.name = "", // filled in at `K_menu.c`
+	.lobby.public = TRUE,
 };
 
-bool quickstart = false, permadeath = false;
+Bool quickstart = FALSE, permadeath = FALSE;
 static MenuType starting_menu = MEN_INTRO;
 static int realmain();
 
@@ -192,27 +192,27 @@ static void cmd_ip() {
 static void cmd_level() {
 	SDL_strlcpy(CLIENT.game.level, next_arg(), sizeof(CLIENT.game.level));
 	if (!quickstart) {
-		quickstart = true;
+		quickstart = TRUE;
 		INFO("Running in quickstart mode");
 	}
 }
 
 static void cmd_kevin() {
 	if (!CLIENT.game.kevin) {
-		CLIENT.game.kevin = true;
+		CLIENT.game.kevin = TRUE;
 		INFO("Kevin mode activated. Good luck...");
 	}
 }
 
 static void cmd_fred() {
 	if (!CLIENT.game.fred) {
-		CLIENT.game.fred = true;
+		CLIENT.game.fred = TRUE;
 		INFO("Fred mode activated. Good luck...");
 	}
 }
 
 static void cmd_string() {
-	int8_t in[ACTOR_STRING_MAX + 1] = "";
+	Sint8 in[ACTOR_STRING_MAX + 1] = {0};
 	GameActor out = {0};
 
 	SDL_strlcpy((char*)in, next_arg(), sizeof(in));
@@ -223,7 +223,7 @@ static void cmd_string() {
 
 static void cmd_host() {
 	SDL_strlcpy(CLIENT.lobby.name, next_arg(), sizeof(CLIENT.lobby.name));
-	CLIENT.lobby.public = (bool)SDL_strtoul(next_arg(), NULL, 10);
+	CLIENT.lobby.public = (Bool)SDL_strtoul(next_arg(), NULL, 10);
 	CLIENT.game.players = (PlayerID)SDL_strtoul(next_arg(), NULL, 10);
 	SDL_clamp(CLIENT.game.players, 2, MAX_PLAYERS);
 	SDL_strlcpy(CLIENT.game.level, next_arg(), sizeof(CLIENT.game.level));

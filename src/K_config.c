@@ -10,12 +10,12 @@
 typedef struct {
 	const char* name;
 
-	bool (*r_bool)();
+	Bool (*r_bool)();
 	int (*r_int)();
 	float (*r_float)();
 	const char* (*r_string)();
 
-	void (*w_bool)(bool), (*w_int)(int), (*w_float)(float), (*w_string)(const char*);
+	void (*w_bool)(Bool), (*w_int)(int), (*w_float)(float), (*w_string)(const char*);
 } ConfigOption;
 
 static const char* get_name() {
@@ -59,22 +59,22 @@ static void set_height(int height) {
 	if (cfg_width)
 		set_resolution(cfg_width, cfg_height);
 }
-static bool get_filter() {
+static Bool get_filter() {
 	return CLIENT.video.filter;
 }
-static void set_filter(bool filter) {
+static void set_filter(Bool filter) {
 	CLIENT.video.filter = filter;
 }
-static bool get_background() {
+static Bool get_background() {
 	return CLIENT.audio.background;
 }
-static void set_background(bool background) {
+static void set_background(Bool background) {
 	CLIENT.audio.background = background;
 }
-static bool get_aware() {
+static Bool get_aware() {
 	return CLIENT.user.aware;
 }
-static void set_aware(bool aware) {
+static void set_aware(Bool aware) {
 	CLIENT.user.aware = aware;
 }
 
@@ -94,7 +94,7 @@ static const ConfigOption OPTIONS[] = {
 	{"background",   .r_bool = get_background,    .w_bool = set_background   },
 };
 
-static bool fill_missing_fields() {
+static Bool fill_missing_fields() {
 	int modified = 0;
 
 	if (!SDL_strlen(CLIENT.user.name))
@@ -132,7 +132,7 @@ static void parse_kb(yyjson_val* obj, void (*load)(Bindings*, yyjson_val*)) {
 			continue;
 		yyjson_val* value = yyjson_obj_iter_get_val(vkey);
 		const char* name = yyjson_get_str(vkey);
-		for (int i = 0; i < KB_SIZE; i++) {
+		for (Keybind i = 0; i < (Keybind)KB_SIZE; i++) {
 			Bindings* bind = &BINDS[i];
 			if (bind->name != NULL && !SDL_strcmp(name, bind->name))
 				load(bind, value);
@@ -215,7 +215,7 @@ static void save_kb(yyjson_mut_doc* json, yyjson_mut_val* root, const char* name
 	yyjson_mut_val* (*serialize)(yyjson_mut_doc*, const Bindings*)) {
 	yyjson_mut_val* obj = yyjson_mut_obj(json);
 
-	for (size_t i = 0; i < KB_SIZE; i++) {
+	for (Keybind i = 0; i < (Keybind)KB_SIZE; i++) {
 		const Bindings* binding = &BINDS[i];
 		yyjson_mut_val* key = yyjson_mut_str(json, binding->name);
 		yyjson_mut_obj_add(obj, key, serialize(json, binding));
@@ -228,7 +228,7 @@ static void save_kb(yyjson_mut_doc* json, yyjson_mut_val* root, const char* name
 void save_config() {
 	fill_missing_fields(); // fill missing after quitting the settings menu
 
-	BAKA(!config_path, "Saving config outside of user path is explicitly prohibited");
+	WHATEVER(!config_path, "Saving config outside of user path is explicitly prohibited");
 	yyjson_mut_doc* json = yyjson_mut_doc_new(NULL);
 	yyjson_mut_val* root = yyjson_mut_obj(json);
 	yyjson_mut_doc_set_root(json, root);

@@ -8,7 +8,7 @@
 // ==============
 
 static void load_ball() {
-	load_texture("enemies/rotodisc_ball", false);
+	load_texture("enemies/rotodisc_ball", FALSE);
 
 	load_actor(ACT_ROTODISC);
 }
@@ -55,7 +55,7 @@ const GameActorTable TAB_ROTODISC_BALL
 // =========
 
 static void load() {
-	load_texture_num("enemies/rotodisc%u", 26L, false);
+	load_texture_num("enemies/rotodisc%u", 26L, FALSE);
 }
 
 static void create(GameActor* actor) {
@@ -82,7 +82,7 @@ static void tick(GameActor* actor) {
 
 	VAL(actor, ROTODISC_ANGLE) += VAL(actor, ROTODISC_SPEED);
 	move_actor(actor,
-		(fvec2){Fadd(owner->pos.x, Fmul(Fcos(VAL(actor, ROTODISC_ANGLE)), VAL(actor, ROTODISC_LENGTH))),
+		(FVec2){Fadd(owner->pos.x, Fmul(Fcos(VAL(actor, ROTODISC_ANGLE)), VAL(actor, ROTODISC_LENGTH))),
 			Fadd(owner->pos.y, Fmul(Fsin(VAL(actor, ROTODISC_ANGLE)), VAL(actor, ROTODISC_LENGTH)))});
 }
 

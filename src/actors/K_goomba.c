@@ -11,10 +11,10 @@ enum {
 // ======
 
 static void load() {
-	load_texture_num("enemies/goomba%u", 2L, false);
+	load_texture_num("enemies/goomba%u", 2L, FALSE);
 
-	load_sound("stomp", false);
-	load_sound("kick", false);
+	load_sound("stomp", FALSE);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_GOOMBA_FLAT);
 	load_actor(ACT_POINTS);
@@ -29,7 +29,7 @@ static void create(GameActor* actor) {
 }
 
 static void tick(GameActor* actor) {
-	move_enemy(actor, (fvec2){FxOne, 19005L}, false);
+	move_enemy(actor, (FVec2){FxOne, 19005L}, FALSE);
 }
 
 static void draw(const GameActor* actor) {
@@ -112,7 +112,7 @@ const GameActorTable TAB_GOOMBA = {
 // ===========
 
 static void load_flat() {
-	load_texture("enemies/goomba_flat", false);
+	load_texture("enemies/goomba_flat", FALSE);
 }
 
 static void create_flat(GameActor* actor) {
@@ -128,7 +128,7 @@ static void tick_flat(GameActor* actor) {
 	}
 
 	VAL(actor, Y_SPEED) += 19005L;
-	displace_actor(actor, FxZero, false);
+	displace_actor(actor, FxZero, FALSE);
 }
 
 static void draw_flat(const GameActor* actor) {

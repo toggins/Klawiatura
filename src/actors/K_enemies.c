@@ -10,25 +10,25 @@
 // HELPER FUNCTIONS
 // ================
 
-void move_enemy(GameActor* actor, fvec2 speed, Bool edge) {
+void move_enemy(GameActor* actor, FVec2 speed, Bool edge) {
 	if (below_level(actor)) {
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}
 
-	if (!ANY_FLAG(actor, FLG_ENEMY_ACTIVE) && in_any_view(actor, FxOne, false)) {
+	if (!ANY_FLAG(actor, FLG_ENEMY_ACTIVE) && in_any_view(actor, FxOne, FALSE)) {
 		VAL(actor, X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -speed.x : speed.x;
 		FLAG_ON(actor, FLG_ENEMY_ACTIVE);
 	}
 
 	if (edge) {
-		const fixed x1 = ANY_FLAG(actor, FLG_X_FLIP) ? (actor->pos.x + actor->box.start.x - FxOne)
+		const Fixed x1 = ANY_FLAG(actor, FLG_X_FLIP) ? (actor->pos.x + actor->box.start.x - FxOne)
 		                                             : (actor->pos.x + actor->box.end.x);
-		const fixed y1 = actor->pos.y + actor->box.start.y;
-		const fixed x2 = x1 + FxOne;
-		const fixed y2 = actor->pos.y + actor->box.end.y + FxOne;
+		const Fixed y1 = actor->pos.y + actor->box.start.y;
+		const Fixed x2 = x1 + FxOne;
+		const Fixed y2 = actor->pos.y + actor->box.end.y + FxOne;
 		if (!touching_solid(
-			    (frect){
+			    (FRect){
 				    {x1, y1},
                                     {x2, y2}
                 },
@@ -45,7 +45,7 @@ void move_enemy(GameActor* actor, fvec2 speed, Bool edge) {
 	}
 
 	VAL(actor, Y_SPEED) += speed.y;
-	displace_actor(actor, FfInt(10L), false);
+	displace_actor(actor, FfInt(10L), FALSE);
 
 	collide_actor(actor);
 	VAL_TICK(actor, ENEMY_TURN);
@@ -111,8 +111,8 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
 	dead->flags = (actor->flags & (~(FLG_DESTROY | FLG_FREEZE))) | FLG_Y_FLIP;
 
 	if (kick) {
-		const fixed rnd = FfInt(rng(5L));
-		const fixed dir = 77208L + Fmul(rnd, 12868L);
+		const Fixed rnd = FfInt(rng(5L));
+		const Fixed dir = 77208L + Fmul(rnd, 12868L);
 		VAL(dead, X_SPEED) = Fmul(Fcos(dir), FfInt(3L));
 		VAL(dead, Y_SPEED) = Fmul(Fsin(dir), FfInt(-3L));
 		play_actor_sound(actor, "kick");
@@ -123,9 +123,9 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
 	return dead;
 }
 
-Bool check_stomp(GameActor* actor, GameActor* from, fixed yoffs, int32_t points) {
+Bool check_stomp(GameActor* actor, GameActor* from, Fixed yoffs, Sint32 points) {
 	if (actor == NULL || from == NULL || from->type != ACT_PLAYER || VAL(from, PLAYER_STARMAN) > 0L)
-		return false;
+		return FALSE;
 
 	if (from->pos.y < (actor->pos.y + yoffs) && (VAL(from, Y_SPEED) >= FxZero || ANY_FLAG(from, FLG_PLAYER_STOMP)))
 	{
@@ -136,18 +136,18 @@ Bool check_stomp(GameActor* actor, GameActor* from, fixed yoffs, int32_t points)
 
 		give_points(actor, player, points);
 		play_actor_sound(from, "stomp");
-		return true;
+		return TRUE;
 	}
 
-	return false;
+	return FALSE;
 }
 
 Bool maybe_hit_player(GameActor* actor, GameActor* from) {
 	if (actor == NULL || from == NULL || from->type != ACT_PLAYER)
-		return false;
+		return FALSE;
 	if (VAL(from, PLAYER_STARMAN) > 0L) {
 		player_starman(from, actor);
-		return false;
+		return FALSE;
 	}
 	return hit_player(from);
 }
@@ -155,15 +155,15 @@ Bool maybe_hit_player(GameActor* actor, GameActor* from) {
 Bool hit_shell(GameActor* actor, GameActor* from) {
 	if (actor == NULL || from == NULL || (from->type != ACT_KOOPA_SHELL && from->type != ACT_BUZZY_SHELL)
 		|| !ANY_FLAG(from, FLG_SHELL_ACTIVE))
-		return false;
+		return FALSE;
 
 	if ((actor->type == ACT_KOOPA_SHELL || actor->type == ACT_BUZZY_SHELL) && ANY_FLAG(actor, FLG_SHELL_ACTIVE)) {
 		VAL(actor, SHELL_COMBO) = VAL(from, SHELL_COMBO) = 0L;
 		give_points(from, get_owner(from), 100L);
-		kill_enemy(from, from, true);
+		kill_enemy(from, from, TRUE);
 	}
 
-	int32_t points = 0L;
+	Sint32 points = 0L;
 	switch (VAL(from, SHELL_COMBO)++) {
 	case 0L:
 		points = 100L;
@@ -192,11 +192,11 @@ Bool hit_shell(GameActor* actor, GameActor* from) {
 	}
 	give_points(actor, get_owner(from), points);
 
-	kill_enemy(actor, from, true);
-	return true;
+	kill_enemy(actor, from, TRUE);
+	return TRUE;
 }
 
-void hit_bump(GameActor* actor, GameActor* from, int32_t points) {
+void hit_bump(GameActor* actor, GameActor* from, Sint32 points) {
 	if (actor == NULL || from == NULL)
 		return;
 
@@ -205,7 +205,7 @@ void hit_bump(GameActor* actor, GameActor* from, int32_t points) {
 		return;
 
 	give_points(actor, player, points);
-	kill_enemy(actor, from, true);
+	kill_enemy(actor, from, TRUE);
 }
 
 void block_fireball(GameActor* actor) {
@@ -215,7 +215,7 @@ void block_fireball(GameActor* actor) {
 	FLAG_ON(actor, FLG_DESTROY);
 }
 
-void hit_fireball(GameActor* actor, GameActor* from, int32_t points) {
+void hit_fireball(GameActor* actor, GameActor* from, Sint32 points) {
 	if (actor == NULL || from == NULL)
 		return;
 
@@ -224,7 +224,7 @@ void hit_fireball(GameActor* actor, GameActor* from, int32_t points) {
 		return;
 
 	give_points(actor, player, points);
-	kill_enemy(actor, from, true);
+	kill_enemy(actor, from, TRUE);
 	FLAG_ON(from, FLG_DESTROY);
 }
 
@@ -235,7 +235,7 @@ void block_beetroot(GameActor* actor) {
 	FLAG_ON(actor, FLG_MISSILE_HIT);
 }
 
-void hit_beetroot(GameActor* actor, GameActor* from, int32_t points) {
+void hit_beetroot(GameActor* actor, GameActor* from, Sint32 points) {
 	if (actor == NULL || from == NULL)
 		return;
 
@@ -244,11 +244,11 @@ void hit_beetroot(GameActor* actor, GameActor* from, int32_t points) {
 		return;
 
 	give_points(actor, player, points);
-	kill_enemy(actor, from, true);
+	kill_enemy(actor, from, TRUE);
 	FLAG_ON(from, FLG_MISSILE_HIT);
 }
 
-void hit_hammer(GameActor* actor, GameActor* from, int32_t points) {
+void hit_hammer(GameActor* actor, GameActor* from, Sint32 points) {
 	hit_bump(actor, from, points);
 }
 
@@ -280,7 +280,7 @@ static void create_dead(GameActor* actor) {
 }
 
 static void tick_dead(GameActor* actor) {
-	if (!in_any_view(actor, FxZero, true)) {
+	if (!in_any_view(actor, FxZero, TRUE)) {
 		switch (VAL(actor, DEAD_TYPE)) {
 		default:
 			break;
@@ -289,7 +289,7 @@ static void tick_dead(GameActor* actor) {
 			if (++VAL(actor, DEAD_RESPAWN) <= 300L)
 				return;
 			GameActor* lakitu = create_actor(
-				ACT_LAKITU, (fvec2){game_state.size.x + FfInt(200L), FfInt(57L + rng(31L))});
+				ACT_LAKITU, (FVec2){game_state.size.x + FfInt(200L), FfInt(57L + rng(31L))});
 			if (lakitu != NULL) {
 				FLAG_ON(lakitu, actor->flags & FLG_LAKITU_GREEN);
 				break;
@@ -301,7 +301,7 @@ static void tick_dead(GameActor* actor) {
 			if (++VAL(actor, DEAD_RESPAWN) <= 300L)
 				return;
 			if (create_actor(ACT_BOSS_BASS,
-				    (fvec2){game_state.size.x + FfInt(200L), game_state.water + FfInt(32L)})
+				    (FVec2){game_state.size.x + FfInt(200L), game_state.water + FfInt(32L)})
 				!= NULL)
 				break;
 			return;

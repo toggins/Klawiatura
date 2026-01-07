@@ -34,11 +34,11 @@ enum {
 // ===
 
 static void load() {
-	load_texture_num("enemies/bro%u", 2L, false);
+	load_texture_num("enemies/bro%u", 2L, FALSE);
 
-	load_sound("hammer", false);
-	load_sound("stomp", false);
-	load_sound("kick", false);
+	load_sound("hammer", FALSE);
+	load_sound("stomp", FALSE);
+	load_sound("kick", FALSE);
 	load_actor(ACT_POINTS);
 }
 
@@ -48,17 +48,17 @@ static void load_special(const GameActor* actor) {
 		break;
 
 	case ACT_MISSILE_HAMMER:
-		load_texture_num("enemies/bro_hammer%u", 2L, false);
+		load_texture_num("enemies/bro_hammer%u", 2L, FALSE);
 		break;
 
 	case ACT_MISSILE_FIREBALL: {
-		load_texture_num("enemies/bro_fire%u", 2L, false);
-		load_sound("fire", false);
+		load_texture_num("enemies/bro_fire%u", 2L, FALSE);
+		load_sound("fire", FALSE);
 		break;
 	}
 
 	case ACT_MISSILE_SILVER_HAMMER:
-		load_texture_num("enemies/bro_silver%u", 2L, false);
+		load_texture_num("enemies/bro_silver%u", 2L, FALSE);
 		break;
 	}
 	load_actor(VAL(actor, BRO_MISSILE));
@@ -89,7 +89,7 @@ static void tick(GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_BRO_ACTIVE)) {
 		if (VAL(actor, BRO_MOVE) == 0L)
 			VAL(actor, BRO_TEMP2) += VAL(actor, BRO_TEMP5);
-	} else if (in_any_view(actor, FxZero, false)) {
+	} else if (in_any_view(actor, FxZero, FALSE)) {
 		FLAG_ON(actor, FLG_BRO_ACTIVE);
 		VAL(actor, BRO_TEMP2) = 101L;
 		VAL(actor, BRO_TEMP3) = VAL(actor, BRO_TEMP5) = 1L;
@@ -176,7 +176,7 @@ static void tick(GameActor* actor) {
 		VAL(actor, BRO_JUMP) = 0L;
 	}
 
-	if (((game_state.time * 2L) % 5L) == 0L && in_any_view(actor, FxZero, false) && ANY_FLAG(actor, FLG_BRO_ACTIVE))
+	if (((game_state.time * 2L) % 5L) == 0L && in_any_view(actor, FxZero, FALSE) && ANY_FLAG(actor, FLG_BRO_ACTIVE))
 	{
 		VAL(actor, BRO_THROW) = rng((game_state.flags & (GF_HARDCORE | GF_LOST | GF_FUNNY)) ? 11L : 20L);
 		FLAG_ON(actor, FLG_BRO_TEMP30 | FLG_BRO_TEMP31);
@@ -231,8 +231,9 @@ static void tick(GameActor* actor) {
 			|| (VAL(actor, BRO_JUMP_STATE) == 1L && VAL(actor, Y_SPEED) > FxZero)
 			|| (VAL(actor, BRO_JUMP_STATE) == 2L && actor->pos.y > VAL(actor, BRO_DOWN))))
 	{
-		fixed i = VAL(actor, Y_SPEED),
-		      jut = FfInt((int32_t)(VAL(actor, Y_SPEED) > FxZero) - (int32_t)(VAL(actor, Y_SPEED) < FxZero));
+		Fixed i = VAL(actor, Y_SPEED);
+		const Fixed jut
+			= FfInt((Sint32)(VAL(actor, Y_SPEED) > FxZero) - (Sint32)(VAL(actor, Y_SPEED) < FxZero));
 
 		while (i >= FxOne) {
 			if (touching_solid(HITBOX_ADD(actor, FxZero, jut), SOL_ALL))
@@ -282,7 +283,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
 	case ACT_PLAYER: {
 		if (check_stomp(actor, from, FfInt(-16L), 200L))
-			kill_enemy(actor, from, false);
+			kill_enemy(actor, from, FALSE);
 		else
 			maybe_hit_player(actor, from);
 		break;

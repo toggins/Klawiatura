@@ -7,10 +7,10 @@
 // ===========
 
 static void load_bullet() {
-	load_texture("enemies/bullet", false);
+	load_texture("enemies/bullet", FALSE);
 
-	load_sound("stomp", false);
-	load_sound("kick", false);
+	load_sound("stomp", FALSE);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_POINTS);
 }
@@ -25,11 +25,11 @@ static void create_bullet(GameActor* actor) {
 static void tick_bullet(GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_ARTILLERY_DEAD)) {
 		VAL(actor, Y_SPEED) += 26214L;
-		if (!in_any_view(actor, FxZero, false)) {
+		if (!in_any_view(actor, FxZero, FALSE)) {
 			FLAG_ON(actor, FLG_DESTROY);
 			return;
 		}
-	} else if (!in_any_view(actor, FfInt(224L), false))
+	} else if (!in_any_view(actor, FfInt(224L), FALSE))
 		FLAG_ON(actor, FLG_DESTROY);
 
 	move_actor(actor, POS_SPEED(actor));
@@ -49,7 +49,7 @@ static void collide_bullet(GameActor* actor, GameActor* from) {
 
 	case ACT_PLAYER: {
 		if (check_stomp(actor, from, FxZero, 100L))
-			kill_enemy(actor, from, false);
+			kill_enemy(actor, from, FALSE);
 		else
 			maybe_hit_player(actor, from);
 		break;
@@ -85,8 +85,8 @@ const GameActorTable TAB_BULLET_BILL = {.load = load_bullet,
 // ============
 
 static void load_blaster() {
-	load_sound("bang", false);
-	load_sound("bang4", false);
+	load_sound("bang", FALSE);
+	load_sound("bang4", FALSE);
 
 	load_actor(ACT_BULLET_BILL);
 	load_actor(ACT_EXPLODE);
@@ -102,7 +102,7 @@ static void tick_blaster(GameActor* actor) {
 
 	GameActor* nearest = nearest_pawn(POS_ADD(actor, FfInt(16L), FfInt(16L)));
 	if (nearest != NULL) {
-		const fixed x = actor->pos.x + FfInt(16L);
+		const Fixed x = actor->pos.x + FfInt(16L);
 		if (nearest->pos.x < x)
 			FLAG_ON(actor, FLG_X_FLIP);
 		else if (nearest->pos.x > x)
@@ -111,7 +111,7 @@ static void tick_blaster(GameActor* actor) {
 			FLAG_ON(actor, FLG_ARTILLERY_BLOCKED);
 	}
 
-	if (!ANY_FLAG(actor, FLG_ARTILLERY_BLOCKED) && in_any_view(actor, FxZero, false))
+	if (!ANY_FLAG(actor, FLG_ARTILLERY_BLOCKED) && in_any_view(actor, FxZero, FALSE))
 		++VAL(actor, ARTILLERY_TIME);
 
 	if (VAL(actor, ARTILLERY_TIME) <= 25L)
@@ -119,7 +119,7 @@ static void tick_blaster(GameActor* actor) {
 	GameActor* bullet = create_actor(
 		ACT_BULLET_BILL, POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? FxZero : FfInt(32L), FfInt(16L)));
 	if (bullet != NULL) {
-		const fixed spd = (game_state.flags & GF_FUNNY) ? 425984L : 212992L;
+		const Fixed spd = (game_state.flags & GF_FUNNY) ? 425984L : 212992L;
 		VAL(bullet, X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -spd : spd;
 		FLAG_ON(bullet, actor->flags & FLG_X_FLIP);
 		create_actor(ACT_EXPLODE, bullet->pos);
@@ -136,9 +136,9 @@ const GameActorTable TAB_BILL_BLASTER = {.load = load_blaster, .create = create_
 // =================
 
 static void load_spike_cannon() {
-	load_texture("enemies/spike_cannon", false);
+	load_texture("enemies/spike_cannon", FALSE);
 
-	load_sound("bang2", false);
+	load_sound("bang2", FALSE);
 
 	load_actor(ACT_SPIKE_BALL);
 	load_actor(ACT_EXPLODE);
@@ -150,7 +150,7 @@ static void create_spike_cannon(GameActor* actor) {
 }
 
 static void tick_spike_cannon(GameActor* actor) {
-	if ((game_state.time % ((game_state.flags & GF_FUNNY) ? 20L : 50L)) == 0L && in_any_view(actor, FxZero, false))
+	if ((game_state.time % ((game_state.flags & GF_FUNNY) ? 20L : 50L)) == 0L && in_any_view(actor, FxZero, FALSE))
 		++VAL(actor, ARTILLERY_TIME);
 
 	if (VAL(actor, ARTILLERY_TIME) < 2L)
@@ -183,7 +183,7 @@ const GameActorTable TAB_SPIKE_CANNON = {.is_solid = always_solid,
 // ==========
 
 static void load_spike() {
-	load_texture("missiles/spike_ball", false);
+	load_texture("missiles/spike_ball", FALSE);
 
 	load_actor(ACT_SPIKE_BALL_EFFECT);
 }
@@ -203,7 +203,7 @@ static void tick_spike(GameActor* actor) {
 	VAL(actor, Y_SPEED) += 6554L;
 	move_actor(actor, POS_SPEED(actor));
 
-	if ((game_state.time % 3L) == 0L && in_any_view(actor, FxZero, false))
+	if ((game_state.time % 3L) == 0L && in_any_view(actor, FxZero, FALSE))
 		align_interp(create_actor(ACT_SPIKE_BALL_EFFECT, actor->pos), actor);
 }
 
@@ -223,7 +223,7 @@ const GameActorTable TAB_SPIKE_BALL = {
 // =================
 
 static void load_spike_effect() {
-	load_texture("missiles/spike_ball", false);
+	load_texture("missiles/spike_ball", FALSE);
 }
 
 static void create_spike_effect(GameActor* actor) {

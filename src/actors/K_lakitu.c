@@ -5,15 +5,15 @@
 #include "actors/K_spiny.h"
 
 static void load() {
-	load_texture_num("enemies/lakitu%u", 10L, false);
-	load_texture_num("enemies/lakitu_cloud%u", 7L, false);
-	load_texture_num("enemies/lakitu_throw%u", 11L, false);
+	load_texture_num("enemies/lakitu%u", 10L, FALSE);
+	load_texture_num("enemies/lakitu_cloud%u", 7L, FALSE);
+	load_texture_num("enemies/lakitu_throw%u", 11L, FALSE);
 
-	load_sound("lakitu", false);
-	load_sound("lakitu2", false);
-	load_sound("lakitu3", false);
-	load_sound("stomp", false);
-	load_sound("kick", false);
+	load_sound("lakitu", FALSE);
+	load_sound("lakitu2", FALSE);
+	load_sound("lakitu3", FALSE);
+	load_sound("stomp", FALSE);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_SPINY_EGG);
 	load_actor(ACT_POINTS);
@@ -65,7 +65,7 @@ static void tick(GameActor* actor) {
 					VAL(actor, X_SPEED) -= FxOne;
 			}
 
-			if (in_any_view(actor, FfInt(-32L), false))
+			if (in_any_view(actor, FfInt(-32L), FALSE))
 				VAL(actor, LAKITU_THROW) += (game_state.flags & GF_HARDCORE) ? 5L : 1L;
 		} else if (VAL(actor, X_SPEED) > FfInt(-2L))
 			VAL(actor, X_SPEED) -= FxOne;
@@ -223,7 +223,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		if (VAL(actor, PLAYER_STARMAN) > 0L)
 			player_starman(from, actor);
 		else if (check_stomp(actor, from, FfInt(-16L), 100L))
-			kill_enemy(actor, from, false);
+			kill_enemy(actor, from, FALSE);
 		break;
 
 	case ACT_KOOPA_SHELL:

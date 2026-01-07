@@ -39,7 +39,7 @@ static const char* log_levels[SDL_LOG_PRIORITY_COUNT] = {
 	[SDL_LOG_PRIORITY_INFO] = "INFO",
 	[SDL_LOG_PRIORITY_WARN] = "WARN",
 	[SDL_LOG_PRIORITY_ERROR] = "ERROR",
-	[SDL_LOG_PRIORITY_CRITICAL] = "SHIT",
+	[SDL_LOG_PRIORITY_CRITICAL] = "FATAL",
 };
 
 static void klaw_logger(void* userdata, int category, SDL_LogPriority priority, const char* message) {

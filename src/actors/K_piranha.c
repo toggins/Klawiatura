@@ -26,12 +26,12 @@ enum {
 // =============
 
 static void load() {
-	load_texture_num("enemies/piranha%u", 2L, false);
-	load_texture_num("enemies/piranha_red%u", 2L, false);
-	load_texture_num("enemies/piranha_fire%u", 2L, false);
+	load_texture_num("enemies/piranha%u", 2L, FALSE);
+	load_texture_num("enemies/piranha_red%u", 2L, FALSE);
+	load_texture_num("enemies/piranha_fire%u", 2L, FALSE);
 
-	load_sound("fire", false);
-	load_sound("kick", false);
+	load_sound("fire", FALSE);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_PIRANHA_FIRE);
 	load_actor(ACT_POINTS);
@@ -63,13 +63,13 @@ static void tick(GameActor* actor) {
 
 	GameActor* nearest = nearest_pawn(actor->pos);
 	if (nearest != NULL) {
-		const fixed range = ANY_FLAG(actor, FLG_PIRANHA_RED) ? FfInt(40L) : FfInt(80L);
+		const Fixed range = ANY_FLAG(actor, FLG_PIRANHA_RED) ? FfInt(40L) : FfInt(80L);
 		if (actor->pos.x < (nearest->pos.x + range) && actor->pos.x > (nearest->pos.x - range))
 			FLAG_ON(actor, FLG_PIRANHA_BLOCKED);
 	}
 
 	if (!ANY_FLAG(actor, FLG_PIRANHA_BLOCKED | FLG_PIRANHA_OUT | FLG_PIRANHA_IN)
-		&& in_any_view(actor, FfInt(96L), false))
+		&& in_any_view(actor, FfInt(96L), FALSE))
 	{
 		FLAG_ON(actor, FLG_PIRANHA_OUT);
 		VAL(actor, PIRANHA_MOVE) = -60L;
@@ -176,7 +176,7 @@ const GameActorTable TAB_PIRANHA_PLANT = {
 // ============
 
 static void load_fire() {
-	load_texture("missiles/fireball", false);
+	load_texture("missiles/fireball", FALSE);
 }
 
 static void create_fire(GameActor* actor) {
@@ -185,7 +185,7 @@ static void create_fire(GameActor* actor) {
 }
 
 static void tick_fire(GameActor* actor) {
-	if (!in_any_view(actor, FxZero, true)) {
+	if (!in_any_view(actor, FxZero, TRUE)) {
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}
@@ -216,10 +216,10 @@ const GameActorTable TAB_PIRANHA_FIRE = {
 // ============
 
 static void load_head() {
-	load_texture_num("enemies/piranha_head%u", 3L, false);
-	load_texture_num("enemies/piranha_head_fire%u", 3L, false);
+	load_texture_num("enemies/piranha_head%u", 3L, FALSE);
+	load_texture_num("enemies/piranha_head_fire%u", 3L, FALSE);
 
-	load_sound("fire", false);
+	load_sound("fire", FALSE);
 
 	load_actor(ACT_PIRANHA_FIRE);
 }
@@ -258,7 +258,7 @@ static void tick_head(GameActor* actor) {
 		--VAL(actor, PIRANHA_FIRE);
 	}
 
-	if (in_any_view(actor, FxZero, false))
+	if (in_any_view(actor, FxZero, FALSE))
 		if (++VAL(actor, PIRANHA_WAIT) >= 200L) {
 			VAL(actor, PIRANHA_FIRE) = (game_state.flags & GF_FUNNY) ? 30L : 3L;
 			VAL(actor, PIRANHA_WAIT) = 0L;

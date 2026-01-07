@@ -24,7 +24,7 @@ const char* log_basename(const char*);
 			return;                                                                                        \
 		}                                                                                                      \
 	} while (0)
-#define BAKA(expr, ...)                                                                                                \
+#define WHATEVER(expr, ...)                                                                                            \
 	do {                                                                                                           \
 		if (!(expr)) {                                                                                         \
 			WARN(__VA_ARGS__);                                                                             \

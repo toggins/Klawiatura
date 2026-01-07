@@ -1,14 +1,15 @@
 #pragma once
 
+#include "K_math.h"
 #include "K_memory.h" // IWYU pragma: keep
 
 typedef struct {
 	char* name;
-	bool transient;
+	Bool transient;
 } AssetBase;
 
 #define ASSET_HEAD(M, T, A)                                                                                            \
-	void load_##A(const char*, bool);                                                                              \
+	void load_##A(const char*, Bool);                                                                              \
 	const T* get_##A(const char*);                                                                                 \
 	const T* get_##A##_key(StTinyKey);                                                                             \
 	void clear_##M();

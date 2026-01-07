@@ -17,46 +17,46 @@
 // ================
 
 static void load_player_textures() {
-	load_texture("player/mario/dead", false);
-	load_texture_num("player/mario/grow%u", 3L, false);
+	load_texture("player/mario/dead", FALSE);
+	load_texture_num("player/mario/grow%u", 3L, FALSE);
 
-	load_texture("player/mario/small/idle", false);
-	load_texture_num("player/mario/small/walk%u", 2L, false);
-	load_texture("player/mario/small/jump", false);
-	load_texture_num("player/mario/small/swim%u", 4L, false);
+	load_texture("player/mario/small/idle", FALSE);
+	load_texture_num("player/mario/small/walk%u", 2L, FALSE);
+	load_texture("player/mario/small/jump", FALSE);
+	load_texture_num("player/mario/small/swim%u", 4L, FALSE);
 
-	load_texture("player/mario/big/idle", false);
-	load_texture_num("player/mario/big/walk%u", 2L, false);
-	load_texture("player/mario/big/jump", false);
-	load_texture("player/mario/big/duck", false);
-	load_texture_num("player/mario/big/swim%u", 4L, false);
+	load_texture("player/mario/big/idle", FALSE);
+	load_texture_num("player/mario/big/walk%u", 2L, FALSE);
+	load_texture("player/mario/big/jump", FALSE);
+	load_texture("player/mario/big/duck", FALSE);
+	load_texture_num("player/mario/big/swim%u", 4L, FALSE);
 
-	load_texture("player/mario/fire/idle", false);
-	load_texture_num("player/mario/fire/walk%u", 2L, false);
-	load_texture("player/mario/fire/jump", false);
-	load_texture("player/mario/fire/duck", false);
-	load_texture("player/mario/fire/fire", false);
-	load_texture_num("player/mario/fire/swim%u", 4L, false);
+	load_texture("player/mario/fire/idle", FALSE);
+	load_texture_num("player/mario/fire/walk%u", 2L, FALSE);
+	load_texture("player/mario/fire/jump", FALSE);
+	load_texture("player/mario/fire/duck", FALSE);
+	load_texture("player/mario/fire/fire", FALSE);
+	load_texture_num("player/mario/fire/swim%u", 4L, FALSE);
 
-	load_texture("player/mario/beetroot/idle", false);
-	load_texture_num("player/mario/beetroot/walk%u", 2L, false);
-	load_texture("player/mario/beetroot/jump", false);
-	load_texture("player/mario/beetroot/duck", false);
-	load_texture("player/mario/beetroot/fire", false);
-	load_texture_num("player/mario/beetroot/swim%u", 4L, false);
+	load_texture("player/mario/beetroot/idle", FALSE);
+	load_texture_num("player/mario/beetroot/walk%u", 2L, FALSE);
+	load_texture("player/mario/beetroot/jump", FALSE);
+	load_texture("player/mario/beetroot/duck", FALSE);
+	load_texture("player/mario/beetroot/fire", FALSE);
+	load_texture_num("player/mario/beetroot/swim%u", 4L, FALSE);
 
-	load_texture("player/mario/lui/idle", false);
-	load_texture_num("player/mario/lui/walk%u", 2L, false);
-	load_texture("player/mario/lui/jump", false);
-	load_texture("player/mario/lui/duck", false);
-	load_texture_num("player/mario/lui/swim%u", 4L, false);
+	load_texture("player/mario/lui/idle", FALSE);
+	load_texture_num("player/mario/lui/walk%u", 2L, FALSE);
+	load_texture("player/mario/lui/jump", FALSE);
+	load_texture("player/mario/lui/duck", FALSE);
+	load_texture_num("player/mario/lui/swim%u", 4L, FALSE);
 
-	load_texture("player/mario/hammer/idle", false);
-	load_texture_num("player/mario/hammer/walk%u", 2L, false);
-	load_texture("player/mario/hammer/jump", false);
-	load_texture("player/mario/hammer/duck", false);
-	load_texture("player/mario/hammer/fire", false);
-	load_texture_num("player/mario/hammer/swim%u", 4L, false);
+	load_texture("player/mario/hammer/idle", FALSE);
+	load_texture_num("player/mario/hammer/walk%u", 2L, FALSE);
+	load_texture("player/mario/hammer/jump", FALSE);
+	load_texture("player/mario/hammer/duck", FALSE);
+	load_texture("player/mario/hammer/fire", FALSE);
+	load_texture_num("player/mario/hammer/swim%u", 4L, FALSE);
 }
 
 PlayerFrame get_player_frame(const GameActor* actor) {
@@ -118,7 +118,7 @@ PlayerFrame get_player_frame(const GameActor* actor) {
 
 	if (VAL(actor, PLAYER_GROUND) <= 0L) {
 		if (ANY_FLAG(actor, FLG_PLAYER_SWIM)) {
-			const int32_t frame = FtInt(VAL(actor, PLAYER_FRAME));
+			const Sint32 frame = FtInt(VAL(actor, PLAYER_FRAME));
 			switch (frame) {
 			case 0L:
 			case 3L:
@@ -393,20 +393,20 @@ Bool hit_player(GameActor* actor) {
 	if (actor == NULL || actor->type != ACT_PLAYER || VAL(actor, PLAYER_FLASH) > 0L
 		|| VAL(actor, PLAYER_STARMAN) > 0L || get_actor(VAL(actor, PLAYER_WARP)) != NULL
 		|| game_state.sequence.type == SEQ_WIN)
-		return false;
+		return FALSE;
 
 	GamePlayer* player = get_owner(actor);
 	if (player != NULL) {
 		if (player->power == POW_SMALL) {
 			kill_player(actor);
-			return true;
+			return TRUE;
 		}
 		player->power = (player->power == POW_BIG) ? POW_SMALL : POW_BIG;
 	}
 
 	VAL(actor, PLAYER_POWER) = 3000L, VAL(actor, PLAYER_FLASH) = 100L;
 	play_actor_sound(actor, "warp");
-	return true;
+	return TRUE;
 }
 
 void kill_player(GameActor* actor) {
@@ -449,7 +449,7 @@ void kill_player(GameActor* actor) {
 			hud_message(fmt("%s is out of lives!", get_player_name(player->id)));
 	}
 
-	Bool all_dead = true;
+	Bool all_dead = TRUE;
 	switch (game_state.sequence.type) {
 	default: {
 		if (game_state.clock == 0L || (game_state.flags & GF_SINGLE))
@@ -460,10 +460,10 @@ void kill_player(GameActor* actor) {
 		if (warp != NULL && (ANY_FLAG(warp, FLG_WARP_EXIT) || VAL(warp, WARP_STRING) != 0L))
 			break;
 
-		for (PlayerID i = 0; i < numplayers(); i++) {
+		for (PlayerID i = 0L; i < numplayers(); i++) {
 			GamePlayer* survivor = get_player(i);
 			if (survivor != NULL && (survivor->lives >= 0L || (game_state.flags & GF_HELL))) {
-				all_dead = false;
+				all_dead = FALSE;
 				break;
 			}
 		}
@@ -516,7 +516,7 @@ void win_player(GameActor* actor) {
 
 		GameActor* kevin = get_actor(p->kevin.actor);
 		if (kevin != NULL) {
-			create_actor(ACT_EXPLODE, (fvec2){kevin->pos.x, kevin->pos.y - FfInt(16L)});
+			create_actor(ACT_EXPLODE, (FVec2){kevin->pos.x, kevin->pos.y - FfInt(16L)});
 			FLAG_ON(kevin, FLG_DESTROY);
 		}
 		p->kevin.actor = NULLACT;
@@ -527,7 +527,7 @@ void win_player(GameActor* actor) {
 		if (missile == NULL)
 			goto clear_missile;
 
-		int32_t points = 100L;
+		Sint32 points = 100L;
 		switch (missile->type) {
 		default:
 			break;
@@ -556,14 +556,14 @@ void win_player(GameActor* actor) {
 
 	for (TrackSlots i = 0L; i < (TrackSlots)TS_SIZE; i++)
 		stop_state_track(i);
-	play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? (was_bowser ? "win3" : "win2") : "win", false);
+	play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? (was_bowser ? "win3" : "win2") : "win", 0L);
 }
 
 void player_starman(GameActor* actor, GameActor* from) {
 	if (actor == NULL || from == NULL)
 		return;
 
-	int32_t points = 0L;
+	Sint32 points = 0L;
 	switch (VAL(actor, PLAYER_STARMAN_COMBO)++) {
 	case 0L:
 		points = 100L;
@@ -592,9 +592,9 @@ void player_starman(GameActor* actor, GameActor* from) {
 	give_points(from, get_owner(actor), points);
 
 	create_actor(ACT_EXPLODE,
-		(fvec2){Flerp(Fadd(from->pos.x, from->box.start.x), Fadd(from->pos.x, from->box.end.x), FxHalf),
+		(FVec2){Flerp(Fadd(from->pos.x, from->box.start.x), Fadd(from->pos.x, from->box.end.x), FxHalf),
 			Flerp(Fadd(from->pos.y, from->box.start.y), Fadd(from->pos.y, from->box.end.y), FxHalf)});
-	kill_enemy(from, actor, true);
+	kill_enemy(from, actor, TRUE);
 }
 
 // ============
@@ -612,12 +612,12 @@ static void create_spawn(GameActor* actor) {
 static void tick_spawn(GameActor* actor) {
 	if ((game_state.flags & GF_HUB) || !(game_state.flags & GF_FRED) || ANY_FLAG(actor, FLG_PLAYER_FRED)
 		|| (VAL(actor, PLAYER_SPAWN_FRED) <= 0L
-			&& !(game_state.spawn == actor->id || in_any_view(actor, FxZero, false))))
+			&& !(game_state.spawn == actor->id || in_any_view(actor, FxZero, FALSE))))
 		return;
 	if (++VAL(actor, PLAYER_SPAWN_FRED) < 50L)
 		return;
 
-	fvec2 pos = actor->pos;
+	FVec2 pos = actor->pos;
 	if (game_state.spawn == actor->id) {
 		GameActor* checkpoint = get_actor(game_state.checkpoint);
 		if (checkpoint != NULL)
@@ -647,18 +647,18 @@ const GameActorTable TAB_PLAYER_SPAWN = {
 static void load() {
 	load_player_textures();
 
-	load_sound("jump", false);
-	load_sound("fire", false);
-	load_sound("swim", false);
-	load_sound("warp", false);
-	load_sound("starman", false);
-	load_sound("bump", false);
-	load_sound("stomp", false);
-	load_sound("respawn", false);
+	load_sound("jump", FALSE);
+	load_sound("fire", FALSE);
+	load_sound("swim", FALSE);
+	load_sound("warp", FALSE);
+	load_sound("starman", FALSE);
+	load_sound("bump", FALSE);
+	load_sound("stomp", FALSE);
+	load_sound("respawn", FALSE);
 
-	load_track("win", false);
-	load_track("win2", false);
-	load_track("win3", false);
+	load_track("win", FALSE);
+	load_track("win2", FALSE);
+	load_track("win3", FALSE);
 
 	load_actor(ACT_PLAYER_EFFECT);
 	load_actor(ACT_PLAYER_DEAD);
@@ -697,7 +697,7 @@ static void tick(GameActor* actor) {
 
 	if (ANY_FLAG(actor, FLG_PLAYER_RESPAWN)) {
 		if (touching_solid(HITBOX(actor), SOL_SOLID)) {
-			move_actor(actor, (fvec2){Flerp(game_state.bounds.start.x, game_state.bounds.end.x, FxHalf),
+			move_actor(actor, (FVec2){Flerp(game_state.bounds.start.x, game_state.bounds.end.x, FxHalf),
 						  actor->pos.y + FxOne});
 			return;
 		} else
@@ -779,9 +779,9 @@ static void tick(GameActor* actor) {
 
 						hud_message(fmt("%s found a secret!",
 							(numplayers() <= 1L) ? "You" : get_player_name(player->id)));
-						for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++)
+						for (TrackSlots i = 0L; i < (TrackSlots)TS_SIZE; i++)
 							stop_state_track(i);
-						play_state_track(TS_FANFARE, "warp", 0);
+						play_state_track(TS_FANFARE, "warp", 0L);
 					} else
 						game_state.flags |= GF_END;
 
@@ -798,7 +798,7 @@ static void tick(GameActor* actor) {
 					player->bounds.end.y = VAL(warp, WARP_BOUNDS_Y2);
 				}
 
-				fvec2 wpos = {VAL(warp, WARP_X), VAL(warp, WARP_Y)};
+				FVec2 wpos = {VAL(warp, WARP_X), VAL(warp, WARP_Y)};
 				switch (VAL(warp, WARP_ANGLE)) {
 				default:
 					break;
@@ -829,21 +829,21 @@ static void tick(GameActor* actor) {
 	const ActorID pfid = (ActorID)VAL(actor, PLAYER_PLATFORM);
 	GameActor* platform = get_actor(pfid);
 	if (platform != NULL) {
-		const fixed vx = VAL(actor, X_SPEED), vy = VAL(actor, Y_SPEED),
+		const Fixed vx = VAL(actor, X_SPEED), vy = VAL(actor, Y_SPEED),
 			    pvx = platform->pos.x - VAL(platform, PLATFORM_X_FROM),
 			    pvy = platform->pos.y - VAL(platform, PLATFORM_Y_FROM);
 
 		VAL(actor, X_SPEED) = pvx, VAL(actor, Y_SPEED) = pvy;
-		displace_actor(actor, FxZero, false);
+		displace_actor(actor, FxZero, FALSE);
 		VAL(actor, X_SPEED) = vx, VAL(actor, Y_SPEED) = vy;
 
-		frect mbox = HITBOX_ADD(actor, pvx, pvy);
+		FRect mbox = HITBOX_ADD(actor, pvx, pvy);
 		mbox.end.y += FxOne;
-		const frect pbox = HITBOX(platform);
+		const FRect pbox = HITBOX(platform);
 		VAL(actor, PLAYER_PLATFORM) = Rcollide(mbox, pbox) ? pfid : NULLACT;
 	}
 
-	fixed foot_y = actor->pos.y - FxOne;
+	Fixed foot_y = actor->pos.y - FxOne;
 	const Bool cant_run = (!ANY_INPUT(player, GI_RUN) || foot_y >= game_state.water),
 		   jumped = ANY_PRESSED(player, GI_JUMP);
 
@@ -959,7 +959,7 @@ static void tick(GameActor* actor) {
 		if (VAL(actor, Y_SPEED) >= FxZero)
 			FLAG_OFF(actor, FLG_PLAYER_ASCEND);
 	} else {
-		displace_actor(actor, FfInt(10L), true);
+		displace_actor(actor, FfInt(10L), TRUE);
 		if (VAL(actor, Y_TOUCH) > 0L)
 			VAL(actor, PLAYER_GROUND) = GROUND_TIME;
 
@@ -968,7 +968,7 @@ static void tick(GameActor* actor) {
 			if (game_state.sequence.type != SEQ_WIN) {
 				if ((actor->pos.x + actor->box.start.x) < game_state.bounds.start.x) {
 					move_actor(actor,
-						(fvec2){game_state.bounds.start.x - actor->box.start.x, actor->pos.y});
+						(FVec2){game_state.bounds.start.x - actor->box.start.x, actor->pos.y});
 					VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED), FxZero);
 					VAL(actor, X_TOUCH) = -1L;
 
@@ -977,7 +977,7 @@ static void tick(GameActor* actor) {
 				}
 				if ((actor->pos.x + actor->box.end.x) > game_state.bounds.end.x) {
 					move_actor(actor,
-						(fvec2){(game_state.bounds.end.x - actor->box.end.x), actor->pos.y});
+						(FVec2){(game_state.bounds.end.x - actor->box.end.x), actor->pos.y});
 					VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED), FxZero);
 					VAL(actor, X_TOUCH) = 1L;
 
@@ -1161,8 +1161,8 @@ skip_physics:
 		&& ((player->kevin.delay <= 0L && Vdist(actor->pos, player->kevin.start) > FxOne)
 			|| player->kevin.delay > 0L))
 	{
-		for (uint32_t i = 0L; i < (KEVIN_DELAY - 1L); i++) {
-			const uint32_t j = i + 1L;
+		for (Uint32 i = 0L; i < (KEVIN_DELAY - 1L); i++) {
+			const Uint32 j = i + 1L;
 			player->kevin.frames[i].pos = player->kevin.frames[j].pos;
 			player->kevin.frames[i].power = player->kevin.frames[j].power;
 			player->kevin.frames[i].frame = player->kevin.frames[j].frame;
@@ -1199,12 +1199,12 @@ static void draw(const GameActor* actor) {
 
 	const char* tex = get_player_texture(player->power, get_player_frame(actor));
 	// !!! CLIENT-SIDE !!!
-	const GLfloat a = (localplayer() == player->id) ? 255L : 191L;
+	const float a = (localplayer() == player->id) ? 255L : 191L;
 	// !!! CLIENT-SIDE !!!
 	draw_actor_no_jitter(actor, tex, 0.f, B_ALPHA(a));
 
 	if (VAL(actor, PLAYER_STARMAN) > 0L) {
-		GLfloat r = 248L, g = 0L, b = 0L;
+		float r = 0.9725490196078431f, g = 0.f, b = 0.f;
 		switch (game_state.time % 5L) {
 		default:
 			break;
@@ -1315,15 +1315,15 @@ const GameActorTable TAB_PLAYER = {
 // ===========
 
 static void load_corpse() {
-	load_texture("player/mario/dead", false);
+	load_texture("player/mario/dead", FALSE);
 
-	load_sound("lose", false);
-	load_sound("dead", false);
-	load_sound("hardcore", false);
+	load_sound("lose", FALSE);
+	load_sound("dead", FALSE);
+	load_sound("hardcore", FALSE);
 
-	load_track("lose", false);
-	load_track("lose2", false);
-	load_track("game_over", false);
+	load_track("lose", FALSE);
+	load_track("lose2", FALSE);
+	load_track("game_over", FALSE);
 }
 
 static void create_corpse(GameActor* actor) {
@@ -1366,7 +1366,7 @@ static void tick_corpse(GameActor* actor) {
 
 			for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++)
 				stop_state_track(i);
-			play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? "lose2" : "lose", false);
+			play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? "lose2" : "lose", 0L);
 		} else
 			play_actor_sound(
 				actor, (player->lives >= 0L || (game_state.flags & GF_HELL)) ? "lose" : "dead");
@@ -1393,7 +1393,7 @@ static void tick_corpse(GameActor* actor) {
 
 	case 200L: {
 		if (game_state.sequence.type == SEQ_LOSE)
-			for (PlayerID i = 0; i < numplayers(); i++) {
+			for (PlayerID i = 0L; i < numplayers(); i++) {
 				GamePlayer* p = get_player(i);
 				if (p != NULL && (p->lives >= 0L || (game_state.flags & GF_HELL))) {
 					game_state.flags |= GF_RESTART;
@@ -1409,7 +1409,7 @@ static void tick_corpse(GameActor* actor) {
 		{
 			game_state.sequence.type = SEQ_LOSE;
 			game_state.sequence.time = 1L;
-			play_state_track(TS_FANFARE, "game_over", false);
+			play_state_track(TS_FANFARE, "game_over", 0L);
 		}
 
 		FLAG_ON(actor, FLG_DESTROY);
@@ -1486,8 +1486,8 @@ const GameActorTable TAB_PLAYER_EFFECT = {
 static void load_kevin() {
 	load_player_textures();
 
-	load_sound("kevin_spawn", false);
-	load_sound("kevin_kill", false);
+	load_sound("kevin_spawn", FALSE);
+	load_sound("kevin_kill", FALSE);
 
 	load_actor(ACT_EXPLODE);
 }
@@ -1522,15 +1522,15 @@ static void draw_kevin(const GameActor* actor) {
 		return;
 
 	const InterpActor* iactor = get_interp(actor);
-	GLfloat pos[3] = {FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)};
-	GLubyte color[4] = {80, 80, 80, (localplayer() == player->id) ? 255 : 191};
-	const GLboolean flip[2] = {ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)};
+	float pos[3] = {FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)};
+	Uint8 color[4] = {80, 80, 80, (localplayer() == player->id) ? 255 : 191};
+	const Bool flip[2] = {ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)};
 	const char* tex = get_player_texture(player->kevin.frames[0].power, player->kevin.frames[0].frame);
 
 	batch_reset(), batch_pos(pos), batch_color(color), batch_flip(flip), batch_sprite(tex);
 	// THIS USES SDL_rand(), NOT rng() THAT ONE IS USED FOR THE GAME STATE
 	pos[0] += (float)(-5L + SDL_rand(11L)), pos[1] += (float)(-5L + SDL_rand(11L));
-	color[3] = (GLubyte)((GLfloat)color[3] * 0.75f);
+	color[3] = (Uint8)((float)color[3] * 0.75f);
 	batch_pos(pos), batch_color(color), batch_sprite(tex);
 }
 
@@ -1562,12 +1562,12 @@ const GameActorTable TAB_KEVIN = {
 // ====
 
 static void load_fred() {
-	load_texture("enemies/fred", false);
+	load_texture("enemies/fred", FALSE);
 
 	load_actor(ACT_EXPLODE);
 
 	if (video_state.fred_surface == NULL)
-		video_state.fred_surface = create_surface(86L, 86L, true, false);
+		video_state.fred_surface = create_surface(86L, 86L, TRUE, FALSE);
 }
 
 static void create_fred(GameActor* actor) {
@@ -1595,7 +1595,7 @@ static void tick_fred(GameActor* actor) {
 
 	GameActor* nearest = nearest_pawn(actor->pos);
 	if (nearest != NULL) {
-		if (!in_any_view(actor, FxZero, false)) {
+		if (!in_any_view(actor, FxZero, FALSE)) {
 			GamePlayer* player = get_owner(nearest);
 			if (player != NULL && !Rcollide(HITBOX(actor), player->bounds)
 				&& get_actor(VAL(nearest, PLAYER_WARP)) == NULL)
@@ -1606,7 +1606,7 @@ static void tick_fred(GameActor* actor) {
 			}
 		}
 		if (get_actor(VAL(nearest, PLAYER_WARP)) == NULL) {
-			const fixed dir = Vtheta(actor->pos, POS_ADD(nearest, FxZero, FfInt(-16L)));
+			const Fixed dir = Vtheta(actor->pos, POS_ADD(nearest, FxZero, FfInt(-16L)));
 			VAL(actor, X_SPEED) += Fmul(Fcos(dir), 10000L);
 			VAL(actor, Y_SPEED) += Fmul(Fsin(dir), 10000L);
 		}
@@ -1631,8 +1631,8 @@ static void draw_fred(const GameActor* actor) {
 	pop_surface();
 
 	const InterpActor* iactor = get_interp(actor);
-	const GLfloat ax = FtInt(iactor->pos.x), ay = FtInt(iactor->pos.y), az = FtFloat(actor->depth);
-	GLubyte col[4] = {255L, 255L, 255L, FtInt(VAL(actor, FRED_ALPHA))};
+	const float ax = FtInt(iactor->pos.x), ay = FtInt(iactor->pos.y), az = FtFloat(actor->depth);
+	Uint8 col[4] = {255L, 255L, 255L, FtInt(VAL(actor, FRED_ALPHA))};
 
 	batch_reset();
 	batch_pos(B_XYZ(ax, ay, az)), batch_offset(B_XY(43.f, 43.f)), batch_color(col);

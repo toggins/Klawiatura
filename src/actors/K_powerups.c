@@ -34,9 +34,9 @@ static void collide_powerup(GameActor* actor, GameActor* from, PlayerPower power
 // ========
 
 static void load_mushroom() {
-	load_texture("items/mushroom", false);
+	load_texture("items/mushroom", FALSE);
 
-	load_sound("grow", false);
+	load_sound("grow", FALSE);
 
 	load_actor(ACT_POINTS);
 }
@@ -60,7 +60,7 @@ static void tick_mushroom(GameActor* actor) {
 		return;
 
 	VAL(actor, Y_SPEED) += 19005L;
-	displace_actor(actor, FfInt(10L), false);
+	displace_actor(actor, FfInt(10L), FALSE);
 	if (VAL(actor, X_TOUCH) != 0L)
 		VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * FfInt(-2L);
 }
@@ -101,7 +101,7 @@ const GameActorTable TAB_MUSHROOM = {
 // ============
 
 static void load_1up_mushroom() {
-	load_texture("items/mushroom_1up", false);
+	load_texture("items/mushroom_1up", FALSE);
 	load_actor(ACT_POINTS);
 }
 
@@ -131,7 +131,7 @@ const GameActorTable TAB_MUSHROOM_1UP = {
 // ===============
 
 static void load_poison_mushroom() {
-	load_texture_num("items/mushroom_poison%u", 2L, false);
+	load_texture_num("items/mushroom_poison%u", 2L, FALSE);
 	load_actor(ACT_EXPLODE);
 }
 
@@ -167,9 +167,9 @@ const GameActorTable TAB_MUSHROOM_POISON = {.load = load_poison_mushroom,
 // ===========
 
 static void load_flower() {
-	load_texture_num("items/flower%u", 4L, false);
+	load_texture_num("items/flower%u", 4L, FALSE);
 
-	load_sound("grow", false);
+	load_sound("grow", FALSE);
 
 	load_actor(ACT_POINTS);
 }
@@ -204,8 +204,8 @@ const GameActorTable TAB_FIRE_FLOWER = {
 // ========
 
 static void load_beetroot() {
-	load_texture_num("items/beetroot%u", 3L, false);
-	load_sound("grow", false);
+	load_texture_num("items/beetroot%u", 3L, FALSE);
+	load_sound("grow", FALSE);
 	load_actor(ACT_POINTS);
 }
 
@@ -252,11 +252,11 @@ const GameActorTable TAB_BEETROOT = {
 // =========
 
 static void load_lui() {
-	load_texture_num("items/lui%u", 5L, false);
-	load_texture_num("items/lui_bounce%u", 3L, false);
+	load_texture_num("items/lui%u", 5L, FALSE);
+	load_texture_num("items/lui_bounce%u", 3L, FALSE);
 
-	load_sound("kick", false);
-	load_sound("grow", false);
+	load_sound("kick", FALSE);
+	load_sound("grow", FALSE);
 
 	load_actor(ACT_POINTS);
 }
@@ -278,7 +278,7 @@ static void tick_lui(GameActor* actor) {
 	}
 
 	VAL(actor, Y_SPEED) += 13107L;
-	displace_actor(actor, FxZero, false);
+	displace_actor(actor, FxZero, FALSE);
 	if (VAL(actor, Y_TOUCH) > 0L) {
 		VAL(actor, Y_SPEED) = FfInt(-7L);
 		VAL(actor, LUI_BOUNCE) = 1L;
@@ -353,9 +353,9 @@ const GameActorTable TAB_LUI = {
 // ===========
 
 static void load_hammer() {
-	load_texture("items/hammer_suit", false);
+	load_texture("items/hammer_suit", FALSE);
 
-	load_sound("grow", false);
+	load_sound("grow", FALSE);
 
 	load_actor(ACT_POINTS);
 }
@@ -389,12 +389,12 @@ const GameActorTable TAB_HAMMER_SUIT = {
 // =======
 
 static void load_starman() {
-	load_texture_num("items/starman%u", 4L, false);
+	load_texture_num("items/starman%u", 4L, FALSE);
 
-	load_sound("grow", false);
-	load_sound("starman", false);
+	load_sound("grow", FALSE);
+	load_sound("starman", FALSE);
 
-	load_track("starman", false);
+	load_track("starman", FALSE);
 }
 
 static void create_starman(GameActor* actor) {
@@ -412,7 +412,7 @@ static void tick_starman(GameActor* actor) {
 	}
 
 	VAL(actor, Y_SPEED) += 13107L;
-	displace_actor(actor, FfInt(10L), false);
+	displace_actor(actor, FfInt(10L), FALSE);
 	if (VAL(actor, X_TOUCH) != 0L)
 		VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * -163840L;
 	if (VAL(actor, Y_TOUCH) > 0L)
@@ -430,7 +430,7 @@ static void collide_starman(GameActor* actor, GameActor* from) {
 
 	// !!! CLIENT-SIDE !!!
 	if (localplayer() == VAL(from, PLAYER_INDEX))
-		play_state_track(TS_POWER, "starman", true);
+		play_state_track(TS_POWER, "starman", PLAY_LOOPING);
 	// !!! CLIENT-SIDE !!!
 
 	VAL(from, PLAYER_STARMAN) = 500L;

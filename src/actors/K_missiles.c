@@ -13,12 +13,12 @@ static void cleanup(GameActor* actor) {
 	if (player == NULL)
 		return;
 
-	for (ActorID i = 0; i < MAX_MISSILES; i++)
+	for (ActorID i = 0L; i < MAX_MISSILES; i++)
 		if (player->missiles[i] == actor->id) {
 			player->missiles[i] = NULLACT;
 			break;
 		}
-	for (ActorID i = 0; i < MAX_SINK; i++)
+	for (ActorID i = 0L; i < MAX_SINK; i++)
 		if (player->sink[i] == actor->id) {
 			player->sink[i] = NULLACT;
 			break;
@@ -39,10 +39,10 @@ static PlayerID owner(const GameActor* actor) {
 // ========
 
 static void load_fireball() {
-	load_texture("missiles/fireball", false);
+	load_texture("missiles/fireball", FALSE);
 
-	load_sound("bump", false);
-	load_sound("kick", false);
+	load_sound("bump", FALSE);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_EXPLODE);
 }
@@ -56,8 +56,8 @@ static void create_fireball(GameActor* actor) {
 
 static void tick_fireball(GameActor* actor) {
 	GamePlayer* player = get_owner(actor);
-	if ((player != NULL && !in_player_view(actor, player, FxZero, true))
-		|| (player == NULL && !in_any_view(actor, FxZero, true)))
+	if ((player != NULL && !in_player_view(actor, player, FxZero, TRUE))
+		|| (player == NULL && !in_any_view(actor, FxZero, TRUE)))
 	{
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
@@ -66,7 +66,7 @@ static void tick_fireball(GameActor* actor) {
 	VAL(actor, MISSILE_ANGLE) += (VAL(actor, X_SPEED) < FxZero) ? -12868L : 12868L;
 	VAL(actor, Y_SPEED) += 26214L;
 
-	displace_actor(actor, FfInt(10L), false);
+	displace_actor(actor, FfInt(10L), FALSE);
 	if (VAL(actor, X_TOUCH) != 0L)
 		FLAG_ON(actor, FLG_DESTROY);
 	else
@@ -99,11 +99,11 @@ const GameActorTable TAB_MISSILE_FIREBALL = {
 // ========
 
 static void load_beetroot() {
-	load_texture("missiles/beetroot", false);
+	load_texture("missiles/beetroot", FALSE);
 
-	load_sound("hurt", false);
-	load_sound("bump", false);
-	load_sound("kick", false);
+	load_sound("hurt", FALSE);
+	load_sound("bump", FALSE);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_EXPLODE);
 	load_actor(ACT_POINTS);
@@ -120,8 +120,8 @@ static void create_beetroot(GameActor* actor) {
 
 static void tick_beetroot(GameActor* actor) {
 	GamePlayer* player = get_owner(actor);
-	if ((player != NULL && !in_player_view(actor, player, FxZero, true))
-		|| (player == NULL && !in_any_view(actor, FxZero, true)))
+	if ((player != NULL && !in_player_view(actor, player, FxZero, TRUE))
+		|| (player == NULL && !in_any_view(actor, FxZero, TRUE)))
 	{
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
@@ -131,12 +131,12 @@ static void tick_beetroot(GameActor* actor) {
 		if (!ANY_FLAG(actor, FLG_MISSILE_SINK)) {
 			GamePlayer* player = get_owner(actor);
 			if (player != NULL) {
-				for (ActorID i = 0; i < MAX_MISSILES; i++)
+				for (ActorID i = 0L; i < MAX_MISSILES; i++)
 					if (player->missiles[i] == actor->id) {
 						player->missiles[i] = NULLACT;
 						break;
 					}
-				for (ActorID i = 0; i < MAX_SINK; i++)
+				for (ActorID i = 0L; i < MAX_SINK; i++)
 					if (get_actor(player->sink[i]) == NULL) {
 						player->sink[i] = actor->id;
 						break;
@@ -150,12 +150,12 @@ static void tick_beetroot(GameActor* actor) {
 		if (ANY_FLAG(actor, FLG_MISSILE_SINK)) {
 			GamePlayer* player = get_owner(actor);
 			if (player != NULL) {
-				for (ActorID i = 0; i < MAX_SINK; i++)
+				for (ActorID i = 0L; i < MAX_SINK; i++)
 					if (player->sink[i] == actor->id) {
 						player->sink[i] = NULLACT;
 						break;
 					}
-				for (ActorID i = 0; i < MAX_MISSILES; i++)
+				for (ActorID i = 0L; i < MAX_MISSILES; i++)
 					if (get_actor(player->missiles[i]) == NULL) {
 						player->missiles[i] = actor->id;
 						break;
@@ -166,18 +166,18 @@ static void tick_beetroot(GameActor* actor) {
 	}
 
 	if (ANY_FLAG(actor, FLG_MISSILE_SINK)) {
-		move_actor(actor, (fvec2){actor->pos.x, actor->pos.y + FfInt(rng(3L))});
+		move_actor(actor, (FVec2){actor->pos.x, actor->pos.y + FfInt(rng(3L))});
 
 		if (VAL(actor, MISSILE_BUBBLE) < 20L && (game_state.time % 10L) == 0L
-			&& in_any_view(actor, FxZero, false))
+			&& in_any_view(actor, FxZero, FALSE))
 		{
-			create_actor(ACT_BUBBLE, (fvec2){actor->pos.x, actor->pos.y - FfInt(3L)});
+			create_actor(ACT_BUBBLE, (FVec2){actor->pos.x, actor->pos.y - FfInt(3L)});
 			++VAL(actor, MISSILE_BUBBLE);
 		}
 		return;
 	}
 
-	const fixed vx = VAL(actor, X_SPEED);
+	const Fixed vx = VAL(actor, X_SPEED);
 	VAL(actor, Y_SPEED) += 26214L;
 	if (VAL(actor, MISSILE_HITS) > 0L) {
 		if (VAL(actor, MISSILE_COOLDOWN) > 0L) {
@@ -232,9 +232,9 @@ const GameActorTable TAB_MISSILE_BEETROOT = {
 // ======
 
 static void load_hammer() {
-	load_texture("missiles/hammer", false);
+	load_texture("missiles/hammer", FALSE);
 
-	load_sound("kick", false);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_POINTS);
 }
@@ -250,8 +250,8 @@ static void create_hammer(GameActor* actor) {
 
 static void tick_hammer(GameActor* actor) {
 	GamePlayer* player = get_owner(actor);
-	if ((player != NULL && !in_player_view(actor, player, FxZero, true))
-		|| (player == NULL && !in_any_view(actor, FfInt(128L), true)))
+	if ((player != NULL && !in_player_view(actor, player, FxZero, TRUE))
+		|| (player == NULL && !in_any_view(actor, FfInt(128L), TRUE)))
 	{
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
@@ -282,9 +282,9 @@ const GameActorTable TAB_MISSILE_HAMMER = {
 // =============
 
 static void load_silver() {
-	load_texture("missiles/hammer_silver", false);
+	load_texture("missiles/hammer_silver", FALSE);
 
-	load_sound("kick", false);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_EXPLODE);
 	load_actor(ACT_POINTS);
@@ -297,8 +297,8 @@ static void create_silver(GameActor* actor) {
 
 static void tick_silver(GameActor* actor) {
 	GamePlayer* player = get_owner(actor);
-	if ((player != NULL && !in_player_view(actor, player, FxZero, true))
-		|| (player == NULL && !in_any_view(actor, FfInt(128L), true)))
+	if ((player != NULL && !in_player_view(actor, player, FxZero, TRUE))
+		|| (player == NULL && !in_any_view(actor, FfInt(128L), TRUE)))
 	{
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
@@ -306,7 +306,7 @@ static void tick_silver(GameActor* actor) {
 
 	VAL(actor, MISSILE_ANGLE) += (VAL(actor, X_SPEED) < FxZero) ? -45753L : 45753L;
 
-	const fixed vx = VAL(actor, X_SPEED);
+	const Fixed vx = VAL(actor, X_SPEED);
 	VAL(actor, Y_SPEED) += 26214L;
 	if (VAL(actor, MISSILE_HITS) > 0L) {
 		if (VAL(actor, MISSILE_COOLDOWN) > 0L) {
@@ -361,7 +361,7 @@ const GameActorTable TAB_MISSILE_SILVER_HAMMER = {
 // ======
 
 static void load_napalm() {
-	load_texture_num("missiles/napalm%u", 3L, false);
+	load_texture_num("missiles/napalm%u", 3L, FALSE);
 }
 
 static void create_napalm(GameActor* actor) {
@@ -375,8 +375,8 @@ static void create_napalm(GameActor* actor) {
 
 static void tick_napalm(GameActor* actor) {
 	GamePlayer* player = get_owner(actor);
-	if ((player != NULL && !in_player_view(actor, player, FxZero, true))
-		|| (player == NULL && !in_any_view(actor, FxZero, true)))
+	if ((player != NULL && !in_player_view(actor, player, FxZero, TRUE))
+		|| (player == NULL && !in_any_view(actor, FxZero, TRUE)))
 	{
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
@@ -385,10 +385,10 @@ static void tick_napalm(GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_MISSILE_SHIMMY)) {
 		if (actor->pos.y > VAL(actor, MISSILE_HEIGHT))
 			move_actor(actor,
-				(fvec2){actor->pos.x, Fmax(actor->pos.y - FfInt(4L), VAL(actor, MISSILE_HEIGHT))});
+				(FVec2){actor->pos.x, Fmax(actor->pos.y - FfInt(4L), VAL(actor, MISSILE_HEIGHT))});
 		else if (actor->pos.y < VAL(actor, MISSILE_HEIGHT))
 			move_actor(actor,
-				(fvec2){actor->pos.x, Fmin(actor->pos.y + FfInt(4L), VAL(actor, MISSILE_HEIGHT))});
+				(FVec2){actor->pos.x, Fmin(actor->pos.y + FfInt(4L), VAL(actor, MISSILE_HEIGHT))});
 	}
 
 	move_actor(actor, POS_SPEED(actor));

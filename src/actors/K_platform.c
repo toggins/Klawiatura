@@ -6,22 +6,22 @@
 static void load_special(const GameActor* actor) {
 	switch (VAL(actor, PLATFORM_TYPE)) {
 	default:
-		load_texture("markers/platform/big", false);
+		load_texture("markers/platform/big", FALSE);
 		break;
 	case PLAT_SMALL:
-		load_texture("markers/platform/small", false);
+		load_texture("markers/platform/small", FALSE);
 		break;
 	case PLAT_CLOUD:
-		load_texture_num("markers/platform/cloud%u", 4L, false);
+		load_texture_num("markers/platform/cloud%u", 4L, FALSE);
 		break;
 	case PLAT_CASTLE:
-		load_texture("markers/platform/castle", false);
+		load_texture("markers/platform/castle", FALSE);
 		break;
 	case PLAT_CASTLE_BIG:
-		load_texture("markers/platform/castle_big", false);
+		load_texture("markers/platform/castle_big", FALSE);
 		break;
 	case PLAT_CASTLE_BUTTON:
-		load_texture("markers/platform/castle_button", false);
+		load_texture("markers/platform/castle_button", FALSE);
 		break;
 	}
 }
@@ -82,10 +82,10 @@ static void pre_tick(GameActor* actor) {
 
 	if (ANY_FLAG(actor, FLG_PLATFORM_WRAP) && !ANY_FLAG(actor, FLG_PLATFORM_FALLING)) {
 		if (VAL(actor, Y_SPEED) > FxZero && actor->pos.y > (game_state.size.y + FfInt(10L))) {
-			move_actor(actor, (fvec2){actor->pos.x, FfInt(-10L)});
+			move_actor(actor, (FVec2){actor->pos.x, FfInt(-10L)});
 			skip_interp(actor);
 		} else if (VAL(actor, Y_SPEED) < FxZero && actor->pos.y < FfInt(-10L)) {
-			move_actor(actor, (fvec2){actor->pos.x, game_state.size.y + FfInt(10L)});
+			move_actor(actor, (FVec2){actor->pos.x, game_state.size.y + FfInt(10L)});
 			skip_interp(actor);
 		}
 	}
@@ -95,7 +95,7 @@ static void pre_tick(GameActor* actor) {
 			FLAG_ON(actor, FLG_DESTROY);
 			return;
 		} else if (++VAL(actor, PLATFORM_RESPAWN) >= 150L) {
-			move_actor(actor, (fvec2){VAL(actor, PLATFORM_X), VAL(actor, PLATFORM_Y)});
+			move_actor(actor, (FVec2){VAL(actor, PLATFORM_X), VAL(actor, PLATFORM_Y)});
 			skip_interp(actor);
 			VAL(actor, X_SPEED) = VAL(actor, PLATFORM_X_SPEED);
 			VAL(actor, Y_SPEED) = VAL(actor, PLATFORM_Y_SPEED);

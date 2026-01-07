@@ -8,6 +8,7 @@
 #define NutPunch_Malloc SDL_malloc
 #define NutPunch_Free SDL_free
 #define NutPunch_Log INFO
+#include <NutPunch.h>
 
 #include "K_cmd.h"
 #include "K_discord.h"
@@ -26,7 +27,7 @@ static enum {
 } netmode = NET_NULL;
 
 static const char* MAGIC_KEY = "KLAWIATURA";
-static const uint8_t MAGIC_VALUE = 127;
+static const Uint8 MAGIC_VALUE = 127;
 
 static int player_peers[MAX_PLAYERS] = {MAX_PEERS};
 
@@ -68,7 +69,7 @@ void set_hostname(const char* hn) {
 	NutPunch_SetServerAddr(hostname);
 }
 
-bool in_public_server() {
+Bool in_public_server() {
 	return !SDL_strcmp(hostname, NUTPUNCH_DEFAULT_SERVER);
 }
 
@@ -100,10 +101,10 @@ static void np_peer_set_string(const char* name, const char* str) {
 			*dest = *value;                                                                                \
 	}
 // NOLINTEND(bugprone-macro-parentheses)
-MAKE_LOBBY_GETTER(bool, bool);
-MAKE_LOBBY_GETTER(u8, uint8_t);
-MAKE_LOBBY_GETTER(u32, uint32_t);
-MAKE_LOBBY_GETTER(i8, int8_t);
+MAKE_LOBBY_GETTER(bool, Bool);
+MAKE_LOBBY_GETTER(u8, Uint8);
+MAKE_LOBBY_GETTER(u32, Uint32);
+MAKE_LOBBY_GETTER(i8, Sint8);
 #undef MAKE_LOBBY_GETTER
 
 static void np_lobby_get_string(const char* name, char dest[NUTPUNCH_FIELD_DATA_MAX]) {
@@ -140,7 +141,7 @@ const char* net_error() {
 	return last_error;
 }
 
-bool is_connected() {
+Bool is_connected() {
 	return netmode != NET_NULL && cur_lobby[0] != '\0' && NutPunch_PeerCount() >= 1;
 }
 
@@ -153,11 +154,11 @@ void disconnect() {
 	update_discord_status(NULL);
 }
 
-bool is_host() {
+Bool is_host() {
 	return NutPunch_IsMaster();
 }
 
-bool is_client() {
+Bool is_client() {
 	return !NutPunch_IsMaster();
 }
 
@@ -181,7 +182,7 @@ void host_lobby(const char* id) {
 	push_user_data();
 
 	np_lobby_set(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
-	const uint32_t party = SDL_rand_bits(); // Generate a better UUID.
+	const Uint32 party = SDL_rand_bits(); // Generate a better UUID.
 	np_lobby_set("PARTY", sizeof(party), &party);
 	const LobbyVisibility visible = CLIENT.lobby.public ? VIS_PUBLIC : VIS_UNLISTED;
 	np_lobby_set("VISIBLE", sizeof(visible), &visible);
@@ -220,7 +221,7 @@ const NutPunch_LobbyInfo* get_lobby(int idx) {
 	return NutPunch_GetLobby(idx);
 }
 
-bool in_public_lobby() {
+Bool in_public_lobby() {
 	LobbyVisibility visible = 0;
 	np_lobby_get_u8("VISIBLE", &visible);
 	return visible == VIS_PUBLIC;
@@ -243,8 +244,8 @@ void make_lobby_active() {
 	np_lobby_set("VISIBLE", sizeof(visible), &visible);
 }
 
-uint32_t get_lobby_party() {
-	uint32_t party = 0;
+Uint32 get_lobby_party() {
+	Uint32 party = 0;
 	np_lobby_get_u32("PARTY", &party);
 	return party;
 }
@@ -261,7 +262,7 @@ int get_max_peers() {
 	return NutPunch_GetMaxPlayers();
 }
 
-bool peer_exists(int idx) {
+Bool peer_exists(int idx) {
 	return NutPunch_PeerAlive(idx);
 }
 

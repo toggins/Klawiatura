@@ -11,7 +11,7 @@
 
 #define DISCORD_APPID 1441442128445181963
 
-#define DSTR(str) ((Discord_String){.ptr = (uint8_t*)(str), .size = sizeof(str)})
+#define DSTR(str) ((Discord_String){.ptr = (Uint8*)(str), .size = sizeof(str)})
 
 static Discord_Client discord = {0};
 
@@ -100,7 +100,7 @@ void update_discord_status(const char* level_name) {
 	// Multiplayer info
 	if (in_public_server() && is_connected()) {
 		Uint32 id = get_lobby_party();
-		Discord_ActivityParty_SetId(&party, (Discord_String){(uint8_t*)(&id), sizeof(id)});
+		Discord_ActivityParty_SetId(&party, (Discord_String){(Uint8*)(&id), sizeof(id)});
 		Discord_ActivityParty_SetCurrentSize(&party, get_peer_count());
 		Discord_ActivityParty_SetMaxSize(&party, get_max_peers());
 		Discord_Activity_SetParty(&activity, &party);
@@ -109,7 +109,7 @@ void update_discord_status(const char* level_name) {
 			const char* lobby_id = get_lobby_id();
 			if (lobby_id != NULL && !game_exists()) {
 				Discord_ActivitySecrets_SetJoin(&secrets,
-					(Discord_String){.ptr = (uint8_t*)lobby_id, .size = SDL_strlen(lobby_id)});
+					(Discord_String){.ptr = (Uint8*)lobby_id, .size = SDL_strlen(lobby_id)});
 				Discord_Activity_SetSecrets(&activity, &secrets);
 			}
 		}

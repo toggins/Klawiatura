@@ -19,7 +19,7 @@ static void create(GameActor* actor) {
 // =====
 
 static void load_cloud() {
-	load_texture_num("props/cloud%u", 3L, false);
+	load_texture_num("props/cloud%u", 3L, FALSE);
 }
 
 static void draw_cloud(const GameActor* actor) {
@@ -46,7 +46,7 @@ const GameActorTable TAB_CLOUD = {.load = load_cloud, .create = create, .draw = 
 // ====
 
 static void load_bush() {
-	load_texture_num("props/bush%u", 3L, false);
+	load_texture_num("props/bush%u", 3L, FALSE);
 }
 
 static void draw_bush(const GameActor* actor) {
@@ -73,7 +73,7 @@ const GameActorTable TAB_BUSH = {.load = load_bush, .create = create, .draw = dr
 // ================
 
 static void load_face() {
-	load_texture_num("bg/cloud_face%u", 10L, false);
+	load_texture_num("bg/cloud_face%u", 10L, FALSE);
 }
 
 static void create_face(GameActor* actor) {
@@ -116,7 +116,7 @@ static void tick_face(GameActor* actor) {
 
 static void draw_face(const GameActor* actor) {
 	const char* tex = "bg/cloud_face0";
-	const uint8_t frame = VAL(actor, PROP_FRAME) / 100L;
+	const Uint8 frame = VAL(actor, PROP_FRAME) / 100L;
 	if (frame > 0L) {
 		if (ANY_FLAG(actor, FLG_PROP_EXTRA))
 			tex = "bg/cloud_face9";
@@ -164,14 +164,14 @@ const GameActorTable TAB_CLOUD_FACE = {.load = load_face, .create = create_face,
 // =============
 
 static void load_clouds() {
-	load_texture("bg/clouds", false);
+	load_texture("bg/clouds", FALSE);
 }
 
 static void draw_clouds(const GameActor* actor) {
 	batch_reset();
 	batch_pos(B_XYZ(-64.f + SDL_floorf(SDL_fmodf(totalticks() * FtFloat(VAL(actor, X_SPEED)), 64.f)),
 		FtInt(actor->pos.y), FtFloat(actor->depth)));
-	batch_tile(B_TILE(true, false));
+	batch_tile(B_TILE(TRUE, FALSE));
 	batch_rectangle("bg/clouds", B_XY(FtFloat(game_state.size.x) + 128.f, 64.f));
 }
 
@@ -182,7 +182,7 @@ const GameActorTable TAB_CLOUDS = {.load = load_clouds, .draw = draw_clouds};
 // ==========
 
 static void load_lamp_light() {
-	load_texture_num("effects/lamp_light%u", 4L, false);
+	load_texture_num("effects/lamp_light%u", 4L, FALSE);
 }
 
 static void draw_lamp_light(const GameActor* actor) {
@@ -227,7 +227,7 @@ static void create_tube(GameActor* actor) {
 }
 
 static void tick_tube(GameActor* actor) {
-	if ((game_state.time % 5L) != 0L || !in_any_view(actor, FxZero, false) || rng(11L) != 10L)
+	if ((game_state.time % 5L) != 0L || !in_any_view(actor, FxZero, FALSE) || rng(11L) != 10L)
 		return;
 	GameActor* bubble = create_actor(ACT_TUBE_BUBBLE, POS_ADD(actor, FfInt(9L + rng(16L)), -FxOne));
 	if (bubble == NULL)
@@ -243,7 +243,7 @@ const GameActorTable TAB_BUBBLE_TUBE = {.load = load_tube, .create = create_tube
 // =========
 
 static void load_waterfall() {
-	load_texture_num("bg/waterfall%u", 4L, false);
+	load_texture_num("bg/waterfall%u", 4L, FALSE);
 }
 
 static void draw_waterfall(const GameActor* actor) {
@@ -259,7 +259,7 @@ const GameActorTable TAB_WATERFALL = {.load = load_waterfall, .create = create, 
 // ========
 
 static void load_lavafall() {
-	load_texture_num("bg/lavafall%u", 6L, false);
+	load_texture_num("bg/lavafall%u", 6L, FALSE);
 }
 
 static void draw_lavafall(const GameActor* actor) {
@@ -293,7 +293,7 @@ static void draw_lavafall(const GameActor* actor) {
 	batch_reset();
 	batch_pos(B_XYZ(FtInt(actor->pos.x), -32.f + SDL_fmodf(((float)VAL(actor, PROP_FRAME) + tt) * 6.25f, 32.f),
 		FtFloat(actor->depth)));
-	batch_tile(B_TILE(false, true)), batch_rectangle(tex, B_XY(54.f, FtFloat(game_state.size.y) + 32.f));
+	batch_tile(B_TILE(FALSE, TRUE)), batch_rectangle(tex, B_XY(54.f, FtFloat(game_state.size.y) + 32.f));
 }
 
 const GameActorTable TAB_LAVAFALL = {.load = load_lavafall, .create = create, .draw = draw_lavafall};
@@ -311,7 +311,7 @@ static void create_laver(GameActor* actor) {
 }
 
 static void tick_laver(GameActor* actor) {
-	if (((game_state.time * 2L) % 5L) >= 2L || !in_any_view(actor, FxZero, false))
+	if (((game_state.time * 2L) % 5L) >= 2L || !in_any_view(actor, FxZero, FALSE))
 		return;
 
 	GameActor* bubble = create_actor(ACT_LAVA_BUBBLE, POS_ADD(actor, FfInt(-7L + rng(48L)), FxZero));

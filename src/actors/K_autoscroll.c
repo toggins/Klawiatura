@@ -5,7 +5,7 @@
 // ==========
 
 static void load() {
-	load_texture("markers/platform/tanks", false);
+	load_texture("markers/platform/tanks", FALSE);
 }
 
 static void create(GameActor* actor) {
@@ -13,7 +13,7 @@ static void create(GameActor* actor) {
 }
 
 static void tick(GameActor* actor) {
-	if (game_state.autoscroll != actor->id && in_any_view(actor, FxZero, false)) {
+	if (game_state.autoscroll != actor->id && in_any_view(actor, FxZero, FALSE)) {
 		GameActor* autoscroll = get_actor(game_state.autoscroll);
 
 		if (autoscroll != NULL) {
@@ -28,7 +28,7 @@ static void tick(GameActor* actor) {
 		game_state.bounds.start = game_state.bounds.end = actor->pos;
 		game_state.bounds.end.x += F_SCREEN_WIDTH, game_state.bounds.end.y += F_SCREEN_HEIGHT;
 
-		for (PlayerID i = 0; i < numplayers(); i++) {
+		for (PlayerID i = 0L; i < numplayers(); i++) {
 			GamePlayer* player = get_player(i);
 			if (player == NULL)
 				continue;
@@ -42,7 +42,7 @@ static void tick(GameActor* actor) {
 	if (game_state.autoscroll == actor->id) {
 		move_actor(actor, POS_SPEED(actor));
 
-		Bool clamp = false;
+		Bool clamp = FALSE;
 		if (actor->pos.x < FxZero || actor->pos.x > (game_state.size.x - F_SCREEN_WIDTH)) {
 			VAL(actor, X_SPEED) = FxZero;
 			clamp = true;
@@ -52,7 +52,7 @@ static void tick(GameActor* actor) {
 			clamp = true;
 		}
 		if (clamp)
-			move_actor(actor, (fvec2){Fclamp(actor->pos.x, FxZero, game_state.size.x - F_SCREEN_WIDTH),
+			move_actor(actor, (FVec2){Fclamp(actor->pos.x, FxZero, game_state.size.x - F_SCREEN_WIDTH),
 						  Fclamp(actor->pos.y, FxZero, game_state.size.y - F_SCREEN_HEIGHT)});
 	}
 }
@@ -64,7 +64,7 @@ static void draw(const GameActor* actor) {
 	const InterpActor* iactor = get_interp(actor);
 	batch_reset();
 	batch_pos(B_XYZ(FtInt(iactor->pos.x) - 32.f, FtInt(iactor->pos.y + F_SCREEN_HEIGHT) - 64.f, 20.f));
-	batch_tile(B_TILE(true, false));
+	batch_tile(B_TILE(true, FALSE));
 	batch_rectangle("markers/platform/tanks", B_XY(SCREEN_WIDTH + 64.f, 64.f));
 }
 
@@ -84,7 +84,7 @@ static void create_wave(GameActor* actor) {
 }
 
 static void tick_wave(GameActor* actor) {
-	const fixed old_wave = Fmul(VAL(actor, WAVE_LENGTH), Fsin(VAL(actor, WAVE_ANGLE)));
+	const Fixed old_wave = Fmul(VAL(actor, WAVE_LENGTH), Fsin(VAL(actor, WAVE_ANGLE)));
 	if (!ANY_FLAG(actor, FLG_WAVE_START)) {
 		VAL(actor, WAVE_DELTA) = old_wave;
 		FLAG_ON(actor, FLG_WAVE_START);

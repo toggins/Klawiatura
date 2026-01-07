@@ -5,7 +5,7 @@
 #include "K_game.h"
 
 #define CMD_OPT(ident) cmd_set_##ident
-#define MAKE_FLAG(ident) MAKE_OPTION_PRO(ident, bool, false, true)
+#define MAKE_FLAG(ident) MAKE_OPTION_PRO(ident, Bool, false, true)
 #define MAKE_OPTION(ident, default) MAKE_OPTION_PRO(ident, const char*, default, next_arg())
 #define MAKE_OPTION_PRO(ident, type, default, set_expr)                                                                \
 	static type ident = default;                                                                                   \
@@ -40,32 +40,32 @@ typedef struct {
 
 typedef struct {
 	struct {
-		bool aware;
+		Bool aware;
 		char name[CLIENT_STRING_MAX];
 		char skin[CLIENT_STRING_MAX];
 	} user;
 
 	struct {
-		uint8_t delay;
+		Uint8 delay;
 	} input;
 
 	struct {
-		bool filter;
+		Bool filter;
 	} video;
 
 	struct {
-		bool background;
+		Bool background;
 	} audio;
 
 	struct {
 		PlayerID players;
-		bool kevin, fred;
+		Bool kevin, fred;
 		char level[CLIENT_STRING_MAX];
 	} game;
 
 	struct {
 		char name[NUTPUNCH_ID_MAX];
-		bool public;
+		Bool public;
 	} lobby;
 } ClientInfo;
 extern ClientInfo CLIENT;

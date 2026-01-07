@@ -13,7 +13,7 @@ static KeybindState kb_incoming = 0, kb_repeating = 0; // Event-specific
 #define AXIS(x) .axis = SDL_GAMEPAD_AXIS_##x
 #define NO_AXIS .axis = SDL_GAMEPAD_AXIS_INVALID
 #define NO_GAMEPAD NO_BUTTON, NO_AXIS
-#define NEGATIVE .negative = true
+#define NEGATIVE .negative = TRUE
 Bindings BINDS[KB_SIZE] = {
 	[KB_UP] = {"Up", KEY(UP), BUTTON(DPAD_UP), AXIS(LEFTY), NEGATIVE},
 	[KB_LEFT] = {"Left", KEY(LEFT), BUTTON(DPAD_LEFT), AXIS(LEFTX), NEGATIVE},
@@ -55,7 +55,7 @@ static SDL_JoystickID cur_controller = 0;
 
 static char* text = NULL;
 static size_t text_size = 0;
-static bool typing_confirmation = false;
+static Bool typing_confirmation = FALSE;
 
 static SDL_JoystickID scanning_for = 0;
 static Keybind scanning = NULLBIND;
@@ -86,7 +86,7 @@ void input_keydown(SDL_KeyboardEvent event) {
 			stop_scanning();
 		}
 	} else if (typing_what() == NULL) {
-		for (int i = 0; i < KB_SIZE; i++) {
+		for (Keybind i = 0; i < (Keybind)KB_SIZE; i++) {
 			const KeybindState mask = (event.scancode == BINDS[i].key) << i;
 			kb_incoming |= mask;
 			kb_now |= mask;
@@ -103,7 +103,7 @@ void input_keydown(SDL_KeyboardEvent event) {
 }
 
 void input_keyup(SDL_KeyboardEvent event) {
-	for (int i = 0; i < KB_SIZE; i++)
+	for (Keybind i = 0; i < (Keybind)KB_SIZE; i++)
 		kb_incoming &= ~((event.scancode == BINDS[i].key) << i);
 }
 
@@ -132,7 +132,7 @@ void input_buttondown(SDL_GamepadButtonEvent event) {
 			stop_scanning();
 		}
 	} else if (typing_what() == NULL) {
-		for (int i = 0; i < KB_SIZE; i++) {
+		for (Keybind i = 0; i < (Keybind)KB_SIZE; i++) {
 			const KeybindState mask = (event.button == BINDS[i].button) << i;
 			kb_incoming |= mask;
 			kb_now |= mask;
@@ -142,7 +142,7 @@ void input_buttondown(SDL_GamepadButtonEvent event) {
 }
 
 void input_buttonup(SDL_GamepadButtonEvent event) {
-	for (int i = 0; i < KB_SIZE; i++)
+	for (Keybind i = 0; i < (Keybind)KB_SIZE; i++)
 		kb_incoming &= ~((event.button == BINDS[i].button) << i);
 }
 
@@ -156,7 +156,7 @@ void input_axis(SDL_GamepadAxisEvent event) {
 			stop_scanning();
 		}
 	} else if (typing_what() == NULL) {
-		for (int i = 0; i < KB_SIZE; i++) {
+		for (Keybind i = 0; i < (Keybind)KB_SIZE; i++) {
 			const KeybindState mask = (event.axis == BINDS[i].axis
 							  && ((BINDS[i].negative && event.value < -8192)
 								  || (!BINDS[i].negative && event.value > 8192)))
@@ -167,7 +167,7 @@ void input_axis(SDL_GamepadAxisEvent event) {
 		}
 	}
 
-	for (int i = 0; i < KB_SIZE; i++)
+	for (Keybind i = 0; i < (Keybind)KB_SIZE; i++)
 		kb_incoming &= ~((event.axis == BINDS[i].axis
 					 && ((BINDS[i].negative && event.value >= -8192)
 						 || (!BINDS[i].negative && event.value <= 8192)))
@@ -185,19 +185,19 @@ const char* input_device() {
 
 #define CHECK_KB(table, kb) (((table) & (1 << (kb))) != 0)
 
-bool kb_pressed(Keybind kb) {
+Bool kb_pressed(Keybind kb) {
 	return CHECK_KB(kb_now, kb) && !CHECK_KB(kb_then, kb);
 }
 
-bool kb_down(Keybind kb) {
+Bool kb_down(Keybind kb) {
 	return CHECK_KB(kb_now, kb);
 }
 
-bool kb_repeated(Keybind kb) {
+Bool kb_repeated(Keybind kb) {
 	return CHECK_KB(kb_now, kb) && CHECK_KB(kb_repeating, kb);
 }
 
-bool kb_released(Keybind kb) {
+Bool kb_released(Keybind kb) {
 	return !CHECK_KB(kb_now, kb) && CHECK_KB(kb_then, kb);
 }
 
@@ -219,14 +219,14 @@ not_bound:
 }
 
 /// True if the typed input was confirmed with the Enter key; false if cancelled with the Esc key.
-bool typing_input_confirmed() {
-	bool value = typing_confirmation;
+Bool typing_input_confirmed() {
+	Bool value = typing_confirmation;
 	typing_confirmation = 0;
 	return value;
 }
 
 void start_typing(char* ptext, size_t size) {
-	typing_confirmation = false;
+	typing_confirmation = FALSE;
 	stop_typing();
 
 	if (window_start_text_input())

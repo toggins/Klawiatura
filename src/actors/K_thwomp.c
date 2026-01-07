@@ -15,11 +15,11 @@ enum {
 };
 
 static void load() {
-	load_texture_num("enemies/thwomp%u", 5L, false);
-	load_texture_num("enemies/thwomp_laugh%u", 3L, false);
+	load_texture_num("enemies/thwomp%u", 5L, FALSE);
+	load_texture_num("enemies/thwomp_laugh%u", 3L, FALSE);
 
-	load_sound("hurt", false);
-	load_sound("thwomp", false);
+	load_sound("hurt", FALSE);
+	load_sound("thwomp", FALSE);
 
 	load_actor(ACT_EXPLODE);
 	load_actor(ACT_POINTS);
@@ -69,14 +69,14 @@ static void tick(GameActor* actor) {
 		if (nearest != NULL && actor->pos.x < (nearest->pos.x + FfInt(100L))
 			&& actor->pos.x > (nearest->pos.x - FfInt(100L))
 			&& (game_state.size.y <= F_SCREEN_HEIGHT
-				|| in_player_view(actor, get_owner(nearest), FfInt(64L), false)))
+				|| in_player_view(actor, get_owner(nearest), FfInt(64L), FALSE)))
 			++VAL(actor, THWOMP_STATE);
 		break;
 	}
 
 	case 1L: {
 		VAL(actor, Y_SPEED) += FxOne;
-		displace_actor(actor, FxZero, false);
+		displace_actor(actor, FxZero, FALSE);
 		if (VAL(actor, Y_TOUCH) > 0L) {
 			create_actor(ACT_EXPLODE, POS_ADD(actor, FfInt(-17L), FfInt(34L)));
 			create_actor(ACT_EXPLODE, POS_ADD(actor, FfInt(17L), FfInt(34L)));
@@ -90,7 +90,7 @@ static void tick(GameActor* actor) {
 	case 101L: {
 		move_actor(actor, POS_ADD(actor, FxZero, -FxOne));
 		if (actor->pos.y < VAL(actor, THWOMP_Y)) {
-			move_actor(actor, (fvec2){actor->pos.x, VAL(actor, THWOMP_Y)});
+			move_actor(actor, (FVec2){actor->pos.x, VAL(actor, THWOMP_Y)});
 			VAL(actor, THWOMP_STATE) = 0L;
 		}
 		break;

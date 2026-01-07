@@ -16,7 +16,7 @@ enum {
 // =========
 
 static void load_explode() {
-	load_texture_num("effects/explode%u", 3L, false);
+	load_texture_num("effects/explode%u", 3L, FALSE);
 }
 
 static void tick_explode(GameActor* actor) {
@@ -37,8 +37,8 @@ const GameActorTable TAB_EXPLODE = {.load = load_explode, .tick = tick_explode, 
 // ===========
 
 static void load_shard() {
-	load_texture("effects/shard", false);
-	load_texture("effects/shard_gray", false);
+	load_texture("effects/shard", FALSE);
+	load_texture("effects/shard_gray", FALSE);
 }
 
 static void create_shard(GameActor* actor) {
@@ -47,7 +47,7 @@ static void create_shard(GameActor* actor) {
 }
 
 static void tick_shard(GameActor* actor) {
-	if (!in_any_view(actor, FxZero, true)) {
+	if (!in_any_view(actor, FxZero, TRUE)) {
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}
@@ -74,7 +74,7 @@ const GameActorTable TAB_BRICK_SHARD = {
 // ============
 
 static void load_splash() {
-	load_texture_num("effects/water%u", 15L, false);
+	load_texture_num("effects/water%u", 15L, FALSE);
 }
 
 static void create_splash(GameActor* actor) {
@@ -104,7 +104,7 @@ const GameActorTable TAB_WATER_SPLASH = {
 // ======
 
 static void load_bubble() {
-	load_texture_num("effects/bubble%u", 8L, false);
+	load_texture_num("effects/bubble%u", 8L, FALSE);
 }
 
 static void create_bubble(GameActor* actor) {
@@ -114,7 +114,7 @@ static void create_bubble(GameActor* actor) {
 }
 
 static void tick_bubble(GameActor* actor) {
-	if (!in_any_view(actor, FfInt(28L), false)) {
+	if (!in_any_view(actor, FfInt(28L), FALSE)) {
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}
@@ -127,8 +127,8 @@ static void tick_bubble(GameActor* actor) {
 		return;
 	}
 
-	const fixed xoffs = FfInt(-2L + rng(5L));
-	const fixed yoffs = FfInt(-rng(3L));
+	const Fixed xoffs = FfInt(-2L + rng(5L));
+	const Fixed yoffs = FfInt(-rng(3L));
 	move_actor(actor, POS_ADD(actor, xoffs, yoffs));
 	if (actor->pos.y < game_state.water) {
 		VAL(actor, EFFECT_FRAME) = 0L;
@@ -175,7 +175,7 @@ const GameActorTable TAB_BUBBLE = {
 // ===========
 
 static void load_lava() {
-	load_texture_num("effects/lava%u", 11L, false);
+	load_texture_num("effects/lava%u", 11L, FALSE);
 }
 
 static void tick_lava(GameActor* actor) {
@@ -199,7 +199,7 @@ const GameActorTable TAB_LAVA_SPLASH = {
 // ===========
 
 static void load_lava_bubble() {
-	load_texture("effects/lava_bubble", false);
+	load_texture("effects/lava_bubble", FALSE);
 }
 
 static void create_lava_bubble(GameActor* actor) {
@@ -210,7 +210,7 @@ static void create_lava_bubble(GameActor* actor) {
 }
 
 static void tick_lava_bubble(GameActor* actor) {
-	if (++VAL(actor, EFFECT_FRAME) >= 42L || !in_any_view(actor, FxZero, false))
+	if (++VAL(actor, EFFECT_FRAME) >= 42L || !in_any_view(actor, FxZero, FALSE))
 		FLAG_ON(actor, FLG_DESTROY);
 	VAL(actor, Y_SPEED) += 6554L;
 	move_actor(actor, POS_SPEED(actor));
@@ -236,11 +236,11 @@ const GameActorTable TAB_LAVA_BUBBLE = {
 // ===========
 
 static void load_tube_bubble() {
-	load_texture("effects/bubble0", false);
+	load_texture("effects/bubble0", FALSE);
 }
 
 static void tick_tube_bubble(GameActor* actor) {
-	if (!in_any_view(actor, FxZero, false)) {
+	if (!in_any_view(actor, FxZero, FALSE)) {
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}

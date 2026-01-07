@@ -4,10 +4,10 @@
 
 static void load_special(const GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_WARP_CALAMITY))
-		load_sound("clone_dead2", false);
+		load_sound("clone_dead2", FALSE);
 
 	if (ANY_FLAG(actor, FLG_WARP_SECRET))
-		load_track("warp", false);
+		load_track("warp", FALSE);
 }
 
 static void create(GameActor* actor) {
@@ -24,12 +24,12 @@ static void collide(GameActor* actor, GameActor* from) {
 	if (player == NULL)
 		return;
 
-	Bool warped = false;
+	Bool warped = FALSE;
 	switch (VAL(actor, WARP_ANGLE)) {
 	case 0L: {
 		if (VAL(from, X_TOUCH) > 0L && ANY_INPUT(player, GI_RIGHT)) {
 			move_actor(from, POS_ADD(actor, actor->box.end.x - from->box.end.x, FxZero));
-			warped = true;
+			warped = TRUE;
 		}
 		break;
 	}
@@ -37,7 +37,7 @@ static void collide(GameActor* actor, GameActor* from) {
 	case 1L: {
 		if (VAL(from, Y_TOUCH) < 0L && ANY_INPUT(player, GI_UP)) {
 			move_actor(from, POS_ADD(actor, FxZero, actor->box.start.y - from->box.start.y));
-			warped = true;
+			warped = TRUE;
 		}
 		break;
 	}
@@ -45,7 +45,7 @@ static void collide(GameActor* actor, GameActor* from) {
 	case 2L: {
 		if (VAL(from, X_TOUCH) < 0L && ANY_INPUT(player, GI_LEFT)) {
 			move_actor(from, POS_ADD(actor, actor->box.start.x - from->box.start.x, FxZero));
-			warped = true;
+			warped = TRUE;
 		}
 		break;
 	}
@@ -53,7 +53,7 @@ static void collide(GameActor* actor, GameActor* from) {
 	default: {
 		if (VAL(from, PLAYER_GROUND) > 0L && ANY_INPUT(player, GI_DOWN)) {
 			move_actor(from, actor->pos);
-			warped = true;
+			warped = TRUE;
 		}
 		break;
 	}
@@ -68,12 +68,12 @@ static void collide(GameActor* actor, GameActor* from) {
 		play_actor_sound(actor, "warp");
 
 		if (VAL(actor, WARP_STRING) != 0L) {
-			int8_t lvl[ACTOR_STRING_MAX + 1] = "";
+			Sint8 lvl[ACTOR_STRING_MAX + 1] = {0L};
 			decode_actor_string(actor, VAL_WARP_STRING, lvl);
 			SDL_strlcpy((char*)game_state.next, (char*)lvl, sizeof(game_state.next));
 
 			GamePlayer* warper = get_owner(from);
-			for (PlayerID i = 0; i < numplayers(); i++) {
+			for (PlayerID i = 0L; i < numplayers(); i++) {
 				GamePlayer* player = get_player(i);
 				if (player == NULL || warper == player)
 					continue;

@@ -10,8 +10,8 @@
 #include "K_tick.h"
 #include "K_video.h"
 
-extern bool permadeath;
-const extern bool quickstart;
+extern Bool permadeath;
+const extern Bool quickstart;
 
 // =======
 // CREDITS
@@ -69,20 +69,20 @@ static int last_secret = -1;
 
 static void load_secrets() {
 	for (SecretType i = 0; i < SECR_SIZE; i++) {
-		load_sound(SECRETS[i].sound, false);
-		load_track(SECRETS[i].track, true);
+		load_sound(SECRETS[i].sound, FALSE);
+		load_track(SECRETS[i].track, TRUE);
 	}
 
-	load_sound("type", false);
-	load_sound("thwomp", false);
-	load_track("it_makes_me_burn", true);
+	load_sound("type", FALSE);
+	load_sound("thwomp", FALSE);
+	load_track("it_makes_me_burn", TRUE);
 }
 
 static void update_menu_track();
 static void activate_secret(SecretType idx) {
-	SECRETS[idx].active = true;
+	SECRETS[idx].active = TRUE;
 	SECRETS[idx].state = SECRETS[idx].type_time = 0;
-	*(SECRETS[idx].cmd) = true;
+	*(SECRETS[idx].cmd) = TRUE;
 
 	if (last_secret == idx)
 		last_secret = -1;
@@ -91,9 +91,9 @@ static void activate_secret(SecretType idx) {
 }
 
 static void deactivate_secret(SecretType idx) {
-	SECRETS[idx].active = false;
+	SECRETS[idx].active = FALSE;
 	SECRETS[idx].state = SECRETS[idx].type_time = 0;
-	*(SECRETS[idx].cmd) = false;
+	*(SECRETS[idx].cmd) = FALSE;
 
 	if (last_secret == idx)
 		last_secret = -1;
@@ -102,7 +102,7 @@ static void deactivate_secret(SecretType idx) {
 
 static MenuType cur_menu;
 static void update_secrets() {
-	const bool handicapped
+	const Bool handicapped
 		= is_connected() || cur_menu == MEN_INTRO || cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY;
 	for (SecretType i = 0; i < SECR_SIZE; i++) {
 		Secret* secret = &SECRETS[i];
@@ -157,7 +157,7 @@ static void update_secrets() {
 static MenuType cur_menu = MEN_NULL;
 
 static GameWinner winners[MAX_PLAYERS] = {0};
-static bool losers = false;
+static Bool losers = FALSE;
 
 static float volume_toggle_impl(float, int);
 #define FMT_OPTION(fname, ...)                                                                                         \
@@ -179,7 +179,7 @@ static float volume_toggle_impl(float, int);
 
 // Main Menu
 static void instaquit() {
-	permadeath = true;
+	permadeath = TRUE;
 }
 
 // Singleplayer
@@ -199,7 +199,7 @@ static void open_troubleshooting_url() {
 }
 
 static void read_multiplayer_note() {
-	CLIENT.user.aware = true;
+	CLIENT.user.aware = TRUE;
 	set_menu(MEN_MULTIPLAYER);
 }
 
@@ -257,9 +257,9 @@ FMT_OPTION(skin, CLIENT.user.skin);
 
 FMT_OPTION(delay, CLIENT.input.delay);
 static void set_delay(int flip) {
-	CLIENT.input.delay
-		= (flip >= 0) ? (uint8_t)((CLIENT.input.delay >= MAX_INPUT_DELAY) ? 0 : (CLIENT.input.delay + 1))
-	                      : (uint8_t)((CLIENT.input.delay <= 0) ? MAX_INPUT_DELAY : (CLIENT.input.delay - 1));
+	CLIENT.input.delay = (flip >= 0)
+	                             ? (Uint8)((CLIENT.input.delay >= MAX_INPUT_DELAY) ? 0 : (CLIENT.input.delay + 1))
+	                             : (Uint8)((CLIENT.input.delay <= 0) ? MAX_INPUT_DELAY : (CLIENT.input.delay - 1));
 }
 
 static const char* fmt_resolution(const char* base) {
@@ -347,8 +347,8 @@ static void update_intro(), reset_credits(), enter_multiplayer_note(), update_fi
 	enter_lobby(), update_inlobby();
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType);
 
-#define GHOST .ghost = true
-#define NORETURN .noreturn = true
+#define GHOST .ghost = TRUE
+#define NORETURN .noreturn = TRUE
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {NORETURN},
 	[MEN_ERROR] = {"Error", GHOST},
@@ -423,8 +423,8 @@ static void join_found_lobby() {
 #define TOGGLE(fname) .flip = toggle_##fname
 #define FORMAT(fname) .format = fmt_##fname
 #define REBIND(fname) .button = rebind_##fname
-#define DISABLE .disabled = true
-#define VIVID .vivid = true
+#define DISABLE .disabled = TRUE
+#define VIVID .vivid = TRUE
 #define OINFO DISABLE, VIVID
 
 static const char* NO_LOBBIES_FOUND = "No lobbies found";
@@ -525,24 +525,24 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 };
 
 void load_menu() {
-	load_texture("ui/disclaimer", false);
-	load_texture("ui/background", false);
-	load_texture("ui/shortcut", false);
+	load_texture("ui/disclaimer", FALSE);
+	load_texture("ui/background", FALSE);
+	load_texture("ui/shortcut", FALSE);
 
-	load_font("main", true);
+	load_font("main", TRUE);
 
-	load_sound("switch", false);
-	load_sound("select", true);
-	load_sound("toggle", false);
-	load_sound("enter", true);
-	load_sound("on", false);
-	load_sound("off", false);
-	load_sound("bump", false);
-	load_sound("connect", false);
-	load_sound("disconnect", true);
+	load_sound("switch", FALSE);
+	load_sound("select", TRUE);
+	load_sound("toggle", FALSE);
+	load_sound("enter", TRUE);
+	load_sound("on", FALSE);
+	load_sound("off", FALSE);
+	load_sound("bump", FALSE);
+	load_sound("connect", FALSE);
+	load_sound("disconnect", TRUE);
 
-	load_track("title", true);
-	load_track("yi_score", true);
+	load_track("title", TRUE);
+	load_track("yi_score", TRUE);
 
 	load_secrets();
 }
@@ -570,7 +570,7 @@ static void cleanup_lobby_list(MenuType next) {
 	maybe_disconnect(next);
 	for (int i = 0; i < MAX_OPTIONS; i++) {
 		OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
-		OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
+		OPTIONS[MEN_FIND_LOBBY][i].disabled = TRUE;
 		OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
 	}
 }
@@ -586,17 +586,17 @@ static void update_find_lobbies() {
 	for (int i = 0; i < MAX_OPTIONS; i++) {
 		if (get_lobby_count() <= 0) {
 			OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
-			OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
+			OPTIONS[MEN_FIND_LOBBY][i].disabled = TRUE;
 			OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
 		} else if (i >= get_lobby_count()) {
 			OPTIONS[MEN_FIND_LOBBY][i].name = NULL;
-			OPTIONS[MEN_FIND_LOBBY][i].disabled = true;
+			OPTIONS[MEN_FIND_LOBBY][i].disabled = TRUE;
 			OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
 		} else {
 			const NutPunch_LobbyInfo* lobby = get_lobby(i);
 			SDL_snprintf(block[i], MAX_LEN, "%s (%d/%d)", lobby->name, lobby->players, lobby->capacity);
 			OPTIONS[MEN_FIND_LOBBY][i].name = block[i];
-			OPTIONS[MEN_FIND_LOBBY][i].disabled = false;
+			OPTIONS[MEN_FIND_LOBBY][i].disabled = FALSE;
 			OPTIONS[MEN_FIND_LOBBY][i].button = join_found_lobby;
 		}
 	}
@@ -754,20 +754,20 @@ void draw_menu() {
 	batch_reset();
 	batch_sprite("ui/background");
 
-	bool has_secret = false;
+	Bool has_secret = FALSE;
 	for (SecretType i = 0; i < SECR_SIZE; i++)
 		if (SECRETS[i].active) {
-			has_secret = true;
+			has_secret = TRUE;
 			break;
 		}
 
 	const float lk = 0.125f * dt();
 	secret_lerp = glm_lerp(secret_lerp, has_secret, SDL_min(lk, 1.f));
 
-	const GLubyte fade_red = (CLIENT.game.kevin && CLIENT.game.fred) ? 255 : 32;
-	const GLubyte fade_alpha = (GLubyte)(secret_lerp * 255.f);
+	const Uint8 fade_red = (CLIENT.game.kevin && CLIENT.game.fred) ? 255 : 32;
+	const Uint8 fade_alpha = (Uint8)(secret_lerp * 255.f);
 	batch_pos(B_XY(-SCREEN_WIDTH, 0));
-	batch_colors((GLubyte[4][4]){
+	batch_colors((Uint8[4][4]){
 		{fade_red, 0, 0, 0         },
                 {fade_red, 0, 0, 0         },
                 {0,        0, 0, fade_alpha},
@@ -805,8 +805,8 @@ void draw_menu() {
 		static char name[512] = {0}; // separate fmt buffer to prevent memory-related bugs
 		SDL_snprintf(name, sizeof(name), "%s%s", format, suffix);
 
-		const GLfloat x = 48.f + (opt->hover * 8.f);
-		const GLfloat y = menu_y + ((GLfloat)i * 24.f);
+		const float x = 48.f + (opt->hover * 8.f);
+		const float y = menu_y + ((float)i * 24.f);
 
 		batch_pos(B_XY(x, y)), batch_color(B_ALPHA(opt->disabled && !opt->vivid ? 128 : 255));
 		batch_align(B_TOP_LEFT);
@@ -846,9 +846,9 @@ void draw_menu() {
 
 			const float top = 200.f, bottom = SCREEN_HEIGHT - 200.f;
 			if ((y + 18.f) > bottom)
-				batch_color(B_ALPHA(128 - (GLubyte)(((y + 18.f - bottom) / 200.f) * 128.f)));
+				batch_color(B_ALPHA(128 - (Uint8)(((y + 18.f - bottom) / 200.f) * 128.f)));
 			else if (y < top)
-				batch_color(B_ALPHA(128 - (GLubyte)(((top - y) / 200.f) * 128.f)));
+				batch_color(B_ALPHA(128 - (Uint8)(((top - y) / 200.f) * 128.f)));
 			else
 				batch_color(B_ALPHA(128));
 
@@ -871,7 +871,7 @@ void draw_menu() {
 		batch_string("main", 24.f, fmt("Players (%i / %i)", num_peers, get_max_peers()));
 
 		batch_color(B_ALPHA(128));
-		GLfloat y = 60.f;
+		float y = 60.f;
 		int idx = 1;
 		for (int i = 0; i < MAX_PEERS; i++) {
 			if (!peer_exists(i))
@@ -948,7 +948,7 @@ void show_error(const char* fmt, ...) {
 	char linum = 0, *sep = "\n", *state = buf, *line = SDL_strtok_r(buf, sep, &state);
 	for (int k = 0; k < MAX_OPTIONS; k++) {
 		OPTIONS[MEN_ERROR][k].name = "";
-		OPTIONS[MEN_ERROR][k].disabled = true;
+		OPTIONS[MEN_ERROR][k].disabled = TRUE;
 	}
 	while (line) {
 		OPTIONS[MEN_ERROR][linum++].name = line;
@@ -972,17 +972,17 @@ void populate_results() {
 void show_results() {
 	for (int i = 0; i < MAX_OPTIONS; i++) {
 		OPTIONS[MEN_RESULTS][i].name = "";
-		OPTIONS[MEN_RESULTS][i].disabled = true;
+		OPTIONS[MEN_RESULTS][i].disabled = TRUE;
 	}
 
 	char idx = 0;
 
 	// Endgame reason
-	losers = true;
+	losers = TRUE;
 	for (PlayerID i = 0; i < numplayers(); i++) {
 		const GamePlayer* player = get_player(i);
 		if (player->lives >= 0L) {
-			losers = false;
+			losers = FALSE;
 			break;
 		}
 	}
@@ -1026,14 +1026,14 @@ const char* who_is_winner(int idx) {
 	return (idx < 0 || idx >= (sizeof(winners) / sizeof(*winners))) ? NULL : winners[idx].name;
 }
 
-bool set_menu(MenuType next_menu) {
+Bool set_menu(MenuType next_menu) {
 	if (next_menu == MEN_EXIT) {
-		permadeath = true;
-		return true;
+		permadeath = TRUE;
+		return TRUE;
 	}
 
 	if (cur_menu == next_menu || next_menu <= MEN_NULL || next_menu >= MEN_SIZE)
-		return false;
+		return FALSE;
 
 	if (MENUS[cur_menu].from != next_menu) {
 		if (MENUS[next_menu].noreturn)
@@ -1064,10 +1064,10 @@ bool set_menu(MenuType next_menu) {
 	}
 
 	update_menu_track();
-	return true;
+	return TRUE;
 }
 
-bool prev_menu() {
+Bool prev_menu() {
 	return set_menu(MENUS[cur_menu].from);
 }
 

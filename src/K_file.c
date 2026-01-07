@@ -3,6 +3,7 @@
 
 #include "K_file.h"
 #include "K_log.h"
+#include "K_math.h"
 
 static const char* data_path = NULL;
 static char* user_path = NULL;
@@ -27,7 +28,7 @@ static const char* find_file(const char* base, const char* filename, const char*
 		return NULL;
 
 	static char result[256];
-	bool success = false;
+	Bool success = FALSE;
 	for (int i = 0; i < count; i++) {
 		const char* file = files[i];
 
@@ -38,7 +39,7 @@ static const char* find_file(const char* base, const char* filename, const char*
 		}
 
 		SDL_snprintf(result, sizeof(result), "%s%s", base, file);
-		success = true;
+		success = TRUE;
 		break;
 	}
 	SDL_free((void*)files);

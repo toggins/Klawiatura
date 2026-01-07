@@ -5,12 +5,12 @@
 // HELPER FUNCTIONS
 // ================
 
-void give_points(GameActor* actor, GamePlayer* player, int32_t points) {
+void give_points(GameActor* actor, GamePlayer* player, Sint32 points) {
 	if (actor == NULL || player == NULL || points == 0L)
 		return;
 
 	if (points < 0L) {
-		const int32_t gimme = (int32_t)(player->lives) - points;
+		const Sint32 gimme = (Sint32)(player->lives) - points;
 		player->lives = SDL_min(gimme, 100L);
 
 		// !!! CLIENT-SIDE !!!
@@ -33,17 +33,17 @@ void give_points(GameActor* actor, GamePlayer* player, int32_t points) {
 // ======
 
 static void load() {
-	load_texture("ui/points/100", false);
-	load_texture("ui/points/200", false);
-	load_texture("ui/points/500", false);
-	load_texture("ui/points/1000", false);
-	load_texture("ui/points/2000", false);
-	load_texture("ui/points/5000", false);
-	load_texture("ui/points/10000", false);
-	load_texture("ui/points/1000000", false);
-	load_texture("ui/points/1up", false);
+	load_texture("ui/points/100", FALSE);
+	load_texture("ui/points/200", FALSE);
+	load_texture("ui/points/500", FALSE);
+	load_texture("ui/points/1000", FALSE);
+	load_texture("ui/points/2000", FALSE);
+	load_texture("ui/points/5000", FALSE);
+	load_texture("ui/points/10000", FALSE);
+	load_texture("ui/points/1000000", FALSE);
+	load_texture("ui/points/1up", FALSE);
 
-	load_sound("1up", false);
+	load_sound("1up", FALSE);
 }
 
 static void create(GameActor* actor) {

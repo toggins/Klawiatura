@@ -17,7 +17,7 @@ set(BUILD_SHARED_LIBS OFF)
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
-# SDL3 (3.2.28)
+# SDL3 (3.4.0)
 set(SDL_SHARED OFF CACHE INTERNAL "")
 set(SDL_STATIC ON CACHE INTERNAL "")
 set(SDL_TEST_LIBRARY OFF CACHE INTERNAL "")
@@ -28,9 +28,9 @@ set(SDL_CAMERA OFF CACHE INTERNAL "")
 FetchContent_Declare(
     SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG release-3.2.28)
+    GIT_TAG release-3.4.0)
 
-# SDL_image (3.2.4)
+# SDL_image (3.2.6)
 set(SDLIMAGE_AVIF OFF CACHE INTERNAL "")
 set(SDLIMAGE_TIF OFF CACHE INTERNAL "")
 set(SDLIMAGE_WEBP OFF CACHE INTERNAL "")
@@ -39,13 +39,13 @@ set(SDLIMAGE_XCF OFF CACHE INTERNAL "")
 FetchContent_Declare(
     SDL3_image
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
-    GIT_TAG release-3.2.4)
+    GIT_TAG release-3.2.6)
 
 # SDL_GameControllerDB
 FetchContent_Declare(
     SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG 5e686a3e781937e7f43138440a032f47140d0624)
+    GIT_TAG 01de5cf46ff3679b5378ec7dae365791e632b76a)
 
 # GLAD (2.0.8, OpenGL 3.3 Core)
 FetchContent_Declare(

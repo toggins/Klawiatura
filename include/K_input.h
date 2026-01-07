@@ -5,12 +5,13 @@
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_stdinc.h>
 
-#define KB_VALUE_MAX 32767
+#include "K_math.h"
+
 #define MAX_INPUT_DELAY 10L
 
-#define NULLBIND ((Keybind)(-1))
+#define NULLBIND ((Keybind)(-1L))
 
-typedef int8_t Keybind;
+typedef Sint8 Keybind;
 enum {
 	KB_UP,
 	KB_LEFT,
@@ -23,7 +24,7 @@ enum {
 	// Utility
 	KB_CHAT,
 
-	// If you allow rebinding anything below this comment I will pulverize you
+	// Non-rebindables
 	KB_PAUSE,
 	KB_UI_UP,
 	KB_UI_LEFT,
@@ -44,15 +45,15 @@ enum {
 	KB_SIZE,
 };
 
-typedef uint32_t KeybindState;
-typedef int16_t KeybindValue;
+typedef Uint32 KeybindState;
+typedef Sint16 KeybindValue;
 
 typedef struct {
 	const char* name;
 	SDL_Scancode key;
 	SDL_GamepadButton button;
 	SDL_GamepadAxis axis;
-	bool negative;
+	Bool negative;
 } Bindings;
 extern Bindings BINDS[KB_SIZE];
 
@@ -65,15 +66,13 @@ void input_wipeout();
 
 const char* input_device();
 
-bool kb_pressed(Keybind), kb_down(Keybind), kb_released(Keybind), kb_repeated(Keybind);
+Bool kb_pressed(Keybind), kb_down(Keybind), kb_released(Keybind), kb_repeated(Keybind);
 const char* kb_label(Keybind);
 
-void start_typing(char*, size_t);
-void stop_typing();
+void start_typing(char*, size_t), stop_typing();
 const char* typing_what();
-bool typing_input_confirmed();
+Bool typing_input_confirmed();
 void input_text_input(SDL_TextInputEvent);
 
-void start_scanning(Keybind);
-void stop_scanning();
+void start_scanning(Keybind), stop_scanning();
 Keybind scanning_what();

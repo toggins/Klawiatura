@@ -26,8 +26,8 @@ enum {
 // ====
 
 static void load() {
-	load_texture_num("enemies/lava%u", 8L, false);
-	load_texture("tiles/lava", false);
+	load_texture_num("enemies/lava%u", 8L, FALSE);
+	load_texture("tiles/lava", FALSE);
 }
 
 static void create(GameActor* actor) {
@@ -42,7 +42,7 @@ static void tick(GameActor* actor) {
 		return;
 
 	move_actor(actor,
-		(fvec2){actor->pos.x,
+		(FVec2){actor->pos.x,
 			VAL(actor, LAVA_Y) + Fmul(VAL(actor, LAVA_WAVE_LENGTH), Fcos(VAL(actor, LAVA_WAVE_ANGLE)))});
 	if (VAL(actor, LAVA_WAVE_LENGTH) <= FxZero) {
 		FLAG_OFF(actor, FLG_LAVA_WAVE);
@@ -116,9 +116,9 @@ const GameActorTable TAB_LAVA = {.load = load, .create = create, .tick = tick, .
 // =======
 
 static void load_podoboo() {
-	load_texture_num("enemies/podoboo%u", 3L, false);
+	load_texture_num("enemies/podoboo%u", 3L, FALSE);
 
-	load_sound("kick", false);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_LAVA_SPLASH);
 	load_actor(ACT_POINTS);
@@ -143,9 +143,9 @@ static void tick_podoboo(GameActor* actor) {
 		return;
 	} else if (!ANY_FLAG(actor, FLG_VISIBLE)) {
 		if ((ANY_FLAG(actor, FLG_PODOBOO_FAST) && (game_state.time % 65L) == 0L
-			    && in_any_view(actor, FxZero, false))
+			    && in_any_view(actor, FxZero, FALSE))
 			|| (!ANY_FLAG(actor, FLG_PODOBOO_FAST) && (game_state.time % 250L) == 0L
-				&& in_any_view(actor, FfInt(608L), false)))
+				&& in_any_view(actor, FfInt(608L), FALSE)))
 		{
 			VAL(actor, Y_SPEED) = FfInt(-12L);
 			FLAG_ON(actor, FLG_VISIBLE);
@@ -201,7 +201,7 @@ const GameActorTable TAB_PODOBOO = {
 // ===============
 
 static void load_volcano(GameActor* actor) {
-	load_sound("fire", false);
+	load_sound("fire", FALSE);
 
 	load_actor(ACT_PODOBOO);
 }
@@ -213,7 +213,7 @@ static void create_volcano(GameActor* actor) {
 static void tick_volcano(GameActor* actor) {
 	if ((game_state.time % 300L) == 0L && VAL(actor, PODOBOO_FIRE) == 0L)
 		VAL(actor, PODOBOO_FIRE) = 8L;
-	if ((game_state.time % 15L) == 0L && VAL(actor, PODOBOO_FIRE) > 0L && in_any_view(actor, FfInt(224L), false)) {
+	if ((game_state.time % 15L) == 0L && VAL(actor, PODOBOO_FIRE) > 0L && in_any_view(actor, FfInt(224L), FALSE)) {
 		GameActor* podoboo = create_actor(ACT_PODOBOO, POS_ADD(actor, FfInt(16L), FfInt(10L)));
 		if (podoboo != NULL) {
 			VAL(podoboo, X_SPEED) = FfInt(-4L + rng(9L));

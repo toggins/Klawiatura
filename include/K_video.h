@@ -5,8 +5,6 @@
 #include <SDL3/SDL_opengl.h>
 #include <SDL3/SDL_video.h>
 
-#include <limits.h> // required for `CHAR_MAX`
-
 #define CGLM_ALL_UNALIGNED
 #define CGLM_FORCE_DEPTH_ZERO_TO_ONE
 #define CGLM_FORCE_LEFT_HANDED
@@ -15,13 +13,13 @@
 #include "K_game.h"
 
 // Shortcut macros for graphic functions
-#define B_XYZ(x, y, z) ((GLfloat[3]){(x), (y), (z)})
+#define B_XYZ(x, y, z) ((float[3]){(x), (y), (z)})
 #define B_XY(x, y) B_XYZ(x, y, 0)
 #define B_ORIGIN B_XY(0, 0)
 #define B_SCREEN B_XY(SCREEN_WIDTH, SCREEN_HEIGHT)
 #define B_SCALE(x) B_XYZ(x, x, x)
 
-#define B_RGBA(r, g, b, a) ((GLubyte[4]){(r), (g), (b), (a)})
+#define B_RGBA(r, g, b, a) ((Uint8[4]){(r), (g), (b), (a)})
 #define B_RGB(r, g, b) B_RGBA(r, g, b, 255)
 #define B_VALUE(v) B_RGB(v, v, v)
 #define B_ALPHA(a) B_RGBA(255, 255, 255, a)
@@ -33,16 +31,16 @@
 #define B_GREEN B_RGB(0, 255, 0)
 #define B_BLUE B_RGB(0, 0, 255)
 
-#define B_STENCIL(r, g, b, v) ((GLfloat[4]){r, g, b, v})
+#define B_STENCIL(r, g, b, v) ((float[4]){r, g, b, v})
 #define B_NO_STENCIL B_STENCIL(0, 0, 0, 0)
 
-#define B_UV(u, v) ((GLfloat[2]){(u), (v)})
+#define B_UV(u, v) ((float[2]){(u), (v)})
 
-#define B_FLIP(x, y) ((GLboolean[2]){(x), (y)})
-#define B_NO_FLIP B_FLIP(false, false)
+#define B_FLIP(x, y) ((Bool[2]){(x), (y)})
+#define B_NO_FLIP B_FLIP(FALSE, FALSE)
 
-#define B_TILE(x, y) ((GLboolean[2]){(x), (y)})
-#define B_NO_TILE B_TILE(false, false)
+#define B_TILE(x, y) ((Bool[2]){(x), (y)})
+#define B_NO_TILE B_TILE(FALSE, FALSE)
 
 #define B_ALIGN(h, v) ((FontAlignment[2]){h, v})
 #define B_TOP_LEFT B_ALIGN(FA_LEFT, FA_TOP)
@@ -58,7 +56,7 @@
         })
 #define B_BLEND_NORMAL B_BLEND(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE)
 
-typedef uint8_t VertexAttribute;
+typedef Uint8 VertexAttribute;
 enum {
 	VATT_POSITION,
 	VATT_COLOR,
@@ -66,19 +64,19 @@ enum {
 };
 
 typedef struct {
-	GLfloat position[3];
-	GLubyte color[4];
-	GLfloat uv[2];
+	float position[3];
+	Uint8 color[4];
+	float uv[2];
 } Vertex;
 
-typedef uint8_t ShaderType;
+typedef Uint8 ShaderType;
 enum {
 	SH_MAIN,
 	SH_WAVE,
 	SH_SIZE,
 };
 
-typedef uint8_t UniformType;
+typedef Uint8 UniformType;
 enum {
 	UNI_MVP,
 	UNI_TEXTURE,
@@ -98,20 +96,20 @@ typedef struct {
 	AssetBase base;
 
 	GLuint texture, size[2];
-	GLfloat offset[2];
+	float offset[2];
 } Texture;
 
 typedef struct {
-	GLfloat width;
-	GLfloat uvs[4];
+	float width;
+	float uvs[4];
 } Glyph;
 
 typedef struct {
 	AssetBase base;
 
 	StTinyKey texture_key;
-	GLfloat height, spacing;
-	Glyph glyphs[CHAR_MAX + 1];
+	float height, spacing;
+	Glyph glyphs[SDL_MAX_SINT8 + 1];
 } Font;
 
 typedef int8_t FontAlignment;
@@ -130,28 +128,28 @@ typedef struct {
 	size_t vertex_count, vertex_capacity;
 	Vertex* vertices;
 
-	GLfloat pos[3], offset[3], scale[3], angle;
-	GLubyte color[4][4];
-	GLboolean flip[2], tile[2];
+	float pos[3], offset[3], scale[3], angle;
+	Uint8 color[4][4];
+	Bool flip[2], tile[2];
 	FontAlignment align[2];
-	GLfloat stencil[4];
+	float stencil[4];
 	GLuint texture;
-	GLboolean filter;
-	GLfloat alpha_test;
+	Bool filter;
+	float alpha_test;
 	GLenum blend[2][2];
 } VertexBatch;
 
 typedef struct TileMap {
 	struct TileMap* next;
 	StTinyKey texture_key;
-	bool translucent;
+	Bool translucent;
 
 	GLuint vao, vbo;
 	size_t vertex_count, vertex_capacity;
 	Vertex* vertices;
 } TileMap;
 
-typedef uint8_t SurfaceAttribute;
+typedef Uint8 SurfaceAttribute;
 enum {
 	SURF_COLOR,
 	SURF_DEPTH,
@@ -159,14 +157,14 @@ enum {
 };
 
 typedef struct Surface {
-	bool active;
+	Bool active;
 	struct Surface* previous;
 
 	mat4 model_matrix, view_matrix, projection_matrix, mvp_matrix;
 
-	bool enabled[SURF_SIZE];
+	Bool enabled[SURF_SIZE];
 	GLuint fbo, texture[SURF_SIZE];
-	GLuint size[2];
+	GLsizei size[2];
 } Surface;
 
 typedef struct {
@@ -187,7 +185,7 @@ typedef struct {
 
 extern VideoState video_state;
 
-void video_init(bool), video_teardown();
+void video_init(Bool), video_teardown();
 void start_drawing(), stop_drawing();
 
 // State
@@ -195,47 +193,46 @@ void start_video_state(), nuke_video_state();
 
 // Display
 void get_resolution(int*, int*), set_resolution(int, int);
-bool get_fullscreen();
-void set_fullscreen(bool);
-bool get_vsync();
-void set_vsync(bool);
+Bool get_fullscreen();
+void set_fullscreen(Bool);
+Bool get_vsync();
+void set_vsync(Bool);
 
-bool window_maximized(), window_focused();
-bool window_start_text_input();
+Bool window_maximized(), window_focused();
+Bool window_start_text_input();
 void window_stop_text_input();
 
 // Basic
-void clear_color(GLfloat, GLfloat, GLfloat, GLfloat), clear_depth(GLfloat);
+void clear_color(float, float, float, float), clear_depth(float);
 
 // Shaders
 void set_shader(ShaderType);
 
-void set_int_uniform(UniformType, GLint);
-void set_float_uniform(UniformType, GLfloat);
-void set_vec2_uniform(UniformType, const GLfloat[2]);
-void set_vec3_uniform(UniformType, const GLfloat[3]);
-void set_vec4_uniform(UniformType, const GLfloat[4]);
-void set_mat4_uniform(UniformType, const GLfloat[4][4]);
+void set_int_uniform(UniformType, int);
+void set_float_uniform(UniformType, float);
+void set_vec2_uniform(UniformType, const float[2]);
+void set_vec3_uniform(UniformType, const float[3]);
+void set_vec4_uniform(UniformType, const float[4]);
+void set_mat4_uniform(UniformType, const float[4][4]);
 
 // Assets
 ASSET_HEAD(textures, Texture, texture);
-void load_texture_num(const char*, uint32_t, bool);
+void load_texture_num(const char*, Uint32, Bool);
 
 ASSET_HEAD(fonts, Font, font);
 
 // Batch
-void batch_pos(const GLfloat[3]), batch_offset(const GLfloat[3]), batch_scale(const GLfloat[2]),
-	batch_angle(const GLfloat);
-void batch_color(const GLubyte[4]), batch_colors(const GLubyte[4][4]), batch_stencil(const GLfloat[4]);
-void batch_flip(const GLboolean[2]), batch_tile(const GLboolean[2]), batch_align(const FontAlignment[2]);
-void batch_filter(bool), batch_alpha_test(GLfloat);
+void batch_pos(const float[3]), batch_offset(const float[3]), batch_scale(const float[2]), batch_angle(const float);
+void batch_color(const Uint8[4]), batch_colors(const Uint8[4][4]), batch_stencil(const float[4]);
+void batch_flip(const Bool[2]), batch_tile(const Bool[2]), batch_align(const FontAlignment[2]);
+void batch_filter(Bool), batch_alpha_test(float);
 void batch_blend(const GLenum[2][2]);
 void batch_reset(), batch_reset_hard();
 
-void batch_rectangle(const char*, const GLfloat[2]);
+void batch_rectangle(const char*, const float[2]);
 void batch_sprite(const char*), batch_surface(Surface*);
-GLfloat string_width(const char*, GLfloat, const char*), string_height(const char*, GLfloat, const char*);
-void batch_string(const char*, GLfloat, const char*);
+float string_width(const char*, float, const char*), string_height(const char*, float, const char*);
+void batch_string(const char*, float, const char*);
 void submit_batch();
 
 // Matrices
@@ -247,15 +244,15 @@ void set_projection_matrix(mat4);
 void apply_matrices();
 
 // Surfaces
-Surface* create_surface(GLuint, GLuint, bool, bool);
+Surface* create_surface(GLsizei, GLsizei, Bool, Bool);
 void destroy_surface(Surface*);
 void check_surface(Surface*), dispose_surface(Surface*);
-void resize_surface(Surface*, GLuint, GLuint);
+void resize_surface(Surface*, GLsizei, GLsizei);
 void push_surface(Surface*), pop_surface();
 
 // Tiles
-void tile_sprite(const char*, const GLfloat[3], const GLfloat[2], const GLubyte[4]);
-void tile_rectangle(const char*, const GLfloat[2][2], GLfloat, const GLubyte[4][4]);
+void tile_sprite(const char*, const float[3], const float[2], const Uint8[4]);
+void tile_rectangle(const char*, const float[2][2], float, const Uint8[4][4]);
 void draw_tilemaps(), clear_tilemaps();
 
 // Camera

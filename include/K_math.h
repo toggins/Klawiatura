@@ -1,19 +1,32 @@
+#pragma once
+
 #include <SDL3/SDL_stdinc.h>
 
 #include <S_fixed.h>
 
-typedef uint8_t Bool;
-typedef fix16_t fixed;
+// FUCK YOU `minwindef.h`
+#ifdef FALSE
+#undef FALSE
+#endif
+#ifdef TRUE
+#undef TRUE
+#endif
+
+typedef Uint8 Bool;
+#define FALSE ((Bool)0L)
+#define TRUE ((Bool)1L)
+
+typedef fix16_t Fixed;
 
 typedef struct {
-	fixed x, y;
-} fvec2;
+	Fixed x, y;
+} FVec2;
 
 typedef struct {
-	fvec2 start, end;
-} frect;
+	FVec2 start, end;
+} FRect;
 
-fvec2 Vadd(register fvec2, register fvec2), Vsub(register fvec2, register fvec2);
-fvec2 Vscale(register fvec2, register fixed);
-fixed Vdist(register fvec2, register fvec2), Vtheta(register fvec2, register fvec2);
-Bool Rcollide(frect, frect);
+FVec2 Vadd(register FVec2, register FVec2), Vsub(register FVec2, register FVec2);
+FVec2 Vscale(register FVec2, register Fixed);
+Fixed Vdist(register FVec2, register FVec2), Vtheta(register FVec2, register FVec2);
+Bool Rcollide(FRect, FRect);

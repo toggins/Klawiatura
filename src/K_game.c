@@ -77,22 +77,22 @@ enum {
 	PMO_SIZE,
 };
 
-static Bool paused = false;
-static uint8_t pause_option = 0;
+static Bool paused = FALSE;
+static Uint8 pause_option = 0;
 
-static GLfloat pause_cursor = 0.f;
-static GLfloat pause_hover[PMO_SIZE] = {0.f};
+static float pause_cursor = 0.f;
+static float pause_hover[PMO_SIZE] = {0.f};
 
 static void pause() {
-	paused = true;
+	paused = TRUE;
 	if (num_players <= 1L)
-		pause_audio_state(true);
+		pause_audio_state(TRUE);
 	input_wipeout();
 }
 
 static void unpause() {
-	paused = false;
-	pause_audio_state(false);
+	paused = FALSE;
+	pause_audio_state(FALSE);
 	input_wipeout();
 }
 
@@ -102,7 +102,7 @@ static void unpause() {
 
 #define MAX_CHATS 8
 
-static const GLfloat chat_fs = 18.f;
+static const float chat_fs = 18.f;
 static char chat_message[100] = {0};
 static struct {
 	char text[sizeof(chat_message)];
@@ -112,7 +112,7 @@ static struct {
 static void send_chat_message() {
 	if (typing_what() || !SDL_strlen(chat_message))
 		return;
-	// TODO: use message headers to distinguish message types, instead of using gross hacks such as this.
+	// TODO: use message headers to distinguish message types, instead of using gross hacks like this.
 	static char buf[4 + sizeof(chat_message)] = "CHAT";
 	SDL_strlcpy(buf + 4, chat_message, sizeof(chat_message));
 	for (PlayerID i = 0; i < num_players; i++)
@@ -152,7 +152,8 @@ static void update_chat_hist() {
 
 static void draw_chat_hist() {
 	const float y = SCREEN_HEIGHT - 12.f - (1.5 * chat_fs);
-	const GLubyte a = (typing_what() == chat_message) ? 255 : 192;
+	const Uint8 a = (typing_what() == chat_message) ? 255 : 192;
+	batch_reset();
 	for (int i = 0; i < MAX_CHATS; i++) {
 		if (chat_hist[i].lifetime <= 0.f)
 			break;
@@ -174,15 +175,15 @@ static void draw_chat_message() {
 // GAME
 // ====
 
-static bool rolling_back = false;
+static Bool rolling_back = FALSE;
 
 /// Initializes a GameContext struct with a clean 1-player preset.
 void setup_game_context(GameContext* ctx, const char* level, GameFlag flags) {
 	SDL_memset(ctx, 0, sizeof(GameContext));
 	ctx->flags = flags;
 
-	ctx->num_players = 1;
-	for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
+	ctx->num_players = 1L;
+	for (PlayerID i = 0L; i < MAX_PLAYERS; i++) {
 		ctx->players[i].power = POW_SMALL;
 		ctx->players[i].lives = DEFAULT_LIVES;
 	}
@@ -197,15 +198,15 @@ void start_game(GameContext* ctx) {
 	else
 		clear_assets();
 
-	load_texture("ui/sidebar_l", false);
-	load_texture("ui/sidebar_r", false);
+	load_texture("ui/sidebar_l", FALSE);
+	load_texture("ui/sidebar_r", FALSE);
 
-	game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, true, true);
+	game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
 
 	gekko_create(&game_session);
 
 	GekkoConfig cfg = {0};
-	cfg.desync_detection = true;
+	cfg.desync_detection = TRUE;
 	cfg.input_size = sizeof(GameInput);
 	cfg.state_size = sizeof(SaveState);
 	cfg.max_spectators = 0;
@@ -224,7 +225,7 @@ void start_game(GameContext* ctx) {
 	input_wipeout();
 }
 
-bool game_exists() {
+Bool game_exists() {
 	return game_session != NULL;
 }
 
@@ -250,7 +251,7 @@ static void nuke_game_to_menu() {
 	clear_assets(), load_menu();
 }
 
-bool update_game() {
+Bool update_game() {
 	gekko_network_poll(game_session);
 
 	const float ahh = gekko_frames_ahead(game_session), ahead = SDL_clamp(ahh, 0, 2);
@@ -258,7 +259,6 @@ bool update_game() {
 
 	update_chat_hist();
 	if (!typing_what() && is_connected()) {
-		// FIXME: Make ESC cancel the message instead of sending it.
 		if (kb_pressed(KB_CHAT) && !paused)
 			start_typing(chat_message, sizeof(chat_message));
 		else if (typing_input_confirmed())
@@ -283,7 +283,7 @@ bool update_game() {
 		}
 
 		if (paused) {
-			const int8_t change = (int8_t)((int8_t)kb_repeated(KB_UI_DOWN) - (int8_t)kb_repeated(KB_UI_UP));
+			const Sint8 change = (Sint8)((Sint8)kb_repeated(KB_UI_DOWN) - (Sint8)kb_repeated(KB_UI_UP));
 			if (change != 0L) {
 				if (change > 0L)
 					pause_option = (pause_option >= (PMO_SIZE - 1L)) ? 0L : (pause_option + 1L);
@@ -318,7 +318,7 @@ bool update_game() {
 				if (game_state.flags & GF_HELL)
 					goto restart_fr;
 				PlayerID can_restart = num_players;
-				for (PlayerID i = 0; i < num_players; i++) {
+				for (PlayerID i = 0L; i < num_players; i++) {
 					GamePlayer* player = get_player(i);
 					if (player == NULL)
 						continue;
@@ -337,7 +337,7 @@ bool update_game() {
 			}
 
 			case PMO_EXIT:
-				extern bool quickstart, permadeath;
+				extern Bool quickstart, permadeath;
 				permadeath |= quickstart;
 				goto byebye_game;
 			}
@@ -353,7 +353,7 @@ bool update_game() {
 			continue;
 
 	dont_break_events:
-		input = 0; // declaring here spits out a shitass warning...
+		input = 0; // declaring here spits out a warning...
 		if (!paused && !typing_what()) {
 			input |= kb_down(KB_UP) * GI_UP;
 			input |= kb_down(KB_LEFT) * GI_LEFT;
@@ -437,7 +437,7 @@ bool update_game() {
 
 				for (PlayerID j = 0; j < num_players; j++)
 					if (!(inputs[j] & GI_WARP))
-						break;
+						goto dont_warp;
 
 				if (game_state.flags & GF_END) {
 					if (game_state.next[0] == '\0') {
@@ -449,7 +449,7 @@ bool update_game() {
 					setup_game_context(&ctx, (char*)game_state.next, GF_TRY_SINGLE | GF_TRY_HELL);
 					ctx.num_players = num_players;
 					for (PlayerID i = 0; i < num_players; i++) {
-						const int8_t lives = game_state.players[i].lives;
+						const Sint8 lives = game_state.players[i].lives;
 						if (lives < 0L && !(ctx.flags & GF_HELL))
 							continue;
 						ctx.players[i].lives = lives;
@@ -459,7 +459,7 @@ bool update_game() {
 					}
 
 					start_game(&ctx);
-					return true;
+					return TRUE;
 				} else if (game_state.flags & GF_RESTART) {
 				restart_fr:
 					GameContext ctx = {0};
@@ -473,9 +473,10 @@ bool update_game() {
 					ctx.checkpoint = game_state.checkpoint;
 
 					start_game(&ctx);
-					return true;
+					return TRUE;
 				}
 
+			dont_warp:
 				break;
 			}
 			default:
@@ -485,17 +486,17 @@ bool update_game() {
 	}
 
 	// Interpolate outside of the loop for uncapped framerate.
-	register const fixed ftick = FfFloat(pendingticks());
+	register const Fixed ftick = FfFloat(pendingticks());
 	for (const GameActor* actor = get_actor(game_state.live_actors); actor; actor = get_actor(actor->previous)) {
 		InterpActor* iactor = &interp.actors[actor->id];
 		iactor->pos = Vadd(iactor->from, Vscale(Vsub(actor->pos, iactor->from), ftick));
 	}
 
-	return true;
+	return TRUE;
 
 byebye_game:
 	nuke_game_to_menu();
-	return false;
+	return FALSE;
 }
 
 static mat4 proj = GLM_MAT4_IDENTITY;
@@ -521,16 +522,16 @@ static void perform_camera_magic() {
 	if (autoscroll) {
 		const InterpActor* iautoscroll = get_interp(autoscroll);
 		if (!iautoscroll)
-			goto fuck;
+			goto skip_morsel;
 
-		const fixed xx = iautoscroll->pos.x + F_HALF_SCREEN_WIDTH,
+		const Fixed xx = iautoscroll->pos.x + F_HALF_SCREEN_WIDTH,
 			    yy = iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT;
 		const float bx1 = FtInt(F_HALF_SCREEN_WIDTH), by1 = FtInt(F_HALF_SCREEN_HEIGHT),
 			    bx2 = FtInt(game_state.size.x - F_HALF_SCREEN_WIDTH),
 			    by2 = FtInt(game_state.size.y - F_HALF_SCREEN_HEIGHT);
 		MORSEL();
 	} else if (player) {
-		fixed xx = FxZero, yy = FxZero;
+		Fixed xx = FxZero, yy = FxZero;
 
 		const InterpActor* ipawn = get_interp(get_actor(player->actor));
 		if (ipawn)
@@ -546,7 +547,7 @@ static void perform_camera_magic() {
 	}
 #undef MORSEL
 
-fuck:
+skip_morsel:
 	if (camera->lerp_time[0] < camera->lerp_time[1]) {
 		glm_vec2_lerp(camera->from, camera->pos, camera->lerp_time[0] / camera->lerp_time[1], cpos);
 		camera->lerp_time[0] += dt();
@@ -582,7 +583,7 @@ static void draw_hud() {
 		batch_color(B_WHITE);
 
 		float lx = 0.5f * dt();
-		for (uint8_t i = 0; i < (uint8_t)PMO_SIZE; i++) {
+		for (Uint8 i = 0; i < (Uint8)PMO_SIZE; i++) {
 			const char* optname = NULL;
 			switch (i) {
 			default:
@@ -616,8 +617,8 @@ static void draw_hud() {
 		ACTOR_CALL(actor, draw_hud);
 
 	if (video_state.message[0] != '\0') {
-		const GLfloat ease = 1.f - (SDL_min(video_state.message_time, 30.f) / 30.f);
-		const GLfloat my = glm_lerp(-24.f, 112.f, 1.f - (ease * ease));
+		const float ease = 1.f - (SDL_min(video_state.message_time, 30.f) / 30.f);
+		const float my = glm_lerp(-24.f, 112.f, 1.f - (ease * ease));
 
 		batch_reset();
 		batch_pos(B_XYZ(HALF_SCREEN_WIDTH, my, -10000.f)), batch_align(B_ALIGN(FA_CENTER, FA_TOP));
@@ -668,7 +669,7 @@ static void draw_hud() {
 		batch_sprite(video_state.world);
 
 	if (game_state.clock >= 0L) {
-		GLfloat scale = 1.f;
+		float scale = 1.f;
 		if ((game_state.flags & GF_HURRY) && video_state.hurry < 120.f) {
 			video_state.hurry += dt();
 			if (video_state.hurry < 8.f)
@@ -679,14 +680,14 @@ static void draw_hud() {
 				scale = 1.6f - (((video_state.hurry - 112.f) / 8.f) * 0.6f);
 		}
 
-		const GLfloat x = (float)SCREEN_WIDTH - (32.f * scale);
-		const GLfloat size = 16.f * scale;
+		const float x = (float)SCREEN_WIDTH - (32.f * scale);
+		const float size = 16.f * scale;
 
 		batch_pos(B_XYZ(x, 24.f * scale, -10000.f));
-		const GLfloat yscale = (video_state.hurry > 0.f && video_state.hurry < 120.f)
-		                               ? glm_lerp(1.f, 0.8f + (SDL_sinf(video_state.hurry * 0.6f) * 0.2f),
-							 (scale - 1.0f) / 0.6f)
-		                               : 1.f;
+		const float yscale = (video_state.hurry > 0.f && video_state.hurry < 120.f)
+		                             ? glm_lerp(1.f, 0.8f + (SDL_sinf(video_state.hurry * 0.6f) * 0.2f),
+						       (scale - 1.0f) / 0.6f)
+		                             : 1.f;
 		batch_scale(B_XY(1.f, yscale)), batch_align(B_ALIGN(FA_RIGHT, FA_MIDDLE));
 		batch_string("hud", size, "TIME");
 		batch_scale(B_SCALE(1.f));
@@ -723,7 +724,7 @@ void draw_game() {
 	const GameActor* wave = get_actor(game_state.wave);
 	if (wave != NULL && ANY_FLAG(wave, FLG_WAVE_SKY)) {
 		batch_pos(B_XYZ(0.f, video_state.camera.pos[1] - HALF_SCREEN_HEIGHT, 200.f));
-		batch_colors((GLubyte[4][4]){
+		batch_colors((Uint8[4][4]){
 			{59,  123, 163, 255},
                         {59,  123, 163, 255},
                         {242, 253, 252, 255},
@@ -744,7 +745,7 @@ void draw_game() {
 	if (wy < lh) {
 		const float lw = FtFloat(game_state.size.x);
 		batch_reset(), batch_pos(B_XYZ(0.f, wy, -100.f)), batch_color(B_ALPHA(135));
-		batch_tile(B_TILE(true, false));
+		batch_tile(B_TILE(TRUE, FALSE));
 		batch_rectangle(fmt("markers/water%u", (game_state.time / 5L) % 8L), B_XY(lw, 16.f));
 		wy += 16.f;
 		if (wy < lh) {
@@ -760,7 +761,7 @@ void draw_game() {
 		set_shader(SH_WAVE);
 		set_float_uniform(UNI_TIME, totalticks() * 0.05f);
 		set_vec2_uniform(UNI_WAVE, B_XY(game_state.sequence.time * 0.00075f, 20.f));
-		const GLfloat t = SDL_min((GLfloat)game_state.sequence.time, 100.f) / 100.f;
+		const float t = SDL_min((float)game_state.sequence.time, 100.f) / 100.f;
 		batch_color(B_RGB(glm_lerp(255.f, 50.f, t), glm_lerp(255.f, 80.f, t), glm_lerp(255.f, 200.f, t)));
 		batch_surface(game_surface);
 		set_shader(SH_MAIN);
@@ -788,7 +789,7 @@ void draw_game() {
 
 static void destroy_actor(GameActor*);
 void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
-	for (PlayerID i = 0; i < num_players; i++) {
+	for (PlayerID i = 0L; i < num_players; i++) {
 		GamePlayer* player = get_player(i);
 		player->last_input = player->input;
 		player->input = inputs[i];
@@ -805,10 +806,10 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 
 	GameActor* wave = get_actor(game_state.wave);
 	if (wave != NULL) {
-		const fixed delta = VAL(wave, WAVE_DELTA);
+		const Fixed delta = VAL(wave, WAVE_DELTA);
 
 		game_state.bounds.start.y -= delta, game_state.bounds.end.y -= delta;
-		for (PlayerID i = 0; i < num_players; i++) {
+		for (PlayerID i = 0L; i < num_players; i++) {
 			GamePlayer* player = get_player(i);
 			player->bounds.start.y -= delta, player->bounds.end.y -= delta;
 		}
@@ -818,10 +819,8 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 
 	if (game_state.pswitch > 0L) {
 		--game_state.pswitch;
-
 		if (game_state.pswitch == 100L)
 			play_state_sound("starman");
-
 		if (game_state.pswitch <= 0L) {
 			replace_actors(ACT_PSWITCH_BRICK, ACT_COIN);
 			replace_actors(ACT_PSWITCH_COIN, ACT_BRICK_BLOCK);
@@ -876,7 +875,7 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 		}
 
 		if (game_state.clock <= 0L)
-			for (PlayerID i = 0; i < num_players; i++) {
+			for (PlayerID i = 0L; i < num_players; i++) {
 				GamePlayer* player = get_player(i);
 				if (player == NULL)
 					continue;
@@ -897,11 +896,11 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 	}
 
 	case SEQ_WIN: {
-		const uint16_t duration = (game_state.flags & GF_LOST) ? 150L : 400L;
+		const Uint16 duration = (game_state.flags & GF_LOST) ? 150L : 400L;
 		++game_state.sequence.time;
 
 		if (game_state.sequence.time > duration && game_state.clock > 0L) {
-			const int32_t diff = (game_state.clock > 0L) + (((game_state.clock - 1L) >= 10L) * 10L);
+			const Sint32 diff = (game_state.clock > 0L) + (((game_state.clock - 1L) >= 10L) * 10L);
 			game_state.clock -= diff;
 
 			GamePlayer* player = get_player(game_state.sequence.activator);
@@ -928,8 +927,8 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 
 		// Compensate with lowest scoring player
 		winner = NULL;
-		uint32_t score = 4294967295L; // World's most paranoid coder award
-		for (PlayerID i = 0; i < num_players; i++) {
+		Uint32 score = 4294967295L; // World's most paranoid coder award
+		for (PlayerID i = 0L; i < num_players; i++) {
 			GamePlayer* loser = get_player(i);
 			if (loser == NULL || loser->score > score || get_actor(loser->actor) == NULL)
 				continue;
@@ -971,10 +970,10 @@ void load_game_state(const GameState* gs) {
 	}
 }
 
-uint32_t check_game_state() {
-	uint32_t checksum = 0;
-	const uint8_t* data = (uint8_t*)(&game_state);
-	for (uint32_t i = 0; i < sizeof(GameState); i++)
+Uint32 check_game_state() {
+	Uint32 checksum = 0;
+	const Uint8* data = (Uint8*)(&game_state);
+	for (Uint32 i = 0; i < sizeof(GameState); i++)
 		checksum += data[i];
 	return checksum;
 }
@@ -1079,22 +1078,22 @@ void nuke_game_state() {
 	clear_tilemaps();
 	SDL_memset(&game_state, 0, sizeof(game_state));
 
-	for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
+	for (PlayerID i = 0L; i < MAX_PLAYERS; i++) {
 		game_state.players[i].id = NULLPLAY;
 		game_state.players[i].actor = NULLACT;
-		for (ActorID j = 0; j < MAX_MISSILES; j++)
+		for (ActorID j = 0L; j < MAX_MISSILES; j++)
 			game_state.players[i].missiles[j] = NULLACT;
-		for (ActorID j = 0; j < MAX_SINK; j++)
+		for (ActorID j = 0L; j < MAX_SINK; j++)
 			game_state.players[i].sink[j] = NULLACT;
 		game_state.players[i].kevin.actor = NULLACT;
 	}
 
 	game_state.live_actors = NULLACT;
-	for (ActorID i = 0; i < MAX_ACTORS; i++) {
+	for (ActorID i = 0L; i < MAX_ACTORS; i++) {
 		game_state.actors[i].id = game_state.actors[i].previous = game_state.actors[i].next
 			= game_state.actors[i].previous_cell = game_state.actors[i].next_cell = NULLACT;
 	}
-	for (int32_t i = 0; i < GRID_SIZE; i++)
+	for (Sint32 i = 0L; i < GRID_SIZE; i++)
 		game_state.grid[i] = NULLACT;
 
 	game_state.size.x = game_state.bounds.end.x = F_SCREEN_WIDTH;
@@ -1110,8 +1109,8 @@ void nuke_game_state() {
 	SDL_memset(&interp, 0, sizeof(interp));
 }
 
-static void read_string(const char** buf, char* dest, uint32_t maxlen) {
-	uint32_t i = 0;
+static void read_string(const char** buf, char* dest, Uint32 maxlen) {
+	Uint32 i = 0;
 	while (**buf != '\0') {
 		if (i < maxlen)
 			dest[i++] = **buf;
@@ -1121,14 +1120,14 @@ static void read_string(const char** buf, char* dest, uint32_t maxlen) {
 	dest[SDL_min(i, maxlen - 1)] = '\0';
 }
 
-#define FLOAT_OFFS(idx) (*((GLfloat*)(buf + sizeof(GLfloat[(idx)]))))
-#define BYTE_OFFS(idx) (*((GLubyte*)(buf + sizeof(GLubyte[(idx)]))))
+#define FLOAT_OFFS(idx) (*((float*)(buf + sizeof(float[(idx)]))))
+#define BYTE_OFFS(idx) (*((Uint8*)(buf + sizeof(Uint8[(idx)]))))
 void start_game_state(GameContext* ctx) {
 	nuke_game_state();
 
-	if (num_players <= 0 || num_players > MAX_PLAYERS)
-		FATAL("Invalid player count for game! Expected 1 to 4, got %i", num_players);
-	for (PlayerID i = 0; i < num_players; i++)
+	if (num_players <= 0L || num_players > MAX_PLAYERS)
+		FATAL("Invalid player count for game! Expected 1..%li, got %i", MAX_PLAYERS, num_players);
+	for (PlayerID i = 0L; i < num_players; i++)
 		game_state.players[i].id = i;
 
 	SDL_strlcpy(cur_level, ctx->level, sizeof(cur_level));
@@ -1142,19 +1141,19 @@ void start_game_state(GameContext* ctx) {
 	//
 	//
 	//
-	load_texture_num("ui/coins%u", 3L, false);
-	load_texture_num("markers/water%u", 8L, false);
+	load_texture_num("ui/coins%u", 3L, FALSE);
+	load_texture_num("markers/water%u", 8L, FALSE);
 
-	load_font("hud", false);
-	load_font("main", false);
+	load_font("hud", FALSE);
+	load_font("main", FALSE);
 
-	load_sound("hurry", false);
-	load_sound("tick", false);
-	load_sound("pause", false);
-	load_sound("switch", false);
-	load_sound("select", false);
-	load_sound("bump", false);
-	load_sound("chat", false);
+	load_sound("hurry", FALSE);
+	load_sound("tick", FALSE);
+	load_sound("pause", FALSE);
+	load_sound("switch", FALSE);
+	load_sound("select", FALSE);
+	load_sound("bump", FALSE);
+	load_sound("chat", FALSE);
 
 	//
 	//
@@ -1168,12 +1167,12 @@ void start_game_state(GameContext* ctx) {
 		show_error("Level \"%s\" not found", ctx->level);
 		goto level_fail;
 	}
-	uint8_t* data = SDL_LoadFile(kla, NULL);
+	Uint8* data = SDL_LoadFile(kla, NULL);
 	if (data == NULL) {
 		show_error("Failed to load level \"%s\"\n%s", ctx->level, SDL_GetError());
 		goto level_fail;
 	}
-	const uint8_t* buf = data;
+	const Uint8* buf = data;
 
 	// Header
 	if (SDL_strncmp((const char*)buf, "Klawiatura", 10) != 0) {
@@ -1183,7 +1182,7 @@ void start_game_state(GameContext* ctx) {
 	}
 	buf += 10;
 
-	const uint8_t major = *buf;
+	const Uint8 major = *buf;
 	if (major != MAJOR_LEVEL_VERSION) {
 		SDL_free(data);
 		show_error("Invalid major version in level \"%s\"\nLevel: %u\nGame: %u)", ctx->level, major,
@@ -1192,7 +1191,7 @@ void start_game_state(GameContext* ctx) {
 	}
 	buf++;
 
-	const uint8_t minor = *buf;
+	const Uint8 minor = *buf;
 	if (minor < 1) {
 		SDL_free(data);
 		show_error("Invalid minor version in level \"%s\"\nLevel: %u\nGame: %u)", ctx->level, minor,
@@ -1209,7 +1208,7 @@ void start_game_state(GameContext* ctx) {
 
 	read_string((const char**)(&buf), video_state.world, sizeof(video_state.world));
 	if (video_state.world[0] != ')' && video_state.world[0] != ']')
-		load_texture(video_state.world, false);
+		load_texture(video_state.world, FALSE);
 
 	read_string((const char**)(&buf), (char*)game_state.next, sizeof(game_state.next));
 
@@ -1218,36 +1217,36 @@ void start_game_state(GameContext* ctx) {
 		if (i == 2 && minor < 2)
 			continue;
 		read_string((const char**)(&buf), track_name[i], sizeof(track_name));
-		load_track(track_name[i], false);
+		load_track(track_name[i], FALSE);
 	}
 
 	game_state.flags |= *((GameFlag*)buf), buf += sizeof(GameFlag);
 	if (game_state.flags & GF_AMBUSH)
 		game_state.sequence.type = SEQ_AMBUSH;
 
-	game_state.size.x = *((fixed*)buf), buf += sizeof(fixed);
-	game_state.size.y = *((fixed*)buf), buf += sizeof(fixed);
+	game_state.size.x = *((Fixed*)buf), buf += sizeof(Fixed);
+	game_state.size.y = *((Fixed*)buf), buf += sizeof(Fixed);
 
-	game_state.bounds.start.x = *((fixed*)buf), buf += sizeof(fixed);
-	game_state.bounds.start.y = *((fixed*)buf), buf += sizeof(fixed);
-	game_state.bounds.end.x = *((fixed*)buf), buf += sizeof(fixed);
-	game_state.bounds.end.y = *((fixed*)buf), buf += sizeof(fixed);
+	game_state.bounds.start.x = *((Fixed*)buf), buf += sizeof(Fixed);
+	game_state.bounds.start.y = *((Fixed*)buf), buf += sizeof(Fixed);
+	game_state.bounds.end.x = *((Fixed*)buf), buf += sizeof(Fixed);
+	game_state.bounds.end.y = *((Fixed*)buf), buf += sizeof(Fixed);
 
-	game_state.clock = *((int32_t*)buf), buf += sizeof(int32_t);
-	game_state.water = *((fixed*)buf), buf += sizeof(fixed);
-	game_state.hazard = *((fixed*)buf), buf += sizeof(fixed);
+	game_state.clock = *((Sint32*)buf), buf += sizeof(Sint32);
+	game_state.water = *((Fixed*)buf), buf += sizeof(Fixed);
+	game_state.hazard = *((Fixed*)buf), buf += sizeof(Fixed);
 
 	// Markers
-	uint32_t num_markers = *((uint32_t*)buf);
-	buf += sizeof(uint32_t);
+	Uint32 num_markers = *((Uint32*)buf);
+	buf += sizeof(Uint32);
 
-	for (uint32_t i = 0; i < num_markers; i++) {
+	for (Uint32 i = 0; i < num_markers; i++) {
 		// Skip editor def
 		while (*buf != '\0')
 			buf++;
 		buf++;
 
-		uint8_t marker_type = *((uint8_t*)buf);
+		Uint8 marker_type = *((Uint8*)buf);
 		buf++;
 
 		switch (marker_type) {
@@ -1261,22 +1260,22 @@ void start_game_state(GameContext* ctx) {
 			char texture_name[GAME_STRING_MAX];
 			read_string((const char**)(&buf), texture_name, sizeof(texture_name));
 
-			GLfloat rect[2][2] = {
+			float rect[2][2] = {
 				{FLOAT_OFFS(0), FLOAT_OFFS(1)},
                                 {FLOAT_OFFS(2), FLOAT_OFFS(3)}
                         };
-			buf += sizeof(GLfloat[2][2]);
+			buf += sizeof(float[2][2]);
 
-			GLfloat z = *((GLfloat*)buf);
-			buf += sizeof(GLfloat);
+			float z = *((float*)buf);
+			buf += sizeof(float);
 
-			GLubyte color[4][4] = {
+			Uint8 color[4][4] = {
 				{BYTE_OFFS(0),  BYTE_OFFS(1),  BYTE_OFFS(2),  BYTE_OFFS(3) },
 				{BYTE_OFFS(4),  BYTE_OFFS(5),  BYTE_OFFS(6),  BYTE_OFFS(7) },
 				{BYTE_OFFS(8),  BYTE_OFFS(9),  BYTE_OFFS(10), BYTE_OFFS(11)},
 				{BYTE_OFFS(12), BYTE_OFFS(13), BYTE_OFFS(14), BYTE_OFFS(15)}
                         };
-			buf += sizeof(GLubyte[4][4]);
+			buf += sizeof(Uint8[4][4]);
 
 			tile_rectangle(texture_name, rect, z, color);
 			break;
@@ -1286,14 +1285,14 @@ void start_game_state(GameContext* ctx) {
 			char texture_name[GAME_STRING_MAX];
 			read_string((const char**)(&buf), texture_name, sizeof(texture_name));
 
-			GLfloat pos[3] = {FLOAT_OFFS(0), FLOAT_OFFS(1), FLOAT_OFFS(2)};
-			buf += sizeof(GLfloat[3]);
+			float pos[3] = {FLOAT_OFFS(0), FLOAT_OFFS(1), FLOAT_OFFS(2)};
+			buf += sizeof(float[3]);
 
-			GLfloat scale[2] = {FLOAT_OFFS(0), FLOAT_OFFS(1)};
-			buf += sizeof(GLfloat[2]);
+			float scale[2] = {FLOAT_OFFS(0), FLOAT_OFFS(1)};
+			buf += sizeof(float[2]);
 
-			GLubyte color[4] = {BYTE_OFFS(0), BYTE_OFFS(1), BYTE_OFFS(2), BYTE_OFFS(3)};
-			buf += sizeof(GLubyte[4]);
+			Uint8 color[4] = {BYTE_OFFS(0), BYTE_OFFS(1), BYTE_OFFS(2), BYTE_OFFS(3)};
+			buf += sizeof(Uint8[4]);
 
 			tile_sprite(texture_name, pos, scale, color);
 			break;
@@ -1303,37 +1302,37 @@ void start_game_state(GameContext* ctx) {
 			GameActorType type = *((GameActorType*)buf);
 			buf += sizeof(GameActorType);
 
-			fvec2 pos = {*((fixed*)buf), *((fixed*)(buf + sizeof(fixed)))};
-			buf += sizeof(fvec2);
+			FVec2 pos = {*((Fixed*)buf), *((Fixed*)(buf + sizeof(Fixed)))};
+			buf += sizeof(FVec2);
 
 			GameActor* actor = create_actor(type, pos);
 			if (actor == NULL) {
 				WARN("Unknown actor type %u", type);
 
-				buf += sizeof(fixed), buf += sizeof(fvec2);
+				buf += sizeof(Fixed), buf += sizeof(FVec2);
 
-				uint8_t num_values = *((uint8_t*)buf);
+				Uint8 num_values = *((Uint8*)buf);
 				buf++;
-				for (uint8_t j = 0; j < num_values; j++)
+				for (Uint8 j = 0; j < num_values; j++)
 					buf += 1 + sizeof(ActorValue);
 				buf += sizeof(ActorFlag);
 
 				break;
 			}
 
-			actor->depth = *((fixed*)buf), buf += sizeof(fixed);
+			actor->depth = *((Fixed*)buf), buf += sizeof(Fixed);
 
-			fvec2 scale = {*((fixed*)buf), *((fixed*)(buf + sizeof(fixed)))};
-			buf += sizeof(fvec2);
+			FVec2 scale = {*((Fixed*)buf), *((Fixed*)(buf + sizeof(Fixed)))};
+			buf += sizeof(FVec2);
 			actor->box.start.x = Fmul(actor->box.start.x, scale.x);
 			actor->box.start.y = Fmul(actor->box.start.y, scale.y);
 			actor->box.end.x = Fmul(actor->box.end.x, scale.x);
 			actor->box.end.y = Fmul(actor->box.end.y, scale.y);
 
-			uint8_t num_values = *((uint8_t*)buf);
+			Uint8 num_values = *((Uint8*)buf);
 			buf++;
-			for (uint8_t j = 0; j < num_values; j++) {
-				uint8_t idx = *((uint8_t*)buf);
+			for (Uint8 j = 0; j < num_values; j++) {
+				Uint8 idx = *((Uint8*)buf);
 				buf++;
 				actor->values[idx] = *((ActorValue*)buf), buf += sizeof(ActorValue);
 			}
@@ -1373,7 +1372,7 @@ void start_game_state(GameContext* ctx) {
 
 	SDL_free(data);
 
-	for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
+	for (PlayerID i = 0L; i < MAX_PLAYERS; i++) {
 		GamePlayer* player = get_player(i);
 		if (player == NULL)
 			continue;
@@ -1423,7 +1422,7 @@ GameActor* respawn_player(GamePlayer* player) {
 	if (player->lives < 0L && !(game_state.flags & GF_HELL)) {
 		// !!! CLIENT-SIDE !!!
 		if (view_player == player->id)
-			for (PlayerID i = 0; i < num_players; i++) {
+			for (PlayerID i = 0L; i < num_players; i++) {
 				GamePlayer* p = get_player(i);
 				if (p != NULL && p->lives >= 0L) {
 					set_view_player(p);
@@ -1464,7 +1463,7 @@ GameActor* respawn_player(GamePlayer* player) {
 
 	pawn = create_actor(
 		ACT_PLAYER, (spawn->type == ACT_AUTOSCROLL)
-				    ? (fvec2){Flerp(game_state.bounds.start.x, game_state.bounds.end.x, FxHalf),
+				    ? (FVec2){Flerp(game_state.bounds.start.x, game_state.bounds.end.x, FxHalf),
 					      game_state.bounds.start.y}
 				    : spawn->pos);
 	if (pawn != NULL) {
@@ -1489,11 +1488,11 @@ GameActor* respawn_player(GamePlayer* player) {
 }
 
 /// Gets the nearest player actor from the position.
-GameActor* nearest_pawn(const fvec2 pos) {
+GameActor* nearest_pawn(const FVec2 pos) {
 	GameActor* nearest = NULL;
-	fixed dist = FxZero;
+	Fixed dist = FxZero;
 
-	for (PlayerID i = 0; i < num_players; i++) {
+	for (PlayerID i = 0L; i < num_players; i++) {
 		GamePlayer* player = get_player(i);
 		if (player == NULL)
 			continue;
@@ -1501,7 +1500,7 @@ GameActor* nearest_pawn(const fvec2 pos) {
 		if (pawn == NULL)
 			continue;
 
-		const fixed ndist = Vdist(pos, pawn->pos);
+		const Fixed ndist = Vdist(pos, pawn->pos);
 		if (nearest == NULL || ndist < dist) {
 			nearest = pawn;
 			dist = ndist;
@@ -1566,7 +1565,7 @@ void load_actor(GameActorType type) {
 }
 
 /// Create an actor.
-GameActor* create_actor(GameActorType type, const fvec2 pos) {
+GameActor* create_actor(GameActorType type, const FVec2 pos) {
 	if (type <= ACT_NULL || type >= ACT_SIZE) {
 		WARN("Creating invalid actor %u", type);
 		return NULL;
@@ -1680,15 +1679,15 @@ GameActor* get_actor(ActorID id) {
 }
 
 /// Move an actor and determine whether or not it actually moved.
-void move_actor(GameActor* actor, const fvec2 pos) {
+void move_actor(GameActor* actor, const FVec2 pos) {
 	if (actor == NULL)
 		return;
 
 	actor->pos = pos;
-	int32_t cx = actor->pos.x / CELL_SIZE, cy = actor->pos.y / CELL_SIZE;
+	Sint32 cx = actor->pos.x / CELL_SIZE, cy = actor->pos.y / CELL_SIZE;
 	cx = SDL_clamp(cx, 0L, MAX_CELLS - 1L), cy = SDL_clamp(cy, 0L, MAX_CELLS - 1L);
 
-	const int32_t cell = cx + (cy * MAX_CELLS);
+	const Sint32 cell = cx + (cy * MAX_CELLS);
 	if (cell == actor->cell)
 		return;
 
@@ -1725,57 +1724,57 @@ Bool below_level(const GameActor* actor) {
 #define CHECK_AUTOSCROLL_VIEW                                                                                          \
 	const GameActor* autoscroll = get_actor(game_state.autoscroll);                                                \
 	if (autoscroll != NULL) {                                                                                      \
-		const frect cbox = {Vsub(game_state.bounds.start, (fvec2){padding, padding}),                          \
-			Vadd(game_state.bounds.end, (fvec2){padding, padding})};                                       \
+		const FRect cbox = {Vsub(game_state.bounds.start, (FVec2){padding, padding}),                          \
+			Vadd(game_state.bounds.end, (FVec2){padding, padding})};                                       \
 		return (abox.start.x < cbox.end.x && abox.end.x > cbox.start.x && abox.start.y < cbox.end.y            \
 			&& (ignore_top || abox.end.y > cbox.start.y));                                                 \
 	}
 
-Bool in_any_view(const GameActor* actor, fixed padding, Bool ignore_top) {
+Bool in_any_view(const GameActor* actor, Fixed padding, Bool ignore_top) {
 	if (actor == NULL)
-		return false;
+		return FALSE;
 
-	const frect abox = HITBOX(actor);
+	const FRect abox = HITBOX(actor);
 
 	CHECK_AUTOSCROLL_VIEW;
 
-	for (PlayerID i = 0; i < num_players; i++) {
+	for (PlayerID i = 0L; i < num_players; i++) {
 		const GamePlayer* player = get_player(i);
 		if (player == NULL)
 			continue;
 
-		const fixed cx = Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+		const Fixed cx = Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
 				    player->bounds.end.x - F_HALF_SCREEN_WIDTH),
 			    cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
 				    player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
 
-		const frect cbox = {
+		const FRect cbox = {
 			{cx - F_HALF_SCREEN_WIDTH - padding, cy - F_HALF_SCREEN_HEIGHT - padding},
 			{cx + F_HALF_SCREEN_WIDTH + padding, cy + F_HALF_SCREEN_HEIGHT + padding}
                 };
 		if (abox.start.x < cbox.end.x && abox.end.x > cbox.start.x && abox.start.y < cbox.end.y
 			&& (ignore_top || abox.end.y > cbox.start.y))
-			return true;
+			return TRUE;
 	}
 
-	return false;
+	return FALSE;
 }
 
 /// Check if the actor is within a player's range.
-Bool in_player_view(const GameActor* actor, GamePlayer* player, fixed padding, Bool ignore_top) {
+Bool in_player_view(const GameActor* actor, GamePlayer* player, Fixed padding, Bool ignore_top) {
 	if (actor == NULL || player == NULL)
-		return false;
+		return FALSE;
 
-	const frect abox = HITBOX(actor);
+	const FRect abox = HITBOX(actor);
 
 	CHECK_AUTOSCROLL_VIEW;
 
-	const fixed cx = Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+	const Fixed cx = Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
 			    player->bounds.end.x - F_HALF_SCREEN_WIDTH),
 		    cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
 			    player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
 
-	const frect cbox = {
+	const FRect cbox = {
 		{cx - F_HALF_SCREEN_WIDTH - padding, cy - F_HALF_SCREEN_HEIGHT - padding},
 		{cx + F_HALF_SCREEN_WIDTH + padding, cy + F_HALF_SCREEN_HEIGHT + padding}
         };
@@ -1786,20 +1785,16 @@ Bool in_player_view(const GameActor* actor, GamePlayer* player, fixed padding, B
 #undef CHECK_AUTOSCROLL_VIEW
 
 /// Retrieve a list of actors overlapping a rectangle.
-void list_cell_at(CellList* list, const frect rect) {
+void list_cell_at(CellList* list, const FRect rect) {
 	list->num_actors = 0L;
 
-	int32_t cx1 = (rect.start.x - CELL_SIZE) / CELL_SIZE;
-	int32_t cy1 = (rect.start.y - CELL_SIZE) / CELL_SIZE;
-	int32_t cx2 = (rect.end.x + CELL_SIZE) / CELL_SIZE;
-	int32_t cy2 = (rect.end.y + CELL_SIZE) / CELL_SIZE;
-	cx1 = SDL_clamp(cx1, 0L, MAX_CELLS - 1L);
-	cy1 = SDL_clamp(cy1, 0L, MAX_CELLS - 1L);
-	cx2 = SDL_clamp(cx2, 0L, MAX_CELLS - 1L);
-	cy2 = SDL_clamp(cy2, 0L, MAX_CELLS - 1L);
+	Sint32 cx1 = (rect.start.x - CELL_SIZE) / CELL_SIZE, cy1 = (rect.start.y - CELL_SIZE) / CELL_SIZE;
+	Sint32 cx2 = (rect.end.x + CELL_SIZE) / CELL_SIZE, cy2 = (rect.end.y + CELL_SIZE) / CELL_SIZE;
+	cx1 = SDL_clamp(cx1, 0L, MAX_CELLS - 1L), cy1 = SDL_clamp(cy1, 0L, MAX_CELLS - 1L);
+	cx2 = SDL_clamp(cx2, 0L, MAX_CELLS - 1L), cy2 = SDL_clamp(cy2, 0L, MAX_CELLS - 1L);
 
-	for (int32_t cx = cx1; cx <= cx2; cx++)
-		for (int32_t cy = cy1; cy <= cy2; cy++)
+	for (Sint32 cx = cx1; cx <= cx2; cx++)
+		for (Sint32 cy = cy1; cy <= cy2; cy++)
 			for (GameActor* actor = get_actor(game_state.grid[cx + (cy * MAX_CELLS)]); actor != NULL;
 				actor = get_actor(actor->previous_cell))
 				if (!ANY_FLAG(actor, FLG_DESTROY) && Rcollide(rect, HITBOX(actor)))
@@ -1811,18 +1806,14 @@ void collide_actor(GameActor* actor) {
 	if (actor == NULL)
 		return;
 
-	const frect abox = HITBOX(actor);
-	int32_t cx1 = (abox.start.x - CELL_SIZE) / CELL_SIZE;
-	int32_t cy1 = (abox.start.y - CELL_SIZE) / CELL_SIZE;
-	int32_t cx2 = (abox.end.x + CELL_SIZE) / CELL_SIZE;
-	int32_t cy2 = (abox.end.y + CELL_SIZE) / CELL_SIZE;
-	cx1 = SDL_clamp(cx1, 0L, MAX_CELLS - 1L);
-	cy1 = SDL_clamp(cy1, 0L, MAX_CELLS - 1L);
-	cx2 = SDL_clamp(cx2, 0L, MAX_CELLS - 1L);
-	cy2 = SDL_clamp(cy2, 0L, MAX_CELLS - 1L);
+	const FRect abox = HITBOX(actor);
+	Sint32 cx1 = (abox.start.x - CELL_SIZE) / CELL_SIZE, cy1 = (abox.start.y - CELL_SIZE) / CELL_SIZE;
+	Sint32 cx2 = (abox.end.x + CELL_SIZE) / CELL_SIZE, cy2 = (abox.end.y + CELL_SIZE) / CELL_SIZE;
+	cx1 = SDL_clamp(cx1, 0L, MAX_CELLS - 1L), cy1 = SDL_clamp(cy1, 0L, MAX_CELLS - 1L);
+	cx2 = SDL_clamp(cx2, 0L, MAX_CELLS - 1L), cy2 = SDL_clamp(cy2, 0L, MAX_CELLS - 1L);
 
-	for (int32_t cx = cx1; cx <= cx2; cx++)
-		for (int32_t cy = cy1; cy <= cy2; cy++)
+	for (Sint32 cx = cx1; cx <= cx2; cx++)
+		for (Sint32 cy = cy1; cy <= cy2; cy++)
 			for (GameActor* other = get_actor(game_state.grid[cx + (cy * MAX_CELLS)]); other != NULL;
 				other = get_actor(other->previous_cell))
 			{
@@ -1835,41 +1826,37 @@ void collide_actor(GameActor* actor) {
 }
 
 /// Check if there are solid actors in a rectangle.
-Bool touching_solid(const frect rect, SolidType types) {
-	int32_t cx1 = (rect.start.x - CELL_SIZE) / CELL_SIZE;
-	int32_t cy1 = (rect.start.y - CELL_SIZE) / CELL_SIZE;
-	int32_t cx2 = (rect.end.x + CELL_SIZE) / CELL_SIZE;
-	int32_t cy2 = (rect.end.y + CELL_SIZE) / CELL_SIZE;
-	cx1 = SDL_clamp(cx1, 0L, MAX_CELLS - 1L);
-	cy1 = SDL_clamp(cy1, 0L, MAX_CELLS - 1L);
-	cx2 = SDL_clamp(cx2, 0L, MAX_CELLS - 1L);
-	cy2 = SDL_clamp(cy2, 0L, MAX_CELLS - 1L);
+Bool touching_solid(const FRect rect, SolidType types) {
+	Sint32 cx1 = (rect.start.x - CELL_SIZE) / CELL_SIZE, cy1 = (rect.start.y - CELL_SIZE) / CELL_SIZE;
+	Sint32 cx2 = (rect.end.x + CELL_SIZE) / CELL_SIZE, cy2 = (rect.end.y + CELL_SIZE) / CELL_SIZE;
+	cx1 = SDL_clamp(cx1, 0L, MAX_CELLS - 1L), cy1 = SDL_clamp(cy1, 0L, MAX_CELLS - 1L);
+	cx2 = SDL_clamp(cx2, 0L, MAX_CELLS - 1L), cy2 = SDL_clamp(cy2, 0L, MAX_CELLS - 1L);
 
-	for (int32_t cx = cx1; cx <= cx2; cx++)
-		for (int32_t cy = cy1; cy <= cy2; cy++)
+	for (Sint32 cx = cx1; cx <= cx2; cx++)
+		for (Sint32 cy = cy1; cy <= cy2; cy++)
 			for (GameActor* actor = get_actor(game_state.grid[cx + (cy * MAX_CELLS)]); actor != NULL;
 				actor = get_actor(actor->previous_cell))
 				if (ACTOR_IS_SOLID(actor, types) && actor->type != ACT_SOLID_SLOPE
 					&& Rcollide(rect, HITBOX(actor)))
-					return true;
+					return TRUE;
 
-	return false;
+	return FALSE;
 }
 
 /// Move the actor with speed and displacement from solid actors.
-void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
+void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 	if (actor == NULL)
 		return;
 
 	if (unstuck
 		&& touching_solid(
-			(frect){
+			(FRect){
 				{actor->pos.x + actor->box.start.x, actor->pos.y + actor->box.start.y      },
 				{actor->pos.x + actor->box.end.x,   actor->pos.y + actor->box.end.y - FxOne}
         },
 			SOL_SOLID))
 	{
-		fixed shift = ANY_FLAG(actor, FLG_X_FLIP) ? FxOne : -FxOne;
+		Fixed shift = ANY_FLAG(actor, FLG_X_FLIP) ? FxOne : -FxOne;
 		if (ANY_FLAG(actor, FLG_X_FLIP)) {
 			if (touching_solid(HITBOX_RIGHT(actor), SOL_SOLID)
 				&& !touching_solid(HITBOX_LEFT(actor), SOL_SOLID))
@@ -1887,21 +1874,21 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 	}
 
 	VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = 0L;
-	fixed x = actor->pos.x, y = actor->pos.y;
+	Fixed x = actor->pos.x, y = actor->pos.y;
 
 	// Horizontal collision
 	x += VAL(actor, X_SPEED);
 	CellList list = {0};
-	list_cell_at(&list, (frect){
+	list_cell_at(&list, (FRect){
 				    {x + actor->box.start.x, y + actor->box.start.y},
 				    {x + actor->box.end.x,   y + actor->box.end.y  }
         });
-	Bool climbed = false;
+	Bool climbed = FALSE;
 
 	if (list.num_actors > 0L) {
-		Bool stop = false;
+		Bool stop = FALSE;
 		if (VAL(actor, X_SPEED) < FxZero) {
-			for (ActorID i = 0; i < list.num_actors; i++) {
+			for (ActorID i = 0L; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
 					|| displacer->type == ACT_SOLID_SLOPE)
@@ -1911,9 +1898,9 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 					&& (actor->pos.y + actor->box.end.y - climb)
 						   < (displacer->pos.y + displacer->box.start.y))
 				{
-					const fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
+					const Fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
 					if (!touching_solid(
-						    (frect){
+						    (FRect){
 							    {x + actor->box.start.x - FxOne,
                                                              step + actor->box.start.y - FxOne},
 							    {x + actor->box.end.x - FxOne,
@@ -1924,7 +1911,7 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 						y = step;
 						VAL(actor, Y_SPEED) = FxZero;
 						VAL(actor, Y_TOUCH) = 1L;
-						climbed = true;
+						climbed = TRUE;
 					}
 					continue;
 				}
@@ -1932,11 +1919,11 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 				ACTOR_CALL2(displacer, on_right, actor);
 				x = Fmax(x, displacer->pos.x + displacer->box.end.x - actor->box.start.x);
 				stop = VAL(actor, X_SPEED) <= FxZero;
-				climbed = false;
+				climbed = FALSE;
 			}
 			VAL(actor, X_TOUCH) = -(stop && !climbed);
 		} else if (VAL(actor, X_SPEED) > FxZero) {
-			for (ActorID i = 0; i < list.num_actors; i++) {
+			for (ActorID i = 0L; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
 					|| displacer->type == ACT_SOLID_SLOPE)
@@ -1946,9 +1933,9 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 					&& (actor->pos.y + actor->box.end.y - climb)
 						   < (displacer->pos.y + displacer->box.start.y))
 				{
-					const fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
+					const Fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
 					if (!touching_solid(
-						    (frect){
+						    (FRect){
 							    {x + actor->box.start.x + FxOne,
                                                              step + actor->box.start.y - FxOne},
 							    {x + actor->box.end.x + FxOne,
@@ -1959,7 +1946,7 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 						y = step;
 						VAL(actor, Y_SPEED) = FxZero;
 						VAL(actor, Y_TOUCH) = 1L;
-						climbed = true;
+						climbed = TRUE;
 					}
 					continue;
 				}
@@ -1967,7 +1954,7 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 				ACTOR_CALL2(displacer, on_left, actor);
 				x = Fmin(x, displacer->pos.x + displacer->box.start.x - actor->box.end.x);
 				stop = VAL(actor, X_SPEED) >= FxZero;
-				climbed = false;
+				climbed = FALSE;
 			}
 			VAL(actor, X_TOUCH) = stop && !climbed;
 		}
@@ -1978,15 +1965,15 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 
 	// Vertical collision
 	y += VAL(actor, Y_SPEED);
-	list_cell_at(&list, (frect){
+	list_cell_at(&list, (FRect){
 				    {x + actor->box.start.x, y + actor->box.start.y},
 				    {x + actor->box.end.x,   y + actor->box.end.y  }
         });
 
 	if (list.num_actors > 0L) {
-		Bool stop = false;
+		Bool stop = FALSE;
 		if (VAL(actor, Y_SPEED) < FxZero) {
-			for (ActorID i = 0; i < list.num_actors; i++) {
+			for (ActorID i = 0L; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
 					|| (displacer->type == ACT_SOLID_SLOPE
@@ -1998,9 +1985,9 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 				y = Fmax(y, displacer->pos.y + displacer->box.end.y - actor->box.start.y);
 				stop = VAL(actor, Y_SPEED) <= FxZero;
 			}
-			VAL(actor, Y_TOUCH) = -(fixed)stop;
+			VAL(actor, Y_TOUCH) = -(Fixed)stop;
 		} else if (VAL(actor, Y_SPEED) > FxZero) {
-			for (ActorID i = 0; i < list.num_actors; i++) {
+			for (ActorID i = 0L; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer)
 					continue;
@@ -2008,22 +1995,22 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 				if (displacer->type == ACT_SOLID_SLOPE) {
 					const Bool side = ANY_FLAG(displacer, FLG_X_FLIP);
 
-					const fixed sa = displacer->pos.y
+					const Fixed sa = displacer->pos.y
 					                 + (side ? displacer->box.start.y : displacer->box.end.y),
 						    sb = displacer->pos.y
 					                 + (side ? displacer->box.end.y : displacer->box.start.y);
 
-					const fixed ax = x + (side ? actor->box.start.x : actor->box.end.x),
+					const Fixed ax = x + (side ? actor->box.start.x : actor->box.end.x),
 						    sx = displacer->pos.x
 					                 + (side ? displacer->box.end.x : displacer->box.start.x);
 
-					const fixed slope = Flerp(sa, sb,
+					const Fixed slope = Flerp(sa, sb,
 						Fclamp(Fdiv(ax - sx, displacer->box.end.x - displacer->box.start.x),
 							FxZero, FxOne));
 
 					if (y >= slope) {
 						y = slope;
-						stop = true;
+						stop = TRUE;
 					}
 					continue;
 				}
@@ -2039,14 +2026,14 @@ void displace_actor(GameActor* actor, fixed climb, Bool unstuck) {
 				y = Fmin(y, displacer->pos.y + displacer->box.start.y - actor->box.end.y);
 				stop = VAL(actor, Y_SPEED) >= FxZero;
 			}
-			VAL(actor, Y_TOUCH) = (fixed)stop;
+			VAL(actor, Y_TOUCH) = (Fixed)stop;
 		}
 
 		if (stop)
 			VAL(actor, Y_SPEED) = FxZero;
 	}
 
-	move_actor(actor, (fvec2){x, y});
+	move_actor(actor, (FVec2){x, y});
 }
 
 /// Move the actor with speed and touch solid actors without being pushed away.
@@ -2056,19 +2043,19 @@ void displace_actor_soft(GameActor* actor) {
 		return;
 
 	VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = 0L;
-	fixed x = actor->pos.x, y = actor->pos.y;
+	Fixed x = actor->pos.x, y = actor->pos.y;
 
 	// Horizontal collision
 	x += VAL(actor, X_SPEED);
 	CellList list = {0};
-	list_cell_at(&list, (frect){
+	list_cell_at(&list, (FRect){
 				    {x + actor->box.start.x, y + actor->box.start.y},
 				    {x + actor->box.end.x,   y + actor->box.end.y  }
         });
 
 	if (list.num_actors > 0L) {
 		if (VAL(actor, X_SPEED) < FxZero)
-			for (ActorID i = 0; i < list.num_actors; i++) {
+			for (ActorID i = 0L; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
 					continue;
@@ -2077,7 +2064,7 @@ void displace_actor_soft(GameActor* actor) {
 				VAL(actor, X_TOUCH) = -1L;
 			}
 		else if (VAL(actor, X_SPEED) > FxZero)
-			for (ActorID i = 0; i < list.num_actors; i++) {
+			for (ActorID i = 0L; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
 					continue;
@@ -2089,14 +2076,14 @@ void displace_actor_soft(GameActor* actor) {
 
 	// Vertical collision
 	y += VAL(actor, Y_SPEED);
-	list_cell_at(&list, (frect){
+	list_cell_at(&list, (FRect){
 				    {x + actor->box.start.x, y + actor->box.start.y},
 				    {x + actor->box.end.x,   y + actor->box.end.y  }
         });
 
 	if (list.num_actors > 0L) {
 		if (VAL(actor, Y_SPEED) < FxZero)
-			for (ActorID i = 0; i < list.num_actors; i++) {
+			for (ActorID i = 0L; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID))
 					continue;
@@ -2105,7 +2092,7 @@ void displace_actor_soft(GameActor* actor) {
 				VAL(actor, Y_TOUCH) = -1L;
 			}
 		else if (VAL(actor, Y_SPEED) > FxZero)
-			for (ActorID i = 0; i < list.num_actors; i++) {
+			for (ActorID i = 0L; i < list.num_actors; i++) {
 				GameActor* displacer = list.actors[i];
 				if (actor == displacer)
 					continue;
@@ -2122,47 +2109,47 @@ void displace_actor_soft(GameActor* actor) {
 			}
 	}
 
-	move_actor(actor, (fvec2){x, y});
+	move_actor(actor, (FVec2){x, y});
 }
 
 /// Encodes a 16-character string into an actor.
-void encode_actor_string(GameActor* actor, ActorValue offset, const int8_t src[ACTOR_STRING_MAX]) {
+void encode_actor_string(GameActor* actor, ActorValue offset, const Sint8 src[ACTOR_STRING_MAX]) {
 	if (actor == NULL)
 		return;
 	ActorValue* dst = actor->values + offset;
 	for (ActorValue i = 0L; i < 4L; i++) {
 		const ActorValue j = i * 4L;
-		dst[i] = ((ActorValue)(int8_t)src[j + 0L]) | ((ActorValue)(int8_t)src[j + 1L] << 8L)
-		         | ((ActorValue)(int8_t)src[j + 2L] << 16L) | ((ActorValue)(int8_t)src[j + 3L] << 24L);
+		dst[i] = ((ActorValue)(Sint8)src[j + 0L]) | ((ActorValue)(Sint8)src[j + 1L] << 8L)
+		         | ((ActorValue)(Sint8)src[j + 2L] << 16L) | ((ActorValue)(Sint8)src[j + 3L] << 24L);
 	}
 }
 
 /// Decodes a 16-character string from an actor.
-void decode_actor_string(const GameActor* actor, ActorValue offset, int8_t dst[ACTOR_STRING_MAX]) {
+void decode_actor_string(const GameActor* actor, ActorValue offset, Sint8 dst[ACTOR_STRING_MAX]) {
 	if (actor == NULL)
 		return;
 	const ActorValue* src = actor->values + offset;
 	for (ActorValue i = 0L; i < 4L; i++) {
 		const ActorValue j = i * 4L, k = (ActorValue)src[i];
-		dst[j + 0L] = (int8_t)(k & 255L);
-		dst[j + 1L] = (int8_t)((k >> 8L) & 255L);
-		dst[j + 2L] = (int8_t)((k >> 16L) & 255L);
-		dst[j + 3L] = (int8_t)((k >> 24L) & 255L);
+		dst[j + 0L] = (Sint8)(k & 255L);
+		dst[j + 1L] = (Sint8)((k >> 8L) & 255L);
+		dst[j + 2L] = (Sint8)((k >> 16L) & 255L);
+		dst[j + 3L] = (Sint8)((k >> 24L) & 255L);
 	}
 }
 
 /// Generic interpolated actor drawing function.
 //
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
-void draw_actor(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
+void draw_actor(const GameActor* actor, const char* name, float angle, const Uint8 color[4]) {
 	draw_actor_offset(actor, name, B_ORIGIN, angle, color);
 }
 
 // Variant of `draw_actor()` with an offset.
 void draw_actor_offset(
-	const GameActor* actor, const char* name, const GLfloat offs[3], GLfloat angle, const GLubyte color[4]) {
+	const GameActor* actor, const char* name, const float offs[3], float angle, const Uint8 color[4]) {
 	const InterpActor* iactor = get_interp(actor);
-	const GLfloat sprout = VAL(actor, SPROUT), z = (sprout > FxZero) ? 21.f : FtFloat(actor->depth);
+	const float sprout = VAL(actor, SPROUT), z = (sprout > FxZero) ? 21.f : FtFloat(actor->depth);
 	batch_reset();
 	batch_pos(B_XYZ(FtInt(iactor->pos.x) + offs[0], FtInt(iactor->pos.y + sprout) + offs[1], z + offs[2]));
 	batch_angle(angle), batch_color(color);
@@ -2171,7 +2158,7 @@ void draw_actor_offset(
 }
 
 // Variant of `draw_actor()` that works around some jittering issues (i.e. players on platforms, autoscrolling).
-void draw_actor_no_jitter(const GameActor* actor, const char* name, GLfloat angle, const GLubyte color[4]) {
+void draw_actor_no_jitter(const GameActor* actor, const char* name, float angle, const Uint8 color[4]) {
 	if (actor->type == ACT_PLAYER && get_actor(VAL(actor, PLAYER_PLATFORM)) == NULL) {
 		const GameActor* autoscroll = get_actor(game_state.autoscroll);
 		if (autoscroll == NULL || !ANY_FLAG(autoscroll, FLG_SCROLL_TANKS)
@@ -2183,7 +2170,7 @@ void draw_actor_no_jitter(const GameActor* actor, const char* name, GLfloat angl
 	}
 
 	const InterpActor* iactor = get_interp(actor);
-	const GLfloat sprout = FtFloat(VAL(actor, SPROUT)), z = sprout > 0.f ? 21.f : FtFloat(actor->depth);
+	const float sprout = FtFloat(VAL(actor, SPROUT)), z = sprout > 0.f ? 21.f : FtFloat(actor->depth);
 	batch_reset();
 	batch_pos(B_XYZ((int)(FtFloat(iactor->pos.x) - camera_offset_morsel[0]),
 		(int)(FtFloat(iactor->pos.y) + sprout + camera_offset_morsel[1]), z));
@@ -2217,9 +2204,9 @@ void play_actor_sound(const GameActor* actor, const char* name) {
 
 /// Produce an exclusive random number.
 // https://rosettacode.org/wiki/Linear_congruential_generator
-int32_t rng(int32_t x) {
+Sint32 rng(Sint32 x) {
 	if (x <= 0L)
-		return 0;
+		return 0L;
 	game_state.seed = (game_state.seed * 1103515245L + 12345L) & 2147483647L;
 	return game_state.seed % x;
 }

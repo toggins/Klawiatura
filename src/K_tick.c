@@ -4,7 +4,7 @@
 #include "K_net.h"
 #include "K_tick.h"
 
-static uint64_t last_time = 0;
+static Uint64 last_time = 0;
 static float pending_ticks = 0.f, total_ticks = 0.f, delta_ticks = 0.f;
 
 void from_scratch() {
@@ -13,7 +13,7 @@ void from_scratch() {
 }
 
 void new_frame(float ahead) {
-	const uint64_t current_time = SDL_GetPerformanceCounter();
+	const Uint64 current_time = SDL_GetPerformanceCounter();
 	delta_ticks = (((float)(current_time - last_time)) * ((float)TICKRATE - ahead))
 	              / ((float)SDL_GetPerformanceFrequency());
 	last_time = current_time;
@@ -22,11 +22,11 @@ void new_frame(float ahead) {
 	total_ticks += delta_ticks;
 }
 
-bool got_ticks() {
+Bool got_ticks() {
 	if (pending_ticks < 1.f)
-		return false;
+		return FALSE;
 	net_newframe();
-	return true;
+	return TRUE;
 }
 
 void next_tick() {

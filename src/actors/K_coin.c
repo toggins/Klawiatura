@@ -8,9 +8,9 @@
 // ====
 
 static void load() {
-	load_texture_num("items/coin%u", 3L, false);
+	load_texture_num("items/coin%u", 3L, FALSE);
 
-	load_sound("coin", false);
+	load_sound("coin", FALSE);
 
 	load_actor(ACT_COIN_POP);
 	load_actor(ACT_POINTS);
@@ -85,10 +85,10 @@ const GameActorTable TAB_PSWITCH_COIN = {.load = load, .create = create, .draw =
 // ========
 
 static void load_pop() {
-	load_texture_num("items/coin_pop%u", 4L, false);
-	load_texture_num("effects/spark%u", 4L, false);
+	load_texture_num("items/coin_pop%u", 4L, FALSE);
+	load_texture_num("effects/spark%u", 4L, FALSE);
 
-	load_sound("coin", false);
+	load_sound("coin", FALSE);
 
 	load_actor(ACT_POINTS);
 }
@@ -143,7 +143,7 @@ static void draw_pop(const GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_COIN_POP_SPARK))
 		tex = fmt("effects/spark%u", (VAL(actor, COIN_POP_FRAME) / 100L));
 	else {
-		const uint32_t frame = (VAL(actor, COIN_POP_FRAME) / 100L) % 5L;
+		const Uint8 frame = (VAL(actor, COIN_POP_FRAME) / 100L) % 5L;
 		tex = fmt("items/coin_pop%u", (frame >= 2L) ? (frame - 1L) : 0L);
 	}
 	draw_actor(actor, tex, 0.f, B_WHITE);

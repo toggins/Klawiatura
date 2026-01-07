@@ -8,13 +8,13 @@
 // =====
 
 static void load() {
-	load_texture_num("enemies/koopa%u", 2L, false);
-	load_texture("enemies/shell0", false);
-	load_texture_num("enemies/koopa_red%u", 2L, false);
-	load_texture("enemies/shell_red0", false);
+	load_texture_num("enemies/koopa%u", 2L, FALSE);
+	load_texture("enemies/shell0", FALSE);
+	load_texture_num("enemies/koopa_red%u", 2L, FALSE);
+	load_texture("enemies/shell_red0", FALSE);
 
-	load_sound("stomp", false);
-	load_sound("kick", false);
+	load_sound("stomp", FALSE);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_KOOPA_SHELL);
 	load_actor(ACT_POINTS);
@@ -31,7 +31,7 @@ static void create(GameActor* actor) {
 static void tick(GameActor* actor) {
 	VAL_TICK(actor, KOOPA_MAYDAY);
 	const Bool red = ANY_FLAG(actor, FLG_KOOPA_RED);
-	move_enemy(actor, (fvec2){red ? FfInt(2L) : FxOne, 19005L}, red);
+	move_enemy(actor, (FVec2){red ? FfInt(2L) : FxOne, 19005L}, red);
 }
 
 static void draw(const GameActor* actor) {
@@ -119,11 +119,11 @@ const GameActorTable TAB_KOOPA = {.load = load,
 // ===========
 
 static void load_shell() {
-	load_texture_num("enemies/shell%u", 4L, false);
-	load_texture_num("enemies/shell_red%u", 4L, false);
+	load_texture_num("enemies/shell%u", 4L, FALSE);
+	load_texture_num("enemies/shell_red%u", 4L, FALSE);
 
-	load_sound("stomp", false);
-	load_sound("kick", false);
+	load_sound("stomp", FALSE);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_POINTS);
 }
@@ -147,10 +147,10 @@ static void tick_shell(GameActor* actor) {
 		VAL(actor, SHELL_FRAME) += 35389L;
 	VAL_TICK(actor, SHELL_HIT);
 
-	const fixed spd = VAL(actor, X_SPEED);
+	const Fixed spd = VAL(actor, X_SPEED);
 	VAL(actor, Y_SPEED) += 24966L;
 
-	displace_actor(actor, FfInt(10L), false);
+	displace_actor(actor, FfInt(10L), FALSE);
 	collide_actor(actor);
 	if (VAL(actor, X_TOUCH) != 0L)
 		VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * -Fabs(spd);
@@ -239,13 +239,13 @@ const GameActorTable TAB_KOOPA_SHELL = {
 // =========
 
 static void load_parakoopa() {
-	load_texture_num("enemies/parakoopa%u", 2L, false);
-	load_texture("enemies/shell0", false);
-	load_texture_num("enemies/parakoopa_red%u", 2L, false);
-	load_texture("enemies/shell_red0", false);
+	load_texture_num("enemies/parakoopa%u", 2L, FALSE);
+	load_texture("enemies/shell0", FALSE);
+	load_texture_num("enemies/parakoopa_red%u", 2L, FALSE);
+	load_texture("enemies/shell_red0", FALSE);
 
-	load_sound("stomp", false);
-	load_sound("kick", false);
+	load_sound("stomp", FALSE);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_KOOPA);
 	load_actor(ACT_POINTS);
@@ -259,7 +259,7 @@ static void tick_parakoopa(GameActor* actor) {
 	}
 
 	move_actor(actor,
-		(fvec2){actor->pos.x, VAL(actor, PARAKOOPA_Y) + Fmul(FfInt(50L), Fcos(VAL(actor, PARAKOOPA_ANGLE)))});
+		(FVec2){actor->pos.x, VAL(actor, PARAKOOPA_Y) + Fmul(FfInt(50L), Fcos(VAL(actor, PARAKOOPA_ANGLE)))});
 	VAL(actor, PARAKOOPA_ANGLE) += Frad(FfInt(2L));
 
 	GameActor* nearest = nearest_pawn(actor->pos);

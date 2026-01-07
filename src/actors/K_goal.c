@@ -40,7 +40,7 @@ const GameActorTable TAB_GOAL_MARK = {.load = load_mark, .create = create_mark, 
 // ========
 
 static void load_bar() {
-	load_texture("markers/goal_bar", false);
+	load_texture("markers/goal_bar", FALSE);
 
 	load_actor(ACT_GOAL_BAR_FLY);
 	load_actor(ACT_POINTS);
@@ -76,11 +76,11 @@ static void collide_bar(GameActor* actor, GameActor* from) {
 	if (from->type != ACT_PLAYER || game_state.sequence.type == SEQ_WIN)
 		return;
 
-	int32_t points = 200L;
+	Sint32 points = 200L;
 	if (ANY_FLAG(actor, FLG_GOAL_JACKPOT)) {
 		points = 1000000L;
 	} else {
-		const fixed gy = VAL(actor, GOAL_Y);
+		const Fixed gy = VAL(actor, GOAL_Y);
 		if (actor->pos.y < (gy + FfInt(30L)))
 			points = 10000L;
 		else if (actor->pos.y < (gy + FfInt(60L)))
@@ -97,7 +97,7 @@ static void collide_bar(GameActor* actor, GameActor* from) {
 
 	GameActor* bar = create_actor(ACT_GOAL_BAR_FLY, POS_ADD(actor, FfInt(-2L), FfInt(7L)));
 	if (bar != NULL) {
-		const fixed dir = 154416L + (-12868L + Fmul(FfInt(rng(3L)), 12868L));
+		const Fixed dir = 154416L + (-12868L + Fmul(FfInt(rng(3L)), 12868L));
 		VAL(bar, X_SPEED) = Fmul(327680L, Fcos(dir)), VAL(bar, Y_SPEED) = Fmul(327680L, -Fsin(dir));
 		FLAG_ON(actor, FLG_DESTROY);
 	}
@@ -111,7 +111,7 @@ const GameActorTable TAB_GOAL_BAR
 // ===============
 
 static void load_fly() {
-	load_texture("markers/goal_bar2", false);
+	load_texture("markers/goal_bar2", FALSE);
 }
 
 static void create_fly(GameActor* actor) {

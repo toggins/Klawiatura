@@ -7,10 +7,10 @@
 // =====
 
 static void load() {
-	load_texture_num("enemies/spiny%u", 2L, false);
-	load_texture_num("enemies/spiny_gray%u", 2L, false);
+	load_texture_num("enemies/spiny%u", 2L, FALSE);
+	load_texture_num("enemies/spiny_gray%u", 2L, FALSE);
 
-	load_sound("kick", false);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_POINTS);
 }
@@ -25,9 +25,9 @@ static void create(GameActor* actor) {
 
 static void tick(GameActor* actor) {
 	move_enemy(actor,
-		(fvec2){((game_state.flags & GF_HARDCORE) && !ANY_FLAG(actor, FLG_SPINY_GRAY)) ? FfInt(2L) : FxOne,
+		(FVec2){((game_state.flags & GF_HARDCORE) && !ANY_FLAG(actor, FLG_SPINY_GRAY)) ? FfInt(2L) : FxOne,
 			19005L},
-		false);
+		FALSE);
 }
 
 static void draw(const GameActor* actor) {
@@ -111,10 +111,10 @@ const GameActorTable TAB_SPINY = {
 // =========
 
 static void load_egg() {
-	load_texture_num("enemies/spiny_egg%u", 6L, false);
-	load_texture("enemies/spiny_egg_green", false);
+	load_texture_num("enemies/spiny_egg%u", 6L, FALSE);
+	load_texture("enemies/spiny_egg_green", FALSE);
 
-	load_sound("kick", false);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_SPINY);
 	load_actor(ACT_POINTS);
@@ -134,7 +134,7 @@ static void tick_egg(GameActor* actor) {
 	if (!ANY_FLAG(actor, FLG_SPINY_HATCH) || ANY_FLAG(actor, FLG_SPINY_GREEN))
 		VAL(actor, SPINY_ANGLE) += (VAL(actor, X_SPEED) < FxZero) ? -25736L : 25736L;
 	if (ALL_FLAG(actor, FLG_SPINY_ROLL)) {
-		move_enemy(actor, (fvec2){FfInt(2L), 19005L}, false);
+		move_enemy(actor, (FVec2){FfInt(2L), 19005L}, FALSE);
 		return;
 	}
 
@@ -143,11 +143,11 @@ static void tick_egg(GameActor* actor) {
 	else if (VAL(actor, Y_SPEED) < FfInt(8L))
 		VAL(actor, Y_SPEED) += 8738L;
 
-	const fixed spd = VAL(actor, X_SPEED);
+	const Fixed spd = VAL(actor, X_SPEED);
 	if (touching_solid(HITBOX(actor), SOL_SOLID))
 		move_actor(actor, POS_SPEED(actor));
 	else
-		displace_actor(actor, FfInt(10L), false);
+		displace_actor(actor, FfInt(10L), FALSE);
 
 	if (!ANY_FLAG(actor, FLG_SPINY_GREEN) && ANY_FLAG(actor, FLG_SPINY_HATCH)) {
 		if (++VAL(actor, SPINY_FRAME) >= 5L) {

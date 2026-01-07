@@ -12,17 +12,17 @@ typedef struct {
 	AssetBase base;
 
 	FMOD_SOUND* sound;
-	uint32_t length;
+	Uint32 length;
 } Sound;
 
 typedef struct {
 	AssetBase base;
 
 	FMOD_SOUND* stream;
-	uint32_t length, loop[2];
+	Uint32 length, loop[2];
 } Track;
 
-typedef uint8_t TrackSlots;
+typedef Uint8 TrackSlots;
 enum {
 	TS_MAIN,
 	TS_EVENT,
@@ -32,7 +32,7 @@ enum {
 	TS_SIZE,
 };
 
-typedef uint8_t PlayFlags;
+typedef Uint8 PlayFlags;
 enum {
 	PLAY_LOOPING = 1 << 0,
 	PLAY_PAN = 1 << 1,
@@ -40,19 +40,19 @@ enum {
 
 typedef struct {
 	StTinyKey track_key;
-	uint32_t offset;
+	Uint32 offset;
 	PlayFlags flags;
 } TrackObject;
 
 typedef struct {
 	StTinyKey sound_key;
-	uint32_t offset;
+	Uint32 offset;
 	PlayFlags flags;
 	float pos[2];
 } SoundObject;
 
 typedef struct {
-	uint8_t next_sound;
+	Uint8 next_sound;
 	TrackSlots top_track;
 
 	SoundObject sounds[MAX_SOUNDS];
@@ -76,7 +76,7 @@ void start_audio_state();
 void tick_audio_state();
 void save_audio_state(AudioState*), load_audio_state(const AudioState*);
 void nuke_audio_state();
-void pause_audio_state(bool);
+void pause_audio_state(Bool);
 
 // Assets
 ASSET_HEAD(sounds, Sound, sound);

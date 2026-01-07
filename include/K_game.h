@@ -16,18 +16,18 @@
 
 #define MAX_ACTORS 1000L
 #define NULLACT ((ActorID)(-1L))
-#define NULLCELL ((int32_t)(-1L))
+#define NULLCELL ((Sint32)(-1L))
 
 #define MAX_VALUES 32L
 #define GAME_STRING_MAX 256L
 #define ACTOR_STRING_MAX 16L
 
-typedef fixed ActorValue;
-typedef uint32_t ActorFlag;
+typedef Fixed ActorValue;
+typedef Uint32 ActorFlag;
 
 #define MAX_CELLS 128L
 #define GRID_SIZE (MAX_CELLS * MAX_CELLS)
-#define CELL_SIZE ((fixed)(0x01000000))
+#define CELL_SIZE ((Fixed)(0x01000000))
 
 #define SCREEN_WIDTH 640L
 #define SCREEN_HEIGHT 480L
@@ -42,10 +42,10 @@ typedef uint32_t ActorFlag;
 #include "K_video.h" // IWYU pragma: keep
 #endif
 
-typedef int8_t PlayerID;
-typedef int16_t ActorID;
+typedef Sint8 PlayerID;
+typedef Sint16 ActorID;
 
-typedef uint8_t GameInput;
+typedef Uint8 GameInput;
 enum {
 	GI_UP = 1 << 0,
 	GI_LEFT = 1 << 1,
@@ -57,7 +57,7 @@ enum {
 	GI_WARP = 1 << 7,
 };
 
-typedef uint16_t GameFlag;
+typedef Uint16 GameFlag;
 enum {
 	GF_HURRY = 1 << 0,
 	GF_END = 1 << 1,
@@ -79,7 +79,7 @@ enum {
 #define GF_TRY_SINGLE (game_state.flags & GF_SINGLE)
 };
 
-typedef uint8_t GameSequenceType;
+typedef Uint8 GameSequenceType;
 enum {
 	SEQ_NONE,
 	SEQ_LOSE,
@@ -90,7 +90,7 @@ enum {
 	SEQ_SECRET,
 };
 
-typedef uint16_t GameActorType;
+typedef Uint16 GameActorType;
 enum {
 	ACT_NULL,
 
@@ -206,7 +206,7 @@ enum {
 	ACT_SIZE,
 };
 
-typedef uint8_t PlayerPower;
+typedef Uint8 PlayerPower;
 enum {
 	POW_SMALL,
 	POW_BIG,
@@ -216,7 +216,7 @@ enum {
 	POW_HAMMER,
 };
 
-typedef uint8_t PlayerFrame;
+typedef Uint8 PlayerFrame;
 enum {
 	PF_IDLE,
 	PF_WALK1,
@@ -238,7 +238,7 @@ enum {
 	PF_DEAD,
 };
 
-typedef uint8_t SolidType;
+typedef Uint8 SolidType;
 enum {
 	SOL_SOLID = 1 << 0,
 	SOL_TOP = 1 << 1,
@@ -246,7 +246,7 @@ enum {
 	SOL_ALL = SOL_SOLID | SOL_TOP | SOL_BOTTOM,
 };
 
-typedef uint8_t PlatformType;
+typedef Uint8 PlatformType;
 enum {
 	PLAT_NORMAL,
 	PLAT_SMALL,
@@ -263,16 +263,16 @@ typedef struct {
 
 	char level[GAME_STRING_MAX];
 	struct {
-		int8_t lives;
-		uint8_t coins;
+		Sint8 lives;
+		Uint8 coins;
 		PlayerPower power;
-		uint32_t score;
+		Uint32 score;
 	} players[MAX_PLAYERS];
 } GameContext;
 
 typedef struct {
-	int8_t lives;
-	uint32_t score;
+	Sint8 lives;
+	Uint32 score;
 	char name[NUTPUNCH_FIELD_DATA_MAX]; // FIXME: Can't include `K_cmd.h` or errors
 } GameWinner;
 
@@ -280,27 +280,27 @@ typedef struct {
 	PlayerID id;
 	GameInput input, last_input;
 
-	int8_t lives;
-	uint8_t coins;
+	Sint8 lives;
+	Uint8 coins;
 	PlayerPower power;
 
 	ActorID actor;
 	ActorID missiles[MAX_MISSILES], sink[MAX_SINK];
-	fvec2 pos;
-	frect bounds;
+	FVec2 pos;
+	FRect bounds;
 
-	uint32_t score;
+	Uint32 score;
 
 	struct {
-		int8_t delay;
+		Sint8 delay;
 		ActorID actor;
-		fvec2 start;
+		FVec2 start;
 
 		struct {
 			Bool flip;
 			PlayerPower power;
 			PlayerFrame frame;
-			fvec2 pos;
+			FVec2 pos;
 		} frames[KEVIN_DELAY];
 	} kevin;
 } GamePlayer;
@@ -315,7 +315,7 @@ typedef struct {
 typedef struct {
 	GameSequenceType type;
 	PlayerID activator;
-	uint16_t time;
+	Uint16 time;
 } GameSequence;
 
 #define VAL_STRING(ident) ident, ident##_END = (ident) + (ACTOR_STRING_MAX / sizeof(ActorValue))
@@ -352,27 +352,27 @@ enum BaseActorFlags {
 #define CUSTOM_FLAG(idx) (1 << (5 + (idx)))
 };
 
-#define POS_ADD(actor, _x, _y) ((fvec2){(actor)->pos.x + (_x), (actor)->pos.y + (_y)})
+#define POS_ADD(actor, _x, _y) ((FVec2){(actor)->pos.x + (_x), (actor)->pos.y + (_y)})
 #define POS_SPEED(actor)                                                                                               \
-	((fvec2){(actor)->pos.x + (actor)->values[VAL_X_SPEED], (actor)->pos.y + (actor)->values[VAL_Y_SPEED]})
+	((FVec2){(actor)->pos.x + (actor)->values[VAL_X_SPEED], (actor)->pos.y + (actor)->values[VAL_Y_SPEED]})
 
 #define HITBOX(actor)                                                                                                  \
-	((frect){                                                                                                      \
+	((FRect){                                                                                                      \
 		{(actor)->pos.x + (actor)->box.start.x, (actor)->pos.y + (actor)->box.start.y},                        \
 		{(actor)->pos.x + (actor)->box.end.x,   (actor)->pos.y + (actor)->box.end.y  },                            \
 	})
 #define HITBOX_ADD(actor, _x, _y)                                                                                      \
-	((frect){                                                                                                      \
+	((FRect){                                                                                                      \
 		{(actor)->pos.x + (actor)->box.start.x + (_x), (actor)->pos.y + (actor)->box.start.y + (_y)},          \
 		{(actor)->pos.x + (actor)->box.end.x + (_x),   (actor)->pos.y + (actor)->box.end.y + (_y)  },              \
 	})
 #define HITBOX_LEFT(actor)                                                                                             \
-	((frect){                                                                                                      \
+	((FRect){                                                                                                      \
 		{(actor)->pos.x + (actor)->box.start.x,         (actor)->pos.y + (actor)->box.start.y},                        \
 		{(actor)->pos.x + (actor)->box.start.x + FxOne, (actor)->pos.y + (actor)->box.end.y  },                  \
 	})
 #define HITBOX_RIGHT(actor)                                                                                            \
-	((frect){                                                                                                      \
+	((FRect){                                                                                                      \
 		{(actor)->pos.x + (actor)->box.end.x - FxOne, (actor)->pos.y + (actor)->box.start.y},                  \
 		{(actor)->pos.x + (actor)->box.end.x,         (actor)->pos.y + (actor)->box.end.y  },                            \
 	})
@@ -383,11 +383,11 @@ typedef struct {
 	ActorID previous, next;
 
 	ActorID previous_cell, next_cell;
-	int32_t cell;
+	Sint32 cell;
 
-	fvec2 pos;
-	frect box;
-	fixed depth;
+	FVec2 pos;
+	FRect box;
+	Fixed depth;
 
 	ActorFlag flags;
 	ActorValue values[MAX_VALUES];
@@ -400,22 +400,22 @@ typedef struct {
 	GamePlayer players[MAX_PLAYERS];
 
 	ActorID spawn, checkpoint, autoscroll, wave;
-	uint16_t pswitch;
+	Uint16 pswitch;
 
-	fvec2 size;
-	frect bounds;
+	FVec2 size;
+	FRect bounds;
 
-	fixed water, hazard;
-	int32_t clock;
+	Fixed water, hazard;
+	Sint32 clock;
 
-	int32_t seed;
-	uint64_t time;
+	Sint32 seed;
+	Uint64 time;
 
 	ActorID live_actors, next_actor;
 	GameActor actors[MAX_ACTORS];
 	ActorID grid[GRID_SIZE];
 
-	int8_t next[GAME_STRING_MAX];
+	Sint8 next[GAME_STRING_MAX];
 } GameState;
 
 typedef struct {
@@ -425,7 +425,7 @@ typedef struct {
 
 typedef struct {
 	GameActorType type;
-	fvec2 from, pos;
+	FVec2 from, pos;
 } InterpActor;
 
 typedef struct {
@@ -452,9 +452,9 @@ extern GameState game_state;
 void setup_game_context(GameContext*, const char*, GameFlag);
 
 void start_game(GameContext*);
-bool game_exists();
+Bool game_exists();
 void nuke_game();
-bool update_game();
+Bool update_game();
 void draw_game();
 
 void start_game_state(GameContext*);
@@ -463,7 +463,7 @@ void draw_game_state();
 void tick_game_state(const GameInput[MAX_PLAYERS]);
 void save_game_state(GameState*);
 void load_game_state(const GameState*);
-uint32_t check_game_state();
+Uint32 check_game_state();
 void dump_game_state();
 void nuke_game_state();
 
@@ -481,7 +481,7 @@ void push_chat_message(const int, const char*);
 
 GamePlayer *get_player(PlayerID), *get_owner(const GameActor*);
 PlayerID get_owner_id(const GameActor*);
-GameActor *respawn_player(GamePlayer*), *nearest_pawn(const fvec2);
+GameActor *respawn_player(GamePlayer*), *nearest_pawn(const FVec2);
 
 PlayerID localplayer(), viewplayer(), numplayers();
 void set_view_player(GamePlayer*);
@@ -493,32 +493,32 @@ const char* get_player_name(PlayerID);
 // ======
 
 void load_actor(GameActorType);
-GameActor* create_actor(GameActorType, const fvec2);
+GameActor* create_actor(GameActorType, const FVec2);
 void replace_actors(GameActorType, GameActorType);
 
 GameActor* get_actor(ActorID);
-void move_actor(GameActor*, const fvec2);
+void move_actor(GameActor*, const FVec2);
 
 Bool below_level(const GameActor*);
-Bool in_any_view(const GameActor*, fixed, Bool);
-Bool in_player_view(const GameActor*, GamePlayer*, fixed, Bool);
+Bool in_any_view(const GameActor*, Fixed, Bool);
+Bool in_player_view(const GameActor*, GamePlayer*, Fixed, Bool);
 
 typedef struct {
 	GameActor* actors[MAX_ACTORS];
 	ActorID num_actors;
 } CellList;
-void list_cell_at(CellList*, const frect);
+void list_cell_at(CellList*, const FRect);
 void collide_actor(GameActor*);
-Bool touching_solid(const frect, SolidType);
-void displace_actor(GameActor*, fixed, Bool);
+Bool touching_solid(const FRect, SolidType);
+void displace_actor(GameActor*, Fixed, Bool);
 void displace_actor_soft(GameActor*);
 
-void encode_actor_string(GameActor*, ActorValue, const int8_t[ACTOR_STRING_MAX]);
-void decode_actor_string(const GameActor*, ActorValue, int8_t[ACTOR_STRING_MAX]);
+void encode_actor_string(GameActor*, ActorValue, const Sint8[ACTOR_STRING_MAX]);
+void decode_actor_string(const GameActor*, ActorValue, Sint8[ACTOR_STRING_MAX]);
 
-void draw_actor(const GameActor*, const char*, GLfloat, const GLubyte[4]);
-void draw_actor_offset(const GameActor*, const char*, const GLfloat[3], GLfloat, const GLubyte[4]);
-void draw_actor_no_jitter(const GameActor*, const char*, GLfloat, const GLubyte[4]);
+void draw_actor(const GameActor*, const char*, float, const Uint8[4]);
+void draw_actor_offset(const GameActor*, const char*, const float[3], float, const Uint8[4]);
+void draw_actor_no_jitter(const GameActor*, const char*, float, const Uint8[4]);
 void draw_dead(const GameActor*);
 void quake_at_actor(const GameActor*, float);
 
@@ -528,7 +528,7 @@ void play_actor_sound(const GameActor*, const char*);
 // MATH
 // ====
 
-int32_t rng(int32_t);
+Sint32 rng(Sint32);
 
 // =============
 // INTERPOLATION

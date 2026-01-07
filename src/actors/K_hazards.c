@@ -35,16 +35,16 @@ enum {
 static void load_special_spike(const GameActor* actor) {
 	switch (VAL(actor, SPIKE_TYPE)) {
 	default:
-		load_texture("enemies/spike", false);
+		load_texture("enemies/spike", FALSE);
 		break;
 	case SPIKE_CASTLE:
-		load_texture("enemies/spike_castle", false);
+		load_texture("enemies/spike_castle", FALSE);
 		break;
 	case SPIKE_TANK:
-		load_texture("enemies/spike_tank", false);
+		load_texture("enemies/spike_tank", FALSE);
 		break;
 	case SPIKE_TANK_LEFT:
-		load_texture("enemies/spike_tank_l", false);
+		load_texture("enemies/spike_tank_l", FALSE);
 		break;
 	}
 }
@@ -103,7 +103,7 @@ const GameActorTable TAB_SPIKE = {
 // ==============
 
 static void load_coral() {
-	load_texture_num("enemies/coral%u", 7L, false);
+	load_texture_num("enemies/coral%u", 7L, FALSE);
 }
 
 static void create_coral(GameActor* actor) {
@@ -114,7 +114,7 @@ static void create_coral(GameActor* actor) {
 }
 
 static void draw_coral(const GameActor* actor) {
-	const uint64_t frame = (game_state.time / 2L) % 22L;
+	const Uint8 frame = (game_state.time / 2L) % 22L;
 	const char* tex = fmt("enemies/coral%u", SDL_min(frame, 6L));
 	draw_actor(actor, tex, 0.f, B_WHITE);
 }
@@ -140,10 +140,10 @@ const GameActorTable TAB_ELECTRIC_CORAL = {
 // ==========
 
 static void load_cloud() {
-	load_texture_num("enemies/fake_cloud%u", 3L, false);
-	load_texture_num("props/cloud%u", 3L, false);
+	load_texture_num("enemies/fake_cloud%u", 3L, FALSE);
+	load_texture_num("props/cloud%u", 3L, FALSE);
 
-	load_sound("fake_cloud", false);
+	load_sound("fake_cloud", FALSE);
 }
 
 static void create_cloud(GameActor* actor) {
@@ -191,7 +191,7 @@ void tick_party(GameActor* actor) {
 
 	VAL(actor, PARTY_TIME) += VAL(actor, PARTY_SPEED);
 	while (VAL(actor, PARTY_TIME) >= FfInt(50L)) {
-		GameActor* nearest = nearest_pawn((fvec2){game_state.size.x, FxZero});
+		GameActor* nearest = nearest_pawn((FVec2){game_state.size.x, FxZero});
 		if (nearest != NULL) {
 			GameActor* drop = create_actor(
 				VAL(actor, PARTY_TYPE), POS_ADD(nearest, FfInt(201L + rng(200L)), FfInt(-498L)));

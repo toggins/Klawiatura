@@ -8,4 +8,4 @@ enum {
 	VAL_POINTS_TIME,
 };
 
-void give_points(GameActor*, GamePlayer*, int32_t);
+void give_points(GameActor*, GamePlayer*, Sint32);

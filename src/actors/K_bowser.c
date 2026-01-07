@@ -11,14 +11,14 @@
 // ======
 
 static void load() {
-	load_texture_num("enemies/bowser%u", 3L, false);
-	load_texture_num("enemies/bowser_jump%u", 2L, false);
-	load_texture_num("enemies/bowser_fire%u", 2L, false);
-	load_texture_num("ui/bowser%u", 3L, false);
+	load_texture_num("enemies/bowser%u", 3L, FALSE);
+	load_texture_num("enemies/bowser_jump%u", 2L, FALSE);
+	load_texture_num("enemies/bowser_fire%u", 2L, FALSE);
+	load_texture_num("ui/bowser%u", 3L, FALSE);
 
-	load_sound("bowser_fire", false);
-	load_sound("bowser_hurt", false);
-	load_sound("kick", false);
+	load_sound("bowser_fire", FALSE);
+	load_sound("bowser_hurt", FALSE);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_MISSILE_NAPALM);
 	load_actor(ACT_BOWSER_DEAD);
@@ -26,30 +26,30 @@ static void load() {
 
 static void load_special(const GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_BOWSER_CHARGE))
-		load_texture_num("enemies/bowser_charge%u", 8L, false);
+		load_texture_num("enemies/bowser_charge%u", 8L, FALSE);
 
 	if (ANY_FLAG(actor, FLG_BOWSER_GUN)) {
-		load_texture("enemies/bowser_gun", false);
+		load_texture("enemies/bowser_gun", FALSE);
 
-		load_sound("bang", false);
-		load_sound("bang4", false);
+		load_sound("bang", FALSE);
+		load_sound("bang4", FALSE);
 
 		load_actor(ACT_BULLET_BILL);
 		load_actor(ACT_EXPLODE);
 	}
 
 	if (ANY_FLAG(actor, FLG_BOWSER_GIGA))
-		load_track("smrpg_smithy", false);
+		load_track("smrpg_smithy", FALSE);
 	else if (ANY_FLAG(actor, FLG_BOWSER_DEVASTATOR)
 		 || ALL_FLAG(actor, FLG_BOWSER_CHARGE | FLG_BOWSER_VOMIT | FLG_BOWSER_HAMMER))
-		load_track("yi_bowser", false);
+		load_track("yi_bowser", FALSE);
 	else if (game_state.flags & GF_LOST)
-		load_track("smb3_bowser", false);
+		load_track("smb3_bowser", FALSE);
 	else
-		load_track("smrpg_bowser", false);
+		load_track("smrpg_bowser", FALSE);
 
 	if (game_state.flags & GF_LOST)
-		load_track("win3", false);
+		load_track("win3", FALSE);
 }
 
 static void create(GameActor* actor) {
@@ -100,7 +100,7 @@ static void tick(GameActor* actor) {
 		GameActor* autoscroll = get_actor(game_state.autoscroll);
 		if (autoscroll == NULL && nearest->pos.x > (game_state.size.x - FfInt(952L))) {
 			autoscroll
-				= create_actor(ACT_AUTOSCROLL, (fvec2){nearest->pos.x - F_HALF_SCREEN_WIDTH, FxZero});
+				= create_actor(ACT_AUTOSCROLL, (FVec2){nearest->pos.x - F_HALF_SCREEN_WIDTH, FxZero});
 			if (autoscroll != NULL) {
 				VAL(autoscroll, X_SPEED) = FxOne;
 				FLAG_ON(autoscroll, FLG_SCROLL_BOWSER);
@@ -127,7 +127,7 @@ static void tick(GameActor* actor) {
 		VAL(actor, BOWSER_C) = rng(64L);
 
 	// 887
-	if (!ANY_FLAG(actor, FLG_BOWSER_ACTIVE) && in_any_view(actor, FxZero, false)) {
+	if (!ANY_FLAG(actor, FLG_BOWSER_ACTIVE) && in_any_view(actor, FxZero, FALSE)) {
 		FLAG_ON(actor, FLG_BOWSER_ACTIVE);
 		VAL(actor, BOWSER_HEIGHT) = actor->pos.y;
 	}
@@ -193,11 +193,11 @@ static void tick(GameActor* actor) {
 			++VAL(actor, BOWSER_K);
 		} else {
 			const ActorFlag mflags = (actor->flags & FLG_X_FLIP) | FLG_MISSILE_SHIMMY;
-			const fvec2 mpos
+			const FVec2 mpos
 				= POS_ADD(actor, (mflags & FLG_X_FLIP) ? FfInt(-18L) : FfInt(18L), FfInt(-32L));
-			const fixed mspd = Fmul(
+			const Fixed mspd = Fmul(
 				(mflags & FLG_X_FLIP) ? FfInt(-4L) : FfInt(4L), VAL(actor, BOWSER_MISSILE_SPEED));
-			for (fixed i = 0L; i < 3L; i++) {
+			for (Fixed i = 0L; i < 3L; i++) {
 				GameActor* napalm = create_actor(ACT_MISSILE_NAPALM, mpos);
 				if (napalm != NULL) {
 					FLAG_ON(napalm, mflags);
@@ -238,7 +238,7 @@ static void tick(GameActor* actor) {
 		if (VAL(actor, BOWSER_SLIP) == 0L)
 			VAL(actor, BOWSER_SLIPPER) = NULLACT;
 		else {
-			const fixed slip = FfInt(VAL(actor, BOWSER_SLIP));
+			const Fixed slip = FfInt(VAL(actor, BOWSER_SLIP));
 			if (!touching_solid(HITBOX_ADD(slipper, slip, FxZero), SOL_SOLID))
 				move_actor(slipper, POS_ADD(slipper, slip, FxZero));
 		}
@@ -246,14 +246,14 @@ static void tick(GameActor* actor) {
 
 	VAL_TICK(actor, BOWSER_GROUND);
 	VAL(actor, Y_SPEED) += 8738L;
-	displace_actor(actor, FfInt(10L), false);
+	displace_actor(actor, FfInt(10L), FALSE);
 	if (VAL(actor, Y_TOUCH) > 0L)
 		VAL(actor, BOWSER_GROUND) = 2L;
 }
 
 static void draw(const GameActor* actor) {
 	const char* tex = NULL;
-	const uint32_t frame = VAL(actor, BOWSER_FRAME) / 100L;
+	const Uint32 frame = VAL(actor, BOWSER_FRAME) / 100L;
 	if (!ANY_FLAG(actor, FLG_BOWSER_ANIMS))
 		switch (frame % 4L) {
 		default:
@@ -296,17 +296,17 @@ static void draw(const GameActor* actor) {
 	else if (ANY_FLAG(actor, FLG_BOWSER_ANIM_FIRE))
 		tex = "enemies/bowser_fire0";
 
-	GLubyte a = 255L;
+	Uint8 a = 255L;
 	if (VAL(actor, BOWSER_HURT) > 0L) {
 		const float time = (float)game_state.time * 0.05f;
 		const float flash = SDL_fmodf(time, 1.f);
-		a = (GLubyte)(((SDL_fmodf(time, 2.f) >= 1.f) ? flash : (1.f - flash)) * 255.f);
+		a = (Uint8)(((SDL_fmodf(time, 2.f) >= 1.f) ? flash : (1.f - flash)) * 255.f);
 
 		const float hurt = VAL(actor, BOWSER_HURT), hurt_time = VAL(actor, BOWSER_HURT_TIME);
 		if (hurt > (hurt_time - 6.f))
-			a = (GLubyte)glm_lerp(255.f, (float)a, (hurt_time - hurt) / 6.f);
+			a = (Uint8)glm_lerp(255.f, (float)a, (hurt_time - hurt) / 6.f);
 		else if (hurt < 10.f)
-			a = (GLubyte)glm_lerp(255.f, (float)a, hurt / 10.f);
+			a = (Uint8)glm_lerp(255.f, (float)a, hurt / 10.f);
 	}
 	draw_actor(actor, tex, 0.f, B_ALPHA(a));
 
@@ -331,11 +331,11 @@ static void draw_hud(const GameActor* actor) {
 		return;
 
 	batch_reset();
-	GLfloat pos[3] = {SCREEN_WIDTH - 16.f, video_state.boss, -10000.f};
+	float pos[3] = {SCREEN_WIDTH - 16.f, video_state.boss, -10000.f};
 	batch_pos(pos), batch_sprite("ui/bowser0");
 
 	pos[0] -= 64.f;
-	for (ActorValue i = 0; i < VAL(actor, BOWSER_HEALTH); i++) {
+	for (ActorValue i = 0L; i < VAL(actor, BOWSER_HEALTH); i++) {
 		batch_pos(pos), batch_sprite("ui/bowser1");
 		pos[0] -= 9.f;
 	}
@@ -371,12 +371,12 @@ static void hit_bowser(GameActor* actor, GameActor* from) {
 
 static Bool slap_bowser(GameActor* actor, GameActor* from) {
 	if (actor == NULL || actor->type != ACT_BOWSER || VAL(actor, BOWSER_HURT) > 0L)
-		return false;
+		return FALSE;
 
 	play_actor_sound(actor, "kick");
 	if (++VAL(actor, BOWSER_HITS) > 4L)
 		hit_bowser(actor, from);
-	return true;
+	return TRUE;
 }
 
 static void collide(GameActor* actor, GameActor* from) {
@@ -446,11 +446,11 @@ const GameActorTable TAB_BOWSER = {
 // ============
 
 static void load_corpse() {
-	load_texture_num("enemies/bowser_dead%u", 2L, false);
+	load_texture_num("enemies/bowser_dead%u", 2L, FALSE);
 
-	load_sound("bowser_dead", false);
-	load_sound("bowser_fall", false);
-	load_sound("bowser_lava", false);
+	load_sound("bowser_dead", FALSE);
+	load_sound("bowser_fall", FALSE);
+	load_sound("bowser_lava", FALSE);
 
 	load_actor(ACT_LAVA_BUBBLE);
 }
@@ -472,7 +472,7 @@ static void tick_corpse(GameActor* actor) {
 		return;
 	}
 
-	const fixed state = ++VAL(actor, KUPPA_BE_HAPPY);
+	const Fixed state = ++VAL(actor, KUPPA_BE_HAPPY);
 	if (state > 100L) {
 		if (state == 101L)
 			play_actor_sound(actor, "bowser_fall");

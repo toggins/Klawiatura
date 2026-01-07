@@ -30,7 +30,7 @@ void audio_init() {
 	result = FMOD_System_Init(speaker, MAX_SOUNDS * 2, FMOD_INIT_NORMAL, NULL);
 	EXPECT(result == FMOD_OK, "FMOD_System_Init fail: %s", FMOD_ErrorString(result));
 
-	uint32_t version = 0, buildnumber = 0;
+	Uint32 version = 0, buildnumber = 0;
 	FMOD_System_GetVersion(speaker, &version, &buildnumber);
 	INFO("FMOD version: %08x - Build %u", version, buildnumber);
 
@@ -41,13 +41,13 @@ void audio_init() {
 
 	FMOD_System_CreateChannelGroup(speaker, "generic_sound", &generic_sound_group);
 	FMOD_System_CreateChannelGroup(speaker, "generic_music", &generic_music_group);
-	FMOD_ChannelGroup_AddGroup(sound_group, generic_sound_group, true, NULL);
-	FMOD_ChannelGroup_AddGroup(music_group, generic_music_group, true, NULL);
+	FMOD_ChannelGroup_AddGroup(sound_group, generic_sound_group, TRUE, NULL);
+	FMOD_ChannelGroup_AddGroup(music_group, generic_music_group, TRUE, NULL);
 
 	FMOD_System_CreateChannelGroup(speaker, "state_sound", &state_sound_group);
 	FMOD_System_CreateChannelGroup(speaker, "state_music", &state_music_group);
-	FMOD_ChannelGroup_AddGroup(sound_group, state_sound_group, true, NULL);
-	FMOD_ChannelGroup_AddGroup(music_group, state_music_group, true, NULL);
+	FMOD_ChannelGroup_AddGroup(sound_group, state_sound_group, TRUE, NULL);
+	FMOD_ChannelGroup_AddGroup(music_group, state_music_group, TRUE, NULL);
 
 	sounds = NewTinyMap(), tracks = NewTinyMap();
 }
@@ -148,17 +148,17 @@ void load_audio_state(const AudioState* as) {
 		if (new_asset == NULL || (!(new_track->flags & PLAY_LOOPING) && new_track->offset >= new_asset->length))
 			continue;
 
-		FMOD_System_PlaySound(speaker, new_asset->stream, state_music_group, true, &music_channels[i]);
+		FMOD_System_PlaySound(speaker, new_asset->stream, state_music_group, TRUE, &music_channels[i]);
 		FMOD_Channel_SetMode(music_channels[i],
 			((new_track->flags & PLAY_LOOPING) ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
 		FMOD_Channel_SetMute(music_channels[i], i < as->top_track);
 		FMOD_Channel_SetPosition(music_channels[i], new_track->offset, FMOD_TIMEUNIT_MS);
-		FMOD_Channel_SetPaused(music_channels[i], false);
+		FMOD_Channel_SetPaused(music_channels[i], FALSE);
 
 		if (i > as->top_track)
 			for (TrackSlots j = 0; j < i; j++)
 				if (music_channels[j] != NULL)
-					FMOD_Channel_SetMute(music_channels[j], true);
+					FMOD_Channel_SetMute(music_channels[j], TRUE);
 	}
 
 	for (size_t i = 0; i < MAX_SOUNDS; i++) {
@@ -173,7 +173,7 @@ void load_audio_state(const AudioState* as) {
 		if (new_asset == NULL || (!(new_sound->flags & PLAY_LOOPING) && new_sound->offset >= new_asset->length))
 			continue;
 
-		FMOD_System_PlaySound(speaker, new_asset->sound, state_sound_group, true, &sound_channels[i]);
+		FMOD_System_PlaySound(speaker, new_asset->sound, state_sound_group, TRUE, &sound_channels[i]);
 		if (new_sound->flags & PLAY_PAN) {
 			FMOD_Channel_SetMode(sound_channels[i], FMOD_3D | FMOD_3D_LINEARROLLOFF);
 			FMOD_Channel_Set3DMinMaxDistance(sound_channels[i], 320, 640);
@@ -181,7 +181,7 @@ void load_audio_state(const AudioState* as) {
 				&((FMOD_VECTOR){new_sound->pos[0], new_sound->pos[1], 0}), &((FMOD_VECTOR){0}));
 		}
 		FMOD_Channel_SetPosition(sound_channels[i], new_sound->offset, FMOD_TIMEUNIT_MS);
-		FMOD_Channel_SetPaused(sound_channels[i], false);
+		FMOD_Channel_SetPaused(sound_channels[i], FALSE);
 	}
 
 	SDL_memcpy(&audio_state, as, sizeof(audio_state));
@@ -195,7 +195,7 @@ void nuke_audio_state() {
 	SDL_memset(&music_channels, 0, sizeof(music_channels));
 }
 
-void pause_audio_state(bool pause) {
+void pause_audio_state(Bool pause) {
 	FMOD_ChannelGroup_SetPaused(state_sound_group, pause);
 	FMOD_ChannelGroup_SetPaused(state_music_group, pause);
 }
@@ -212,7 +212,7 @@ static void nuke_sound(void* ptr) {
 
 ASSET_SRC(sounds, Sound, sound);
 
-void load_sound(const char* name, bool transient) {
+void load_sound(const char* name, Bool transient) {
 	if (!name || !*name || get_sound(name))
 		return;
 
@@ -241,7 +241,7 @@ static void nuke_track(void* ptr) {
 
 ASSET_SRC(tracks, Track, track);
 
-void load_track(const char* name, bool transient) {
+void load_track(const char* name, Bool transient) {
 	if (!name || !*name || get_track(name))
 		return;
 
@@ -260,22 +260,26 @@ void load_track(const char* name, bool transient) {
 	FMOD_Sound_GetLength(data, &(track.length), FMOD_TIMEUNIT_MS);
 
 	file = find_data_file(fmt("data/music/%s.json", name), NULL);
-	if (file != NULL) {
-		yyjson_doc* json = yyjson_read_file(file, JSON_READ_FLAGS, NULL, NULL);
-		if (json != NULL) {
-			yyjson_val* root = yyjson_doc_get_root(json);
-			if (yyjson_is_obj(root)) {
-				unsigned int loop_start = yyjson_get_uint(yyjson_obj_get(root, "loop_start"));
-				unsigned int loop_end = yyjson_get_uint(yyjson_obj_get(root, "loop_end"));
-				if (loop_end <= 0)
-					loop_end = track.length;
-				FMOD_Sound_SetLoopPoints(
-					data, loop_start, FMOD_TIMEUNIT_MS, loop_end, FMOD_TIMEUNIT_MS);
-			}
-			yyjson_doc_free(json);
-		}
-	}
+	if (file == NULL)
+		goto trk_no_json;
+	yyjson_doc* json = yyjson_read_file(file, JSON_READ_FLAGS, NULL, NULL);
+	if (json == NULL)
+		goto trk_no_json;
 
+	yyjson_val* root = yyjson_doc_get_root(json);
+	if (!yyjson_is_obj(root))
+		goto trk_no_obj;
+
+	unsigned int loop_start = yyjson_get_uint(yyjson_obj_get(root, "loop_start"));
+	unsigned int loop_end = yyjson_get_uint(yyjson_obj_get(root, "loop_end"));
+	if (loop_end <= 0)
+		loop_end = track.length;
+	FMOD_Sound_SetLoopPoints(data, loop_start, FMOD_TIMEUNIT_MS, loop_end, FMOD_TIMEUNIT_MS);
+
+trk_no_obj:
+	yyjson_doc_free(json);
+
+trk_no_json:
 	StMapPut(tracks, StHashStr(name), &track, sizeof(track))->cleanup = nuke_track;
 }
 
@@ -290,7 +294,7 @@ void play_generic_sound(const char* name) {
 		return;
 	}
 
-	FMOD_System_PlaySound(speaker, sound->sound, generic_sound_group, false, NULL);
+	FMOD_System_PlaySound(speaker, sound->sound, generic_sound_group, FALSE, NULL);
 }
 
 void play_generic_track(const char* name, PlayFlags flags) {
@@ -306,9 +310,9 @@ void play_generic_track(const char* name, PlayFlags flags) {
 	stop_generic_track();
 
 	FMOD_CHANNEL* channel = NULL;
-	const FMOD_RESULT result = FMOD_System_PlaySound(speaker, track->stream, generic_music_group, true, &channel);
+	const FMOD_RESULT result = FMOD_System_PlaySound(speaker, track->stream, generic_music_group, TRUE, &channel);
 	FMOD_Channel_SetMode(channel, (flags & PLAY_LOOPING ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
-	FMOD_Channel_SetPaused(channel, false);
+	FMOD_Channel_SetPaused(channel, FALSE);
 	generic_track = (result == FMOD_OK) ? key : 0;
 }
 
@@ -337,7 +341,7 @@ void play_state_sound(const char* name) {
 
 	if (sound_channels[idx] != NULL)
 		FMOD_Channel_Stop(sound_channels[idx]);
-	FMOD_System_PlaySound(speaker, sound->sound, state_sound_group, false, &sound_channels[idx]);
+	FMOD_System_PlaySound(speaker, sound->sound, state_sound_group, FALSE, &sound_channels[idx]);
 
 	audio_state.next_sound = (idx + 1) % MAX_SOUNDS;
 }
@@ -360,11 +364,11 @@ void play_state_sound_at(const char* name, const float pos[2]) {
 
 	if (sound_channels[idx] != NULL)
 		FMOD_Channel_Stop(sound_channels[idx]);
-	FMOD_System_PlaySound(speaker, sound->sound, state_sound_group, true, &sound_channels[idx]);
+	FMOD_System_PlaySound(speaker, sound->sound, state_sound_group, TRUE, &sound_channels[idx]);
 	FMOD_Channel_SetMode(sound_channels[idx], FMOD_3D | FMOD_3D_LINEARROLLOFF);
 	FMOD_Channel_Set3DMinMaxDistance(sound_channels[idx], 320, 640);
 	FMOD_Channel_Set3DAttributes(sound_channels[idx], &((FMOD_VECTOR){pos[0], pos[1], 0}), &((FMOD_VECTOR){0}));
-	FMOD_Channel_SetPaused(sound_channels[idx], false);
+	FMOD_Channel_SetPaused(sound_channels[idx], FALSE);
 
 	audio_state.next_sound = (idx + 1) % MAX_SOUNDS;
 }
@@ -394,16 +398,16 @@ void play_state_track(TrackSlots slot, const char* name, PlayFlags flags) {
 
 	if (music_channels[slot] != NULL)
 		FMOD_Channel_Stop(music_channels[slot]);
-	FMOD_System_PlaySound(speaker, track->stream, state_music_group, true, &music_channels[slot]);
+	FMOD_System_PlaySound(speaker, track->stream, state_music_group, TRUE, &music_channels[slot]);
 	FMOD_Channel_SetMode(
 		music_channels[slot], ((flags & PLAY_LOOPING) ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
 	FMOD_Channel_SetMute(music_channels[slot], slot < audio_state.top_track);
-	FMOD_Channel_SetPaused(music_channels[slot], false);
+	FMOD_Channel_SetPaused(music_channels[slot], FALSE);
 
 	if (slot > audio_state.top_track) {
 		for (TrackSlots i = 0; i < slot; i++)
 			if (music_channels[i] != NULL)
-				FMOD_Channel_SetMute(music_channels[i], true);
+				FMOD_Channel_SetMute(music_channels[i], TRUE);
 		audio_state.top_track = slot;
 	}
 }
@@ -421,7 +425,7 @@ void stop_state_track(TrackSlots slot) {
 		int i = slot - 1;
 		while (i >= 0) {
 			if (music_channels[i] != NULL) {
-				FMOD_Channel_SetMute(music_channels[i], false);
+				FMOD_Channel_SetMute(music_channels[i], FALSE);
 				audio_state.top_track = i;
 				break;
 			}

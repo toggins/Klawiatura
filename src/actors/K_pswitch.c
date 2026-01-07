@@ -12,13 +12,13 @@ enum {
 };
 
 static void load() {
-	load_texture_num("markers/pswitch%u", 3L, false);
-	load_texture("markers/pswitch_flat", false);
+	load_texture_num("markers/pswitch%u", 3L, FALSE);
+	load_texture("markers/pswitch_flat", FALSE);
 
-	load_sound("toggle", false);
-	load_sound("starman", false);
+	load_sound("toggle", FALSE);
+	load_sound("starman", FALSE);
 
-	load_track("pswitch", false);
+	load_track("pswitch", FALSE);
 
 	load_actor(ACT_PSWITCH_COIN);
 	load_actor(ACT_PSWITCH_BRICK);
@@ -56,7 +56,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		replace_actors(ACT_BRICK_BLOCK, ACT_PSWITCH_COIN);
 
 		play_actor_sound(actor, "toggle");
-		play_state_track(TS_EVENT, "pswitch", true);
+		play_state_track(TS_EVENT, "pswitch", PLAY_LOOPING);
 	}
 }
 

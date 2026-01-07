@@ -4,8 +4,8 @@
 
 #include "K_input.h"
 
-#define MAX_OPTIONS 16
-#define MAX_SECRET_INPUTS 5
+#define MAX_OPTIONS 16L
+#define MAX_SECRET_INPUTS 5L
 
 typedef enum {
 	MEN_NULL,
@@ -29,11 +29,11 @@ typedef enum {
 
 typedef struct {
 	const char* name;
-	bool disabled, (*disable_if)();
+	Bool disabled, (*disable_if)();
 	void (*button)();
 	void (*flip)(int);
 	const char* (*format)(const char*);
-	bool vivid; /// If true, won't dim the option's text even if it's disabled.
+	Bool vivid; /// If true, won't dim the option's text even if it's disabled.
 
 	float hover;
 	MenuType enter;
@@ -44,7 +44,7 @@ typedef struct {
 typedef struct {
 	const char *name, *back_sound;
 	void (*update)(), (*enter)(), (*leave)(MenuType next);
-	bool noreturn, ghost;
+	Bool noreturn, ghost;
 
 	MenuType from;
 	size_t option;
@@ -61,23 +61,21 @@ typedef struct {
 	const char* name;
 	Keybind inputs[MAX_SECRET_INPUTS + 1];
 
-	bool* cmd;
+	Bool* cmd;
 	const char *sound, *track;
 
 	size_t state;
-	uint8_t type_time;
-	bool active;
+	Uint8 type_time;
+	Bool active;
 } Secret;
 
 void load_menu();
 
 void menu_init();
-void update_menu();
-void draw_menu();
+void update_menu(), draw_menu();
 
-bool set_menu(MenuType), prev_menu();
+Bool set_menu(MenuType), prev_menu();
 void show_error(const char*, ...);
 
-void populate_results();
-void show_results();
+void populate_results(), show_results();
 const char* who_is_winner(int);

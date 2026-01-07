@@ -28,16 +28,16 @@ static void create(GameActor* actor) {
 // ================
 
 static void load_blue() {
-	load_texture_num("enemies/cheep_blue%u", 2L, false);
+	load_texture_num("enemies/cheep_blue%u", 2L, FALSE);
 
-	load_sound("stomp", false);
-	load_sound("kick", false);
+	load_sound("stomp", FALSE);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_POINTS);
 }
 
 static void tick_blue(GameActor* actor) {
-	move_enemy(actor, (fvec2){FxOne, FxZero}, false);
+	move_enemy(actor, (FVec2){FxOne, FxZero}, FALSE);
 }
 
 static void draw_blue(const GameActor* actor) {
@@ -56,7 +56,7 @@ static void collide_blue(GameActor* actor, GameActor* from) {
 
 	case ACT_PLAYER: {
 		if (!ANY_FLAG(from, FLG_PLAYER_SWIM) && check_stomp(actor, from, FfInt(-16L), 200L))
-			kill_enemy(actor, from, false);
+			kill_enemy(actor, from, FALSE);
 		else
 			maybe_hit_player(actor, from);
 		break;
@@ -109,21 +109,21 @@ const GameActorTable TAB_CHEEP_CHEEP_BLUE = {
 // =================
 
 static void load_spiky() {
-	load_texture_num("enemies/cheep_spiky%u", 2L, false);
+	load_texture_num("enemies/cheep_spiky%u", 2L, FALSE);
 
-	load_sound("kick", false);
+	load_sound("kick", FALSE);
 
 	load_actor(ACT_POINTS);
 }
 
 static void tick_spiky(GameActor* actor) {
-	fix16_t dir = FxZero, spd = FxZero;
+	Fixed dir = FxZero, spd = FxZero;
 
 	if (!ANY_FLAG(actor, FLG_ENEMY_ACTIVE)) {
 		spd = -FxOne;
-		if (in_any_view(actor, FxZero, false))
+		if (in_any_view(actor, FxZero, FALSE))
 			FLAG_ON(actor, FLG_ENEMY_ACTIVE);
-	} else if (in_any_view(actor, FfInt(224L), false)) {
+	} else if (in_any_view(actor, FfInt(224L), FALSE)) {
 		if ((game_state.time % 50L) == 0L) {
 			GameActor* nearest = nearest_pawn(actor->pos);
 			if (nearest != NULL) {
@@ -201,7 +201,7 @@ const GameActorTable TAB_CHEEP_CHEEP_SPIKY = {
 // =========
 
 static void load_bass() {
-	load_texture_num("enemies/bass%u", 4L, false);
+	load_texture_num("enemies/bass%u", 4L, FALSE);
 
 	load_actor(ACT_WATER_SPLASH);
 	load_actor(ACT_POINTS);

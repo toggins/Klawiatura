@@ -85,7 +85,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 	}
 	}
 
-	Bool is_powerup = false;
+	Bool is_powerup = FALSE;
 	switch (VAL(actor, BLOCK_ITEM)) {
 	default:
 		break;
@@ -98,7 +98,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 		if (player != NULL && player->power == POW_SMALL)
 			VAL(actor, BLOCK_ITEM) = ACT_MUSHROOM;
 		else
-			is_powerup = true;
+			is_powerup = TRUE;
 		break;
 	}
 	}
@@ -154,10 +154,10 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 // ==========
 
 static void load() {
-	load_texture_num("items/block%u", 3L, false);
-	load_texture("items/empty", false);
+	load_texture_num("items/block%u", 3L, FALSE);
+	load_texture("items/empty", FALSE);
 
-	load_sound("sprout", false);
+	load_sound("sprout", FALSE);
 }
 
 static void load_special(const GameActor* actor) {
@@ -204,7 +204,7 @@ static void draw(const GameActor* actor) {
 			break;
 		}
 
-	int8_t bump = 0L;
+	Sint8 bump = 0L;
 	switch (VAL(actor, BLOCK_BUMP)) {
 	default:
 		break;
@@ -236,7 +236,7 @@ static void on_bottom(GameActor* actor, GameActor* from) {
 
 	case ACT_MISSILE_BEETROOT:
 	case ACT_MISSILE_SILVER_HAMMER:
-		bump_block(actor, from, true);
+		bump_block(actor, from, TRUE);
 		break;
 
 	case ACT_PLAYER: {
@@ -253,13 +253,13 @@ static void on_side(GameActor* actor, GameActor* from) {
 		break;
 	case ACT_MISSILE_BEETROOT:
 	case ACT_MISSILE_SILVER_HAMMER:
-		bump_block(actor, from, true);
+		bump_block(actor, from, TRUE);
 		break;
 
 	case ACT_KOOPA_SHELL:
 	case ACT_BUZZY_SHELL: {
 		if (ANY_FLAG(from, FLG_SHELL_ACTIVE))
-			bump_block(actor, from, true);
+			bump_block(actor, from, TRUE);
 		break;
 	}
 	}
@@ -267,7 +267,7 @@ static void on_side(GameActor* actor, GameActor* from) {
 
 static void on_misc_side(GameActor* actor, GameActor* from) {
 	if (from->type == ACT_MISSILE_BEETROOT || from->type == ACT_MISSILE_SILVER_HAMMER)
-		bump_block(actor, from, true);
+		bump_block(actor, from, TRUE);
 }
 
 const GameActorTable TAB_ITEM_BLOCK = {
@@ -302,9 +302,9 @@ static void collide_hidden(GameActor* actor, GameActor* from) {
 	if (block == NULL)
 		return;
 
-	move_actor(from, (fvec2){from->pos.x, (actor->pos.y + actor->box.end.y) - from->box.start.y});
+	move_actor(from, (FVec2){from->pos.x, (actor->pos.y + actor->box.end.y) - from->box.start.y});
 	VAL(block, BLOCK_ITEM) = VAL(actor, BLOCK_ITEM);
-	bump_block(block, from, false);
+	bump_block(block, from, FALSE);
 	FLAG_ON(actor, FLG_DESTROY);
 }
 
@@ -320,17 +320,17 @@ const GameActorTable TAB_HIDDEN_BLOCK = {
 // ===========
 
 static void load_brick() {
-	load_texture("items/brick", false);
-	load_texture("items/brick_gray", false);
+	load_texture("items/brick", FALSE);
+	load_texture("items/brick_gray", FALSE);
 
-	load_sound("bump", false);
-	load_sound("break", false);
+	load_sound("bump", FALSE);
+	load_sound("break", FALSE);
 
 	load_actor(ACT_BRICK_SHARD);
 }
 
 static void draw_brick(const GameActor* actor) {
-	int8_t bump = 0L;
+	Sint8 bump = 0L;
 	switch (VAL(actor, BLOCK_BUMP)) {
 	default:
 		break;
@@ -388,9 +388,9 @@ const GameActorTable TAB_BRICK_BLOCK = {
 // ==========
 
 static void load_coin_block() {
-	load_texture("items/brick", false);
-	load_texture("items/brick_gray", false);
-	load_texture("items/empty", false);
+	load_texture("items/brick", FALSE);
+	load_texture("items/brick_gray", FALSE);
+	load_texture("items/empty", FALSE);
 }
 
 static void tick_coin_block(GameActor* actor) {
@@ -428,11 +428,11 @@ static Bool note_solid(const GameActor* actor) {
 }
 
 static void load_note() {
-	load_texture_num("items/note%u", 3L, false);
+	load_texture_num("items/note%u", 3L, FALSE);
 
-	load_sound("bump", false);
-	load_sound("spring", false);
-	load_sound("sprout", false);
+	load_sound("bump", FALSE);
+	load_sound("spring", FALSE);
+	load_sound("sprout", FALSE);
 }
 
 static void draw_note(const GameActor* actor) {
@@ -453,7 +453,7 @@ static void draw_note(const GameActor* actor) {
 		break;
 	}
 
-	int8_t bump = 0L;
+	Sint8 bump = 0L;
 	switch (VAL(actor, BLOCK_BUMP)) {
 	default:
 		break;
@@ -478,7 +478,7 @@ static void draw_note(const GameActor* actor) {
 		break;
 	}
 
-	const int8_t bx = (int8_t)(VAL(actor, X_TOUCH) * bump), by = (int8_t)(VAL(actor, Y_TOUCH) * bump);
+	const Sint8 bx = (Sint8)(VAL(actor, X_TOUCH) * bump), by = (Sint8)(VAL(actor, Y_TOUCH) * bump);
 	draw_actor_offset(actor, tex, B_XY(bx, by), 0.f, B_WHITE);
 }
 
@@ -548,24 +548,24 @@ static void collide_note(GameActor* actor, GameActor* from) {
 	if ((from->pos.x + from->box.end.x - Fmax(FxZero, VAL(from, X_SPEED)) - FxOne)
 		<= (actor->pos.x + actor->box.start.x))
 	{
-		move_actor(from, (fvec2){actor->pos.x + actor->box.start.x - from->box.end.x, from->pos.y});
+		move_actor(from, (FVec2){actor->pos.x + actor->box.start.x - from->box.end.x, from->pos.y});
 		FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
 	} else if ((from->pos.x + from->box.start.x - Fmin(FxZero, VAL(from, X_SPEED)) + FxOne)
 		   >= (actor->pos.x + actor->box.end.x))
 	{
-		move_actor(from, (fvec2){actor->pos.x + actor->box.end.x - from->box.start.x, from->pos.y});
+		move_actor(from, (FVec2){actor->pos.x + actor->box.end.x - from->box.start.x, from->pos.y});
 		FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
 	}
 
 	if ((from->pos.y + from->box.end.y - Fmax(FxZero, VAL(from, Y_SPEED)) - FxOne)
 		<= (actor->pos.y + actor->box.start.y))
 	{
-		move_actor(from, (fvec2){from->pos.x, actor->pos.y + actor->box.start.y - from->box.end.y});
+		move_actor(from, (FVec2){from->pos.x, actor->pos.y + actor->box.start.y - from->box.end.y});
 		FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
 	} else if ((from->pos.y + from->box.start.y - Fmin(FxZero, VAL(from, Y_SPEED)) + FxOne)
 		   >= (actor->pos.y + actor->box.end.y))
 	{
-		move_actor(from, (fvec2){from->pos.x, actor->pos.y + actor->box.end.y - from->box.start.y});
+		move_actor(from, (FVec2){from->pos.x, actor->pos.y + actor->box.end.y - from->box.start.y});
 		FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
 	}
 }
