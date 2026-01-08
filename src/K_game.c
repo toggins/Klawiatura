@@ -269,6 +269,10 @@ Bool update_game() {
 
 	// nonk: make sure to use these three funcs ONLY in a `for` construct. Behavior is undefined otherwise.
 	for (new_frame(ahead); got_ticks(); next_tick()) {
+		// Safety net, NutPunch errors can nuke the game at any moment.
+		if (game_session == NULL)
+			goto byebye_game;
+
 		// Capture interpolation data from the START of the current tick, since we're interpolating from the
 		// start of one tick to the next.
 		for (GameActor* actor = get_actor(game_state.live_actors); actor; actor = get_actor(actor->previous)) {

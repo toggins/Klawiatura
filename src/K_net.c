@@ -13,6 +13,7 @@
 #include "K_cmd.h"
 #include "K_discord.h"
 #include "K_game.h"
+#include "K_menu.h"
 #include "K_net.h"
 
 static char hostname[512] = "";
@@ -129,6 +130,10 @@ void net_newframe() {
 	if (NutPunch_Update() == NPS_Error) {
 		last_error = NutPunch_GetLastError();
 		disconnect();
+		if (game_exists()) {
+			show_error("Net error:\n%s", last_error);
+			nuke_game();
+		}
 	} else {
 		last_error = NULL;
 	}
