@@ -188,9 +188,10 @@ FMT_OPTION(level, CLIENT.game.level);
 static void play_singleplayer() {
 	play_generic_sound("enter");
 
-	GameContext ctx;
-	setup_game_context(&ctx, CLIENT.game.level, GF_SINGLE | GF_TRY_HELL);
-	start_game(&ctx);
+	GameContext* ctx = init_game_context();
+	SDL_strlcpy(ctx->level, CLIENT.game.level, sizeof(ctx->level));
+	ctx->flags |= GF_SINGLE | GF_TRY_HELL;
+	start_game();
 }
 
 // Multiplayer Note
@@ -639,10 +640,11 @@ static void update_inlobby() {
 	play_generic_sound("enter");
 	make_lobby_active();
 
-	GameContext ctx;
-	setup_game_context(&ctx, CLIENT.game.level, GF_TRY_HELL);
-	ctx.num_players = (PlayerID)max_peers;
-	start_game(&ctx);
+	GameContext* ctx = init_game_context();
+	SDL_strlcpy(ctx->level, CLIENT.game.level, sizeof(ctx->level));
+	ctx->flags |= GF_TRY_HELL;
+	ctx->num_players = (PlayerID)max_peers;
+	start_game();
 }
 
 static void maybe_disconnect(MenuType next) {

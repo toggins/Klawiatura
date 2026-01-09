@@ -96,9 +96,10 @@ static int realmain() {
 	input_init(), config_init(config_path), discord_init(), net_init(), menu_init();
 
 	if (quickstart) {
-		GameContext ctx;
-		setup_game_context(&ctx, CLIENT.game.level, GF_SINGLE | GF_TRY_HELL);
-		start_game(&ctx);
+		GameContext* ctx = init_game_context();
+		SDL_strlcpy(ctx->level, CLIENT.game.level, sizeof(ctx->level));
+		ctx->flags |= GF_SINGLE | GF_TRY_HELL;
+		start_game();
 	} else {
 		switch (starting_menu) {
 		default:

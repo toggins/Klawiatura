@@ -59,10 +59,12 @@ const GameActorTable* ACTORS[ACT_SIZE] = {0};
 
 static Surface* game_surface = NULL;
 static GekkoSession* game_session = NULL;
+
+GameContext queue_game_context = {0};
+static GameContext game_context = {0};
 GameState game_state = {0};
 
-PlayerID local_player = NULLPLAY, view_player = NULLPLAY, num_players = 0L;
-static char cur_level[GAME_STRING_MAX] = {'\0'};
+PlayerID local_player = NULLPLAY, view_player = NULLPLAY;
 
 static InterpState interp = {0};
 
@@ -85,7 +87,7 @@ static float pause_hover[PMO_SIZE] = {0.f};
 
 static void pause() {
 	paused = TRUE;
-	if (num_players <= 1L)
+	if (!is_connected())
 		pause_audio_state(TRUE);
 	input_wipeout();
 }
@@ -115,7 +117,7 @@ static void send_chat_message() {
 	// TODO: use message headers to distinguish message types, instead of using gross hacks like this.
 	static char buf[4 + sizeof(chat_message)] = "CHAT";
 	SDL_strlcpy(buf + 4, chat_message, sizeof(chat_message));
-	for (PlayerID i = 0; i < num_players; i++)
+	for (PlayerID i = 0; i < game_context.num_players; i++)
 		NutPunch_SendReliably(player_to_peer(i), buf, sizeof(buf));
 	push_chat_message(NutPunch_LocalPeer(), chat_message);
 	chat_message[0] = 0;
@@ -178,25 +180,29 @@ static void draw_chat_message() {
 static Bool rolling_back = FALSE;
 
 /// Initializes a GameContext struct with a clean 1-player preset.
-void setup_game_context(GameContext* ctx, const char* level, GameFlag flags) {
-	SDL_memset(ctx, 0, sizeof(GameContext));
-	ctx->flags = flags;
-
-	ctx->num_players = 1L;
+GameContext* init_game_context() {
+	SDL_memset(&queue_game_context, 0, sizeof(queue_game_context));
+	queue_game_context.num_players = 1L;
 	for (PlayerID i = 0L; i < MAX_PLAYERS; i++) {
-		ctx->players[i].power = POW_SMALL;
-		ctx->players[i].lives = DEFAULT_LIVES;
+		queue_game_context.players[i].power = POW_SMALL;
+		queue_game_context.players[i].lives = DEFAULT_LIVES;
 	}
+	queue_game_context.checkpoint = NULLACT;
 
-	SDL_strlcpy(ctx->level, level, sizeof(ctx->level));
-	ctx->checkpoint = NULLACT;
+	return &queue_game_context;
 }
 
-void start_game(GameContext* ctx) {
+static void start_game_state();
+void start_game() {
 	if (game_session != NULL)
 		nuke_game();
 	else
 		clear_assets();
+
+	EXPECT(queue_game_context.num_players > 0L && queue_game_context.num_players <= MAX_PLAYERS,
+		"Invalid player count in game context!\nExpected 1..%li, got %i", MAX_PLAYERS,
+		queue_game_context.num_players);
+	SDL_memcpy(&game_context, &queue_game_context, sizeof(game_context));
 
 	load_texture("ui/sidebar_l", FALSE);
 	load_texture("ui/sidebar_r", FALSE);
@@ -209,9 +215,8 @@ void start_game(GameContext* ctx) {
 	cfg.desync_detection = TRUE;
 	cfg.input_size = sizeof(GameInput);
 	cfg.state_size = sizeof(SaveState);
-	cfg.max_spectators = 0;
 	cfg.input_prediction_window = MAX_INPUT_DELAY;
-	cfg.num_players = num_players = ctx->num_players;
+	cfg.num_players = game_context.num_players;
 
 	unpause();
 	gekko_start(game_session, &cfg);
@@ -220,7 +225,7 @@ void start_game(GameContext* ctx) {
 
 	start_audio_state();
 	start_video_state();
-	start_game_state(ctx);
+	start_game_state();
 	from_scratch();
 	input_wipeout();
 }
@@ -229,6 +234,7 @@ Bool game_exists() {
 	return game_session != NULL;
 }
 
+static void nuke_game_state();
 void nuke_game() {
 	if (game_session == NULL)
 		return;
@@ -251,6 +257,9 @@ static void nuke_game_to_menu() {
 	clear_assets(), load_menu();
 }
 
+static Uint32 check_game_state();
+static void dump_game_state(), save_game_state(GameState*), load_game_state(const GameState*),
+	tick_game_state(const GameInput[MAX_PLAYERS]);
 Bool update_game() {
 	gekko_network_poll(game_session);
 
@@ -321,8 +330,8 @@ Bool update_game() {
 
 				if (game_state.flags & GF_HELL)
 					goto restart_fr;
-				PlayerID can_restart = num_players;
-				for (PlayerID i = 0L; i < num_players; i++) {
+				PlayerID can_restart = game_context.num_players;
+				for (PlayerID i = 0L; i < game_context.num_players; i++) {
 					GamePlayer* player = get_player(i);
 					if (player == NULL)
 						continue;
@@ -433,50 +442,52 @@ Bool update_game() {
 			case AdvanceEvent: {
 				rolling_back = event->data.adv.rolling_back;
 
-				GameInput inputs[MAX_PLAYERS] = {0};
-				for (PlayerID j = 0; j < num_players; j++)
-					inputs[j] = ((GameInput*)(event->data.adv.inputs))[j];
+				GameInput inputs[MAX_PLAYERS] = {0L};
+				for (PlayerID j = 0L; j < game_context.num_players; j++)
+					inputs[j] = ((GameInput*)event->data.adv.inputs)[j];
 				tick_game_state(inputs);
 				tick_audio_state();
 
-				for (PlayerID j = 0; j < num_players; j++)
+				for (PlayerID j = 0L; j < game_context.num_players; j++)
 					if (!(inputs[j] & GI_WARP))
 						goto dont_warp;
 
 				if (game_state.flags & GF_END) {
-					if (game_state.next[0] == '\0') {
+					if (game_state.next[0] == 0L) {
 						show_results();
 						goto byebye_game;
 					}
 
-					GameContext ctx = {0};
-					setup_game_context(&ctx, (char*)game_state.next, GF_TRY_SINGLE | GF_TRY_HELL);
-					ctx.num_players = num_players;
-					for (PlayerID i = 0; i < num_players; i++) {
+					GameContext* ctx = init_game_context();
+					SDL_strlcpy(ctx->level, (char*)game_state.next, sizeof(ctx->level));
+					ctx->flags |= GF_TRY_SINGLE | GF_TRY_HELL;
+					ctx->num_players = game_context.num_players;
+					for (PlayerID i = 0L; i < ctx->num_players; i++) {
 						const Sint8 lives = game_state.players[i].lives;
-						if (lives < 0L && !(ctx.flags & GF_HELL))
+						if (lives < 0L && !(ctx->flags & GF_HELL))
 							continue;
-						ctx.players[i].lives = lives;
-						ctx.players[i].power = game_state.players[i].power;
-						ctx.players[i].coins = game_state.players[i].coins;
-						ctx.players[i].score = game_state.players[i].score;
+						ctx->players[i].lives = lives;
+						ctx->players[i].power = game_state.players[i].power;
+						ctx->players[i].coins = game_state.players[i].coins;
+						ctx->players[i].score = game_state.players[i].score;
 					}
 
-					start_game(&ctx);
+					start_game();
 					return TRUE;
 				} else if (game_state.flags & GF_RESTART) {
 				restart_fr:
-					GameContext ctx = {0};
-					setup_game_context(&ctx, cur_level, GF_TRY_SINGLE | GF_REPLAY | GF_TRY_HELL);
-					ctx.num_players = num_players;
-					for (PlayerID i = 0; i < num_players; i++) {
-						ctx.players[i].lives = game_state.players[i].lives;
-						ctx.players[i].coins = game_state.players[i].coins;
-						ctx.players[i].score = game_state.players[i].score;
+					GameContext* ctx = init_game_context();
+					SDL_strlcpy(ctx->level, game_context.level, sizeof(ctx->level));
+					ctx->flags |= GF_REPLAY | GF_TRY_SINGLE | GF_TRY_HELL;
+					ctx->num_players = game_context.num_players;
+					for (PlayerID i = 0L; i < ctx->num_players; i++) {
+						ctx->players[i].lives = game_state.players[i].lives;
+						ctx->players[i].coins = game_state.players[i].coins;
+						ctx->players[i].score = game_state.players[i].score;
 					}
-					ctx.checkpoint = game_state.checkpoint;
+					ctx->checkpoint = game_state.checkpoint;
 
-					start_game(&ctx);
+					start_game();
 					return TRUE;
 				}
 
@@ -792,9 +803,11 @@ void draw_game() {
 	}
 
 static void destroy_actor(GameActor*);
-void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
-	for (PlayerID i = 0L; i < num_players; i++) {
+static void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
+	for (PlayerID i = 0L; i < game_context.num_players; i++) {
 		GamePlayer* player = get_player(i);
+		if (player == NULL)
+			continue;
 		player->last_input = player->input;
 		player->input = inputs[i];
 	}
@@ -813,8 +826,10 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 		const Fixed delta = VAL(wave, WAVE_DELTA);
 
 		game_state.bounds.start.y -= delta, game_state.bounds.end.y -= delta;
-		for (PlayerID i = 0L; i < num_players; i++) {
+		for (PlayerID i = 0L; i < game_context.num_players; i++) {
 			GamePlayer* player = get_player(i);
+			if (player == NULL)
+				continue;
 			player->bounds.start.y -= delta, player->bounds.end.y -= delta;
 		}
 
@@ -859,7 +874,7 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 		if (game_state.sequence.time > 0L)
 			break;
 
-		if (num_players > 1L) {
+		if (game_context.num_players > 1L) {
 			GamePlayer* player = get_player(game_state.sequence.activator);
 			if (player != NULL)
 				hud_message(fmt("%s got the last kill!", get_player_name(player->id)));
@@ -879,7 +894,7 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 		}
 
 		if (game_state.clock <= 0L)
-			for (PlayerID i = 0L; i < num_players; i++) {
+			for (PlayerID i = 0L; i < game_context.num_players; i++) {
 				GamePlayer* player = get_player(i);
 				if (player == NULL)
 					continue;
@@ -932,7 +947,7 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 		// Compensate with lowest scoring player
 		winner = NULL;
 		Uint32 score = 4294967295L; // World's most paranoid coder award
-		for (PlayerID i = 0L; i < num_players; i++) {
+		for (PlayerID i = 0L; i < game_context.num_players; i++) {
 			GamePlayer* loser = get_player(i);
 			if (loser == NULL || loser->score > score || get_actor(loser->actor) == NULL)
 				continue;
@@ -957,11 +972,11 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 
 #undef TICK_LOOP
 
-void save_game_state(GameState* gs) {
+static void save_game_state(GameState* gs) {
 	SDL_memcpy(gs, &game_state, sizeof(GameState));
 }
 
-void load_game_state(const GameState* gs) {
+static void load_game_state(const GameState* gs) {
 	SDL_memcpy(&game_state, gs, sizeof(GameState));
 
 	// Fix for being stuck in spectator during rollback
@@ -974,7 +989,7 @@ void load_game_state(const GameState* gs) {
 	}
 }
 
-Uint32 check_game_state() {
+static Uint32 check_game_state() {
 	Uint32 checksum = 0;
 	const Uint8* data = (Uint8*)(&game_state);
 	for (Uint32 i = 0; i < sizeof(GameState); i++)
@@ -982,7 +997,7 @@ Uint32 check_game_state() {
 	return checksum;
 }
 
-void dump_game_state() {
+static void dump_game_state() {
 	INFO("====================");
 	INFO("Flags: %u", game_state.flags);
 	INFO("");
@@ -993,7 +1008,7 @@ void dump_game_state() {
 	INFO("");
 	INFO("[PLAYERS]");
 
-	for (PlayerID i = 0; i < num_players; i++) {
+	for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
 		const GamePlayer* player = &game_state.players[i];
 
 		INFO("	Player %i:", i + 1);
@@ -1078,7 +1093,7 @@ void dump_game_state() {
 	INFO("====================");
 }
 
-void nuke_game_state() {
+static void nuke_game_state() {
 	clear_tilemaps();
 	SDL_memset(&game_state, 0, sizeof(game_state));
 
@@ -1126,17 +1141,13 @@ static void read_string(const char** buf, char* dest, Uint32 maxlen) {
 
 #define FLOAT_OFFS(idx) (*((float*)(buf + sizeof(float[(idx)]))))
 #define BYTE_OFFS(idx) (*((Uint8*)(buf + sizeof(Uint8[(idx)]))))
-void start_game_state(GameContext* ctx) {
+static void start_game_state() {
 	nuke_game_state();
 
-	if (num_players <= 0L || num_players > MAX_PLAYERS)
-		FATAL("Invalid player count for game! Expected 1..%li, got %i", MAX_PLAYERS, num_players);
-	for (PlayerID i = 0L; i < num_players; i++)
+	for (PlayerID i = 0L; i < game_context.num_players; i++)
 		game_state.players[i].id = i;
-
-	SDL_strlcpy(cur_level, ctx->level, sizeof(cur_level));
-	game_state.flags |= ctx->flags;
-	game_state.checkpoint = ctx->checkpoint;
+	game_state.flags |= game_context.flags;
+	game_state.checkpoint = game_context.checkpoint;
 
 	//
 	//
@@ -1166,14 +1177,14 @@ void start_game_state(GameContext* ctx) {
 	//
 	//
 	//
-	const char* kla = find_data_file(fmt("data/levels/%s.*", ctx->level), NULL);
+	const char* kla = find_data_file(fmt("data/levels/%s.*", game_context.level), NULL);
 	if (kla == NULL) {
-		show_error("Level \"%s\" not found", ctx->level);
+		show_error("Level \"%s\" not found", game_context.level);
 		goto level_fail;
 	}
 	Uint8* data = SDL_LoadFile(kla, NULL);
 	if (data == NULL) {
-		show_error("Failed to load level \"%s\"\n%s", ctx->level, SDL_GetError());
+		show_error("Failed to load level \"%s\"\n%s", game_context.level, SDL_GetError());
 		goto level_fail;
 	}
 	const Uint8* buf = data;
@@ -1181,7 +1192,7 @@ void start_game_state(GameContext* ctx) {
 	// Header
 	if (SDL_strncmp((const char*)buf, "Klawiatura", 10) != 0) {
 		SDL_free(data);
-		show_error("Invalid header in level \"%s\"", ctx->level);
+		show_error("Invalid header in level \"%s\"", game_context.level);
 		goto level_fail;
 	}
 	buf += 10;
@@ -1189,7 +1200,7 @@ void start_game_state(GameContext* ctx) {
 	const Uint8 major = *buf;
 	if (major != MAJOR_LEVEL_VERSION) {
 		SDL_free(data);
-		show_error("Invalid major version in level \"%s\"\nLevel: %u\nGame: %u)", ctx->level, major,
+		show_error("Invalid major version in level \"%s\"\nLevel: %u\nGame: %u)", game_context.level, major,
 			MAJOR_LEVEL_VERSION);
 		goto level_fail;
 	}
@@ -1198,7 +1209,7 @@ void start_game_state(GameContext* ctx) {
 	const Uint8 minor = *buf;
 	if (minor < 1) {
 		SDL_free(data);
-		show_error("Invalid minor version in level \"%s\"\nLevel: %u\nGame: %u)", ctx->level, minor,
+		show_error("Invalid minor version in level \"%s\"\nLevel: %u\nGame: %u)", game_context.level, minor,
 			MINOR_LEVEL_VERSION);
 		goto level_fail;
 	}
@@ -1207,7 +1218,7 @@ void start_game_state(GameContext* ctx) {
 	// Level
 	char level_name[32 + 1];
 	SDL_memcpy(level_name, buf, 32);
-	INFO("Level: %s (%s)", ctx->level, level_name);
+	INFO("Level: %s (%s)", game_context.level, level_name);
 	buf += 32;
 
 	read_string((const char**)(&buf), video_state.world, sizeof(video_state.world));
@@ -1381,10 +1392,10 @@ void start_game_state(GameContext* ctx) {
 		if (player == NULL)
 			continue;
 
-		player->lives = ctx->players[i].lives;
-		player->coins = ctx->players[i].coins;
-		player->score = ctx->players[i].score;
-		player->power = ctx->players[i].power;
+		player->lives = game_context.players[i].lives;
+		player->coins = game_context.players[i].coins;
+		player->score = game_context.players[i].score;
+		player->power = game_context.players[i].power;
 		respawn_player(player);
 	}
 
@@ -1412,10 +1423,10 @@ void hud_message(const char* str) {
 
 /// Fetch a player by its `PlayerID`.
 GamePlayer* get_player(PlayerID id) {
-	if (id < 0L || id >= num_players)
+	if (id < 0L || id >= game_context.num_players)
 		return NULL;
 	GamePlayer* player = &game_state.players[id];
-	return (player->id == NULLPLAY) ? NULL : player;
+	return (player->id != id) ? NULL : player;
 }
 
 /// Attempts to respawn the player.
@@ -1426,7 +1437,7 @@ GameActor* respawn_player(GamePlayer* player) {
 	if (player->lives < 0L && !(game_state.flags & GF_HELL)) {
 		// !!! CLIENT-SIDE !!!
 		if (view_player == player->id)
-			for (PlayerID i = 0L; i < num_players; i++) {
+			for (PlayerID i = 0L; i < game_context.num_players; i++) {
 				GamePlayer* p = get_player(i);
 				if (p != NULL && p->lives >= 0L) {
 					set_view_player(p);
@@ -1496,7 +1507,7 @@ GameActor* nearest_pawn(const FVec2 pos) {
 	GameActor* nearest = NULL;
 	Fixed dist = FxZero;
 
-	for (PlayerID i = 0L; i < num_players; i++) {
+	for (PlayerID i = 0L; i < game_context.num_players; i++) {
 		GamePlayer* player = get_player(i);
 		if (player == NULL)
 			continue;
@@ -1535,7 +1546,7 @@ PlayerID viewplayer() {
 }
 
 PlayerID numplayers() {
-	return num_players;
+	return game_context.num_players;
 }
 
 void set_view_player(GamePlayer* player) {
@@ -1742,7 +1753,7 @@ Bool in_any_view(const GameActor* actor, Fixed padding, Bool ignore_top) {
 
 	CHECK_AUTOSCROLL_VIEW;
 
-	for (PlayerID i = 0L; i < num_players; i++) {
+	for (PlayerID i = 0L; i < game_context.num_players; i++) {
 		const GamePlayer* player = get_player(i);
 		if (player == NULL)
 			continue;

@@ -452,23 +452,12 @@ typedef struct {
 
 extern GameState game_state;
 
-void setup_game_context(GameContext*, const char*, GameFlag);
+GameContext* init_game_context();
 
-void start_game(GameContext*);
+void start_game(), nuke_game();
 Bool game_exists();
-void nuke_game();
 Bool update_game();
 void draw_game();
-
-void start_game_state(GameContext*);
-void update_game_state();
-void draw_game_state();
-void tick_game_state(const GameInput[MAX_PLAYERS]);
-void save_game_state(GameState*);
-void load_game_state(const GameState*);
-Uint32 check_game_state();
-void dump_game_state();
-void nuke_game_state();
 
 void hud_message(const char*);
 
