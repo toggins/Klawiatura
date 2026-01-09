@@ -17,6 +17,7 @@
 #define B_XY(x, y) B_XYZ(x, y, 0)
 #define B_ORIGIN B_XY(0, 0)
 #define B_SCREEN B_XY(SCREEN_WIDTH, SCREEN_HEIGHT)
+#define B_HALF_SCREEN B_XY(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT)
 #define B_SCALE(x) B_XYZ(x, x, x)
 
 #define B_RGBA(r, g, b, a) ((Uint8[4]){(r), (g), (b), (a)})
@@ -55,6 +56,13 @@
                 {as, ad} \
         })
 #define B_BLEND_NORMAL B_BLEND(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE)
+#define B_BLEND_ADD B_BLEND(GL_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA, GL_ONE)
+#define B_BLEND_SUBTRACT B_BLEND(GL_ZERO, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE)
+#define B_BLEND_MIN B_BLEND(GL_ONE, GL_ONE, GL_SRC_ALPHA, GL_ONE)
+#define B_BLEND_MAX B_BLEND(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE)
+
+#define B_WH(w, h) ((float[2]){(w), (h)})
+#define B_SIZE(x) B_WH(x, x)
 
 typedef Uint8 VertexAttribute;
 enum {

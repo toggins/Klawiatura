@@ -42,7 +42,12 @@ static void draw_left_wheel(const GameActor* actor) {
 }
 
 static void draw_wheel(const GameActor* actor) {
-	draw_actor(actor, fmt("tiles/wheel%u", FtInt(VAL(actor, WHEEL_FRAME)) % 4L), 0.f, B_WHITE);
+	batch_reset();
+	const InterpActor* iactor = get_interp(actor);
+	batch_pos(B_XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)));
+	batch_tile(B_TILE(TRUE, FALSE));
+	batch_rectangle(fmt("tiles/wheel%u", FtInt(VAL(actor, WHEEL_FRAME)) % 4L),
+		B_WH(FtInt(actor->box.end.x - actor->box.start.x), FtInt(actor->box.end.y - actor->box.start.y)));
 }
 
 static void draw_right_wheel(const GameActor* actor) {

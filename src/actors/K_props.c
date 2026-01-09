@@ -207,7 +207,7 @@ static void draw_lamp_light(const GameActor* actor) {
 	batch_reset();
 	const InterpActor* iactor = get_interp(actor);
 	batch_pos(B_XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)));
-	batch_color(B_ALPHA(155L)), batch_blend(B_BLEND(GL_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA, GL_ONE));
+	batch_color(B_ALPHA(155L)), batch_blend(B_BLEND_ADD);
 	batch_sprite(tex);
 	batch_blend(B_BLEND_NORMAL);
 }
