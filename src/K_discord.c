@@ -101,8 +101,8 @@ void update_discord_status(const char* level_name) {
 	if (in_public_server() && is_connected()) {
 		Uint32 id = get_lobby_party();
 		Discord_ActivityParty_SetId(&party, (Discord_String){(Uint8*)(&id), sizeof(id)});
-		Discord_ActivityParty_SetCurrentSize(&party, get_peer_count());
-		Discord_ActivityParty_SetMaxSize(&party, get_max_peers());
+		Discord_ActivityParty_SetCurrentSize(&party, NutPunch_PeerCount());
+		Discord_ActivityParty_SetMaxSize(&party, NutPunch_GetMaxPlayers());
 		Discord_Activity_SetParty(&activity, &party);
 
 		if (!game_exists()) {

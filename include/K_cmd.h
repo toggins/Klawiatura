@@ -2,6 +2,10 @@
 
 #include <SDL3/SDL_stdinc.h>
 
+#include "K_net.h" // IWYU pragma: keep
+
+#define CLIENT_STRING_MAX (NUTPUNCH_FIELD_DATA_MAX)
+
 #include "K_game.h"
 
 #define CMD_OPT(ident) cmd_set_##ident
@@ -18,8 +22,6 @@ typedef struct {
 	const char *shortform, *longform;
 	void (*handler)();
 } CmdArg;
-
-#define CLIENT_STRING_MAX (NUTPUNCH_FIELD_DATA_MAX)
 
 // !!! !!! !!!
 // !!! !!! !!!
@@ -64,7 +66,7 @@ typedef struct {
 	} game;
 
 	struct {
-		char name[NUTPUNCH_ID_MAX];
+		char name[LOBBY_STRING_MAX];
 		Bool public;
 	} lobby;
 } ClientInfo;

@@ -1,6 +1,10 @@
 #pragma once
 
 #include "K_audio.h"
+
+typedef Sint8 PlayerID;
+
+#include "K_cmd.h"
 #include "K_math.h"
 #include "K_net.h" // IWYU pragma: keep
 
@@ -42,7 +46,6 @@ typedef Uint32 ActorFlag;
 #include "K_video.h" // IWYU pragma: keep
 #endif
 
-typedef Sint8 PlayerID;
 typedef Sint16 ActorID;
 
 typedef Uint8 GameInput;
@@ -273,7 +276,7 @@ typedef struct {
 typedef struct {
 	Sint8 lives;
 	Uint32 score;
-	char name[NUTPUNCH_FIELD_DATA_MAX]; // FIXME: Can't include `K_cmd.h` or errors
+	char name[CLIENT_STRING_MAX];
 } GameWinner;
 
 typedef struct {

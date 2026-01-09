@@ -16,16 +16,10 @@
 #include "K_menu.h"
 #include "K_net.h"
 
-static char hostname[512] = "";
+static char hostname[256] = "";
 static const char* last_error = NULL;
 
-static char cur_lobby[NUTPUNCH_ID_MAX] = "";
-static enum {
-	NET_NULL,
-	NET_HOST,
-	NET_JOIN,
-	NET_LIST,
-} netmode = NET_NULL;
+static char cur_lobby[LOBBY_STRING_MAX] = "";
 
 static const char* MAGIC_KEY = "KLAWIATURA";
 static const Uint8 MAGIC_VALUE = 127;
@@ -123,7 +117,7 @@ const char* net_verb() {
 void net_newframe() {
 	if (is_connected()) {
 		push_user_data();
-		if (is_host())
+		if (NutPunch_IsMaster())
 			push_lobby_data();
 	}
 
@@ -134,11 +128,10 @@ void net_newframe() {
 			show_error("Net error:\n%s", last_error);
 			nuke_game();
 		}
-	} else {
+	} else
 		last_error = NULL;
-	}
 
-	if (is_connected() && is_client())
+	if (is_connected() && !NutPunch_IsMaster())
 		pull_lobby_data();
 }
 
@@ -147,24 +140,15 @@ const char* net_error() {
 }
 
 Bool is_connected() {
-	return netmode != NET_NULL && cur_lobby[0] != '\0' && NutPunch_PeerCount() >= 1;
+	return cur_lobby[0] != '\0' && NutPunch_PeerCount() >= 1;
 }
 
 void disconnect() {
 	NutPunch_Disconnect();
 	SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
-	netmode = NET_NULL;
 	if (net_error())
 		WARN("Net error: %s", net_error());
 	update_discord_status(NULL);
-}
-
-Bool is_host() {
-	return NutPunch_IsMaster();
-}
-
-Bool is_client() {
-	return !NutPunch_IsMaster();
 }
 
 void push_user_data() {
@@ -183,7 +167,7 @@ void host_lobby(const char* id) {
 
 	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
 	NutPunch_Host(cur_lobby, CLIENT.game.players);
-	netmode = NET_HOST, verb = "host";
+	verb = "host";
 	push_user_data();
 
 	np_lobby_set(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
@@ -197,7 +181,7 @@ void host_lobby(const char* id) {
 void join_lobby(const char* id) {
 	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
 	NutPunch_Join(cur_lobby);
-	netmode = NET_JOIN, verb = "join";
+	verb = "join";
 	push_user_data();
 }
 
@@ -215,15 +199,6 @@ void list_lobbies() {
 	filter[1].comparison = NPF_Eq;
 
 	NutPunch_FindLobbies(2, filter);
-	netmode = NET_LIST;
-}
-
-int get_lobby_count() {
-	return NutPunch_LobbyCount();
-}
-
-const NutPunch_LobbyInfo* get_lobby(int idx) {
-	return NutPunch_GetLobby(idx);
 }
 
 Bool in_public_lobby() {
@@ -258,18 +233,6 @@ Uint32 get_lobby_party() {
 // =====
 // PEERS
 // =====
-
-int get_peer_count() {
-	return NutPunch_PeerCount();
-}
-
-int get_max_peers() {
-	return NutPunch_GetMaxPlayers();
-}
-
-Bool peer_exists(int idx) {
-	return NutPunch_PeerAlive(idx);
-}
 
 int player_to_peer(PlayerID pid) {
 	return (pid < 0L || pid >= MAX_PLAYERS) ? MAX_PEERS : player_peers[pid];

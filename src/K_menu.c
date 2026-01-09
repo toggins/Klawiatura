@@ -241,7 +241,7 @@ static void do_join_fr() {
 
 // Lobby
 FMT_OPTION(active_lobby, get_lobby_id(), in_public_lobby() ? "" : " (Unlisted)");
-FMT_OPTION(lobby_start, is_host() ? "Start!" : "Waiting for host");
+FMT_OPTION(lobby_limit, NutPunch_GetMaxPlayers());
 
 static void set_players(int flip) {
 	CLIENT.game.players
@@ -249,7 +249,7 @@ static void set_players(int flip) {
 					 : ((CLIENT.game.players <= 2) ? MAX_PLAYERS : (CLIENT.game.players - 1)));
 }
 
-FMT_OPTION(waiting, (get_peer_count() >= get_max_peers()) ? "Starting!" : "Waiting for players");
+FMT_OPTION(waiting, (NutPunch_PeerCount() >= NutPunch_GetMaxPlayers()) ? "Starting!" : "Waiting for players");
 
 // Options
 FMT_OPTION(name, CLIENT.user.name);
@@ -412,11 +412,11 @@ static void reset_credits() {
 
 // Find lobbies
 static void join_found_lobby() {
-	const char* lober = get_lobby((int)MENUS[MEN_FIND_LOBBY].option)->name;
-	if (lober != NULL) {
-		join_lobby(lober);
-		set_menu(MEN_JOINING_LOBBY);
-	}
+	const NutPunch_LobbyInfo* lobby = NutPunch_GetLobby((int)MENUS[MEN_FIND_LOBBY].option);
+	if (lobby == NULL)
+		return;
+	join_lobby(lobby->name);
+	set_menu(MEN_JOINING_LOBBY);
 }
 
 #define EDIT(var) .edit = (var), .edit_size = sizeof(var)
@@ -517,7 +517,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_LOBBY] = {
 		{"%s%s", DISABLE, FORMAT(active_lobby)},
 		{},
-		{"Players: %d", DISABLE, FORMAT(players)},
+		{"Players: %d", DISABLE, FORMAT(lobby_limit)},
 		{"Level: %s", DISABLE, FORMAT(level)},
 		{},
 		{"%s", DISABLE, FORMAT(waiting)},
@@ -584,16 +584,16 @@ static void update_intro() {
 static void update_find_lobbies() {
 	static char block[MAX_OPTIONS][MAX_LEN] = {0};
 	for (int i = 0; i < MAX_OPTIONS; i++) {
-		if (get_lobby_count() <= 0) {
+		if (NutPunch_LobbyCount() <= 0) {
 			OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
 			OPTIONS[MEN_FIND_LOBBY][i].disabled = TRUE;
 			OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
-		} else if (i >= get_lobby_count()) {
+		} else if (i >= NutPunch_LobbyCount()) {
 			OPTIONS[MEN_FIND_LOBBY][i].name = NULL;
 			OPTIONS[MEN_FIND_LOBBY][i].disabled = TRUE;
 			OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
 		} else {
-			const NutPunch_LobbyInfo* lobby = get_lobby(i);
+			const NutPunch_LobbyInfo* lobby = NutPunch_GetLobby(i);
 			SDL_snprintf(block[i], MAX_LEN, "%s (%d/%d)", lobby->name, lobby->players, lobby->capacity);
 			OPTIONS[MEN_FIND_LOBBY][i].name = block[i];
 			OPTIONS[MEN_FIND_LOBBY][i].disabled = FALSE;
@@ -631,8 +631,10 @@ static void update_inlobby() {
 	int num_peers = 0;
 	for (int i = 0; i < MAX_PEERS; i++)
 		num_peers += get_peer_name(i) != NULL;
-	const int max_peers = get_max_peers();
-	if (num_peers <= 1 || max_peers <= 1 || num_peers < max_peers)
+	if (num_peers <= 1)
+		return;
+	const int max_peers = NutPunch_GetMaxPlayers();
+	if (max_peers <= 1 || num_peers < max_peers)
 		return;
 	play_generic_sound("enter");
 	make_lobby_active();
@@ -867,14 +869,14 @@ void draw_menu() {
 	case MEN_LOBBY: {
 		batch_pos(B_XY(SCREEN_WIDTH - 48.f, 24.f)), batch_color(B_RGBA(255, 144, 144, 192));
 		batch_align(B_TOP_RIGHT);
-		int num_peers = get_peer_count();
-		batch_string("main", 24.f, fmt("Players (%i / %i)", num_peers, get_max_peers()));
+		const int num_peers = NutPunch_PeerCount();
+		batch_string("main", 24.f, fmt("Players (%i / %i)", num_peers, NutPunch_GetMaxPlayers()));
 
 		batch_color(B_ALPHA(128));
 		float y = 60.f;
 		int idx = 1;
 		for (int i = 0; i < MAX_PEERS; i++) {
-			if (!peer_exists(i))
+			if (!NutPunch_PeerAlive(i))
 				continue;
 			batch_pos(B_XY(SCREEN_WIDTH - 48.f, y)), batch_align(B_TOP_RIGHT);
 			batch_string("main", 24.f, fmt("%i. %s", idx, get_peer_name(i)));
