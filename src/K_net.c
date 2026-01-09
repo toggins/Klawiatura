@@ -10,9 +10,7 @@
 #define NutPunch_Log INFO
 #include <NutPunch.h>
 
-#include "K_cmd.h"
 #include "K_discord.h"
-#include "K_game.h"
 #include "K_menu.h"
 #include "K_net.h"
 

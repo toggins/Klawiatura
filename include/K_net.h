@@ -5,10 +5,12 @@
 #include <NutPunch.h>
 #include <gekkonet.h>
 
+#define LOBBY_STRING_MAX (sizeof(NutPunch_Id))
+
+#include "K_game.h"
 #include "K_math.h"
 
 #define MAX_PEERS (NUTPUNCH_MAX_PLAYERS)
-#define LOBBY_STRING_MAX (sizeof(NutPunch_Id))
 
 typedef Uint8 LobbyVisibility;
 enum {
@@ -44,6 +46,6 @@ Bool in_public_lobby();
 Uint32 get_lobby_party();
 
 // Peers
-int player_to_peer(Sint8);
+int player_to_peer(PlayerID);
 const char* get_peer_name(int);
-Sint8 populate_game(GekkoSession*);
+PlayerID populate_game(GekkoSession*);
