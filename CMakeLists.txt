@@ -8,7 +8,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
@@ -29,6 +29,8 @@ FetchContent_Declare(
     SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
     GIT_TAG release-3.4.0)
+FetchContent_MakeAvailable(SDL3)
+list(APPEND LIBS SDL3::SDL3-static)
 
 # SDL_image (3.2.6)
 set(SDLIMAGE_AVIF OFF CACHE INTERNAL "")
@@ -40,12 +42,15 @@ FetchContent_Declare(
     SDL3_image
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
     GIT_TAG release-3.2.6)
+FetchContent_MakeAvailable(SDL3_image)
+list(APPEND LIBS SDL3_image::SDL3_image-static)
 
 # SDL_GameControllerDB
 FetchContent_Declare(
     SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
     GIT_TAG 01de5cf46ff3679b5378ec7dae365791e632b76a)
+FetchContent_MakeAvailable(SDL_GameControllerDB)
 
 # GLAD (2.0.8, OpenGL 3.3 Core)
 FetchContent_Declare(
@@ -53,6 +58,9 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/Dav1dde/glad.git
     GIT_TAG v2.0.8
     SOURCE_SUBDIR cmake)
+FetchContent_MakeAvailable(glad)
+glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
+list(APPEND LIBS glad_gl_core_33)
 
 # cglm
 set(CGLM_SHARED OFF CACHE INTERNAL "")
@@ -61,6 +69,20 @@ FetchContent_Declare(
     cglm
     GIT_REPOSITORY https://github.com/recp/cglm.git
     GIT_TAG v0.9.6)
+FetchContent_MakeAvailable(cglm)
+list(APPEND LIBS cglm)
+
+# FMOD Core API (2.03.11)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
+list(APPEND LIBS fmod)
+
+# yyjson (0.12.0)
+FetchContent_Declare(
+    yyjson
+    GIT_REPOSITORY https://github.com/ibireme/yyjson.git
+    GIT_TAG 0.12.0)
+FetchContent_MakeAvailable(yyjson)
+list(APPEND LIBS yyjson)
 
 # S_fixed
 set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
@@ -68,6 +90,8 @@ FetchContent_Declare(
     S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
     GIT_TAG 8171508bb7729d94aa98f6ee391a5f30d84ec328)
+FetchContent_MakeAvailable(S_fixed)
+list(APPEND LIBS S_fixed)
 
 # S_tructures
 set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
@@ -75,6 +99,8 @@ FetchContent_Declare(
     S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
     GIT_TAG 71c959ad0056e33ce4264714461d5cfb7211fec9)
+FetchContent_MakeAvailable(S_tructures)
+list(APPEND LIBS S_tructures)
 
 # NutPunch
 set(NUTPUNCH_BUILD_TESTS OFF CACHE INTERNAL "")
@@ -84,13 +110,9 @@ set(NUTPUNCH_STAGING ON CACHE INTERNAL "")
 FetchContent_Declare(
     NutPunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG da0432bcbf17258b60cd6b04edd42d0effc3feab)
-
-# yyjson (0.12.0)
-FetchContent_Declare(
-    yyjson
-    GIT_REPOSITORY https://github.com/ibireme/yyjson.git
-    GIT_TAG 0.12.0)
+    GIT_TAG 85745d35c7a3f74c75f98691f63b02794ae717e3)
+FetchContent_MakeAvailable(NutPunch)
+list(APPEND LIBS NutPunch)
 
 # GekkoNet
 set(NO_ASIO_BUILD ON CACHE INTERNAL "")
@@ -98,28 +120,12 @@ FetchContent_Declare(
     GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
     GIT_TAG 2bf3cb4ed0a11297c3a002a66b9d650052da62cd)
-
-# FMOD Core API (2.03.11)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
+FetchContent_MakeAvailable(GekkoNet)
+list(APPEND LIBS GekkoNet)
 
 # Discord Social SDK (1.7.13152)
 set(KLAW_DISCORD OFF CACHE INTERNAL "Use Discord Social SDK")
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/discord)
-
-FetchContent_MakeAvailable(
-    SDL3 SDL3_image SDL_GameControllerDB
-    glad cglm
-    S_fixed S_tructures
-    NutPunch GekkoNet
-    yyjson)
-glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
-
-set(LIBS
-    SDL3::SDL3-static SDL3_image::SDL3_image-static
-    glad_gl_core_33
-    cglm fmod GekkoNet
-    S_fixed S_tructures NutPunch
-    yyjson)
 if(KLAW_DISCORD)
     list(APPEND LIBS discord)
 endif()
@@ -188,5 +194,3 @@ set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 set(CPACK_COMPONENTS_GROUPING ALL_COMPONENTS_IN_ONE)
 set(CPACK_COMPONENTS_ALL Klawiatura)
 include(CPack)
-
-# https://youtu.be/dHxLi2D8Sto
