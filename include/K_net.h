@@ -1,5 +1,6 @@
 #pragma once
 
+#define NUTPUNCH_NOSTD
 #include <SDL3/SDL_stdinc.h>
 
 #include <NutPunch.h>
