@@ -555,7 +555,9 @@
                             "type": "object",
                             "index": 79,
                             "z": 20,
-                            "texture": "tiles/wheel0"
+                            "texture": "tiles/wheel0",
+                            "stretch": true,
+                            "max_stretch": [256, 32]
                         },
 
                         {
