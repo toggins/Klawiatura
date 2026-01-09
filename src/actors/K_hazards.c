@@ -167,7 +167,7 @@ static void collide_cloud(GameActor* actor, GameActor* from) {
 		return;
 	kill_player(from);
 	FLAG_OFF(actor, FLG_CLOUD_HIDDEN | FLG_CLOUD_TRANSLUCENT | FLG_CLOUD_TROLL);
-	play_actor_sound(actor, "fake_cloud");
+	play_state_sound("fake_cloud", PLAY_POS, 0L, A_ACTOR(actor));
 }
 
 const GameActorTable TAB_FAKE_CLOUD = {

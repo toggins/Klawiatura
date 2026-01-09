@@ -118,7 +118,7 @@ static void tick(GameActor* actor) {
 		if (fire != NULL) {
 			VAL(fire, X_SPEED) = FfInt(-4L + rng(9L));
 			VAL(fire, Y_SPEED) = FfInt(flip ? rng(6L) : (-3L - rng(9L)));
-			play_actor_sound(fire, "fire");
+			play_state_sound("fire", PLAY_POS, 0L, A_ACTOR(fire));
 		}
 
 		--VAL(actor, PIRANHA_FIRE);
@@ -252,7 +252,7 @@ static void tick_head(GameActor* actor) {
 		if (fire != NULL) {
 			VAL(fire, X_SPEED) = FfInt(-4L + rng(9L));
 			VAL(fire, Y_SPEED) = FfInt(flip ? rng(6L) : (-3L - rng(9L)));
-			play_actor_sound(fire, "fire");
+			play_state_sound("fire", PLAY_POS, 0L, A_ACTOR(fire));
 		}
 
 		--VAL(actor, PIRANHA_FIRE);

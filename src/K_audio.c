@@ -93,113 +93,6 @@ void set_music_volume(float volume) {
 	FMOD_ChannelGroup_SetVolume(music_group, volume);
 }
 
-void move_ears(const float pos[2]) {
-	FMOD_System_Set3DListenerAttributes(speaker, 0, &((FMOD_VECTOR){pos[0], pos[1], -320}), &((FMOD_VECTOR){0}),
-		&((FMOD_VECTOR){0, 0, -1}), &((FMOD_VECTOR){0, -1, 0}));
-}
-
-// =====
-// STATE
-// =====
-
-void start_audio_state() {
-	nuke_audio_state();
-}
-
-void tick_audio_state() {
-	for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++) {
-		TrackObject* track = &audio_state.tracks[i];
-		const Track* asset = get_track_key(track->track_key);
-		if (asset == NULL)
-			continue;
-
-		track->offset += 20;
-		if (!(track->flags & PLAY_LOOPING) && track->offset >= asset->length)
-			stop_state_track(i);
-	}
-
-	for (size_t i = 0; i < MAX_SOUNDS; i++) {
-		SoundObject* sound = &audio_state.sounds[i];
-		const Sound* asset = get_sound_key(sound->sound_key);
-		if (asset == NULL)
-			continue;
-
-		sound->offset += 20;
-		if (!(sound->flags & PLAY_LOOPING) && sound->offset >= asset->length)
-			sound_channels[i] = NULL;
-	}
-}
-
-void save_audio_state(AudioState* as) {
-	SDL_memcpy(as, &audio_state, sizeof(audio_state));
-}
-
-static void stop_state_sound(size_t);
-void load_audio_state(const AudioState* as) {
-	for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++) {
-		const TrackObject* new_track = &as->tracks[i];
-		TrackObject* old_track = &audio_state.tracks[i];
-		if (old_track->track_key == new_track->track_key && old_track->flags == new_track->flags)
-			continue;
-
-		stop_state_track(i);
-
-		const Track* new_asset = get_track_key(new_track->track_key);
-		if (new_asset == NULL || (!(new_track->flags & PLAY_LOOPING) && new_track->offset >= new_asset->length))
-			continue;
-
-		FMOD_System_PlaySound(speaker, new_asset->stream, state_music_group, TRUE, &music_channels[i]);
-		FMOD_Channel_SetMode(music_channels[i],
-			((new_track->flags & PLAY_LOOPING) ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
-		FMOD_Channel_SetMute(music_channels[i], i < as->top_track);
-		FMOD_Channel_SetPosition(music_channels[i], new_track->offset, FMOD_TIMEUNIT_MS);
-		FMOD_Channel_SetPaused(music_channels[i], FALSE);
-
-		if (i > as->top_track)
-			for (TrackSlots j = 0; j < i; j++)
-				if (music_channels[j] != NULL)
-					FMOD_Channel_SetMute(music_channels[j], TRUE);
-	}
-
-	for (size_t i = 0; i < MAX_SOUNDS; i++) {
-		const SoundObject* new_sound = &as->sounds[i];
-		SoundObject* old_sound = &audio_state.sounds[i];
-		if (old_sound->sound_key == new_sound->sound_key && old_sound->flags == new_sound->flags)
-			continue;
-
-		stop_state_sound(i);
-
-		const Sound* new_asset = get_sound_key(new_sound->sound_key);
-		if (new_asset == NULL || (!(new_sound->flags & PLAY_LOOPING) && new_sound->offset >= new_asset->length))
-			continue;
-
-		FMOD_System_PlaySound(speaker, new_asset->sound, state_sound_group, TRUE, &sound_channels[i]);
-		if (new_sound->flags & PLAY_PAN) {
-			FMOD_Channel_SetMode(sound_channels[i], FMOD_3D | FMOD_3D_LINEARROLLOFF);
-			FMOD_Channel_Set3DMinMaxDistance(sound_channels[i], 320, 640);
-			FMOD_Channel_Set3DAttributes(sound_channels[i],
-				&((FMOD_VECTOR){new_sound->pos[0], new_sound->pos[1], 0}), &((FMOD_VECTOR){0}));
-		}
-		FMOD_Channel_SetPosition(sound_channels[i], new_sound->offset, FMOD_TIMEUNIT_MS);
-		FMOD_Channel_SetPaused(sound_channels[i], FALSE);
-	}
-
-	SDL_memcpy(&audio_state, as, sizeof(audio_state));
-}
-
-void nuke_audio_state() {
-	FMOD_ChannelGroup_Stop(state_sound_group);
-	FMOD_ChannelGroup_Stop(state_music_group);
-	SDL_memset(&audio_state, 0, sizeof(audio_state));
-	SDL_memset(&sound_channels, 0, sizeof(sound_channels));
-	SDL_memset(&music_channels, 0, sizeof(music_channels));
-}
-
-void pause_audio_state(Bool pause) {
-	FMOD_ChannelGroup_SetPaused(state_sound_group, pause);
-	FMOD_ChannelGroup_SetPaused(state_music_group, pause);
-}
-
 // ======
 // ASSETS
 // ======
@@ -325,75 +218,157 @@ void stop_generic_track() {
 // STATE SOUNDS
 // ============
 
-void play_state_sound(const char* name) {
-	const StTinyKey key = StHashStr(name);
-	const Sound* sound = get_sound_key(key);
-	if (sound == NULL) {
-		WARN("Unknown sound \"%s\"", name);
-		return;
-	}
-
-	const size_t idx = audio_state.next_sound;
-	SoundObject* sobj = &audio_state.sounds[idx];
-	sobj->sound_key = key;
-	sobj->offset = 0;
-	sobj->flags = 0;
-
-	if (sound_channels[idx] != NULL)
-		FMOD_Channel_Stop(sound_channels[idx]);
-	FMOD_System_PlaySound(speaker, sound->sound, state_sound_group, FALSE, &sound_channels[idx]);
-
-	audio_state.next_sound = (idx + 1) % MAX_SOUNDS;
+void start_audio_state() {
+	nuke_audio_state();
 }
 
-void play_state_sound_at(const char* name, const float pos[2]) {
+void tick_audio_state() {
+	for (size_t i = 0; i < MAX_SOUNDS; i++) {
+		SoundObject* sound = &audio_state.sounds[i];
+		const Sound* asset = get_sound_key(sound->sound_key);
+		if (asset == NULL)
+			continue;
+
+		sound->offset += 20L;
+		if (!(sound->flags & PLAY_LOOPING) && sound->offset >= asset->length)
+			sound_channels[i] = NULL;
+	}
+
+	for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++) {
+		TrackObject* track = &audio_state.tracks[i];
+		const Track* asset = get_track_key(track->track_key);
+		if (asset == NULL)
+			continue;
+
+		track->offset += 20L;
+		if (!(track->flags & PLAY_LOOPING) && track->offset >= asset->length)
+			stop_state_track(i);
+	}
+}
+
+void save_audio_state(AudioState* as) {
+	SDL_memcpy(as, &audio_state, sizeof(audio_state));
+}
+
+static void stop_state_sound(size_t);
+void load_audio_state(const AudioState* as) {
+	for (size_t i = 0; i < MAX_SOUNDS; i++) {
+		const SoundObject* new_sound = &as->sounds[i];
+		SoundObject* old_sound = &audio_state.sounds[i];
+		if (old_sound->sound_key == new_sound->sound_key && old_sound->flags == new_sound->flags)
+			continue;
+
+		stop_state_sound(i);
+
+		const Sound* new_asset = get_sound_key(new_sound->sound_key);
+		if (new_asset == NULL || (!(new_sound->flags & PLAY_LOOPING) && new_sound->offset >= new_asset->length))
+			continue;
+
+		FMOD_System_PlaySound(speaker, new_asset->sound, state_sound_group, TRUE, &sound_channels[i]);
+
+		if (new_sound->flags & PLAY_PAN) {
+			FMOD_Channel_SetPan(sound_channels[i], new_sound->pos[0]);
+		} else if (new_sound->flags & PLAY_POS) {
+			FMOD_Channel_SetMode(sound_channels[i], FMOD_3D | FMOD_3D_LINEARROLLOFF);
+			FMOD_Channel_Set3DMinMaxDistance(sound_channels[i], HALF_SCREEN_WIDTH, SCREEN_WIDTH);
+			FMOD_Channel_Set3DAttributes(sound_channels[i],
+				&((FMOD_VECTOR){new_sound->pos[0], new_sound->pos[1], 0}), &((FMOD_VECTOR){0}));
+		}
+
+		FMOD_Channel_SetPosition(sound_channels[i], new_sound->offset, FMOD_TIMEUNIT_MS);
+		FMOD_Channel_SetPaused(sound_channels[i], FALSE);
+	}
+
+	for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++) {
+		const TrackObject* new_track = &as->tracks[i];
+		TrackObject* old_track = &audio_state.tracks[i];
+		if (old_track->track_key == new_track->track_key && old_track->flags == new_track->flags)
+			continue;
+
+		stop_state_track(i);
+
+		const Track* new_asset = get_track_key(new_track->track_key);
+		if (new_asset == NULL || (!(new_track->flags & PLAY_LOOPING) && new_track->offset >= new_asset->length))
+			continue;
+
+		FMOD_System_PlaySound(speaker, new_asset->stream, state_music_group, TRUE, &music_channels[i]);
+		FMOD_Channel_SetMode(music_channels[i],
+			((new_track->flags & PLAY_LOOPING) ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
+		FMOD_Channel_SetMute(music_channels[i], i < as->top_track);
+		FMOD_Channel_SetPosition(music_channels[i], new_track->offset, FMOD_TIMEUNIT_MS);
+		FMOD_Channel_SetPaused(music_channels[i], FALSE);
+
+		if (i > as->top_track)
+			for (TrackSlots j = 0; j < i; j++)
+				if (music_channels[j] != NULL)
+					FMOD_Channel_SetMute(music_channels[j], TRUE);
+	}
+
+	SDL_memcpy(&audio_state, as, sizeof(audio_state));
+}
+
+void nuke_audio_state() {
+	FMOD_ChannelGroup_Stop(state_sound_group);
+	FMOD_ChannelGroup_Stop(state_music_group);
+	SDL_memset(&audio_state, 0, sizeof(audio_state));
+	SDL_memset(&sound_channels, 0, sizeof(sound_channels));
+	SDL_memset(&music_channels, 0, sizeof(music_channels));
+}
+
+void pause_audio_state(Bool pause) {
+	FMOD_ChannelGroup_SetPaused(state_sound_group, pause);
+	FMOD_ChannelGroup_SetPaused(state_music_group, pause);
+}
+
+void play_state_sound(const char* name, PlayFlags flags, Uint32 offset, const float pos[2]) {
 	const StTinyKey key = StHashStr(name);
 	const Sound* sound = get_sound_key(key);
 	if (sound == NULL) {
 		WARN("Unknown sound \"%s\"", name);
 		return;
 	}
+	if (!(flags & PLAY_LOOPING) && offset >= sound->length)
+		return;
 
 	const size_t idx = audio_state.next_sound;
 	SoundObject* sobj = &audio_state.sounds[idx];
 	sobj->sound_key = key;
-	sobj->offset = 0;
-
-	sobj->flags = PLAY_PAN;
-	sobj->pos[0] = pos[0], sobj->pos[1] = pos[1];
+	sobj->flags = flags;
+	sobj->offset = offset;
+	sobj->pos[0] = pos[0], sobj->pos[0] = pos[1];
 
 	if (sound_channels[idx] != NULL)
 		FMOD_Channel_Stop(sound_channels[idx]);
 	FMOD_System_PlaySound(speaker, sound->sound, state_sound_group, TRUE, &sound_channels[idx]);
-	FMOD_Channel_SetMode(sound_channels[idx], FMOD_3D | FMOD_3D_LINEARROLLOFF);
-	FMOD_Channel_Set3DMinMaxDistance(sound_channels[idx], 320, 640);
-	FMOD_Channel_Set3DAttributes(sound_channels[idx], &((FMOD_VECTOR){pos[0], pos[1], 0}), &((FMOD_VECTOR){0}));
+	FMOD_Channel_SetPosition(sound_channels[idx], offset, FMOD_TIMEUNIT_MS);
+
+	if (flags & PLAY_PAN) {
+		FMOD_Channel_SetPan(sound_channels[idx], pos[0]);
+	} else if (flags & PLAY_POS) {
+		FMOD_Channel_SetMode(sound_channels[idx], FMOD_3D | FMOD_3D_LINEARROLLOFF);
+		FMOD_Channel_Set3DMinMaxDistance(sound_channels[idx], HALF_SCREEN_WIDTH, SCREEN_WIDTH);
+		FMOD_Channel_Set3DAttributes(
+			sound_channels[idx], &((FMOD_VECTOR){pos[0], pos[1], 0}), &((FMOD_VECTOR){0}));
+	}
+
 	FMOD_Channel_SetPaused(sound_channels[idx], FALSE);
 
 	audio_state.next_sound = (idx + 1) % MAX_SOUNDS;
 }
 
-void stop_state_sound(size_t idx) {
-	SoundObject* sound = &audio_state.sounds[idx];
-	sound->sound_key = 0;
-
-	if (sound_channels[idx] != NULL) {
-		FMOD_Channel_Stop(sound_channels[idx]);
-		sound_channels[idx] = NULL;
-	}
-}
-
-void play_state_track(TrackSlots slot, const char* name, PlayFlags flags) {
+void play_state_track(TrackSlots slot, const char* name, PlayFlags flags, Uint32 offset) {
 	const StTinyKey key = StHashStr(name);
 	const Track* track = get_track_key(key);
 	if (track == NULL) {
 		WARN("Unknown track \"%s\"", name);
 		return;
 	}
+	if (!(flags & PLAY_LOOPING) && offset >= track->length)
+		return;
 
 	TrackObject* tobj = &audio_state.tracks[slot];
 	tobj->track_key = key;
-	tobj->offset = 0;
+	tobj->offset = offset;
 	tobj->flags = flags;
 
 	if (music_channels[slot] != NULL)
@@ -401,6 +376,7 @@ void play_state_track(TrackSlots slot, const char* name, PlayFlags flags) {
 	FMOD_System_PlaySound(speaker, track->stream, state_music_group, TRUE, &music_channels[slot]);
 	FMOD_Channel_SetMode(
 		music_channels[slot], ((flags & PLAY_LOOPING) ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_ACCURATETIME);
+	FMOD_Channel_SetPosition(music_channels[slot], offset, FMOD_TIMEUNIT_MS);
 	FMOD_Channel_SetMute(music_channels[slot], slot < audio_state.top_track);
 	FMOD_Channel_SetPaused(music_channels[slot], FALSE);
 
@@ -409,6 +385,16 @@ void play_state_track(TrackSlots slot, const char* name, PlayFlags flags) {
 			if (music_channels[i] != NULL)
 				FMOD_Channel_SetMute(music_channels[i], TRUE);
 		audio_state.top_track = slot;
+	}
+}
+
+static void stop_state_sound(size_t idx) {
+	SoundObject* sound = &audio_state.sounds[idx];
+	sound->sound_key = 0;
+
+	if (sound_channels[idx] != NULL) {
+		FMOD_Channel_Stop(sound_channels[idx]);
+		sound_channels[idx] = NULL;
 	}
 }
 
@@ -432,4 +418,9 @@ void stop_state_track(TrackSlots slot) {
 			--i;
 		}
 	}
+}
+
+void move_ears(const float pos[2]) {
+	FMOD_System_Set3DListenerAttributes(speaker, 0, &((FMOD_VECTOR){pos[0], pos[1], -HALF_SCREEN_WIDTH}),
+		&((FMOD_VECTOR){0}), &((FMOD_VECTOR){0, 0, -1}), &((FMOD_VECTOR){0, -1, 0}));
 }

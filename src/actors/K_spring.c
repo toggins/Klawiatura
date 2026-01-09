@@ -57,7 +57,7 @@ static void collide(GameActor* actor, GameActor* from) {
 	                             ? (ANY_FLAG(actor, FLG_SPRING_GREEN) ? FfInt(-33L) : FfInt(-19L))
 	                             : FfInt(-10L);
 	VAL(actor, SPRING_FRAME) = 1L;
-	play_actor_sound(actor, "spring");
+	play_state_sound("spring", PLAY_POS, 0L, A_ACTOR(actor));
 }
 
 const GameActorTable TAB_SPRING = {.load = load, .create = create, .tick = tick, .draw = draw, .collide = collide};

@@ -179,7 +179,7 @@ static void collide_shell(GameActor* actor, GameActor* from) {
 		}
 
 		if (!ANY_FLAG(actor, FLG_SHELL_ACTIVE)) {
-			play_actor_sound(actor, "kick");
+			play_state_sound("kick", PLAY_POS, 0L, A_ACTOR(actor));
 			VAL(actor, X_SPEED) = (from->pos.x > actor->pos.x) ? FfInt(-6L) : FfInt(6L);
 			VAL(actor, SHELL_PLAYER) = (ActorValue)get_owner_id(from);
 			VAL(actor, SHELL_HIT) = 6L;

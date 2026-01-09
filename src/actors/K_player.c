@@ -405,7 +405,7 @@ Bool hit_player(GameActor* actor) {
 	}
 
 	VAL(actor, PLAYER_POWER) = 3000L, VAL(actor, PLAYER_FLASH) = 100L;
-	play_actor_sound(actor, "warp");
+	play_state_sound("warp", PLAY_POS, 0L, A_ACTOR(actor));
 	return TRUE;
 }
 
@@ -556,7 +556,7 @@ void win_player(GameActor* actor) {
 
 	for (TrackSlots i = 0L; i < (TrackSlots)TS_SIZE; i++)
 		stop_state_track(i);
-	play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? (was_bowser ? "win3" : "win2") : "win", 0L);
+	play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? (was_bowser ? "win3" : "win2") : "win", 0L, 0L);
 }
 
 void player_starman(GameActor* actor, GameActor* from) {
@@ -781,7 +781,7 @@ static void tick(GameActor* actor) {
 							(numplayers() <= 1L) ? "You" : get_player_name(player->id)));
 						for (TrackSlots i = 0L; i < (TrackSlots)TS_SIZE; i++)
 							stop_state_track(i);
-						play_state_track(TS_FANFARE, "warp", 0L);
+						play_state_track(TS_FANFARE, "warp", 0L, 0L);
 					} else
 						game_state.flags |= GF_END;
 
@@ -810,7 +810,7 @@ static void tick(GameActor* actor) {
 
 				FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
 				skip_interp(actor);
-				play_actor_sound(actor, "warp");
+				play_state_sound("warp", PLAY_POS, 0L, A_ACTOR(actor));
 			}
 		}
 
@@ -907,7 +907,7 @@ static void tick(GameActor* actor) {
 			VAL(actor, PLAYER_GROUND) = 0L;
 			VAL(actor, PLAYER_FRAME) = FxZero;
 			FLAG_OFF(actor, FLG_PLAYER_DUCK);
-			play_actor_sound(actor, "swim");
+			play_state_sound("swim", PLAY_POS, 0L, A_ACTOR(actor));
 		}
 	}
 	VAL_TICK(actor, PLAYER_SPRING);
@@ -933,7 +933,7 @@ static void tick(GameActor* actor) {
 			VAL(actor, PLAYER_GROUND) = 0L;
 			VAL(actor, Y_SPEED) = FfInt(-13L);
 			FLAG_OFF(actor, FLG_PLAYER_JUMP | FLG_PLAYER_DUCK);
-			play_actor_sound(actor, "jump");
+			play_state_sound("jump", PLAY_POS, 0L, A_ACTOR(actor));
 		}
 		if (!ANY_INPUT(player, GI_JUMP) && VAL(actor, PLAYER_GROUND) > 0L && ANY_FLAG(actor, FLG_PLAYER_JUMP))
 			FLAG_OFF(actor, FLG_PLAYER_JUMP);
@@ -1108,7 +1108,7 @@ static void tick(GameActor* actor) {
 
 		if (VAL(actor, PLAYER_GROUND) > 0L)
 			VAL(actor, PLAYER_FIRE) = 2L;
-		play_actor_sound(actor, "fire");
+		play_state_sound("fire", PLAY_POS, 0L, A_ACTOR(missile));
 		break;
 	}
 
@@ -1133,7 +1133,7 @@ static void tick(GameActor* actor) {
 	if (VAL(actor, PLAYER_STARMAN) > 0L) {
 		--VAL(actor, PLAYER_STARMAN);
 		if (VAL(actor, PLAYER_STARMAN) == 100L)
-			play_actor_sound(actor, "starman");
+			play_state_sound("starman", PLAY_POS, 0L, A_ACTOR(actor));
 		if (VAL(actor, PLAYER_STARMAN) <= 0L) {
 			VAL(actor, PLAYER_STARMAN_COMBO) = 0L;
 
@@ -1175,7 +1175,7 @@ skip_physics:
 				if (kevin != NULL) {
 					player->kevin.actor = kevin->id;
 					VAL(kevin, KEVIN_PLAYER) = (ActorValue)player->id;
-					play_actor_sound(kevin, "kevin_spawn");
+					play_state_sound("kevin_spawn", PLAY_POS, 0L, A_ACTOR(kevin));
 				}
 			}
 
@@ -1280,7 +1280,7 @@ static void collide(GameActor* actor, GameActor* from) {
 				VAL(actor, X_SPEED) += Fhalf(VAL(from, X_SPEED));
 				VAL(from, X_SPEED) = -Fhalf(VAL(from, X_SPEED));
 				if (Fabs(VAL(from, X_SPEED)) > FfInt(2L))
-					play_actor_sound(actor, "bump");
+					play_state_sound("bump", PLAY_POS, 0L, A_ACTOR(actor));
 			}
 
 		break;
@@ -1362,14 +1362,14 @@ static void tick_corpse(GameActor* actor) {
 				VAL(autoscroll, X_SPEED) = VAL(autoscroll, Y_SPEED) = FxZero;
 
 			if (game_state.flags & GF_HARDCORE)
-				play_state_sound("hardcore");
+				play_state_sound("hardcore", 0L, 0L, A_NULL);
 
 			for (TrackSlots i = 0; i < (TrackSlots)TS_SIZE; i++)
 				stop_state_track(i);
-			play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? "lose2" : "lose", 0L);
+			play_state_track(TS_FANFARE, (game_state.flags & GF_LOST) ? "lose2" : "lose", 0L, 0L);
 		} else
-			play_actor_sound(
-				actor, (player->lives >= 0L || (game_state.flags & GF_HELL)) ? "lose" : "dead");
+			play_state_sound((player->lives >= 0L || (game_state.flags & GF_HELL)) ? "lose" : "dead",
+				PLAY_POS, 0L, A_ACTOR(actor));
 		break;
 	}
 
@@ -1383,7 +1383,7 @@ static void tick_corpse(GameActor* actor) {
 
 		GameActor* pawn = respawn_player(player);
 		if (pawn != NULL) {
-			play_actor_sound(pawn, "respawn");
+			play_state_sound("respawn", PLAY_POS, 0L, A_ACTOR(pawn));
 			VAL(pawn, PLAYER_FLASH) = 100L;
 			FLAG_ON(actor, FLG_DESTROY);
 		}
@@ -1409,7 +1409,7 @@ static void tick_corpse(GameActor* actor) {
 		{
 			game_state.sequence.type = SEQ_LOSE;
 			game_state.sequence.time = 1L;
-			play_state_track(TS_FANFARE, "game_over", 0L);
+			play_state_track(TS_FANFARE, "game_over", 0L, 0L);
 		}
 
 		FLAG_ON(actor, FLG_DESTROY);
@@ -1539,7 +1539,7 @@ static void collide_kevin(GameActor* actor, GameActor* from) {
 		return;
 	if (get_owner(actor) == get_owner(from)) {
 		kill_player(from);
-		play_actor_sound(actor, "kevin_kill");
+		play_state_sound("kevin_kill", PLAY_POS, 0L, A_ACTOR(actor));
 	} else
 		hit_player(from);
 }

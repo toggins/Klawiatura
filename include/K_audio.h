@@ -8,6 +8,11 @@
 
 #define MAX_SOUNDS 16
 
+#define A_NULL ((float[2]){0})
+#define A_PAN(pan) ((float[2]){pan, 0})
+#define A_XY(x, y) ((float[2]){x, y})
+#define A_ACTOR(actor) ((float[2]){FtFloat(actor->pos.x), FtFloat(actor->pos.y)})
+
 typedef struct {
 	AssetBase base;
 
@@ -22,6 +27,13 @@ typedef struct {
 	Uint32 length, loop[2];
 } Track;
 
+typedef Uint8 PlayFlags;
+enum {
+	PLAY_LOOPING = 1 << 0,
+	PLAY_POS = 1 << 1,
+	PLAY_PAN = 1 << 2,
+};
+
 typedef Uint8 TrackSlots;
 enum {
 	TS_MAIN,
@@ -30,12 +42,6 @@ enum {
 	TS_SCORE,
 	TS_FANFARE,
 	TS_SIZE,
-};
-
-typedef Uint8 PlayFlags;
-enum {
-	PLAY_LOOPING = 1 << 0,
-	PLAY_PAN = 1 << 1,
 };
 
 typedef struct {
@@ -69,14 +75,6 @@ float get_sound_volume();
 void set_sound_volume(float);
 float get_music_volume();
 void set_music_volume(float);
-void move_ears(const float[2]);
-
-// State
-void start_audio_state();
-void tick_audio_state();
-void save_audio_state(AudioState*), load_audio_state(const AudioState*);
-void nuke_audio_state();
-void pause_audio_state(Bool);
 
 // Assets
 ASSET_HEAD(sounds, Sound, sound);
@@ -89,8 +87,15 @@ void play_generic_track(const char*, PlayFlags);
 void stop_generic_track();
 
 // State Sounds
-void play_state_sound(const char*);
-void play_state_sound_at(const char*, const float[2]);
+void start_audio_state();
+void tick_audio_state();
+void save_audio_state(AudioState*), load_audio_state(const AudioState*);
+void nuke_audio_state();
+void pause_audio_state(Bool);
 
-void play_state_track(TrackSlots, const char*, PlayFlags);
+void play_state_sound(const char*, PlayFlags, Uint32, const float[2]);
+
+void play_state_track(TrackSlots, const char*, PlayFlags, Uint32);
 void stop_state_track(TrackSlots);
+
+void move_ears(const float[2]);

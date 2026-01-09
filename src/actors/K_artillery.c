@@ -123,7 +123,7 @@ static void tick_blaster(GameActor* actor) {
 		VAL(bullet, X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -spd : spd;
 		FLAG_ON(bullet, actor->flags & FLG_X_FLIP);
 		create_actor(ACT_EXPLODE, bullet->pos);
-		play_actor_sound(bullet, "bang");
+		play_state_sound("bang", PLAY_POS, 0L, A_ACTOR(bullet));
 	}
 
 	VAL(actor, ARTILLERY_TIME) = -50L - rng(150L);
@@ -162,7 +162,7 @@ static void tick_spike_cannon(GameActor* actor) {
 			ball->values[VAL_Y_SPEED] = FfInt(-7L - rng(5L));
 
 		create_actor(ACT_EXPLODE, ball->pos);
-		play_actor_sound(ball, "bang2");
+		play_state_sound("bang2", PLAY_POS, 0L, A_ACTOR(ball));
 	}
 
 	VAL(actor, ARTILLERY_TIME) = 0L;

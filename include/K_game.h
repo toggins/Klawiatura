@@ -525,8 +525,6 @@ void draw_actor_no_jitter(const GameActor*, const char*, float, const Uint8[4]);
 void draw_dead(const GameActor*);
 void quake_at_actor(const GameActor*, float);
 
-void play_actor_sound(const GameActor*, const char*);
-
 // ====
 // MATH
 // ====

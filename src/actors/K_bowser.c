@@ -113,7 +113,7 @@ static void tick(GameActor* actor) {
 					track = "yi_bowser";
 				else if (game_state.flags & GF_LOST)
 					track = "smb3_bowser";
-				play_state_track(TS_MAIN, track, PLAY_LOOPING);
+				play_state_track(TS_MAIN, track, PLAY_LOOPING, 0L);
 			}
 		}
 	}
@@ -210,7 +210,7 @@ static void tick(GameActor* actor) {
 			VAL(actor, BOWSER_K) = 0L;
 		}
 
-		play_actor_sound(actor, "bowser_fire");
+		play_state_sound("bowser_fire", PLAY_POS, 0L, A_ACTOR(actor));
 	}
 
 	if (ALL_FLAG(actor, FLG_BOWSER_ACTIVE | FLG_BOWSER_GUN) && VAL(actor, BOWSER_GUN)++ > 100L) {
@@ -222,7 +222,7 @@ static void tick(GameActor* actor) {
 			FLAG_ON(bullet, actor->flags & FLG_X_FLIP);
 
 			create_actor(ACT_EXPLODE, bullet->pos);
-			play_actor_sound(bullet, "bang");
+			play_state_sound("bang", PLAY_POS, 0L, A_ACTOR(bullet));
 		}
 
 		VAL(actor, BOWSER_GUN) = 0L;
@@ -345,7 +345,7 @@ static void hit_bowser(GameActor* actor, GameActor* from) {
 	if (actor == NULL || actor->type != ACT_BOWSER || VAL(actor, BOWSER_HURT) > 0L)
 		return;
 
-	play_actor_sound(actor, "bowser_hurt");
+	play_state_sound("bowser_hurt", PLAY_POS, 0L, A_ACTOR(actor));
 	if (--VAL(actor, BOWSER_HEALTH) <= 0L) {
 		GameActor* dead = create_actor(ACT_BOWSER_DEAD, actor->pos);
 		if (dead != NULL) {
@@ -373,7 +373,7 @@ static Bool slap_bowser(GameActor* actor, GameActor* from) {
 	if (actor == NULL || actor->type != ACT_BOWSER || VAL(actor, BOWSER_HURT) > 0L)
 		return FALSE;
 
-	play_actor_sound(actor, "kick");
+	play_state_sound("kick", PLAY_POS, 0L, A_ACTOR(actor));
 	if (++VAL(actor, BOWSER_HITS) > 4L)
 		hit_bowser(actor, from);
 	return TRUE;
@@ -461,7 +461,7 @@ static void create_corpse(GameActor* actor) {
 	actor->box.end.x = FfInt(30L);
 	actor->depth = FxOne;
 
-	play_actor_sound(actor, "bowser_dead");
+	play_state_sound("bowser_dead", PLAY_POS, 0L, A_ACTOR(actor));
 }
 
 static void tick_corpse(GameActor* actor) {
@@ -475,7 +475,7 @@ static void tick_corpse(GameActor* actor) {
 	const Fixed state = ++VAL(actor, KUPPA_BE_HAPPY);
 	if (state > 100L) {
 		if (state == 101L)
-			play_actor_sound(actor, "bowser_fall");
+			play_state_sound("bowser_fall", PLAY_POS, 0L, A_ACTOR(actor));
 		VAL(actor, Y_SPEED) += 8738L;
 	}
 

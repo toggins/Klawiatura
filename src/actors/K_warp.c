@@ -65,7 +65,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		VAL(from, PLAYER_WARP) = actor->id;
 		VAL(from, PLAYER_WARP_STATE) = 0L;
 		FLAG_OFF(from, FLG_PLAYER_WARP_OUT);
-		play_actor_sound(actor, "warp");
+		play_state_sound("warp", PLAY_POS, 0L, A_ACTOR(from));
 
 		if (VAL(actor, WARP_STRING) != 0L) {
 			Sint8 lvl[ACTOR_STRING_MAX + 1] = {0L};
@@ -103,7 +103,7 @@ static void collide(GameActor* actor, GameActor* from) {
 			FLAG_OFF(actor, FLG_WARP_CALAMITY);
 
 			hud_message("MUSHROOM CALAMITY ACTIVATED!!!");
-			play_state_sound("clone_dead2");
+			play_state_sound("clone_dead2", 0L, 0L, A_NULL);
 		}
 	}
 }

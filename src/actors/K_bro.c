@@ -202,14 +202,14 @@ static void tick(GameActor* actor) {
 						= FfInt((ANY_FLAG(actor, FLG_X_FLIP) ? -1L : 1L) * (1L + rng(5L)));
 					VAL(missile, Y_SPEED) = FfInt(-6L - rng(5L));
 					FLAG_ON(missile, actor->flags & FLG_X_FLIP);
-					play_actor_sound(missile, "hammer");
+					play_state_sound("hammer", PLAY_POS, 0L, A_ACTOR(missile));
 					break;
 				}
 
 				case ACT_MISSILE_FIREBALL: {
 					VAL(missile, X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -532480L : 532480L;
 					FLAG_ON(missile, actor->flags & FLG_X_FLIP);
-					play_actor_sound(missile, "fire");
+					play_state_sound("fire", PLAY_POS, 0L, A_ACTOR(missile));
 					break;
 				}
 
@@ -218,7 +218,7 @@ static void tick(GameActor* actor) {
 						ANY_FLAG(actor, FLG_X_FLIP) ? (-1L - rng(10L)) : (1L + rng(10L)));
 					VAL(missile, Y_SPEED) = FfInt(-6L - rng(5L));
 					FLAG_ON(missile, actor->flags & FLG_X_FLIP);
-					play_actor_sound(missile, "hammer");
+					play_state_sound("hammer", PLAY_POS, 0L, A_ACTOR(missile));
 					break;
 				}
 				}

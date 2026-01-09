@@ -55,8 +55,8 @@ static void collide(GameActor* actor, GameActor* from) {
 		replace_actors(ACT_COIN, ACT_PSWITCH_BRICK);
 		replace_actors(ACT_BRICK_BLOCK, ACT_PSWITCH_COIN);
 
-		play_actor_sound(actor, "toggle");
-		play_state_track(TS_EVENT, "pswitch", PLAY_LOOPING);
+		play_state_sound("toggle", PLAY_POS, 0L, A_ACTOR(actor));
+		play_state_track(TS_EVENT, "pswitch", PLAY_LOOPING, 0L);
 	}
 }
 

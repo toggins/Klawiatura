@@ -57,7 +57,7 @@ static void collide(GameActor* actor, GameActor* from) {
 			player->coins -= 100L;
 		}
 		player->score += 200L;
-		play_actor_sound(actor, "coin");
+		play_state_sound("coin", PLAY_POS, 0L, A_ACTOR(actor));
 
 		FLAG_ON(actor, FLG_DESTROY);
 		break;
@@ -109,7 +109,7 @@ static void tick_pop(GameActor* actor) {
 			player->score += 200L;
 		}
 
-		play_actor_sound(actor, "coin");
+		play_state_sound("coin", PLAY_POS, 0L, A_ACTOR(actor));
 		VAL(actor, Y_SPEED) = -278528L;
 		FLAG_ON(actor, FLG_COIN_POP_START);
 	}

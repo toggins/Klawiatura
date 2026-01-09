@@ -86,7 +86,7 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
 	case ACT_ROTODISC:
 	case ACT_PODOBOO: {
 		if (kick)
-			play_actor_sound(actor, "kick");
+			play_state_sound("kick", PLAY_POS, 0L, A_ACTOR(actor));
 		FLAG_ON(actor, FLG_DESTROY);
 		mark_ambush_winner(from);
 		return NULL;
@@ -98,7 +98,7 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
 		FLAG_ON(actor, FLG_ARTILLERY_DEAD);
 
 		if (kick)
-			play_actor_sound(actor, "kick");
+			play_state_sound("kick", PLAY_POS, 0L, A_ACTOR(actor));
 		return actor;
 	}
 	}
@@ -115,7 +115,7 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
 		const Fixed dir = 77208L + Fmul(rnd, 12868L);
 		VAL(dead, X_SPEED) = Fmul(Fcos(dir), FfInt(3L));
 		VAL(dead, Y_SPEED) = Fmul(Fsin(dir), FfInt(-3L));
-		play_actor_sound(actor, "kick");
+		play_state_sound("kick", PLAY_POS, 0L, A_ACTOR(actor));
 	}
 
 	FLAG_ON(actor, FLG_DESTROY);
@@ -135,7 +135,7 @@ Bool check_stomp(GameActor* actor, GameActor* from, Fixed yoffs, Sint32 points) 
 		FLAG_ON(from, FLG_PLAYER_STOMP);
 
 		give_points(actor, player, points);
-		play_actor_sound(from, "stomp");
+		play_state_sound("stomp", PLAY_POS, 0L, A_ACTOR(from));
 		return TRUE;
 	}
 
@@ -211,7 +211,7 @@ void hit_bump(GameActor* actor, GameActor* from, Sint32 points) {
 void block_fireball(GameActor* actor) {
 	if (actor == NULL || get_owner(actor) == NULL)
 		return;
-	play_actor_sound(actor, "bump");
+	play_state_sound("bump", PLAY_POS, 0L, A_ACTOR(actor));
 	FLAG_ON(actor, FLG_DESTROY);
 }
 
@@ -231,7 +231,7 @@ void hit_fireball(GameActor* actor, GameActor* from, Sint32 points) {
 void block_beetroot(GameActor* actor) {
 	if (actor == NULL || get_owner(actor) == NULL)
 		return;
-	play_actor_sound(actor, "bump");
+	play_state_sound("bump", PLAY_POS, 0L, A_ACTOR(actor));
 	FLAG_ON(actor, FLG_MISSILE_HIT);
 }
 

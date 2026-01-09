@@ -36,7 +36,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		return;
 
 	give_points(actor, player, 1000L);
-	play_actor_sound(actor, "sprout");
+	play_state_sound("sprout", 0L, 0L, A_NULL);
 	game_state.checkpoint = actor->id;
 
 	if (numplayers() > 1L)

@@ -82,7 +82,7 @@ static void tick(GameActor* actor) {
 			create_actor(ACT_EXPLODE, POS_ADD(actor, FfInt(17L), FfInt(34L)));
 			++VAL(actor, THWOMP_STATE);
 			quake_at_actor(actor, 10.f);
-			play_actor_sound(actor, "hurt");
+			play_state_sound("hurt", PLAY_POS, 0L, A_ACTOR(actor));
 		}
 		break;
 	}
@@ -140,7 +140,7 @@ static void collide(GameActor* actor, GameActor* from) {
 			break;
 		VAL(actor, THWOMP_FRAME) = FxZero;
 		FLAG_ON(actor, FLG_THWOMP_LAUGH);
-		play_actor_sound(actor, "thwomp");
+		play_state_sound("thwomp", PLAY_POS, 0L, A_ACTOR(actor));
 		break;
 	}
 

@@ -94,17 +94,8 @@ static void tick(GameActor* actor) {
 	if (VAL(actor, LAKITU_THROW) > (200L + VAL(actor, LAKITU_STALL))) {
 		VAL(actor, LAKITU_THROW) = 0L;
 		VAL(actor, LAKITU_STALL) = rng(100L);
-		switch (rng(3L)) {
-		default:
-			play_actor_sound(actor, "lakitu");
-			break;
-		case 1L:
-			play_actor_sound(actor, "lakitu2");
-			break;
-		case 2L:
-			play_actor_sound(actor, "lakitu3");
-			break;
-		}
+		const Sint32 wee = rng(3L);
+		play_state_sound(fmt("lakitu%i", wee), PLAY_POS, 0L, A_ACTOR(actor));
 
 		GameActor* egg = create_actor(ACT_SPINY_EGG, POS_ADD(actor, FxZero, FfInt(-39L)));
 		if (egg != NULL) {

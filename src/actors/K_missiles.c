@@ -196,7 +196,7 @@ static void tick_beetroot(GameActor* actor) {
 
 	if (!ANY_FLAG(actor, FLG_MISSILE_HIT)) {
 		if (VAL(actor, X_TOUCH) != 0L || VAL(actor, Y_TOUCH) != 0L)
-			play_actor_sound(actor, "hurt");
+			play_state_sound("hurt", PLAY_POS, 0L, A_ACTOR(actor));
 		else
 			return;
 	}
@@ -325,7 +325,7 @@ static void tick_silver(GameActor* actor) {
 
 	if (!ANY_FLAG(actor, FLG_MISSILE_HIT)) {
 		if (VAL(actor, X_TOUCH) != 0L || VAL(actor, Y_TOUCH) != 0L)
-			play_actor_sound(actor, "kick");
+			play_state_sound("kick", PLAY_POS, 0L, A_ACTOR(actor));
 		else
 			return;
 	}

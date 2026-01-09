@@ -87,7 +87,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
 		from->depth = FfInt(21L);
 		FLAG_ON(from, FLG_KUPPA_LAVA_LOVE);
-		play_actor_sound(from, "bowser_lava");
+		play_state_sound("bowser_lava", PLAY_POS, 0L, A_ACTOR(from));
 
 		for (ActorID i = 0L; i < 2L; i++) {
 			GameActor* laver = create_actor(ACT_BOWSER_LAVA, from->pos);
@@ -219,7 +219,7 @@ static void tick_volcano(GameActor* actor) {
 			VAL(podoboo, X_SPEED) = FfInt(-4L + rng(9L));
 			VAL(podoboo, Y_SPEED) = FfInt(-11L);
 			FLAG_ON(podoboo, FLG_PODOBOO_VOLCANO);
-			play_actor_sound(podoboo, "fire");
+			play_state_sound("fire", PLAY_POS, 0L, A_ACTOR(podoboo));
 		}
 		--VAL(actor, PODOBOO_FIRE);
 	}

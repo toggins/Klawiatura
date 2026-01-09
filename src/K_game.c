@@ -824,7 +824,7 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 	if (game_state.pswitch > 0L) {
 		--game_state.pswitch;
 		if (game_state.pswitch == 100L)
-			play_state_sound("starman");
+			play_state_sound("starman", 0L, 0L, A_NULL);
 		if (game_state.pswitch <= 0L) {
 			replace_actors(ACT_PSWITCH_BRICK, ACT_COIN);
 			replace_actors(ACT_PSWITCH_COIN, ACT_BRICK_BLOCK);
@@ -874,7 +874,7 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 
 		--game_state.clock;
 		if (game_state.clock <= 100L && !(game_state.flags & GF_HURRY)) {
-			play_state_sound("hurry");
+			play_state_sound("hurry", 0L, 0L, A_NULL);
 			game_state.flags |= GF_HURRY;
 		}
 
@@ -912,7 +912,7 @@ void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 				player->score += diff * 10L;
 
 			if ((game_state.time % 5L) == 0L)
-				play_state_sound("tick");
+				play_state_sound("tick", 0L, 0L, A_NULL);
 			--game_state.sequence.time;
 		}
 
@@ -1388,7 +1388,7 @@ void start_game_state(GameContext* ctx) {
 		respawn_player(player);
 	}
 
-	play_state_track(TS_MAIN, track_name[0], PLAY_LOOPING);
+	play_state_track(TS_MAIN, track_name[0], PLAY_LOOPING, 0L);
 
 	update_discord_status(level_name);
 	return;
@@ -2195,11 +2195,6 @@ void quake_at_actor(const GameActor* actor, float amount) {
 	                   / (float)SCREEN_HEIGHT;
 	const float quake = amount / SDL_max(dist, 1.f);
 	video_state.quake = SDL_min(video_state.quake + quake, 10.f);
-}
-
-/// Convenience function for playing a sound at an actor's position.
-void play_actor_sound(const GameActor* actor, const char* name) {
-	play_state_sound_at(name, (float[2]){FtFloat(actor->pos.x), FtFloat(actor->pos.y)});
 }
 
 // ====

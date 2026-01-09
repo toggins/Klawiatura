@@ -42,7 +42,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 	case ACT_BRICK_BLOCK:
 	case ACT_PSWITCH_BRICK: {
 		if (!strong) {
-			play_actor_sound(actor, "bump");
+			play_state_sound("bump", PLAY_POS, 0L, A_ACTOR(actor));
 			break;
 		}
 
@@ -73,14 +73,14 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 		if (player != NULL)
 			player->score += 50L;
 
-		play_actor_sound(actor, "break");
+		play_state_sound("break", PLAY_POS, 0L, A_ACTOR(actor));
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}
 
 	case ACT_NOTE_BLOCK: {
 		VAL(actor, X_TOUCH) = 0L, VAL(actor, Y_TOUCH) = -1L;
-		play_actor_sound(actor, "bump");
+		play_state_sound("bump", PLAY_POS, 0L, A_ACTOR(actor));
 		break;
 	}
 	}
@@ -134,7 +134,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 
 			if (is_powerup)
 				FLAG_OFF(item, FLG_POWERUP_FULL);
-			play_actor_sound(item, "sprout");
+			play_state_sound("sprout", PLAY_POS, 0L, A_ACTOR(item));
 		}
 	}
 
@@ -493,7 +493,7 @@ static void note_top(GameActor* actor, GameActor* from) {
 		VAL(from, Y_SPEED) = (VAL(from, PLAYER_SPRING) > 0L) ? FfInt(-19L) : FfInt(-10L);
 		VAL(actor, BLOCK_BUMP) = 1L;
 		VAL(actor, X_TOUCH) = 0L, VAL(actor, Y_TOUCH) = 1L;
-		play_actor_sound(actor, "spring");
+		play_state_sound("spring", PLAY_POS, 0L, A_ACTOR(actor));
 		break;
 	}
 	}
@@ -514,7 +514,7 @@ static void note_left(GameActor* actor, GameActor* from) {
 		VAL(from, X_SPEED) = FfInt(-5L);
 		VAL(actor, BLOCK_BUMP) = 1L;
 		VAL(actor, X_TOUCH) = 1L, VAL(actor, Y_TOUCH) = 0L;
-		play_actor_sound(actor, "bump");
+		play_state_sound("bump", PLAY_POS, 0L, A_ACTOR(actor));
 		break;
 	}
 	}
@@ -535,7 +535,7 @@ static void note_right(GameActor* actor, GameActor* from) {
 		VAL(from, X_SPEED) = FfInt(5L);
 		VAL(actor, BLOCK_BUMP) = 1L;
 		VAL(actor, X_TOUCH) = -1L, VAL(actor, Y_TOUCH) = 0L;
-		play_actor_sound(actor, "bump");
+		play_state_sound("bump", PLAY_POS, 0L, A_ACTOR(actor));
 		break;
 	}
 	}

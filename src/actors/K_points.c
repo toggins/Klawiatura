@@ -15,7 +15,7 @@ void give_points(GameActor* actor, GamePlayer* player, Sint32 points) {
 
 		// !!! CLIENT-SIDE !!!
 		if (viewplayer() == player->id)
-			play_actor_sound(actor, "1up");
+			play_state_sound("1up", 0L, 0L, A_NULL);
 		// !!! CLIENT-SIDE !!!
 	} else
 		player->score += points;

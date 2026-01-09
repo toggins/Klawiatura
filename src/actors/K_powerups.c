@@ -25,7 +25,7 @@ static void collide_powerup(GameActor* actor, GameActor* from, PlayerPower power
 	}
 	give_points(actor, player, 1000L);
 
-	play_actor_sound(from, "grow");
+	play_state_sound("grow", PLAY_POS, 0L, A_ACTOR(from));
 	FLAG_ON(actor, FLG_DESTROY);
 }
 
@@ -84,7 +84,7 @@ static void collide_mushroom(GameActor* actor, GameActor* from) {
 	}
 	give_points(actor, player, 1000L);
 
-	play_actor_sound(from, "grow");
+	play_state_sound("grow", PLAY_POS, 0L, A_ACTOR(from));
 	FLAG_ON(actor, FLG_DESTROY);
 }
 
@@ -282,7 +282,7 @@ static void tick_lui(GameActor* actor) {
 	if (VAL(actor, Y_TOUCH) > 0L) {
 		VAL(actor, Y_SPEED) = FfInt(-7L);
 		VAL(actor, LUI_BOUNCE) = 1L;
-		play_actor_sound(actor, "kick");
+		play_state_sound("kick", PLAY_POS, 0L, A_ACTOR(actor));
 	}
 }
 
@@ -430,11 +430,11 @@ static void collide_starman(GameActor* actor, GameActor* from) {
 
 	// !!! CLIENT-SIDE !!!
 	if (localplayer() == VAL(from, PLAYER_INDEX))
-		play_state_track(TS_POWER, "starman", PLAY_LOOPING);
+		play_state_track(TS_POWER, "starman", PLAY_LOOPING, 0L);
 	// !!! CLIENT-SIDE !!!
 
 	VAL(from, PLAYER_STARMAN) = 500L;
-	play_actor_sound(from, "grow");
+	play_state_sound("grow", PLAY_POS, 0L, A_ACTOR(from));
 	FLAG_ON(actor, FLG_DESTROY);
 }
 
