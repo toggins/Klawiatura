@@ -152,7 +152,7 @@ static int realmain() {
 				input_text_input(event.text);
 				break;
 			case SDL_EVENT_WINDOW_RESIZED:
-				set_resolution(event.window.data1, event.window.data2);
+				set_resolution(event.window.data1, event.window.data2, FALSE);
 				break;
 			default:
 				break;

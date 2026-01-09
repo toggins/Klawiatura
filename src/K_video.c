@@ -272,11 +272,13 @@ void get_resolution(int* width, int* height) {
 	SDL_GetWindowSizeInPixels(window, width, height);
 }
 
-void set_resolution(int width, int height) {
+void set_resolution(int width, int height, Bool center) {
 	SDL_SetWindowSize(window, width <= 0 ? SCREEN_WIDTH : width, height <= 0 ? SCREEN_HEIGHT : height);
 	SDL_SyncWindow(window);
-	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-	SDL_SyncWindow(window);
+	if (center) {
+		SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+		SDL_SyncWindow(window);
+	}
 	get_resolution(&window_width, &window_height);
 }
 

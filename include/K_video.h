@@ -192,7 +192,7 @@ void start_drawing(), stop_drawing();
 void start_video_state(), nuke_video_state();
 
 // Display
-void get_resolution(int*, int*), set_resolution(int, int);
+void get_resolution(int*, int*), set_resolution(int, int, Bool);
 Bool get_fullscreen();
 void set_fullscreen(Bool);
 Bool get_vsync();

@@ -278,17 +278,17 @@ static void toggle_resolution(int flip) {
 
 	if (flip >= 0) {
 		if (scale < 1.25)
-			set_resolution(SCREEN_WIDTH * 1.5, SCREEN_HEIGHT * 1.5);
+			set_resolution(SCREEN_WIDTH * 1.5, SCREEN_HEIGHT * 1.5, TRUE);
 		else if (scale >= 1.25 && scale < 1.75)
-			set_resolution(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2);
+			set_resolution(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, TRUE);
 		else if (scale >= 1.75)
-			set_resolution(SCREEN_WIDTH, SCREEN_HEIGHT);
+			set_resolution(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE);
 	} else if (scale < 1.25)
-		set_resolution(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2);
+		set_resolution(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, TRUE);
 	else if (scale >= 1.25 && scale < 1.75)
-		set_resolution(SCREEN_WIDTH, SCREEN_HEIGHT);
+		set_resolution(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE);
 	else if (scale >= 1.75)
-		set_resolution(SCREEN_WIDTH * 1.5, SCREEN_HEIGHT * 1.5);
+		set_resolution(SCREEN_WIDTH * 1.5, SCREEN_HEIGHT * 1.5, TRUE);
 }
 
 FMT_OPTION(fullscreen, get_fullscreen() ? "On" : "Off");

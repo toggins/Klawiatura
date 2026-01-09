@@ -47,7 +47,7 @@ static int get_width() {
 static void set_width(int width) {
 	cfg_width = width;
 	if (cfg_height)
-		set_resolution(cfg_width, cfg_height);
+		set_resolution(cfg_width, cfg_height, TRUE);
 }
 static int get_height() {
 	if (!window_maximized())
@@ -57,7 +57,7 @@ static int get_height() {
 static void set_height(int height) {
 	cfg_height = height;
 	if (cfg_width)
-		set_resolution(cfg_width, cfg_height);
+		set_resolution(cfg_width, cfg_height, TRUE);
 }
 static Bool get_filter() {
 	return CLIENT.video.filter;
