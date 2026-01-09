@@ -9,9 +9,9 @@ static void load() {
 	load_texture_num("enemies/lakitu_cloud%u", 7L, FALSE);
 	load_texture_num("enemies/lakitu_throw%u", 11L, FALSE);
 
-	load_sound("lakitu", FALSE);
+	load_sound("lakitu0", FALSE);
+	load_sound("lakitu1", FALSE);
 	load_sound("lakitu2", FALSE);
-	load_sound("lakitu3", FALSE);
 	load_sound("stomp", FALSE);
 	load_sound("kick", FALSE);
 
