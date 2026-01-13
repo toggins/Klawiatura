@@ -103,9 +103,6 @@ FetchContent_MakeAvailable(S_tructures)
 list(APPEND LIBS S_tructures)
 
 # NutPunch
-set(NUTPUNCH_BUILD_TESTS OFF CACHE INTERNAL "")
-set(NUTPUNCH_BUILD_SERVER OFF CACHE INTERNAL "")
-set(NUTPUNCH_BUILD_LOBBYIST OFF CACHE INTERNAL "")
 set(NUTPUNCH_STAGING ON CACHE INTERNAL "")
 FetchContent_Declare(
     NutPunch
