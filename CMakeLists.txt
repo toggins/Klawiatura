@@ -25,8 +25,7 @@ set(SDL_RENDER OFF CACHE INTERNAL "")
 set(SDL_GPU OFF CACHE INTERNAL "")
 set(SDL_AUDIO OFF CACHE INTERNAL "")
 set(SDL_CAMERA OFF CACHE INTERNAL "")
-FetchContent_Declare(
-    SDL3
+FetchContent_Declare(SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
     GIT_TAG release-3.4.0)
 FetchContent_MakeAvailable(SDL3)
@@ -38,23 +37,20 @@ set(SDLIMAGE_TIF OFF CACHE INTERNAL "")
 set(SDLIMAGE_WEBP OFF CACHE INTERNAL "")
 set(SDLIMAGE_SVG OFF CACHE INTERNAL "")
 set(SDLIMAGE_XCF OFF CACHE INTERNAL "")
-FetchContent_Declare(
-    SDL3_image
+FetchContent_Declare(SDL3_image
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
     GIT_TAG release-3.2.6)
 FetchContent_MakeAvailable(SDL3_image)
 list(APPEND LIBS SDL3_image::SDL3_image-static)
 
 # SDL_GameControllerDB
-FetchContent_Declare(
-    SDL_GameControllerDB
+FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
     GIT_TAG 01de5cf46ff3679b5378ec7dae365791e632b76a)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
 
 # GLAD (2.0.8, OpenGL 3.3 Core)
-FetchContent_Declare(
-    glad
+FetchContent_Declare(glad
     GIT_REPOSITORY https://github.com/Dav1dde/glad.git
     GIT_TAG v2.0.8
     SOURCE_SUBDIR cmake)
@@ -65,8 +61,7 @@ list(APPEND LIBS glad_gl_core_33)
 # cglm
 set(CGLM_SHARED OFF CACHE INTERNAL "")
 set(CGLM_STATIC ON CACHE INTERNAL "")
-FetchContent_Declare(
-    cglm
+FetchContent_Declare(cglm
     GIT_REPOSITORY https://github.com/recp/cglm.git
     GIT_TAG v0.9.6)
 FetchContent_MakeAvailable(cglm)
@@ -77,8 +72,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
 list(APPEND LIBS fmod)
 
 # yyjson (0.12.0)
-FetchContent_Declare(
-    yyjson
+FetchContent_Declare(yyjson
     GIT_REPOSITORY https://github.com/ibireme/yyjson.git
     GIT_TAG 0.12.0)
 FetchContent_MakeAvailable(yyjson)
@@ -86,8 +80,7 @@ list(APPEND LIBS yyjson)
 
 # S_fixed
 set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
-FetchContent_Declare(
-    S_fixed
+FetchContent_Declare(S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
     GIT_TAG 8171508bb7729d94aa98f6ee391a5f30d84ec328)
 FetchContent_MakeAvailable(S_fixed)
@@ -95,8 +88,7 @@ list(APPEND LIBS S_fixed)
 
 # S_tructures
 set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
-FetchContent_Declare(
-    S_tructures
+FetchContent_Declare(S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
     GIT_TAG 71c959ad0056e33ce4264714461d5cfb7211fec9)
 FetchContent_MakeAvailable(S_tructures)
@@ -104,8 +96,7 @@ list(APPEND LIBS S_tructures)
 
 # NutPunch
 set(NUTPUNCH_STAGING ON CACHE INTERNAL "")
-FetchContent_Declare(
-    NutPunch
+FetchContent_Declare(NutPunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
     GIT_TAG c9614d14c2327139f9e814d6d8a85a9c00a50c95)
 FetchContent_MakeAvailable(NutPunch)
@@ -113,8 +104,7 @@ list(APPEND LIBS NutPunch)
 
 # GekkoNet
 set(NO_ASIO_BUILD ON CACHE INTERNAL "")
-FetchContent_Declare(
-    GekkoNet
+FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
     GIT_TAG 2bf3cb4ed0a11297c3a002a66b9d650052da62cd)
 FetchContent_MakeAvailable(GekkoNet)
