@@ -107,7 +107,7 @@ set(NUTPUNCH_STAGING ON CACHE INTERNAL "")
 FetchContent_Declare(
     NutPunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG fc12e7fd9ebd52658369d7c8e60341d13496d9dd)
+    GIT_TAG 48dae25e73da1fd8d0801b3021f665c974c4c9bc)
 FetchContent_MakeAvailable(NutPunch)
 list(APPEND LIBS NutPunch)
 
