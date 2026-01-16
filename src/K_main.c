@@ -63,6 +63,9 @@ static MenuType starting_menu = MEN_INTRO;
 static int realmain();
 
 static void show_disclaimer() {
+	// Windose cmd starts a new line when you type `.\Klawiatura.exe` and press Enter, but
+	// doesn't break that line for us. So here goes an extra line break at the start:
+	printf("\n");
 	printf("==========[KLAWIATURA]==========\n");
 	printf("      MARIO FOREVER ONLINE      \n");
 	printf("================================\n");
