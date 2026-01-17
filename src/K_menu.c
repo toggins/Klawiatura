@@ -609,6 +609,8 @@ static void update_joining_lobby() {
 		play_generic_sound("disconnect");
 		show_error("Failed to %s lobby:\n\n%s", net_verb(), net_error());
 	} else if (is_connected()) {
+		push_user_data();
+		(NutPunch_IsMaster() ? push_lobby_data : pull_lobby_data)();
 		play_generic_sound("connect");
 		set_menu(MEN_LOBBY);
 	}

@@ -89,7 +89,7 @@ static void np_peer_set_string(const char* name, const char* str) {
 #define MAKE_LOBBY_GETTER(suffix, type)                                                                                \
 	static void np_lobby_get_##suffix(const char* name, type* dest) {                                              \
 		int size = 0;                                                                                          \
-		type* value = NutPunch_LobbyGet(name, &size);                                                          \
+		const type* value = NutPunch_LobbyGet(name, &size);                                                    \
 		if (value != NULL && size == sizeof(type))                                                             \
 			*dest = *value;                                                                                \
 	}
@@ -102,7 +102,7 @@ MAKE_LOBBY_GETTER(i8, Sint8);
 
 static void np_lobby_get_string(const char* name, char dest[NUTPUNCH_FIELD_DATA_MAX]) {
 	int size = 0;
-	char* str = NutPunch_LobbyGet(name, &size);
+	const char* str = NutPunch_LobbyGet(name, &size);
 	if (str != NULL && size == NUTPUNCH_FIELD_DATA_MAX)
 		SDL_memcpy(dest, str, NUTPUNCH_FIELD_DATA_MAX);
 }
@@ -113,12 +113,6 @@ const char* net_verb() {
 }
 
 void net_newframe() {
-	if (is_connected()) {
-		push_user_data();
-		if (NutPunch_IsMaster())
-			push_lobby_data();
-	}
-
 	if (NutPunch_Update() == NPS_Error) {
 		last_error = NutPunch_GetLastError();
 		disconnect();
@@ -128,9 +122,6 @@ void net_newframe() {
 		}
 	} else
 		last_error = NULL;
-
-	if (is_connected() && !NutPunch_IsMaster())
-		pull_lobby_data();
 }
 
 const char* net_error() {
