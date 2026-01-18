@@ -3,7 +3,10 @@
 #include <SDL3/SDL_log.h>
 #include <SDL3/SDL_stdinc.h>
 
-__attribute__((noreturn)) void handle_fatal(const char*, int, const char*, const char*, ...);
+#include "K_os.h"
+
+K_NORETURN void handle_fatal(const char*, int, const char*, const char*, ...);
+
 const char* log_basename(const char*);
 #define LOG_WITH(fn, msg, ...)                                                                                         \
 	fn(SDL_LOG_CATEGORY_APPLICATION, "%s:%d %s(): " msg, log_basename(__FILE__), __LINE__, __func__, ##__VA_ARGS__)
