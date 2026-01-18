@@ -2,8 +2,7 @@
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "file",
     "files.exclude": {
-        ".cache": true,
-        "build*/": true
+        ".cache": true
     },
     "files.associations": {
         "*.h": "c"
