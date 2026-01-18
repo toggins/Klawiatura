@@ -128,10 +128,6 @@ const char* net_error() {
 	return last_error;
 }
 
-Bool is_connected() {
-	return cur_lobby[0] != '\0' && NutPunch_PeerCount() >= 1;
-}
-
 void disconnect() {
 	NutPunch_Disconnect();
 	SDL_memset(cur_lobby, 0, sizeof(cur_lobby));

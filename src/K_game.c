@@ -87,7 +87,7 @@ static float pause_hover[PMO_SIZE] = {0.f};
 
 static void pause() {
 	paused = TRUE;
-	if (!is_connected())
+	if (!NutPunch_IsReady())
 		pause_audio_state(TRUE);
 	input_wipeout();
 }
@@ -267,7 +267,7 @@ Bool update_game() {
 	GameInput input = 0;
 
 	update_chat_hist();
-	if (!typing_what() && is_connected()) {
+	if (!typing_what() && NutPunch_IsReady()) {
 		if (kb_pressed(KB_CHAT) && !paused)
 			start_typing(chat_message, sizeof(chat_message));
 		else if (typing_input_confirmed())
@@ -325,7 +325,7 @@ Bool update_game() {
 
 			case PMO_RESTART: {
 				// FIXME: Update this if replays are implemented.
-				if (is_connected())
+				if (NutPunch_IsReady())
 					goto no_can_restart;
 
 				if (game_state.flags & GF_HELL)
@@ -362,7 +362,7 @@ Bool update_game() {
 		}
 
 	pause_n_all:
-		if (!is_connected())
+		if (!NutPunch_IsReady())
 			continue;
 
 	dont_break_events:
@@ -607,8 +607,8 @@ static void draw_hud() {
 				optname = "Resume Game";
 				break;
 			case PMO_RESTART:
-				optname = is_connected() ? "(Can't restart in multiplayer!)"
-				                         : "Restart Level (-1 Life)";
+				optname = NutPunch_IsReady() ? "(Can't restart in multiplayer!)"
+				                             : "Restart Level (-1 Life)";
 				break;
 			case PMO_EXIT:
 				optname = "Return to Title";

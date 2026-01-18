@@ -103,7 +103,7 @@ static void deactivate_secret(SecretType idx) {
 static MenuType cur_menu;
 static void update_secrets() {
 	const Bool handicapped
-		= is_connected() || cur_menu == MEN_INTRO || cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY;
+		= NutPunch_IsReady() || cur_menu == MEN_INTRO || cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY;
 	for (SecretType i = 0; i < SECR_SIZE; i++) {
 		Secret* secret = &SECRETS[i];
 
@@ -608,7 +608,7 @@ static void update_joining_lobby() {
 	if (net_error()) {
 		play_generic_sound("disconnect");
 		show_error("Failed to %s lobby:\n\n%s", net_verb(), net_error());
-	} else if (is_connected()) {
+	} else if (NutPunch_IsReady()) {
 		push_user_data();
 		(NutPunch_IsMaster() ? push_lobby_data : pull_lobby_data)();
 		play_generic_sound("connect");
@@ -621,7 +621,7 @@ static void enter_lobby() {
 }
 
 static void update_inlobby() {
-	if (!is_connected()) {
+	if (!NutPunch_IsReady()) {
 		const char* error = net_error();
 		if (error == NULL)
 			prev_menu();

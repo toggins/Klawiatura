@@ -28,7 +28,6 @@ Bool in_public_server();
 
 // Interface
 void net_newframe();
-Bool is_connected();
 const char *net_error(), *net_verb();
 void disconnect();
 
