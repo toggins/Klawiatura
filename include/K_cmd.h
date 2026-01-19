@@ -43,7 +43,6 @@ typedef struct {
 	struct {
 		Bool aware;
 		char name[CLIENT_STRING_MAX];
-		char skin[CLIENT_STRING_MAX];
 	} user;
 
 	struct {

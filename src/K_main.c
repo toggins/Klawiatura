@@ -50,7 +50,6 @@ CmdArg CMDLINE[] = {
 
 ClientInfo CLIENT = {
 	.user.name = "", // filled in later in `K_config.c`
-	.user.skin = "",
 	.input.delay = 1,
 	.game.players = 2,
 	.game.level = "test",

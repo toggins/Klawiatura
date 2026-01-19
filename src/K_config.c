@@ -24,12 +24,6 @@ static const char* get_name() {
 static void set_name(const char* name) {
 	SDL_strlcpy(CLIENT.user.name, name, sizeof(CLIENT.user.name));
 }
-static const char* get_skin() {
-	return CLIENT.user.skin;
-}
-static void set_skin(const char* skin) {
-	SDL_strlcpy(CLIENT.user.skin, skin, sizeof(CLIENT.user.skin));
-}
 
 static int get_delay() {
 	return CLIENT.input.delay;
@@ -81,7 +75,6 @@ static void set_aware(Bool aware) {
 static const ConfigOption OPTIONS[] = {
 	{"aware",        .r_bool = get_aware,         .w_bool = set_aware        },
 	{"name",         .r_string = get_name,        .w_string = set_name       },
-	{"skin",         .r_string = get_skin,        .w_string = set_skin       },
 	{"delay",        .r_int = get_delay,          .w_int = set_delay         },
 	{"width",        .r_int = get_width,          .w_int = set_width         },
 	{"height",       .r_int = get_height,         .w_int = set_height        },
@@ -100,9 +93,6 @@ static Bool fill_missing_fields() {
 
 	if (!SDL_strlen(CLIENT.user.name))
 		SDL_snprintf(CLIENT.user.name, CLIENT_STRING_MAX, "Mario #%04d", 1 + SDL_rand(9999)), modified++;
-
-	if (!SDL_strlen(CLIENT.user.skin))
-		SDL_snprintf(CLIENT.user.skin, CLIENT_STRING_MAX, "mario"), modified++;
 
 	if (modified)
 		INFO("Set %d options to their default values", modified);
