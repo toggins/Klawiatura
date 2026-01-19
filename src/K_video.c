@@ -235,8 +235,7 @@ void stop_drawing() {
 	if (framerate <= 0)
 		return;
 	const Uint64 current_frame_time = SDL_GetTicksNS();
-	const float sleep
-		= (1000000000.f / (float)framerate) - ((float)(current_frame_time - last_frame_time) / 1000000000.f);
+	const float sleep = (1000000000.f / (float)framerate) - (float)(current_frame_time - last_frame_time);
 	last_frame_time = current_frame_time;
 	SDL_DelayPrecise(SDL_max(0.f, sleep));
 }
