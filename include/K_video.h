@@ -203,6 +203,8 @@ void start_video_state(), nuke_video_state();
 void get_resolution(int*, int*), set_resolution(int, int, Bool);
 Bool get_fullscreen();
 void set_fullscreen(Bool);
+int get_framerate();
+void set_framerate(int);
 Bool get_vsync();
 void set_vsync(Bool);
 

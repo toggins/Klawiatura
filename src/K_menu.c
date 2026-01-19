@@ -254,7 +254,6 @@ FMT_OPTION(waiting, (NutPunch_PeerCount() >= NutPunch_GetMaxPlayers()) ? "Starti
 
 // Options
 FMT_OPTION(name, CLIENT.user.name);
-FMT_OPTION(skin, CLIENT.user.skin);
 
 FMT_OPTION(delay, CLIENT.input.delay);
 static void set_delay(int flip) {
@@ -294,6 +293,83 @@ static void toggle_resolution(int flip) {
 
 FMT_OPTION(fullscreen, get_fullscreen() ? "On" : "Off");
 BOOL_OPTION(fullscreen, get_fullscreen, set_fullscreen);
+
+FMT_OPTION(framerate, get_framerate());
+static void flip_framerate(int flip) {
+	const int fps = get_framerate();
+	if (flip >= 0)
+		switch (fps) {
+		default:
+			set_framerate(0);
+			break;
+		case 0 ... 29:
+			set_framerate(30);
+			break;
+		case 30 ... 49:
+			set_framerate(50);
+			break;
+		case 50 ... 59:
+			set_framerate(60);
+			break;
+		case 60 ... 74:
+			set_framerate(75);
+			break;
+		case 75 ... 119:
+			set_framerate(120);
+			break;
+		case 120 ... 143:
+			set_framerate(144);
+			break;
+		case 144 ... 164:
+			set_framerate(165);
+			break;
+		case 165 ... 179:
+			set_framerate(180);
+			break;
+		case 180 ... 239:
+			set_framerate(240);
+			break;
+		case 240 ... 359:
+			set_framerate(360);
+			break;
+		}
+	else
+		switch (fps) {
+		default:
+			set_framerate(360);
+			break;
+		case 1 ... 30:
+			set_framerate(0);
+			break;
+		case 31 ... 50:
+			set_framerate(30);
+			break;
+		case 51 ... 60:
+			set_framerate(50);
+			break;
+		case 61 ... 75:
+			set_framerate(60);
+			break;
+		case 76 ... 120:
+			set_framerate(75);
+			break;
+		case 121 ... 144:
+			set_framerate(120);
+			break;
+		case 145 ... 165:
+			set_framerate(144);
+			break;
+		case 166 ... 180:
+			set_framerate(165);
+			break;
+		case 181 ... 240:
+			set_framerate(180);
+			break;
+		case 241 ... 360:
+			set_framerate(240);
+			break;
+		}
+}
 
 FMT_OPTION(vsync, get_vsync() ? "On" : "Off");
 BOOL_OPTION(vsync, get_vsync, set_vsync);
@@ -466,13 +542,13 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	},
 	[MEN_OPTIONS] = {
 		{"Name: %s", FORMAT(name), EDIT(CLIENT.user.name)},
-		{"Skin: %s", FORMAT(skin), EDIT(CLIENT.user.skin)},
 		{},
 		{"Controls", .enter = MEN_CONTROLS},
 		{"Input Delay: %i", FORMAT(delay), .flip = set_delay},
 		{},
 		{"Resolution: %dx%d", .disable_if = get_fullscreen, FORMAT(resolution), TOGGLE(resolution)},
 		{"Fullscreen: %s", FORMAT(fullscreen), TOGGLE(fullscreen)},
+		{"Framerate: %i FPS", FORMAT(framerate), .flip = flip_framerate},
 		{"Vsync: %s", FORMAT(vsync), TOGGLE(vsync)},
 		{"Texture Filter: %s", FORMAT(filter), TOGGLE(filter)},
 		{},

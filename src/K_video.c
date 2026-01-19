@@ -13,6 +13,7 @@ SDL_Window* window = NULL;
 static SDL_GLContext gpu = NULL;
 
 static int window_width = SCREEN_WIDTH, window_height = SCREEN_HEIGHT;
+static int framerate = 60;
 static Bool vsync = FALSE;
 
 #define SHD(idx, nm) [idx] = {.name = (nm), -1}
@@ -34,6 +35,8 @@ static mat4 model_matrix = GLM_MAT4_IDENTITY, view_matrix = GLM_MAT4_IDENTITY, p
 
 static StTinyMap* tilemaps = NULL;
 static TileMap* last_tilemap = NULL;
+
+static Uint64 last_frame_time = 0;
 
 VideoState video_state = {0};
 
@@ -188,6 +191,7 @@ bypass:
 
 	textures = NewTinyMap(), fonts = NewTinyMap();
 	batch_reset_hard();
+	last_frame_time = SDL_GetPerformanceCounter();
 }
 
 #undef CHECK_GL_EXTENSION
@@ -227,6 +231,15 @@ void start_drawing() {
 void stop_drawing() {
 	submit_batch();
 	SDL_GL_SwapWindow(window);
+
+	if (framerate <= 0)
+		return;
+	const Uint64 current_frame_time = SDL_GetPerformanceCounter();
+	const float sleep = (1000000000.f / (float)framerate)
+	                    - ((float)(current_frame_time - last_frame_time)
+				    / ((float)SDL_GetPerformanceFrequency() * 1000000000.f));
+	last_frame_time = current_frame_time;
+	SDL_DelayNS((Uint64)SDL_max(0.f, sleep));
 }
 
 Bool window_maximized() {
@@ -290,6 +303,14 @@ void set_fullscreen(Bool fullscreen) {
 	SDL_SetWindowFullscreen(window, fullscreen), SDL_SyncWindow(window);
 	SDL_RestoreWindow(window), SDL_SyncWindow(window);
 	get_resolution(&window_width, &window_height);
+}
+
+int get_framerate() {
+	return framerate;
+}
+
+void set_framerate(int fps) {
+	framerate = fps;
 }
 
 Bool get_vsync() {
