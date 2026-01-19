@@ -191,7 +191,7 @@ bypass:
 
 	textures = NewTinyMap(), fonts = NewTinyMap();
 	batch_reset_hard();
-	last_frame_time = SDL_GetPerformanceCounter();
+	last_frame_time = SDL_GetTicksNS();
 }
 
 #undef CHECK_GL_EXTENSION
@@ -234,12 +234,11 @@ void stop_drawing() {
 
 	if (framerate <= 0)
 		return;
-	const Uint64 current_frame_time = SDL_GetPerformanceCounter();
-	const float sleep = (1000000000.f / (float)framerate)
-	                    - ((float)(current_frame_time - last_frame_time)
-				    / ((float)SDL_GetPerformanceFrequency() * 1000000000.f));
+	const Uint64 current_frame_time = SDL_GetTicksNS();
+	const float sleep
+		= (1000000000.f / (float)framerate) - ((float)(current_frame_time - last_frame_time) / 1000000000.f);
 	last_frame_time = current_frame_time;
-	SDL_DelayNS((Uint64)SDL_max(0.f, sleep));
+	SDL_DelayPrecise(SDL_max(0.f, sleep));
 }
 
 Bool window_maximized() {
