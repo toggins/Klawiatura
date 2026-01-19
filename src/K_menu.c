@@ -296,79 +296,23 @@ BOOL_OPTION(fullscreen, get_fullscreen, set_fullscreen);
 
 FMT_OPTION(framerate, get_framerate());
 static void flip_framerate(int flip) {
-	const int fps = get_framerate();
-	if (flip >= 0)
-		switch (fps) {
-		default:
-			set_framerate(0);
-			break;
-		case 0 ... 29:
-			set_framerate(30);
-			break;
-		case 30 ... 49:
-			set_framerate(50);
-			break;
-		case 50 ... 59:
-			set_framerate(60);
-			break;
-		case 60 ... 74:
-			set_framerate(75);
-			break;
-		case 75 ... 119:
-			set_framerate(120);
-			break;
-		case 120 ... 143:
-			set_framerate(144);
-			break;
-		case 144 ... 164:
-			set_framerate(165);
-			break;
-		case 165 ... 179:
-			set_framerate(180);
-			break;
-		case 180 ... 239:
-			set_framerate(240);
-			break;
-		case 240 ... 359:
-			set_framerate(360);
-			break;
-		}
-	else
-		switch (fps) {
-		default:
-			set_framerate(360);
-			break;
-		case 1 ... 30:
-			set_framerate(0);
-			break;
-		case 31 ... 50:
-			set_framerate(30);
-			break;
-		case 51 ... 60:
-			set_framerate(50);
-			break;
-		case 61 ... 75:
-			set_framerate(60);
-			break;
-		case 76 ... 120:
-			set_framerate(75);
-			break;
-		case 121 ... 144:
-			set_framerate(120);
-			break;
-		case 145 ... 165:
-			set_framerate(144);
-			break;
-		case 166 ... 180:
-			set_framerate(165);
-			break;
-		case 181 ... 240:
-			set_framerate(180);
-			break;
-		case 241 ... 360:
-			set_framerate(240);
-			break;
-		}
+	static const int ranges[] = {0, 30, 50, 60, 75, 120, 144, 165, 180, 240, 360};
+	const int fps = get_framerate(), len = sizeof(ranges) / sizeof(*ranges);
+	if (flip >= 0) {
+		for (int i = 0; i < len; i++)
+			if (fps < ranges[i]) {
+				set_framerate(ranges[i]);
+				return;
+			}
+		set_framerate(ranges[0]);
+	} else {
+		for (int i = len - 2; i >= 0; i--)
+			if (fps > ranges[i]) {
+				set_framerate(ranges[i]);
+				return;
+			}
+		set_framerate(ranges[len - 1]);
+	}
 }
 
 FMT_OPTION(vsync, get_vsync() ? "On" : "Off");
