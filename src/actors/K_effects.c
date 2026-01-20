@@ -19,6 +19,10 @@ static void load_explode() {
 	load_texture_num("effects/explode%u", 3L, FALSE);
 }
 
+static void create_explode(GameActor* actor) {
+	actor->depth = -FxOne;
+}
+
 static void tick_explode(GameActor* actor) {
 	VAL(actor, EFFECT_FRAME) += 24L;
 	if (VAL(actor, EFFECT_FRAME) >= 300L)
@@ -30,7 +34,12 @@ static void draw_explode(const GameActor* actor) {
 	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
-const GameActorTable TAB_EXPLODE = {.load = load_explode, .tick = tick_explode, .draw = draw_explode};
+const GameActorTable TAB_EXPLODE = {
+	.load = load_explode,
+	.create = create_explode,
+	.tick = tick_explode,
+	.draw = draw_explode,
+};
 
 // ===========
 // BRICK SHARD
