@@ -368,7 +368,7 @@ BIND_OPTION(chat, KB_CHAT);
 #undef BIND_OPTION
 
 static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
-	enter_lobby(), update_inlobby(), find_levels();
+	enter_lobby(), update_inlobby(), show_levels_first_page();
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType);
 
 #define GHOST .ghost = TRUE
@@ -379,7 +379,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_RESULTS] = {"", GHOST},
 	[MEN_INTRO] = {NORETURN, .update = update_intro},
 	[MEN_MAIN] = {"Mario Together", NORETURN, .enter = reset_credits},
-	[MEN_LEVEL_SELECT] = {"Level Select", .enter = find_levels},
+	[MEN_LEVEL_SELECT] = {"Level Select", .enter = show_levels_first_page},
 	[MEN_SINGLEPLAYER] = {"Singleplayer"},
 	[MEN_MULTIPLAYER_NOTE] = {"Read This First!", GHOST, .enter = enter_multiplayer_note},
 	[MEN_MULTIPLAYER] = {"Multiplayer"},
@@ -1126,10 +1126,26 @@ static void select_level() {
 }
 
 #define LEVELS_DIR "data/levels"
+#define LEVELS_PER_PAGE (MAX_OPTIONS - 3)
 
-static void find_levels() {
+static int levels_page = 0;
+
+static void show_levels();
+
+static void levels_next_page() {
+	levels_page++;
+	show_levels();
+}
+
+static void levels_prev_page() {
+	levels_page -= 1;
+	show_levels();
+}
+
+static void show_levels() {
 	static char block[MAX_OPTIONS][CLIENT_STRING_MAX] = {0};
 
+	MENUS[MEN_LEVEL_SELECT].option = 0;
 	for (int i = 0; i < MAX_OPTIONS; i++) {
 		Option* opt = &OPTIONS[MEN_LEVEL_SELECT][i];
 		opt->disabled = TRUE, opt->name = NULL, opt->button = NULL;
@@ -1137,11 +1153,22 @@ static void find_levels() {
 
 	int count = 0;
 	char** glob = SDL_GlobDirectory(LEVELS_DIR, NULL, 0, &count);
-	if (!glob)
-		return;
 
-	for (int i = 0; i < count && i < MAX_OPTIONS; i++) {
-		const char* level = filename_sans_extension(glob[i]);
+	Option* pager = &OPTIONS[MEN_LEVEL_SELECT][MAX_OPTIONS - 1];
+	if (levels_page < count / LEVELS_PER_PAGE) {
+		pager->name = "Next ->", pager->disabled = FALSE;
+		pager->button = levels_next_page;
+		pager = &OPTIONS[MEN_LEVEL_SELECT][MAX_OPTIONS - 2];
+	}
+
+	if (levels_page > 0) {
+		pager->name = "<- Back", pager->disabled = FALSE;
+		pager->button = levels_prev_page;
+	}
+
+	const int off = levels_page * LEVELS_PER_PAGE;
+	for (int i = 0; i < count - off && i < LEVELS_PER_PAGE; i++) {
+		const char* level = filename_sans_extension(glob[off + i]);
 		SDL_strlcpy(block[i], level, CLIENT_STRING_MAX);
 		Option* opt = &OPTIONS[MEN_LEVEL_SELECT][i];
 		opt->disabled = FALSE, opt->name = block[i];
@@ -1151,4 +1178,9 @@ static void find_levels() {
 	SDL_free((void*)glob);
 }
 
+#undef LEVELS_PER_PAGE
 #undef LEVELS_DIR
+
+static void show_levels_first_page() {
+	show_levels(0);
+}
