@@ -75,3 +75,13 @@ const char* file_basename(const char* path) {
 		s = SDL_strrchr(path, '\\');
 	return s ? s + 1 : path;
 }
+
+const char* filename_sans_extension(const char* path) {
+	static char buf[512] = {0};
+	SDL_strlcpy(buf, path, sizeof(buf));
+
+	char* s = SDL_strrchr(buf, '.');
+	if (s)
+		*s = 0;
+	return buf;
+}

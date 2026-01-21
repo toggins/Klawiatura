@@ -4,11 +4,14 @@
 #include "K_cmd.h"
 #include "K_config.h"
 #include "K_discord.h"
+#include "K_file.h"
 #include "K_menu.h"
 #include "K_net.h"
 #include "K_string.h"
 #include "K_tick.h"
 #include "K_video.h"
+
+#include "SDL3/SDL_filesystem.h"
 
 extern Bool permadeath;
 const extern Bool quickstart;
@@ -365,7 +368,7 @@ BIND_OPTION(chat, KB_CHAT);
 #undef BIND_OPTION
 
 static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
-	enter_lobby(), update_inlobby();
+	enter_lobby(), update_inlobby(), find_levels();
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType);
 
 #define GHOST .ghost = TRUE
@@ -376,6 +379,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_RESULTS] = {"", GHOST},
 	[MEN_INTRO] = {NORETURN, .update = update_intro},
 	[MEN_MAIN] = {"Mario Together", NORETURN, .enter = reset_credits},
+	[MEN_LEVEL_SELECT] = {"Level Select", .enter = find_levels},
 	[MEN_SINGLEPLAYER] = {"Singleplayer"},
 	[MEN_MULTIPLAYER_NOTE] = {"Read This First!", GHOST, .enter = enter_multiplayer_note},
 	[MEN_MULTIPLAYER] = {"Multiplayer"},
@@ -451,8 +455,6 @@ static void join_found_lobby() {
 static const char* NO_LOBBIES_FOUND = "No lobbies found";
 
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
-	[MEN_ERROR] = {},
-	[MEN_RESULTS] = {},
 	[MEN_MAIN] = {
 		{"Singleplayer", .enter = MEN_SINGLEPLAYER},
 		{"Multiplayer", .enter = MEN_MULTIPLAYER_NOTE},
@@ -460,7 +462,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Exit", .button = instaquit},
 	},
 	[MEN_SINGLEPLAYER] = {
-		{"Level: %s", FORMAT(level), EDIT(CLIENT.game.level)},
+		{"Level: %s", FORMAT(level), .enter = MEN_LEVEL_SELECT},
 		{},
 		{"Start!", .button = play_singleplayer},
 	},
@@ -520,7 +522,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Visibility: %s", FORMAT(lobby_public), TOGGLE(lobby_public)},
 		{},
 		{"Players: %d", FORMAT(players), .flip = set_players},
-		{"Level: %s", FORMAT(level), EDIT(CLIENT.game.level)},
+		{"Level: %s", FORMAT(level), .enter = MEN_LEVEL_SELECT},
 		{},
 		{"Host!", .button = do_host_fr},
 	},
@@ -590,9 +592,9 @@ static void maybe_save_config(MenuType next) {
 static void cleanup_lobby_list(MenuType next) {
 	maybe_disconnect(next);
 	for (int i = 0; i < MAX_OPTIONS; i++) {
-		OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
-		OPTIONS[MEN_FIND_LOBBY][i].disabled = TRUE;
-		OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
+		Option* opt = &OPTIONS[MEN_FIND_LOBBY][i];
+		opt->name = i ? NULL : NO_LOBBIES_FOUND;
+		opt->disabled = TRUE, opt->button = NULL;
 	}
 }
 
@@ -605,20 +607,16 @@ static void update_intro() {
 static void update_find_lobbies() {
 	static char block[MAX_OPTIONS][MAX_LEN] = {0};
 	for (int i = 0; i < MAX_OPTIONS; i++) {
+		Option* opt = &OPTIONS[MEN_FIND_LOBBY][i];
 		if (NutPunch_LobbyCount() <= 0) {
-			OPTIONS[MEN_FIND_LOBBY][i].name = i ? NULL : NO_LOBBIES_FOUND;
-			OPTIONS[MEN_FIND_LOBBY][i].disabled = TRUE;
-			OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
+			opt->name = i ? NULL : NO_LOBBIES_FOUND;
+			opt->disabled = TRUE, opt->button = NULL;
 		} else if (i >= NutPunch_LobbyCount()) {
-			OPTIONS[MEN_FIND_LOBBY][i].name = NULL;
-			OPTIONS[MEN_FIND_LOBBY][i].disabled = TRUE;
-			OPTIONS[MEN_FIND_LOBBY][i].button = NULL;
+			opt->name = NULL, opt->disabled = TRUE, opt->button = NULL;
 		} else {
 			const NutPunch_LobbyInfo* lobby = NutPunch_GetLobby(i);
 			SDL_snprintf(block[i], MAX_LEN, "%s (%d/%d)", lobby->name, lobby->players, lobby->capacity);
-			OPTIONS[MEN_FIND_LOBBY][i].name = block[i];
-			OPTIONS[MEN_FIND_LOBBY][i].disabled = FALSE;
-			OPTIONS[MEN_FIND_LOBBY][i].button = join_found_lobby;
+			opt->name = block[i], opt->disabled = FALSE, opt->button = join_found_lobby;
 		}
 	}
 }
@@ -1116,3 +1114,40 @@ static float volume_toggle_impl(float volume, int flip) {
 
 	return volume;
 }
+
+// Level-select junk
+
+static void select_level() {
+	const int m = MEN_LEVEL_SELECT;
+	const char* name = OPTIONS[m][(int)MENUS[m].option].name;
+	SDL_strlcpy(CLIENT.game.level, name, CLIENT_STRING_MAX);
+	prev_menu();
+}
+
+#define LEVELS_DIR "data/levels"
+
+static void find_levels() {
+	static char block[MAX_OPTIONS][CLIENT_STRING_MAX] = {0};
+
+	for (int i = 0; i < MAX_OPTIONS; i++) {
+		Option* opt = &OPTIONS[MEN_LEVEL_SELECT][i];
+		opt->disabled = TRUE, opt->name = NULL, opt->button = NULL;
+	}
+
+	int count = 0;
+	char** glob = SDL_GlobDirectory(LEVELS_DIR, NULL, 0, &count);
+	if (!glob)
+		return;
+
+	for (int i = 0; i < count && i < MAX_OPTIONS; i++) {
+		const char* level = filename_sans_extension(glob[i]);
+		SDL_strlcpy(block[i], level, CLIENT_STRING_MAX);
+		Option* opt = &OPTIONS[MEN_LEVEL_SELECT][i];
+		opt->disabled = FALSE, opt->name = block[i];
+		opt->button = select_level;
+	}
+
+	SDL_free((void*)glob);
+}
+
+#undef LEVELS_DIR
