@@ -1106,12 +1106,13 @@ static float volume_toggle_impl(float volume, int flip) {
 			volume = 0.f;
 		else
 			volume += delta;
-	} else if (volume > 0.01f && (volume + delta) < 0.f)
+	} else if (volume > 0.01f && (volume + delta) < 0.f) {
 		volume = 0.f;
-	else if (volume <= 0.01f && (volume + delta) <= 0.f)
+	} else if (volume <= 0.01f && (volume + delta) <= 0.f) {
 		volume = 1.f;
-	else
+	} else {
 		volume += delta;
+	}
 
 	return volume;
 }
