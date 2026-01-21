@@ -719,7 +719,7 @@ void update_menu() {
 		for (size_t i = 0; i < MAX_OPTIONS; i++) {
 			if (change < 0 && new_option <= 0)
 				new_option = MAX_OPTIONS - 1;
-			if (change > 0 && new_option >= (MAX_OPTIONS - 1))
+			else if (change > 0 && new_option >= (MAX_OPTIONS - 1))
 				new_option = 0;
 			else
 				new_option += change;
