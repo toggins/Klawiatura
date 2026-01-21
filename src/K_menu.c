@@ -368,7 +368,7 @@ BIND_OPTION(chat, KB_CHAT);
 #undef BIND_OPTION
 
 static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
-	enter_lobby(), update_inlobby(), show_levels_first_page();
+	enter_lobby(), update_inlobby(), show_levels();
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType);
 
 #define GHOST .ghost = TRUE
@@ -379,7 +379,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_RESULTS] = {"", GHOST},
 	[MEN_INTRO] = {NORETURN, .update = update_intro},
 	[MEN_MAIN] = {"Mario Together", NORETURN, .enter = reset_credits},
-	[MEN_LEVEL_SELECT] = {"Level Select", .enter = show_levels_first_page},
+	[MEN_LEVEL_SELECT] = {"Level Select", .enter = show_levels},
 	[MEN_SINGLEPLAYER] = {"Singleplayer"},
 	[MEN_MULTIPLAYER_NOTE] = {"Read This First!", GHOST, .enter = enter_multiplayer_note},
 	[MEN_MULTIPLAYER] = {"Multiplayer"},
@@ -1130,8 +1130,6 @@ static void select_level() {
 
 static int levels_page = 0;
 
-static void show_levels();
-
 static void levels_next_page() {
 	levels_page++;
 	show_levels();
@@ -1180,7 +1178,3 @@ static void show_levels() {
 
 #undef LEVELS_PER_PAGE
 #undef LEVELS_DIR
-
-static void show_levels_first_page() {
-	show_levels(0);
-}
