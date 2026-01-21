@@ -1126,7 +1126,7 @@ static void select_level() {
 	prev_menu();
 }
 
-#define LEVELS_PER_PAGE (MAX_OPTIONS - 3)
+#define LEVELS_PER_PAGE (10)
 static int levels_page = 0;
 
 static void levels_next_page() {
@@ -1151,11 +1151,10 @@ static void show_levels() {
 	int count = 0;
 	char** glob = SDL_GlobDirectory("data/levels", NULL, 0, &count);
 
-	Option* pager = &OPTIONS[MEN_LEVEL_SELECT][MAX_OPTIONS - 1];
-	if (levels_page < count / LEVELS_PER_PAGE) {
+	Option* pager = &OPTIONS[MEN_LEVEL_SELECT][LEVELS_PER_PAGE + 1];
+	if (levels_page < (count - 1) / LEVELS_PER_PAGE) {
 		pager->name = "Next ->", pager->disabled = FALSE;
-		pager->button = levels_next_page;
-		pager = &OPTIONS[MEN_LEVEL_SELECT][MAX_OPTIONS - 2];
+		pager->button = levels_next_page, pager += 1;
 	}
 
 	if (levels_page > 0) {
