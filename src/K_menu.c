@@ -453,6 +453,7 @@ static void join_found_lobby() {
 #define OINFO DISABLE, VIVID
 
 static const char* NO_LOBBIES_FOUND = "No lobbies found";
+#define LEVEL_SELECT_OPTION "Level: %s", FORMAT(level), .enter = MEN_LEVEL_SELECT
 
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_MAIN] = {
@@ -462,7 +463,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Exit", .button = instaquit},
 	},
 	[MEN_SINGLEPLAYER] = {
-		{"Level: %s", FORMAT(level), .enter = MEN_LEVEL_SELECT},
+		{LEVEL_SELECT_OPTION},
 		{},
 		{"Start!", .button = play_singleplayer},
 	},
@@ -522,7 +523,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Visibility: %s", FORMAT(lobby_public), TOGGLE(lobby_public)},
 		{},
 		{"Players: %d", FORMAT(players), .flip = set_players},
-		{"Level: %s", FORMAT(level), .enter = MEN_LEVEL_SELECT},
+		{LEVEL_SELECT_OPTION},
 		{},
 		{"Host!", .button = do_host_fr},
 	},
