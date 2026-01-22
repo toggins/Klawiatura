@@ -1899,73 +1899,45 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 				    {x + actor->box.end.x,   y + actor->box.end.y  }
         });
 	Bool climbed = FALSE, stop = FALSE;
-	if (VAL(actor, X_SPEED) < FxZero) {
-		for (ActorID i = 0L; i < list.num_actors; i++) {
-			GameActor* displacer = list.actors[i];
-			if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
-				|| displacer->type == ACT_SOLID_SLOPE)
-				continue;
 
-			if (VAL(actor, Y_SPEED) >= FxZero
-				&& (actor->pos.y + actor->box.end.y - climb)
-					   < (displacer->pos.y + displacer->box.start.y))
-			{
-				const Fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
-				if (!touching_solid(
-					    (FRect){
-						    {x + actor->box.start.x - FxOne, step + actor->box.start.y - FxOne},
-						    {x + actor->box.end.x - FxOne,   step + actor->box.end.y - FxOne  }
-                                },
-					    SOL_SOLID))
-				{
-					y = step;
-					VAL(actor, Y_SPEED) = FxZero;
-					VAL(actor, Y_TOUCH) = 1L;
-					climbed = TRUE;
-				}
-				continue;
+	const Bool right = VAL(actor, X_SPEED) >= FxZero;
+	for (ActorID i = 0L; i < list.num_actors; i++) {
+		GameActor* displacer = list.actors[i];
+		if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID) || displacer->type == ACT_SOLID_SLOPE)
+			continue;
+
+		if (VAL(actor, Y_SPEED) >= FxZero
+			&& (actor->pos.y + actor->box.end.y - climb) < (displacer->pos.y + displacer->box.start.y))
+		{
+			const Fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
+			const FRect solid = right ? (FRect){
+				{x + actor->box.start.x + FxOne, step + actor->box.start.y - FxOne},
+				{x + actor->box.end.x + FxOne,   step + actor->box.end.y - FxOne  }
+			} : (FRect){
+				{x + actor->box.start.x - FxOne, step + actor->box.start.y - FxOne},
+				{x + actor->box.end.x - FxOne,   step + actor->box.end.y - FxOne  }
+			};
+			if (!touching_solid(solid, SOL_SOLID)) {
+				y = step;
+				VAL(actor, Y_SPEED) = FxZero;
+				VAL(actor, Y_TOUCH) = 1L;
+				climbed = TRUE;
 			}
-
-			ACTOR_CALL2(displacer, on_right, actor);
-			x = Fmax(x, displacer->pos.x + displacer->box.end.x - actor->box.start.x);
-			stop = VAL(actor, X_SPEED) <= FxZero;
-			climbed = FALSE;
+			continue;
 		}
-		VAL(actor, X_TOUCH) = -(stop && !climbed);
-	} else if (VAL(actor, X_SPEED) > FxZero) {
-		for (ActorID i = 0L; i < list.num_actors; i++) {
-			GameActor* displacer = list.actors[i];
-			if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
-				|| displacer->type == ACT_SOLID_SLOPE)
-				continue;
 
-			if (VAL(actor, Y_SPEED) >= FxZero
-				&& (actor->pos.y + actor->box.end.y - climb)
-					   < (displacer->pos.y + displacer->box.start.y))
-			{
-				const Fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
-				if (!touching_solid(
-					    (FRect){
-						    {x + actor->box.start.x + FxOne, step + actor->box.start.y - FxOne},
-						    {x + actor->box.end.x + FxOne,   step + actor->box.end.y - FxOne  }
-                                },
-					    SOL_SOLID))
-				{
-					y = step;
-					VAL(actor, Y_SPEED) = FxZero;
-					VAL(actor, Y_TOUCH) = 1L;
-					climbed = TRUE;
-				}
-				continue;
-			}
-
+		if (right) {
 			ACTOR_CALL2(displacer, on_left, actor);
 			x = Fmin(x, displacer->pos.x + displacer->box.start.x - actor->box.end.x);
 			stop = VAL(actor, X_SPEED) >= FxZero;
-			climbed = FALSE;
+		} else {
+			ACTOR_CALL2(displacer, on_right, actor);
+			x = Fmax(x, displacer->pos.x + displacer->box.end.x - actor->box.start.x);
+			stop = VAL(actor, X_SPEED) <= FxZero;
 		}
-		VAL(actor, X_TOUCH) = stop && !climbed;
+		climbed = FALSE;
 	}
+	VAL(actor, X_TOUCH) = (right ? 1 : -1) * (stop && !climbed);
 
 	if (stop)
 		VAL(actor, X_SPEED) = FxZero;
