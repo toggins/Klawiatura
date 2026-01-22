@@ -253,7 +253,10 @@ static void set_players(int flip) {
 					 : ((CLIENT.game.players <= 2) ? MAX_PLAYERS : (CLIENT.game.players - 1)));
 }
 
-FMT_OPTION(waiting, (NutPunch_PeerCount() >= NutPunch_GetMaxPlayers()) ? "Starting!" : "Waiting for players");
+FMT_OPTION(ready, is_peer_ready(NutPunch_LocalPeer()) ? "Ready!" : "Press to ready");
+static void toggle_ready() {
+	set_ready(!is_peer_ready(NutPunch_LocalPeer()));
+}
 
 // Options
 FMT_OPTION(name, CLIENT.user.name);
@@ -532,9 +535,6 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{},
 		{"Join!", .button = do_join_fr},
 	},
-	[MEN_FIND_LOBBY] = {
-		{NULL, DISABLE},
-	},
 	[MEN_JOINING_LOBBY] = {
 		{"Joining lobby \"%s\"", DISABLE, FORMAT(active_lobby)},
 	},
@@ -544,7 +544,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Players: %d", DISABLE, FORMAT(lobby_limit)},
 		{"Level: %s", DISABLE, FORMAT(level)},
 		{},
-		{"%s", DISABLE, FORMAT(waiting)},
+		{"%s", FORMAT(ready), TOGGLE(ready)},
 	},
 };
 
@@ -636,7 +636,7 @@ static void update_joining_lobby() {
 }
 
 static void enter_lobby() {
-	update_discord_status(NULL);
+	set_ready(FALSE), update_discord_status(NULL);
 }
 
 static void update_inlobby() {
@@ -650,13 +650,13 @@ static void update_inlobby() {
 		return;
 	}
 
-	int num_peers = 0;
+	int num_ready_peers = 0;
 	for (int i = 0; i < MAX_PEERS; i++)
-		num_peers += get_peer_name(i) != NULL;
-	if (num_peers <= 1)
+		num_ready_peers += is_peer_ready(i);
+	if (num_ready_peers <= 1)
 		return;
 	const int max_peers = NutPunch_GetMaxPlayers();
-	if (max_peers <= 1 || num_peers < max_peers)
+	if (max_peers <= 1 || num_ready_peers < max_peers)
 		return;
 	play_generic_sound("enter");
 	make_lobby_active();
