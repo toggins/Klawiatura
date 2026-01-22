@@ -111,10 +111,10 @@ static void update_secrets() {
 		Secret* secret = &SECRETS[i];
 
 		if (secret->active) {
-			if (!(*(secret->cmd)))
+			if (!*secret->cmd)
 				deactivate_secret(i);
 			continue;
-		} else if (*(secret->cmd)) {
+		} else if (*secret->cmd) {
 			activate_secret(i);
 			continue;
 		}
