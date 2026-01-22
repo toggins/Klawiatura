@@ -48,6 +48,4 @@ Uint32 get_lobby_party();
 // Peers
 int player_to_peer(PlayerID);
 const char* get_peer_name(int);
-Bool is_peer_ready(int);
-void set_ready(Bool);
 PlayerID populate_game(GekkoSession*);

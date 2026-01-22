@@ -194,7 +194,7 @@ GameContext* init_game_context() {
 
 static void start_game_state();
 void start_game() {
-	if (game_exists())
+	if (game_session != NULL)
 		nuke_game();
 	else
 		clear_assets();
@@ -252,7 +252,9 @@ void nuke_game() {
 }
 
 static void nuke_game_to_menu() {
-	nuke_game(), clear_assets(), load_menu();
+	nuke_game();
+	disconnect();
+	clear_assets(), load_menu();
 }
 
 static Uint32 check_game_state();
@@ -350,7 +352,7 @@ Bool update_game() {
 			case PMO_EXIT:
 				extern Bool quickstart, permadeath;
 				permadeath |= quickstart;
-				goto byebye_all;
+				goto byebye_game;
 			}
 		} else if (kb_pressed(KB_PAUSE) && !typing_what()) {
 			play_generic_sound("pause");
@@ -393,7 +395,7 @@ Bool update_game() {
 					   "\nGame state has been dumped to console.",
 					desync.remote_handle + 1, who_is_winner(desync.remote_handle), desync.frame,
 					desync.local_checksum, desync.remote_checksum);
-				goto byebye_all;
+				goto byebye_game;
 			}
 
 			case PlayerConnected: {
@@ -403,10 +405,10 @@ Bool update_game() {
 			}
 
 			case PlayerDisconnected: {
-				struct Disconnected disconnection = event->data.disconnected;
-				show_error("Lost connection to player %i (%s)", disconnection.handle + 1,
-					who_is_winner(disconnection.handle));
-				goto byebye_all;
+				struct Disconnected disconnect = event->data.disconnected;
+				show_error("Lost connection to player %i (%s)", disconnect.handle + 1,
+					who_is_winner(disconnect.handle));
+				goto byebye_game;
 			}
 
 			default:
@@ -509,12 +511,6 @@ Bool update_game() {
 
 byebye_game:
 	nuke_game_to_menu();
-	return FALSE;
-
-byebye_all:
-	nuke_game_to_menu();
-	if (!NutPunch_IsMaster())
-		disconnect();
 	return FALSE;
 }
 
@@ -1184,12 +1180,12 @@ static void start_game_state() {
 	const char* kla = find_data_file(fmt("data/levels/%s.*", game_context.level), NULL);
 	if (kla == NULL) {
 		show_error("Level \"%s\" not found", game_context.level);
-		goto level_err;
+		goto level_fail;
 	}
 	Uint8* data = SDL_LoadFile(kla, NULL);
 	if (data == NULL) {
 		show_error("Failed to load level \"%s\"\n%s", game_context.level, SDL_GetError());
-		goto level_err;
+		goto level_fail;
 	}
 	const Uint8* buf = data;
 
@@ -1197,7 +1193,7 @@ static void start_game_state() {
 	if (SDL_strncmp((const char*)buf, "Klawiatura", 10) != 0) {
 		SDL_free(data);
 		show_error("Invalid header in level \"%s\"", game_context.level);
-		goto level_err;
+		goto level_fail;
 	}
 	buf += 10;
 
@@ -1206,7 +1202,7 @@ static void start_game_state() {
 		SDL_free(data);
 		show_error("Invalid major version in level \"%s\"\nLevel: %u\nGame: %u)", game_context.level, major,
 			MAJOR_LEVEL_VERSION);
-		goto level_err;
+		goto level_fail;
 	}
 	buf++;
 
@@ -1215,7 +1211,7 @@ static void start_game_state() {
 		SDL_free(data);
 		show_error("Invalid minor version in level \"%s\"\nLevel: %u\nGame: %u)", game_context.level, minor,
 			MINOR_LEVEL_VERSION);
-		goto level_err;
+		goto level_fail;
 	}
 	buf++;
 
@@ -1272,7 +1268,7 @@ static void start_game_state() {
 		default: {
 			SDL_free(data);
 			show_error("Unknown marker type %u", marker_type);
-			goto level_err;
+			goto level_fail;
 		}
 
 		case 1: { // Gradient
@@ -1408,9 +1404,8 @@ static void start_game_state() {
 	update_discord_status(level_name);
 	return;
 
-level_err:
+level_fail:
 	nuke_game_to_menu();
-	disconnect();
 }
 #undef FLOAT_OFFS
 #undef BYTE_OFFS
@@ -1903,49 +1898,85 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 				    {x + actor->box.start.x, y + actor->box.start.y},
 				    {x + actor->box.end.x,   y + actor->box.end.y  }
         });
-	Bool climbed = FALSE, stop = FALSE;
+	Bool climbed = FALSE;
 
-	const Bool right = VAL(actor, X_SPEED) >= FxZero;
-	for (ActorID i = 0L; i < list.num_actors; i++) {
-		GameActor* displacer = list.actors[i];
-		if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID) || displacer->type == ACT_SOLID_SLOPE)
-			continue;
+	if (list.num_actors > 0L) {
+		Bool stop = FALSE;
+		if (VAL(actor, X_SPEED) < FxZero) {
+			for (ActorID i = 0L; i < list.num_actors; i++) {
+				GameActor* displacer = list.actors[i];
+				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
+					|| displacer->type == ACT_SOLID_SLOPE)
+					continue;
 
-		if (VAL(actor, Y_SPEED) >= FxZero
-			&& (actor->pos.y + actor->box.end.y - climb) < (displacer->pos.y + displacer->box.start.y))
-		{
-			const Fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
-			const FRect solid = right ? (FRect){
-				{x + actor->box.start.x + FxOne, step + actor->box.start.y - FxOne},
-				{x + actor->box.end.x + FxOne,   step + actor->box.end.y - FxOne  }
-			} : (FRect){
-				{x + actor->box.start.x - FxOne, step + actor->box.start.y - FxOne},
-				{x + actor->box.end.x - FxOne,   step + actor->box.end.y - FxOne  }
-			};
-			if (!touching_solid(solid, SOL_SOLID)) {
-				y = step;
-				VAL(actor, Y_SPEED) = FxZero;
-				VAL(actor, Y_TOUCH) = 1L;
-				climbed = TRUE;
+				if (VAL(actor, Y_SPEED) >= FxZero
+					&& (actor->pos.y + actor->box.end.y - climb)
+						   < (displacer->pos.y + displacer->box.start.y))
+				{
+					const Fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
+					if (!touching_solid(
+						    (FRect){
+							    {x + actor->box.start.x - FxOne,
+                                                             step + actor->box.start.y - FxOne},
+							    {x + actor->box.end.x - FxOne,
+                                                             step + actor->box.end.y - FxOne  }
+                                        },
+						    SOL_SOLID))
+					{
+						y = step;
+						VAL(actor, Y_SPEED) = FxZero;
+						VAL(actor, Y_TOUCH) = 1L;
+						climbed = TRUE;
+					}
+					continue;
+				}
+
+				ACTOR_CALL2(displacer, on_right, actor);
+				x = Fmax(x, displacer->pos.x + displacer->box.end.x - actor->box.start.x);
+				stop = VAL(actor, X_SPEED) <= FxZero;
+				climbed = FALSE;
 			}
-			continue;
+			VAL(actor, X_TOUCH) = -(stop && !climbed);
+		} else if (VAL(actor, X_SPEED) > FxZero) {
+			for (ActorID i = 0L; i < list.num_actors; i++) {
+				GameActor* displacer = list.actors[i];
+				if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
+					|| displacer->type == ACT_SOLID_SLOPE)
+					continue;
+
+				if (VAL(actor, Y_SPEED) >= FxZero
+					&& (actor->pos.y + actor->box.end.y - climb)
+						   < (displacer->pos.y + displacer->box.start.y))
+				{
+					const Fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
+					if (!touching_solid(
+						    (FRect){
+							    {x + actor->box.start.x + FxOne,
+                                                             step + actor->box.start.y - FxOne},
+							    {x + actor->box.end.x + FxOne,
+                                                             step + actor->box.end.y - FxOne  }
+                                        },
+						    SOL_SOLID))
+					{
+						y = step;
+						VAL(actor, Y_SPEED) = FxZero;
+						VAL(actor, Y_TOUCH) = 1L;
+						climbed = TRUE;
+					}
+					continue;
+				}
+
+				ACTOR_CALL2(displacer, on_left, actor);
+				x = Fmin(x, displacer->pos.x + displacer->box.start.x - actor->box.end.x);
+				stop = VAL(actor, X_SPEED) >= FxZero;
+				climbed = FALSE;
+			}
+			VAL(actor, X_TOUCH) = stop && !climbed;
 		}
 
-		if (right) {
-			ACTOR_CALL2(displacer, on_left, actor);
-			x = Fmin(x, displacer->pos.x + displacer->box.start.x - actor->box.end.x);
-			stop |= VAL(actor, X_SPEED) >= FxZero;
-		} else {
-			ACTOR_CALL2(displacer, on_right, actor);
-			x = Fmax(x, displacer->pos.x + displacer->box.end.x - actor->box.start.x);
-			stop |= VAL(actor, X_SPEED) <= FxZero;
-		}
-		climbed = FALSE;
+		if (stop)
+			VAL(actor, X_SPEED) = FxZero;
 	}
-	VAL(actor, X_TOUCH) = (right ? 1 : -1) * (stop && !climbed);
-
-	if (stop)
-		VAL(actor, X_SPEED) = FxZero;
 
 	// Vertical collision
 	y += VAL(actor, Y_SPEED);

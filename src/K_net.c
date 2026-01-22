@@ -120,9 +120,8 @@ void net_newframe() {
 			show_error("Net error:\n%s", last_error);
 			nuke_game();
 		}
-	} else {
+	} else
 		last_error = NULL;
-	}
 }
 
 const char* net_error() {
@@ -150,6 +149,7 @@ const char* get_lobby_id() {
 }
 
 void host_lobby(const char* id) {
+
 	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
 	NutPunch_Host(cur_lobby, CLIENT.game.players);
 	verb = "host";
@@ -227,16 +227,6 @@ const char* get_peer_name(int idx) {
 	int size = 0;
 	char* str = (char*)NutPunch_PeerGet(idx, "NAME", &size);
 	return (str == NULL || size > NUTPUNCH_FIELD_DATA_MAX) ? NULL : str;
-}
-
-Bool is_peer_ready(int idx) {
-	int size = 0;
-	Uint8* ready = (Uint8*)NutPunch_PeerGet(idx, "READY", &size);
-	return size && ready && *ready;
-}
-
-void set_ready(Bool ready) {
-	NutPunch_PeerSet("READY", 1, &ready);
 }
 
 static void net_send(GekkoNetAddress* gn_addr, const char* data, int len) {

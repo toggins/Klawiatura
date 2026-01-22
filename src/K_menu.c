@@ -111,10 +111,10 @@ static void update_secrets() {
 		Secret* secret = &SECRETS[i];
 
 		if (secret->active) {
-			if (!*secret->cmd)
+			if (!(*(secret->cmd)))
 				deactivate_secret(i);
 			continue;
-		} else if (*secret->cmd) {
+		} else if (*(secret->cmd)) {
 			activate_secret(i);
 			continue;
 		}
@@ -253,10 +253,7 @@ static void set_players(int flip) {
 					 : ((CLIENT.game.players <= 2) ? MAX_PLAYERS : (CLIENT.game.players - 1)));
 }
 
-FMT_OPTION(ready, is_peer_ready(NutPunch_LocalPeer()) ? "Ready!" : "Press to ready");
-static void toggle_ready() {
-	set_ready(!is_peer_ready(NutPunch_LocalPeer()));
-}
+FMT_OPTION(waiting, (NutPunch_PeerCount() >= NutPunch_GetMaxPlayers()) ? "Starting!" : "Waiting for players");
 
 // Options
 FMT_OPTION(name, CLIENT.user.name);
@@ -372,15 +369,14 @@ BIND_OPTION(chat, KB_CHAT);
 
 static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
 	enter_lobby(), update_inlobby(), show_levels();
-static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect_1(MenuType),
-	maybe_disconnect_2(MenuType);
+static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType);
 
 #define GHOST .ghost = TRUE
 #define NORETURN .noreturn = TRUE
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {NORETURN},
 	[MEN_ERROR] = {"Error", GHOST},
-	[MEN_RESULTS] = {""},
+	[MEN_RESULTS] = {"", GHOST},
 	[MEN_INTRO] = {NORETURN, .update = update_intro},
 	[MEN_MAIN] = {"Mario Together", NORETURN, .enter = reset_credits},
 	[MEN_LEVEL_SELECT] = {"Level Select", .enter = show_levels},
@@ -392,9 +388,9 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_FIND_LOBBY]
 	= {"Find Lobbies", .update = update_find_lobbies, .enter = list_lobbies, .leave = cleanup_lobby_list},
 	[MEN_JOINING_LOBBY] = {"Please wait...", .update = update_joining_lobby, .back_sound = "disconnect",
-		      .leave = maybe_disconnect_1, GHOST},
+		      .leave = maybe_disconnect, GHOST},
 	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .enter = enter_lobby, .update = update_inlobby,
-		      .leave = maybe_disconnect_2, GHOST},
+		      .leave = disconnect, GHOST},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
 };
@@ -488,8 +484,8 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	},
 	[MEN_MULTIPLAYER] = {
 		{"Host Lobby", .enter = MEN_HOST_LOBBY},
+		{"Join a Lobby", .enter = MEN_JOIN_LOBBY},
 		{"Find Lobbies", .enter = MEN_FIND_LOBBY},
-		{"Join Lobby by ID", .enter = MEN_JOIN_LOBBY},
 	},
 	[MEN_OPTIONS] = {
 		{"Name: %s", FORMAT(name), EDIT(CLIENT.user.name)},
@@ -536,6 +532,9 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{},
 		{"Join!", .button = do_join_fr},
 	},
+	[MEN_FIND_LOBBY] = {
+		{NULL, DISABLE},
+	},
 	[MEN_JOINING_LOBBY] = {
 		{"Joining lobby \"%s\"", DISABLE, FORMAT(active_lobby)},
 	},
@@ -545,7 +544,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Players: %d", DISABLE, FORMAT(lobby_limit)},
 		{"Level: %s", DISABLE, FORMAT(level)},
 		{},
-		{"%s", FORMAT(ready), TOGGLE(ready)},
+		{"%s", DISABLE, FORMAT(waiting)},
 	},
 };
 
@@ -592,7 +591,7 @@ static void maybe_save_config(MenuType next) {
 }
 
 static void cleanup_lobby_list(MenuType next) {
-	maybe_disconnect_1(next);
+	maybe_disconnect(next);
 	for (int i = 0; i < MAX_OPTIONS; i++) {
 		Option* opt = &OPTIONS[MEN_FIND_LOBBY][i];
 		opt->name = i ? NULL : NO_LOBBIES_FOUND;
@@ -637,7 +636,7 @@ static void update_joining_lobby() {
 }
 
 static void enter_lobby() {
-	set_ready(FALSE), update_discord_status(NULL);
+	update_discord_status(NULL);
 }
 
 static void update_inlobby() {
@@ -651,13 +650,13 @@ static void update_inlobby() {
 		return;
 	}
 
-	int num_ready_peers = 0;
+	int num_peers = 0;
 	for (int i = 0; i < MAX_PEERS; i++)
-		num_ready_peers += is_peer_ready(i);
-	if (num_ready_peers <= 1)
+		num_peers += get_peer_name(i) != NULL;
+	if (num_peers <= 1)
 		return;
-	const int max_peers = NutPunch_PeerCount();
-	if (max_peers <= 1 || num_ready_peers < max_peers)
+	const int max_peers = NutPunch_GetMaxPlayers();
+	if (max_peers <= 1 || num_peers < max_peers)
 		return;
 	play_generic_sound("enter");
 	make_lobby_active();
@@ -669,13 +668,8 @@ static void update_inlobby() {
 	start_game();
 }
 
-static void maybe_disconnect_1(MenuType next) {
+static void maybe_disconnect(MenuType next) {
 	if (next != MEN_LOBBY && next != MEN_JOINING_LOBBY)
-		disconnect();
-}
-
-static void maybe_disconnect_2(MenuType next) {
-	if (next != MEN_RESULTS)
 		disconnect();
 }
 
@@ -908,9 +902,9 @@ void draw_menu() {
 			if (!NutPunch_PeerAlive(i))
 				continue;
 			batch_pos(B_XY(SCREEN_WIDTH - 48.f, y)), batch_align(B_TOP_RIGHT);
-			const char ready = is_peer_ready(i) ? '!' : '.';
-			batch_string("main", 24.f, fmt("%i%c %s", idx, ready, get_peer_name(i)));
-			++idx, y += 24.f;
+			batch_string("main", 24.f, fmt("%i. %s", idx, get_peer_name(i)));
+			++idx;
+			y += 24.f;
 		}
 
 		break;
