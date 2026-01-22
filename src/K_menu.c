@@ -769,11 +769,11 @@ void update_menu() {
 			}
 		}
 
-		if (!kb_pressed(KB_PAUSE))
-			continue; // de-nesting
-		const char* sound = MENUS[cur_menu].back_sound;
-		if (prev_menu())
-			play_generic_sound(sound == NULL ? "select" : sound);
+		if (kb_pressed(KB_PAUSE)) {
+			const char* sound = MENUS[cur_menu].back_sound;
+			if (prev_menu())
+				play_generic_sound(sound ? sound : "select");
+		}
 	}
 }
 
@@ -1136,13 +1136,11 @@ static void select_level() {
 static int levels_page = 0;
 
 static void levels_next_page() {
-	levels_page++;
-	show_levels();
+	levels_page++, show_levels();
 }
 
 static void levels_prev_page() {
-	levels_page -= 1;
-	show_levels();
+	levels_page--, show_levels();
 }
 
 static void show_levels() {
