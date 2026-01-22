@@ -487,8 +487,8 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	},
 	[MEN_MULTIPLAYER] = {
 		{"Host Lobby", .enter = MEN_HOST_LOBBY},
-		{"Join a Lobby", .enter = MEN_JOIN_LOBBY},
 		{"Find Lobbies", .enter = MEN_FIND_LOBBY},
+		{"Join Lobby by ID", .enter = MEN_JOIN_LOBBY},
 	},
 	[MEN_OPTIONS] = {
 		{"Name: %s", FORMAT(name), EDIT(CLIENT.user.name)},
