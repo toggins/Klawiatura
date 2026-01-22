@@ -655,7 +655,7 @@ static void update_inlobby() {
 		num_ready_peers += is_peer_ready(i);
 	if (num_ready_peers <= 1)
 		return;
-	const int max_peers = NutPunch_GetMaxPlayers();
+	const int max_peers = NutPunch_PeerCount();
 	if (max_peers <= 1 || num_ready_peers < max_peers)
 		return;
 	play_generic_sound("enter");
