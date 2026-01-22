@@ -1929,11 +1929,11 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 		if (right) {
 			ACTOR_CALL2(displacer, on_left, actor);
 			x = Fmin(x, displacer->pos.x + displacer->box.start.x - actor->box.end.x);
-			stop = VAL(actor, X_SPEED) >= FxZero;
+			stop |= VAL(actor, X_SPEED) >= FxZero;
 		} else {
 			ACTOR_CALL2(displacer, on_right, actor);
 			x = Fmax(x, displacer->pos.x + displacer->box.end.x - actor->box.start.x);
-			stop = VAL(actor, X_SPEED) <= FxZero;
+			stop |= VAL(actor, X_SPEED) <= FxZero;
 		}
 		climbed = FALSE;
 	}
