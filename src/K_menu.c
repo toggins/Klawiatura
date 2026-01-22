@@ -902,9 +902,9 @@ void draw_menu() {
 			if (!NutPunch_PeerAlive(i))
 				continue;
 			batch_pos(B_XY(SCREEN_WIDTH - 48.f, y)), batch_align(B_TOP_RIGHT);
-			batch_string("main", 24.f, fmt("%i. %s", idx, get_peer_name(i)));
-			++idx;
-			y += 24.f;
+			const char ready = is_peer_ready(i) ? '!' : '.';
+			batch_string("main", 24.f, fmt("%i%c %s", idx, ready, get_peer_name(i)));
+			++idx, y += 24.f;
 		}
 
 		break;
