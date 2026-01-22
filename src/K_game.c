@@ -252,9 +252,7 @@ void nuke_game() {
 }
 
 static void nuke_game_to_menu() {
-	nuke_game();
-	disconnect();
-	clear_assets(), load_menu();
+	nuke_game(), clear_assets(), load_menu();
 }
 
 static Uint32 check_game_state();
@@ -352,7 +350,7 @@ Bool update_game() {
 			case PMO_EXIT:
 				extern Bool quickstart, permadeath;
 				permadeath |= quickstart;
-				goto byebye_game;
+				goto byebye_all;
 			}
 		} else if (kb_pressed(KB_PAUSE) && !typing_what()) {
 			play_generic_sound("pause");
@@ -395,7 +393,7 @@ Bool update_game() {
 					   "\nGame state has been dumped to console.",
 					desync.remote_handle + 1, who_is_winner(desync.remote_handle), desync.frame,
 					desync.local_checksum, desync.remote_checksum);
-				goto byebye_game;
+				goto byebye_all;
 			}
 
 			case PlayerConnected: {
@@ -405,10 +403,10 @@ Bool update_game() {
 			}
 
 			case PlayerDisconnected: {
-				struct Disconnected disconnect = event->data.disconnected;
-				show_error("Lost connection to player %i (%s)", disconnect.handle + 1,
-					who_is_winner(disconnect.handle));
-				goto byebye_game;
+				struct Disconnected disconnection = event->data.disconnected;
+				show_error("Lost connection to player %i (%s)", disconnection.handle + 1,
+					who_is_winner(disconnection.handle));
+				goto byebye_all;
 			}
 
 			default:
@@ -511,6 +509,12 @@ Bool update_game() {
 
 byebye_game:
 	nuke_game_to_menu();
+	return FALSE;
+
+byebye_all:
+	nuke_game_to_menu();
+	if (!NutPunch_IsMaster())
+		disconnect();
 	return FALSE;
 }
 
@@ -1180,12 +1184,12 @@ static void start_game_state() {
 	const char* kla = find_data_file(fmt("data/levels/%s.*", game_context.level), NULL);
 	if (kla == NULL) {
 		show_error("Level \"%s\" not found", game_context.level);
-		goto level_fail;
+		goto level_err;
 	}
 	Uint8* data = SDL_LoadFile(kla, NULL);
 	if (data == NULL) {
 		show_error("Failed to load level \"%s\"\n%s", game_context.level, SDL_GetError());
-		goto level_fail;
+		goto level_err;
 	}
 	const Uint8* buf = data;
 
@@ -1193,7 +1197,7 @@ static void start_game_state() {
 	if (SDL_strncmp((const char*)buf, "Klawiatura", 10) != 0) {
 		SDL_free(data);
 		show_error("Invalid header in level \"%s\"", game_context.level);
-		goto level_fail;
+		goto level_err;
 	}
 	buf += 10;
 
@@ -1202,7 +1206,7 @@ static void start_game_state() {
 		SDL_free(data);
 		show_error("Invalid major version in level \"%s\"\nLevel: %u\nGame: %u)", game_context.level, major,
 			MAJOR_LEVEL_VERSION);
-		goto level_fail;
+		goto level_err;
 	}
 	buf++;
 
@@ -1211,7 +1215,7 @@ static void start_game_state() {
 		SDL_free(data);
 		show_error("Invalid minor version in level \"%s\"\nLevel: %u\nGame: %u)", game_context.level, minor,
 			MINOR_LEVEL_VERSION);
-		goto level_fail;
+		goto level_err;
 	}
 	buf++;
 
@@ -1268,7 +1272,7 @@ static void start_game_state() {
 		default: {
 			SDL_free(data);
 			show_error("Unknown marker type %u", marker_type);
-			goto level_fail;
+			goto level_err;
 		}
 
 		case 1: { // Gradient
@@ -1404,8 +1408,9 @@ static void start_game_state() {
 	update_discord_status(level_name);
 	return;
 
-level_fail:
+level_err:
 	nuke_game_to_menu();
+	disconnect();
 }
 #undef FLOAT_OFFS
 #undef BYTE_OFFS

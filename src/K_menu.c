@@ -372,14 +372,15 @@ BIND_OPTION(chat, KB_CHAT);
 
 static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
 	enter_lobby(), update_inlobby(), show_levels();
-static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType);
+static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect_1(MenuType),
+	maybe_disconnect_2(MenuType);
 
 #define GHOST .ghost = TRUE
 #define NORETURN .noreturn = TRUE
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {NORETURN},
 	[MEN_ERROR] = {"Error", GHOST},
-	[MEN_RESULTS] = {"", GHOST},
+	[MEN_RESULTS] = {""},
 	[MEN_INTRO] = {NORETURN, .update = update_intro},
 	[MEN_MAIN] = {"Mario Together", NORETURN, .enter = reset_credits},
 	[MEN_LEVEL_SELECT] = {"Level Select", .enter = show_levels},
@@ -391,9 +392,9 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_FIND_LOBBY]
 	= {"Find Lobbies", .update = update_find_lobbies, .enter = list_lobbies, .leave = cleanup_lobby_list},
 	[MEN_JOINING_LOBBY] = {"Please wait...", .update = update_joining_lobby, .back_sound = "disconnect",
-		      .leave = maybe_disconnect, GHOST},
+		      .leave = maybe_disconnect_1, GHOST},
 	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .enter = enter_lobby, .update = update_inlobby,
-		      .leave = disconnect, GHOST},
+		      .leave = maybe_disconnect_2, GHOST},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
 };
@@ -591,7 +592,7 @@ static void maybe_save_config(MenuType next) {
 }
 
 static void cleanup_lobby_list(MenuType next) {
-	maybe_disconnect(next);
+	maybe_disconnect_1(next);
 	for (int i = 0; i < MAX_OPTIONS; i++) {
 		Option* opt = &OPTIONS[MEN_FIND_LOBBY][i];
 		opt->name = i ? NULL : NO_LOBBIES_FOUND;
@@ -668,8 +669,13 @@ static void update_inlobby() {
 	start_game();
 }
 
-static void maybe_disconnect(MenuType next) {
+static void maybe_disconnect_1(MenuType next) {
 	if (next != MEN_LOBBY && next != MEN_JOINING_LOBBY)
+		disconnect();
+}
+
+static void maybe_disconnect_2(MenuType next) {
+	if (next != MEN_RESULTS)
 		disconnect();
 }
 
