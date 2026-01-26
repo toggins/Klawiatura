@@ -16,11 +16,11 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.start.y = FfInt(16L);
-	actor->box.end.x = FfInt(31L);
-	actor->box.end.y = FfInt(64L);
+	actor->box.start.y = Int2Fx(16L);
+	actor->box.end.x = Int2Fx(31L);
+	actor->box.end.y = Int2Fx(64L);
 
-	actor->depth = FfInt(2L);
+	actor->depth = Int2Fx(2L);
 }
 
 static void tick(GameActor* actor) {
@@ -50,12 +50,12 @@ static void draw(const GameActor* actor) {
 }
 
 static void collide(GameActor* actor, GameActor* from) {
-	if (from->type != ACT_PLAYER || from->pos.y > (actor->pos.y + FfInt(63L)) || VAL(from, Y_SPEED) <= FxZero)
+	if (from->type != ACT_PLAYER || from->pos.y > (actor->pos.y + Int2Fx(63L)) || VAL(from, Y_SPEED) <= FxZero)
 		return;
 
 	VAL(from, Y_SPEED) = (VAL(from, PLAYER_SPRING) > 0L)
-	                             ? (ANY_FLAG(actor, FLG_SPRING_GREEN) ? FfInt(-33L) : FfInt(-19L))
-	                             : FfInt(-10L);
+	                             ? (ANY_FLAG(actor, FLG_SPRING_GREEN) ? Int2Fx(-33L) : Int2Fx(-19L))
+	                             : Int2Fx(-10L);
 	VAL(actor, SPRING_FRAME) = 1L;
 	play_state_sound("spring", PLAY_POS, 0L, A_ACTOR(actor));
 }

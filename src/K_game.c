@@ -501,7 +501,7 @@ Bool update_game() {
 	}
 
 	// Interpolate outside of the loop for uncapped framerate.
-	register const Fixed ftick = FfFloat(pendingticks());
+	register const Fixed ftick = Float2Fx(pendingticks());
 	for (const GameActor* actor = get_actor(game_state.live_actors); actor; actor = get_actor(actor->previous)) {
 		InterpActor* iactor = &interp.actors[actor->id];
 		iactor->pos = Vadd(iactor->from, Vscale(Vsub(actor->pos, iactor->from), ftick));
@@ -527,11 +527,11 @@ static void perform_camera_magic() {
 
 #define MORSEL()                                                                                                       \
 	do {                                                                                                           \
-		camera->pos[0] = FtInt(xx), camera->pos[1] = FtInt(yy);                                                \
+		camera->pos[0] = Fx2Int(xx), camera->pos[1] = Fx2Int(yy);                                              \
 		camera->pos[0] = SDL_clamp(camera->pos[0], bx1, bx2);                                                  \
 		camera->pos[1] = SDL_clamp(camera->pos[1], by1, by2);                                                  \
-		camera_offset_morsel[0] = SDL_clamp(FtFloat(xx), bx1, bx2) - camera->pos[0];                           \
-		camera_offset_morsel[1] = camera->pos[1] - SDL_clamp(FtFloat(yy), by1, by2);                           \
+		camera_offset_morsel[0] = SDL_clamp(Fx2Float(xx), bx1, bx2) - camera->pos[0];                          \
+		camera_offset_morsel[1] = camera->pos[1] - SDL_clamp(Fx2Float(yy), by1, by2);                          \
 	} while (0)
 
 	if (autoscroll) {
@@ -541,9 +541,9 @@ static void perform_camera_magic() {
 
 		const Fixed xx = iautoscroll->pos.x + F_HALF_SCREEN_WIDTH,
 			    yy = iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT;
-		const float bx1 = FtInt(F_HALF_SCREEN_WIDTH), by1 = FtInt(F_HALF_SCREEN_HEIGHT),
-			    bx2 = FtInt(game_state.size.x - F_HALF_SCREEN_WIDTH),
-			    by2 = FtInt(game_state.size.y - F_HALF_SCREEN_HEIGHT);
+		const float bx1 = HALF_SCREEN_WIDTH, by1 = HALF_SCREEN_HEIGHT,
+			    bx2 = Fx2Int(game_state.size.x - F_HALF_SCREEN_WIDTH),
+			    by2 = Fx2Int(game_state.size.y - F_HALF_SCREEN_HEIGHT);
 		MORSEL();
 	} else if (player) {
 		Fixed xx = FxZero, yy = FxZero;
@@ -554,10 +554,10 @@ static void perform_camera_magic() {
 		else
 			xx = player->pos.x, yy = player->pos.y;
 
-		const float bx1 = FtInt(player->bounds.start.x + F_HALF_SCREEN_WIDTH),
-			    by1 = FtInt(player->bounds.start.y + F_HALF_SCREEN_HEIGHT),
-			    bx2 = FtInt(player->bounds.end.x - F_HALF_SCREEN_WIDTH),
-			    by2 = FtInt(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
+		const float bx1 = Fx2Int(player->bounds.start.x + F_HALF_SCREEN_WIDTH),
+			    by1 = Fx2Int(player->bounds.start.y + F_HALF_SCREEN_HEIGHT),
+			    bx2 = Fx2Int(player->bounds.end.x - F_HALF_SCREEN_WIDTH),
+			    by2 = Fx2Int(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
 		MORSEL();
 	}
 #undef MORSEL
@@ -745,7 +745,7 @@ void draw_game() {
                         {242, 253, 252, 255},
                         {242, 253, 252, 255}
                 });
-		batch_rectangle(NULL, B_XY(FtFloat(game_state.size.x), SCREEN_HEIGHT));
+		batch_rectangle(NULL, B_XY(Fx2Float(game_state.size.x), SCREEN_HEIGHT));
 	}
 
 	const GameActor* actor = get_actor(game_state.live_actors);
@@ -755,10 +755,10 @@ void draw_game() {
 		actor = get_actor(actor->previous);
 	}
 
-	float wy = FtInt(game_state.water);
-	const float lh = FtFloat(game_state.size.y);
+	float wy = Fx2Int(game_state.water);
+	const float lh = Fx2Float(game_state.size.y);
 	if (wy < lh) {
-		const float lw = FtFloat(game_state.size.x);
+		const float lw = Fx2Float(game_state.size.x);
 		batch_reset(), batch_pos(B_XYZ(0.f, wy, -100.f)), batch_color(B_ALPHA(135));
 		batch_tile(B_TILE(TRUE, FALSE));
 		batch_rectangle(fmt("markers/water%u", (game_state.time / 5L) % 8L), B_XY(lw, 16.f));
@@ -1028,15 +1028,16 @@ static void dump_game_state() {
 		for (ActorID j = 0; j < MAX_SINK; j++)
 			INFO("			%i (%p)", player->sink[j], get_actor(player->sink[j]));
 
-		INFO("		Position: (%.2f, %.2f)", FtFloat(player->pos.x), FtFloat(player->pos.y));
-		INFO("		Bounds: (%.2f, %.2f, %.2f, %.2f)", FtFloat(player->bounds.start.x),
-			FtFloat(player->bounds.start.y), FtFloat(player->bounds.end.x), FtFloat(player->bounds.end.y));
+		INFO("		Position: (%.2f, %.2f)", Fx2Float(player->pos.x), Fx2Float(player->pos.y));
+		INFO("		Bounds: (%.2f, %.2f, %.2f, %.2f)", Fx2Float(player->bounds.start.x),
+			Fx2Float(player->bounds.start.y), Fx2Float(player->bounds.end.x),
+			Fx2Float(player->bounds.end.y));
 		INFO("		Score: %u", player->score);
 		INFO("		Kevin:");
 		INFO("			Delay: %i", player->kevin.delay);
 		INFO("			Actor: %i (%p)", player->kevin.actor, get_actor(player->kevin.actor));
-		INFO("			Start: (%.2f, %.2f)", FtFloat(player->kevin.start.x),
-			FtFloat(player->kevin.start.y));
+		INFO("			Start: (%.2f, %.2f)", Fx2Float(player->kevin.start.x),
+			Fx2Float(player->kevin.start.y));
 		INFO("			(Frames...)");
 		INFO("");
 	}
@@ -1047,11 +1048,12 @@ static void dump_game_state() {
 	INFO("Autoscroll: %i (%p)", game_state.autoscroll, get_actor(game_state.autoscroll));
 	INFO("Wave: %i (%p)", game_state.wave, get_actor(game_state.wave));
 	INFO("P-Switch: %u", game_state.pswitch);
-	INFO("Size: (%.2f, %.2f)", FtFloat(game_state.size.x), FtFloat(game_state.size.y));
-	INFO("Bounds: (%.2f, %.2f, %.2f, %.2f)", FtFloat(game_state.bounds.start.x), FtFloat(game_state.bounds.start.y),
-		FtFloat(game_state.bounds.end.x), FtFloat(game_state.bounds.end.y));
-	INFO("Water Y: %.2f", FtFloat(game_state.water));
-	INFO("Hazard Y: %.2f", FtFloat(game_state.hazard));
+	INFO("Size: (%.2f, %.2f)", Fx2Float(game_state.size.x), Fx2Float(game_state.size.y));
+	INFO("Bounds: (%.2f, %.2f, %.2f, %.2f)", Fx2Float(game_state.bounds.start.x),
+		Fx2Float(game_state.bounds.start.y), Fx2Float(game_state.bounds.end.x),
+		Fx2Float(game_state.bounds.end.y));
+	INFO("Water Y: %.2f", Fx2Float(game_state.water));
+	INFO("Hazard Y: %.2f", Fx2Float(game_state.hazard));
 	INFO("Clock: %i", game_state.clock);
 	INFO("Seed: %i", game_state.seed);
 	INFO("Tick: %zu", game_state.time);
@@ -1071,10 +1073,10 @@ static void dump_game_state() {
 		INFO("		Previous Neighbor: %i (%p)", actor->previous_cell, get_actor(actor->previous_cell));
 		INFO("		Next Neighbor: %i (%p)", actor->next_cell, get_actor(actor->next_cell));
 		INFO("		Cell: %i", actor->cell);
-		INFO("		Position: (%.2f, %.2f)", FtFloat(actor->pos.x), FtFloat(actor->pos.y));
-		INFO("		Box: (%.2f, %.2f, %.2f, %.2f)", FtFloat(actor->box.start.x),
-			FtFloat(actor->box.start.y), FtFloat(actor->box.end.x), FtFloat(actor->box.end.y));
-		INFO("		Depth: %.2f", FtFloat(actor->depth));
+		INFO("		Position: (%.2f, %.2f)", Fx2Float(actor->pos.x), Fx2Float(actor->pos.y));
+		INFO("		Box: (%.2f, %.2f, %.2f, %.2f)", Fx2Float(actor->box.start.x),
+			Fx2Float(actor->box.start.y), Fx2Float(actor->box.end.x), Fx2Float(actor->box.end.y));
+		INFO("		Depth: %.2f", Fx2Float(actor->depth));
 		INFO("		Flags: %u", actor->flags);
 		INFO("		Non-Zero Values:");
 
@@ -1119,7 +1121,7 @@ static void nuke_game_state() {
 	game_state.size.y = game_state.bounds.end.y = F_SCREEN_HEIGHT;
 
 	game_state.spawn = game_state.checkpoint = game_state.autoscroll = game_state.wave = NULLACT;
-	game_state.water = FfInt(32767L);
+	game_state.water = Int2Fx(32767L);
 
 	game_state.clock = -1L;
 
@@ -1489,7 +1491,7 @@ GameActor* respawn_player(GamePlayer* player) {
 
 		FLAG_ON(pawn, spawn->flags & (FLG_X_FLIP | FLG_PLAYER_ASCEND | FLG_PLAYER_DESCEND));
 		if (ANY_FLAG(pawn, FLG_PLAYER_ASCEND))
-			VAL(pawn, Y_SPEED) -= FfInt(22L);
+			VAL(pawn, Y_SPEED) -= Int2Fx(22L);
 
 		if (spawn->type == ACT_AUTOSCROLL)
 			FLAG_ON(pawn, FLG_PLAYER_RESPAWN);
@@ -2164,9 +2166,9 @@ void draw_actor(const GameActor* actor, const char* name, float angle, const Uin
 void draw_actor_offset(
 	const GameActor* actor, const char* name, const float offs[3], float angle, const Uint8 color[4]) {
 	const InterpActor* iactor = get_interp(actor);
-	const float sprout = VAL(actor, SPROUT), z = (sprout > FxZero) ? 21.f : FtFloat(actor->depth);
+	const float sprout = VAL(actor, SPROUT), z = (sprout > FxZero) ? 21.f : Fx2Float(actor->depth);
 	batch_reset();
-	batch_pos(B_XYZ(FtInt(iactor->pos.x) + offs[0], FtInt(iactor->pos.y + sprout) + offs[1], z + offs[2]));
+	batch_pos(B_XYZ(Fx2Int(iactor->pos.x) + offs[0], Fx2Int(iactor->pos.y + sprout) + offs[1], z + offs[2]));
 	batch_angle(angle), batch_color(color);
 	batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 	batch_sprite(name);
@@ -2177,7 +2179,7 @@ void draw_actor_no_jitter(const GameActor* actor, const char* name, float angle,
 	if (actor->type == ACT_PLAYER && get_actor(VAL(actor, PLAYER_PLATFORM)) == NULL) {
 		const GameActor* autoscroll = get_actor(game_state.autoscroll);
 		if (autoscroll == NULL || !ANY_FLAG(autoscroll, FLG_SCROLL_TANKS)
-			|| (VAL(actor, PLAYER_GROUND) > 0L && actor->pos.y < (autoscroll->pos.y + FfInt(415L))))
+			|| (VAL(actor, PLAYER_GROUND) > 0L && actor->pos.y < (autoscroll->pos.y + Int2Fx(415L))))
 		{
 			draw_actor(actor, name, angle, color);
 			return;
@@ -2185,10 +2187,10 @@ void draw_actor_no_jitter(const GameActor* actor, const char* name, float angle,
 	}
 
 	const InterpActor* iactor = get_interp(actor);
-	const float sprout = FtFloat(VAL(actor, SPROUT)), z = sprout > 0.f ? 21.f : FtFloat(actor->depth);
+	const float sprout = Fx2Float(VAL(actor, SPROUT)), z = sprout > 0.f ? 21.f : Fx2Float(actor->depth);
 	batch_reset();
-	batch_pos(B_XYZ((int)(FtFloat(iactor->pos.x) - camera_offset_morsel[0]),
-		(int)(FtFloat(iactor->pos.y) + sprout + camera_offset_morsel[1]), z));
+	batch_pos(B_XYZ((int)(Fx2Float(iactor->pos.x) - camera_offset_morsel[0]),
+		(int)(Fx2Float(iactor->pos.y) + sprout + camera_offset_morsel[1]), z));
 	batch_angle(angle), batch_color(color);
 	batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 	batch_sprite(name);
@@ -2202,7 +2204,7 @@ void draw_dead(const GameActor* actor) {
 
 /// Convenience function for quaking at an actor's position.
 void quake_at_actor(const GameActor* actor, float amount) {
-	const float dist = glm_vec2_distance(video_state.camera.pos, (vec2){FtInt(actor->pos.x), FtInt(actor->pos.y)})
+	const float dist = glm_vec2_distance(video_state.camera.pos, (vec2){Fx2Int(actor->pos.x), Fx2Int(actor->pos.y)})
 	                   / (float)SCREEN_HEIGHT;
 	const float quake = amount / SDL_max(dist, 1.f);
 	video_state.quake = SDL_min(video_state.quake + quake, 10.f);

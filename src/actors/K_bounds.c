@@ -12,7 +12,7 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.end.x = actor->box.end.y = FfInt(32L);
+	actor->box.end.x = actor->box.end.y = Int2Fx(32L);
 }
 
 static void collide(GameActor* actor, GameActor* from) {

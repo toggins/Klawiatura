@@ -11,7 +11,7 @@
 #define A_NULL ((float[2]){0})
 #define A_PAN(pan) ((float[2]){pan, 0})
 #define A_XY(x, y) ((float[2]){x, y})
-#define A_ACTOR(actor) ((float[2]){FtFloat(actor->pos.x), FtFloat(actor->pos.y)})
+#define A_ACTOR(actor) ((float[2]){Fx2Float(actor->pos.x), Fx2Float(actor->pos.y)})
 
 typedef struct {
 	AssetBase base;

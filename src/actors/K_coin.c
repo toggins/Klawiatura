@@ -17,11 +17,11 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.start.x = FfInt(6L);
-	actor->box.start.y = FfInt(2L);
-	actor->box.end.x = FfInt(25L);
-	actor->box.end.y = FfInt(30L);
-	actor->depth = FfInt(2L);
+	actor->box.start.x = Int2Fx(6L);
+	actor->box.start.y = Int2Fx(2L);
+	actor->box.end.x = Int2Fx(25L);
+	actor->box.end.y = Int2Fx(30L);
+	actor->depth = Int2Fx(2L);
 }
 
 static void draw(const GameActor* actor) {
@@ -68,7 +68,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		if (player == NULL)
 			break;
 
-		GameActor* pop = create_actor(ACT_COIN_POP, POS_ADD(actor, FfInt(16L), FfInt(28L)));
+		GameActor* pop = create_actor(ACT_COIN_POP, POS_ADD(actor, Int2Fx(16L), Int2Fx(28L)));
 		if (pop != NULL)
 			VAL(pop, COIN_POP_PLAYER) = (ActorValue)player->id;
 		FLAG_ON(actor, FLG_DESTROY);

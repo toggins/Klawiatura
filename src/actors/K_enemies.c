@@ -45,7 +45,7 @@ void move_enemy(GameActor* actor, FVec2 speed, Bool edge) {
 	}
 
 	VAL(actor, Y_SPEED) += speed.y;
-	displace_actor(actor, FfInt(10L), FALSE);
+	displace_actor(actor, Int2Fx(10L), FALSE);
 
 	collide_actor(actor);
 	VAL_TICK(actor, ENEMY_TURN);
@@ -103,7 +103,7 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
 	}
 	}
 
-	GameActor* dead = create_actor(ACT_DEAD, POS_ADD(actor, FxZero, FfInt(-32L)));
+	GameActor* dead = create_actor(ACT_DEAD, POS_ADD(actor, FxZero, Int2Fx(-32L)));
 	if (dead == NULL)
 		return NULL;
 
@@ -111,10 +111,10 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
 	dead->flags = (actor->flags & (~(FLG_DESTROY | FLG_FREEZE))) | FLG_Y_FLIP;
 
 	if (kick) {
-		const Fixed rnd = FfInt(rng(5L));
+		const Fixed rnd = Int2Fx(rng(5L));
 		const Fixed dir = 77208L + Fmul(rnd, 12868L);
-		VAL(dead, X_SPEED) = Fmul(Fcos(dir), FfInt(3L));
-		VAL(dead, Y_SPEED) = Fmul(Fsin(dir), FfInt(-3L));
+		VAL(dead, X_SPEED) = Fmul(Fcos(dir), Int2Fx(3L));
+		VAL(dead, Y_SPEED) = Fmul(Fsin(dir), Int2Fx(-3L));
 		play_state_sound("kick", PLAY_POS, 0L, A_ACTOR(actor));
 	}
 
@@ -130,8 +130,8 @@ Bool check_stomp(GameActor* actor, GameActor* from, Fixed yoffs, Sint32 points) 
 	if (from->pos.y < (actor->pos.y + yoffs) && (VAL(from, Y_SPEED) >= FxZero || ANY_FLAG(from, FLG_PLAYER_STOMP)))
 	{
 		GamePlayer* player = get_owner(from);
-		VAL(from, Y_SPEED) = Fmin(
-			VAL(from, Y_SPEED), (player != NULL && ANY_INPUT(player, GI_JUMP)) ? FfInt(-13L) : FfInt(-8L));
+		VAL(from, Y_SPEED) = Fmin(VAL(from, Y_SPEED),
+			(player != NULL && ANY_INPUT(player, GI_JUMP)) ? Int2Fx(-13L) : Int2Fx(-8L));
 		FLAG_ON(from, FLG_PLAYER_STOMP);
 
 		give_points(actor, player, points);
@@ -275,8 +275,8 @@ void decrease_ambush() {
 // ==========
 
 static void create_dead(GameActor* actor) {
-	actor->box.start.x = actor->box.start.y = FfInt(-32L);
-	actor->box.end.x = actor->box.end.y = FfInt(32L);
+	actor->box.start.x = actor->box.start.y = Int2Fx(-32L);
+	actor->box.end.x = actor->box.end.y = Int2Fx(32L);
 }
 
 static void tick_dead(GameActor* actor) {
@@ -289,7 +289,7 @@ static void tick_dead(GameActor* actor) {
 			if (++VAL(actor, DEAD_RESPAWN) <= 300L)
 				return;
 			GameActor* lakitu = create_actor(
-				ACT_LAKITU, (FVec2){game_state.size.x + FfInt(200L), FfInt(57L + rng(31L))});
+				ACT_LAKITU, (FVec2){game_state.size.x + Int2Fx(200L), Int2Fx(57L + rng(31L))});
 			if (lakitu != NULL) {
 				FLAG_ON(lakitu, actor->flags & FLG_LAKITU_GREEN);
 				break;
@@ -301,7 +301,7 @@ static void tick_dead(GameActor* actor) {
 			if (++VAL(actor, DEAD_RESPAWN) <= 300L)
 				return;
 			if (create_actor(ACT_BOSS_BASS,
-				    (FVec2){game_state.size.x + FfInt(200L), game_state.water + FfInt(32L)})
+				    (FVec2){game_state.size.x + Int2Fx(200L), game_state.water + Int2Fx(32L)})
 				!= NULL)
 				break;
 			return;

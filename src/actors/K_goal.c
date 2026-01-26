@@ -22,8 +22,8 @@ static void load_mark() {
 }
 
 static void create_mark(GameActor* actor) {
-	actor->box.end.x = FfInt(31L);
-	actor->box.end.y = FfInt(32L);
+	actor->box.end.x = Int2Fx(31L);
+	actor->box.end.y = Int2Fx(32L);
 }
 
 static void collide_mark(GameActor* actor, GameActor* from) {
@@ -47,22 +47,22 @@ static void load_bar() {
 }
 
 static void create_bar(GameActor* actor) {
-	actor->box.start.x = FfInt(-23L);
-	actor->box.end.x = FfInt(21L);
-	actor->box.end.y = FfInt(16L);
+	actor->box.start.x = Int2Fx(-23L);
+	actor->box.end.x = Int2Fx(21L);
+	actor->box.end.y = Int2Fx(16L);
 }
 
 static void tick_bar(GameActor* actor) {
 	if (!ANY_FLAG(actor, FLG_GOAL_START)) {
 		VAL(actor, GOAL_Y) = actor->pos.y;
-		VAL(actor, Y_SPEED) = FfInt(3L);
+		VAL(actor, Y_SPEED) = Int2Fx(3L);
 		FLAG_ON(actor, FLG_GOAL_START);
 	}
 
 	if (game_state.sequence.type == SEQ_WIN)
 		VAL(actor, Y_SPEED) = FxZero;
 
-	if ((VAL(actor, Y_SPEED) > FxZero && actor->pos.y >= (VAL(actor, GOAL_Y) + FfInt(220L)))
+	if ((VAL(actor, Y_SPEED) > FxZero && actor->pos.y >= (VAL(actor, GOAL_Y) + Int2Fx(220L)))
 		|| (VAL(actor, Y_SPEED) < FxZero && actor->pos.y <= VAL(actor, GOAL_Y)))
 		VAL(actor, Y_SPEED) = -VAL(actor, Y_SPEED);
 	move_actor(actor, POS_SPEED(actor));
@@ -81,23 +81,23 @@ static void collide_bar(GameActor* actor, GameActor* from) {
 		points = 1000000L;
 	} else {
 		const Fixed gy = VAL(actor, GOAL_Y);
-		if (actor->pos.y < (gy + FfInt(30L)))
+		if (actor->pos.y < (gy + Int2Fx(30L)))
 			points = 10000L;
-		else if (actor->pos.y < (gy + FfInt(60L)))
+		else if (actor->pos.y < (gy + Int2Fx(60L)))
 			points = 5000L;
-		else if (actor->pos.y < (gy + FfInt(100L)))
+		else if (actor->pos.y < (gy + Int2Fx(100L)))
 			points = 2000L;
-		else if (actor->pos.y < (gy + FfInt(150L)))
+		else if (actor->pos.y < (gy + Int2Fx(150L)))
 			points = 1000L;
-		else if (actor->pos.y < (gy + FfInt(200L)))
+		else if (actor->pos.y < (gy + Int2Fx(200L)))
 			points = 500L;
 	}
 	give_points(actor, get_owner(from), points);
 	win_player(from);
 
-	GameActor* bar = create_actor(ACT_GOAL_BAR_FLY, POS_ADD(actor, FfInt(-2L), FfInt(7L)));
+	GameActor* bar = create_actor(ACT_GOAL_BAR_FLY, POS_ADD(actor, Int2Fx(-2L), Int2Fx(7L)));
 	if (bar != NULL) {
-		const Fixed dir = 154416L + (-12868L + Fmul(FfInt(rng(3L)), 12868L));
+		const Fixed dir = 154416L + (-12868L + Fmul(Int2Fx(rng(3L)), 12868L));
 		VAL(bar, X_SPEED) = Fmul(327680L, Fcos(dir)), VAL(bar, Y_SPEED) = Fmul(327680L, -Fsin(dir));
 		FLAG_ON(actor, FLG_DESTROY);
 	}
@@ -115,8 +115,8 @@ static void load_fly() {
 }
 
 static void create_fly(GameActor* actor) {
-	actor->box.start.x = actor->box.start.y = FfInt(-23L);
-	actor->box.end.x = actor->box.end.y = FfInt(23L);
+	actor->box.start.x = actor->box.start.y = Int2Fx(-23L);
+	actor->box.end.x = actor->box.end.y = Int2Fx(23L);
 }
 
 static void tick_fly(GameActor* actor) {
@@ -131,7 +131,7 @@ static void tick_fly(GameActor* actor) {
 }
 
 static void draw_fly(const GameActor* actor) {
-	draw_actor(actor, "markers/goal_bar2", FtFloat(VAL(actor, GOAL_ANGLE)), B_WHITE);
+	draw_actor(actor, "markers/goal_bar2", Fx2Float(VAL(actor, GOAL_ANGLE)), B_WHITE);
 }
 
 const GameActorTable TAB_GOAL_BAR_FLY = {

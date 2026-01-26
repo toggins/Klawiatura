@@ -51,8 +51,8 @@ static void load_shard() {
 }
 
 static void create_shard(GameActor* actor) {
-	actor->box.start.x = actor->box.start.y = FfInt(-8L);
-	actor->box.end.x = actor->box.end.y = FfInt(8L);
+	actor->box.start.x = actor->box.start.y = Int2Fx(-8L);
+	actor->box.end.x = actor->box.end.y = Int2Fx(8L);
 }
 
 static void tick_shard(GameActor* actor) {
@@ -68,7 +68,7 @@ static void tick_shard(GameActor* actor) {
 
 static void draw_shard(const GameActor* actor) {
 	draw_actor(actor, ANY_FLAG(actor, FLG_BLOCK_GRAY) ? "effects/shard_gray" : "effects/shard",
-		FtFloat(VAL(actor, BRICK_SHARD_ANGLE)), B_WHITE);
+		Fx2Float(VAL(actor, BRICK_SHARD_ANGLE)), B_WHITE);
 }
 
 const GameActorTable TAB_BRICK_SHARD = {
@@ -87,7 +87,7 @@ static void load_splash() {
 }
 
 static void create_splash(GameActor* actor) {
-	actor->depth = FfInt(-2L);
+	actor->depth = Int2Fx(-2L);
 }
 
 static void tick_splash(GameActor* actor) {
@@ -117,13 +117,13 @@ static void load_bubble() {
 }
 
 static void create_bubble(GameActor* actor) {
-	actor->box.start.x = actor->box.start.y = FfInt(-4L);
-	actor->box.end.x = FfInt(5L);
-	actor->box.end.y = FfInt(6L);
+	actor->box.start.x = actor->box.start.y = Int2Fx(-4L);
+	actor->box.end.x = Int2Fx(5L);
+	actor->box.end.y = Int2Fx(6L);
 }
 
 static void tick_bubble(GameActor* actor) {
-	if (!in_any_view(actor, FfInt(28L), FALSE)) {
+	if (!in_any_view(actor, Int2Fx(28L), FALSE)) {
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}
@@ -136,8 +136,8 @@ static void tick_bubble(GameActor* actor) {
 		return;
 	}
 
-	const Fixed xoffs = FfInt(-2L + rng(5L));
-	const Fixed yoffs = FfInt(-rng(3L));
+	const Fixed xoffs = Int2Fx(-2L + rng(5L));
+	const Fixed yoffs = Int2Fx(-rng(3L));
 	move_actor(actor, POS_ADD(actor, xoffs, yoffs));
 	if (actor->pos.y < game_state.water) {
 		VAL(actor, EFFECT_FRAME) = 0L;
@@ -168,7 +168,7 @@ static void draw_bubble(const GameActor* actor) {
 
 	const InterpActor* iactor = get_interp(actor);
 	batch_reset();
-	batch_pos(B_XYZ(FtInt(iactor->pos.x) + pos[0], FtInt(iactor->pos.y) + pos[1], FtFloat(actor->depth)));
+	batch_pos(B_XYZ(Fx2Int(iactor->pos.x) + pos[0], Fx2Int(iactor->pos.y) + pos[1], Fx2Float(actor->depth)));
 	batch_sprite(tex);
 }
 
@@ -212,10 +212,10 @@ static void load_lava_bubble() {
 }
 
 static void create_lava_bubble(GameActor* actor) {
-	actor->box.start.x = FfInt(-7L);
-	actor->box.start.y = FfInt(-6L);
-	actor->box.end.x = FfInt(8L);
-	actor->box.end.y = FfInt(9L);
+	actor->box.start.x = Int2Fx(-7L);
+	actor->box.start.y = Int2Fx(-6L);
+	actor->box.end.x = Int2Fx(8L);
+	actor->box.end.y = Int2Fx(9L);
 }
 
 static void tick_lava_bubble(GameActor* actor) {
@@ -227,7 +227,7 @@ static void tick_lava_bubble(GameActor* actor) {
 
 static void draw_lava_bubble(const GameActor* actor) {
 	const InterpActor* iactor = get_interp(actor);
-	batch_reset(), batch_pos(B_XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)));
+	batch_reset(), batch_pos(B_XYZ(Fx2Int(iactor->pos.x), Fx2Int(iactor->pos.y), Fx2Float(actor->depth)));
 	const float scale = 1.f - ((float)VAL(actor, EFFECT_FRAME) / 42.f);
 	batch_scale(B_SCALE(scale));
 	batch_sprite("effects/lava_bubble");
@@ -276,7 +276,7 @@ static void draw_tube_bubble(const GameActor* actor) {
 
 	const InterpActor* iactor = get_interp(actor);
 	batch_reset();
-	batch_pos(B_XYZ(FtInt(iactor->pos.x) + pos[0], FtInt(iactor->pos.y) + pos[1], FtFloat(actor->depth)));
+	batch_pos(B_XYZ(Fx2Int(iactor->pos.x) + pos[0], Fx2Int(iactor->pos.y) + pos[1], Fx2Float(actor->depth)));
 	batch_color(B_ALPHA(57L));
 	batch_sprite("effects/bubble0");
 }

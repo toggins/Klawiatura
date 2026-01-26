@@ -2,6 +2,7 @@
 
 #include <SDL3/SDL_stdinc.h>
 
+#define FIX_NOSTD
 #include <S_fixed.h>
 
 // FUCK YOU `minwindef.h`

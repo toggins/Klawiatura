@@ -38,9 +38,9 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.start.x = FfInt(-15L);
-	actor->box.start.y = FfInt(-45L);
-	actor->box.end.x = FfInt(15L);
+	actor->box.start.x = Int2Fx(-15L);
+	actor->box.start.y = Int2Fx(-45L);
+	actor->box.end.x = Int2Fx(15L);
 	actor->box.end.y = FxOne;
 
 	FLAG_ON(actor, FLG_PIRANHA_FIRED);
@@ -50,10 +50,10 @@ static void tick(GameActor* actor) {
 	if (!ANY_FLAG(actor, FLG_PIRANHA_START)) {
 		if (ANY_FLAG(actor, FLG_Y_FLIP)) {
 			actor->box.start.y = -FxOne;
-			actor->box.end.y = FfInt(45L);
-			move_actor(actor, POS_ADD(actor, FxZero, FfInt(-60L)));
+			actor->box.end.y = Int2Fx(45L);
+			move_actor(actor, POS_ADD(actor, FxZero, Int2Fx(-60L)));
 		} else
-			move_actor(actor, POS_ADD(actor, FxZero, FfInt(60L)));
+			move_actor(actor, POS_ADD(actor, FxZero, Int2Fx(60L)));
 		skip_interp(actor);
 		FLAG_ON(actor, FLG_PIRANHA_START);
 	}
@@ -63,13 +63,13 @@ static void tick(GameActor* actor) {
 
 	GameActor* nearest = nearest_pawn(actor->pos);
 	if (nearest != NULL) {
-		const Fixed range = ANY_FLAG(actor, FLG_PIRANHA_RED) ? FfInt(40L) : FfInt(80L);
+		const Fixed range = ANY_FLAG(actor, FLG_PIRANHA_RED) ? Int2Fx(40L) : Int2Fx(80L);
 		if (actor->pos.x < (nearest->pos.x + range) && actor->pos.x > (nearest->pos.x - range))
 			FLAG_ON(actor, FLG_PIRANHA_BLOCKED);
 	}
 
 	if (!ANY_FLAG(actor, FLG_PIRANHA_BLOCKED | FLG_PIRANHA_OUT | FLG_PIRANHA_IN)
-		&& in_any_view(actor, FfInt(96L), FALSE))
+		&& in_any_view(actor, Int2Fx(96L), FALSE))
 	{
 		FLAG_ON(actor, FLG_PIRANHA_OUT);
 		VAL(actor, PIRANHA_MOVE) = -60L;
@@ -77,7 +77,7 @@ static void tick(GameActor* actor) {
 
 	if (VAL(actor, PIRANHA_MOVE) < 0L && ANY_FLAG(actor, FLG_PIRANHA_OUT)) {
 		const ActorValue move = ANY_FLAG(actor, FLG_PIRANHA_RED) ? 2L : 1L;
-		move_actor(actor, POS_ADD(actor, FxZero, FfInt(ANY_FLAG(actor, FLG_Y_FLIP) ? move : -move)));
+		move_actor(actor, POS_ADD(actor, FxZero, Int2Fx(ANY_FLAG(actor, FLG_Y_FLIP) ? move : -move)));
 		VAL(actor, PIRANHA_MOVE) += move;
 	}
 
@@ -98,7 +98,7 @@ static void tick(GameActor* actor) {
 
 	if (VAL(actor, PIRANHA_MOVE) > 0L && ANY_FLAG(actor, FLG_PIRANHA_OUT)) {
 		const ActorValue move = ANY_FLAG(actor, FLG_PIRANHA_RED) ? 2L : 1L;
-		move_actor(actor, POS_ADD(actor, FxZero, FfInt(ANY_FLAG(actor, FLG_Y_FLIP) ? -move : move)));
+		move_actor(actor, POS_ADD(actor, FxZero, Int2Fx(ANY_FLAG(actor, FLG_Y_FLIP) ? -move : move)));
 		VAL(actor, PIRANHA_MOVE) -= move;
 	}
 
@@ -114,10 +114,10 @@ static void tick(GameActor* actor) {
 		const Bool flip = ANY_FLAG(actor, FLG_Y_FLIP);
 
 		GameActor* fire
-			= create_actor(ACT_PIRANHA_FIRE, POS_ADD(actor, FxZero, flip ? FfInt(35L) : FfInt(-35L)));
+			= create_actor(ACT_PIRANHA_FIRE, POS_ADD(actor, FxZero, flip ? Int2Fx(35L) : Int2Fx(-35L)));
 		if (fire != NULL) {
-			VAL(fire, X_SPEED) = FfInt(-4L + rng(9L));
-			VAL(fire, Y_SPEED) = FfInt(flip ? rng(6L) : (-3L - rng(9L)));
+			VAL(fire, X_SPEED) = Int2Fx(-4L + rng(9L));
+			VAL(fire, Y_SPEED) = Int2Fx(flip ? rng(6L) : (-3L - rng(9L)));
 			play_state_sound("fire", PLAY_POS, 0L, A_ACTOR(fire));
 		}
 
@@ -180,8 +180,8 @@ static void load_fire() {
 }
 
 static void create_fire(GameActor* actor) {
-	actor->box.start.x = actor->box.start.y = FfInt(-7L);
-	actor->box.end.x = actor->box.end.y = FfInt(8L);
+	actor->box.start.x = actor->box.start.y = Int2Fx(-7L);
+	actor->box.end.x = actor->box.end.y = Int2Fx(8L);
 }
 
 static void tick_fire(GameActor* actor) {
@@ -196,7 +196,7 @@ static void tick_fire(GameActor* actor) {
 }
 
 static void draw_fire(const GameActor* actor) {
-	draw_actor(actor, "missiles/fireball", FtFloat(VAL(actor, MISSILE_ANGLE)), B_WHITE);
+	draw_actor(actor, "missiles/fireball", Fx2Float(VAL(actor, MISSILE_ANGLE)), B_WHITE);
 }
 
 static void collide_fire(GameActor* actor, GameActor* from) {
@@ -226,8 +226,8 @@ static void load_head() {
 
 static void create_head(GameActor* actor) {
 	actor->box.start.y = FxOne;
-	actor->box.end.x = FfInt(31L);
-	actor->box.end.y = FfInt(32L);
+	actor->box.end.x = Int2Fx(31L);
+	actor->box.end.y = Int2Fx(32L);
 
 	actor->depth = FxOne;
 }
@@ -235,7 +235,7 @@ static void create_head(GameActor* actor) {
 static void tick_head(GameActor* actor) {
 	if (!ANY_FLAG(actor, FLG_PIRANHA_START)) {
 		if (ANY_FLAG(actor, FLG_Y_FLIP)) {
-			actor->box.start.y = FfInt(-32L);
+			actor->box.start.y = Int2Fx(-32L);
 			actor->box.end.y = -FxOne;
 		}
 		FLAG_ON(actor, FLG_PIRANHA_START);
@@ -247,11 +247,11 @@ static void tick_head(GameActor* actor) {
 	if (VAL(actor, PIRANHA_FIRE) > 0L && (game_state.time % ((game_state.flags & GF_FUNNY) ? 2L : 10L)) == 0L) {
 		const Bool flip = ANY_FLAG(actor, FLG_Y_FLIP);
 
-		GameActor* fire
-			= create_actor(ACT_PIRANHA_FIRE, POS_ADD(actor, FfInt(15L), flip ? FfInt(-16L) : FfInt(16L)));
+		GameActor* fire = create_actor(
+			ACT_PIRANHA_FIRE, POS_ADD(actor, Int2Fx(15L), flip ? Int2Fx(-16L) : Int2Fx(16L)));
 		if (fire != NULL) {
-			VAL(fire, X_SPEED) = FfInt(-4L + rng(9L));
-			VAL(fire, Y_SPEED) = FfInt(flip ? rng(6L) : (-3L - rng(9L)));
+			VAL(fire, X_SPEED) = Int2Fx(-4L + rng(9L));
+			VAL(fire, Y_SPEED) = Int2Fx(flip ? rng(6L) : (-3L - rng(9L)));
 			play_state_sound("fire", PLAY_POS, 0L, A_ACTOR(fire));
 		}
 

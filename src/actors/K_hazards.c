@@ -51,8 +51,8 @@ static void load_special_spike(const GameActor* actor) {
 
 static void create_spike(GameActor* actor) {
 	actor->box.start.x = actor->box.start.y = FxOne;
-	actor->box.end.x = FfInt(31L);
-	actor->box.end.y = FfInt(32L);
+	actor->box.end.x = Int2Fx(31L);
+	actor->box.end.y = Int2Fx(32L);
 }
 
 static void tick_spike(GameActor* actor) {
@@ -60,7 +60,7 @@ static void tick_spike(GameActor* actor) {
 		return;
 
 	if (ANY_FLAG(actor, FLG_Y_FLIP)) {
-		actor->box.start.y = FfInt(-32L);
+		actor->box.start.y = Int2Fx(-32L);
 		actor->box.end.y = -FxOne;
 	}
 	FLAG_ON(actor, FLG_SPIKE_START);
@@ -107,10 +107,10 @@ static void load_coral() {
 }
 
 static void create_coral(GameActor* actor) {
-	actor->box.end.x = FfInt(28L);
-	actor->box.end.y = FfInt(30L);
+	actor->box.end.x = Int2Fx(28L);
+	actor->box.end.y = Int2Fx(30L);
 
-	actor->depth = FfInt(20L);
+	actor->depth = Int2Fx(20L);
 }
 
 static void draw_coral(const GameActor* actor) {
@@ -148,8 +148,8 @@ static void load_cloud() {
 
 static void create_cloud(GameActor* actor) {
 	actor->box.start.x = FxOne;
-	actor->box.end.x = FfInt(64L);
-	actor->box.end.y = FfInt(48L);
+	actor->box.end.x = Int2Fx(64L);
+	actor->box.end.y = Int2Fx(48L);
 
 	VAL(actor, CLOUD_FRAME) = rng(3L);
 }
@@ -190,16 +190,16 @@ void tick_party(GameActor* actor) {
 		return;
 
 	VAL(actor, PARTY_TIME) += VAL(actor, PARTY_SPEED);
-	while (VAL(actor, PARTY_TIME) >= FfInt(50L)) {
+	while (VAL(actor, PARTY_TIME) >= Int2Fx(50L)) {
 		GameActor* nearest = nearest_pawn((FVec2){game_state.size.x, FxZero});
 		if (nearest != NULL) {
 			GameActor* drop = create_actor(
-				VAL(actor, PARTY_TYPE), POS_ADD(nearest, FfInt(201L + rng(200L)), FfInt(-498L)));
+				VAL(actor, PARTY_TYPE), POS_ADD(nearest, Int2Fx(201L + rng(200L)), Int2Fx(-498L)));
 			if (drop != NULL)
 				FLAG_ON(drop, FLG_X_FLIP);
 		}
 
-		VAL(actor, PARTY_TIME) -= FfInt(50L);
+		VAL(actor, PARTY_TIME) -= Int2Fx(50L);
 	}
 }
 

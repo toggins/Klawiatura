@@ -11,9 +11,9 @@ static void load_special(const GameActor* actor) {
 }
 
 static void create(GameActor* actor) {
-	actor->box.start.x = FfInt(-8L);
-	actor->box.start.y = FfInt(-16L);
-	actor->box.end.x = FfInt(8L);
+	actor->box.start.x = Int2Fx(-8L);
+	actor->box.start.y = Int2Fx(-16L);
+	actor->box.end.x = Int2Fx(8L);
 }
 
 static void collide(GameActor* actor, GameActor* from) {
@@ -60,7 +60,7 @@ static void collide(GameActor* actor, GameActor* from) {
 	}
 
 	if (warped) {
-		from->depth = FfInt(21L);
+		from->depth = Int2Fx(21L);
 		VAL(from, X_SPEED) = VAL(from, Y_SPEED) = FxZero;
 		VAL(from, PLAYER_WARP) = actor->id;
 		VAL(from, PLAYER_WARP_STATE) = 0L;
@@ -96,8 +96,8 @@ static void collide(GameActor* actor, GameActor* from) {
 					    && act->type != ACT_MUSHROOM_POISON)
 					|| !ANY_FLAG(act, FLG_POWERUP_CALAMITY))
 					continue;
-				VAL(act, X_SPEED) = FfInt(2L);
-				VAL(act, SPROUT) = FfInt(32L);
+				VAL(act, X_SPEED) = Int2Fx(2L);
+				VAL(act, SPROUT) = Int2Fx(32L);
 				FLAG_OFF(act, FLG_POWERUP_CALAMITY);
 			}
 			FLAG_OFF(actor, FLG_WARP_CALAMITY);

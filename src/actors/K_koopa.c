@@ -21,9 +21,9 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.start.x = FfInt(-15L);
-	actor->box.start.y = FfInt(-32L);
-	actor->box.end.x = FfInt(15L);
+	actor->box.start.x = Int2Fx(-15L);
+	actor->box.start.y = Int2Fx(-32L);
+	actor->box.end.x = Int2Fx(15L);
 
 	increase_ambush();
 }
@@ -31,7 +31,7 @@ static void create(GameActor* actor) {
 static void tick(GameActor* actor) {
 	VAL_TICK(actor, KOOPA_MAYDAY);
 	const Bool red = ANY_FLAG(actor, FLG_KOOPA_RED);
-	move_enemy(actor, (FVec2){red ? FfInt(2L) : FxOne, 19005L}, red);
+	move_enemy(actor, (FVec2){red ? Int2Fx(2L) : FxOne, 19005L}, red);
 }
 
 static void draw(const GameActor* actor) {
@@ -58,7 +58,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		if (VAL(actor, KOOPA_MAYDAY) > 0L)
 			break;
 
-		if (check_stomp(actor, from, FfInt(-16L), 100L)) {
+		if (check_stomp(actor, from, Int2Fx(-16L), 100L)) {
 			GameActor* shell = create_actor(ACT_KOOPA_SHELL, actor->pos);
 			if (shell != NULL) {
 				VAL(shell, Y_SPEED) = Fmax(VAL(actor, Y_SPEED), FxZero);
@@ -129,9 +129,9 @@ static void load_shell() {
 }
 
 static void create_shell(GameActor* actor) {
-	actor->box.start.x = FfInt(-15L);
-	actor->box.start.y = FfInt(-32L);
-	actor->box.end.x = FfInt(15L);
+	actor->box.start.x = Int2Fx(-15L);
+	actor->box.start.y = Int2Fx(-32L);
+	actor->box.end.x = Int2Fx(15L);
 
 	VAL(actor, SHELL_PLAYER) = (ActorValue)NULLPLAY;
 	VAL(actor, SHELL_HIT) = 6L;
@@ -150,7 +150,7 @@ static void tick_shell(GameActor* actor) {
 	const Fixed spd = VAL(actor, X_SPEED);
 	VAL(actor, Y_SPEED) += 24966L;
 
-	displace_actor(actor, FfInt(10L), FALSE);
+	displace_actor(actor, Int2Fx(10L), FALSE);
 	collide_actor(actor);
 	if (VAL(actor, X_TOUCH) != 0L)
 		VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * -Fabs(spd);
@@ -158,7 +158,7 @@ static void tick_shell(GameActor* actor) {
 
 static void draw_shell(const GameActor* actor) {
 	const char* tex = fmt(ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/shell_red%u" : "enemies/shell%u",
-		FtInt(VAL(actor, SHELL_FRAME)) % 4L);
+		Fx2Int(VAL(actor, SHELL_FRAME)) % 4L);
 	draw_actor(actor, tex, 0.f, B_WHITE);
 }
 
@@ -180,7 +180,7 @@ static void collide_shell(GameActor* actor, GameActor* from) {
 
 		if (!ANY_FLAG(actor, FLG_SHELL_ACTIVE)) {
 			play_state_sound("kick", PLAY_POS, 0L, A_ACTOR(actor));
-			VAL(actor, X_SPEED) = (from->pos.x > actor->pos.x) ? FfInt(-6L) : FfInt(6L);
+			VAL(actor, X_SPEED) = (from->pos.x > actor->pos.x) ? Int2Fx(-6L) : Int2Fx(6L);
 			VAL(actor, SHELL_PLAYER) = (ActorValue)get_owner_id(from);
 			VAL(actor, SHELL_HIT) = 6L;
 			VAL(actor, SHELL_COMBO) = 0L;
@@ -189,7 +189,7 @@ static void collide_shell(GameActor* actor, GameActor* from) {
 			break;
 		}
 
-		if (check_stomp(actor, from, FfInt(-16L), 100L)) {
+		if (check_stomp(actor, from, Int2Fx(-16L), 100L)) {
 			VAL(actor, X_SPEED) = FxZero;
 			VAL(actor, SHELL_PLAYER) = (ActorValue)NULLPLAY;
 			VAL(actor, SHELL_HIT) = 6L;
@@ -254,13 +254,13 @@ static void load_parakoopa() {
 static void tick_parakoopa(GameActor* actor) {
 	if (!ANY_FLAG(actor, FLG_PARAKOOPA_START)) {
 		VAL(actor, PARAKOOPA_Y) = actor->pos.y;
-		VAL(actor, PARAKOOPA_ANGLE) = Frad(FfInt(rng(360L)));
+		VAL(actor, PARAKOOPA_ANGLE) = FxRad(Int2Fx(rng(360L)));
 		FLAG_ON(actor, FLG_PARAKOOPA_START);
 	}
 
 	move_actor(actor,
-		(FVec2){actor->pos.x, VAL(actor, PARAKOOPA_Y) + Fmul(FfInt(50L), Fcos(VAL(actor, PARAKOOPA_ANGLE)))});
-	VAL(actor, PARAKOOPA_ANGLE) += Frad(FfInt(2L));
+		(FVec2){actor->pos.x, VAL(actor, PARAKOOPA_Y) + Fmul(Int2Fx(50L), Fcos(VAL(actor, PARAKOOPA_ANGLE)))});
+	VAL(actor, PARAKOOPA_ANGLE) += FxRad(Int2Fx(2L));
 
 	GameActor* nearest = nearest_pawn(actor->pos);
 	if (nearest != NULL) {
@@ -283,7 +283,7 @@ static void collide_parakoopa(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_PLAYER: {
-		if (check_stomp(actor, from, FfInt(-16L), 100L)) {
+		if (check_stomp(actor, from, Int2Fx(-16L), 100L)) {
 			GameActor* koopa = create_actor(ACT_KOOPA, actor->pos);
 			if (koopa != NULL) {
 				VAL(koopa, KOOPA_MAYDAY) = 2L;

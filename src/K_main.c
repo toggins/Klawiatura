@@ -16,6 +16,7 @@
 #include <S_tructures.h>
 
 #define FIX_IMPLEMENTATION
+#define FIX_NOSTD
 #include <S_fixed.h>
 
 #include "K_audio.h"

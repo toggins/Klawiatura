@@ -14,7 +14,7 @@ static void load_ball() {
 }
 
 static void create_ball(GameActor* actor) {
-	actor->depth = FfInt(19L);
+	actor->depth = Int2Fx(19L);
 
 	VAL(actor, ROTODISC_CHILD) = NULLACT;
 }
@@ -60,7 +60,7 @@ static void load() {
 
 static void create(GameActor* actor) {
 	actor->box.start.x = actor->box.start.y = FxOne;
-	actor->box.end.x = actor->box.end.y = FfInt(30L);
+	actor->box.end.x = actor->box.end.y = Int2Fx(30L);
 
 	VAL(actor, ROTODISC_PARENT) = NULLACT;
 }
@@ -73,8 +73,8 @@ static void tick(GameActor* actor) {
 	}
 
 	if (ANY_FLAG(actor, FLG_ROTODISC_FLOWER)) {
-		VAL(actor, ROTODISC_LENGTH) += ANY_FLAG(actor, FLG_ROTODISC_FLOWER2) ? FfInt(-5L) : FfInt(5L);
-		if (VAL(actor, ROTODISC_LENGTH) >= FfInt(200L) && !ANY_FLAG(actor, FLG_ROTODISC_FLOWER2))
+		VAL(actor, ROTODISC_LENGTH) += ANY_FLAG(actor, FLG_ROTODISC_FLOWER2) ? Int2Fx(-5L) : Int2Fx(5L);
+		if (VAL(actor, ROTODISC_LENGTH) >= Int2Fx(200L) && !ANY_FLAG(actor, FLG_ROTODISC_FLOWER2))
 			FLAG_ON(actor, FLG_ROTODISC_FLOWER2);
 		else if (VAL(actor, ROTODISC_LENGTH) <= FxZero && ANY_FLAG(actor, FLG_ROTODISC_FLOWER2))
 			FLAG_OFF(actor, FLG_ROTODISC_FLOWER2);

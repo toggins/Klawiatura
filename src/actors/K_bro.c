@@ -65,9 +65,9 @@ static void load_special(const GameActor* actor) {
 }
 
 static void create(GameActor* actor) {
-	actor->box.start.x = FfInt(-15L);
-	actor->box.start.y = FfInt(-48L);
-	actor->box.end.x = FfInt(15L);
+	actor->box.start.x = Int2Fx(-15L);
+	actor->box.start.y = Int2Fx(-48L);
+	actor->box.end.x = Int2Fx(15L);
 
 	increase_ambush();
 }
@@ -97,10 +97,10 @@ static void tick(GameActor* actor) {
 
 	if (VAL(actor, BRO_MOVE) < 0L) {
 		++VAL(actor, BRO_MOVE);
-		move_actor(actor, POS_ADD(actor, FfInt(-2L), FxZero));
+		move_actor(actor, POS_ADD(actor, Int2Fx(-2L), FxZero));
 	} else if (VAL(actor, BRO_MOVE) > 0L) {
 		--VAL(actor, BRO_MOVE);
-		move_actor(actor, POS_ADD(actor, FfInt(2L), FxZero));
+		move_actor(actor, POS_ADD(actor, Int2Fx(2L), FxZero));
 	}
 
 	if (VAL(actor, BRO_TEMP2) > -1L) {
@@ -165,11 +165,11 @@ static void tick(GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_BRO_JUMP)) {
 		if (VAL(actor, BRO_JUMP) == 5L && ANY_FLAG(actor, FLG_BRO_BOTTOM | FLG_BRO_TOP)) {
 			VAL(actor, BRO_JUMP_STATE) = 1L;
-			VAL(actor, Y_SPEED) = FfInt(-8L);
+			VAL(actor, Y_SPEED) = Int2Fx(-8L);
 		} else if (VAL(actor, BRO_JUMP) == 15L && ANY_FLAG(actor, FLG_BRO_TOP)) {
 			VAL(actor, BRO_JUMP_STATE) = 2L;
-			VAL(actor, BRO_DOWN) = actor->pos.y + FfInt(80L);
-			VAL(actor, Y_SPEED) = FfInt(-3L);
+			VAL(actor, BRO_DOWN) = actor->pos.y + Int2Fx(80L);
+			VAL(actor, Y_SPEED) = Int2Fx(-3L);
 		}
 
 		FLAG_OFF(actor, FLG_BRO_JUMP);
@@ -194,13 +194,13 @@ static void tick(GameActor* actor) {
 			FLAG_OFF(actor, FLG_BRO_TEMP30);
 
 			GameActor* missile = create_actor(VAL(actor, BRO_MISSILE),
-				POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? FfInt(-9L) : FfInt(9L), FfInt(-20L)));
+				POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-9L) : Int2Fx(9L), Int2Fx(-20L)));
 			if (missile != NULL)
 				switch (missile->type) {
 				default: {
 					VAL(missile, X_SPEED)
-						= FfInt((ANY_FLAG(actor, FLG_X_FLIP) ? -1L : 1L) * (1L + rng(5L)));
-					VAL(missile, Y_SPEED) = FfInt(-6L - rng(5L));
+						= Int2Fx((ANY_FLAG(actor, FLG_X_FLIP) ? -1L : 1L) * (1L + rng(5L)));
+					VAL(missile, Y_SPEED) = Int2Fx(-6L - rng(5L));
 					FLAG_ON(missile, actor->flags & FLG_X_FLIP);
 					play_state_sound("hammer", PLAY_POS, 0L, A_ACTOR(missile));
 					break;
@@ -214,9 +214,9 @@ static void tick(GameActor* actor) {
 				}
 
 				case ACT_MISSILE_SILVER_HAMMER: {
-					VAL(missile, X_SPEED) = FfInt(
+					VAL(missile, X_SPEED) = Int2Fx(
 						ANY_FLAG(actor, FLG_X_FLIP) ? (-1L - rng(10L)) : (1L + rng(10L)));
-					VAL(missile, Y_SPEED) = FfInt(-6L - rng(5L));
+					VAL(missile, Y_SPEED) = Int2Fx(-6L - rng(5L));
 					FLAG_ON(missile, actor->flags & FLG_X_FLIP);
 					play_state_sound("hammer", PLAY_POS, 0L, A_ACTOR(missile));
 					break;
@@ -233,7 +233,7 @@ static void tick(GameActor* actor) {
 	{
 		Fixed i = VAL(actor, Y_SPEED);
 		const Fixed jut
-			= FfInt((Sint32)(VAL(actor, Y_SPEED) > FxZero) - (Sint32)(VAL(actor, Y_SPEED) < FxZero));
+			= Int2Fx((Sint32)(VAL(actor, Y_SPEED) > FxZero) - (Sint32)(VAL(actor, Y_SPEED) < FxZero));
 
 		while (i >= FxOne) {
 			if (touching_solid(HITBOX_ADD(actor, FxZero, jut), SOL_ALL))
@@ -282,7 +282,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_PLAYER: {
-		if (check_stomp(actor, from, FfInt(-16L), 200L))
+		if (check_stomp(actor, from, Int2Fx(-16L), 200L))
 			kill_enemy(actor, from, FALSE);
 		else
 			maybe_hit_player(actor, from);
@@ -324,7 +324,7 @@ const GameActorTable TAB_BRO = {
 // =========
 
 static void create_layer(GameActor* actor) {
-	actor->box.end.x = actor->box.end.y = FfInt(32L);
+	actor->box.end.x = actor->box.end.y = Int2Fx(32L);
 }
 
 static void collide_layer(GameActor* actor, GameActor* from) {

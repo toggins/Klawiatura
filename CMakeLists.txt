@@ -82,7 +82,7 @@ list(APPEND LIBS yyjson)
 set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
 FetchContent_Declare(S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
-    GIT_TAG 8171508bb7729d94aa98f6ee391a5f30d84ec328)
+    GIT_TAG 230d7592c7b131237ae8a995a3bb86cb49b6cb41)
 FetchContent_MakeAvailable(S_fixed)
 list(APPEND LIBS S_fixed)
 
@@ -98,7 +98,7 @@ list(APPEND LIBS S_tructures)
 set(NUTPUNCH_STAGING ON CACHE INTERNAL "")
 FetchContent_Declare(NutPunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG 80b389d60a69cd596c15d38d75ebf2202cc13f76)
+    GIT_TAG 0adfb307836f4fe72abab6a71ae640e548281334)
 FetchContent_MakeAvailable(NutPunch)
 list(APPEND LIBS NutPunch)
 

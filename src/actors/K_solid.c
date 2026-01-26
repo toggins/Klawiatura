@@ -4,7 +4,7 @@
 #include "actors/K_autoscroll.h"
 
 static void create(GameActor* actor) {
-	actor->box.end.x = actor->box.end.y = FfInt(32L);
+	actor->box.end.x = actor->box.end.y = Int2Fx(32L);
 }
 
 const GameActorTable TAB_SOLID = {.is_solid = always_solid, .create = create},
@@ -38,20 +38,20 @@ static void tick_wheel(GameActor* actor) {
 }
 
 static void draw_left_wheel(const GameActor* actor) {
-	draw_actor(actor, fmt("tiles/wheel_l%u", FtInt(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, B_WHITE);
+	draw_actor(actor, fmt("tiles/wheel_l%u", Fx2Int(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, B_WHITE);
 }
 
 static void draw_wheel(const GameActor* actor) {
 	batch_reset();
 	const InterpActor* iactor = get_interp(actor);
-	batch_pos(B_XYZ(FtInt(iactor->pos.x), FtInt(iactor->pos.y), FtFloat(actor->depth)));
+	batch_pos(B_XYZ(Fx2Int(iactor->pos.x), Fx2Int(iactor->pos.y), Fx2Float(actor->depth)));
 	batch_tile(B_TILE(TRUE, FALSE));
-	batch_rectangle(fmt("tiles/wheel%u", FtInt(VAL(actor, WHEEL_FRAME)) % 4L),
-		B_WH(FtInt(actor->box.end.x - actor->box.start.x), FtInt(actor->box.end.y - actor->box.start.y)));
+	batch_rectangle(fmt("tiles/wheel%u", Fx2Int(VAL(actor, WHEEL_FRAME)) % 4L),
+		B_WH(Fx2Int(actor->box.end.x - actor->box.start.x), Fx2Int(actor->box.end.y - actor->box.start.y)));
 }
 
 static void draw_right_wheel(const GameActor* actor) {
-	draw_actor(actor, fmt("tiles/wheel_r%u", FtInt(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, B_WHITE);
+	draw_actor(actor, fmt("tiles/wheel_r%u", Fx2Int(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, B_WHITE);
 }
 
 const GameActorTable TAB_WHEEL_LEFT = {

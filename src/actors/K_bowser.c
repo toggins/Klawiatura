@@ -53,9 +53,9 @@ static void load_special(const GameActor* actor) {
 }
 
 static void create(GameActor* actor) {
-	actor->box.start.x = FfInt(-30L);
-	actor->box.start.y = FfInt(-70L);
-	actor->box.end.x = FfInt(30L);
+	actor->box.start.x = Int2Fx(-30L);
+	actor->box.start.y = Int2Fx(-70L);
+	actor->box.end.x = Int2Fx(30L);
 	actor->depth = FxOne;
 
 	VAL(actor, BOWSER_SLIPPER) = NULLACT;
@@ -98,7 +98,7 @@ static void tick(GameActor* actor) {
 			FLAG_OFF(actor, FLG_X_FLIP);
 
 		GameActor* autoscroll = get_actor(game_state.autoscroll);
-		if (autoscroll == NULL && nearest->pos.x > (game_state.size.x - FfInt(952L))) {
+		if (autoscroll == NULL && nearest->pos.x > (game_state.size.x - Int2Fx(952L))) {
 			autoscroll
 				= create_actor(ACT_AUTOSCROLL, (FVec2){nearest->pos.x - F_HALF_SCREEN_WIDTH, FxZero});
 			if (autoscroll != NULL) {
@@ -138,15 +138,15 @@ static void tick(GameActor* actor) {
 
 	// 889, 890
 	if (VAL(actor, BOWSER_C) > 0L) {
-		VAL(actor, X_SPEED) = ANY_FLAG(actor, FLG_BOWSER_1) ? FfInt(2L) : FfInt(-2L);
+		VAL(actor, X_SPEED) = ANY_FLAG(actor, FLG_BOWSER_1) ? Int2Fx(2L) : Int2Fx(-2L);
 		--VAL(actor, BOWSER_C);
 	} else
 		VAL(actor, X_SPEED) = FxZero;
 
 	// 891, 892
-	if ((!ANY_FLAG(actor, FLG_BOWSER_1) && (actor->pos.x + actor->box.start.x) < (game_state.size.x - FfInt(560L)))
+	if ((!ANY_FLAG(actor, FLG_BOWSER_1) && (actor->pos.x + actor->box.start.x) < (game_state.size.x - Int2Fx(560L)))
 		|| (ANY_FLAG(actor, FLG_BOWSER_1)
-			&& (actor->pos.x + actor->box.end.x) > (game_state.size.x - FfInt(80L))))
+			&& (actor->pos.x + actor->box.end.x) > (game_state.size.x - Int2Fx(80L))))
 		TOGGLE_FLAG(actor, FLG_BOWSER_1);
 
 	// 893
@@ -155,7 +155,7 @@ static void tick(GameActor* actor) {
 
 	// 894
 	if (VAL(actor, BOWSER_D) == 10L && VAL(actor, BOWSER_GROUND) > 0L)
-		VAL(actor, Y_SPEED) = FfInt(-6L);
+		VAL(actor, Y_SPEED) = Int2Fx(-6L);
 
 	// 905
 	if (ANY_FLAG(actor, FLG_BOWSER_ACTIVE)
@@ -182,28 +182,28 @@ static void tick(GameActor* actor) {
 		FLAG_ON(actor, FLG_BOWSER_ANIM_FIRE);
 		if (VAL(actor, BOWSER_K) < 5L) {
 			GameActor* napalm = create_actor(ACT_MISSILE_NAPALM,
-				POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? FfInt(-18L) : FfInt(18L), FfInt(-32L)));
+				POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-18L) : Int2Fx(18L), Int2Fx(-32L)));
 			if (napalm != NULL) {
 				FLAG_ON(napalm, (actor->flags & FLG_X_FLIP) | FLG_MISSILE_SHIMMY);
-				VAL(napalm, X_SPEED) = Fmul(ANY_FLAG(napalm, FLG_X_FLIP) ? FfInt(-4L) : FfInt(4L),
+				VAL(napalm, X_SPEED) = Fmul(ANY_FLAG(napalm, FLG_X_FLIP) ? Int2Fx(-4L) : Int2Fx(4L),
 					VAL(actor, BOWSER_MISSILE_SPEED));
-				VAL(napalm, MISSILE_HEIGHT) = VAL(actor, BOWSER_HEIGHT) - FfInt(28L + (rng(3L) * 36L));
+				VAL(napalm, MISSILE_HEIGHT) = VAL(actor, BOWSER_HEIGHT) - Int2Fx(28L + (rng(3L) * 36L));
 			}
 
 			++VAL(actor, BOWSER_K);
 		} else {
 			const ActorFlag mflags = (actor->flags & FLG_X_FLIP) | FLG_MISSILE_SHIMMY;
 			const FVec2 mpos
-				= POS_ADD(actor, (mflags & FLG_X_FLIP) ? FfInt(-18L) : FfInt(18L), FfInt(-32L));
+				= POS_ADD(actor, (mflags & FLG_X_FLIP) ? Int2Fx(-18L) : Int2Fx(18L), Int2Fx(-32L));
 			const Fixed mspd = Fmul(
-				(mflags & FLG_X_FLIP) ? FfInt(-4L) : FfInt(4L), VAL(actor, BOWSER_MISSILE_SPEED));
+				(mflags & FLG_X_FLIP) ? Int2Fx(-4L) : Int2Fx(4L), VAL(actor, BOWSER_MISSILE_SPEED));
 			for (Fixed i = 0L; i < 3L; i++) {
 				GameActor* napalm = create_actor(ACT_MISSILE_NAPALM, mpos);
 				if (napalm != NULL) {
 					FLAG_ON(napalm, mflags);
 					VAL(napalm, X_SPEED) = mspd;
 					VAL(napalm, MISSILE_HEIGHT)
-						= VAL(actor, BOWSER_HEIGHT) - FfInt(28L + (i * 36L));
+						= VAL(actor, BOWSER_HEIGHT) - Int2Fx(28L + (i * 36L));
 				}
 			}
 
@@ -215,7 +215,7 @@ static void tick(GameActor* actor) {
 
 	if (ALL_FLAG(actor, FLG_BOWSER_ACTIVE | FLG_BOWSER_GUN) && VAL(actor, BOWSER_GUN)++ > 100L) {
 		GameActor* bullet = create_actor(ACT_BULLET_BILL,
-			POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? FfInt(-39L) : FfInt(39L), FfInt(-23L)));
+			POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-39L) : Int2Fx(39L), Int2Fx(-23L)));
 		if (bullet != NULL) {
 			bullet->depth = FxHalf;
 			VAL(bullet, X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -212992L : 212992L;
@@ -238,7 +238,7 @@ static void tick(GameActor* actor) {
 		if (VAL(actor, BOWSER_SLIP) == 0L)
 			VAL(actor, BOWSER_SLIPPER) = NULLACT;
 		else {
-			const Fixed slip = FfInt(VAL(actor, BOWSER_SLIP));
+			const Fixed slip = Int2Fx(VAL(actor, BOWSER_SLIP));
 			if (!touching_solid(HITBOX_ADD(slipper, slip, FxZero), SOL_SOLID))
 				move_actor(slipper, POS_ADD(slipper, slip, FxZero));
 		}
@@ -246,7 +246,7 @@ static void tick(GameActor* actor) {
 
 	VAL_TICK(actor, BOWSER_GROUND);
 	VAL(actor, Y_SPEED) += 8738L;
-	displace_actor(actor, FfInt(10L), FALSE);
+	displace_actor(actor, Int2Fx(10L), FALSE);
 	if (VAL(actor, Y_TOUCH) > 0L)
 		VAL(actor, BOWSER_GROUND) = 2L;
 }
@@ -312,8 +312,8 @@ static void draw(const GameActor* actor) {
 
 	if (ANY_FLAG(actor, FLG_BOWSER_GUN)) {
 		const InterpActor* iactor = get_interp(actor);
-		batch_pos(B_XYZ(FtInt(iactor->pos.x) + (ANY_FLAG(actor, FLG_X_FLIP) ? -23L : 23L),
-			FtInt(iactor->pos.y) - 23L, FtFloat(actor->depth)));
+		batch_pos(B_XYZ(Fx2Int(iactor->pos.x) + (ANY_FLAG(actor, FLG_X_FLIP) ? -23L : 23L),
+			Fx2Int(iactor->pos.y) - 23L, Fx2Float(actor->depth)));
 		batch_flip(B_NO_FLIP), batch_sprite("enemies/bowser_gun");
 	}
 }
@@ -386,10 +386,10 @@ static void collide(GameActor* actor, GameActor* from) {
 
 	case ACT_PLAYER: {
 		if (VAL(actor, BOWSER_HURT) >= (VAL(actor, BOWSER_HURT_TIME) - 5L)
-			&& from->pos.y < (actor->pos.y - FfInt(45L)))
+			&& from->pos.y < (actor->pos.y - Int2Fx(45L)))
 			break;
 
-		if (VAL(actor, BOWSER_HURT) > 0L || from->pos.y >= (actor->pos.y - FfInt(45L))
+		if (VAL(actor, BOWSER_HURT) > 0L || from->pos.y >= (actor->pos.y - Int2Fx(45L))
 			|| (VAL(from, Y_SPEED) < FxZero && !ANY_FLAG(from, FLG_PLAYER_STOMP)))
 		{
 			hit_player(from);
@@ -399,7 +399,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		GamePlayer* player = get_owner(from);
 		if (player != NULL)
 			player->score += 100L;
-		VAL(from, Y_SPEED) = FfInt(-8L);
+		VAL(from, Y_SPEED) = Int2Fx(-8L);
 		FLAG_ON(from, FLG_PLAYER_STOMP);
 
 		VAL(actor, BOWSER_SLIPPER) = from->id;
@@ -456,16 +456,16 @@ static void load_corpse() {
 }
 
 static void create_corpse(GameActor* actor) {
-	actor->box.start.x = FfInt(-30L);
-	actor->box.start.y = FfInt(-70L);
-	actor->box.end.x = FfInt(30L);
+	actor->box.start.x = Int2Fx(-30L);
+	actor->box.start.y = Int2Fx(-70L);
+	actor->box.end.x = Int2Fx(30L);
 	actor->depth = FxOne;
 
 	play_state_sound("bowser_dead", PLAY_POS, 0L, A_ACTOR(actor));
 }
 
 static void tick_corpse(GameActor* actor) {
-	if (actor->pos.y > (game_state.bounds.end.y + FfInt(100L)) && game_state.sequence.type == SEQ_BOWSER_END) {
+	if (actor->pos.y > (game_state.bounds.end.y + Int2Fx(100L)) && game_state.sequence.type == SEQ_BOWSER_END) {
 		game_state.sequence.type = SEQ_AMBUSH_END;
 		game_state.sequence.time = 999L;
 		FLAG_ON(actor, FLG_DESTROY);
@@ -484,10 +484,10 @@ static void tick_corpse(GameActor* actor) {
 			VAL(actor, Y_SPEED) = Fmax(VAL(actor, Y_SPEED) - FxOne, FxOne);
 		if (VAL(actor, KUPPA_PFRBRBR) < 50L) {
 			GameActor* bubble
-				= create_actor(ACT_LAVA_BUBBLE, POS_ADD(actor, FfInt(-23L + rng(47L)), FfInt(-16L)));
+				= create_actor(ACT_LAVA_BUBBLE, POS_ADD(actor, Int2Fx(-23L + rng(47L)), Int2Fx(-16L)));
 			if (bubble != NULL) {
-				VAL(bubble, X_SPEED) = FfInt(-2L + rng(5L));
-				VAL(bubble, Y_SPEED) = FfInt(-2L - rng(4L));
+				VAL(bubble, X_SPEED) = Int2Fx(-2L + rng(5L));
+				VAL(bubble, Y_SPEED) = Int2Fx(-2L - rng(4L));
 			}
 
 			++VAL(actor, KUPPA_PFRBRBR);
@@ -528,12 +528,12 @@ const GameActorTable TAB_BOWSER_DEAD = {
 // =============
 
 static void create_laver(GameActor* actor) {
-	actor->box.start.x = FfInt(-15L);
-	actor->box.start.y = FfInt(-17L);
-	actor->box.end.x = FfInt(17L);
-	actor->box.end.y = FfInt(15L);
+	actor->box.start.x = Int2Fx(-15L);
+	actor->box.start.y = Int2Fx(-17L);
+	actor->box.end.x = Int2Fx(17L);
+	actor->box.end.y = Int2Fx(15L);
 
-	VAL(actor, KUPPA_LAVER) = FfInt(16L);
+	VAL(actor, KUPPA_LAVER) = Int2Fx(16L);
 }
 
 static void tick_laver(GameActor* actor) {
@@ -542,7 +542,7 @@ static void tick_laver(GameActor* actor) {
 		return;
 	}
 
-	move_actor(actor, POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? FfInt(-4L) : FfInt(4L), FxZero));
+	move_actor(actor, POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-4L) : Int2Fx(4L), FxZero));
 	collide_actor(actor);
 }
 

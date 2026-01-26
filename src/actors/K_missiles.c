@@ -50,8 +50,8 @@ static void load_fireball() {
 static void create_fireball(GameActor* actor) {
 	create(actor);
 
-	actor->box.start.x = actor->box.start.y = FfInt(-7L);
-	actor->box.end.x = actor->box.end.y = FfInt(8L);
+	actor->box.start.x = actor->box.start.y = Int2Fx(-7L);
+	actor->box.end.x = actor->box.end.y = Int2Fx(8L);
 }
 
 static void tick_fireball(GameActor* actor) {
@@ -66,7 +66,7 @@ static void tick_fireball(GameActor* actor) {
 	VAL(actor, MISSILE_ANGLE) += (VAL(actor, X_SPEED) < FxZero) ? -12868L : 12868L;
 	VAL(actor, Y_SPEED) += 26214L;
 
-	displace_actor(actor, FfInt(10L), FALSE);
+	displace_actor(actor, Int2Fx(10L), FALSE);
 	if (VAL(actor, X_TOUCH) != 0L)
 		FLAG_ON(actor, FLG_DESTROY);
 	else
@@ -77,11 +77,11 @@ static void tick_fireball(GameActor* actor) {
 	}
 
 	if (VAL(actor, Y_TOUCH) > 0L)
-		VAL(actor, Y_SPEED) = FfInt(-5L);
+		VAL(actor, Y_SPEED) = Int2Fx(-5L);
 }
 
 static void draw_fireball(const GameActor* actor) {
-	draw_actor(actor, "missiles/fireball", FtFloat(VAL(actor, MISSILE_ANGLE)), B_WHITE);
+	draw_actor(actor, "missiles/fireball", Fx2Float(VAL(actor, MISSILE_ANGLE)), B_WHITE);
 }
 
 const GameActorTable TAB_MISSILE_FIREBALL = {
@@ -113,9 +113,9 @@ static void create_beetroot(GameActor* actor) {
 	create(actor);
 	VAL(actor, MISSILE_HITS) = 3L;
 
-	actor->box.start.x = FfInt(-11L);
-	actor->box.start.y = FfInt(-32L);
-	actor->box.end.x = FfInt(12L);
+	actor->box.start.x = Int2Fx(-11L);
+	actor->box.start.y = Int2Fx(-32L);
+	actor->box.end.x = Int2Fx(12L);
 }
 
 static void tick_beetroot(GameActor* actor) {
@@ -166,12 +166,12 @@ static void tick_beetroot(GameActor* actor) {
 	}
 
 	if (ANY_FLAG(actor, FLG_MISSILE_SINK)) {
-		move_actor(actor, (FVec2){actor->pos.x, actor->pos.y + FfInt(rng(3L))});
+		move_actor(actor, (FVec2){actor->pos.x, actor->pos.y + Int2Fx(rng(3L))});
 
 		if (VAL(actor, MISSILE_BUBBLE) < 20L && (game_state.time % 10L) == 0L
 			&& in_any_view(actor, FxZero, FALSE))
 		{
-			create_actor(ACT_BUBBLE, (FVec2){actor->pos.x, actor->pos.y - FfInt(3L)});
+			create_actor(ACT_BUBBLE, (FVec2){actor->pos.x, actor->pos.y - Int2Fx(3L)});
 			++VAL(actor, MISSILE_BUBBLE);
 		}
 		return;
@@ -205,7 +205,7 @@ static void tick_beetroot(GameActor* actor) {
 
 	if (vx == VAL(actor, X_SPEED))
 		VAL(actor, X_SPEED) = -VAL(actor, X_SPEED);
-	VAL(actor, Y_SPEED) = FfInt(-8L);
+	VAL(actor, Y_SPEED) = Int2Fx(-8L);
 
 	--VAL(actor, MISSILE_HITS);
 	VAL(actor, MISSILE_COOLDOWN) = 2L;
@@ -242,16 +242,16 @@ static void load_hammer() {
 static void create_hammer(GameActor* actor) {
 	create(actor);
 
-	actor->box.start.x = FfInt(-13L);
-	actor->box.start.y = FfInt(-18L);
-	actor->box.end.x = FfInt(11L);
-	actor->box.end.y = FfInt(15L);
+	actor->box.start.x = Int2Fx(-13L);
+	actor->box.start.y = Int2Fx(-18L);
+	actor->box.end.x = Int2Fx(11L);
+	actor->box.end.y = Int2Fx(15L);
 }
 
 static void tick_hammer(GameActor* actor) {
 	GamePlayer* player = get_owner(actor);
 	if ((player != NULL && !in_player_view(actor, player, FxZero, TRUE))
-		|| (player == NULL && !in_any_view(actor, FfInt(128L), TRUE)))
+		|| (player == NULL && !in_any_view(actor, Int2Fx(128L), TRUE)))
 	{
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
@@ -264,7 +264,7 @@ static void tick_hammer(GameActor* actor) {
 }
 
 static void draw_hammer(const GameActor* actor) {
-	draw_actor(actor, "missiles/hammer", FtFloat(VAL(actor, MISSILE_ANGLE)), B_WHITE);
+	draw_actor(actor, "missiles/hammer", Fx2Float(VAL(actor, MISSILE_ANGLE)), B_WHITE);
 }
 
 const GameActorTable TAB_MISSILE_HAMMER = {
@@ -298,7 +298,7 @@ static void create_silver(GameActor* actor) {
 static void tick_silver(GameActor* actor) {
 	GamePlayer* player = get_owner(actor);
 	if ((player != NULL && !in_player_view(actor, player, FxZero, TRUE))
-		|| (player == NULL && !in_any_view(actor, FfInt(128L), TRUE)))
+		|| (player == NULL && !in_any_view(actor, Int2Fx(128L), TRUE)))
 	{
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
@@ -334,7 +334,7 @@ static void tick_silver(GameActor* actor) {
 
 	if (vx == VAL(actor, X_SPEED))
 		VAL(actor, X_SPEED) = -VAL(actor, X_SPEED);
-	VAL(actor, Y_SPEED) = FfInt(-5L);
+	VAL(actor, Y_SPEED) = Int2Fx(-5L);
 
 	--VAL(actor, MISSILE_HITS);
 	VAL(actor, MISSILE_COOLDOWN) = 2L;
@@ -343,7 +343,7 @@ static void tick_silver(GameActor* actor) {
 }
 
 static void draw_silver(const GameActor* actor) {
-	draw_actor(actor, "missiles/hammer_silver", FtFloat(VAL(actor, MISSILE_ANGLE)), B_WHITE);
+	draw_actor(actor, "missiles/hammer_silver", Fx2Float(VAL(actor, MISSILE_ANGLE)), B_WHITE);
 }
 
 const GameActorTable TAB_MISSILE_SILVER_HAMMER = {
@@ -367,10 +367,10 @@ static void load_napalm() {
 static void create_napalm(GameActor* actor) {
 	create(actor);
 
-	actor->box.start.x = FfInt(-16L);
-	actor->box.start.y = FfInt(-15L);
-	actor->box.end.x = FfInt(16L);
-	actor->box.end.y = FfInt(15L);
+	actor->box.start.x = Int2Fx(-16L);
+	actor->box.start.y = Int2Fx(-15L);
+	actor->box.end.x = Int2Fx(16L);
+	actor->box.end.y = Int2Fx(15L);
 }
 
 static void tick_napalm(GameActor* actor) {
@@ -385,10 +385,10 @@ static void tick_napalm(GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_MISSILE_SHIMMY)) {
 		if (actor->pos.y > VAL(actor, MISSILE_HEIGHT))
 			move_actor(actor,
-				(FVec2){actor->pos.x, Fmax(actor->pos.y - FfInt(4L), VAL(actor, MISSILE_HEIGHT))});
+				(FVec2){actor->pos.x, Fmax(actor->pos.y - Int2Fx(4L), VAL(actor, MISSILE_HEIGHT))});
 		else if (actor->pos.y < VAL(actor, MISSILE_HEIGHT))
 			move_actor(actor,
-				(FVec2){actor->pos.x, Fmin(actor->pos.y + FfInt(4L), VAL(actor, MISSILE_HEIGHT))});
+				(FVec2){actor->pos.x, Fmin(actor->pos.y + Int2Fx(4L), VAL(actor, MISSILE_HEIGHT))});
 	}
 
 	move_actor(actor, POS_SPEED(actor));
