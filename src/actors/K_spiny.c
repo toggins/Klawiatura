@@ -16,16 +16,16 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-15L);
-	actor->box.start.y = Int2Fx(-32L);
-	actor->box.end.x = Int2Fx(15L);
+	actor->box.start.x = FxFrom(-15L);
+	actor->box.start.y = FxFrom(-32L);
+	actor->box.end.x = FxFrom(15L);
 
 	increase_ambush();
 }
 
 static void tick(GameActor* actor) {
 	move_enemy(actor,
-		(FVec2){((game_state.flags & GF_HARDCORE) && !ANY_FLAG(actor, FLG_SPINY_GRAY)) ? Int2Fx(2L) : FxOne,
+		(FVec2){((game_state.flags & GF_HARDCORE) && !ANY_FLAG(actor, FLG_SPINY_GRAY)) ? FxFrom(2L) : FxOne,
 			19005L},
 		FALSE);
 }
@@ -121,8 +121,8 @@ static void load_egg() {
 }
 
 static void create_egg(GameActor* actor) {
-	actor->box.start.x = actor->box.start.y = Int2Fx(-15L);
-	actor->box.end.x = actor->box.end.y = Int2Fx(15L);
+	actor->box.start.x = actor->box.start.y = FxFrom(-15L);
+	actor->box.end.x = actor->box.end.y = FxFrom(15L);
 }
 
 static void tick_egg(GameActor* actor) {
@@ -134,20 +134,20 @@ static void tick_egg(GameActor* actor) {
 	if (!ANY_FLAG(actor, FLG_SPINY_HATCH) || ANY_FLAG(actor, FLG_SPINY_GREEN))
 		VAL(actor, SPINY_ANGLE) += (VAL(actor, X_SPEED) < FxZero) ? -25736L : 25736L;
 	if (ALL_FLAG(actor, FLG_SPINY_ROLL)) {
-		move_enemy(actor, (FVec2){Int2Fx(2L), 19005L}, FALSE);
+		move_enemy(actor, (FVec2){FxFrom(2L), 19005L}, FALSE);
 		return;
 	}
 
 	if (ANY_FLAG(actor, FLG_SPINY_GREEN))
 		VAL(actor, Y_SPEED) += 19005L;
-	else if (VAL(actor, Y_SPEED) < Int2Fx(8L))
+	else if (VAL(actor, Y_SPEED) < FxFrom(8L))
 		VAL(actor, Y_SPEED) += 8738L;
 
 	const Fixed spd = VAL(actor, X_SPEED);
 	if (touching_solid(HITBOX(actor), SOL_SOLID))
 		move_actor(actor, POS_SPEED(actor));
 	else
-		displace_actor(actor, Int2Fx(10L), FALSE);
+		displace_actor(actor, FxFrom(10L), FALSE);
 
 	if (!ANY_FLAG(actor, FLG_SPINY_GREEN) && ANY_FLAG(actor, FLG_SPINY_HATCH)) {
 		if (++VAL(actor, SPINY_FRAME) >= 5L) {
@@ -180,14 +180,14 @@ static void tick_egg(GameActor* actor) {
 					return;
 				}
 
-				VAL(actor, Y_SPEED) = Int2Fx(-4L);
+				VAL(actor, Y_SPEED) = FxFrom(-4L);
 
 				if (nearest != NULL) {
 					if (nearest->pos.x < actor->pos.x) {
-						VAL(actor, X_SPEED) = Int2Fx(-3L);
+						VAL(actor, X_SPEED) = FxFrom(-3L);
 						FLAG_ON(actor, FLG_X_FLIP);
 					} else {
-						VAL(actor, X_SPEED) = Int2Fx(3L);
+						VAL(actor, X_SPEED) = FxFrom(3L);
 						FLAG_OFF(actor, FLG_X_FLIP);
 					}
 				}
@@ -196,10 +196,10 @@ static void tick_egg(GameActor* actor) {
 				return;
 			}
 
-			actor->box.start.y = Int2Fx(-32L);
+			actor->box.start.y = FxFrom(-32L);
 			actor->box.end.y = FxZero;
 
-			move_actor(actor, POS_ADD(actor, FxZero, Int2Fx(15L)));
+			move_actor(actor, POS_ADD(actor, FxZero, FxFrom(15L)));
 			skip_interp(actor);
 
 			VAL(actor, SPINY_FRAME) = 0L;

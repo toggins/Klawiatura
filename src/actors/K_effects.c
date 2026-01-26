@@ -51,8 +51,8 @@ static void load_shard() {
 }
 
 static void create_shard(GameActor* actor) {
-	actor->box.start.x = actor->box.start.y = Int2Fx(-8L);
-	actor->box.end.x = actor->box.end.y = Int2Fx(8L);
+	actor->box.start.x = actor->box.start.y = FxFrom(-8L);
+	actor->box.end.x = actor->box.end.y = FxFrom(8L);
 }
 
 static void tick_shard(GameActor* actor) {
@@ -87,7 +87,7 @@ static void load_splash() {
 }
 
 static void create_splash(GameActor* actor) {
-	actor->depth = Int2Fx(-2L);
+	actor->depth = FxFrom(-2L);
 }
 
 static void tick_splash(GameActor* actor) {
@@ -117,13 +117,13 @@ static void load_bubble() {
 }
 
 static void create_bubble(GameActor* actor) {
-	actor->box.start.x = actor->box.start.y = Int2Fx(-4L);
-	actor->box.end.x = Int2Fx(5L);
-	actor->box.end.y = Int2Fx(6L);
+	actor->box.start.x = actor->box.start.y = FxFrom(-4L);
+	actor->box.end.x = FxFrom(5L);
+	actor->box.end.y = FxFrom(6L);
 }
 
 static void tick_bubble(GameActor* actor) {
-	if (!in_any_view(actor, Int2Fx(28L), FALSE)) {
+	if (!in_any_view(actor, FxFrom(28L), FALSE)) {
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}
@@ -136,8 +136,8 @@ static void tick_bubble(GameActor* actor) {
 		return;
 	}
 
-	const Fixed xoffs = Int2Fx(-2L + rng(5L));
-	const Fixed yoffs = Int2Fx(-rng(3L));
+	const Fixed xoffs = FxFrom(-2L + rng(5L));
+	const Fixed yoffs = FxFrom(-rng(3L));
 	move_actor(actor, POS_ADD(actor, xoffs, yoffs));
 	if (actor->pos.y < game_state.water) {
 		VAL(actor, EFFECT_FRAME) = 0L;
@@ -212,10 +212,10 @@ static void load_lava_bubble() {
 }
 
 static void create_lava_bubble(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-7L);
-	actor->box.start.y = Int2Fx(-6L);
-	actor->box.end.x = Int2Fx(8L);
-	actor->box.end.y = Int2Fx(9L);
+	actor->box.start.x = FxFrom(-7L);
+	actor->box.start.y = FxFrom(-6L);
+	actor->box.end.x = FxFrom(8L);
+	actor->box.end.y = FxFrom(9L);
 }
 
 static void tick_lava_bubble(GameActor* actor) {

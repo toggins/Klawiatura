@@ -501,7 +501,7 @@ Bool update_game() {
 	}
 
 	// Interpolate outside of the loop for uncapped framerate.
-	register const Fixed ftick = Float2Fx(pendingticks());
+	register const Fixed ftick = FxFrom(pendingticks());
 	for (const GameActor* actor = get_actor(game_state.live_actors); actor; actor = get_actor(actor->previous)) {
 		InterpActor* iactor = &interp.actors[actor->id];
 		iactor->pos = Vadd(iactor->from, Vscale(Vsub(actor->pos, iactor->from), ftick));
@@ -1121,7 +1121,7 @@ static void nuke_game_state() {
 	game_state.size.y = game_state.bounds.end.y = F_SCREEN_HEIGHT;
 
 	game_state.spawn = game_state.checkpoint = game_state.autoscroll = game_state.wave = NULLACT;
-	game_state.water = Int2Fx(32767L);
+	game_state.water = FxFrom(32767L);
 
 	game_state.clock = -1L;
 
@@ -1491,7 +1491,7 @@ GameActor* respawn_player(GamePlayer* player) {
 
 		FLAG_ON(pawn, spawn->flags & (FLG_X_FLIP | FLG_PLAYER_ASCEND | FLG_PLAYER_DESCEND));
 		if (ANY_FLAG(pawn, FLG_PLAYER_ASCEND))
-			VAL(pawn, Y_SPEED) -= Int2Fx(22L);
+			VAL(pawn, Y_SPEED) -= FxFrom(22L);
 
 		if (spawn->type == ACT_AUTOSCROLL)
 			FLAG_ON(pawn, FLG_PLAYER_RESPAWN);
@@ -2179,7 +2179,7 @@ void draw_actor_no_jitter(const GameActor* actor, const char* name, float angle,
 	if (actor->type == ACT_PLAYER && get_actor(VAL(actor, PLAYER_PLATFORM)) == NULL) {
 		const GameActor* autoscroll = get_actor(game_state.autoscroll);
 		if (autoscroll == NULL || !ANY_FLAG(autoscroll, FLG_SCROLL_TANKS)
-			|| (VAL(actor, PLAYER_GROUND) > 0L && actor->pos.y < (autoscroll->pos.y + Int2Fx(415L))))
+			|| (VAL(actor, PLAYER_GROUND) > 0L && actor->pos.y < (autoscroll->pos.y + FxFrom(415L))))
 		{
 			draw_actor(actor, name, angle, color);
 			return;

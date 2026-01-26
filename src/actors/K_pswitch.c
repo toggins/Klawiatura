@@ -25,8 +25,8 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.end.x = Int2Fx(31L);
-	actor->box.end.y = Int2Fx(32L);
+	actor->box.end.x = FxFrom(31L);
+	actor->box.end.y = FxFrom(32L);
 	actor->depth = FxOne;
 }
 
@@ -46,8 +46,8 @@ static void collide(GameActor* actor, GameActor* from) {
 	if (from->type != ACT_PLAYER || VAL(actor, PSWITCH) > 0L)
 		return;
 
-	if (from->pos.y < (actor->pos.y + Int2Fx(16L))
-		&& (VAL(from, Y_SPEED) > Int2Fx(2L) || ANY_FLAG(from, FLG_PLAYER_STOMP)))
+	if (from->pos.y < (actor->pos.y + FxFrom(16L))
+		&& (VAL(from, Y_SPEED) > FxFrom(2L) || ANY_FLAG(from, FLG_PLAYER_STOMP)))
 	{
 		VAL(from, Y_SPEED) = -FxOne;
 		VAL(actor, PSWITCH) = game_state.pswitch = 600L;

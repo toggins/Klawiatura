@@ -20,9 +20,9 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-15L);
-	actor->box.start.y = Int2Fx(-48L);
-	actor->box.end.x = Int2Fx(15L);
+	actor->box.start.x = FxFrom(-15L);
+	actor->box.start.y = FxFrom(-48L);
+	actor->box.end.x = FxFrom(15L);
 }
 
 static void tick(GameActor* actor) {
@@ -48,27 +48,27 @@ static void tick(GameActor* actor) {
 
 	GameActor* nearest = nearest_pawn(actor->pos);
 	if (nearest != NULL) {
-		if (nearest->pos.x < (game_state.size.x - Int2Fx(1000L))) {
-			if (actor->pos.x > (nearest->pos.x + Int2Fx(50L))
+		if (nearest->pos.x < (game_state.size.x - FxFrom(1000L))) {
+			if (actor->pos.x > (nearest->pos.x + FxFrom(50L))
 				&& VAL(actor, X_SPEED)
-					   > ((game_state.flags & GF_HARDCORE) ? Int2Fx(-20L) : Int2Fx(-9L)))
+					   > ((game_state.flags & GF_HARDCORE) ? FxFrom(-20L) : FxFrom(-9L)))
 				VAL(actor, X_SPEED) -= 13107L;
-			else if (actor->pos.x < (nearest->pos.x - Int2Fx(50L))
-				 && VAL(actor, X_SPEED) < ((game_state.flags & GF_HARDCORE) ? Int2Fx(20L) : Int2Fx(9L)))
+			else if (actor->pos.x < (nearest->pos.x - FxFrom(50L))
+				 && VAL(actor, X_SPEED) < ((game_state.flags & GF_HARDCORE) ? FxFrom(20L) : FxFrom(9L)))
 				VAL(actor, X_SPEED) += 13107L;
 
-			if (actor->pos.x < (nearest->pos.x + Int2Fx(100L))
-				&& actor->pos.x > (nearest->pos.x - Int2Fx(100L)))
+			if (actor->pos.x < (nearest->pos.x + FxFrom(100L))
+				&& actor->pos.x > (nearest->pos.x - FxFrom(100L)))
 			{
-				if (actor->pos.x > nearest->pos.x && VAL(actor, X_SPEED) < Int2Fx(-2L))
+				if (actor->pos.x > nearest->pos.x && VAL(actor, X_SPEED) < FxFrom(-2L))
 					VAL(actor, X_SPEED) += FxOne;
-				else if (actor->pos.x < nearest->pos.x && VAL(actor, X_SPEED) > Int2Fx(4L))
+				else if (actor->pos.x < nearest->pos.x && VAL(actor, X_SPEED) > FxFrom(4L))
 					VAL(actor, X_SPEED) -= FxOne;
 			}
 
-			if (in_any_view(actor, Int2Fx(-32L), FALSE))
+			if (in_any_view(actor, FxFrom(-32L), FALSE))
 				VAL(actor, LAKITU_THROW) += (game_state.flags & GF_HARDCORE) ? 5L : 1L;
-		} else if (VAL(actor, X_SPEED) > Int2Fx(-2L))
+		} else if (VAL(actor, X_SPEED) > FxFrom(-2L))
 			VAL(actor, X_SPEED) -= FxOne;
 	}
 
@@ -98,18 +98,18 @@ static void tick(GameActor* actor) {
 		const Sint32 wee = rng(3L);
 		play_state_sound(fmt("lakitu%i", wee), PLAY_POS, 0L, A_ACTOR(actor));
 
-		GameActor* egg = create_actor(ACT_SPINY_EGG, POS_ADD(actor, FxZero, Int2Fx(-39L)));
+		GameActor* egg = create_actor(ACT_SPINY_EGG, POS_ADD(actor, FxZero, FxFrom(-39L)));
 		if (egg != NULL) {
 			if (ANY_FLAG(actor, FLG_LAKITU_GREEN)) {
 				VAL(egg, X_SPEED)
 					= (nearest != NULL
 						  && (nearest->pos.x + Fdouble(VAL(nearest, X_SPEED))) < egg->pos.x)
-				                  ? Int2Fx(-4L)
-				                  : Int2Fx(4L);
-				VAL(egg, Y_SPEED) = Int2Fx(-5L);
+				                  ? FxFrom(-4L)
+				                  : FxFrom(4L);
+				VAL(egg, Y_SPEED) = FxFrom(-5L);
 				FLAG_ON(egg, FLG_SPINY_GREEN);
 			} else
-				VAL(egg, Y_SPEED) = Int2Fx(-3L);
+				VAL(egg, Y_SPEED) = FxFrom(-3L);
 		}
 	}
 
@@ -214,7 +214,7 @@ static void collide(GameActor* actor, GameActor* from) {
 	case ACT_PLAYER:
 		if (VAL(actor, PLAYER_STARMAN) > 0L)
 			player_starman(from, actor);
-		else if (check_stomp(actor, from, Int2Fx(-16L), 100L))
+		else if (check_stomp(actor, from, FxFrom(-16L), 100L))
 			kill_enemy(actor, from, FALSE);
 		break;
 

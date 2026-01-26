@@ -12,12 +12,12 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-19L);
-	actor->box.start.y = Int2Fx(-110L);
-	actor->box.end.x = Int2Fx(21L);
+	actor->box.start.x = FxFrom(-19L);
+	actor->box.start.y = FxFrom(-110L);
+	actor->box.end.x = FxFrom(21L);
 	actor->box.end.y = FxOne;
 
-	actor->depth = Int2Fx(3L);
+	actor->depth = FxFrom(3L);
 }
 
 static void draw(const GameActor* actor) {

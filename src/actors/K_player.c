@@ -440,7 +440,7 @@ void kill_player(GameActor* actor) {
 
 		GameActor* kevin = get_actor(player->kevin.actor);
 		if (kevin != NULL) {
-			create_actor(ACT_EXPLODE, POS_ADD(kevin, FxZero, Int2Fx(-16L)));
+			create_actor(ACT_EXPLODE, POS_ADD(kevin, FxZero, FxFrom(-16L)));
 			FLAG_ON(kevin, FLG_DESTROY);
 		}
 		player->kevin.actor = NULLACT;
@@ -516,7 +516,7 @@ void win_player(GameActor* actor) {
 
 		GameActor* kevin = get_actor(p->kevin.actor);
 		if (kevin != NULL) {
-			create_actor(ACT_EXPLODE, (FVec2){kevin->pos.x, kevin->pos.y - Int2Fx(16L)});
+			create_actor(ACT_EXPLODE, (FVec2){kevin->pos.x, kevin->pos.y - FxFrom(16L)});
 			FLAG_ON(kevin, FLG_DESTROY);
 		}
 		p->kevin.actor = NULLACT;
@@ -546,8 +546,8 @@ void win_player(GameActor* actor) {
 
 	GameActor* autoscroll = get_actor(game_state.autoscroll);
 	if (autoscroll != NULL && !ANY_FLAG(autoscroll, FLG_SCROLL_TANKS | FLG_SCROLL_BOWSER)) {
-		VAL(autoscroll, X_SPEED) = Fmul(VAL(autoscroll, X_SPEED), Int2Fx(4L));
-		VAL(autoscroll, Y_SPEED) = Fmul(VAL(autoscroll, Y_SPEED), Int2Fx(4L));
+		VAL(autoscroll, X_SPEED) = Fmul(VAL(autoscroll, X_SPEED), FxFrom(4L));
+		VAL(autoscroll, Y_SPEED) = Fmul(VAL(autoscroll, Y_SPEED), FxFrom(4L));
 	}
 
 	game_state.pswitch = 0L;
@@ -678,9 +678,9 @@ static void load() {
 static void create(GameActor* actor) {
 	actor->depth = -FxOne;
 
-	actor->box.start.x = Int2Fx(-9L);
-	actor->box.start.y = Int2Fx(-26L);
-	actor->box.end.x = Int2Fx(10L);
+	actor->box.start.x = FxFrom(-9L);
+	actor->box.start.y = FxFrom(-26L);
+	actor->box.end.x = FxFrom(10L);
 
 	VAL(actor, PLAYER_INDEX) = (ActorValue)NULLPLAY;
 	VAL(actor, PLAYER_GROUND) = GROUND_TIME;
@@ -803,7 +803,7 @@ static void tick(GameActor* actor) {
 				default:
 					break;
 				case 3L:
-					wpos.y += Int2Fx(50L);
+					wpos.y += FxFrom(50L);
 					break;
 				}
 				move_actor(actor, wpos);
@@ -900,10 +900,10 @@ static void tick(GameActor* actor) {
 		VAL(actor, PLAYER_SPRING) = 7L;
 		if (foot_y >= game_state.water) {
 			VAL(actor, Y_TOUCH) = 0L;
-			VAL(actor, Y_SPEED) = ((foot_y + actor->box.start.y) > (game_state.water + Int2Fx(16L))
+			VAL(actor, Y_SPEED) = ((foot_y + actor->box.start.y) > (game_state.water + FxFrom(16L))
 						      || ((foot_y + actor->box.end.y - FxOne) < game_state.water))
-			                              ? Int2Fx(-3L)
-			                              : Int2Fx(-9L);
+			                              ? FxFrom(-3L)
+			                              : FxFrom(-9L);
 			VAL(actor, PLAYER_GROUND) = 0L;
 			VAL(actor, PLAYER_FRAME) = FxZero;
 			FLAG_OFF(actor, FLG_PLAYER_DUCK);
@@ -917,7 +917,7 @@ static void tick(GameActor* actor) {
 			if (Fabs(VAL(actor, X_SPEED)) >= FxHalf)
 				VAL(actor, X_SPEED) -= (VAL(actor, X_SPEED) >= FxZero) ? FxHalf : -FxHalf;
 			VAL(actor, PLAYER_FRAME) = FxZero;
-			if (foot_y < (game_state.water + Int2Fx(11L)))
+			if (foot_y < (game_state.water + FxFrom(11L)))
 				create_actor(ACT_WATER_SPLASH, actor->pos);
 			FLAG_ON(actor, FLG_PLAYER_SWIM);
 		}
@@ -931,7 +931,7 @@ static void tick(GameActor* actor) {
 			&& VAL(actor, PLAYER_GROUND) > 0L)
 		{
 			VAL(actor, PLAYER_GROUND) = 0L;
-			VAL(actor, Y_SPEED) = Int2Fx(-13L);
+			VAL(actor, Y_SPEED) = FxFrom(-13L);
 			FLAG_OFF(actor, FLG_PLAYER_JUMP | FLG_PLAYER_DUCK);
 			play_state_sound("jump", PLAY_POS, 0L, A_ACTOR(actor));
 		}
@@ -943,14 +943,14 @@ static void tick(GameActor* actor) {
 			create_actor(
 				ACT_BUBBLE, POS_ADD(actor, FxZero,
 						    (player->power == POW_SMALL || ANY_FLAG(actor, FLG_PLAYER_DUCK))
-							    ? Int2Fx(-18L)
-							    : Int2Fx(-39L)));
+							    ? FxFrom(-18L)
+							    : FxFrom(-39L)));
 
 	if (jumped && VAL(actor, PLAYER_GROUND) <= 0L && VAL(actor, Y_SPEED) > FxZero)
 		FLAG_ON(actor, FLG_PLAYER_JUMP);
 
 	actor->box.start.y
-		= (player->power == POW_SMALL || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-26L) : Int2Fx(-52L);
+		= (player->power == POW_SMALL || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? FxFrom(-26L) : FxFrom(-52L);
 
 	VAL_TICK(actor, PLAYER_GROUND);
 
@@ -959,7 +959,7 @@ static void tick(GameActor* actor) {
 		if (VAL(actor, Y_SPEED) >= FxZero)
 			FLAG_OFF(actor, FLG_PLAYER_ASCEND);
 	} else {
-		displace_actor(actor, Int2Fx(10L), TRUE);
+		displace_actor(actor, FxFrom(10L), TRUE);
 		if (VAL(actor, Y_TOUCH) > 0L)
 			VAL(actor, PLAYER_GROUND) = GROUND_TIME;
 
@@ -987,7 +987,7 @@ static void tick(GameActor* actor) {
 			}
 
 			if (ANY_FLAG(autoscroll, FLG_SCROLL_TANKS)
-				&& ((actor->pos.y + actor->box.end.y) >= (game_state.bounds.end.y - Int2Fx(64L))
+				&& ((actor->pos.y + actor->box.end.y) >= (game_state.bounds.end.y - FxFrom(64L))
 					|| VAL(actor, PLAYER_GROUND) <= 0L)
 				&& !touching_solid(HITBOX_ADD(actor, VAL(autoscroll, X_SPEED), FxZero), SOL_SOLID))
 				move_actor(actor, POS_ADD(actor, VAL(autoscroll, X_SPEED), FxZero));
@@ -1002,13 +1002,13 @@ static void tick(GameActor* actor) {
 	foot_y = actor->pos.y - FxOne;
 	if (VAL(actor, Y_TOUCH) <= 0L) {
 		if (foot_y >= game_state.water) {
-			if (VAL(actor, Y_SPEED) > Int2Fx(3L))
-				VAL(actor, Y_SPEED) = Fmin(VAL(actor, Y_SPEED) - FxOne, Int2Fx(3L));
-			else if (VAL(actor, Y_SPEED) < Int2Fx(3L))
+			if (VAL(actor, Y_SPEED) > FxFrom(3L))
+				VAL(actor, Y_SPEED) = Fmin(VAL(actor, Y_SPEED) - FxOne, FxFrom(3L));
+			else if (VAL(actor, Y_SPEED) < FxFrom(3L))
 				VAL(actor, Y_SPEED) += 6554L;
-		} else if (VAL(actor, Y_SPEED) > Int2Fx(10L)) {
-			VAL(actor, Y_SPEED) = Fmin(VAL(actor, Y_SPEED) - FxOne, Int2Fx(10L));
-		} else if (VAL(actor, Y_SPEED) < Int2Fx(10L))
+		} else if (VAL(actor, Y_SPEED) > FxFrom(10L)) {
+			VAL(actor, Y_SPEED) = Fmin(VAL(actor, Y_SPEED) - FxOne, FxFrom(10L));
+		} else if (VAL(actor, Y_SPEED) < FxFrom(10L))
 			VAL(actor, Y_SPEED) += FxOne;
 	}
 
@@ -1075,7 +1075,7 @@ static void tick(GameActor* actor) {
 		if (mtype == ACT_NULL)
 			break;
 		GameActor* missile = create_actor(
-			mtype, POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-5L) : Int2Fx(5L), Int2Fx(-30L)));
+			mtype, POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? FxFrom(-5L) : FxFrom(5L), FxFrom(-30L)));
 		if (missile == NULL)
 			break;
 
@@ -1093,7 +1093,7 @@ static void tick(GameActor* actor) {
 
 		case ACT_MISSILE_BEETROOT: {
 			VAL(missile, X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -139264L : 139264L;
-			VAL(missile, Y_SPEED) = Int2Fx(-5L);
+			VAL(missile, Y_SPEED) = FxFrom(-5L);
 			break;
 		}
 
@@ -1101,7 +1101,7 @@ static void tick(GameActor* actor) {
 			FLAG_ON(missile, actor->flags & FLG_X_FLIP);
 			VAL(missile, X_SPEED)
 				= (ANY_FLAG(actor, FLG_X_FLIP) ? -173015L : 173015L) + VAL(actor, X_SPEED);
-			VAL(missile, Y_SPEED) = Int2Fx(-7L) + Fmin(0L, Fhalf(VAL(actor, Y_SPEED)));
+			VAL(missile, Y_SPEED) = FxFrom(-7L) + Fmin(0L, Fhalf(VAL(actor, Y_SPEED)));
 			break;
 		}
 		}
@@ -1145,7 +1145,7 @@ static void tick(GameActor* actor) {
 	}
 
 	if (foot_y > (((get_actor(game_state.autoscroll) != NULL) ? game_state.bounds.end.y : player->bounds.end.y)
-		      + ((wave != NULL) ? Int2Fx(48L) : Int2Fx(64L))))
+		      + ((wave != NULL) ? FxFrom(48L) : FxFrom(64L))))
 	{
 		kill_player(actor);
 		goto sync_pos;
@@ -1271,7 +1271,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_PLAYER: {
-		if (check_stomp(actor, from, Int2Fx(-16L), 0))
+		if (check_stomp(actor, from, FxFrom(-16L), 0))
 			VAL(actor, Y_SPEED) = Fmax(VAL(actor, Y_SPEED), FxZero);
 		else if (Fabs(VAL(from, X_SPEED)) > Fabs(VAL(actor, X_SPEED)))
 			if ((VAL(from, X_SPEED) > FxZero && from->pos.x < actor->pos.x)
@@ -1279,7 +1279,7 @@ static void collide(GameActor* actor, GameActor* from) {
 			{
 				VAL(actor, X_SPEED) += Fhalf(VAL(from, X_SPEED));
 				VAL(from, X_SPEED) = -Fhalf(VAL(from, X_SPEED));
-				if (Fabs(VAL(from, X_SPEED)) > Int2Fx(2L))
+				if (Fabs(VAL(from, X_SPEED)) > FxFrom(2L))
 					play_state_sound("bump", PLAY_POS, 0L, A_ACTOR(actor));
 			}
 
@@ -1288,7 +1288,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
 	case ACT_BLOCK_BUMP: {
 		if (get_owner_id(actor) != get_owner_id(from) && VAL(actor, PLAYER_GROUND) > 0L) {
-			VAL(actor, Y_SPEED) = Int2Fx(-8L);
+			VAL(actor, Y_SPEED) = FxFrom(-8L);
 			VAL(actor, PLAYER_GROUND) = 0L;
 		}
 		break;
@@ -1374,7 +1374,7 @@ static void tick_corpse(GameActor* actor) {
 	}
 
 	case 25L:
-		VAL(actor, Y_SPEED) = Int2Fx(-10L);
+		VAL(actor, Y_SPEED) = FxFrom(-10L);
 		break;
 
 	case 150L: {
@@ -1443,14 +1443,14 @@ const GameActorTable TAB_PLAYER_DEAD = {
 // =============
 
 static void create_effect(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-24L);
-	actor->box.start.y = Int2Fx(-64L);
-	actor->box.end.x = Int2Fx(24L);
+	actor->box.start.x = FxFrom(-24L);
+	actor->box.start.y = FxFrom(-64L);
+	actor->box.end.x = FxFrom(24L);
 
 	VAL(actor, PLAYER_EFFECT_INDEX) = (ActorValue)NULLPLAY;
 	VAL(actor, PLAYER_EFFECT_POWER) = POW_SMALL;
 	VAL(actor, PLAYER_EFFECT_FRAME) = PF_IDLE;
-	VAL(actor, PLAYER_EFFECT_ALPHA) = Int2Fx(255L);
+	VAL(actor, PLAYER_EFFECT_ALPHA) = FxFrom(255L);
 }
 
 static void tick_effect(GameActor* actor) {
@@ -1495,9 +1495,9 @@ static void load_kevin() {
 static void create_kevin(GameActor* actor) {
 	actor->depth = -FxOne;
 
-	actor->box.start.x = Int2Fx(-9L);
-	actor->box.start.y = Int2Fx(-26L);
-	actor->box.end.x = Int2Fx(10L);
+	actor->box.start.x = FxFrom(-9L);
+	actor->box.start.y = FxFrom(-26L);
+	actor->box.end.x = FxFrom(10L);
 
 	VAL(actor, KEVIN_PLAYER) = (ActorValue)NULLPLAY;
 }
@@ -1571,15 +1571,15 @@ static void load_fred() {
 }
 
 static void create_fred(GameActor* actor) {
-	actor->box.start.x = actor->box.start.y = Int2Fx(-30L);
-	actor->box.end.x = actor->box.end.y = Int2Fx(30L);
+	actor->box.start.x = actor->box.start.y = FxFrom(-30L);
+	actor->box.end.x = actor->box.end.y = FxFrom(30L);
 }
 
 static void tick_fred(GameActor* actor) {
-	if (VAL(actor, FRED_ALPHA) < Int2Fx(255L)) {
+	if (VAL(actor, FRED_ALPHA) < FxFrom(255L)) {
 		VAL(actor, FRED_ALPHA) += 278528L;
-		if (VAL(actor, FRED_ALPHA) >= Int2Fx(255L))
-			VAL(actor, FRED_ALPHA) = Int2Fx(255L);
+		if (VAL(actor, FRED_ALPHA) >= FxFrom(255L))
+			VAL(actor, FRED_ALPHA) = FxFrom(255L);
 		else
 			return;
 	}
@@ -1606,7 +1606,7 @@ static void tick_fred(GameActor* actor) {
 			}
 		}
 		if (get_actor(VAL(nearest, PLAYER_WARP)) == NULL) {
-			const Fixed dir = Vtheta(actor->pos, POS_ADD(nearest, FxZero, Int2Fx(-16L)));
+			const Fixed dir = Vtheta(actor->pos, POS_ADD(nearest, FxZero, FxFrom(-16L)));
 			VAL(actor, X_SPEED) += Fmul(Fcos(dir), 10000L);
 			VAL(actor, Y_SPEED) += Fmul(Fsin(dir), 10000L);
 		}
@@ -1646,7 +1646,7 @@ static void draw_fred(const GameActor* actor) {
 }
 
 static void collide_fred(GameActor* actor, GameActor* from) {
-	if (from->type == ACT_PLAYER && VAL(actor, FRED_ALPHA) >= Int2Fx(255L)
+	if (from->type == ACT_PLAYER && VAL(actor, FRED_ALPHA) >= FxFrom(255L)
 		&& get_actor(VAL(from, PLAYER_WARP)) == NULL)
 		kill_player(from);
 }

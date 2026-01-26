@@ -9,7 +9,7 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.end.x = actor->box.end.y = Int2Fx(32L);
+	actor->box.end.x = actor->box.end.y = FxFrom(32L);
 }
 
 static void tick(GameActor* actor) {

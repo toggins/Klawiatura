@@ -16,10 +16,10 @@ static void load_bullet() {
 }
 
 static void create_bullet(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-16L);
-	actor->box.start.y = Int2Fx(-13L);
-	actor->box.end.x = Int2Fx(16L);
-	actor->box.end.y = Int2Fx(15L);
+	actor->box.start.x = FxFrom(-16L);
+	actor->box.start.y = FxFrom(-13L);
+	actor->box.end.x = FxFrom(16L);
+	actor->box.end.y = FxFrom(15L);
 }
 
 static void tick_bullet(GameActor* actor) {
@@ -29,7 +29,7 @@ static void tick_bullet(GameActor* actor) {
 			FLAG_ON(actor, FLG_DESTROY);
 			return;
 		}
-	} else if (!in_any_view(actor, Int2Fx(224L), FALSE))
+	} else if (!in_any_view(actor, FxFrom(224L), FALSE))
 		FLAG_ON(actor, FLG_DESTROY);
 
 	move_actor(actor, POS_SPEED(actor));
@@ -93,21 +93,21 @@ static void load_blaster() {
 }
 
 static void create_blaster(GameActor* actor) {
-	actor->box.end.x = actor->box.end.y = Int2Fx(32L);
+	actor->box.end.x = actor->box.end.y = FxFrom(32L);
 }
 
 static void tick_blaster(GameActor* actor) {
 	if ((game_state.time % 10L) == 0L)
 		FLAG_OFF(actor, FLG_ARTILLERY_BLOCKED);
 
-	GameActor* nearest = nearest_pawn(POS_ADD(actor, Int2Fx(16L), Int2Fx(16L)));
+	GameActor* nearest = nearest_pawn(POS_ADD(actor, FxFrom(16L), FxFrom(16L)));
 	if (nearest != NULL) {
-		const Fixed x = actor->pos.x + Int2Fx(16L);
+		const Fixed x = actor->pos.x + FxFrom(16L);
 		if (nearest->pos.x < x)
 			FLAG_ON(actor, FLG_X_FLIP);
 		else if (nearest->pos.x > x)
 			FLAG_OFF(actor, FLG_X_FLIP);
-		if (nearest->pos.x > (x - Int2Fx(80L)) && nearest->pos.x < (x + Int2Fx(80L)))
+		if (nearest->pos.x > (x - FxFrom(80L)) && nearest->pos.x < (x + FxFrom(80L)))
 			FLAG_ON(actor, FLG_ARTILLERY_BLOCKED);
 	}
 
@@ -117,7 +117,7 @@ static void tick_blaster(GameActor* actor) {
 	if (VAL(actor, ARTILLERY_TIME) <= 25L)
 		return;
 	GameActor* bullet = create_actor(
-		ACT_BULLET_BILL, POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? FxZero : Int2Fx(32L), Int2Fx(16L)));
+		ACT_BULLET_BILL, POS_ADD(actor, ANY_FLAG(actor, FLG_X_FLIP) ? FxZero : FxFrom(32L), FxFrom(16L)));
 	if (bullet != NULL) {
 		const Fixed spd = (game_state.flags & GF_FUNNY) ? 425984L : 212992L;
 		VAL(bullet, X_SPEED) = ANY_FLAG(actor, FLG_X_FLIP) ? -spd : spd;
@@ -145,8 +145,8 @@ static void load_spike_cannon() {
 }
 
 static void create_spike_cannon(GameActor* actor) {
-	actor->box.start.y = Int2Fx(22L);
-	actor->box.end.x = actor->box.end.y = Int2Fx(64L);
+	actor->box.start.y = FxFrom(22L);
+	actor->box.end.x = actor->box.end.y = FxFrom(64L);
 }
 
 static void tick_spike_cannon(GameActor* actor) {
@@ -155,11 +155,11 @@ static void tick_spike_cannon(GameActor* actor) {
 
 	if (VAL(actor, ARTILLERY_TIME) < 2L)
 		return;
-	GameActor* ball = create_actor(ACT_SPIKE_BALL, POS_ADD(actor, Int2Fx(32L), Int2Fx(22L)));
+	GameActor* ball = create_actor(ACT_SPIKE_BALL, POS_ADD(actor, FxFrom(32L), FxFrom(22L)));
 	if (ball != NULL) {
-		VAL(ball, X_SPEED) = Int2Fx(-2L + rng(5L));
+		VAL(ball, X_SPEED) = FxFrom(-2L + rng(5L));
 		if (!ANY_FLAG(actor, FLG_Y_FLIP))
-			ball->values[VAL_Y_SPEED] = Int2Fx(-7L - rng(5L));
+			ball->values[VAL_Y_SPEED] = FxFrom(-7L - rng(5L));
 
 		create_actor(ACT_EXPLODE, ball->pos);
 		play_state_sound("bang2", PLAY_POS, 0L, A_ACTOR(ball));
@@ -189,8 +189,8 @@ static void load_spike() {
 }
 
 static void create_spike(GameActor* actor) {
-	actor->box.start.x = actor->box.start.y = Int2Fx(-20L);
-	actor->box.end.x = actor->box.end.y = Int2Fx(20L);
+	actor->box.start.x = actor->box.start.y = FxFrom(-20L);
+	actor->box.end.x = actor->box.end.y = FxFrom(20L);
 }
 
 static void tick_spike(GameActor* actor) {
@@ -199,7 +199,7 @@ static void tick_spike(GameActor* actor) {
 		return;
 	}
 
-	VAL(actor, ARTILLERY_ANGLE) += FxRad(Int2Fx(120L));
+	VAL(actor, ARTILLERY_ANGLE) += FxRad(FxFrom(120L));
 	VAL(actor, Y_SPEED) += 6554L;
 	move_actor(actor, POS_SPEED(actor));
 
@@ -232,7 +232,7 @@ static void create_spike_effect(GameActor* actor) {
 
 static void tick_spike_effect(GameActor* actor) {
 	actor->depth += 4095L;
-	VAL(actor, ARTILLERY_ANGLE) += FxRad(Int2Fx(120L));
+	VAL(actor, ARTILLERY_ANGLE) += FxRad(FxFrom(120L));
 	VAL(actor, ARTILLERY_ALPHA) -= 5L;
 	if (VAL(actor, ARTILLERY_ALPHA) <= 0L)
 		FLAG_ON(actor, FLG_DESTROY);

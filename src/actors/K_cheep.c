@@ -18,9 +18,9 @@ enum {
 // ===========
 
 static void create(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-15L);
-	actor->box.start.y = Int2Fx(-32L);
-	actor->box.end.x = Int2Fx(15L);
+	actor->box.start.x = FxFrom(-15L);
+	actor->box.start.y = FxFrom(-32L);
+	actor->box.end.x = FxFrom(15L);
 }
 
 // ================
@@ -55,7 +55,7 @@ static void collide_blue(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_PLAYER: {
-		if (!ANY_FLAG(from, FLG_PLAYER_SWIM) && check_stomp(actor, from, Int2Fx(-16L), 200L))
+		if (!ANY_FLAG(from, FLG_PLAYER_SWIM) && check_stomp(actor, from, FxFrom(-16L), 200L))
 			kill_enemy(actor, from, FALSE);
 		else
 			maybe_hit_player(actor, from);
@@ -123,11 +123,11 @@ static void tick_spiky(GameActor* actor) {
 		spd = -FxOne;
 		if (in_any_view(actor, FxZero, FALSE))
 			FLAG_ON(actor, FLG_ENEMY_ACTIVE);
-	} else if (in_any_view(actor, Int2Fx(224L), FALSE)) {
+	} else if (in_any_view(actor, FxFrom(224L), FALSE)) {
 		if ((game_state.time % 50L) == 0L) {
 			GameActor* nearest = nearest_pawn(actor->pos);
 			if (nearest != NULL) {
-				dir = Vtheta(actor->pos, POS_ADD(nearest, FxZero, Int2Fx(-14L)));
+				dir = Vtheta(actor->pos, POS_ADD(nearest, FxZero, FxFrom(-14L)));
 				spd = 81920L;
 			}
 		}
@@ -135,7 +135,7 @@ static void tick_spiky(GameActor* actor) {
 		FLAG_OFF(actor, FLG_ENEMY_ACTIVE);
 
 	if ((actor->pos.y - FxOne) < game_state.water) {
-		dir = 167284L - Fmul(Int2Fx(rng(7L)), 12868L);
+		dir = 167284L - Fmul(FxFrom(rng(7L)), 12868L);
 		spd = 81920L;
 	}
 
@@ -208,9 +208,9 @@ static void load_bass() {
 }
 
 static void create_bass(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-20L);
-	actor->box.start.y = Int2Fx(-64L);
-	actor->box.end.x = Int2Fx(20L);
+	actor->box.start.x = FxFrom(-20L);
+	actor->box.start.y = FxFrom(-64L);
+	actor->box.end.x = FxFrom(20L);
 
 	VAL(actor, BASS_EAT) = NULLACT;
 }
@@ -221,26 +221,26 @@ static void tick_bass(GameActor* actor) {
 		GameActor* nearest = nearest_pawn(actor->pos);
 		if (nearest != NULL) {
 			if (ANY_FLAG(actor, FLG_BASS_SWIM)) {
-				if (nearest->pos.x < actor->pos.x && VAL(actor, X_SPEED) > Int2Fx(-8L))
+				if (nearest->pos.x < actor->pos.x && VAL(actor, X_SPEED) > FxFrom(-8L))
 					VAL(actor, X_SPEED) -= 16384L;
-				else if (nearest->pos.x > actor->pos.x && VAL(actor, X_SPEED) < Int2Fx(8L))
+				else if (nearest->pos.x > actor->pos.x && VAL(actor, X_SPEED) < FxFrom(8L))
 					VAL(actor, X_SPEED) += 16384L;
 
 				if (nearest->pos.y < actor->pos.y
-					&& (actor->pos.y - Int2Fx(20L)) > (game_state.water + Int2Fx(24L)))
+					&& (actor->pos.y - FxFrom(20L)) > (game_state.water + FxFrom(24L)))
 					VAL(actor, Y_SPEED) -= FxHalf;
 				else if (nearest->pos.y > actor->pos.y)
 					VAL(actor, Y_SPEED) += FxHalf;
 			}
 
 			if ((!ANY_FLAG(actor, FLG_X_FLIP) && nearest->pos.x > actor->pos.x
-				    && nearest->pos.x < (actor->pos.x + Int2Fx(128L)))
+				    && nearest->pos.x < (actor->pos.x + FxFrom(128L)))
 				|| (ANY_FLAG(actor, FLG_X_FLIP) && nearest->pos.x < actor->pos.x
-					&& nearest->pos.x > (actor->pos.x - Int2Fx(128L))))
+					&& nearest->pos.x > (actor->pos.x - FxFrom(128L))))
 			{
 				FLAG_ON(actor, FLG_BASS_ATTACK);
 				if (nearest->pos.y < game_state.water && ANY_FLAG(actor, FLG_BASS_SWIM)
-					&& VAL(actor, Y_SPEED) < Int2Fx(2L))
+					&& VAL(actor, Y_SPEED) < FxFrom(2L))
 					VAL(actor, Y_SPEED) = -425984L;
 			} else
 				FLAG_OFF(actor, FLG_BASS_ATTACK);
@@ -253,18 +253,18 @@ static void tick_bass(GameActor* actor) {
 		else if (VAL(actor, Y_SPEED) < FxZero)
 			VAL(actor, Y_SPEED) = Fmin(VAL(actor, Y_SPEED) + 16384L, FxZero);
 
-		if (game_state.water >= (actor->pos.y - Int2Fx(20L)))
+		if (game_state.water >= (actor->pos.y - FxFrom(20L)))
 			FLAG_OFF(actor, FLG_BASS_SWIM);
 	} else {
-		if (VAL(actor, X_SPEED) < Int2Fx(-6L))
+		if (VAL(actor, X_SPEED) < FxFrom(-6L))
 			VAL(actor, X_SPEED) += 16384L;
-		else if (VAL(actor, X_SPEED) > Int2Fx(6L))
+		else if (VAL(actor, X_SPEED) > FxFrom(6L))
 			VAL(actor, X_SPEED) -= 16384L;
 		VAL(actor, Y_SPEED) += 19005L;
 
-		if (game_state.water < (actor->pos.y - Int2Fx(20L))) {
-			if (VAL(actor, Y_SPEED) >= Int2Fx(4L))
-				create_actor(ACT_WATER_SPLASH, POS_ADD(actor, FxZero, Int2Fx(-15L)));
+		if (game_state.water < (actor->pos.y - FxFrom(20L))) {
+			if (VAL(actor, Y_SPEED) >= FxFrom(4L))
+				create_actor(ACT_WATER_SPLASH, POS_ADD(actor, FxZero, FxFrom(-15L)));
 			FLAG_ON(actor, FLG_BASS_SWIM);
 		}
 	}
@@ -320,7 +320,7 @@ static void collide_bass(GameActor* actor, GameActor* from) {
 		if (!ANY_FLAG(actor, FLG_BASS_ATTACK) || get_actor(VAL(actor, BASS_EAT)) != NULL
 			|| (ANY_FLAG(actor, FLG_X_FLIP) && from->pos.x > actor->pos.x)
 			|| (!ANY_FLAG(actor, FLG_X_FLIP) && from->pos.x < actor->pos.x)
-			|| (from->pos.y < (actor->pos.y - Int2Fx(25L))))
+			|| (from->pos.y < (actor->pos.y - FxFrom(25L))))
 			break;
 
 		FLAG_ON(from, FLG_FREEZE);

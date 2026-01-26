@@ -47,7 +47,7 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->depth = Int2Fx(-1000L);
+	actor->depth = FxFrom(-1000L);
 	VAL(actor, POINTS_PLAYER) = (ActorValue)NULLPLAY;
 }
 

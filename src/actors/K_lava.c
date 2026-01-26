@@ -31,8 +31,8 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.end.x = actor->box.end.y = Int2Fx(32L);
-	actor->depth = Int2Fx(20L);
+	actor->box.end.x = actor->box.end.y = FxFrom(32L);
+	actor->depth = FxFrom(20L);
 
 	VAL(actor, LAVA_Y) = actor->pos.y;
 }
@@ -76,7 +76,7 @@ static void collide(GameActor* actor, GameActor* from) {
 	case ACT_PODOBOO: {
 		if (!ANY_FLAG(from, FLG_PODOBOO_VOLCANO) || VAL(from, Y_SPEED) <= FxZero)
 			break;
-		create_actor(ACT_LAVA_SPLASH, POS_ADD(from, FxZero, Int2Fx(15L)));
+		create_actor(ACT_LAVA_SPLASH, POS_ADD(from, FxZero, FxFrom(15L)));
 		FLAG_ON(from, FLG_DESTROY);
 		break;
 	}
@@ -85,7 +85,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		if (ANY_FLAG(from, FLG_KUPPA_LAVA_LOVE))
 			break;
 
-		from->depth = Int2Fx(21L);
+		from->depth = FxFrom(21L);
 		FLAG_ON(from, FLG_KUPPA_LAVA_LOVE);
 		play_state_sound("bowser_lava", PLAY_POS, 0L, A_ACTOR(from));
 
@@ -102,7 +102,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		if (ANY_FLAG(actor, FLG_LAVA_WAVE))
 			break;
 		VAL(actor, LAVA_WAVE_LENGTH) = VAL(from, KUPPA_LAVER);
-		VAL(from, KUPPA_LAVER) -= Int2Fx(4L);
+		VAL(from, KUPPA_LAVER) -= FxFrom(4L);
 		FLAG_ON(actor, FLG_LAVA_WAVE);
 		break;
 	}
@@ -125,10 +125,10 @@ static void load_podoboo() {
 }
 
 static void create_podoboo(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-13L);
-	actor->box.start.y = Int2Fx(-16L);
-	actor->box.end.x = Int2Fx(13L);
-	actor->box.end.y = Int2Fx(16L);
+	actor->box.start.x = FxFrom(-13L);
+	actor->box.start.y = FxFrom(-16L);
+	actor->box.end.x = FxFrom(13L);
+	actor->box.end.y = FxFrom(16L);
 }
 
 static void tick_podoboo(GameActor* actor) {
@@ -145,14 +145,14 @@ static void tick_podoboo(GameActor* actor) {
 		if ((ANY_FLAG(actor, FLG_PODOBOO_FAST) && (game_state.time % 65L) == 0L
 			    && in_any_view(actor, FxZero, FALSE))
 			|| (!ANY_FLAG(actor, FLG_PODOBOO_FAST) && (game_state.time % 250L) == 0L
-				&& in_any_view(actor, Int2Fx(608L), FALSE)))
+				&& in_any_view(actor, FxFrom(608L), FALSE)))
 		{
-			VAL(actor, Y_SPEED) = Int2Fx(-12L);
+			VAL(actor, Y_SPEED) = FxFrom(-12L);
 			FLAG_ON(actor, FLG_VISIBLE);
 		} else
 			return;
-	} else if (!ANY_FLAG(actor, FLG_PODOBOO_VOLCANO) && (actor->pos.y + Int2Fx(17L)) >= VAL(actor, PODOBOO_Y)) {
-		create_actor(ACT_LAVA_SPLASH, POS_ADD(actor, FxZero, Int2Fx(15L)));
+	} else if (!ANY_FLAG(actor, FLG_PODOBOO_VOLCANO) && (actor->pos.y + FxFrom(17L)) >= VAL(actor, PODOBOO_Y)) {
+		create_actor(ACT_LAVA_SPLASH, POS_ADD(actor, FxZero, FxFrom(15L)));
 		FLAG_OFF(actor, FLG_VISIBLE);
 		return;
 	} else
@@ -207,17 +207,17 @@ static void load_volcano(GameActor* actor) {
 }
 
 static void create_volcano(GameActor* actor) {
-	actor->box.end.x = actor->box.end.y = Int2Fx(32L);
+	actor->box.end.x = actor->box.end.y = FxFrom(32L);
 }
 
 static void tick_volcano(GameActor* actor) {
 	if ((game_state.time % 300L) == 0L && VAL(actor, PODOBOO_FIRE) == 0L)
 		VAL(actor, PODOBOO_FIRE) = 8L;
-	if ((game_state.time % 15L) == 0L && VAL(actor, PODOBOO_FIRE) > 0L && in_any_view(actor, Int2Fx(224L), FALSE)) {
-		GameActor* podoboo = create_actor(ACT_PODOBOO, POS_ADD(actor, Int2Fx(16L), Int2Fx(10L)));
+	if ((game_state.time % 15L) == 0L && VAL(actor, PODOBOO_FIRE) > 0L && in_any_view(actor, FxFrom(224L), FALSE)) {
+		GameActor* podoboo = create_actor(ACT_PODOBOO, POS_ADD(actor, FxFrom(16L), FxFrom(10L)));
 		if (podoboo != NULL) {
-			VAL(podoboo, X_SPEED) = Int2Fx(-4L + rng(9L));
-			VAL(podoboo, Y_SPEED) = Int2Fx(-11L);
+			VAL(podoboo, X_SPEED) = FxFrom(-4L + rng(9L));
+			VAL(podoboo, Y_SPEED) = FxFrom(-11L);
 			FLAG_ON(podoboo, FLG_PODOBOO_VOLCANO);
 			play_state_sound("fire", PLAY_POS, 0L, A_ACTOR(podoboo));
 		}

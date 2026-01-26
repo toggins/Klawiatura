@@ -26,10 +26,10 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-27L);
-	actor->box.start.y = Int2Fx(-33L);
-	actor->box.end.x = Int2Fx(26L);
-	actor->box.end.y = Int2Fx(35L);
+	actor->box.start.x = FxFrom(-27L);
+	actor->box.start.y = FxFrom(-33L);
+	actor->box.end.x = FxFrom(26L);
+	actor->box.end.y = FxFrom(35L);
 }
 
 static void tick(GameActor* actor) {
@@ -45,13 +45,13 @@ static void tick(GameActor* actor) {
 
 	if (ANY_FLAG(actor, FLG_THWOMP_LAUGH)) {
 		VAL(actor, THWOMP_FRAME) += 10486L;
-		if (VAL(actor, THWOMP_FRAME) >= Int2Fx(15L)) {
+		if (VAL(actor, THWOMP_FRAME) >= FxFrom(15L)) {
 			VAL(actor, THWOMP_FRAME) = FxZero;
 			FLAG_OFF(actor, FLG_THWOMP_LAUGH);
 		}
 	} else if (VAL(actor, THWOMP_FRAME) > FxZero) {
 		VAL(actor, THWOMP_FRAME) += FxOne;
-		if (VAL(actor, THWOMP_FRAME) >= Int2Fx(7L))
+		if (VAL(actor, THWOMP_FRAME) >= FxFrom(7L))
 			VAL(actor, THWOMP_FRAME) = FxZero;
 	}
 
@@ -66,10 +66,10 @@ static void tick(GameActor* actor) {
 
 	case 0L: {
 		GameActor* nearest = nearest_pawn(actor->pos);
-		if (nearest != NULL && actor->pos.x < (nearest->pos.x + Int2Fx(100L))
-			&& actor->pos.x > (nearest->pos.x - Int2Fx(100L))
+		if (nearest != NULL && actor->pos.x < (nearest->pos.x + FxFrom(100L))
+			&& actor->pos.x > (nearest->pos.x - FxFrom(100L))
 			&& (game_state.size.y <= F_SCREEN_HEIGHT
-				|| in_player_view(actor, get_owner(nearest), Int2Fx(64L), FALSE)))
+				|| in_player_view(actor, get_owner(nearest), FxFrom(64L), FALSE)))
 			++VAL(actor, THWOMP_STATE);
 		break;
 	}
@@ -78,8 +78,8 @@ static void tick(GameActor* actor) {
 		VAL(actor, Y_SPEED) += FxOne;
 		displace_actor(actor, FxZero, FALSE);
 		if (VAL(actor, Y_TOUCH) > 0L) {
-			create_actor(ACT_EXPLODE, POS_ADD(actor, Int2Fx(-17L), Int2Fx(34L)));
-			create_actor(ACT_EXPLODE, POS_ADD(actor, Int2Fx(17L), Int2Fx(34L)));
+			create_actor(ACT_EXPLODE, POS_ADD(actor, FxFrom(-17L), FxFrom(34L)));
+			create_actor(ACT_EXPLODE, POS_ADD(actor, FxFrom(17L), FxFrom(34L)));
 			++VAL(actor, THWOMP_STATE);
 			quake_at_actor(actor, 10.f);
 			play_state_sound("hurt", PLAY_POS, 0L, A_ACTOR(actor));

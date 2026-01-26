@@ -42,9 +42,9 @@ static void load_mushroom() {
 }
 
 static void create_mushroom(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-15L);
-	actor->box.start.y = Int2Fx(-32L);
-	actor->box.end.x = Int2Fx(15L);
+	actor->box.start.x = FxFrom(-15L);
+	actor->box.start.y = FxFrom(-32L);
+	actor->box.end.x = FxFrom(15L);
 	actor->depth = FxOne;
 
 	FLAG_ON(actor, FLG_POWERUP_FULL);
@@ -60,9 +60,9 @@ static void tick_mushroom(GameActor* actor) {
 		return;
 
 	VAL(actor, Y_SPEED) += 19005L;
-	displace_actor(actor, Int2Fx(10L), FALSE);
+	displace_actor(actor, FxFrom(10L), FALSE);
 	if (VAL(actor, X_TOUCH) != 0L)
-		VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * Int2Fx(-2L);
+		VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * FxFrom(-2L);
 }
 
 static void draw_mushroom(const GameActor* actor) {
@@ -137,7 +137,7 @@ static void load_poison_mushroom() {
 
 static void create_poison_mushroom(GameActor* actor) {
 	create_mushroom(actor);
-	VAL(actor, X_SPEED) = Int2Fx(2L);
+	VAL(actor, X_SPEED) = FxFrom(2L);
 }
 
 static void draw_poison_mushroom(const GameActor* actor) {
@@ -152,7 +152,7 @@ static void collide_poison_mushroom(GameActor* actor, GameActor* from) {
 		return;
 
 	kill_player(from);
-	align_interp(create_actor(ACT_EXPLODE, POS_ADD(actor, FxZero, Int2Fx(-15L))), actor);
+	align_interp(create_actor(ACT_EXPLODE, POS_ADD(actor, FxZero, FxFrom(-15L))), actor);
 	FLAG_ON(actor, FLG_DESTROY);
 }
 
@@ -175,9 +175,9 @@ static void load_flower() {
 }
 
 static void create_flower(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-17L);
-	actor->box.start.y = Int2Fx(-32L);
-	actor->box.end.x = Int2Fx(16L);
+	actor->box.start.x = FxFrom(-17L);
+	actor->box.start.y = FxFrom(-32L);
+	actor->box.end.x = FxFrom(16L);
 	actor->depth = FxOne;
 
 	FLAG_ON(actor, FLG_POWERUP_FULL);
@@ -210,9 +210,9 @@ static void load_beetroot() {
 }
 
 static void create_beetroot(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-13L);
-	actor->box.start.y = Int2Fx(-32L);
-	actor->box.end.x = Int2Fx(14L);
+	actor->box.start.x = FxFrom(-13L);
+	actor->box.start.y = FxFrom(-32L);
+	actor->box.end.x = FxFrom(14L);
 	actor->depth = FxOne;
 
 	FLAG_ON(actor, FLG_POWERUP_FULL);
@@ -262,9 +262,9 @@ static void load_lui() {
 }
 
 static void create_lui(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-15L);
-	actor->box.start.y = Int2Fx(-31L);
-	actor->box.end.x = Int2Fx(15L);
+	actor->box.start.x = FxFrom(-15L);
+	actor->box.start.y = FxFrom(-31L);
+	actor->box.end.x = FxFrom(15L);
 	actor->depth = FxOne;
 
 	FLAG_ON(actor, FLG_POWERUP_FULL);
@@ -280,7 +280,7 @@ static void tick_lui(GameActor* actor) {
 	VAL(actor, Y_SPEED) += 13107L;
 	displace_actor(actor, FxZero, FALSE);
 	if (VAL(actor, Y_TOUCH) > 0L) {
-		VAL(actor, Y_SPEED) = Int2Fx(-7L);
+		VAL(actor, Y_SPEED) = FxFrom(-7L);
 		VAL(actor, LUI_BOUNCE) = 1L;
 		play_state_sound("kick", PLAY_POS, 0L, A_ACTOR(actor));
 	}
@@ -361,9 +361,9 @@ static void load_hammer() {
 }
 
 static void create_hammer(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-13L);
-	actor->box.start.y = Int2Fx(-31L);
-	actor->box.end.x = Int2Fx(14L);
+	actor->box.start.x = FxFrom(-13L);
+	actor->box.start.y = FxFrom(-31L);
+	actor->box.end.x = FxFrom(14L);
 	actor->depth = FxOne;
 
 	FLAG_ON(actor, FLG_POWERUP_FULL);
@@ -398,9 +398,9 @@ static void load_starman() {
 }
 
 static void create_starman(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-16L);
-	actor->box.start.y = Int2Fx(-32L);
-	actor->box.end.x = Int2Fx(17L);
+	actor->box.start.x = FxFrom(-16L);
+	actor->box.start.y = FxFrom(-32L);
+	actor->box.end.x = FxFrom(17L);
 
 	actor->depth = FxOne;
 }
@@ -412,11 +412,11 @@ static void tick_starman(GameActor* actor) {
 	}
 
 	VAL(actor, Y_SPEED) += 13107L;
-	displace_actor(actor, Int2Fx(10L), FALSE);
+	displace_actor(actor, FxFrom(10L), FALSE);
 	if (VAL(actor, X_TOUCH) != 0L)
 		VAL(actor, X_SPEED) = VAL(actor, X_TOUCH) * -163840L;
 	if (VAL(actor, Y_TOUCH) > 0L)
-		VAL(actor, Y_SPEED) = Int2Fx(-5L);
+		VAL(actor, Y_SPEED) = FxFrom(-5L);
 }
 
 static void draw_starman(const GameActor* actor) {

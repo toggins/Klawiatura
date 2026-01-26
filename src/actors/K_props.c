@@ -77,8 +77,8 @@ static void load_face() {
 }
 
 static void create_face(GameActor* actor) {
-	actor->box.end.x = Int2Fx(30L);
-	actor->box.end.y = Int2Fx(32L);
+	actor->box.end.x = FxFrom(30L);
+	actor->box.end.y = FxFrom(32L);
 }
 
 static void tick_face(GameActor* actor) {
@@ -223,13 +223,13 @@ static void load_tube() {
 }
 
 static void create_tube(GameActor* actor) {
-	actor->box.end.x = actor->box.end.y = Int2Fx(32L);
+	actor->box.end.x = actor->box.end.y = FxFrom(32L);
 }
 
 static void tick_tube(GameActor* actor) {
 	if ((game_state.time % 5L) != 0L || !in_any_view(actor, FxZero, FALSE) || rng(11L) != 10L)
 		return;
-	GameActor* bubble = create_actor(ACT_TUBE_BUBBLE, POS_ADD(actor, Int2Fx(9L + rng(16L)), -FxOne));
+	GameActor* bubble = create_actor(ACT_TUBE_BUBBLE, POS_ADD(actor, FxFrom(9L + rng(16L)), -FxOne));
 	if (bubble == NULL)
 		return;
 	bubble->depth = actor->depth + FxOne;
@@ -307,18 +307,18 @@ static void load_laver() {
 }
 
 static void create_laver(GameActor* actor) {
-	actor->box.end.x = actor->box.end.y = Int2Fx(32L);
+	actor->box.end.x = actor->box.end.y = FxFrom(32L);
 }
 
 static void tick_laver(GameActor* actor) {
 	if (((game_state.time * 2L) % 5L) >= 2L || !in_any_view(actor, FxZero, FALSE))
 		return;
 
-	GameActor* bubble = create_actor(ACT_LAVA_BUBBLE, POS_ADD(actor, Int2Fx(-7L + rng(48L)), FxZero));
+	GameActor* bubble = create_actor(ACT_LAVA_BUBBLE, POS_ADD(actor, FxFrom(-7L + rng(48L)), FxZero));
 	if (bubble == NULL)
 		return;
-	VAL(bubble, X_SPEED) = Int2Fx(-2L + rng(5L));
-	VAL(bubble, Y_SPEED) = Int2Fx(-2L - rng(4L));
+	VAL(bubble, X_SPEED) = FxFrom(-2L + rng(5L));
+	VAL(bubble, Y_SPEED) = FxFrom(-2L - rng(4L));
 }
 
 const GameActorTable TAB_LAVA_BUBBLE_SPAWNER = {.load = load_laver, .create = create_laver, .tick = tick_laver};

@@ -21,9 +21,9 @@ static void load() {
 }
 
 static void create(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-15L);
-	actor->box.start.y = Int2Fx(-32L);
-	actor->box.end.x = Int2Fx(15L);
+	actor->box.start.x = FxFrom(-15L);
+	actor->box.start.y = FxFrom(-32L);
+	actor->box.end.x = FxFrom(15L);
 
 	increase_ambush();
 }
@@ -51,7 +51,7 @@ static void collide(GameActor* actor, GameActor* from) {
 		break;
 
 	case ACT_PLAYER: {
-		if (check_stomp(actor, from, Int2Fx(-16L), 100L)) {
+		if (check_stomp(actor, from, FxFrom(-16L), 100L)) {
 			GameActor* flat = create_actor(ACT_GOOMBA_FLAT, actor->pos);
 			if (flat != NULL) {
 				VAL(flat, Y_SPEED) = Fmax(VAL(actor, Y_SPEED), FxZero);
@@ -116,9 +116,9 @@ static void load_flat() {
 }
 
 static void create_flat(GameActor* actor) {
-	actor->box.start.x = Int2Fx(-15L);
-	actor->box.start.y = Int2Fx(-16L);
-	actor->box.end.x = Int2Fx(15L);
+	actor->box.start.x = FxFrom(-15L);
+	actor->box.start.y = FxFrom(-16L);
+	actor->box.end.x = FxFrom(15L);
 }
 
 static void tick_flat(GameActor* actor) {

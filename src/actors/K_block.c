@@ -46,27 +46,27 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 			break;
 		}
 
-		GameActor* shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, Int2Fx(8L), Int2Fx(8L)));
+		GameActor* shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, FxFrom(8L), FxFrom(8L)));
 		if (shard != NULL) {
-			VAL(shard, X_SPEED) = Int2Fx(-2L), VAL(shard, Y_SPEED) = Int2Fx(-8L);
+			VAL(shard, X_SPEED) = FxFrom(-2L), VAL(shard, Y_SPEED) = FxFrom(-8L);
 			FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
 		}
 
-		shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, Int2Fx(16L), Int2Fx(8L)));
+		shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, FxFrom(16L), FxFrom(8L)));
 		if (shard != NULL) {
-			VAL(shard, X_SPEED) = Int2Fx(2L), VAL(shard, Y_SPEED) = Int2Fx(-8L);
+			VAL(shard, X_SPEED) = FxFrom(2L), VAL(shard, Y_SPEED) = FxFrom(-8L);
 			FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
 		}
 
-		shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, Int2Fx(8L), Int2Fx(16L)));
+		shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, FxFrom(8L), FxFrom(16L)));
 		if (shard != NULL) {
-			VAL(shard, X_SPEED) = Int2Fx(-3L), VAL(shard, Y_SPEED) = Int2Fx(-6L);
+			VAL(shard, X_SPEED) = FxFrom(-3L), VAL(shard, Y_SPEED) = FxFrom(-6L);
 			FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
 		}
 
-		shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, Int2Fx(16L), Int2Fx(16L)));
+		shard = create_actor(ACT_BRICK_SHARD, POS_ADD(actor, FxFrom(16L), FxFrom(16L)));
 		if (shard != NULL) {
-			VAL(shard, X_SPEED) = Int2Fx(3L), VAL(shard, Y_SPEED) = Int2Fx(-6L);
+			VAL(shard, X_SPEED) = FxFrom(3L), VAL(shard, Y_SPEED) = FxFrom(-6L);
 			FLAG_ON(shard, actor->flags & FLG_BLOCK_GRAY);
 		}
 
@@ -117,14 +117,14 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 			if (from != NULL)
 				VAL(item, COIN_POP_PLAYER) = (ActorValue)get_owner_id(from);
 		} else {
-			VAL(item, SPROUT) = Int2Fx(32L);
+			VAL(item, SPROUT) = FxFrom(32L);
 			switch (item->type) {
 			default:
 				break;
 
 			case ACT_MUSHROOM:
 			case ACT_MUSHROOM_1UP:
-				VAL(item, X_SPEED) = Int2Fx(2L);
+				VAL(item, X_SPEED) = FxFrom(2L);
 				break;
 
 			case ACT_STARMAN:
@@ -176,8 +176,8 @@ static void load_special(const GameActor* actor) {
 
 static void create(GameActor* actor) {
 	actor->box.start.x = actor->box.start.y = FxZero;
-	actor->box.end.x = actor->box.end.y = Int2Fx(32L);
-	actor->depth = Int2Fx(20L);
+	actor->box.end.x = actor->box.end.y = FxFrom(32L);
+	actor->depth = FxFrom(20L);
 
 	VAL(actor, BLOCK_ITEM) = ACT_NULL;
 }
@@ -490,7 +490,7 @@ static void note_top(GameActor* actor, GameActor* from) {
 	case ACT_PLAYER:
 	case ACT_MISSILE_BEETROOT:
 	case ACT_MISSILE_SILVER_HAMMER: {
-		VAL(from, Y_SPEED) = (VAL(from, PLAYER_SPRING) > 0L) ? Int2Fx(-19L) : Int2Fx(-10L);
+		VAL(from, Y_SPEED) = (VAL(from, PLAYER_SPRING) > 0L) ? FxFrom(-19L) : FxFrom(-10L);
 		VAL(actor, BLOCK_BUMP) = 1L;
 		VAL(actor, X_TOUCH) = 0L, VAL(actor, Y_TOUCH) = 1L;
 		play_state_sound("spring", PLAY_POS, 0L, A_ACTOR(actor));
@@ -511,7 +511,7 @@ static void note_left(GameActor* actor, GameActor* from) {
 	case ACT_PLAYER:
 	case ACT_MISSILE_BEETROOT:
 	case ACT_MISSILE_SILVER_HAMMER: {
-		VAL(from, X_SPEED) = Int2Fx(-5L);
+		VAL(from, X_SPEED) = FxFrom(-5L);
 		VAL(actor, BLOCK_BUMP) = 1L;
 		VAL(actor, X_TOUCH) = 1L, VAL(actor, Y_TOUCH) = 0L;
 		play_state_sound("bump", PLAY_POS, 0L, A_ACTOR(actor));
@@ -532,7 +532,7 @@ static void note_right(GameActor* actor, GameActor* from) {
 	case ACT_PLAYER:
 	case ACT_MISSILE_BEETROOT:
 	case ACT_MISSILE_SILVER_HAMMER: {
-		VAL(from, X_SPEED) = Int2Fx(5L);
+		VAL(from, X_SPEED) = FxFrom(5L);
 		VAL(actor, BLOCK_BUMP) = 1L;
 		VAL(actor, X_TOUCH) = -1L, VAL(actor, Y_TOUCH) = 0L;
 		play_state_sound("bump", PLAY_POS, 0L, A_ACTOR(actor));
@@ -589,8 +589,8 @@ const GameActorTable TAB_NOTE_BLOCK = {
 // ==========
 
 static void create_bump(GameActor* actor) {
-	actor->box.end.x = Int2Fx(32L);
-	actor->box.start.y = Int2Fx(-8L);
+	actor->box.end.x = FxFrom(32L);
+	actor->box.start.y = FxFrom(-8L);
 
 	VAL(actor, BLOCK_PLAYER) = (ActorValue)NULLPLAY;
 }

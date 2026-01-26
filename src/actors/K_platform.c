@@ -31,43 +31,43 @@ static void pre_tick(GameActor* actor) {
 		switch (VAL(actor, PLATFORM_TYPE)) {
 		default: {
 			actor->box.start.x = actor->box.start.y = FxZero;
-			actor->box.end.x = Int2Fx(95);
-			actor->box.end.y = Int2Fx(16);
+			actor->box.end.x = FxFrom(95);
+			actor->box.end.y = FxFrom(16);
 			break;
 		}
 
 		case PLAT_SMALL: {
 			actor->box.start.x = actor->box.start.y = FxZero;
-			actor->box.end.x = Int2Fx(31);
-			actor->box.end.y = Int2Fx(16);
+			actor->box.end.x = FxFrom(31);
+			actor->box.end.y = FxFrom(16);
 			break;
 		}
 
 		case PLAT_CLOUD: {
 			actor->box.start.x = actor->box.start.y = FxZero;
-			actor->box.end.x = Int2Fx(127);
-			actor->box.end.y = Int2Fx(32);
+			actor->box.end.x = FxFrom(127);
+			actor->box.end.y = FxFrom(32);
 			break;
 		}
 
 		case PLAT_CASTLE: {
 			actor->box.start.x = actor->box.start.y = FxZero;
-			actor->box.end.x = Int2Fx(64);
-			actor->box.end.y = Int2Fx(32);
+			actor->box.end.x = FxFrom(64);
+			actor->box.end.y = FxFrom(32);
 			break;
 		}
 
 		case PLAT_CASTLE_BIG: {
 			actor->box.start.x = actor->box.start.y = FxZero;
-			actor->box.end.x = Int2Fx(120);
-			actor->box.end.y = Int2Fx(32);
+			actor->box.end.x = FxFrom(120);
+			actor->box.end.y = FxFrom(32);
 			break;
 		}
 
 		case PLAT_CASTLE_BUTTON: {
 			actor->box.start.x = actor->box.start.y = FxZero;
-			actor->box.end.x = Int2Fx(76);
-			actor->box.end.y = Int2Fx(32);
+			actor->box.end.x = FxFrom(76);
+			actor->box.end.y = FxFrom(32);
 			break;
 		}
 		}
@@ -81,16 +81,16 @@ static void pre_tick(GameActor* actor) {
 	VAL(actor, PLATFORM_X_FROM) = actor->pos.x, VAL(actor, PLATFORM_Y_FROM) = actor->pos.y;
 
 	if (ANY_FLAG(actor, FLG_PLATFORM_WRAP) && !ANY_FLAG(actor, FLG_PLATFORM_FALLING)) {
-		if (VAL(actor, Y_SPEED) > FxZero && actor->pos.y > (game_state.size.y + Int2Fx(10L))) {
-			move_actor(actor, (FVec2){actor->pos.x, Int2Fx(-10L)});
+		if (VAL(actor, Y_SPEED) > FxZero && actor->pos.y > (game_state.size.y + FxFrom(10L))) {
+			move_actor(actor, (FVec2){actor->pos.x, FxFrom(-10L)});
 			skip_interp(actor);
-		} else if (VAL(actor, Y_SPEED) < FxZero && actor->pos.y < Int2Fx(-10L)) {
-			move_actor(actor, (FVec2){actor->pos.x, game_state.size.y + Int2Fx(10L)});
+		} else if (VAL(actor, Y_SPEED) < FxZero && actor->pos.y < FxFrom(-10L)) {
+			move_actor(actor, (FVec2){actor->pos.x, game_state.size.y + FxFrom(10L)});
 			skip_interp(actor);
 		}
 	}
 
-	if (actor->pos.y > (game_state.size.y + Int2Fx(32L))) {
+	if (actor->pos.y > (game_state.size.y + FxFrom(32L))) {
 		if (!ANY_FLAG(actor, FLG_PLATFORM_WRAP) && (game_state.flags & GF_SINGLE)) {
 			FLAG_ON(actor, FLG_DESTROY);
 			return;
@@ -160,7 +160,7 @@ const GameActorTable TAB_PLATFORM = {
 // ===============
 
 static void create_turn(GameActor* actor) {
-	actor->box.end.x = actor->box.end.y = Int2Fx(32L);
+	actor->box.end.x = actor->box.end.y = FxFrom(32L);
 }
 
 static void collide_turn(GameActor* actor, GameActor* from) {
