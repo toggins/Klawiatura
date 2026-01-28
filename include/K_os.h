@@ -4,7 +4,7 @@
 #define K_OS_WINDOSE
 #endif
 
-#ifdef _MSVC_VER
+#ifdef _MSC_VER
 #define K_NORETURN __declspec(noreturn)
 #else
 #define K_NORETURN __attribute__((noreturn))
