@@ -86,10 +86,9 @@ FetchContent_MakeAvailable(S_fixed)
 list(APPEND LIBS S_fixed)
 
 # S_tructures
-set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
 FetchContent_Declare(S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
-    GIT_TAG 71c959ad0056e33ce4264714461d5cfb7211fec9)
+    GIT_TAG b540ee8f457509370acfbed49499acab84bf327e)
 FetchContent_MakeAvailable(S_tructures)
 list(APPEND LIBS S_tructures)
 
