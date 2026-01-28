@@ -79,7 +79,6 @@ FetchContent_MakeAvailable(yyjson)
 list(APPEND LIBS yyjson)
 
 # S_fixed
-set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
 FetchContent_Declare(S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
     GIT_TAG 230d7592c7b131237ae8a995a3bb86cb49b6cb41)
