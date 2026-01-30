@@ -9,9 +9,9 @@ void clear_assets() {
 void clear_asset_map_PRO(StTinyMap** target, void (*nuke)(void*)) {
 	StTinyMap* new = NewTinyMap();
 
-	StTinyMapIter it = StMapIter(*target);
-	while (StMapNext(&it)) {
-		StTinyBucket* bucket = it.at;
+	StIterator it = StMapIter(*target);
+	while (StIterNext(&it)) {
+		StTinyBucket* bucket = it.bucket;
 
 		AssetBase* asset = bucket->data;
 		if (!asset->transient)

@@ -31,7 +31,7 @@ FetchContent_Declare(SDL3
 FetchContent_MakeAvailable(SDL3)
 list(APPEND LIBS SDL3::SDL3-static)
 
-# SDL_image (3.2.6)
+# SDL_image (3.4.0)
 set(SDLIMAGE_AVIF OFF CACHE INTERNAL "")
 set(SDLIMAGE_TIF OFF CACHE INTERNAL "")
 set(SDLIMAGE_WEBP OFF CACHE INTERNAL "")
@@ -39,14 +39,14 @@ set(SDLIMAGE_SVG OFF CACHE INTERNAL "")
 set(SDLIMAGE_XCF OFF CACHE INTERNAL "")
 FetchContent_Declare(SDL3_image
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
-    GIT_TAG release-3.2.6)
+    GIT_TAG release-3.4.0)
 FetchContent_MakeAvailable(SDL3_image)
 list(APPEND LIBS SDL3_image::SDL3_image-static)
 
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG 01de5cf46ff3679b5378ec7dae365791e632b76a)
+    GIT_TAG 8b6d0e22319d9db7cdd709f5b26bd51f80036f01)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
 
 # GLAD (2.0.8, OpenGL 3.3 Core)
@@ -81,14 +81,14 @@ list(APPEND LIBS yyjson)
 # S_fixed
 FetchContent_Declare(S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
-    GIT_TAG 230d7592c7b131237ae8a995a3bb86cb49b6cb41)
+    GIT_TAG 1869c0adcf4ae770afecf0b5e875cf399ee7ce98)
 FetchContent_MakeAvailable(S_fixed)
 list(APPEND LIBS S_fixed)
 
 # S_tructures
 FetchContent_Declare(S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
-    GIT_TAG b540ee8f457509370acfbed49499acab84bf327e)
+    GIT_TAG 2bb14085172b06afeca00783c7b4f30fe3210b68)
 FetchContent_MakeAvailable(S_tructures)
 list(APPEND LIBS S_tructures)
 
@@ -96,7 +96,7 @@ list(APPEND LIBS S_tructures)
 set(NUTPUNCH_STAGING ON CACHE INTERNAL "")
 FetchContent_Declare(NutPunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG 0adfb307836f4fe72abab6a71ae640e548281334)
+    GIT_TAG 89e1571d7f6b1400ae3de50941c2ca328074fc9c)
 FetchContent_MakeAvailable(NutPunch)
 list(APPEND LIBS NutPunch)
 
