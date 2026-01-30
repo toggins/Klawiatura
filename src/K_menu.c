@@ -987,7 +987,7 @@ void show_error(const char* fmt, ...) {
 }
 
 void populate_results() {
-	SDL_memset(&winners, 0, sizeof(winners));
+	SDL_zero(winners);
 	for (PlayerID i = 0; i < numplayers(); i++) {
 		const char* name = get_peer_name(player_to_peer(i));
 		SDL_strlcpy(winners[i].name, (name == NULL) ? fmt("Player %i", i + 1) : name, sizeof(winners[i].name));
@@ -1036,12 +1036,8 @@ void show_results() {
 		for (PlayerID j = 0; j < (numplayers() - 1); j++) {
 			if (winners[j].score >= winners[j + 1].score)
 				continue;
-
-			SDL_memcpy(&cmp[0], &winners[j], sizeof(cmp[0]));
-			SDL_memcpy(&cmp[1], &winners[j + 1], sizeof(cmp[1]));
-
-			SDL_memcpy(&winners[j], &cmp[1], sizeof(cmp[1]));
-			SDL_memcpy(&winners[j + 1], &cmp[0], sizeof(cmp[0]));
+			cmp[0] = winners[j], cmp[1] = winners[j + 1];
+			winners[j] = cmp[1], winners[j + 1] = cmp[0];
 		}
 
 	set_menu(MEN_RESULTS);

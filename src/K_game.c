@@ -125,7 +125,7 @@ static void send_chat_message() {
 
 void push_chat_message(const int from, const char* text) {
 	for (int i = MAX_CHATS - 1; i >= 1; i--)
-		SDL_memcpy(&chat_hist[i], &chat_hist[i - 1], sizeof(*chat_hist));
+		chat_hist[i] = chat_hist[i - 1];
 
 	const char* line = fmt("%s: %s", get_peer_name(from), text);
 	INFO("%s", line);
@@ -142,11 +142,11 @@ static void update_chat_hist() {
 			chat_hist[i].lifetime -= delta;
 		if (chat_hist[i].lifetime <= 0.f) {
 			if (i >= (MAX_CHATS - 1))
-				SDL_memset(&chat_hist[i], 0, sizeof(*chat_hist));
+				SDL_zero(chat_hist[i]);
 			else {
 				for (int j = i; j < MAX_CHATS - 1; j++)
-					SDL_memcpy(&chat_hist[j], &chat_hist[j + 1], sizeof(*chat_hist));
-				SDL_memset(&chat_hist[MAX_CHATS - 1], 0, sizeof(*chat_hist));
+					chat_hist[j] = chat_hist[j + 1];
+				SDL_zero(chat_hist[MAX_CHATS - 1]);
 			}
 		}
 	}
@@ -181,7 +181,7 @@ static Bool rolling_back = FALSE;
 
 /// Initializes a GameContext struct with a clean 1-player preset.
 GameContext* init_game_context() {
-	SDL_memset(&queue_game_context, 0, sizeof(queue_game_context));
+	SDL_zero(queue_game_context);
 	queue_game_context.num_players = 1L;
 	for (PlayerID i = 0L; i < MAX_PLAYERS; i++) {
 		queue_game_context.players[i].power = POW_SMALL;
@@ -202,7 +202,7 @@ void start_game() {
 	EXPECT(queue_game_context.num_players > 0L && queue_game_context.num_players <= MAX_PLAYERS,
 		"Invalid player count in game context!\nExpected 1..%li, got %i", MAX_PLAYERS,
 		queue_game_context.num_players);
-	SDL_memcpy(&game_context, &queue_game_context, sizeof(game_context));
+	game_context = queue_game_context;
 
 	load_texture("ui/sidebar_l", FALSE);
 	load_texture("ui/sidebar_r", FALSE);
@@ -909,7 +909,7 @@ static void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 			break;
 		if (++game_state.sequence.time <= 300L)
 			break;
-		SDL_memset(game_state.next, 0, sizeof(game_state.next));
+		SDL_zeroa(game_state.next);
 		game_state.flags |= GF_END;
 		break;
 	}
@@ -973,11 +973,11 @@ static void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 #undef TICK_LOOP
 
 static void save_game_state(GameState* gs) {
-	SDL_memcpy(gs, &game_state, sizeof(GameState));
+	*gs = game_state;
 }
 
 static void load_game_state(const GameState* gs) {
-	SDL_memcpy(&game_state, gs, sizeof(GameState));
+	game_state = *gs;
 
 	// Fix for being stuck in spectator during rollback
 	if (local_player == view_player)
@@ -1097,7 +1097,7 @@ static void dump_game_state() {
 
 static void nuke_game_state() {
 	clear_tilemaps();
-	SDL_memset(&game_state, 0, sizeof(game_state));
+	SDL_zero(game_state);
 
 	for (PlayerID i = 0L; i < MAX_PLAYERS; i++) {
 		game_state.players[i].id = NULLPLAY;
@@ -1127,7 +1127,7 @@ static void nuke_game_state() {
 
 	game_state.sequence.activator = NULLPLAY;
 
-	SDL_memset(&interp, 0, sizeof(interp));
+	SDL_zero(interp);
 }
 
 static void read_string(const char** buf, char* dest, Uint32 maxlen) {
@@ -1601,7 +1601,7 @@ GameActor* create_actor(GameActorType type, const FVec2 pos) {
 	return NULL;
 
 found:
-	SDL_memset(actor, 0, sizeof(GameActor));
+	SDL_zerop(actor);
 
 	actor->id = index;
 	actor->type = type;

@@ -271,7 +271,7 @@ void start_video_state() {
 void nuke_video_state() {
 	if (video_state.fred_surface != NULL)
 		destroy_surface(video_state.fred_surface);
-	SDL_memset(&video_state, 0, sizeof(video_state));
+	SDL_zero(video_state);
 	video_state.boss = -48.f;
 }
 
@@ -994,7 +994,7 @@ void apply_matrices() {
 Surface* create_surface(GLsizei width, GLsizei height, Bool color, Bool depth) {
 	Surface* surface = SDL_malloc(sizeof(*surface));
 	EXPECT(surface, "create_surface fail");
-	SDL_memset(surface, 0, sizeof(*surface));
+	SDL_zerop(surface);
 
 	glm_mat4_identity(surface->model_matrix), glm_mat4_identity(surface->view_matrix);
 	glm_ortho(0, (float)width, 0, (float)height, -16000, 16000, surface->projection_matrix);

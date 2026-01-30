@@ -75,7 +75,7 @@ Bool in_public_server() {
 
 static void np_set_string(void setter(const char*, int, const void*), const char* name, const char* str) {
 	static char buf[NUTPUNCH_FIELD_DATA_MAX] = {0};
-	SDL_memset(buf, 0, sizeof(buf)), SDL_strlcpy(buf, str, sizeof(buf));
+	SDL_zeroa(buf), SDL_strlcpy(buf, str, sizeof(buf));
 	(setter)(name, sizeof(buf), buf);
 }
 static void np_lobby_set_string(const char* name, const char* str) {
@@ -130,7 +130,7 @@ const char* net_error() {
 
 void disconnect() {
 	NutPunch_Disconnect();
-	SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
+	SDL_zeroa(cur_lobby);
 	if (net_error())
 		WARN("Net error: %s", net_error());
 	update_discord_status(NULL);
@@ -171,7 +171,7 @@ void join_lobby(const char* id) {
 }
 
 void list_lobbies() {
-	SDL_memset(cur_lobby, 0, sizeof(cur_lobby));
+	SDL_zeroa(cur_lobby);
 
 	NutPunch_Filter filter[2] = {0};
 	SDL_memcpy(filter[0].field.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));

@@ -247,7 +247,7 @@ void tick_audio_state() {
 }
 
 void save_audio_state(AudioState* as) {
-	SDL_memcpy(as, &audio_state, sizeof(audio_state));
+	*as = audio_state;
 }
 
 static void stop_state_sound(size_t);
@@ -304,15 +304,15 @@ void load_audio_state(const AudioState* as) {
 					FMOD_Channel_SetMute(music_channels[j], TRUE);
 	}
 
-	SDL_memcpy(&audio_state, as, sizeof(audio_state));
+	audio_state = *as;
 }
 
 void nuke_audio_state() {
 	FMOD_ChannelGroup_Stop(state_sound_group);
 	FMOD_ChannelGroup_Stop(state_music_group);
-	SDL_memset(&audio_state, 0, sizeof(audio_state));
-	SDL_memset(&sound_channels, 0, sizeof(sound_channels));
-	SDL_memset(&music_channels, 0, sizeof(music_channels));
+	SDL_zero(audio_state);
+	SDL_zero(sound_channels);
+	SDL_zero(music_channels);
 }
 
 void pause_audio_state(Bool pause) {
