@@ -22,7 +22,7 @@ jobs:
           - { name: WinXP, mingw: 32 }
           - { name: Win64, mingw: 64 }
     env:
-      OUTNAME: Klawiatura-${{ matrix.name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
+      OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
       MINGW_ARCH: ${{ matrix.mingw == 32 && 'i686' || 'x86_64' }}
       MINGW_SHIT: >-
         -D CMAKE_C_COMPILER=${MINGW_ARCH}-w64-mingw32-gcc
@@ -90,4 +90,4 @@ jobs:
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
           prerelease: ${{ github.ref_name == 'master' }}
           make_latest: ${{ github.ref_type == 'tag' }}
-          files: build/${{ env.OUTNAME }}
+          files: build/${{ env.OUTNAME }}.zip
