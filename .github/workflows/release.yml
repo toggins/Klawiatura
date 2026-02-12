@@ -3,7 +3,7 @@ name: Build and release binaries
 on:
   push:
     branches: [master]
-    tags: [stable, tracing]
+    tags: [stable, tracing, v*]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -11,18 +11,16 @@ concurrency:
 
 jobs:
   release:
-    name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} binaries for ${{ matrix.name }}
+    name: Build binaries for ${{ matrix.name }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write
     strategy:
       matrix:
         include:
-          - name: Linux
-          - name: WinXP
-            mingw: 32
-          - name: Win64
-            mingw: 64
+          - { name: Linux }
+          - { name: WinXP, mingw: 32 }
+          - { name: Win64, mingw: 64 }
     env:
       OUTNAME: Klawiatura-${{ matrix.name }}-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
       MINGW_ARCH: ${{ matrix.mingw == 32 && 'i686' || 'x86_64' }}
@@ -85,8 +83,11 @@ jobs:
         run: cmake --build build --target Klawiatura
       - name: Package
         run: cmake --build build --target package
-      - name: Release ${{ github.ref_name == 'master' && 'dev' || github.ref_name }} build for ${{ matrix.name }}
+      - name: Release
         uses: softprops/action-gh-release@v2
         with:
+          draft: ${{ github.ref_name != 'master' }}
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
-          files: build/${{ env.OUTNAME }}.zip
+          prerelease: ${{ github.ref_name == 'master' }}
+          make_latest: ${{ github.ref_type == 'tag' }}
+          files: build/${{ env.OUTNAME }}
