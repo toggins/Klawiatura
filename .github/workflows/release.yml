@@ -89,5 +89,4 @@ jobs:
           draft: ${{ github.ref_name != 'master' }}
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
           prerelease: ${{ github.ref_name == 'master' }}
-          make_latest: ${{ github.ref_type == 'tag' }}
           files: build/${{ env.OUTNAME }}.zip
