@@ -46,7 +46,7 @@ list(APPEND LIBS SDL3_image::SDL3_image-static)
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG 8b6d0e22319d9db7cdd709f5b26bd51f80036f01)
+    GIT_TAG c9e695ef7709d9f2e5d8e44e36e27b56b881366f)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
 
 # GLAD (2.0.8, OpenGL 3.3 Core)
@@ -96,7 +96,7 @@ list(APPEND LIBS S_tructures)
 set(NUTPUNCH_STAGING ON CACHE INTERNAL "")
 FetchContent_Declare(NutPunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG d62043bb13974c95491f90b3e30eb815dd794b9d)
+    GIT_TAG a905bd3d04f7757eec5db5132927624c4f8a9142)
 FetchContent_MakeAvailable(NutPunch)
 list(APPEND LIBS NutPunch)
 
@@ -104,7 +104,7 @@ list(APPEND LIBS NutPunch)
 set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG 2bf3cb4ed0a11297c3a002a66b9d650052da62cd)
+    GIT_TAG v20260213120409-6dbce37)
 FetchContent_MakeAvailable(GekkoNet)
 list(APPEND LIBS GekkoNet)
 

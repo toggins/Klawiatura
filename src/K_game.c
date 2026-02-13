@@ -209,7 +209,7 @@ void start_game() {
 
 	game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
 
-	gekko_create(&game_session);
+	gekko_create(&game_session, Game);
 
 	GekkoConfig cfg = {0};
 	cfg.desync_detection = TRUE;
