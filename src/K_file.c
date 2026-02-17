@@ -2,6 +2,7 @@
 #include <SDL3/SDL_stdinc.h>
 
 #include "K_file.h"
+#include "K_game.h"
 #include "K_log.h"
 #include "K_math.h"
 
@@ -13,7 +14,7 @@ void file_init(const char* path) {
 	if (path != NULL)
 		INFO("Using data path \"%s\"", path);
 
-	user_path = SDL_GetPrefPath("toggins", "Klawiatura");
+	user_path = SDL_GetPrefPath("toggins", GAME_NAME);
 	EXPECT(user_path, "SDL_GetPrefPath fail");
 }
 

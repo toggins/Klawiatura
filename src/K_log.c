@@ -5,6 +5,7 @@
 #include <SDL3/SDL_stdinc.h>
 
 #include "K_file.h"
+#include "K_game.h"
 #include "K_log.h"
 #include "K_string.h"
 
@@ -13,18 +14,19 @@ void handle_fatal(const char* file, int line, const char* func, const char* fmt,
 	extern SDL_Window* window;
 
 	static SDL_MessageBoxButtonData butts[1] = {0};
-	butts[0].text = "Damn it";
+	butts[0].text = "Exit";
 	butts[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT | SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
 
 	SDL_MessageBoxData data = {0};
 	data.window = window, data.message = buf;
-	data.title = "Klawiatura FATAL ERROR", data.flags = SDL_MESSAGEBOX_ERROR;
+	data.title = GAME_NAME, data.flags = SDL_MESSAGEBOX_ERROR;
 	data.buttons = butts, data.numbuttons = sizeof(butts) / sizeof(*butts);
 
 	va_list args = {0};
 	va_start(args, fmt);
-	SDL_snprintf(
-		buf, sizeof(buf), "File: %s:%d\nFunction: %s()\n\n%s", log_basename(file), line, func, vfmt(fmt, args));
+	SDL_snprintf(buf, sizeof(buf),
+		"Sorry, " GAME_NAME " encountered a fatal error!\n\nFile: %s:%d\nFunction: %s()\n\n%s",
+		log_basename(file), line, func, vfmt(fmt, args));
 	va_end(args);
 
 	SDL_ShowMessageBox(&data, NULL);

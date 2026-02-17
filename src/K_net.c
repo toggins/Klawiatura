@@ -19,9 +19,6 @@ static const char* last_error = NULL;
 
 static char cur_lobby[LOBBY_STRING_MAX] = "";
 
-static const char* MAGIC_KEY = "KLAWIATURA";
-static const Uint8 MAGIC_VALUE = 127;
-
 static int player_peers[MAX_PLAYERS] = {MAX_PEERS};
 
 void net_init() {
@@ -155,7 +152,7 @@ void host_lobby(const char* id) {
 	verb = "host";
 	push_user_data();
 
-	np_lobby_set(MAGIC_KEY, sizeof(MAGIC_VALUE), &MAGIC_VALUE);
+	np_lobby_set(GAME_NAME, sizeof(GAME_VERSION), GAME_VERSION);
 	const Uint32 party = SDL_rand_bits(); // Generate a better UUID.
 	np_lobby_set("PARTY", sizeof(party), &party);
 	const LobbyVisibility visible = CLIENT.lobby.public ? VIS_PUBLIC : VIS_UNLISTED;
@@ -174,8 +171,8 @@ void list_lobbies() {
 	SDL_zeroa(cur_lobby);
 
 	NutPunch_Filter filter[2] = {0};
-	SDL_memcpy(filter[0].field.name, MAGIC_KEY, SDL_strnlen(MAGIC_KEY, NUTPUNCH_FIELD_NAME_MAX));
-	SDL_memcpy(filter[0].field.value, &MAGIC_VALUE, sizeof(MAGIC_VALUE));
+	SDL_memcpy(filter[0].field.name, GAME_NAME, SDL_strnlen(GAME_NAME, NUTPUNCH_FIELD_NAME_MAX));
+	SDL_memcpy(filter[0].field.value, GAME_VERSION, sizeof(GAME_VERSION));
 	filter[0].comparison = NPF_Eq;
 
 	SDL_memcpy(filter[1].field.name, "VISIBLE", SDL_strnlen("VISIBLE", NUTPUNCH_FIELD_NAME_MAX));

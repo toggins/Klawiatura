@@ -82,7 +82,7 @@ void update_discord_status(const char* level_name) {
 
 	// Information
 	Discord_Activity_SetType(&activity, Discord_ActivityTypes_Playing);
-	Discord_Activity_SetName(&activity, DSTR("Klawiatura"));
+	Discord_Activity_SetName(&activity, DSTR(GAME_NAME));
 
 	char details[32] = "", state[32] = "";
 
