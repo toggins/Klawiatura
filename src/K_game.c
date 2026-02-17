@@ -209,7 +209,7 @@ void start_game() {
 
 	game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
 
-	gekko_create(&game_session, Game);
+	gekko_create(&game_session, GekkoGameSession);
 
 	GekkoConfig cfg = {0};
 	cfg.desync_detection = TRUE;
@@ -385,9 +385,9 @@ Bool update_game() {
 		for (int i = 0; i < count; i++) {
 			GekkoSessionEvent* event = events[i];
 			switch (event->type) {
-			case DesyncDetected: {
+			case GekkoDesyncDetected: {
 				dump_game_state();
-				struct Desynced desync = event->data.desynced;
+				struct GekkoDesynced desync = event->data.desynced;
 				show_error("Out of sync with player %i (%s)\n"
 					   "Tick: %i\n"
 					   "Local Checksum: %u\n"
@@ -398,14 +398,14 @@ Bool update_game() {
 				goto byebye_game;
 			}
 
-			case PlayerConnected: {
-				struct Connected connect = event->data.connected;
+			case GekkoPlayerConnected: {
+				struct GekkoConnected connect = event->data.connected;
 				INFO("Player %i connected", connect.handle + 1);
 				break;
 			}
 
-			case PlayerDisconnected: {
-				struct Disconnected disconnect = event->data.disconnected;
+			case GekkoPlayerDisconnected: {
+				struct GekkoDisconnected disconnect = event->data.disconnected;
 				show_error("Lost connection to player %i (%s)", disconnect.handle + 1,
 					who_is_winner(disconnect.handle));
 				goto byebye_game;
@@ -421,7 +421,7 @@ Bool update_game() {
 		for (int i = 0; i < count; i++) {
 			GekkoGameEvent* event = updates[i];
 			switch (event->type) {
-			case SaveEvent: {
+			case GekkoSaveEvent: {
 				static SaveState save;
 				save_game_state(&save.game);
 				save_audio_state(&save.audio);
@@ -432,14 +432,14 @@ Bool update_game() {
 				break;
 			}
 
-			case LoadEvent: {
+			case GekkoLoadEvent: {
 				const SaveState* load = (SaveState*)(event->data.load.state);
 				load_game_state(&load->game);
 				load_audio_state(&load->audio);
 				break;
 			}
 
-			case AdvanceEvent: {
+			case GekkoAdvanceEvent: {
 				rolling_back = event->data.adv.rolling_back;
 
 				GameInput inputs[MAX_PLAYERS] = {0L};

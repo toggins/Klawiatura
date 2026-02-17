@@ -271,7 +271,7 @@ PlayerID populate_game(GekkoSession* session) {
 
 	const int num_peers = NutPunch_PeerCount();
 	if (num_peers <= 1) {
-		gekko_add_actor(session, LocalPlayer, NULL);
+		gekko_add_actor(session, GekkoLocalPlayer, NULL);
 		return 0;
 	}
 
@@ -283,14 +283,14 @@ PlayerID populate_game(GekkoSession* session) {
 		player_peers[counter] = i;
 		if (NutPunch_LocalPeer() == i) {
 			local = counter;
-			gekko_add_actor(session, LocalPlayer, NULL);
+			gekko_add_actor(session, GekkoLocalPlayer, NULL);
 			gekko_set_local_delay(session, local, CLIENT.input.delay);
 			INFO("You are player %i", local + 1);
 		} else {
 			GekkoNetAddress addr = {0};
 			addr.size = sizeof(*player_peers);
 			addr.data = &player_peers[counter];
-			gekko_add_actor(session, RemotePlayer, &addr);
+			gekko_add_actor(session, GekkoRemotePlayer, &addr);
 		}
 
 		if (++counter >= num_peers)
