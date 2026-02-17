@@ -94,6 +94,7 @@ list(APPEND LIBS S_tructures)
 
 # NutPunch
 set(NUTPUNCH_STAGING ON CACHE INTERNAL "")
+set(NUTPUNCH_BUILD_SERVER ON CACHE INTERNAL "")
 FetchContent_Declare(NutPunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
     GIT_TAG a905bd3d04f7757eec5db5132927624c4f8a9142)
@@ -155,7 +156,7 @@ endif()
 
 add_custom_command(TARGET Klawiatura POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:Klawiatura>
-    ${RUNTIME_DLLS} ${CONTROLLER_DB}
+    ${RUNTIME_DLLS} ${CONTROLLER_DB} $<TARGET_FILE:NutPuncher>
 
     COMMAND ${CMAKE_COMMAND} -E remove_directory
     $<TARGET_FILE_DIR:Klawiatura>/data
@@ -167,7 +168,7 @@ add_custom_command(TARGET Klawiatura POST_BUILD
 
 install(TARGETS Klawiatura RUNTIME DESTINATION . COMPONENT Klawiatura)
 install(FILES
-    README.md UNLICENSE res/console.bat ${CONTROLLER_DB} ${RUNTIME_DLLS}
+    README.md UNLICENSE res/console.bat ${CONTROLLER_DB} ${RUNTIME_DLLS} $<TARGET_FILE:NutPuncher>
     DESTINATION . COMPONENT Klawiatura)
 install(DIRECTORY modsrc/ DESTINATION data COMPONENT Klawiatura)
 # Has all the README .pngs:
