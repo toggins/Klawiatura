@@ -66,18 +66,13 @@ static void show_disclaimer() {
 	// Windose cmd starts a new line when you type `.\Klawiatura.exe` and press Enter, but
 	// doesn't break that line for us. So here goes an extra line break at the start:
 	printf("\n");
-	printf("==========[KLAWIATURA]==========\n");
-	printf("      MARIO FOREVER ONLINE      \n");
-	printf("================================\n");
-	printf("                                \n");
-	printf("         ! DISCLAIMER !         \n");
-	printf("   This is a free, open-source  \n");
-	printf("project not created for any sort\n");
-	printf("           of profit.           \n");
-	printf(" All assets belong to Nintendo. \n");
-	printf("We do not condone any commercial\n");
-	printf("      use of this project.      \n");
-	printf("                                \n");
+	printf("[" GAME_NAME " " GAME_VERSION " - MARIO FOREVER ONLINE]\n");
+	printf("\n");
+	printf("DISCLAIMER:\n");
+	printf("This is a free, open-source project not created for any sort of profit.\n");
+	printf("All assets belong to Nintendo.\n");
+	printf("We do not condone any commercial use of this project.\n");
+	printf("\n");
 }
 
 int main(int argc, char* argv[]) {
