@@ -23,8 +23,8 @@ jobs:
           - { name: Win64, mingw: 64 }
     env:
       OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
-      MINGW_ARCH: ${{ matrix.mingw == 32 && 'i686' || 'x86_64' }}
-      MINGW_SHIT: >-
+      MINGW_PACKAGE: g++-mingw-w64-${{ matrix.mingw == 32 && 'i686' || 'x86_64' }}
+      MINGW_SHEBANG: >-
         -D CMAKE_C_COMPILER=${MINGW_ARCH}-w64-mingw32-gcc
         -D CMAKE_CXX_COMPILER=${MINGW_ARCH}-w64-mingw32-g++
         -D CMAKE_RC_COMPILER=${MINGW_ARCH}-w64-mingw32-windres
@@ -49,21 +49,18 @@ jobs:
           git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/discord.git
           git pull origin master
       - name: Install dependencies
-        run: |
-          sudo apt-get update && sudo apt-get install --yes --no-install-suggests \
-            python3-jinja2 \
-            libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev \
-            libsndio-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev \
-            libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev libdrm-dev \
-            libgbm-dev libgl1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
-            libibus-1.0-dev libudev-dev libthai-dev libpipewire-0.3-dev libwayland-dev \
-            libdecor-0-dev liburing-dev
-      - name: Install MinGW
-        if: matrix.mingw
-        uses: egor-tensin/setup-mingw@v3
+        uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          platform: ${{ matrix.mingw == 32 && 'x86' || 'x64' }}
-          cc: 0
+          version: 1.0
+          packages: >-
+            python3-jinja2
+            libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev
+            libsndio-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev
+            libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev libdrm-dev
+            libgbm-dev libgl1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev
+            libibus-1.0-dev libudev-dev libthai-dev libpipewire-0.3-dev libwayland-dev
+            libdecor-0-dev liburing-dev
+            ${{ matrix.mingw && env.MINGW_PACKAGE || '' }}
       - name: Cache build dir
         id: cache-build
         uses: actions/cache@v5
@@ -76,7 +73,7 @@ jobs:
       - name: Configure
         run: |
           cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
-            ${{ matrix.mingw && env.MINGW_SHIT || '' }} \
+            ${{ matrix.mingw && env.MINGW_SHEBANG || '' }} \
             ${{ github.ref_name == 'tracing' && '-D NUTPUNCH_TRACING=1' || '' }} \
             -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }} \
             -D CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
