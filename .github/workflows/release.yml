@@ -52,6 +52,8 @@ jobs:
           cd external/discord; git init
           git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/discord.git
           git pull origin master
+      - name: Restore source timestamps for crazy CMake caching benefits
+        uses: chetan/git-restore-mtime-action@v2
       - name: Install dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
