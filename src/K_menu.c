@@ -110,10 +110,10 @@ static void update_secrets() {
 		Secret* secret = &SECRETS[i];
 
 		if (secret->active) {
-			if (!(*(secret->cmd)))
+			if (!*secret->cmd)
 				deactivate_secret(i);
 			continue;
-		} else if (*(secret->cmd)) {
+		} else if (*secret->cmd) {
 			activate_secret(i);
 			continue;
 		}
@@ -375,7 +375,7 @@ static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_dis
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {NORETURN},
 	[MEN_ERROR] = {"Error", GHOST},
-	[MEN_RESULTS] = {"", GHOST},
+	[MEN_RESULTS] = {GHOST},
 	[MEN_INTRO] = {NORETURN, .update = update_intro},
 	[MEN_MAIN] = {"Mario Together", NORETURN, .enter = reset_credits},
 	[MEN_LEVEL_SELECT] = {"Level Select", .enter = show_levels},
@@ -383,7 +383,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_MULTIPLAYER_NOTE] = {"Read This First!", GHOST, .enter = enter_multiplayer_note},
 	[MEN_MULTIPLAYER] = {"Multiplayer"},
 	[MEN_HOST_LOBBY] = {"Host Lobby", .enter = maybe_reset_lobby_name},
-	[MEN_JOIN_LOBBY] = {"Join a Lobby"},
+	[MEN_LOBBY_ID] = {"Join a Lobby"},
 	[MEN_FIND_LOBBY]
 	= {"Find Lobbies", .update = update_find_lobbies, .enter = list_lobbies, .leave = cleanup_lobby_list},
 	[MEN_JOINING_LOBBY] = {"Please wait...", .update = update_joining_lobby, .back_sound = "disconnect",
@@ -482,9 +482,9 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"NutPunch Troubleshooting (opens browser)", .button = open_troubleshooting_url},
 	},
 	[MEN_MULTIPLAYER] = {
-		{"Host Lobby", .enter = MEN_HOST_LOBBY},
-		{"Join a Lobby", .enter = MEN_JOIN_LOBBY},
 		{"Find Lobbies", .enter = MEN_FIND_LOBBY},
+		{"Host a Lobby", .enter = MEN_HOST_LOBBY},
+		{"Enter a Lobby ID", .enter = MEN_LOBBY_ID},
 	},
 	[MEN_OPTIONS] = {
 		{"Name: %s", FORMAT(name), EDIT(CLIENT.user.name)},
@@ -526,7 +526,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{},
 		{"Host!", .button = do_host_fr},
 	},
-	[MEN_JOIN_LOBBY] = {
+	[MEN_LOBBY_ID] = {
 		{"Lobby ID: %s", FORMAT(lobby), EDIT(CLIENT.lobby.name)},
 		{},
 		{"Join!", .button = do_join_fr},

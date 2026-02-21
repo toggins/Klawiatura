@@ -194,7 +194,7 @@ GameContext* init_game_context() {
 
 static void start_game_state();
 void start_game() {
-	if (game_session != NULL)
+	if (game_exists())
 		nuke_game();
 	else
 		clear_assets();

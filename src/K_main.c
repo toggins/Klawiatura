@@ -110,8 +110,8 @@ static int realmain() {
 			break;
 		}
 
-		case MEN_JOIN_LOBBY: {
-			set_menu(MEN_MAIN), set_menu(MEN_MULTIPLAYER), set_menu(MEN_JOIN_LOBBY);
+		case MEN_LOBBY_ID: {
+			set_menu(MEN_MAIN), set_menu(MEN_MULTIPLAYER), set_menu(MEN_LOBBY_ID);
 			join_lobby(CLIENT.lobby.name);
 			starting_menu = MEN_JOINING_LOBBY;
 			break;
@@ -231,5 +231,5 @@ static void cmd_host() {
 
 static void cmd_join() {
 	SDL_strlcpy(CLIENT.lobby.name, next_arg(), sizeof(CLIENT.lobby.name));
-	starting_menu = MEN_JOIN_LOBBY;
+	starting_menu = MEN_LOBBY_ID;
 }
