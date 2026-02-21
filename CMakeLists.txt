@@ -55,6 +55,7 @@ FetchContent_Declare(SDL3_image
     GIT_TAG release-3.4.0)
 FetchContent_MakeAvailable(SDL3_image)
 list(APPEND LIBS SDL3_image::SDL3_image-static)
+set_target_properties(SDL3_image::SDL3_image-static PROPERTIES UNITY_BUILD OFF)
 
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
