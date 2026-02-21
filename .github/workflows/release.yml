@@ -55,7 +55,7 @@ jobs:
       - name: Install dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          version: 1.1
+          version: 1.2
           packages: >-
             python3-jinja2
             libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev
@@ -65,6 +65,7 @@ jobs:
             libibus-1.0-dev libudev-dev libthai-dev libpipewire-0.3-dev libwayland-dev
             libdecor-0-dev liburing-dev
             ${{ matrix.mingw && env.MINGW_PACKAGES || '' }}
+          execute_install_scripts: true
       - name: Cache build dir
         id: cache-build
         uses: actions/cache@v5
