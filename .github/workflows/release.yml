@@ -23,7 +23,7 @@ jobs:
           - { name: Win64, mingw: 64 }
     env:
       OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
-      MINGW_PACKAGE: g++-mingw-w64-${{ matrix.mingw == 32 && 'i686' || 'x86_64' }}
+      MINGW_PACKAGE: g++-mingw-w64-${{ matrix.mingw == 32 && 'i686' || 'x86-64' }}
       MINGW_SHEBANG: >-
         -D CMAKE_C_COMPILER=${MINGW_ARCH}-w64-mingw32-gcc
         -D CMAKE_CXX_COMPILER=${MINGW_ARCH}-w64-mingw32-g++
