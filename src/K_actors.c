@@ -106,6 +106,7 @@ void populate_actors_table() {
 	ACTOR(LAVAFALL);
 	ACTOR(LAVA_BUBBLE_SPAWNER);
 	ACTOR(PARTY);
+	ACTOR(BENCHMARK);
 
 	static const GameActorTable TAB_NULL = {0};
 	ACTORS[ACT_NULL] = &TAB_NULL;

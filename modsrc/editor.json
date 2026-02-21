@@ -1597,6 +1597,13 @@
                             "default": false
                         }
                     ]
+                },
+
+                {
+                    "def": "Crazy Benchmark",
+                    "type": "object",
+                    "index": 109,
+                    "texture": "items/starman0"
                 }
             ]
         ],
