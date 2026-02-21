@@ -1,4 +1,5 @@
-#include <SDL3_image/SDL_image.h>
+#include <SDL3/SDL_keyboard.h>
+#include <SDL3/SDL_timer.h>
 
 #include "K_assets.h"
 #include "K_cmd.h"
@@ -390,13 +391,13 @@ void load_texture(const char* name, Bool transient) {
 
 	Texture texture = {0};
 
-	const char* file = find_data_file(fmt("data/textures/%s.*", name), ".json");
+	const char* file = find_data_file(fmt("data/textures/%s.png", name), NULL);
 	if (!file) {
 		WTF("Texture \"%s\" not found", name);
 		return;
 	}
 
-	SDL_Surface* surface = IMG_Load(file);
+	SDL_Surface* surface = SDL_LoadPNG(file);
 	if (!surface) {
 		WTF("Texture \"%s\" fail: %s", name, SDL_GetError());
 		return;
