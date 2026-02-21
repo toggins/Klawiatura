@@ -22,7 +22,7 @@ jobs:
           - { name: WinXP, mingw: 32 }
           - { name: Win64, mingw: 64 }
     env:
-      CACHE_BUST: 1
+      CACHE_BUST: 2
       OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
       MINGW_ARCH: ${{ matrix.mingw == 32 && 'i686' || 'x86_64' }}
       MINGW_PACKAGES: >-
