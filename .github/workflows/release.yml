@@ -78,7 +78,9 @@ jobs:
           cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
             ${{ matrix.mingw && env.MINGW_SHIT || '' }} \
             ${{ github.ref_name == 'tracing' && '-D NUTPUNCH_TRACING=1' || '' }} \
-            -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
+            -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }} \
+            -D CMAKE_UNITY_BUILD=ON -D CMAKE_UNITY_BUILD_BATCH_SIZE=0 \
+            -D CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
       - name: Build
         run: cmake --build build --target Klawiatura
       - name: Package
