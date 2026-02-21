@@ -22,6 +22,7 @@ jobs:
           - { name: WinXP, mingw: 32 }
           - { name: Win64, mingw: 64 }
     env:
+      CACHE_BUST: 0
       OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
       MINGW_ARCH: ${{ matrix.mingw == 32 && 'i686' || 'x86_64' }}
       MINGW_PACKAGES: >-
@@ -69,10 +70,10 @@ jobs:
         uses: actions/cache@v5
         with:
           path: build
-          key: ${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
+          key: K${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            ${{ matrix.name }}-${{ github.ref_name }}-
-            ${{ matrix.name }}-
+            K${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-
+            K${{ env.CACHE_BUST }}-${{ matrix.name }}-
       - name: Configure
         run: |
           cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
