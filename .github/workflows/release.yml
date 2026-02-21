@@ -68,8 +68,8 @@ jobs:
       - name: Symlink MinGW compiler binaries
         if: matrix.mingw
         run: |
-          sudo ln -s /usr/bin/${MINGW_ARCH}-w64-mingw32-gcc{-win32,}
-          sudo ln -s /usr/bin/${MINGW_ARCH}-w64-mingw32-g++{-win32,}
+          sudo ln -sf /usr/bin/${MINGW_ARCH}-w64-mingw32-gcc{-win32,}
+          sudo ln -sf /usr/bin/${MINGW_ARCH}-w64-mingw32-g++{-win32,}
       - name: Cache build dir
         id: cache-build
         uses: actions/cache@v5
