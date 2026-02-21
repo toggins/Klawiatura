@@ -24,7 +24,9 @@ jobs:
     env:
       OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
       MINGW_ARCH: ${{ matrix.mingw == 32 && 'i686' || 'x86_64' }}
-      MINGW_PACKAGE: g++-mingw-w64-${{ matrix.mingw == 32 && 'i686' || 'x86-64' }}
+      MINGW_PACKAGES: >-
+        g++-mingw-w64-${{ matrix.mingw == 32 && 'i686' || 'x86-64' }}
+        gcc-mingw-w64-${{ matrix.mingw == 32 && 'i686' || 'x86-64' }}
       MINGW_SHEBANG: >-
         -D CMAKE_C_COMPILER=${MINGW_ARCH}-w64-mingw32-gcc
         -D CMAKE_CXX_COMPILER=${MINGW_ARCH}-w64-mingw32-g++
@@ -52,7 +54,7 @@ jobs:
       - name: Install dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          version: 1.0
+          version: 1.1
           packages: >-
             python3-jinja2
             libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev
@@ -61,7 +63,7 @@ jobs:
             libgbm-dev libgl1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev
             libibus-1.0-dev libudev-dev libthai-dev libpipewire-0.3-dev libwayland-dev
             libdecor-0-dev liburing-dev
-            ${{ matrix.mingw && env.MINGW_PACKAGE || '' }}
+            ${{ matrix.mingw && env.MINGW_PACKAGES || '' }}
       - name: Cache build dir
         id: cache-build
         uses: actions/cache@v5
