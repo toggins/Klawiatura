@@ -42,16 +42,15 @@ jobs:
         run: git config --global init.defaultBranch master
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Source FMOD Core API
+      - name: Source proprietary SDKs
         run: |
-          cd external/fmod; git init
-          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/fmod.git
-          git pull origin master
-      - name: Source Discord Social SDK
-        run: |
-          cd external/discord; git init
-          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/discord.git
-          git pull origin master
+          function trash() {
+            cd external/$1; git init
+            git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/$1.git
+            git pull origin master; cd ../..
+          }
+
+          trash fmod; trash discord
       - name: Restore source timestamps for crazy CMake caching benefits
         uses: chetan/git-restore-mtime-action@v2
       - name: Install dependencies
