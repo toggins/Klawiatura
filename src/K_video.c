@@ -579,6 +579,12 @@ void submit_batch() {
 	// Apply blend mode
 	glBlendFuncSeparate(batch.blend[0][0], batch.blend[0][1], batch.blend[1][0], batch.blend[1][1]);
 
+	// Apply depth
+	if (current_surface != NULL && current_surface->enabled[SURF_DEPTH])
+		glEnable(GL_DEPTH_TEST);
+	else
+		glDisable(GL_DEPTH_TEST);
+
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)batch.vertex_count);
 	batch.vertex_count = 0;
 }
@@ -1096,7 +1102,6 @@ void push_surface(Surface* surface) {
 	if (surface == NULL) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-		glDisable(GL_DEPTH_TEST);
 		glCullFace(GL_FRONT);
 	} else {
 		EXPECT(!surface->active, "Pushing an active surface?");
@@ -1106,7 +1111,6 @@ void push_surface(Surface* surface) {
 		check_surface(surface);
 		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
 		glViewport(0, 0, surface->size[0], surface->size[1]);
-		(surface->enabled[SURF_DEPTH] ? glEnable : glDisable)(GL_DEPTH_TEST);
 		glCullFace(GL_BACK);
 	}
 
@@ -1125,13 +1129,11 @@ void pop_surface() {
 	if (surface == NULL) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, window_width, window_height);
-		glDisable(GL_DEPTH_TEST);
 		glCullFace(GL_FRONT);
 	} else {
 		check_surface(surface);
 		glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
 		glViewport(0, 0, surface->size[0], surface->size[1]);
-		(surface->enabled[SURF_DEPTH] ? glEnable : glDisable)(GL_DEPTH_TEST);
 		glCullFace(GL_BACK);
 	}
 
@@ -1258,6 +1260,11 @@ void draw_tilemaps() {
 	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
 	set_float_uniform(UNI_ALPHA_TEST, 0.5f);
 	set_mat4_uniform(UNI_MVP, *get_mvp_matrix());
+
+	if (current_surface != NULL && current_surface->enabled[SURF_DEPTH])
+		glEnable(GL_DEPTH_TEST);
+	else
+		glDisable(GL_DEPTH_TEST);
 
 	while (tilemap != NULL) {
 		glDepthMask(tilemap->translucent ? GL_FALSE : GL_TRUE);
