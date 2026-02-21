@@ -46,8 +46,7 @@ jobs:
         run: |
           function trash() {
             cd external/$1; git init
-            git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/$1.git
-            git pull origin master
+            git pull https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/$1.git master
           }
           (trash fmod) & (trash discord) & wait
       - name: Restore source timestamps for crazy CMake caching benefits
