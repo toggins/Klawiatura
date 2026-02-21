@@ -15,7 +15,8 @@ static void tick(GameActor* self) {
 		if (other->type == DUMMY_ACTOR && VAL(other, DEATH_TIMER)++ >= 600L)
 			FLAG_ON(other, FLG_DESTROY);
 	GameActor* dummy = create_actor(DUMMY_ACTOR, self->pos);
-	VAL(dummy, DEATH_TIMER) = 0L; // redundant but sure...
+	if (dummy)
+		VAL(dummy, DEATH_TIMER) = 0L; // redundant but sure...
 }
 
 const GameActorTable TAB_BENCHMARK = {.load = load, .tick = tick};
