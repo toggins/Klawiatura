@@ -1939,7 +1939,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 		}
 		climbed = FALSE;
 	}
-	VAL(actor, X_TOUCH) = (right ? 1 : -1) * (stop && !climbed);
+	VAL(actor, X_TOUCH) = (right ? 1L : -1L) * (stop && !climbed);
 
 	if (stop)
 		VAL(actor, X_SPEED) = FxZero;
