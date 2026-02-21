@@ -956,34 +956,43 @@ void batch_string(const char* font_name, float size, const char* str) {
 // MATRICES
 // ========
 
+void get_model_matrix(mat4 dest) {
+	glm_mat4_copy((current_surface == NULL) ? model_matrix : current_surface->model_matrix, dest);
+}
+
+void get_view_matrix(mat4 dest) {
+	glm_mat4_copy((current_surface == NULL) ? view_matrix : current_surface->view_matrix, dest);
+}
+
+void get_projection_matrix(mat4 dest) {
+	glm_mat4_copy((current_surface == NULL) ? projection_matrix : current_surface->projection_matrix, dest);
+}
+
 const mat4* get_mvp_matrix() {
 	return (current_surface == NULL) ? &mvp_matrix : &current_surface->mvp_matrix;
 }
 
 void set_model_matrix(mat4 matrix) {
-	submit_batch();
 	glm_mat4_copy(matrix, (current_surface == NULL) ? model_matrix : current_surface->model_matrix);
 }
 
 void set_view_matrix(mat4 matrix) {
-	submit_batch();
 	glm_mat4_copy(matrix, (current_surface == NULL) ? view_matrix : current_surface->view_matrix);
 }
 
 void set_projection_matrix(mat4 matrix) {
-	submit_batch();
 	glm_mat4_copy(matrix, (current_surface == NULL) ? projection_matrix : current_surface->projection_matrix);
 }
 
 void apply_matrices() {
 	submit_batch();
-	if (current_surface != NULL) {
+	if (current_surface == NULL) {
+		glm_mat4_mul(view_matrix, model_matrix, mvp_matrix);
+		glm_mat4_mul(projection_matrix, mvp_matrix, mvp_matrix);
+	} else {
 		glm_mat4_mul(current_surface->view_matrix, current_surface->model_matrix, current_surface->mvp_matrix);
 		glm_mat4_mul(
 			current_surface->projection_matrix, current_surface->mvp_matrix, current_surface->mvp_matrix);
-	} else {
-		glm_mat4_mul(view_matrix, model_matrix, mvp_matrix);
-		glm_mat4_mul(projection_matrix, mvp_matrix, mvp_matrix);
 	}
 }
 
@@ -993,7 +1002,7 @@ void apply_matrices() {
 
 Surface* create_surface(GLsizei width, GLsizei height, Bool color, Bool depth) {
 	Surface* surface = SDL_malloc(sizeof(*surface));
-	EXPECT(surface, "create_surface fail");
+	EXPECT(surface, "Failed to allocate Surface");
 	SDL_zerop(surface);
 
 	glm_mat4_identity(surface->model_matrix), glm_mat4_identity(surface->view_matrix);
@@ -1015,45 +1024,42 @@ void destroy_surface(Surface* surface) {
 	SDL_free(surface);
 }
 
-static void make_surface_buffer(Surface* surface, SurfaceAttribute idx) {
-	glGenTextures(1, &surface->texture[idx]);
+static void dispose_surface_buffer(Surface* surface, SurfaceAttribute idx) {
+	if (surface->texture[idx] == 0)
+		return;
+	glDeleteTextures(1, &surface->texture[idx]);
+	surface->texture[idx] = 0;
+}
 
+static void check_surface_buffer(
+	Surface* surface, SurfaceAttribute idx, GLint internal_format, GLenum format, GLenum type, GLenum attachment) {
+	if (surface->enabled[idx]) {
+		if (surface->texture[idx] != 0)
+			return;
+	} else {
+		dispose_surface_buffer(surface, idx);
+		return;
+	}
+
+	glGenTextures(1, &surface->texture[idx]);
 	glBindFramebuffer(GL_FRAMEBUFFER, surface->fbo);
 	glBindTexture(GL_TEXTURE_2D, surface->texture[idx]);
-
-	const GLsizei width = surface->size[0], height = surface->size[1];
-	if (idx == SURF_COLOR)
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	else
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL,
-			GL_UNSIGNED_INT_24_8, NULL);
-
+	glTexImage2D(GL_TEXTURE_2D, 0, internal_format, surface->size[0], surface->size[1], 0, format, type, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	const GLenum attachment = idx == SURF_COLOR ? GL_COLOR_ATTACHMENT0 : GL_DEPTH_STENCIL_ATTACHMENT;
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, surface->texture[idx], 0);
-}
-
-static void check_surface_buffer(Surface* surface, SurfaceAttribute idx) {
-	if (surface->enabled[idx]) {
-		if (!surface->texture[idx])
-			make_surface_buffer(surface, idx);
-	} else if (surface->texture[idx] != 0) {
-		glDeleteTextures(1, &surface->texture[idx]);
-		surface->texture[idx] = 0;
-	}
 }
 
 /// Checks the surface for a valid framebuffer.
 void check_surface(Surface* surface) {
 	if (surface->fbo == 0)
 		glGenFramebuffers(1, &surface->fbo);
-	check_surface_buffer(surface, SURF_COLOR);
-	check_surface_buffer(surface, SURF_DEPTH);
+	check_surface_buffer(surface, SURF_COLOR, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_COLOR_ATTACHMENT0);
+	check_surface_buffer(surface, SURF_DEPTH, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8,
+		GL_DEPTH_STENCIL_ATTACHMENT);
 }
 
 /// Nukes the surface's framebuffer.
@@ -1065,21 +1071,16 @@ void dispose_surface(Surface* surface) {
 		surface->fbo = 0;
 	}
 
-	if (surface->texture[SURF_COLOR] != 0) {
-		glDeleteTextures(1, &surface->texture[SURF_COLOR]);
-		surface->texture[SURF_COLOR] = 0;
-	}
-
-	if (surface->texture[SURF_DEPTH] != 0) {
-		glDeleteTextures(1, &surface->texture[SURF_DEPTH]);
-		surface->texture[SURF_DEPTH] = 0;
-	}
+	dispose_surface_buffer(surface, SURF_COLOR);
+	dispose_surface_buffer(surface, SURF_DEPTH);
 }
 
 void resize_surface(Surface* surface, GLsizei width, GLsizei height) {
 	EXPECT(!surface->active, "Resizing an active surface?");
+
 	if (surface->size[0] == width && surface->size[1] == height)
 		return;
+
 	dispose_surface(surface);
 	surface->size[0] = width;
 	surface->size[1] = height;
