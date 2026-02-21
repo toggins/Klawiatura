@@ -47,10 +47,9 @@ jobs:
           function trash() {
             cd external/$1; git init
             git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/$1.git
-            git pull origin master; cd ../..
+            git pull origin master
           }
-
-          trash fmod; trash discord
+          (trash fmod) & (trash discord) & wait
       - name: Restore source timestamps for crazy CMake caching benefits
         uses: chetan/git-restore-mtime-action@v2
       - name: Install dependencies
