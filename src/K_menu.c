@@ -13,8 +13,7 @@
 
 #include "SDL3/SDL_filesystem.h"
 
-extern Bool permadeath;
-const extern Bool quickstart;
+extern Bool permadeath, quickstart;
 
 // =======
 // CREDITS
@@ -259,7 +258,7 @@ FMT_OPTION(waiting, (NutPunch_PeerCount() >= NutPunch_GetMaxPlayers()) ? "Starti
 FMT_OPTION(name, CLIENT.user.name);
 
 FMT_OPTION(delay, CLIENT.input.delay);
-static void set_delay(int flip) {
+static void set_input_delay(int flip) {
 	CLIENT.input.delay = (flip >= 0)
 	                             ? (Uint8)((CLIENT.input.delay >= MAX_INPUT_DELAY) ? 0 : (CLIENT.input.delay + 1))
 	                             : (Uint8)((CLIENT.input.delay <= 0) ? MAX_INPUT_DELAY : (CLIENT.input.delay - 1));
@@ -491,7 +490,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Name: %s", FORMAT(name), EDIT(CLIENT.user.name)},
 		{},
 		{"Controls", .enter = MEN_CONTROLS},
-		{"Input Delay: %i", FORMAT(delay), .flip = set_delay},
+		{"Input Delay: %i", FORMAT(delay), .flip = set_input_delay},
 		{},
 		{"Resolution: %dx%d", .disable_if = get_fullscreen, FORMAT(resolution), TOGGLE(resolution)},
 		{"Fullscreen: %s", FORMAT(fullscreen), TOGGLE(fullscreen)},
