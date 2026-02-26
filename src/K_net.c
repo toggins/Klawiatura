@@ -120,25 +120,19 @@ void net_newframe() {
 	} else
 		last_error = NULL;
 
-	static char data[NUTPUNCH_BUFFER_SIZE] = {0};
-	while (NutPunch_HasMessage(MCH_LOBBY)) {
-		int size = sizeof(data), peer = NutPunch_NextMessage(MCH_LOBBY, data, &size);
-
-		if (peer == NUTPUNCH_MAX_PLAYERS) {
-			last_error = NutPunch_GetLastError();
-			WTF("Lobby message error: %s", last_error);
-			continue;
-		}
-		if (size < sizeof(MessageType))
+	char* data = net_buffer();
+	while (NutPunch_HasMessage(PCH_LOBBY)) {
+		int size = NET_BUFFER_SIZE, peer = NutPunch_NextMessage(PCH_LOBBY, data, &size);
+		if (size < sizeof(PacketType))
 			continue;
 
-		switch (*(MessageType*)data) {
+		switch (*(PacketType*)data) {
 		default:
 			break;
 
-		case MT_CHAT:
-			if (size > sizeof(MessageType))
-				push_chat_message(peer, data + sizeof(MessageType));
+		case PT_CHAT:
+			if (size > sizeof(PacketType))
+				push_chat_message(peer, data + sizeof(PacketType), size - (int)sizeof(PacketType));
 			break;
 		}
 	}
@@ -250,16 +244,17 @@ const char* get_peer_name(int idx) {
 }
 
 static void net_send(GekkoNetAddress* gn_addr, const char* data, int len) {
-	NutPunch_Send(MCH_GAME, *(int*)gn_addr->data, data, len);
+	NutPunch_Send(PCH_GAME, *(int*)gn_addr->data, data, len);
 }
 
 static GekkoNetResult** net_receive(int* pCount) {
 	static GekkoNetResult* packets[64] = {0};
-	static char data[NUTPUNCH_BUFFER_SIZE] = {0};
+
+	char* data = net_buffer();
 	*pCount = 0;
 
-	while (NutPunch_HasMessage(MCH_GAME) && *pCount < sizeof(packets) / sizeof(void*)) {
-		int size = sizeof(data), peer = NutPunch_NextMessage(MCH_GAME, data, &size);
+	while (NutPunch_HasMessage(PCH_GAME) && *pCount < sizeof(packets) / sizeof(void*)) {
+		int size = NET_BUFFER_SIZE, peer = NutPunch_NextMessage(PCH_GAME, data, &size);
 		GekkoNetResult* res = SDL_malloc(sizeof(GekkoNetResult));
 
 		res->addr.size = sizeof(int), res->addr.data = SDL_malloc(res->addr.size);
@@ -268,7 +263,7 @@ static GekkoNetResult** net_receive(int* pCount) {
 		res->data_len = size, res->data = SDL_malloc(size);
 		SDL_memcpy(res->data, data, size);
 
-		packets[*pCount] = res, *pCount += 1;
+		packets[(*pCount)++] = res;
 	}
 
 	return packets;
@@ -313,4 +308,13 @@ PlayerID populate_game(GekkoSession* session) {
 	}
 
 	return (PlayerID)local;
+}
+
+// ======
+// BUFFER
+// ======
+
+char* net_buffer() {
+	static char buf[NET_BUFFER_SIZE] = {0};
+	return buf;
 }

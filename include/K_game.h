@@ -469,7 +469,7 @@ void hud_message(const char*);
 // CHAT
 // ====
 
-void push_chat_message(int, const char*);
+void push_chat_message(int, const char*, int);
 
 // =======
 // PLAYERS

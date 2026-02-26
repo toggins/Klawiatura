@@ -12,6 +12,7 @@
 #include "K_math.h"
 
 #define MAX_PEERS (NUTPUNCH_MAX_PLAYERS)
+#define NET_BUFFER_SIZE (NUTPUNCH_BUFFER_SIZE)
 
 typedef Uint8 LobbyVisibility;
 enum {
@@ -20,16 +21,16 @@ enum {
 	VIS_UNLISTED = 2,
 };
 
-typedef Uint8 MessageChannel;
+typedef Uint8 PacketChannel;
 enum {
-	MCH_LOBBY = 0,
-	MCH_GAME = 1,
+	PCH_LOBBY = 0,
+	PCH_GAME = 1,
 };
 
-typedef Uint8 MessageType;
+typedef Uint8 PacketType;
 enum {
-	MT_START,
-	MT_CHAT,
+	PT_START,
+	PT_CHAT,
 };
 
 void net_init(), net_teardown();
@@ -61,3 +62,6 @@ Uint32 get_lobby_party();
 int player_to_peer(PlayerID);
 const char* get_peer_name(int);
 PlayerID populate_game(GekkoSession*);
+
+// Buffer
+char* net_buffer();

@@ -115,23 +115,30 @@ static void send_chat_message() {
 	if (typing_what() || !SDL_strlen(chat_message))
 		return;
 
-	static char data[sizeof(MessageType) + sizeof(chat_message)] = {0};
-	*(MessageType*)data = MT_CHAT;
-	SDL_strlcpy(data + sizeof(MessageType), chat_message, sizeof(chat_message));
+	char* data = net_buffer();
+	*(PacketType*)data = PT_CHAT;
+	const int ssize = (int)SDL_strlcpy(
+		data + sizeof(PacketType), chat_message, SDL_min(sizeof(chat_message), NET_BUFFER_SIZE));
 
+	const int psize = (int)sizeof(PacketType) + ssize;
 	for (int i = 0; i < MAX_PEERS; i++)
 		if (NutPunch_PeerAlive(i))
-			NutPunch_SendReliably(MCH_LOBBY, i, data, sizeof(data));
+			NutPunch_SendReliably(PCH_LOBBY, i, data, psize);
 
-	push_chat_message(NutPunch_LocalPeer(), chat_message);
+	push_chat_message(NutPunch_LocalPeer(), chat_message, sizeof(chat_message));
 	chat_message[0] = 0;
 }
 
-void push_chat_message(int from, const char* text) {
+void push_chat_message(int from, const char* text, int size) {
+	if (size <= 0)
+		return;
+
 	for (int i = MAX_CHATS - 1; i >= 1; i--)
 		chat_hist[i] = chat_hist[i - 1];
 
-	const char* line = fmt("%s: %s", get_peer_name(from), text);
+	static char buf[sizeof(chat_message)] = {0};
+	SDL_strlcpy(buf, text, SDL_min(sizeof(chat_message), size + 1));
+	const char* line = fmt("%s: %s", get_peer_name(from), buf);
 	INFO("%s", line);
 
 	SDL_strlcpy(chat_hist[0].text, line, sizeof(chat_message));
