@@ -20,6 +20,7 @@ static const char* last_error = NULL;
 static char cur_lobby[LOBBY_STRING_MAX] = "";
 
 static int player_peers[MAX_PLAYERS] = {MAX_PEERS};
+static int spectator_peers[MAX_PLAYERS] = {MAX_PEERS};
 
 void net_init() {
 	if (!hostname[0])
@@ -67,19 +68,16 @@ Bool in_public_server() {
 // INTERFACE
 // =========
 
-#define np_lobby_set NutPunch_LobbySet
-#define np_peer_set NutPunch_PeerSet
-
 static void np_set_string(void setter(const char*, int, const void*), const char* name, const char* str) {
 	static char buf[NUTPUNCH_FIELD_DATA_MAX] = {0};
 	SDL_zeroa(buf), SDL_strlcpy(buf, str, sizeof(buf));
 	(setter)(name, sizeof(buf), buf);
 }
 static void np_lobby_set_string(const char* name, const char* str) {
-	return np_set_string(np_lobby_set, name, str);
+	return np_set_string(NutPunch_LobbySet, name, str);
 }
 static void np_peer_set_string(const char* name, const char* str) {
-	return np_set_string(np_peer_set, name, str);
+	return np_set_string(NutPunch_PeerSet, name, str);
 }
 
 // NOLINTBEGIN(bugprone-macro-parentheses)
@@ -130,10 +128,17 @@ void net_newframe() {
 		default:
 			break;
 
-		case PT_CHAT:
+		case PT_START: {
+			if (!NutPunch_IsMaster())
+				start_online_game();
+			break;
+		}
+
+		case PT_CHAT: {
 			if (size > sizeof(PacketType))
 				push_chat_message(peer, data + sizeof(PacketType), size - (int)sizeof(PacketType));
 			break;
+		}
 		}
 	}
 }
@@ -163,17 +168,16 @@ const char* get_lobby_id() {
 }
 
 void host_lobby(const char* id) {
-
 	SDL_strlcpy(cur_lobby, id, sizeof(cur_lobby));
 	NutPunch_Host(cur_lobby, CLIENT.game.players);
 	verb = "host";
 	push_user_data();
 
-	np_lobby_set(GAME_NAME, sizeof(GAME_VERSION), GAME_VERSION);
+	NutPunch_LobbySet(GAME_NAME, sizeof(GAME_VERSION), GAME_VERSION);
 	const Uint32 party = SDL_rand_bits(); // Generate a better UUID.
-	np_lobby_set("PARTY", sizeof(party), &party);
+	NutPunch_LobbySet("PARTY", sizeof(party), &party);
 	const LobbyVisibility visible = CLIENT.lobby.public ? VIS_PUBLIC : VIS_UNLISTED;
-	np_lobby_set("VISIBLE", sizeof(visible), &visible);
+	NutPunch_LobbySet("VISIBLE", sizeof(visible), &visible);
 	push_lobby_data();
 }
 
@@ -207,8 +211,8 @@ Bool in_public_lobby() {
 }
 
 void push_lobby_data() {
-	np_lobby_set("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
-	np_lobby_set("FRED", sizeof(CLIENT.game.fred), &CLIENT.game.fred);
+	NutPunch_LobbySet("KEVIN", sizeof(CLIENT.game.kevin), &CLIENT.game.kevin);
+	NutPunch_LobbySet("FRED", sizeof(CLIENT.game.fred), &CLIENT.game.fred);
 	np_lobby_set_string("LEVEL", CLIENT.game.level);
 }
 
@@ -216,11 +220,6 @@ void pull_lobby_data() {
 	np_lobby_get_bool("KEVIN", &CLIENT.game.kevin);
 	np_lobby_get_bool("FRED", &CLIENT.game.fred);
 	np_lobby_get_string("LEVEL", CLIENT.game.level);
-}
-
-void make_lobby_active() {
-	const LobbyVisibility visible = VIS_INVALID;
-	np_lobby_set("VISIBLE", sizeof(visible), &visible);
 }
 
 Uint32 get_lobby_party() {
@@ -237,10 +236,47 @@ int player_to_peer(PlayerID pid) {
 	return (pid < 0L || pid >= MAX_PLAYERS) ? MAX_PEERS : player_peers[pid];
 }
 
+int spectator_to_peer(int sid) {
+	return (sid < 0L || sid >= MAX_PLAYERS) ? MAX_PEERS : spectator_peers[sid];
+}
+
 const char* get_peer_name(int idx) {
 	int size = 0;
 	char* str = (char*)NutPunch_PeerGet(idx, "NAME", &size);
 	return (str == NULL || size > NUTPUNCH_FIELD_DATA_MAX) ? NULL : str;
+}
+
+Bool peer_is_spectating(int idx) {
+	int size = 0;
+	Bool* spec = (Bool*)NutPunch_PeerGet(idx, "SPEC", &size);
+	return (spec == NULL || size < sizeof(Bool)) ? FALSE : *spec;
+}
+
+Bool i_am_spectating() {
+	return peer_is_spectating(NutPunch_LocalPeer());
+}
+
+void start_online_game() {
+	pull_lobby_data();
+
+	int num_players = 0;
+	for (int i = 0; i < MAX_PEERS; i++) {
+		if (!NutPunch_PeerAlive(i) || peer_is_spectating(i))
+			continue;
+		++num_players;
+	}
+	if (num_players < 1) {
+		WTF("Not enough players");
+		return;
+	}
+
+	play_generic_sound("enter");
+
+	GameContext* ctx = init_game_context();
+	SDL_strlcpy(ctx->level, CLIENT.game.level, sizeof(ctx->level));
+	ctx->flags |= GF_TRY_HELL;
+	ctx->num_players = (PlayerID)num_players;
+	start_game();
 }
 
 static void net_send(GekkoNetAddress* gn_addr, const char* data, int len) {
@@ -276,18 +312,20 @@ PlayerID populate_game(GekkoSession* session) {
 	adapter.free_data = SDL_free;
 	gekko_net_adapter_set(session, &adapter);
 
-	for (int i = 0; i < MAX_PLAYERS; i++)
+	for (int i = 0; i < MAX_PLAYERS; i++) {
 		player_peers[i] = MAX_PEERS;
+		spectator_peers[i] = MAX_PEERS;
+	}
 
-	const int num_peers = NutPunch_PeerCount();
-	if (num_peers <= 1) {
+	if (!NutPunch_IsReady()) {
 		gekko_add_actor(session, GekkoLocalPlayer, NULL);
 		return 0;
 	}
 
-	int counter = 0, local = MAX_PLAYERS;
-	for (int i = 0; i < NUTPUNCH_MAX_PLAYERS; i++) {
-		if (!NutPunch_PeerAlive(i))
+	const int num_peers = NutPunch_PeerCount();
+	int counter = 0, local = MAX_PLAYERS, tv = MAX_PLAYERS;
+	for (int i = 0; i < MAX_PEERS; i++) {
+		if (!NutPunch_PeerAlive(i) || peer_is_spectating(i))
 			continue;
 
 		player_peers[counter] = i;
@@ -303,10 +341,36 @@ PlayerID populate_game(GekkoSession* session) {
 			gekko_add_actor(session, GekkoRemotePlayer, &addr);
 		}
 
+		// First valid player will act as a host for all spectators
+		if (tv >= MAX_PLAYERS)
+			tv = counter;
+
 		if (++counter >= num_peers)
 			break;
 	}
 
+	if (tv != local || i_am_spectating())
+		goto finish_populating;
+
+	int num_spectators = 0;
+	for (int i = 0; i < MAX_PEERS; i++) {
+		if (!NutPunch_PeerAlive(i) || !peer_is_spectating(i))
+			continue;
+
+		spectator_peers[counter] = i;
+		GekkoNetAddress addr = {0};
+		addr.size = sizeof(*spectator_peers);
+		addr.data = &spectator_peers[counter];
+		gekko_add_actor(session, GekkoSpectator, &addr);
+		++num_spectators;
+
+		if (++counter >= num_peers)
+			break;
+	}
+	if (num_spectators > 0)
+		INFO("You have %i spectator(s)", num_spectators);
+
+finish_populating:
 	return (PlayerID)local;
 }
 

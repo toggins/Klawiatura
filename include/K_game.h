@@ -82,7 +82,6 @@ enum {
 	GF_HUB = 1 << 14,
 
 	GF_HELL = GF_KEVIN | GF_FRED,
-#define GF_TRY_SINGLE (game_state.flags & GF_SINGLE)
 };
 
 typedef Uint8 GameSequenceType;

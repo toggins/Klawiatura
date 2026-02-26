@@ -90,6 +90,7 @@ static void activate_secret(SecretType idx) {
 		last_secret = -1;
 	play_generic_sound(SECRETS[idx].sound);
 	update_menu_track();
+	push_lobby_data();
 }
 
 static void deactivate_secret(SecretType idx) {
@@ -100,12 +101,12 @@ static void deactivate_secret(SecretType idx) {
 	if (last_secret == idx)
 		last_secret = -1;
 	update_menu_track();
+	push_lobby_data();
 }
 
 static MenuType cur_menu;
 static void update_secrets() {
-	const Bool handicapped
-		= NutPunch_IsReady() || cur_menu == MEN_INTRO || cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY;
+	const Bool handicapped = !NutPunch_IsMaster() || cur_menu == MEN_INTRO || cur_menu == MEN_JOINING_LOBBY;
 	for (SecretType i = 0; i < SECR_SIZE; i++) {
 		Secret* secret = &SECRETS[i];
 
@@ -192,7 +193,7 @@ static void play_singleplayer() {
 
 	GameContext* ctx = init_game_context();
 	SDL_strlcpy(ctx->level, CLIENT.game.level, sizeof(ctx->level));
-	ctx->flags |= GF_SINGLE | GF_TRY_HELL;
+	ctx->flags |= GF_TRY_HELL;
 	start_game();
 }
 
@@ -245,6 +246,7 @@ static void do_join_fr() {
 // Lobby
 FMT_OPTION(active_lobby, get_lobby_id(), in_public_lobby() ? "" : " (Unlisted)");
 FMT_OPTION(lobby_limit, NutPunch_GetMaxPlayers());
+FMT_OPTION(spectate, i_am_spectating() ? "Spectator" : "Player");
 
 static void set_players(int flip) {
 	CLIENT.game.players
@@ -252,7 +254,40 @@ static void set_players(int flip) {
 					 : ((CLIENT.game.players <= 2) ? MAX_PLAYERS : (CLIENT.game.players - 1)));
 }
 
-FMT_OPTION(waiting, (NutPunch_PeerCount() >= NutPunch_GetMaxPlayers()) ? "Starting!" : "Waiting for players");
+static void set_spectate(int flip) {
+	const Bool toggle = !i_am_spectating();
+	NutPunch_PeerSet("SPEC", sizeof(Bool), &toggle);
+	push_user_data();
+}
+
+static void start_multiplayer() {
+	if (!NutPunch_IsMaster())
+		return;
+
+	char* data = net_buffer();
+	*(PacketType*)data = PT_START;
+	for (int i = 0; i < MAX_PEERS; i++)
+		if (NutPunch_PeerAlive(i))
+			NutPunch_SendReliably(PCH_LOBBY, i, data, sizeof(PacketType));
+
+	// FIXME: Starting a session right after sending a start packet will
+	//        delay the packet until the host has loaded in. This sucks.
+	start_online_game();
+}
+
+static Bool is_client() {
+	return !NutPunch_IsMaster();
+}
+
+static Bool disable_start() {
+	if (NutPunch_IsMaster())
+		for (int i = 0; i < MAX_PEERS; i++)
+			if (NutPunch_PeerAlive(i) && !peer_is_spectating(i))
+				return FALSE;
+	return TRUE;
+}
+
+FMT_OPTION(start, NutPunch_IsMaster() ? "Start!" : "Waiting for host");
 
 // Options
 FMT_OPTION(name, CLIENT.user.name);
@@ -368,7 +403,8 @@ BIND_OPTION(chat, KB_CHAT);
 
 static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
 	enter_lobby(), update_inlobby(), show_levels();
-static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType);
+static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType),
+	maybe_leave_lobby(MenuType);
 
 #define GHOST .ghost = TRUE
 #define NORETURN .noreturn = TRUE
@@ -389,7 +425,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_JOINING_LOBBY] = {"Please wait...", .update = update_joining_lobby, .back_sound = "disconnect",
 		      .leave = maybe_disconnect, GHOST},
 	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .enter = enter_lobby, .update = update_inlobby,
-		      .leave = disconnect, GHOST},
+		      .leave = maybe_leave_lobby},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
 };
@@ -450,6 +486,7 @@ static void join_found_lobby() {
 #define DISABLE .disabled = TRUE
 #define VIVID .vivid = TRUE
 #define OINFO DISABLE, VIVID
+#define NOCLIENT .disable_if = is_client
 
 static const char* NO_LOBBIES_FOUND = "No lobbies found";
 #define LEVEL_SELECT_OPTION "Level: %s", FORMAT(level), .enter = MEN_LEVEL_SELECT
@@ -541,9 +578,10 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"%s%s", DISABLE, FORMAT(active_lobby)},
 		{},
 		{"Players: %d", DISABLE, FORMAT(lobby_limit)},
-		{"Level: %s", DISABLE, FORMAT(level)},
+		{LEVEL_SELECT_OPTION, NOCLIENT},
 		{},
-		{"%s", DISABLE, FORMAT(waiting)},
+		{"Enter as: %s", FORMAT(spectate), .flip = set_spectate},
+		{"%s", FORMAT(start), .disable_if = disable_start, .button = start_multiplayer},
 	},
 };
 
@@ -635,7 +673,17 @@ static void update_joining_lobby() {
 }
 
 static void enter_lobby() {
+	if (!NutPunch_IsReady()) {
+		prev_menu();
+		return;
+	}
+
 	update_discord_status(NULL);
+}
+
+static void maybe_leave_lobby(MenuType next) {
+	if (next != MEN_LEVEL_SELECT && next != MEN_RESULTS && next != MEN_ERROR)
+		disconnect();
 }
 
 static void update_inlobby() {
@@ -643,28 +691,16 @@ static void update_inlobby() {
 		const char* error = net_error();
 		if (error == NULL)
 			prev_menu();
-		else
+		else {
 			show_error("Lost connection\n%s", net_error());
+			disconnect();
+		}
 		play_generic_sound("disconnect");
 		return;
 	}
 
-	int num_peers = 0;
-	for (int i = 0; i < MAX_PEERS; i++)
-		num_peers += get_peer_name(i) != NULL;
-	if (num_peers <= 1)
-		return;
-	const int max_peers = NutPunch_GetMaxPlayers();
-	if (max_peers <= 1 || num_peers < max_peers)
-		return;
-	play_generic_sound("enter");
-	make_lobby_active();
-
-	GameContext* ctx = init_game_context();
-	SDL_strlcpy(ctx->level, CLIENT.game.level, sizeof(ctx->level));
-	ctx->flags |= GF_TRY_HELL;
-	ctx->num_players = (PlayerID)max_peers;
-	start_game();
+	if (!NutPunch_IsMaster())
+		pull_lobby_data();
 }
 
 static void maybe_disconnect(MenuType next) {
@@ -901,7 +937,8 @@ void draw_menu() {
 			if (!NutPunch_PeerAlive(i))
 				continue;
 			batch_pos(B_XY(SCREEN_WIDTH - 48.f, y)), batch_align(B_TOP_RIGHT);
-			batch_string("main", 24.f, fmt("%i. %s", idx, get_peer_name(i)));
+			batch_string("main", 24.f,
+				fmt("%i. %s%s", idx, get_peer_name(i), peer_is_spectating(i) ? " (SPEC)" : ""));
 			++idx;
 			y += 24.f;
 		}
@@ -1118,6 +1155,8 @@ static void select_level() {
 	const int m = MEN_LEVEL_SELECT;
 	const char* name = OPTIONS[m][(int)MENUS[m].option].name;
 	SDL_strlcpy(CLIENT.game.level, name, CLIENT_STRING_MAX);
+	if (NutPunch_IsMaster())
+		push_lobby_data();
 	prev_menu();
 }
 
@@ -1144,7 +1183,7 @@ static void show_levels() {
 	}
 
 	int count = 0;
-	char** glob = SDL_GlobDirectory("data/levels", NULL, 0, &count);
+	char** glob = SDL_GlobDirectory(fmt("%s%s", get_data_path(), "data/levels"), NULL, 0, &count);
 
 	Option* pager = &OPTIONS[MEN_LEVEL_SELECT][LEVELS_PER_PAGE + 1];
 	if (levels_page < (count - 1) / LEVELS_PER_PAGE) {

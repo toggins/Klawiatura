@@ -220,7 +220,8 @@ void start_game() {
 
 	game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
 
-	gekko_create(&game_session, GekkoGameSession);
+	const Bool spectating = i_am_spectating();
+	gekko_create(&game_session, spectating ? GekkoSpectateSession : GekkoGameSession);
 
 	GekkoConfig cfg = {0};
 	cfg.desync_detection = TRUE;
@@ -228,6 +229,10 @@ void start_game() {
 	cfg.state_size = sizeof(SaveState);
 	cfg.input_prediction_window = MAX_INPUT_DELAY;
 	cfg.num_players = game_context.num_players;
+	if (!spectating)
+		for (int i = 0; i < MAX_PEERS; i++)
+			if (NutPunch_PeerAlive(i) && peer_is_spectating(i))
+				++cfg.max_spectators;
 
 	unpause();
 	gekko_start(game_session, &cfg);
@@ -264,7 +269,6 @@ void nuke_game() {
 
 static void nuke_game_to_menu() {
 	nuke_game();
-	disconnect();
 	clear_assets(), load_menu();
 }
 
@@ -377,19 +381,21 @@ Bool update_game() {
 			continue;
 
 	dont_break_events:
-		input = 0; // declaring here spits out a warning...
-		if (!paused && !typing_what()) {
-			input |= kb_down(KB_UP) * GI_UP;
-			input |= kb_down(KB_LEFT) * GI_LEFT;
-			input |= kb_down(KB_DOWN) * GI_DOWN;
-			input |= kb_down(KB_RIGHT) * GI_RIGHT;
-			input |= kb_down(KB_JUMP) * GI_JUMP;
-			input |= kb_down(KB_FIRE) * GI_FIRE;
-			input |= kb_down(KB_RUN) * GI_RUN;
+		if (!i_am_spectating()) {
+			input = 0; // declaring here spits out a warning...
+			if (!paused && !typing_what()) {
+				input |= kb_down(KB_UP) * GI_UP;
+				input |= kb_down(KB_LEFT) * GI_LEFT;
+				input |= kb_down(KB_DOWN) * GI_DOWN;
+				input |= kb_down(KB_RIGHT) * GI_RIGHT;
+				input |= kb_down(KB_JUMP) * GI_JUMP;
+				input |= kb_down(KB_FIRE) * GI_FIRE;
+				input |= kb_down(KB_RUN) * GI_RUN;
+			}
+			if (game_state.flags & (GF_END | GF_RESTART))
+				input |= GI_WARP;
+			gekko_add_local_input(game_session, local_player, &input);
 		}
-		if (game_state.flags & (GF_END | GF_RESTART))
-			input |= GI_WARP;
-		gekko_add_local_input(game_session, local_player, &input);
 
 		int count = 0;
 		GekkoSessionEvent** events = gekko_session_events(game_session, &count);
@@ -417,6 +423,12 @@ Bool update_game() {
 
 			case GekkoPlayerDisconnected: {
 				struct GekkoDisconnected disconnect = event->data.disconnected;
+
+				if (spectator_to_peer(disconnect.handle) < MAX_PEERS) {
+					WARN("Spectator %i left the session", disconnect.handle + 1);
+					break;
+				}
+
 				show_error("Lost connection to player %i (%s)", disconnect.handle + 1,
 					who_is_winner(disconnect.handle));
 				goto byebye_game;
@@ -471,7 +483,7 @@ Bool update_game() {
 
 					GameContext* ctx = init_game_context();
 					SDL_strlcpy(ctx->level, (char*)game_state.next, sizeof(ctx->level));
-					ctx->flags |= GF_TRY_SINGLE | GF_TRY_HELL;
+					ctx->flags |= GF_TRY_HELL;
 					ctx->num_players = game_context.num_players;
 					for (PlayerID i = 0L; i < ctx->num_players; i++) {
 						const Sint8 lives = game_state.players[i].lives;
@@ -489,7 +501,7 @@ Bool update_game() {
 				restart_fr:
 					GameContext* ctx = init_game_context();
 					SDL_strlcpy(ctx->level, game_context.level, sizeof(ctx->level));
-					ctx->flags |= GF_REPLAY | GF_TRY_SINGLE | GF_TRY_HELL;
+					ctx->flags |= GF_REPLAY | GF_TRY_HELL;
 					ctx->num_players = game_context.num_players;
 					for (PlayerID i = 0L; i < ctx->num_players; i++) {
 						ctx->players[i].lives = game_state.players[i].lives;
@@ -622,7 +634,7 @@ static void draw_hud() {
 				                             : "Restart Level (-1 Life)";
 				break;
 			case PMO_EXIT:
-				optname = "Return to Title";
+				optname = NutPunch_IsReady() ? "Return to Lobby" : "Return to Title";
 				break;
 			}
 
@@ -1159,7 +1171,7 @@ static void start_game_state() {
 
 	for (PlayerID i = 0L; i < game_context.num_players; i++)
 		game_state.players[i].id = i;
-	game_state.flags |= game_context.flags;
+	game_state.flags |= game_context.flags | ((game_context.num_players <= 1L) * GF_SINGLE);
 	game_state.checkpoint = game_context.checkpoint;
 
 	//
@@ -1411,6 +1423,18 @@ static void start_game_state() {
 		player->power = game_context.players[i].power;
 		respawn_player(player);
 	}
+
+	// !!! CLIENT-SIDE !!!
+	if (get_player(local_player) == NULL)
+		for (PlayerID i = 0L; i < MAX_PLAYERS; i++) {
+			GamePlayer* player = get_player(i);
+			if (player == NULL)
+				continue;
+
+			set_view_player(player);
+			break;
+		}
+	// !!! CLIENT-SIDE !!!
 
 	play_state_track(TS_MAIN, track_name[0], PLAY_LOOPING, 0L);
 

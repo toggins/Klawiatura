@@ -96,7 +96,7 @@ static int realmain() {
 	if (quickstart) {
 		GameContext* ctx = init_game_context();
 		SDL_strlcpy(ctx->level, CLIENT.game.level, sizeof(ctx->level));
-		ctx->flags |= GF_SINGLE | GF_TRY_HELL;
+		ctx->flags |= GF_TRY_HELL;
 		start_game();
 	} else {
 		switch (starting_menu) {

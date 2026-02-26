@@ -50,7 +50,6 @@ void push_user_data();
 const char* get_lobby_id();
 void host_lobby(const char*), join_lobby(const char*);
 void push_lobby_data(), pull_lobby_data();
-void make_lobby_active();
 
 void list_lobbies();
 int get_lobby_count();
@@ -59,8 +58,10 @@ Bool in_public_lobby();
 Uint32 get_lobby_party();
 
 // Peers
-int player_to_peer(PlayerID);
+int player_to_peer(PlayerID), spectator_to_peer(int);
 const char* get_peer_name(int);
+Bool peer_is_spectating(int), i_am_spectating();
+void start_online_game();
 PlayerID populate_game(GekkoSession*);
 
 // Buffer
