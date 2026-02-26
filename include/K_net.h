@@ -6,7 +6,7 @@
 #include <NutPunch.h>
 #include <gekkonet.h>
 
-#define LOBBY_STRING_MAX (sizeof(NutPunch_Id))
+#define LOBBY_STRING_MAX (sizeof(NutPunch_LobbyId))
 
 #include "K_game.h"
 #include "K_math.h"
@@ -18,6 +18,18 @@ enum {
 	VIS_INVALID = 0,
 	VIS_PUBLIC = 1,
 	VIS_UNLISTED = 2,
+};
+
+typedef Uint8 MessageChannel;
+enum {
+	MCH_LOBBY = 0,
+	MCH_GAME = 1,
+};
+
+typedef Uint8 MessageType;
+enum {
+	MT_START,
+	MT_CHAT,
 };
 
 void net_init(), net_teardown();

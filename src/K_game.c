@@ -114,16 +114,20 @@ static struct {
 static void send_chat_message() {
 	if (typing_what() || !SDL_strlen(chat_message))
 		return;
-	// TODO: use message headers to distinguish message types, instead of using gross hacks like this.
-	static char buf[4 + sizeof(chat_message)] = "CHAT";
-	SDL_strlcpy(buf + 4, chat_message, sizeof(chat_message));
-	for (PlayerID i = 0; i < game_context.num_players; i++)
-		NutPunch_SendReliably(player_to_peer(i), buf, sizeof(buf));
+
+	static char data[sizeof(MessageType) + sizeof(chat_message)] = {0};
+	*(MessageType*)data = MT_CHAT;
+	SDL_strlcpy(data + sizeof(MessageType), chat_message, sizeof(chat_message));
+
+	for (int i = 0; i < MAX_PEERS; i++)
+		if (NutPunch_PeerAlive(i))
+			NutPunch_SendReliably(MCH_LOBBY, i, data, sizeof(data));
+
 	push_chat_message(NutPunch_LocalPeer(), chat_message);
 	chat_message[0] = 0;
 }
 
-void push_chat_message(const int from, const char* text) {
+void push_chat_message(int from, const char* text) {
 	for (int i = MAX_CHATS - 1; i >= 1; i--)
 		chat_hist[i] = chat_hist[i - 1];
 

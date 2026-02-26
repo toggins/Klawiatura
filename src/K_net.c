@@ -119,6 +119,29 @@ void net_newframe() {
 		}
 	} else
 		last_error = NULL;
+
+	static char data[NUTPUNCH_BUFFER_SIZE] = {0};
+	while (NutPunch_HasMessage(MCH_LOBBY)) {
+		int size = sizeof(data), peer = NutPunch_NextMessage(MCH_LOBBY, data, &size);
+
+		if (peer == NUTPUNCH_MAX_PLAYERS) {
+			last_error = NutPunch_GetLastError();
+			WTF("Lobby message error: %s", last_error);
+			continue;
+		}
+		if (size < sizeof(MessageType))
+			continue;
+
+		switch (*(MessageType*)data) {
+		default:
+			break;
+
+		case MT_CHAT:
+			if (size > sizeof(MessageType))
+				push_chat_message(peer, data + sizeof(MessageType));
+			break;
+		}
+	}
 }
 
 const char* net_error() {
@@ -227,7 +250,7 @@ const char* get_peer_name(int idx) {
 }
 
 static void net_send(GekkoNetAddress* gn_addr, const char* data, int len) {
-	NutPunch_Send(*(int*)gn_addr->data, data, len);
+	NutPunch_Send(MCH_GAME, *(int*)gn_addr->data, data, len);
 }
 
 static GekkoNetResult** net_receive(int* pCount) {
@@ -235,13 +258,8 @@ static GekkoNetResult** net_receive(int* pCount) {
 	static char data[NUTPUNCH_BUFFER_SIZE] = {0};
 	*pCount = 0;
 
-	while (NutPunch_HasMessage() && *pCount < sizeof(packets) / sizeof(void*)) {
-		int size = sizeof(data), peer = NutPunch_NextMessage(data, &size);
-		if (!SDL_memcmp(data, "CHAT", 4)) { // GROSS HACK
-			push_chat_message(peer, data + 4);
-			continue;
-		}
-
+	while (NutPunch_HasMessage(MCH_GAME) && *pCount < sizeof(packets) / sizeof(void*)) {
+		int size = sizeof(data), peer = NutPunch_NextMessage(MCH_GAME, data, &size);
 		GekkoNetResult* res = SDL_malloc(sizeof(GekkoNetResult));
 
 		res->addr.size = sizeof(int), res->addr.data = SDL_malloc(res->addr.size);
