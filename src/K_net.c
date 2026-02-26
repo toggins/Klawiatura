@@ -28,7 +28,7 @@ void net_init() {
 }
 
 void net_teardown() {
-	disconnect();
+	NutPunch_Cleanup();
 }
 
 /// Returns the current hostname.
