@@ -93,7 +93,7 @@ list(APPEND LIBS NutPunch)
 set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG v20260217000837-ad4b516)
+    GIT_TAG v20260224163038-7be848c)
 FetchContent_MakeAvailable(GekkoNet)
 list(APPEND LIBS GekkoNet)
 
