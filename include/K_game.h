@@ -14,7 +14,7 @@ typedef Sint8 PlayerID;
 #define MAJOR_LEVEL_VERSION 0
 #define MINOR_LEVEL_VERSION 2
 
-#define MAX_PLAYERS 4L
+#define MAX_PLAYERS 8L
 #define DEFAULT_LIVES 4L
 #define MAX_MISSILES 2L
 #define MAX_SINK 6L
