@@ -4,6 +4,7 @@
 #include "K_file.h"
 #include "K_input.h"
 #include "K_log.h"
+#include "K_misc.h"
 #include "K_string.h"
 #include "K_video.h"
 
@@ -153,7 +154,7 @@ static void parse_config(yyjson_val* obj) {
 			continue;
 		yyjson_val* value = yyjson_obj_iter_get_val(vkey);
 		const char* name = yyjson_get_str(vkey);
-		for (int i = 0; i < sizeof(OPTIONS) / sizeof(*OPTIONS); i++) {
+		for (int i = 0; i < entries(OPTIONS); i++) {
 			const ConfigOption* opt = &OPTIONS[i];
 			if (SDL_strcmp(name, opt->name))
 				continue;
@@ -224,7 +225,7 @@ void save_config() {
 	yyjson_mut_val* root = yyjson_mut_obj(json);
 	yyjson_mut_doc_set_root(json, root);
 
-	for (size_t i = 0; i < sizeof(OPTIONS) / sizeof(*OPTIONS); i++) {
+	for (size_t i = 0; i < entries(OPTIONS); i++) {
 		const ConfigOption* opt = &OPTIONS[i];
 		yyjson_mut_val *key = yyjson_mut_strcpy(json, opt->name), *value = NULL;
 

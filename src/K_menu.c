@@ -6,6 +6,7 @@
 #include "K_discord.h"
 #include "K_file.h"
 #include "K_menu.h"
+#include "K_misc.h"
 #include "K_net.h"
 #include "K_string.h"
 #include "K_tick.h"
@@ -334,7 +335,7 @@ BOOL_OPTION(fullscreen, get_fullscreen, set_fullscreen);
 FMT_OPTION(framerate, get_framerate());
 static void flip_framerate(int flip) {
 	static const int ranges[] = {0, 30, 50, 60, 75, 120, 144, 165, 180, 240, 360};
-	const int fps = get_framerate(), len = sizeof(ranges) / sizeof(*ranges);
+	const int fps = get_framerate(), len = entries(ranges);
 	if (flip >= 0) {
 		for (int i = 0; i < len; i++)
 			if (fps < ranges[i]) {
@@ -923,13 +924,11 @@ void draw_menu() {
 		break;
 
 	case MEN_MAIN: {
-		const int num_lines = sizeof(credits) / sizeof(*credits);
-
 		credits_y -= dt() * 0.5f;
-		if (credits_y <= ((float)num_lines * -18.f))
+		if (credits_y <= ((float)entries(credits) * -18.f))
 			credits_y = SCREEN_HEIGHT;
 
-		for (int i = 0; i < num_lines; i++) {
+		for (int i = 0; i < entries(credits); i++) {
 			const float y = credits_y + ((float)i * 18.f);
 			if (y >= (SCREEN_HEIGHT - 18.f) || y <= 0.f)
 				continue;
@@ -1110,7 +1109,7 @@ void show_results() {
 }
 
 const char* who_is_winner(int idx) {
-	return (idx < 0 || idx >= (sizeof(winners) / sizeof(*winners))) ? NULL : winners[idx].name;
+	return (idx < 0 || idx >= entries(winners)) ? NULL : winners[idx].name;
 }
 
 Bool set_menu(MenuType next_menu) {

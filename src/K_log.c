@@ -7,6 +7,7 @@
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
+#include "K_misc.h"
 #include "K_string.h"
 
 void handle_fatal(const char* file, int line, const char* func, const char* fmt, ...) {
@@ -20,7 +21,7 @@ void handle_fatal(const char* file, int line, const char* func, const char* fmt,
 	SDL_MessageBoxData data = {0};
 	data.window = window, data.message = buf;
 	data.title = GAME_NAME, data.flags = SDL_MESSAGEBOX_ERROR;
-	data.buttons = butts, data.numbuttons = sizeof(butts) / sizeof(*butts);
+	data.buttons = butts, data.numbuttons = entries(butts);
 
 	va_list args = {0};
 	va_start(args, fmt);

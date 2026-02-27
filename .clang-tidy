@@ -1,10 +1,9 @@
-Checks:
-  [
+Checks: [
     clang-diagnostic-*,
     clang-analyzer-*,
     bugprone-*,
     -bugprone-easily-swappable-parameters,
-    -bugprone-reserved-identifier,
+    -bugprone-integer-division, # false positives
     performance-*,
     -performance-no-int-to-ptr,
     portability-*,
