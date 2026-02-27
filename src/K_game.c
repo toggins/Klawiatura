@@ -834,16 +834,15 @@ static void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 		break;
 
 	case SEQ_AMBUSH: {
-		if (game_state.sequence.time > 0L)
+		if (game_state.sequence.time <= 0L) {
+			if (game_context.num_players > 1L) {
+				GamePlayer* player = get_player(game_state.sequence.activator);
+				if (player != NULL)
+					hud_message(fmt("%s got the last kill!", get_player_name(player->id)));
+			}
+			game_state.sequence.type = SEQ_AMBUSH_END;
 			break;
-
-		if (game_context.num_players > 1L) {
-			GamePlayer* player = get_player(game_state.sequence.activator);
-			if (player != NULL)
-				hud_message(fmt("%s got the last kill!", get_player_name(player->id)));
 		}
-		game_state.sequence.type = SEQ_AMBUSH_END;
-		break;
 	}
 
 	case SEQ_NONE: {
