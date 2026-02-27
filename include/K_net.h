@@ -23,8 +23,9 @@ enum {
 
 typedef Uint8 PacketChannel;
 enum {
-	PCH_LOBBY = 0,
-	PCH_GAME = 1,
+	PCH_LOBBY,
+	PCH_GAME,
+	PCH_MAX,
 };
 
 typedef Uint8 PacketType;

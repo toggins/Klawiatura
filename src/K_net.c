@@ -1,5 +1,3 @@
-#include "K_log.h"
-
 #define NUTPUNCH_IMPLEMENTATION
 #define NutPunch_SNPrintF SDL_snprintf
 #define NutPunch_Memcmp SDL_memcmp
@@ -8,9 +6,9 @@
 #define NutPunch_Malloc SDL_malloc
 #define NutPunch_Free SDL_free
 #define NutPunch_Log INFO
-#include <NutPunch.h>
 
 #include "K_discord.h"
+#include "K_log.h"
 #include "K_menu.h"
 #include "K_net.h"
 
@@ -25,6 +23,7 @@ static int spectator_peers[MAX_PLAYERS] = {MAX_PEERS};
 void net_init() {
 	if (!hostname[0])
 		set_hostname(NUTPUNCH_DEFAULT_SERVER);
+	NutPunch_SetChannelCount(PCH_MAX);
 }
 
 void net_teardown() {
