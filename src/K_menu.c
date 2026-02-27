@@ -708,14 +708,6 @@ static void maybe_disconnect(MenuType next) {
 		disconnect();
 }
 
-static void run_disableif() {
-	for (size_t i = 0; i < MAX_OPTIONS; i++) {
-		Option* option = &OPTIONS[cur_menu][i];
-		if (option->disable_if != NULL)
-			option->disabled = option->disable_if();
-	}
-}
-
 static const char* keve() {
 	if (last_secret >= 0) {
 		static char buf[MAX_SECRET_INPUTS + 1] = "";
@@ -733,6 +725,12 @@ static const char* keve() {
 	return str;
 }
 
+static Bool is_option_disabled(const Option* opt) {
+	if (opt->disable_if && opt->disable_if())
+		return TRUE;
+	return !opt->name || opt->disabled;
+}
+
 void update_menu() {
 	for (new_frame(0); got_ticks(); next_tick()) {
 		int last_menu = cur_menu, flip = 0;
@@ -740,7 +738,6 @@ void update_menu() {
 			MENUS[cur_menu].update();
 		if (last_menu != cur_menu)
 			continue;
-		run_disableif();
 
 		update_secrets();
 
@@ -748,18 +745,19 @@ void update_menu() {
 		if (!change)
 			goto try_select;
 
-		size_t old_option = MENUS[cur_menu].option;
-		size_t new_option = old_option;
+		int old_option = MENUS[cur_menu].option, new_option = old_option;
+		if (is_option_disabled(&OPTIONS[cur_menu][new_option])) // jump to first enabled option, if any
+			new_option = -1, change = 1;
 
 		for (size_t i = 0; i < MAX_OPTIONS; i++) {
 			if (change < 0 && new_option <= 0)
 				new_option = MAX_OPTIONS - 1;
-			else if (change > 0 && new_option >= (MAX_OPTIONS - 1))
+			else if (change > 0 && new_option >= MAX_OPTIONS)
 				new_option = 0;
 			else
 				new_option += change;
 			Option* option = &OPTIONS[cur_menu][new_option];
-			if (option->name != NULL && !option->disabled)
+			if (!is_option_disabled(option))
 				goto found_option;
 		}
 		goto try_select;
@@ -792,7 +790,7 @@ void update_menu() {
 		flip = kb_repeated(KB_UI_RIGHT) - kb_repeated(KB_UI_LEFT);
 		if (flip != 0) {
 			const Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
-			if (opt->flip != NULL && !opt->disabled) {
+			if (opt->flip != NULL && !is_option_disabled(opt)) {
 				play_generic_sound("toggle");
 				opt->flip(flip);
 			}
@@ -841,7 +839,7 @@ void draw_menu() {
 
 	const float lx = 0.6f * dt();
 	menu->cursor = glm_lerp(menu->cursor, (float)menu->option, SDL_min(lx, 1.f));
-	if (!OPTIONS[cur_menu][menu->option].disabled) {
+	if (!is_option_disabled(&OPTIONS[cur_menu][menu->option])) {
 		batch_pos(B_XY(44.f + (SDL_sinf(totalticks() / 5.f) * 4.f), menu_y + (menu->cursor * 24.f)));
 		batch_align(B_TOP_RIGHT);
 		batch_string("main", 24.f, ">");
@@ -856,7 +854,8 @@ void draw_menu() {
 			continue;
 
 		const float lx = 0.5f * dt();
-		opt->hover = glm_lerp(opt->hover, (float)(menu->option == i && !opt->disabled), SDL_min(lx, 1.f));
+		opt->hover = glm_lerp(
+			opt->hover, (float)(menu->option == i && !is_option_disabled(opt)), SDL_min(lx, 1.f));
 
 		const char *suffix = "", *format = opt->format == NULL ? opt->name : opt->format(opt->name);
 		if (opt->edit != NULL && typing_what() == opt->edit && SDL_fmodf(totalticks(), 30.f) < 16.f)
@@ -868,7 +867,7 @@ void draw_menu() {
 		const float x = 48.f + (opt->hover * 8.f);
 		const float y = menu_y + ((float)i * 24.f);
 
-		batch_pos(B_XY(x, y)), batch_color(B_ALPHA(opt->disabled && !opt->vivid ? 128 : 255));
+		batch_pos(B_XY(x, y)), batch_color(B_ALPHA(is_option_disabled(opt) && !opt->vivid ? 128 : 255));
 		batch_align(B_TOP_LEFT);
 		batch_string("main", 24.f, name);
 
@@ -1108,10 +1107,10 @@ Bool set_menu(MenuType next_menu) {
 		MENUS[cur_menu].enter();
 
 	// Go to nearest valid option
-	size_t new_option = MENUS[cur_menu].option;
+	int new_option = MENUS[cur_menu].option;
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		Option* option = &OPTIONS[cur_menu][new_option];
-		if (option->name != NULL && !option->disabled) {
+		if (!is_option_disabled(option)) {
 			MENUS[cur_menu].option = new_option;
 			MENUS[cur_menu].cursor = (float)new_option;
 			option->hover = 1;

@@ -48,7 +48,7 @@ typedef struct {
 	Bool noreturn, ghost;
 
 	MenuType from;
-	size_t option;
+	int option;
 	float cursor;
 } Menu;
 
