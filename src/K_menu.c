@@ -108,7 +108,8 @@ static void deactivate_secret(SecretType idx) {
 
 static MenuType cur_menu;
 static void update_secrets() {
-	const Bool handicapped = !NutPunch_IsMaster() || cur_menu == MEN_INTRO || cur_menu == MEN_JOINING_LOBBY;
+	const Bool handicapped = (NutPunch_IsReady() && !NutPunch_IsMaster()) || cur_menu == MEN_INTRO
+	                         || cur_menu == MEN_JOINING_LOBBY;
 	for (SecretType i = 0; i < SECR_SIZE; i++) {
 		Secret* secret = &SECRETS[i];
 
