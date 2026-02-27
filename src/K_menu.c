@@ -731,9 +731,27 @@ static Bool is_option_disabled(const Option* opt) {
 	return !opt->name || opt->disabled;
 }
 
-static void select_menu_option_by_mouse(int* new_option) {}
+static bool select_menu_option_by_mouse(int* new_option) {
+	float y = 0.f;
+	int h = 0;
 
-static void select_menu_option_by_keyboard(const int old_option, int* new_option, const int change) {
+	const Bool select = (SDL_GetMouseState(NULL, &y) & SDL_BUTTON_LMASK) != 0;
+	{
+		extern SDL_Window* window;
+		SDL_GetWindowSize(window, NULL, &h);
+		y *= (float)SCREEN_HEIGHT / (float)h;
+	}
+
+	const int opt = (int)SDL_floorf((y - 60.f) / 24.f);
+	if (opt >= 0 && opt < MAX_OPTIONS && !is_option_disabled(&OPTIONS[cur_menu][opt])) {
+		*new_option = opt;
+		return select;
+	}
+
+	return FALSE;
+}
+
+static bool select_menu_option_by_keyboard(const int old_option, int* new_option, const int change) {
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		if (change < 0 && *new_option <= 0)
 			*new_option = MAX_OPTIONS - 1;
@@ -743,21 +761,25 @@ static void select_menu_option_by_keyboard(const int old_option, int* new_option
 			*new_option += change;
 		Option* option = &OPTIONS[cur_menu][*new_option];
 		if (!is_option_disabled(option))
-			return;
+			break;
 	}
+	return kb_pressed(KB_UI_ENTER);
 }
 
 static void select_menu_option() {
 	int old_option = MENUS[cur_menu].option, new_option = old_option;
+	Bool select = FALSE;
+
 	if (is_option_disabled(&OPTIONS[cur_menu][new_option])) {
 		// jump to first enabled option, if any
-		new_option = -1, select_menu_option_by_keyboard(old_option, &new_option, 1);
+		new_option = -1;
+		select = select_menu_option_by_keyboard(old_option, &new_option, 1);
 	} else {
 		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
 		if (change)
-			select_menu_option_by_keyboard(old_option, &new_option, change);
+			select = select_menu_option_by_keyboard(old_option, &new_option, change);
 		else
-			select_menu_option_by_mouse(&new_option);
+			select = select_menu_option_by_mouse(&new_option);
 	}
 
 	if (old_option != new_option) {
@@ -765,7 +787,7 @@ static void select_menu_option() {
 		play_generic_sound("switch");
 	}
 
-	if (kb_pressed(KB_UI_ENTER)) {
+	if (select) {
 		Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
 		if (is_option_disabled(opt))
 			goto NO_SELECT_CYKA;
