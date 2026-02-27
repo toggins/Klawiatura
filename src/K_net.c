@@ -90,6 +90,7 @@ static void np_peer_set_string(const char* name, const char* str) {
 			*dest = *value;                                                                                \
 	}
 // NOLINTEND(bugprone-macro-parentheses)
+
 MAKE_LOBBY_GETTER(bool, Bool);
 MAKE_LOBBY_GETTER(u8, Uint8);
 MAKE_LOBBY_GETTER(u32, Uint32);
@@ -285,13 +286,13 @@ static void net_send(GekkoNetAddress* gn_addr, const char* data, int len) {
 	NutPunch_Send(PCH_GAME, *(int*)gn_addr->data, data, len);
 }
 
-static GekkoNetResult** net_receive(int* pCount) {
+static GekkoNetResult** net_receive(int* packet_count) {
 	static GekkoNetResult* packets[64] = {0};
 
 	char* data = net_buffer();
-	*pCount = 0;
+	*packet_count = 0;
 
-	while (NutPunch_HasMessage(PCH_GAME) && *pCount < entries(packets)) {
+	while (NutPunch_HasMessage(PCH_GAME) && *packet_count < entries(packets)) {
 		int size = NET_BUFFER_SIZE, peer = NutPunch_NextMessage(PCH_GAME, data, &size);
 		GekkoNetResult* res = SDL_malloc(sizeof(GekkoNetResult));
 
@@ -301,7 +302,7 @@ static GekkoNetResult** net_receive(int* pCount) {
 		res->data_len = size, res->data = SDL_malloc(size);
 		SDL_memcpy(res->data, data, size);
 
-		packets[(*pCount)++] = res;
+		packets[(*packet_count)++] = res;
 	}
 
 	return packets;

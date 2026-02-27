@@ -831,11 +831,14 @@ void update_menu() {
 		update_secrets();
 		select_menu_option();
 
-		if (kb_pressed(KB_PAUSE)) {
-			const char* sound = MENUS[cur_menu].back_sound;
-			if (prev_menu())
-				play_generic_sound(sound == NULL ? "select" : sound);
-		}
+		if (!kb_pressed(KB_PAUSE))
+			continue;
+
+		const char* sound = MENUS[cur_menu].back_sound;
+		if (!sound)
+			sound = "select";
+		if (prev_menu())
+			play_generic_sound(sound);
 	}
 }
 
