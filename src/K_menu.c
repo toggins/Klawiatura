@@ -734,7 +734,6 @@ static Bool is_option_disabled(const Option* opt) {
 static void select_menu_option_by_mouse(int* new_option) {
 	static float last_y = 0.f;
 	float y = 0.f;
-	int h = 0;
 
 	SDL_GetMouseState(NULL, &y);
 	if (SDL_fabsf(last_y - y) < 1e-3)
@@ -742,6 +741,7 @@ static void select_menu_option_by_mouse(int* new_option) {
 	last_y = y;
 
 	{
+		int h = 0;
 		extern SDL_Window* window;
 		SDL_GetWindowSize(window, NULL, &h);
 		y *= (float)SCREEN_HEIGHT / (float)h;
