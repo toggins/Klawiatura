@@ -768,19 +768,18 @@ static void select_menu_option_by_keyboard(const int old_option, int* new_option
 }
 
 static void select_menu_option() {
-	int old_option = MENUS[cur_menu].option, new_option = old_option;
+	const int old_option = MENUS[cur_menu].option, change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
+	int new_option = old_option;
 	Bool select = kb_pressed(KB_UI_ENTER);
 
 	if (is_option_disabled(&OPTIONS[cur_menu][new_option])) {
 		// jump to first enabled option, if any
 		new_option = -1;
 		select_menu_option_by_keyboard(old_option, &new_option, 1);
+	} else if (change) {
+		select_menu_option_by_keyboard(old_option, &new_option, change);
 	} else {
-		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
-		if (change)
-			select_menu_option_by_keyboard(old_option, &new_option, change);
-		else
-			select |= select_menu_option_by_mouse(&new_option);
+		select |= select_menu_option_by_mouse(&new_option);
 	}
 
 	if (old_option != new_option) {
