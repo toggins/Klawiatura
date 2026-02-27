@@ -827,7 +827,7 @@ void batch_rectangle(const char* name, const float size[2]) {
 }
 
 static float string_width_fast(const Font* font, float size, const char* str) {
-	float width = 0;
+	float width = 0.f;
 
 	float cx = 0.f;
 	const float scale = size / font->height;
@@ -850,12 +850,14 @@ static float string_width_fast(const Font* font, float size, const char* str) {
 			gid = '?';
 
 		// Valid glyph
-		cx += (font->glyphs[gid].width + ((float)(bytes > 0) * font->spacing)) * xscale;
-
-		width = SDL_max(width, cx);
+		const Glyph* glyph = &font->glyphs[gid];
+		if (bytes > 0)
+			cx += (glyph->width + font->spacing) * xscale;
+		const float extend = cx + (glyph->width * xscale);
+		width = SDL_max(width, extend);
 	}
 
-	return width * (size / font->height);
+	return width;
 }
 
 float string_width(const char* name, float size, const char* str) {
