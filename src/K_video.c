@@ -1194,12 +1194,9 @@ static TileMap* fetch_tilemap(const char* name) {
 static void tile_vertex(TileMap* tilemap, const float pos[3], const Uint8 color[4], const float uv[2]) {
 	if (tilemap->vertex_count >= tilemap->vertex_capacity) {
 		const size_t new_size = tilemap->vertex_capacity * 2;
-		if (new_size < tilemap->vertex_capacity)
-			FATAL("Capacity overflow in tilemap %p", tilemap);
-
+		EXPECT(new_size >= tilemap->vertex_capacity, "Capacity overflow in tilemap %p", tilemap);
 		tilemap->vertices = SDL_realloc(tilemap->vertices, new_size * sizeof(Vertex));
-		if (tilemap->vertices == NULL)
-			FATAL("Out of memory for tilemap %p vertices", tilemap);
+		EXPECT(tilemap->vertices, "Out of memory for tilemap %p vertices", tilemap);
 
 		tilemap->vertex_capacity = new_size;
 
