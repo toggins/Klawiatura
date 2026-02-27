@@ -1157,7 +1157,7 @@ skip_physics:
 
 	if ((game_state.flags & GF_KEVIN) && !(game_state.flags & GF_HUB)
 		&& (game_state.sequence.type == SEQ_NONE || game_state.sequence.type == SEQ_AMBUSH
-			|| game_state.sequence.type == SEQ_AMBUSH_END)
+			|| game_state.sequence.type == SEQ_AMBUSH_END || game_state.sequence.type == SEQ_BOWSER_END)
 		&& ((player->kevin.delay <= 0L && Vdist(actor->pos, player->kevin.start) > FxOne)
 			|| player->kevin.delay > 0L))
 	{
