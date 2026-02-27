@@ -81,6 +81,46 @@ int main(int argc, char* argv[]) {
 	return realmain();
 }
 
+static void handle_sdl_event(SDL_Event event) {
+	switch (event.type) {
+	case SDL_EVENT_KEY_DOWN:
+		input_keydown(event.key);
+		break;
+	case SDL_EVENT_KEY_UP:
+		input_keyup(event.key);
+		break;
+	case SDL_EVENT_MOUSE_BUTTON_DOWN:
+		input_mbdown(event.button);
+		break;
+	case SDL_EVENT_MOUSE_BUTTON_UP:
+		input_mbup(event.button);
+		break;
+	case SDL_EVENT_GAMEPAD_ADDED:
+		input_gamepadon(event.gdevice);
+		break;
+	case SDL_EVENT_GAMEPAD_REMOVED:
+		input_gamepadoff(event.gdevice);
+		break;
+	case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+		input_buttondown(event.gbutton);
+		break;
+	case SDL_EVENT_GAMEPAD_BUTTON_UP:
+		input_buttonup(event.gbutton);
+		break;
+	case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+		input_axis(event.gaxis);
+		break;
+	case SDL_EVENT_TEXT_INPUT:
+		input_text_input(event.text);
+		break;
+	case SDL_EVENT_WINDOW_RESIZED:
+		set_resolution(event.window.data1, event.window.data2, FALSE);
+		break;
+	default:
+		break;
+	}
+}
+
 static int realmain() {
 	extern void log_init();
 	log_init();
@@ -122,40 +162,11 @@ static int realmain() {
 
 	while (!permadeath) {
 		SDL_Event event;
-		while (SDL_PollEvent(&event))
-			switch (event.type) {
-			case SDL_EVENT_QUIT:
+		while (SDL_PollEvent(&event)) {
+			if (event.type == SDL_EVENT_QUIT)
 				goto teardown;
-			case SDL_EVENT_KEY_DOWN:
-				input_keydown(event.key);
-				break;
-			case SDL_EVENT_KEY_UP:
-				input_keyup(event.key);
-				break;
-			case SDL_EVENT_GAMEPAD_ADDED:
-				input_gamepadon(event.gdevice);
-				break;
-			case SDL_EVENT_GAMEPAD_REMOVED:
-				input_gamepadoff(event.gdevice);
-				break;
-			case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
-				input_buttondown(event.gbutton);
-				break;
-			case SDL_EVENT_GAMEPAD_BUTTON_UP:
-				input_buttonup(event.gbutton);
-				break;
-			case SDL_EVENT_GAMEPAD_AXIS_MOTION:
-				input_axis(event.gaxis);
-				break;
-			case SDL_EVENT_TEXT_INPUT:
-				input_text_input(event.text);
-				break;
-			case SDL_EVENT_WINDOW_RESIZED:
-				set_resolution(event.window.data1, event.window.data2, FALSE);
-				break;
-			default:
-				break;
-			}
+			handle_sdl_event(event);
+		}
 
 		if (game_exists()) {
 			if (update_game())

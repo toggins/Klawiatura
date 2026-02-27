@@ -735,7 +735,9 @@ static bool select_menu_option_by_mouse(int* new_option) {
 	float y = 0.f;
 	int h = 0;
 
-	const Bool select = (SDL_GetMouseState(NULL, &y) & SDL_BUTTON_LMASK) != 0;
+	const Bool select = mb_pressed(SDL_BUTTON_LMASK);
+	SDL_GetMouseState(NULL, &y);
+
 	{
 		extern SDL_Window* window;
 		SDL_GetWindowSize(window, NULL, &h);
@@ -751,7 +753,7 @@ static bool select_menu_option_by_mouse(int* new_option) {
 	return FALSE;
 }
 
-static bool select_menu_option_by_keyboard(const int old_option, int* new_option, const int change) {
+static void select_menu_option_by_keyboard(const int old_option, int* new_option, const int change) {
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		if (change < 0 && *new_option <= 0)
 			*new_option = MAX_OPTIONS - 1;
@@ -763,23 +765,22 @@ static bool select_menu_option_by_keyboard(const int old_option, int* new_option
 		if (!is_option_disabled(option))
 			break;
 	}
-	return kb_pressed(KB_UI_ENTER);
 }
 
 static void select_menu_option() {
 	int old_option = MENUS[cur_menu].option, new_option = old_option;
-	Bool select = FALSE;
+	Bool select = kb_pressed(KB_UI_ENTER);
 
 	if (is_option_disabled(&OPTIONS[cur_menu][new_option])) {
 		// jump to first enabled option, if any
 		new_option = -1;
-		select = select_menu_option_by_keyboard(old_option, &new_option, 1);
+		select_menu_option_by_keyboard(old_option, &new_option, 1);
 	} else {
 		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
 		if (change)
-			select = select_menu_option_by_keyboard(old_option, &new_option, change);
+			select_menu_option_by_keyboard(old_option, &new_option, change);
 		else
-			select = select_menu_option_by_mouse(&new_option);
+			select |= select_menu_option_by_mouse(&new_option);
 	}
 
 	if (old_option != new_option) {

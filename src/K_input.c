@@ -51,6 +51,7 @@ Bindings BINDS[KB_SIZE] = {
 #undef NO_GAMEPAD
 #undef NEGATIVE
 
+static SDL_MouseButtonFlags mb_then = 0, mb_now = 0;
 static SDL_JoystickID cur_controller = 0;
 
 static char* text = NULL;
@@ -71,6 +72,9 @@ void input_newframe() {
 	kb_then = kb_now;
 	kb_now &= kb_incoming;
 	kb_repeating = 0;
+
+	mb_then = mb_now;
+	mb_now = 0;
 }
 
 void input_keydown(SDL_KeyboardEvent event) {
@@ -105,6 +109,29 @@ void input_keydown(SDL_KeyboardEvent event) {
 void input_keyup(SDL_KeyboardEvent event) {
 	for (Keybind i = 0; i < (Keybind)KB_SIZE; i++)
 		kb_incoming &= ~((event.scancode == BINDS[i].key) << i);
+}
+
+void input_mbdown(SDL_MouseButtonEvent event) {
+	if (event.button != SDL_BUTTON_RIGHT)
+		goto damn_straight;
+
+	if (scanning_what() != NULLBIND) {
+		stop_scanning();
+		return;
+	}
+
+	if (typing_what()) {
+		typing_confirmation = FALSE;
+		stop_typing();
+		return;
+	}
+
+damn_straight:
+	mb_now |= SDL_BUTTON_MASK(event.button);
+}
+
+void input_mbup(SDL_MouseButtonEvent event) {
+	// TODO: do something with mouse-button up events.
 }
 
 void input_gamepadon(SDL_GamepadDeviceEvent event) {
@@ -186,6 +213,9 @@ const char* input_device() {
 #define CHECK_KB(table, kb) (((table) & (1 << (kb))) != 0)
 
 Bool kb_pressed(Keybind kb) {
+	// HACK: hardcode RMB for pause.
+	if (kb == KB_PAUSE && mb_pressed(SDL_BUTTON_RMASK))
+		return TRUE;
 	return CHECK_KB(kb_now, kb) && !CHECK_KB(kb_then, kb);
 }
 
@@ -216,6 +246,10 @@ const char* kb_label(Keybind kb) {
 
 not_bound:
 	return "<Not bound>";
+}
+
+Bool mb_pressed(SDL_MouseButtonFlags mask) {
+	return (mb_now & mask) && !(mb_then & mask);
 }
 
 /// True if the typed input was confirmed with the Enter key; false if cancelled with the Esc key.

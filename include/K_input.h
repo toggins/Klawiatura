@@ -59,6 +59,7 @@ extern Bindings BINDS[KB_SIZE];
 
 void input_init(), input_teardown(), input_newframe();
 void input_keydown(SDL_KeyboardEvent), input_keyup(SDL_KeyboardEvent);
+void input_mbdown(SDL_MouseButtonEvent), input_mbup(SDL_MouseButtonEvent);
 void input_gamepadon(SDL_GamepadDeviceEvent), input_gamepadoff(SDL_GamepadDeviceEvent);
 void input_buttondown(SDL_GamepadButtonEvent), input_buttonup(SDL_GamepadButtonEvent);
 void input_axis(SDL_GamepadAxisEvent);
@@ -68,6 +69,8 @@ const char* input_device();
 
 Bool kb_pressed(Keybind), kb_down(Keybind), kb_released(Keybind), kb_repeated(Keybind);
 const char* kb_label(Keybind);
+
+Bool mb_pressed(SDL_MouseButtonFlags);
 
 void start_typing(char*, size_t), stop_typing();
 const char* typing_what();
