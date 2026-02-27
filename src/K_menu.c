@@ -754,11 +754,14 @@ static void select_menu_option_by_mouse(int* new_option) {
 	const int opt = (int)SDL_floorf((y - 60.f) / 24.f);
 	if (opt >= 0 && opt < MAX_OPTIONS && !is_option_disabled(&OPTIONS[cur_menu][opt]))
 		*new_option = opt;
+	else
+		*new_option = MAX_OPTIONS;
 }
 
 static void select_menu_option_by_keyboard(const int old_option, int* new_option, const int change) {
 	if (!change)
 		return;
+
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		if (change < 0 && *new_option <= 0)
 			*new_option = MAX_OPTIONS - 1;
@@ -766,10 +769,13 @@ static void select_menu_option_by_keyboard(const int old_option, int* new_option
 			*new_option = 0;
 		else
 			*new_option += change;
+
 		Option* option = &OPTIONS[cur_menu][*new_option];
 		if (!is_option_disabled(option))
-			break;
+			return;
 	}
+
+	*new_option = MAX_OPTIONS;
 }
 
 static void select_menu_option() {
@@ -785,6 +791,9 @@ static void select_menu_option() {
 		select_menu_option_by_keyboard(old_option, &new_option, change);
 		select_menu_option_by_mouse(&new_option);
 	}
+
+	if (new_option == MAX_OPTIONS)
+		return;
 
 	if (old_option != new_option) {
 		MENUS[cur_menu].option = new_option;
