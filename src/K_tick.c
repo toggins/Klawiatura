@@ -1,5 +1,6 @@
 #include <SDL3/SDL_timer.h>
 
+#include "K_chat.h"
 #include "K_input.h"
 #include "K_net.h"
 #include "K_tick.h"
@@ -19,6 +20,8 @@ void new_frame(float ahead) {
 
 	pending_ticks += delta_ticks;
 	total_ticks += delta_ticks;
+
+	tick_chat_hist();
 }
 
 Bool got_ticks() {

@@ -1,6 +1,7 @@
 #include <SDL3/SDL_misc.h>
 
 #include "K_audio.h"
+#include "K_chat.h"
 #include "K_cmd.h"
 #include "K_config.h"
 #include "K_discord.h"
@@ -688,6 +689,8 @@ static void maybe_leave_lobby(MenuType next) {
 }
 
 static void update_inlobby() {
+	handle_chat_inputs();
+
 	if (!NutPunch_IsReady()) {
 		const char* error = net_error();
 		if (error == NULL)
@@ -818,7 +821,7 @@ NO_SELECT_CYKA:
 }
 
 void update_menu() {
-	for (new_frame(0); got_ticks(); next_tick()) {
+	for (new_frame(0.f); got_ticks(); next_tick()) {
 		int last_menu = cur_menu;
 		if (MENUS[cur_menu].update != NULL)
 			MENUS[cur_menu].update();
@@ -971,6 +974,8 @@ void draw_menu() {
 			++idx;
 			y += 24.f;
 		}
+
+		draw_chat();
 
 		break;
 	}

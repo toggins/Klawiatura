@@ -461,14 +461,9 @@ void start_game(), nuke_game();
 Bool game_exists();
 Bool update_game();
 void draw_game();
+Bool game_paused();
 
 void hud_message(const char*);
-
-// ====
-// CHAT
-// ====
-
-void push_chat_message(int, const char*, int);
 
 // =======
 // PLAYERS

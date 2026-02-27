@@ -7,6 +7,7 @@
 #define NutPunch_Free SDL_free
 #define NutPunch_Log INFO
 
+#include "K_chat.h"
 #include "K_discord.h"
 #include "K_log.h"
 #include "K_menu.h"
@@ -153,6 +154,7 @@ void disconnect() {
 	if (net_error())
 		WARN("Net error: %s", net_error());
 	update_discord_status(NULL);
+	purge_chat();
 }
 
 void push_user_data() {
