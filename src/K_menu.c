@@ -731,76 +731,85 @@ static Bool is_option_disabled(const Option* opt) {
 	return !opt->name || opt->disabled;
 }
 
+static void select_menu_option_by_mouse(int* new_option) {}
+
+static void select_menu_option_by_keyboard(const int old_option, int* new_option, const int change) {
+	for (size_t i = 0; i < MAX_OPTIONS; i++) {
+		if (change < 0 && *new_option <= 0)
+			*new_option = MAX_OPTIONS - 1;
+		else if (change > 0 && *new_option >= (MAX_OPTIONS - 1))
+			*new_option = 0;
+		else
+			*new_option += change;
+		Option* option = &OPTIONS[cur_menu][*new_option];
+		if (!is_option_disabled(option))
+			return;
+	}
+}
+
+static void select_menu_option() {
+	int old_option = MENUS[cur_menu].option, new_option = old_option;
+	if (is_option_disabled(&OPTIONS[cur_menu][new_option])) {
+		// jump to first enabled option, if any
+		new_option = -1, select_menu_option_by_keyboard(old_option, &new_option, 1);
+	} else {
+		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
+		if (change)
+			select_menu_option_by_keyboard(old_option, &new_option, change);
+		else
+			select_menu_option_by_mouse(&new_option);
+	}
+
+	if (old_option != new_option) {
+		MENUS[cur_menu].option = new_option;
+		play_generic_sound("switch");
+	}
+
+	if (kb_pressed(KB_UI_ENTER)) {
+		Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
+		if (is_option_disabled(opt))
+			goto NO_SELECT_CYKA;
+
+		play_generic_sound("select");
+		if (opt->button)
+			opt->button();
+		else if (opt->flip)
+			opt->flip(1);
+		else if (opt->edit)
+			start_typing(opt->edit, opt->edit_size); // FIXME: Play "select" when pressing Enter or
+			                                         //        backspace while typing
+		else if (opt->enter)
+			set_menu(opt->enter);
+	}
+
+NO_SELECT_CYKA:
+	int flip = kb_repeated(KB_UI_RIGHT) - kb_repeated(KB_UI_LEFT);
+	if (!flip)
+		return;
+
+	Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
+	if (opt->flip && !is_option_disabled(opt)) {
+		play_generic_sound("toggle");
+		opt->flip(flip);
+	}
+}
+
 void update_menu() {
 	for (new_frame(0); got_ticks(); next_tick()) {
-		int last_menu = cur_menu, flip = 0;
+		int last_menu = cur_menu;
 		if (MENUS[cur_menu].update != NULL)
 			MENUS[cur_menu].update();
 		if (last_menu != cur_menu)
 			continue;
 
 		update_secrets();
+		select_menu_option();
 
-		int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
-		if (!change)
-			goto try_select;
-
-		int old_option = MENUS[cur_menu].option, new_option = old_option;
-		if (is_option_disabled(&OPTIONS[cur_menu][new_option])) // jump to first enabled option, if any
-			new_option = -1, change = 1;
-
-		for (size_t i = 0; i < MAX_OPTIONS; i++) {
-			if (change < 0 && new_option <= 0)
-				new_option = MAX_OPTIONS - 1;
-			else if (change > 0 && new_option >= MAX_OPTIONS)
-				new_option = 0;
-			else
-				new_option += change;
-			Option* option = &OPTIONS[cur_menu][new_option];
-			if (!is_option_disabled(option))
-				goto found_option;
+		if (kb_pressed(KB_PAUSE)) {
+			const char* sound = MENUS[cur_menu].back_sound;
+			if (prev_menu())
+				play_generic_sound(sound == NULL ? "select" : sound);
 		}
-		goto try_select;
-
-	found_option:
-		if (old_option != new_option) {
-			MENUS[cur_menu].option = new_option;
-			play_generic_sound("switch");
-		}
-
-	try_select:
-		if (kb_pressed(KB_UI_ENTER)) {
-			Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
-			if (opt->disabled)
-				goto NO_SELECT_CYKA;
-
-			play_generic_sound("select");
-			if (opt->button != NULL)
-				opt->button();
-			else if (opt->flip != NULL)
-				opt->flip(1);
-			else if (opt->edit != NULL)
-				start_typing(opt->edit, opt->edit_size); // FIXME: Play "select" when pressing Enter or
-				                                         //        backspace while typing
-			else if (opt->enter != MEN_NULL)
-				set_menu(opt->enter);
-		}
-
-	NO_SELECT_CYKA:
-		flip = kb_repeated(KB_UI_RIGHT) - kb_repeated(KB_UI_LEFT);
-		if (flip != 0) {
-			const Option* opt = &OPTIONS[cur_menu][MENUS[cur_menu].option];
-			if (opt->flip != NULL && !is_option_disabled(opt)) {
-				play_generic_sound("toggle");
-				opt->flip(flip);
-			}
-		}
-
-		if (!kb_pressed(KB_PAUSE))
-			continue; // de-nesting
-		const char* sound = MENUS[cur_menu].back_sound;
-		if (prev_menu())
-			play_generic_sound(sound == NULL ? "select" : sound);
 	}
 }
 
