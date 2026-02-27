@@ -104,18 +104,17 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
 	}
 
 	GameActor* dead = create_actor(ACT_DEAD, POS_ADD(actor, FxZero, FxFrom(-32L)));
-	if (dead == NULL)
-		return NULL;
+	if (dead != NULL) {
+		VAL(dead, DEAD_TYPE) = actor->type;
+		dead->flags = (actor->flags & (~(FLG_DESTROY | FLG_FREEZE))) | FLG_Y_FLIP;
 
-	VAL(dead, DEAD_TYPE) = actor->type;
-	dead->flags = (actor->flags & (~(FLG_DESTROY | FLG_FREEZE))) | FLG_Y_FLIP;
-
-	if (kick) {
-		const Fixed rnd = FxFrom(rng(5L));
-		const Fixed dir = 77208L + Fmul(rnd, 12868L);
-		VAL(dead, X_SPEED) = Fmul(Fcos(dir), FxFrom(3L));
-		VAL(dead, Y_SPEED) = Fmul(Fsin(dir), FxFrom(-3L));
-		play_state_sound("kick", PLAY_POS, 0L, A_ACTOR(actor));
+		if (kick) {
+			const Fixed rnd = FxFrom(rng(5L));
+			const Fixed dir = 77208L + Fmul(rnd, 12868L);
+			VAL(dead, X_SPEED) = Fmul(Fcos(dir), FxFrom(3L));
+			VAL(dead, Y_SPEED) = Fmul(Fsin(dir), FxFrom(-3L));
+			play_state_sound("kick", PLAY_POS, 0L, A_ACTOR(actor));
+		}
 	}
 
 	FLAG_ON(actor, FLG_DESTROY);
