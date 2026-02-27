@@ -31,6 +31,7 @@ enum {
 typedef Uint8 PacketType;
 enum {
 	PT_START,
+	PT_CONTINUE,
 	PT_CHAT,
 };
 
@@ -62,7 +63,7 @@ Uint32 get_lobby_party();
 int player_to_peer(PlayerID), spectator_to_peer(int);
 const char* get_peer_name(int);
 Bool peer_is_spectating(int), i_am_spectating();
-void start_online_game();
+void start_online_game(Bool);
 PlayerID populate_game(GekkoSession*);
 
 // Buffer

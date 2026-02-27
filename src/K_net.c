@@ -132,7 +132,31 @@ void net_newframe() {
 
 		case PT_START: {
 			if (!NutPunch_IsMaster())
-				start_online_game();
+				start_online_game(TRUE);
+			break;
+		}
+
+		case PT_CONTINUE: {
+			if (NutPunch_IsMaster())
+				break;
+
+			GameContext* ctx = init_game_context();
+			char* cursor = data;
+
+			cursor += sizeof(PacketType);
+			SDL_strlcpy(ctx->level, cursor, CLIENT_STRING_MAX), cursor += CLIENT_STRING_MAX;
+			ctx->flags = *(GameFlag*)cursor, cursor += sizeof(GameFlag);
+			ctx->checkpoint = *(ActorID*)cursor, cursor += sizeof(ActorID);
+
+			ctx->num_players = *(PlayerID*)cursor, cursor += sizeof(PlayerID);
+			for (PlayerID i = 0; i < ctx->num_players; i++) {
+				ctx->players[i].lives = *(Sint8*)cursor, cursor += sizeof(Sint8);
+				ctx->players[i].power = *(PlayerPower*)cursor, cursor += sizeof(PlayerPower);
+				ctx->players[i].coins = *(Uint8*)cursor, cursor += sizeof(Uint8);
+				ctx->players[i].score = *(Uint32*)cursor, cursor += sizeof(Uint32);
+			}
+
+			start_online_game(FALSE);
 			break;
 		}
 
@@ -259,15 +283,16 @@ Bool i_am_spectating() {
 	return peer_is_spectating(NutPunch_LocalPeer());
 }
 
-void start_online_game() {
+void start_online_game(Bool override_ctx) {
 	pull_lobby_data();
 
+	if (!override_ctx)
+		goto dont_override_ctx;
+
 	int num_players = 0;
-	for (int i = 0; i < MAX_PEERS; i++) {
-		if (!NutPunch_PeerAlive(i) || peer_is_spectating(i))
-			continue;
-		++num_players;
-	}
+	for (int i = 0; i < MAX_PEERS; i++)
+		if (NutPunch_PeerAlive(i) && !peer_is_spectating(i))
+			++num_players;
 	if (num_players < 1) {
 		WTF("Not enough players");
 		return;
@@ -279,6 +304,8 @@ void start_online_game() {
 	SDL_strlcpy(ctx->level, CLIENT.game.level, sizeof(ctx->level));
 	ctx->flags |= GF_TRY_HELL;
 	ctx->num_players = (PlayerID)num_players;
+
+dont_override_ctx:
 	start_game();
 }
 

@@ -60,7 +60,6 @@ enum {
 	GI_JUMP = 1 << 4,
 	GI_RUN = 1 << 5,
 	GI_FIRE = 1 << 6,
-	GI_WARP = 1 << 7,
 };
 
 typedef Uint16 GameFlag;
@@ -458,6 +457,7 @@ extern GameState game_state;
 GameContext* init_game_context();
 
 void start_game(), nuke_game();
+void continue_game();
 Bool game_exists();
 Bool update_game();
 void draw_game();

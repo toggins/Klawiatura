@@ -819,7 +819,7 @@ static void tick(GameActor* actor) {
 		VAL(actor, PLAYER_WARP) = NULLACT;
 
 	if (game_state.sequence.type == SEQ_WIN) {
-		player->input &= GI_WARP;
+		player->input = 0L;
 		if (VAL(actor, X_SPEED) < FxZero)
 			player->input |= GI_RIGHT;
 		else

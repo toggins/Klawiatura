@@ -166,6 +166,41 @@ void start_game() {
 	input_wipeout();
 }
 
+void continue_game() {
+	if (!NutPunch_IsReady()) {
+		start_game();
+		return;
+	}
+
+	if (!NutPunch_IsMaster())
+		return;
+
+	char *data = net_buffer(), *cursor = data;
+	*(PacketType*)cursor = PT_CONTINUE, cursor += sizeof(PacketType);
+	SDL_strlcpy(cursor, queue_game_context.level, CLIENT_STRING_MAX), cursor += CLIENT_STRING_MAX;
+	*(GameFlag*)cursor = queue_game_context.flags, cursor += sizeof(GameFlag);
+	*(ActorID*)cursor = queue_game_context.checkpoint, cursor += sizeof(ActorID);
+
+	PlayerID count = 0;
+	for (int i = 0; i < MAX_PEERS; i++)
+		if (NutPunch_PeerAlive(i) && !peer_is_spectating(i))
+			++count;
+
+	*(PlayerID*)cursor = queue_game_context.num_players = count, cursor += sizeof(PlayerID);
+	for (PlayerID i = 0; i < count; i++) {
+		*(Sint8*)cursor = queue_game_context.players[i].lives, cursor += sizeof(Sint8);
+		*(PlayerPower*)cursor = queue_game_context.players[i].power, cursor += sizeof(PlayerPower);
+		*(Uint8*)cursor = queue_game_context.players[i].coins, cursor += sizeof(Uint8);
+		*(Uint32*)cursor = queue_game_context.players[i].score, cursor += sizeof(Uint32);
+	}
+
+	for (int i = 0; i < MAX_PEERS; i++)
+		if (NutPunch_PeerAlive(i))
+			NutPunch_SendReliably(PCH_LOBBY, i, data, (int)(cursor - data));
+
+	start_game();
+}
+
 Bool game_exists() {
 	return game_session != NULL;
 }
@@ -304,8 +339,6 @@ Bool update_game() {
 				input |= kb_down(KB_FIRE) * GI_FIRE;
 				input |= kb_down(KB_RUN) * GI_RUN;
 			}
-			if (game_state.flags & (GF_END | GF_RESTART))
-				input |= GI_WARP;
 			gekko_add_local_input(game_session, local_player, &input);
 		}
 
@@ -383,10 +416,6 @@ Bool update_game() {
 				tick_game_state(inputs);
 				tick_audio_state();
 
-				for (PlayerID j = 0L; j < game_context.num_players; j++)
-					if (!(inputs[j] & GI_WARP))
-						goto dont_warp;
-
 				if (game_state.flags & GF_END) {
 					if (game_state.next[0] == 0L) {
 						show_results();
@@ -407,7 +436,7 @@ Bool update_game() {
 						ctx->players[i].score = game_state.players[i].score;
 					}
 
-					start_game();
+					continue_game();
 					return TRUE;
 				} else if (game_state.flags & GF_RESTART) {
 				restart_fr:
@@ -422,7 +451,7 @@ Bool update_game() {
 					}
 					ctx->checkpoint = game_state.checkpoint;
 
-					start_game();
+					continue_game();
 					return TRUE;
 				}
 
@@ -1082,7 +1111,13 @@ static void start_game_state() {
 
 	for (PlayerID i = 0L; i < game_context.num_players; i++)
 		game_state.players[i].id = i;
-	game_state.flags |= game_context.flags | ((game_context.num_players <= 1L) * GF_SINGLE);
+
+	game_state.flags |= game_context.flags;
+	if (game_context.num_players <= 1L)
+		game_state.flags |= GF_SINGLE;
+	else
+		game_state.flags &= ~GF_SINGLE;
+
 	game_state.checkpoint = game_context.checkpoint;
 
 	//

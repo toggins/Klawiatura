@@ -274,7 +274,7 @@ static void start_multiplayer() {
 
 	// FIXME: Starting a session right after sending a start packet will
 	//        delay the packet until the host has loaded in. This sucks.
-	start_online_game();
+	start_online_game(TRUE);
 }
 
 static Bool is_client() {
