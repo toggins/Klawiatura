@@ -188,7 +188,7 @@ void nuke_game() {
 }
 
 static void nuke_game_to_menu() {
-	nuke_game();
+	nuke_game(), purge_chat();
 	clear_assets(), load_menu();
 }
 
