@@ -731,12 +731,15 @@ static Bool is_option_disabled(const Option* opt) {
 	return !opt->name || opt->disabled;
 }
 
-static bool select_menu_option_by_mouse(int* new_option) {
+static void select_menu_option_by_mouse(int* new_option) {
+	static float last_y = 0.f;
 	float y = 0.f;
 	int h = 0;
 
-	const Bool select = mb_pressed(SDL_BUTTON_LMASK);
 	SDL_GetMouseState(NULL, &y);
+	if (SDL_fabsf(last_y - y) < 1e-3)
+		return; // don't change menu option unless the mouse moves
+	last_y = y;
 
 	{
 		extern SDL_Window* window;
@@ -745,15 +748,13 @@ static bool select_menu_option_by_mouse(int* new_option) {
 	}
 
 	const int opt = (int)SDL_floorf((y - 60.f) / 24.f);
-	if (opt >= 0 && opt < MAX_OPTIONS && !is_option_disabled(&OPTIONS[cur_menu][opt])) {
+	if (opt >= 0 && opt < MAX_OPTIONS && !is_option_disabled(&OPTIONS[cur_menu][opt]))
 		*new_option = opt;
-		return select;
-	}
-
-	return FALSE;
 }
 
 static void select_menu_option_by_keyboard(const int old_option, int* new_option, const int change) {
+	if (!change)
+		return;
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		if (change < 0 && *new_option <= 0)
 			*new_option = MAX_OPTIONS - 1;
@@ -768,18 +769,17 @@ static void select_menu_option_by_keyboard(const int old_option, int* new_option
 }
 
 static void select_menu_option() {
-	const int old_option = MENUS[cur_menu].option, change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
+	const int old_option = MENUS[cur_menu].option;
+	const Bool select = kb_pressed(KB_UI_ENTER) || mb_pressed(SDL_BUTTON_LMASK);
 	int new_option = old_option;
-	Bool select = kb_pressed(KB_UI_ENTER);
 
 	if (is_option_disabled(&OPTIONS[cur_menu][new_option])) {
 		// jump to first enabled option, if any
-		new_option = -1;
-		select_menu_option_by_keyboard(old_option, &new_option, 1);
-	} else if (change) {
-		select_menu_option_by_keyboard(old_option, &new_option, change);
+		new_option = -1, select_menu_option_by_keyboard(old_option, &new_option, 1);
 	} else {
-		select |= select_menu_option_by_mouse(&new_option);
+		const int change = kb_repeated(KB_UI_DOWN) - kb_repeated(KB_UI_UP);
+		select_menu_option_by_keyboard(old_option, &new_option, change);
+		select_menu_option_by_mouse(&new_option);
 	}
 
 	if (old_option != new_option) {
