@@ -1,4 +1,5 @@
 
+#include "K_editor.h"
 #include "K_string.h"
 #include "K_tick.h"
 
@@ -692,6 +693,11 @@ static void tick(GameActor* actor) {
 	GamePlayer* player = get_owner(actor);
 	if (player == NULL) {
 		FLAG_ON(actor, FLG_DESTROY);
+		return;
+	}
+
+	if (is_editing_level()) {
+		editor_baton_pass(player, actor);
 		return;
 	}
 

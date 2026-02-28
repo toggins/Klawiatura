@@ -31,6 +31,7 @@ enum {
 	KB_UI_DOWN,
 	KB_UI_RIGHT,
 	KB_UI_ENTER,
+	KB_EDIT,
 
 	KB_SECRET_D,
 	KB_SECRET_E,

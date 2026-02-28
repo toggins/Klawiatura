@@ -2,6 +2,7 @@
 #include "K_chat.h"
 #include "K_cmd.h"
 #include "K_discord.h"
+#include "K_editor.h"
 #include "K_file.h"
 #include "K_game.h"
 #include "K_input.h"
@@ -125,6 +126,8 @@ GameContext* init_game_context() {
 
 static void start_game_state();
 void start_game() {
+	set_editing_level(FALSE);
+
 	if (game_exists())
 		nuke_game();
 	else
@@ -206,6 +209,8 @@ Bool game_exists() {
 
 static void nuke_game_state();
 void nuke_game() {
+	set_editing_level(FALSE);
+
 	if (game_session == NULL)
 		return;
 
@@ -318,6 +323,8 @@ Bool update_game() {
 		} else if (kb_pressed(KB_PAUSE) && !typing_what()) {
 			play_generic_sound("pause");
 			pause();
+		} else if (kb_pressed(KB_EDIT)) { // FIXME: ignore in multiplayer
+			set_editing_level(!is_editing_level());
 		} else {
 			goto dont_break_events;
 		}
