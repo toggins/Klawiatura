@@ -195,8 +195,7 @@ void continue_game() {
 	}
 
 	for (int i = 0; i < MAX_PEERS; i++)
-		if (NutPunch_PeerAlive(i))
-			NutPunch_SendReliably(PCH_LOBBY, i, data, (int)(cursor - data));
+		NutPunch_SendReliably(PCH_LOBBY, i, data, (int)(cursor - data));
 
 	start_game();
 }
