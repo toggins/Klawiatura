@@ -5,7 +5,7 @@
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_stdinc.h>
 
-#include "K_math.h"
+#include "K_misc.h"
 
 #define MAX_INPUT_DELAY 10L
 

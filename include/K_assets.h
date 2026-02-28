@@ -1,7 +1,7 @@
 #pragma once
 
-#include "K_math.h"
 #include "K_memory.h" // IWYU pragma: keep
+#include "K_misc.h"
 
 typedef struct {
 	char* name;
