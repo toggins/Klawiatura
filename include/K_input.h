@@ -71,6 +71,7 @@ Bool kb_pressed(Keybind), kb_down(Keybind), kb_released(Keybind), kb_repeated(Ke
 const char* kb_label(Keybind);
 
 Bool mb_pressed(SDL_MouseButtonFlags);
+void get_cursor_pos(float* x, float* y);
 
 void start_typing(char*, size_t), stop_typing();
 const char* typing_what();

@@ -252,6 +252,20 @@ Bool mb_pressed(SDL_MouseButtonFlags mask) {
 	return (mb_now & mask) && !(mb_then & mask);
 }
 
+/// Returns cursor coordinates relative to the effective 800x600 screen area.
+void get_cursor_pos(float* x, float* y) {
+	DrawArea area = {0};
+	get_draw_area(&area);
+
+	float gx = 0.f, gy = 0.f;
+	SDL_GetMouseState(&gx, &gy);
+
+	if (x)
+		*x = gx * area.scale + area.left;
+	if (y)
+		*y = gy * area.scale + area.top;
+}
+
 /// True if the typed input was confirmed with the Enter key; false if cancelled with the Esc key.
 Bool typing_input_confirmed() {
 	Bool value = typing_confirmation;

@@ -737,18 +737,14 @@ static Bool is_option_disabled(const Option* opt) {
 }
 
 static void select_menu_option_by_mouse(int* new_option) {
-	DrawArea area = {0};
-	get_draw_area(&area);
+	float x = 0.f, y = 0.f;
+	get_cursor_pos(&x, &y);
 
 	static float last_y = 0.f;
-	float x = 0.f, y = 0.f;
-
-	SDL_GetMouseState(&x, &y);
 	if (SDL_fabsf(last_y - y) < 1e-3)
 		return; // don't change menu option unless the cursor moves vertically
 	last_y = y;
 
-	y *= area.scale, y += area.top;
 	const int opt = (int)SDL_floorf((y - 60.f) / 24.f);
 	*new_option = MAX_OPTIONS;
 
@@ -756,7 +752,7 @@ static void select_menu_option_by_mouse(int* new_option) {
 		return;
 
 	const float margin = 8.f;
-	x *= area.scale, x += area.left, x -= 48.f;
+	x -= 48.f;
 
 	if (x < -margin || x > string_width("main", 24.f, OPTIONS[cur_menu][opt].name) + margin)
 		return;
