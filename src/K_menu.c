@@ -737,26 +737,31 @@ static Bool is_option_disabled(const Option* opt) {
 }
 
 static void select_menu_option_by_mouse(int* new_option) {
-	static float last_y = 0.f;
-	float y = 0.f;
+	DrawArea area = {0};
+	get_draw_area(&area);
 
-	SDL_GetMouseState(NULL, &y);
+	static float last_y = 0.f;
+	float x = 0.f, y = 0.f;
+
+	SDL_GetMouseState(&x, &y);
 	if (SDL_fabsf(last_y - y) < 1e-3)
-		return; // don't change menu option unless the mouse moves
+		return; // don't change menu option unless the cursor moves vertically
 	last_y = y;
 
-	{
-		int h = 0;
-		extern SDL_Window* window;
-		SDL_GetWindowSize(window, NULL, &h);
-		y *= (float)SCREEN_HEIGHT / (float)h;
-	}
-
+	y *= area.scale, y += area.top;
 	const int opt = (int)SDL_floorf((y - 60.f) / 24.f);
-	if (opt >= 0 && opt < MAX_OPTIONS && !is_option_disabled(&OPTIONS[cur_menu][opt]))
-		*new_option = opt;
-	else
-		*new_option = MAX_OPTIONS;
+	*new_option = MAX_OPTIONS;
+
+	if (opt < 0 || opt >= MAX_OPTIONS || is_option_disabled(&OPTIONS[cur_menu][opt]))
+		return;
+
+	const float margin = 8.f;
+	x *= area.scale, x += area.left, x -= 48.f;
+
+	if (x < -margin || x > string_width("main", 24.f, OPTIONS[cur_menu][opt].name) + margin)
+		return;
+
+	*new_option = opt;
 }
 
 static void select_menu_option_by_keyboard(const int old_option, int* new_option, const int change) {

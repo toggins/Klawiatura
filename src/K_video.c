@@ -213,17 +213,20 @@ void video_teardown() {
 	SDL_DestroyWindow(window);
 }
 
-void start_drawing() {
+void get_draw_area(DrawArea* out) {
 	const float ww = (float)window_width, wh = (float)window_height;
+	out->scale = SDL_max((float)SCREEN_WIDTH / ww, (float)SCREEN_HEIGHT / wh);
+	out->width = ww * out->scale, out->height = wh * out->scale;
+	out->left = ((ww - ((float)SCREEN_WIDTH / out->scale)) / -2.f) * out->scale,
+	out->top = ((wh - ((float)SCREEN_HEIGHT / out->scale)) / -2.f) * out->scale;
+	out->right = out->left + out->width, out->bottom = out->top + out->height;
+}
 
-	const float scalew = ww / (float)SCREEN_WIDTH, scaleh = wh / (float)SCREEN_HEIGHT;
-	const float scale = SDL_min(scalew, scaleh);
+void start_drawing() {
+	DrawArea area = {0};
+	get_draw_area(&area);
 
-	const float left = ((ww - ((float)SCREEN_WIDTH * scale)) / -2.f) / scale,
-		    top = ((wh - ((float)SCREEN_HEIGHT * scale)) / -2.f) / scale;
-	const float right = left + (ww / scale), bottom = top + (wh / scale);
-
-	glm_ortho(left, right, bottom, top, -16000, 16000, projection_matrix);
+	glm_ortho(area.left, area.right, area.bottom, area.top, -16000, 16000, projection_matrix);
 	glm_mat4_mul(view_matrix, model_matrix, mvp_matrix);
 	glm_mat4_mul(projection_matrix, mvp_matrix, mvp_matrix);
 	glViewport(0, 0, window_width, window_height);

@@ -120,6 +120,12 @@ typedef struct {
 	Glyph glyphs[SDL_MAX_SINT8 + 1];
 } Font;
 
+/// Output of `get_draw_area()`.
+typedef struct {
+	float left, right, top, bottom;
+	float width, height, scale;
+} DrawArea;
+
 typedef int8_t FontAlignment;
 enum {
 	FA_LEFT = -1,
@@ -195,6 +201,7 @@ extern VideoState video_state;
 
 void video_init(Bool), video_teardown();
 void start_drawing(), stop_drawing();
+void get_draw_area(DrawArea*);
 
 // State
 void start_video_state(), nuke_video_state();
