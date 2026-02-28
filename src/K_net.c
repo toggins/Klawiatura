@@ -6,6 +6,7 @@
 #define NutPunch_Malloc SDL_malloc
 #define NutPunch_Free SDL_free
 #define NutPunch_Log INFO
+#define ptrdiff_t int64_t // HACK: solves the linux ci build failing
 
 #include "K_chat.h"
 #include "K_discord.h"
