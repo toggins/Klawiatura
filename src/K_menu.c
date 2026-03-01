@@ -251,6 +251,10 @@ FMT_OPTION(active_lobby, get_lobby_id(), in_public_lobby() ? "" : " (Unlisted)")
 FMT_OPTION(lobby_limit, NutPunch_GetMaxPlayers());
 FMT_OPTION(spectate, i_am_spectating() ? "Spectator" : "Player");
 
+// Ingame
+FMT_OPTION(restart, NutPunch_IsReady() ? "(Can't restart in multiplayer!)" : "Restart Level (-1 Life)")
+FMT_OPTION(exit, NutPunch_IsReady() ? "Return to Lobby" : "Return to Title")
+
 static void set_players(int flip) {
 	CLIENT.game.players
 		= (PlayerID)((flip >= 0) ? ((CLIENT.game.players >= MAX_PLAYERS) ? 2 : (CLIENT.game.players + 1))
@@ -405,7 +409,11 @@ BIND_OPTION(chat, KB_CHAT);
 #undef BIND_OPTION
 
 static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
-	enter_lobby(), update_inlobby(), show_levels();
+	enter_lobby(), update_inlobby(), show_levels(), update_playing(), update_pause(), restart_session(),
+	exit_to_main(), resume(), ingame_return_hack();
+
+extern void pause_gamestate(), unpause_gamestate();
+
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType),
 	maybe_leave_lobby(MenuType);
 
@@ -431,56 +439,13 @@ static Menu MENUS[MEN_SIZE] = {
 		      .leave = maybe_leave_lobby},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
+	[MEN_INGAME_RETURN_HACK] = {.enter = ingame_return_hack},
+	[MEN_INGAME_PLAYING] = {.from = MEN_INGAME_PAUSE, .enter = unpause_gamestate, .update = update_playing},
+	[MEN_INGAME_PAUSE] = {.update = update_pause, .enter = pause_gamestate},
 };
 
-static void update_menu_track() {
-	const char* track = NULL;
-	switch (cur_menu) {
-	default: {
-		if (CLIENT.game.kevin && CLIENT.game.fred) {
-			track = "it_makes_me_burn";
-			break;
-		}
-
-		for (SecretType i = 0; i < SECR_SIZE; i++)
-			if (SECRETS[i].active && SECRETS[i].track != NULL)
-				track = SECRETS[i].track;
-
-		if (track == NULL)
-			track = "title";
-		break;
-	}
-
-	case MEN_INTRO:
-	case MEN_ERROR:
-		break;
-
-	case MEN_RESULTS: {
-		if (!losers)
-			track = "yi_score";
-		break;
-	}
-	}
-
-	if (track != NULL)
-		play_generic_track(track, PLAY_LOOPING);
-	else
-		stop_generic_track();
-}
-
-// Main Menu
-static void reset_credits() {
-	credits_y = SCREEN_HEIGHT;
-}
-
-// Find lobbies
-static void join_found_lobby() {
-	const NutPunch_LobbyInfo* lobby = NutPunch_GetLobby((int)MENUS[MEN_FIND_LOBBY].option);
-	if (lobby == NULL)
-		return;
-	join_lobby(lobby->name);
-	set_menu(MEN_JOINING_LOBBY);
-}
+static const char* NO_LOBBIES_FOUND = "No lobbies found";
+#define LEVEL_SELECT_OPTION "Level: %s", FORMAT(level), .enter = MEN_LEVEL_SELECT
 
 #define EDIT(var) .edit = (var), .edit_size = sizeof(var)
 #define TOGGLE(fname) .flip = toggle_##fname
@@ -490,9 +455,6 @@ static void join_found_lobby() {
 #define VIVID .vivid = TRUE
 #define OINFO DISABLE, VIVID
 #define NOCLIENT .disable_if = is_client
-
-static const char* NO_LOBBIES_FOUND = "No lobbies found";
-#define LEVEL_SELECT_OPTION "Level: %s", FORMAT(level), .enter = MEN_LEVEL_SELECT
 
 static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_MAIN] = {
@@ -586,7 +548,61 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Enter as: %s", FORMAT(spectate), .flip = set_spectate},
 		{"%s", FORMAT(start), .disable_if = disable_start, .button = start_multiplayer},
 	},
+	[MEN_INGAME_RETURN_HACK] = {},
+	[MEN_INGAME_PLAYING] = {},
+	[MEN_INGAME_PAUSE] = {
+		{"Resume Game", .button = resume},
+		{"%s", FORMAT(restart), .button = restart_session},
+		{"%s", FORMAT(exit), .button = exit_to_main},
+	},
 };
+
+static void update_menu_track() {
+	const char* track = NULL;
+	switch (cur_menu) {
+	default: {
+		if (CLIENT.game.kevin && CLIENT.game.fred) {
+			track = "it_makes_me_burn";
+			break;
+		}
+
+		for (SecretType i = 0; i < SECR_SIZE; i++)
+			if (SECRETS[i].active && SECRETS[i].track != NULL)
+				track = SECRETS[i].track;
+
+		if (track == NULL)
+			track = "title";
+		break;
+	}
+
+	case MEN_INTRO:
+	case MEN_ERROR:
+		break;
+
+	case MEN_RESULTS: {
+		if (!losers)
+			track = "yi_score";
+		break;
+	}
+	}
+
+	if (track != NULL)
+		play_generic_track(track, PLAY_LOOPING);
+	else
+		stop_generic_track();
+}
+
+static void reset_credits() {
+	credits_y = SCREEN_HEIGHT;
+}
+
+static void join_found_lobby() {
+	const NutPunch_LobbyInfo* lobby = NutPunch_GetLobby((int)MENUS[MEN_FIND_LOBBY].option);
+	if (lobby == NULL)
+		return;
+	join_lobby(lobby->name);
+	set_menu(MEN_JOINING_LOBBY);
+}
 
 void load_menu() {
 	load_texture("ui/disclaimer", FALSE);
@@ -706,6 +722,68 @@ static void update_inlobby() {
 
 	if (!NutPunch_IsMaster())
 		pull_lobby_data();
+}
+
+static void common_game_update() {
+	if (game_exists() && !update_game())
+		input_wipeout();
+}
+
+static void update_playing() {
+	handle_chat_inputs();
+	common_game_update();
+}
+
+static void update_pause() {
+	common_game_update();
+}
+
+static void resume() {
+	set_menu(MEN_INGAME_PLAYING);
+}
+
+static void ingame_return_hack() {
+	if (cur_menu >= MEN_INGAME)
+		set_menu(MENUS[MEN_INGAME_RETURN_HACK].from);
+	else
+		set_menu(MEN_INGAME_PLAYING);
+}
+
+void enter_gaming_menu() {
+	set_menu(MEN_INGAME_RETURN_HACK);
+}
+
+static void restart_session() {
+	// FIXME: Update this if replays are implemented.
+
+	if (NutPunch_IsReady())
+		goto no_can_restart;
+
+	if (game_state.flags & GF_HELL) {
+		restart_game_session();
+		return;
+	}
+
+	PlayerID can_restart = numplayers();
+	for (PlayerID i = 0L; i < numplayers(); i++) {
+		GamePlayer* player = get_player(i);
+		if (player == NULL)
+			continue;
+		if (player->lives <= 0L)
+			--can_restart;
+		else if (game_state.sequence.type != SEQ_LOSE)
+			--player->lives;
+	}
+
+	if (can_restart <= 0L) {
+	no_can_restart:
+		play_generic_sound("bump");
+	}
+}
+
+static void exit_to_main() {
+	extern Bool quickstart, permadeath;
+	permadeath |= quickstart;
 }
 
 static void maybe_disconnect(MenuType next) {
@@ -832,7 +910,15 @@ NO_SELECT_CYKA:
 }
 
 void update_menu() {
-	for (new_frame(0.f); got_ticks(); next_tick()) {
+	float ahead = 0.f;
+	if (cur_menu == MEN_INGAME_PLAYING) {
+		extern GekkoSession* game_session;
+		gekko_network_poll(game_session);
+		ahead = gekko_frames_ahead(game_session);
+		ahead = SDL_clamp(ahead, 0, 2);
+	}
+
+	for (new_frame(ahead); got_ticks(); next_tick()) {
 		int last_menu = cur_menu;
 		if (MENUS[cur_menu].update != NULL)
 			MENUS[cur_menu].update();
@@ -842,15 +928,17 @@ void update_menu() {
 		update_secrets();
 		select_menu_option();
 
-		if (!kb_pressed(KB_PAUSE))
-			continue;
-
-		const char* sound = MENUS[cur_menu].back_sound;
-		if (!sound)
-			sound = "select";
-		if (prev_menu())
-			play_generic_sound(sound);
+		if (kb_pressed(KB_PAUSE)) {
+			const char* sound = MENUS[cur_menu].back_sound;
+			if (!sound)
+				sound = "select";
+			if (prev_menu())
+				play_generic_sound(sound);
+		}
 	}
+
+	extern void interpolate();
+	interpolate();
 }
 
 void draw_menu() {
@@ -860,6 +948,17 @@ void draw_menu() {
 
 	batch_reset();
 	batch_sprite("ui/background");
+
+	if (cur_menu >= MEN_INGAME)
+		draw_game();
+
+	if (cur_menu == MEN_INGAME_PAUSE) {
+		batch_pos(B_XYZ(0.f, 0.f, -10000.f)), batch_color(B_RGBA(0, 0, 0, 128));
+		batch_rectangle(NULL, B_XY(SCREEN_WIDTH, SCREEN_HEIGHT));
+		batch_pos(B_XYZ(48.f, 128.f, -10000.f)), batch_color(B_RGB(255, 144, 144));
+		batch_string("main", 24, "Paused");
+		batch_color(B_WHITE);
+	}
 
 	Bool has_secret = FALSE;
 	for (SecretType i = 0; i < SECR_SIZE; i++)
@@ -927,11 +1026,12 @@ void draw_menu() {
 	}
 
 	if (menu->from != MEN_NULL) {
-		const char *btn
-			= (MENUS[cur_menu].from == MEN_EXIT)
-		                  ? "Exit"
-		                  : ((cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY) ? "Disconnect" : "Back"),
-			*indicator = fmt("[%s] %s", kb_label(KB_PAUSE), btn);
+		const char* btn = "Back";
+		if (MENUS[cur_menu].from == MEN_EXIT)
+			btn = "Exit";
+		else if (cur_menu == MEN_JOINING_LOBBY || cur_menu == MEN_LOBBY)
+			btn = "Disconnect";
+		const char* indicator = fmt("[%s] %s", kb_label(KB_PAUSE), btn);
 		batch_pos(B_XY(48.f, SCREEN_HEIGHT - 24.f)), batch_color(B_ALPHA(128)), batch_align(B_BOTTOM_LEFT);
 		batch_string("main", 24.f, indicator);
 	}

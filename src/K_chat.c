@@ -93,8 +93,7 @@ void handle_chat_inputs() {
 	if (typing_what() || !NutPunch_IsReady())
 		return;
 
-	const Bool paused = game_exists() && game_paused();
-	if (kb_pressed(KB_CHAT) && !paused)
+	if (kb_pressed(KB_CHAT))
 		start_typing(chat_message, sizeof(chat_message));
 	else if (typing_input_confirmed())
 		send_chat_message();

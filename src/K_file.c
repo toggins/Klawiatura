@@ -4,7 +4,7 @@
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
-#include "K_math.h"
+#include "K_misc.h"
 
 static const char* data_path = NULL;
 static char* user_path = NULL;

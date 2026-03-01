@@ -457,11 +457,10 @@ extern GameState game_state;
 GameContext* init_game_context();
 
 void start_game(), nuke_game();
-void continue_game();
+void continue_game(), restart_game_session();
 Bool game_exists();
 Bool update_game();
 void draw_game();
-Bool game_paused();
 
 void hud_message(const char*);
 

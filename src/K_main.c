@@ -143,20 +143,19 @@ static int realmain() {
 		default:
 			break;
 
-		case MEN_HOST_LOBBY: {
+		case MEN_HOST_LOBBY:
 			set_menu(MEN_MAIN), set_menu(MEN_MULTIPLAYER), set_menu(MEN_HOST_LOBBY);
 			host_lobby(CLIENT.lobby.name);
 			starting_menu = MEN_JOINING_LOBBY;
 			break;
-		}
 
-		case MEN_LOBBY_ID: {
+		case MEN_LOBBY_ID:
 			set_menu(MEN_MAIN), set_menu(MEN_MULTIPLAYER), set_menu(MEN_LOBBY_ID);
 			join_lobby(CLIENT.lobby.name);
 			starting_menu = MEN_JOINING_LOBBY;
 			break;
 		}
-		}
+
 		set_menu(starting_menu);
 	}
 
@@ -168,15 +167,8 @@ static int realmain() {
 			handle_sdl_event(event);
 		}
 
-		if (game_exists()) {
-			if (update_game())
-				draw_game();
-			else
-				input_wipeout();
-		} else {
-			update_menu();
-			draw_menu();
-		}
+		update_menu();
+		draw_menu();
 
 		audio_update();
 		discord_update();
