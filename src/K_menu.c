@@ -707,11 +707,11 @@ static void update_inlobby() {
 
 	if (!is_in_netgame()) {
 		const char* error = net_error();
-		if (error == NULL)
-			prev_menu();
-		else {
+		if (error) {
 			show_error("Lost connection\n%s", net_error());
 			disconnect();
+		} else {
+			prev_menu();
 		}
 		play_generic_sound("disconnect");
 		return;
@@ -772,8 +772,7 @@ static void restart_at_a_cost() {
 static void exit_to_main() {
 	extern Bool quickstart, permadeath;
 	permadeath |= quickstart;
-	nuke_game(), disconnect();
-	set_menu(MENUS[MEN_INGAME_PLAYING].from);
+	nuke_game(), set_menu(MENUS[MEN_INGAME_PLAYING].from);
 }
 
 static void maybe_disconnect(MenuType next) {
