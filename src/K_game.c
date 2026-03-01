@@ -402,11 +402,11 @@ Bool update_game() {
 
 	update_interp_parameters();
 
-	if (!NutPunch_IsReady() && kb_pressed(KB_EDIT))
-		set_editing_level(!is_editing_level());
-
 	if (paused && !NutPunch_IsReady())
 		return TRUE;
+
+	if (!NutPunch_IsReady() && kb_pressed(KB_EDIT))
+		set_editing_level(!is_editing_level());
 
 	if (!i_am_spectating())
 		add_local_inputs();
