@@ -131,17 +131,17 @@ void net_newframe() {
 			continue;
 
 		switch (*(PacketType*)data) {
-		default:
-			break;
-
-		case PT_START: {
-			if (!NutPunch_IsMaster())
+		case PT_START:
+			if (!NutPunch_IsMaster(peer))
+				break; // FUCK YOU
+			if (!NutPunch_IsMaster(NutPunch_LocalPeer()))
 				start_online_game(TRUE);
 			break;
-		}
 
-		case PT_CONTINUE: {
-			if (NutPunch_IsMaster())
+		case PT_CONTINUE:
+			if (!NutPunch_IsMaster(peer))
+				break; // FUCK YOU
+			if (NutPunch_IsMaster(NutPunch_LocalPeer()))
 				break;
 
 			GameContext* ctx = init_game_context();
@@ -162,13 +162,14 @@ void net_newframe() {
 
 			start_online_game(FALSE);
 			break;
-		}
 
-		case PT_CHAT: {
+		case PT_CHAT:
 			if (size > sizeof(PacketType))
 				push_chat_message(peer, data + sizeof(PacketType), size - (int)sizeof(PacketType));
 			break;
-		}
+
+		default:
+			break;
 		}
 	}
 }
