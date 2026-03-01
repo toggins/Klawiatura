@@ -9,7 +9,7 @@ typedef Sint8 PlayerID;
 #include "K_net.h" // IWYU pragma: keep
 
 #define GAME_NAME "Klawiatura"
-#define GAME_VERSION "1.1.0"
+#define GAME_VERSION "1.2.0"
 
 #define MAJOR_LEVEL_VERSION 0
 #define MINOR_LEVEL_VERSION 2
