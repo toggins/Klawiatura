@@ -1,5 +1,4 @@
 #include "K_assets.h"
-#include "K_chat.h"
 #include "K_cmd.h"
 #include "K_discord.h"
 #include "K_editor.h"
@@ -593,7 +592,7 @@ static void draw_hud() {
 }
 
 void draw_game() {
-	if (game_session == NULL)
+	if (!game_exists())
 		return;
 
 	start_drawing();
@@ -656,9 +655,6 @@ void draw_game() {
 		batch_surface(game_surface);
 
 	draw_hud();
-	draw_chat();
-
-	stop_drawing();
 }
 
 #define TICK_LOOP(ticker)                                                                                              \

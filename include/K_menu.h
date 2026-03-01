@@ -27,10 +27,7 @@ typedef enum {
 	MEN_LOBBY,
 	// "ingame" menu marker since they're handled a bit differently
 	MEN_INGAME,
-	// HACK: the ingame pause menu exits to this menu. it keeps track which menu we came from before hopping into a
-	// game session.
-	MEN_INGAME_RETURN_HACK = MEN_INGAME,
-	MEN_INGAME_PLAYING,
+	MEN_INGAME_PLAYING = MEN_INGAME,
 	MEN_INGAME_PAUSE,
 	MEN_SIZE,
 } MenuType;
@@ -51,7 +48,11 @@ typedef struct {
 
 typedef struct {
 	const char *name, *back_sound;
-	void (*update)(), (*enter)(), (*leave)(MenuType next);
+	void (*update)();
+	// don't call `set_menu` here please
+	void (*enter)();
+	// don't call `set_menu` here please
+	void (*leave)(MenuType next);
 	Bool noreturn, ghost;
 
 	MenuType from;

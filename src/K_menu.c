@@ -410,9 +410,7 @@ BIND_OPTION(chat, KB_CHAT);
 
 static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
 	enter_lobby(), update_inlobby(), show_levels(), update_playing(), update_pause(), restart_session(),
-	exit_to_main(), resume(), ingame_return_hack();
-
-extern void pause_gamestate(), unpause_gamestate();
+	exit_to_main(), resume(), quit_ingame_menu();
 
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType),
 	maybe_leave_lobby(MenuType);
@@ -422,7 +420,7 @@ static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_dis
 static Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {NORETURN},
 	[MEN_ERROR] = {"Error", GHOST},
-	[MEN_RESULTS] = {GHOST},
+	[MEN_RESULTS] = {},
 	[MEN_INTRO] = {NORETURN, .update = update_intro},
 	[MEN_MAIN] = {"Mario Together", NORETURN, .enter = reset_credits},
 	[MEN_LEVEL_SELECT] = {"Level Select", .enter = show_levels},
@@ -439,9 +437,8 @@ static Menu MENUS[MEN_SIZE] = {
 		      .leave = maybe_leave_lobby},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
-	[MEN_INGAME_RETURN_HACK] = {.enter = ingame_return_hack},
-	[MEN_INGAME_PLAYING] = {.from = MEN_INGAME_PAUSE, .enter = unpause_gamestate, .update = update_playing},
-	[MEN_INGAME_PAUSE] = {.update = update_pause, .enter = pause_gamestate},
+	[MEN_INGAME_PLAYING] = {.from = MEN_INGAME_PAUSE, .update = update_playing},
+	[MEN_INGAME_PAUSE] = {.update = update_pause},
 };
 
 static const char* NO_LOBBIES_FOUND = "No lobbies found";
@@ -548,7 +545,6 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 		{"Enter as: %s", FORMAT(spectate), .flip = set_spectate},
 		{"%s", FORMAT(start), .disable_if = disable_start, .button = start_multiplayer},
 	},
-	[MEN_INGAME_RETURN_HACK] = {},
 	[MEN_INGAME_PLAYING] = {},
 	[MEN_INGAME_PAUSE] = {
 		{"Resume Game", .button = resume},
@@ -701,7 +697,7 @@ static void enter_lobby() {
 }
 
 static void maybe_leave_lobby(MenuType next) {
-	if (next != MEN_LEVEL_SELECT && next != MEN_RESULTS && next != MEN_ERROR)
+	if (next < MEN_INGAME && next != MEN_LEVEL_SELECT && next != MEN_RESULTS && next != MEN_ERROR)
 		disconnect();
 }
 
@@ -742,15 +738,12 @@ static void resume() {
 	set_menu(MEN_INGAME_PLAYING);
 }
 
-static void ingame_return_hack() {
-	if (cur_menu >= MEN_INGAME)
-		set_menu(MENUS[MEN_INGAME_RETURN_HACK].from);
-	else
-		set_menu(MEN_INGAME_PLAYING);
+static void quit_ingame_menu() {
+	set_menu(MENUS[MEN_INGAME_PLAYING].from);
 }
 
 void enter_gaming_menu() {
-	set_menu(MEN_INGAME_RETURN_HACK);
+	set_menu(MEN_INGAME_PLAYING);
 }
 
 static void restart_session() {
@@ -784,6 +777,8 @@ static void restart_session() {
 static void exit_to_main() {
 	extern Bool quickstart, permadeath;
 	permadeath |= quickstart;
+	nuke_game(), disconnect();
+	quit_ingame_menu();
 }
 
 static void maybe_disconnect(MenuType next) {
@@ -1025,7 +1020,7 @@ void draw_menu() {
 		}
 	}
 
-	if (menu->from != MEN_NULL) {
+	if (menu->from != MEN_NULL && cur_menu < MEN_INGAME) {
 		const char* btn = "Back";
 		if (MENUS[cur_menu].from == MEN_EXIT)
 			btn = "Exit";
@@ -1089,8 +1084,6 @@ void draw_menu() {
 			y += 24.f;
 		}
 
-		draw_chat();
-
 		break;
 	}
 
@@ -1111,6 +1104,8 @@ void draw_menu() {
 		break;
 	}
 	}
+
+	draw_chat();
 
 	batch_pos(B_XY(HALF_SCREEN_WIDTH + ((fade_red >= 255) ? (SDL_rand(3) - SDL_rand(3)) : 0.f),
 		SCREEN_HEIGHT - 48.f - ((fade_red >= 255) ? SDL_rand(5) : 0.f)));
@@ -1240,7 +1235,25 @@ Bool set_menu(MenuType next_menu) {
 	if (cur_menu == next_menu || next_menu <= MEN_NULL || next_menu >= MEN_SIZE)
 		return FALSE;
 
-	if (MENUS[cur_menu].from != next_menu) {
+	// HACK: extra-special ingame-menu handling.
+	if ((cur_menu == MEN_INGAME_PLAYING && next_menu == MEN_INGAME_PAUSE)
+		|| (cur_menu == MEN_INGAME_PAUSE && next_menu == MEN_INGAME_PLAYING))
+	{
+		MENUS[MEN_INGAME_PAUSE].from = MEN_INGAME_PLAYING;
+		cur_menu = next_menu;
+
+		extern void pause_gamestate(), unpause_gamestate();
+		if (cur_menu == MEN_INGAME_PLAYING)
+			pause_gamestate();
+		else
+			unpause_gamestate();
+
+		return FALSE;
+	}
+
+	if (next_menu == MEN_RESULTS) // HACK: ghosting doesn't return to main menu from results???
+		MENUS[MEN_RESULTS].from = MENUS[MEN_INGAME_PLAYING].from;
+	else if (cur_menu < MEN_INGAME && MENUS[cur_menu].from != next_menu) {
 		if (MENUS[next_menu].noreturn)
 			MENUS[next_menu].from = MEN_NULL;
 		else if (MENUS[cur_menu].ghost)
@@ -1273,6 +1286,8 @@ Bool set_menu(MenuType next_menu) {
 }
 
 Bool prev_menu() {
+	if (cur_menu == MEN_INGAME_PLAYING)
+		return set_menu(MEN_INGAME_PAUSE);
 	return set_menu(MENUS[cur_menu].from);
 }
 
