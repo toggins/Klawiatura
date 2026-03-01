@@ -11,6 +11,7 @@ typedef struct {
 #define ASSET_HEAD(M, T, A)                                                                                            \
 	void load_##A##_pro(const char*, Bool);                                                                        \
 	void load_##A(const char*), load_transient_##A(const char*);                                                   \
+	void load_##A##_num(const char*, Uint32);                                                                      \
 	const T* get_##A(const char*);                                                                                 \
 	const T* get_##A##_key(StTinyKey);                                                                             \
 	void clear_##M();
@@ -22,6 +23,10 @@ typedef struct {
                                                                                                                        \
 	void load_transient_##A(const char* name) {                                                                    \
 		load_##A##_pro(name, TRUE);                                                                            \
+	}                                                                                                              \
+                                                                                                                       \
+	void load_##A##_num(const char* pattern, Uint32 n) {                                                           \
+		load_num_pro(pattern, n, load_##A);                                                                    \
 	}                                                                                                              \
                                                                                                                        \
 	const T* get_##A(const char* name) {                                                                           \
@@ -36,5 +41,6 @@ typedef struct {
 		clear_asset_map_PRO(&(M), nuke_##A);                                                                   \
 	}
 
+void load_num_pro(const char*, Uint32, void (*)(const char*));
 void clear_asset_map_PRO(StTinyMap** target, void (*nuke)(void*));
 void clear_assets();

@@ -446,15 +446,6 @@ tex_no_json:
 	return;
 }
 
-/// Load a number of frame-indexed textures, starting at 0.
-void load_texture_num(const char* pattern, Uint32 n) {
-	static char buf[256] = "";
-	for (Uint32 i = 0; i < n; i++) {
-		SDL_snprintf(buf, sizeof(buf), pattern, i);
-		load_texture(buf);
-	}
-}
-
 static void nuke_font(void* ptr) {
 	Font* font = ptr;
 	SDL_free(font->base.name);

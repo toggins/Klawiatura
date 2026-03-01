@@ -2,6 +2,12 @@
 #include "K_audio.h"
 #include "K_video.h"
 
+void load_num_pro(const char* pattern, Uint32 n, void (*load)(const char*)) {
+	static char buf[256] = {0};
+	for (Uint32 i = 0; i < n; i++)
+		SDL_snprintf(buf, sizeof(buf), pattern, i), load(buf);
+}
+
 void clear_assets() {
 	clear_textures(), clear_fonts(), clear_sounds(), clear_tracks();
 }
