@@ -410,7 +410,7 @@ BIND_OPTION(chat, KB_CHAT);
 
 static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
 	enter_lobby(), update_inlobby(), show_levels(), update_playing(), update_pause(), restart_session(),
-	exit_to_main(), resume(), quit_ingame_menu();
+	exit_to_main(), resume();
 
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType),
 	maybe_leave_lobby(MenuType);
@@ -438,7 +438,7 @@ static Menu MENUS[MEN_SIZE] = {
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
 	[MEN_INGAME_PLAYING] = {.from = MEN_INGAME_PAUSE, .update = update_playing},
-	[MEN_INGAME_PAUSE] = {.update = update_pause},
+	[MEN_INGAME_PAUSE] = {"Paused", .update = update_pause},
 };
 
 static const char* NO_LOBBIES_FOUND = "No lobbies found";
@@ -738,10 +738,6 @@ static void resume() {
 	set_menu(MEN_INGAME_PLAYING);
 }
 
-static void quit_ingame_menu() {
-	set_menu(MENUS[MEN_INGAME_PLAYING].from);
-}
-
 void enter_gaming_menu() {
 	set_menu(MEN_INGAME_PLAYING);
 }
@@ -778,7 +774,7 @@ static void exit_to_main() {
 	extern Bool quickstart, permadeath;
 	permadeath |= quickstart;
 	nuke_game(), disconnect();
-	quit_ingame_menu();
+	set_menu(MENUS[MEN_INGAME_PLAYING].from);
 }
 
 static void maybe_disconnect(MenuType next) {
@@ -809,6 +805,10 @@ static Bool is_option_disabled(const Option* opt) {
 	return !opt->name || opt->disabled;
 }
 
+static const char* opt_name(const Option* opt) {
+	return opt->format ? opt->format(opt->name) : opt->name;
+}
+
 static void select_menu_option_by_mouse(int* new_option) {
 	float x = 0.f, y = 0.f;
 	get_cursor_pos(&x, &y);
@@ -818,19 +818,20 @@ static void select_menu_option_by_mouse(int* new_option) {
 		return; // don't change menu option unless the cursor moves vertically
 	last_y = y;
 
-	const int opt = (int)SDL_floorf((y - 60.f) / 24.f);
+	const int iopt = (int)SDL_floorf((y - 60.f) / 24.f);
 	*new_option = MAX_OPTIONS;
 
-	if (opt < 0 || opt >= MAX_OPTIONS || is_option_disabled(&OPTIONS[cur_menu][opt]))
+	if (iopt < 0 || iopt >= MAX_OPTIONS || is_option_disabled(&OPTIONS[cur_menu][iopt]))
 		return;
 
 	const float margin = 8.f;
 	x -= 48.f;
 
-	if (x < -margin || x > string_width("main", 24.f, OPTIONS[cur_menu][opt].name) + margin)
+	const Option* opt = &OPTIONS[cur_menu][iopt];
+	if (x < -margin || x > string_width("main", 24.f, opt_name(opt)) + margin)
 		return;
 
-	*new_option = opt;
+	*new_option = iopt;
 }
 
 static void select_menu_option_by_keyboard(const int old_option, int* new_option, const int change) {
@@ -953,9 +954,6 @@ void draw_menu() {
 	if (cur_menu == MEN_INGAME_PAUSE) {
 		batch_pos(B_XYZ(0.f, 0.f, -10000.f)), batch_color(B_RGBA(0, 0, 0, 128));
 		batch_rectangle(NULL, B_XY(SCREEN_WIDTH, SCREEN_HEIGHT));
-		batch_pos(B_XYZ(48.f, 128.f, -10000.f)), batch_color(B_RGB(255, 144, 144));
-		batch_string("main", 24, "Paused");
-		batch_color(B_WHITE);
 	}
 
 	Bool has_secret = FALSE;
@@ -996,14 +994,14 @@ void draw_menu() {
 
 	for (size_t i = 0; i < MAX_OPTIONS; i++) {
 		Option* opt = &OPTIONS[cur_menu][i];
-		if (opt->name == NULL)
+		if (!opt->name)
 			continue;
 
 		const float lx = 0.5f * dt();
 		opt->hover = glm_lerp(
 			opt->hover, (float)(menu->option == i && !is_option_disabled(opt)), SDL_min(lx, 1.f));
 
-		const char *suffix = "", *format = opt->format == NULL ? opt->name : opt->format(opt->name);
+		const char *suffix = "", *format = opt_name(opt);
 		if (opt->edit != NULL && typing_what() == opt->edit && SDL_fmodf(totalticks(), 30.f) < 16.f)
 			suffix = "|";
 
