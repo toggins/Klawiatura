@@ -108,8 +108,8 @@ static void deactivate_secret(SecretType idx) {
 
 static MenuType cur_menu;
 static void update_secrets() {
-	const Bool handicapped = (NutPunch_IsReady() && !NutPunch_IsMaster()) || cur_menu == MEN_INTRO
-	                         || cur_menu == MEN_JOINING_LOBBY;
+	const Bool handicapped
+		= (is_in_netgame() && !NutPunch_IsMaster()) || cur_menu == MEN_INTRO || cur_menu == MEN_JOINING_LOBBY;
 	for (SecretType i = 0; i < SECR_SIZE; i++) {
 		Secret* secret = &SECRETS[i];
 
@@ -252,8 +252,8 @@ FMT_OPTION(lobby_limit, NutPunch_GetMaxPlayers());
 FMT_OPTION(spectate, i_am_spectating() ? "Spectator" : "Player");
 
 // Ingame
-FMT_OPTION(restart, NutPunch_IsReady() ? "(Can't restart in multiplayer!)" : "Restart Level (-1 Life)")
-FMT_OPTION(exit, NutPunch_IsReady() ? "Return to Lobby" : "Return to Title")
+FMT_OPTION(restart, is_in_netgame() ? "(Can't restart in multiplayer!)" : "Restart Level (-1 Life)")
+FMT_OPTION(exit, is_in_netgame() ? "Return to Lobby" : "Return to Title")
 
 static void set_players(int flip) {
 	CLIENT.game.players
@@ -679,7 +679,7 @@ static void update_joining_lobby() {
 	if (net_error()) {
 		play_generic_sound("disconnect");
 		show_error("Failed to %s lobby:\n\n%s", net_verb(), net_error());
-	} else if (NutPunch_IsReady()) {
+	} else if (is_in_netgame()) {
 		push_user_data();
 		(NutPunch_IsMaster() ? push_lobby_data : pull_lobby_data)();
 		play_generic_sound("connect");
@@ -688,7 +688,7 @@ static void update_joining_lobby() {
 }
 
 static void enter_lobby() {
-	if (!NutPunch_IsReady()) {
+	if (!is_in_netgame()) {
 		prev_menu();
 		return;
 	}
@@ -704,7 +704,7 @@ static void maybe_leave_lobby(MenuType next) {
 static void update_inlobby() {
 	handle_chat_inputs();
 
-	if (!NutPunch_IsReady()) {
+	if (!is_in_netgame()) {
 		const char* error = net_error();
 		if (error == NULL)
 			prev_menu();
@@ -745,7 +745,7 @@ void enter_gaming_menu() {
 static void restart_at_a_cost() {
 	// FIXME: Update this if replays are implemented.
 
-	if (NutPunch_IsReady())
+	if (is_in_netgame())
 		goto no_can_restart;
 
 	PlayerID can_restart = numplayers();

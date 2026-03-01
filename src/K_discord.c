@@ -95,10 +95,10 @@ void update_discord_status(const char* level_name) {
 					? "Nostaliga Mode"
 					: ((game_state.flags & GF_KEVIN) ? "Kevin Mode" : "Fred Mode"));
 	} else
-		SDL_snprintf(details, sizeof(details), NutPunch_IsReady() ? "Lobby" : "Menu");
+		SDL_snprintf(details, sizeof(details), is_in_netgame() ? "Lobby" : "Menu");
 
 	// Multiplayer info
-	if (in_public_server() && NutPunch_IsReady()) {
+	if (in_public_server() && is_in_netgame()) {
 		Uint32 id = get_lobby_party();
 		Discord_ActivityParty_SetId(&party, (Discord_String){(Uint8*)(&id), sizeof(id)});
 		Discord_ActivityParty_SetCurrentSize(&party, NutPunch_PeerCount());

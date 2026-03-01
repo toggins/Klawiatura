@@ -76,7 +76,7 @@ static Bool paused = FALSE;
 
 void pause_gamestate() {
 	paused = TRUE;
-	if (!NutPunch_IsReady())
+	if (!is_in_netgame())
 		pause_audio_state(TRUE);
 	input_wipeout();
 }
@@ -154,7 +154,7 @@ void start_game() {
 }
 
 void continue_game() {
-	if (!NutPunch_IsReady()) {
+	if (!is_in_netgame()) {
 		start_game();
 		return;
 	}
@@ -402,10 +402,10 @@ Bool update_game() {
 
 	update_interp_parameters();
 
-	if (paused && !NutPunch_IsReady())
+	if (paused && !is_in_netgame())
 		return TRUE;
 
-	if (!NutPunch_IsReady() && kb_pressed(KB_EDIT))
+	if (!is_in_netgame() && kb_pressed(KB_EDIT))
 		set_editing_level(!is_editing_level());
 
 	if (!i_am_spectating())

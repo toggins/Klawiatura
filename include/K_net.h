@@ -9,7 +9,7 @@
 #define LOBBY_STRING_MAX (sizeof(NutPunch_LobbyId))
 
 #include "K_game.h"
-#include "K_math.h"
+#include "K_misc.h"
 
 #define MAX_PEERS (NUTPUNCH_MAX_PLAYERS)
 #define NET_BUFFER_SIZE (NUTPUNCH_BUFFER_SIZE)
@@ -36,6 +36,7 @@ enum {
 };
 
 void net_init(), net_teardown();
+Bool is_in_netgame();
 
 const char* get_hostname();
 void set_hostname(const char*);

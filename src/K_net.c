@@ -32,6 +32,10 @@ void net_teardown() {
 	NutPunch_Cleanup();
 }
 
+Bool is_in_netgame() {
+	return NutPunch_IsReady();
+}
+
 /// Returns the current hostname.
 ///
 /// If the hostname is an IPv4 or IPv6 address, returns `(custom IP)` instead.

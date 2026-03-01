@@ -90,7 +90,7 @@ void tick_chat_hist() {
 }
 
 void handle_chat_inputs() {
-	if (typing_what() || !NutPunch_IsReady())
+	if (typing_what() || !is_in_netgame())
 		return;
 
 	if (kb_pressed(KB_CHAT))

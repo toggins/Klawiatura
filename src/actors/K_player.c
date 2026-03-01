@@ -696,7 +696,7 @@ static void tick(GameActor* actor) {
 		return;
 	}
 
-	if (is_editing_level()) {
+	if (is_editing_level() && !is_in_netgame()) {
 		editor_baton_pass(player, actor);
 		return;
 	}
