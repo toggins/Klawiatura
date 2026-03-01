@@ -73,12 +73,12 @@ static int last_secret = -1;
 
 static void load_secrets() {
 	for (SecretType i = 0; i < SECR_SIZE; i++) {
-		load_sound(SECRETS[i].sound, FALSE);
+		load_sound(SECRETS[i].sound, TRUE);
 		load_track(SECRETS[i].track, TRUE);
 	}
 
-	load_sound("type", FALSE);
-	load_sound("thwomp", FALSE);
+	load_sound("type", TRUE);
+	load_sound("thwomp", TRUE);
 	load_track("it_makes_me_burn", TRUE);
 }
 
@@ -601,20 +601,20 @@ static void join_found_lobby() {
 }
 
 void load_menu() {
-	load_texture("ui/disclaimer", FALSE);
-	load_texture("ui/background", FALSE);
-	load_texture("ui/shortcut", FALSE);
+	load_texture("ui/disclaimer", TRUE);
+	load_texture("ui/background", TRUE);
+	load_texture("ui/shortcut", TRUE);
 
 	load_font("main", TRUE);
 
-	load_sound("switch", FALSE);
+	load_sound("switch", TRUE);
 	load_sound("select", TRUE);
-	load_sound("toggle", FALSE);
+	load_sound("toggle", TRUE);
 	load_sound("enter", TRUE);
-	load_sound("on", FALSE);
-	load_sound("off", FALSE);
-	load_sound("bump", FALSE);
-	load_sound("connect", FALSE);
+	load_sound("on", TRUE);
+	load_sound("off", TRUE);
+	load_sound("bump", TRUE);
+	load_sound("connect", TRUE);
 	load_sound("disconnect", TRUE);
 
 	load_track("title", TRUE);
