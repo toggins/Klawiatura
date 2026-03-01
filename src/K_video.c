@@ -388,7 +388,7 @@ static void nuke_texture(void* ptr) {
 
 ASSET_SRC(textures, Texture, texture);
 
-void load_texture(const char* name, Bool transient) {
+void load_texture_pro(const char* name, Bool transient) {
 	if (!name || !*name || get_texture(name))
 		return;
 
@@ -447,11 +447,11 @@ tex_no_json:
 }
 
 /// Load a number of frame-indexed textures, starting at 0.
-void load_texture_num(const char* pattern, Uint32 n, Bool transient) {
+void load_texture_num(const char* pattern, Uint32 n) {
 	static char buf[256] = "";
 	for (Uint32 i = 0; i < n; i++) {
 		SDL_snprintf(buf, sizeof(buf), pattern, i);
-		load_texture(buf, transient);
+		load_texture(buf);
 	}
 }
 
@@ -462,7 +462,7 @@ static void nuke_font(void* ptr) {
 
 ASSET_SRC(fonts, Font, font);
 
-void load_font(const char* name, Bool transient) {
+void load_font_pro(const char* name, Bool transient) {
 	if (name == NULL || get_font(name) != NULL)
 		return;
 
@@ -494,7 +494,7 @@ void load_font(const char* name, Bool transient) {
 	if (tex != NULL)
 		tex->base.transient |= transient;
 	else {
-		load_texture(tname, transient);
+		load_texture_pro(tname, transient);
 		tex = StMapGet(textures, tkey);
 	}
 	if (tex == NULL) {
@@ -1168,7 +1168,7 @@ static TileMap* fetch_tilemap(const char* name) {
 
 	tilemap.next = last_tilemap;
 	if (name != NULL) {
-		load_texture(name, FALSE);
+		load_texture(name);
 		tilemap.texture_key = key;
 	}
 	tilemap.translucent = FALSE;

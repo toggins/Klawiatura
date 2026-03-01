@@ -119,8 +119,8 @@ void start_game() {
 		queue_game_context.num_players);
 	game_context = queue_game_context;
 
-	load_texture("ui/sidebar_l", FALSE);
-	load_texture("ui/sidebar_r", FALSE);
+	load_texture("ui/sidebar_l");
+	load_texture("ui/sidebar_r");
 
 	game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
 
@@ -1030,19 +1030,19 @@ static void start_game_state() {
 	//
 	//
 	//
-	load_texture_num("ui/coins%u", 3L, FALSE);
-	load_texture_num("markers/water%u", 8L, FALSE);
+	load_texture_num("ui/coins%u", 3L);
+	load_texture_num("markers/water%u", 8L);
 
-	load_font("hud", FALSE);
-	load_font("main", FALSE);
+	load_font("hud");
+	load_font("main");
 
-	load_sound("hurry", FALSE);
-	load_sound("tick", FALSE);
-	load_sound("pause", FALSE);
-	load_sound("switch", FALSE);
-	load_sound("select", FALSE);
-	load_sound("bump", FALSE);
-	load_sound("chat", FALSE);
+	load_sound("hurry");
+	load_sound("tick");
+	load_sound("pause");
+	load_sound("switch");
+	load_sound("select");
+	load_sound("bump");
+	load_sound("chat");
 
 	//
 	//
@@ -1097,7 +1097,7 @@ static void start_game_state() {
 
 	read_string((const char**)(&buf), video_state.world, sizeof(video_state.world));
 	if (video_state.world[0] != ')' && video_state.world[0] != ']')
-		load_texture(video_state.world, FALSE);
+		load_texture(video_state.world);
 
 	read_string((const char**)(&buf), (char*)game_state.next, sizeof(game_state.next));
 
@@ -1106,7 +1106,7 @@ static void start_game_state() {
 		if (i == 2 && minor < 2)
 			continue;
 		read_string((const char**)(&buf), track_name[i], sizeof(track_name));
-		load_track(track_name[i], FALSE);
+		load_track(track_name[i]);
 	}
 
 	game_state.flags |= *((GameFlag*)buf), buf += sizeof(GameFlag);

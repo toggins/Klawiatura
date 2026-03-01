@@ -26,8 +26,8 @@ enum {
 // ====
 
 static void load() {
-	load_texture_num("enemies/lava%u", 8L, FALSE);
-	load_texture("tiles/lava", FALSE);
+	load_texture_num("enemies/lava%u", 8L);
+	load_texture("tiles/lava");
 }
 
 static void create(GameActor* actor) {
@@ -116,9 +116,9 @@ const GameActorTable TAB_LAVA = {.load = load, .create = create, .tick = tick, .
 // =======
 
 static void load_podoboo() {
-	load_texture_num("enemies/podoboo%u", 3L, FALSE);
+	load_texture_num("enemies/podoboo%u", 3L);
 
-	load_sound("kick", FALSE);
+	load_sound("kick");
 
 	load_actor(ACT_LAVA_SPLASH);
 	load_actor(ACT_POINTS);
@@ -201,7 +201,7 @@ const GameActorTable TAB_PODOBOO = {
 // ===============
 
 static void load_volcano(GameActor* actor) {
-	load_sound("fire", FALSE);
+	load_sound("fire");
 
 	load_actor(ACT_PODOBOO);
 }

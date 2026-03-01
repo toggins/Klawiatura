@@ -18,46 +18,46 @@
 // ================
 
 static void load_player_textures() {
-	load_texture("player/mario/dead", FALSE);
-	load_texture_num("player/mario/grow%u", 3L, FALSE);
+	load_texture("player/mario/dead");
+	load_texture_num("player/mario/grow%u", 3L);
 
-	load_texture("player/mario/small/idle", FALSE);
-	load_texture_num("player/mario/small/walk%u", 2L, FALSE);
-	load_texture("player/mario/small/jump", FALSE);
-	load_texture_num("player/mario/small/swim%u", 4L, FALSE);
+	load_texture("player/mario/small/idle");
+	load_texture_num("player/mario/small/walk%u", 2L);
+	load_texture("player/mario/small/jump");
+	load_texture_num("player/mario/small/swim%u", 4L);
 
-	load_texture("player/mario/big/idle", FALSE);
-	load_texture_num("player/mario/big/walk%u", 2L, FALSE);
-	load_texture("player/mario/big/jump", FALSE);
-	load_texture("player/mario/big/duck", FALSE);
-	load_texture_num("player/mario/big/swim%u", 4L, FALSE);
+	load_texture("player/mario/big/idle");
+	load_texture_num("player/mario/big/walk%u", 2L);
+	load_texture("player/mario/big/jump");
+	load_texture("player/mario/big/duck");
+	load_texture_num("player/mario/big/swim%u", 4L);
 
-	load_texture("player/mario/fire/idle", FALSE);
-	load_texture_num("player/mario/fire/walk%u", 2L, FALSE);
-	load_texture("player/mario/fire/jump", FALSE);
-	load_texture("player/mario/fire/duck", FALSE);
-	load_texture("player/mario/fire/fire", FALSE);
-	load_texture_num("player/mario/fire/swim%u", 4L, FALSE);
+	load_texture("player/mario/fire/idle");
+	load_texture_num("player/mario/fire/walk%u", 2L);
+	load_texture("player/mario/fire/jump");
+	load_texture("player/mario/fire/duck");
+	load_texture("player/mario/fire/fire");
+	load_texture_num("player/mario/fire/swim%u", 4L);
 
-	load_texture("player/mario/beetroot/idle", FALSE);
-	load_texture_num("player/mario/beetroot/walk%u", 2L, FALSE);
-	load_texture("player/mario/beetroot/jump", FALSE);
-	load_texture("player/mario/beetroot/duck", FALSE);
-	load_texture("player/mario/beetroot/fire", FALSE);
-	load_texture_num("player/mario/beetroot/swim%u", 4L, FALSE);
+	load_texture("player/mario/beetroot/idle");
+	load_texture_num("player/mario/beetroot/walk%u", 2L);
+	load_texture("player/mario/beetroot/jump");
+	load_texture("player/mario/beetroot/duck");
+	load_texture("player/mario/beetroot/fire");
+	load_texture_num("player/mario/beetroot/swim%u", 4L);
 
-	load_texture("player/mario/lui/idle", FALSE);
-	load_texture_num("player/mario/lui/walk%u", 2L, FALSE);
-	load_texture("player/mario/lui/jump", FALSE);
-	load_texture("player/mario/lui/duck", FALSE);
-	load_texture_num("player/mario/lui/swim%u", 4L, FALSE);
+	load_texture("player/mario/lui/idle");
+	load_texture_num("player/mario/lui/walk%u", 2L);
+	load_texture("player/mario/lui/jump");
+	load_texture("player/mario/lui/duck");
+	load_texture_num("player/mario/lui/swim%u", 4L);
 
-	load_texture("player/mario/hammer/idle", FALSE);
-	load_texture_num("player/mario/hammer/walk%u", 2L, FALSE);
-	load_texture("player/mario/hammer/jump", FALSE);
-	load_texture("player/mario/hammer/duck", FALSE);
-	load_texture("player/mario/hammer/fire", FALSE);
-	load_texture_num("player/mario/hammer/swim%u", 4L, FALSE);
+	load_texture("player/mario/hammer/idle");
+	load_texture_num("player/mario/hammer/walk%u", 2L);
+	load_texture("player/mario/hammer/jump");
+	load_texture("player/mario/hammer/duck");
+	load_texture("player/mario/hammer/fire");
+	load_texture_num("player/mario/hammer/swim%u", 4L);
 }
 
 PlayerFrame get_player_frame(const GameActor* actor) {
@@ -648,18 +648,18 @@ const GameActorTable TAB_PLAYER_SPAWN = {
 static void load() {
 	load_player_textures();
 
-	load_sound("jump", FALSE);
-	load_sound("fire", FALSE);
-	load_sound("swim", FALSE);
-	load_sound("warp", FALSE);
-	load_sound("starman", FALSE);
-	load_sound("bump", FALSE);
-	load_sound("stomp", FALSE);
-	load_sound("respawn", FALSE);
+	load_sound("jump");
+	load_sound("fire");
+	load_sound("swim");
+	load_sound("warp");
+	load_sound("starman");
+	load_sound("bump");
+	load_sound("stomp");
+	load_sound("respawn");
 
-	load_track("win", FALSE);
-	load_track("win2", FALSE);
-	load_track("win3", FALSE);
+	load_track("win");
+	load_track("win2");
+	load_track("win3");
 
 	load_actor(ACT_PLAYER_EFFECT);
 	load_actor(ACT_PLAYER_DEAD);
@@ -674,6 +674,8 @@ static void load() {
 		load_actor(ACT_KEVIN);
 	if (game_state.flags & GF_FRED)
 		load_actor(ACT_FRED);
+
+	load_editor();
 }
 
 static void create(GameActor* actor) {
@@ -696,7 +698,7 @@ static void tick(GameActor* actor) {
 		return;
 	}
 
-	if (is_editing_level() && !is_in_netgame()) {
+	if (is_editing_level()) {
 		editor_baton_pass(player, actor);
 		return;
 	}
@@ -1321,15 +1323,15 @@ const GameActorTable TAB_PLAYER = {
 // ===========
 
 static void load_corpse() {
-	load_texture("player/mario/dead", FALSE);
+	load_texture("player/mario/dead");
 
-	load_sound("lose", FALSE);
-	load_sound("dead", FALSE);
-	load_sound("hardcore", FALSE);
+	load_sound("lose");
+	load_sound("dead");
+	load_sound("hardcore");
 
-	load_track("lose", FALSE);
-	load_track("lose2", FALSE);
-	load_track("game_over", FALSE);
+	load_track("lose");
+	load_track("lose2");
+	load_track("game_over");
 }
 
 static void create_corpse(GameActor* actor) {
@@ -1492,8 +1494,8 @@ const GameActorTable TAB_PLAYER_EFFECT = {
 static void load_kevin() {
 	load_player_textures();
 
-	load_sound("kevin_spawn", FALSE);
-	load_sound("kevin_kill", FALSE);
+	load_sound("kevin_spawn");
+	load_sound("kevin_kill");
 
 	load_actor(ACT_EXPLODE);
 }
@@ -1568,7 +1570,7 @@ const GameActorTable TAB_KEVIN = {
 // ====
 
 static void load_fred() {
-	load_texture("enemies/fred", FALSE);
+	load_texture("enemies/fred");
 
 	load_actor(ACT_EXPLODE);
 

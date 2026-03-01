@@ -7,10 +7,10 @@
 // ===========
 
 static void load_bullet() {
-	load_texture("enemies/bullet", FALSE);
+	load_texture("enemies/bullet");
 
-	load_sound("stomp", FALSE);
-	load_sound("kick", FALSE);
+	load_sound("stomp");
+	load_sound("kick");
 
 	load_actor(ACT_POINTS);
 }
@@ -85,8 +85,8 @@ const GameActorTable TAB_BULLET_BILL = {.load = load_bullet,
 // ============
 
 static void load_blaster() {
-	load_sound("bang", FALSE);
-	load_sound("bang4", FALSE);
+	load_transient_sound("bang");
+	load_transient_sound("bang4");
 
 	load_actor(ACT_BULLET_BILL);
 	load_actor(ACT_EXPLODE);
@@ -136,9 +136,9 @@ const GameActorTable TAB_BILL_BLASTER = {.load = load_blaster, .create = create_
 // =================
 
 static void load_spike_cannon() {
-	load_texture("enemies/spike_cannon", FALSE);
+	load_texture("enemies/spike_cannon");
 
-	load_sound("bang2", FALSE);
+	load_sound("bang2");
 
 	load_actor(ACT_SPIKE_BALL);
 	load_actor(ACT_EXPLODE);
@@ -183,7 +183,7 @@ const GameActorTable TAB_SPIKE_CANNON = {.is_solid = always_solid,
 // ==========
 
 static void load_spike() {
-	load_texture("missiles/spike_ball", FALSE);
+	load_texture("missiles/spike_ball");
 
 	load_actor(ACT_SPIKE_BALL_EFFECT);
 }
@@ -223,7 +223,7 @@ const GameActorTable TAB_SPIKE_BALL = {
 // =================
 
 static void load_spike_effect() {
-	load_texture("missiles/spike_ball", FALSE);
+	load_texture("missiles/spike_ball");
 }
 
 static void create_spike_effect(GameActor* actor) {

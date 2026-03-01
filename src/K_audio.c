@@ -105,7 +105,7 @@ static void nuke_sound(void* ptr) {
 
 ASSET_SRC(sounds, Sound, sound);
 
-void load_sound(const char* name, Bool transient) {
+void load_sound_pro(const char* name, Bool transient) {
 	if (!name || !*name || get_sound(name))
 		return;
 
@@ -134,7 +134,7 @@ static void nuke_track(void* ptr) {
 
 ASSET_SRC(tracks, Track, track);
 
-void load_track(const char* name, Bool transient) {
+void load_track_pro(const char* name, Bool transient) {
 	if (!name || !*name || get_track(name))
 		return;
 

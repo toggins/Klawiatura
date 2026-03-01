@@ -234,7 +234,7 @@ void set_mat4_uniform(UniformType, const float[4][4]);
 
 // Assets
 ASSET_HEAD(textures, Texture, texture);
-void load_texture_num(const char*, Uint32, Bool);
+void load_texture_num(const char*, Uint32);
 
 ASSET_HEAD(fonts, Font, font);
 

@@ -8,7 +8,7 @@ enum {
 };
 
 static void load() {
-	load_sound("warp", FALSE);
+	load_sound("warp");
 }
 
 static void create(GameActor* actor) {

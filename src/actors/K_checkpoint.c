@@ -4,9 +4,9 @@
 #include "actors/K_points.h"
 
 static void load() {
-	load_texture_num("markers/checkpoint%u", 3L, FALSE);
+	load_texture_num("markers/checkpoint%u", 3L);
 
-	load_sound("sprout", FALSE);
+	load_sound("sprout");
 
 	load_actor(ACT_POINTS);
 }

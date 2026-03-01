@@ -35,16 +35,16 @@ enum {
 static void load_special_spike(const GameActor* actor) {
 	switch (VAL(actor, SPIKE_TYPE)) {
 	default:
-		load_texture("enemies/spike", FALSE);
+		load_texture("enemies/spike");
 		break;
 	case SPIKE_CASTLE:
-		load_texture("enemies/spike_castle", FALSE);
+		load_texture("enemies/spike_castle");
 		break;
 	case SPIKE_TANK:
-		load_texture("enemies/spike_tank", FALSE);
+		load_texture("enemies/spike_tank");
 		break;
 	case SPIKE_TANK_LEFT:
-		load_texture("enemies/spike_tank_l", FALSE);
+		load_texture("enemies/spike_tank_l");
 		break;
 	}
 }
@@ -103,7 +103,7 @@ const GameActorTable TAB_SPIKE = {
 // ==============
 
 static void load_coral() {
-	load_texture_num("enemies/coral%u", 7L, FALSE);
+	load_texture_num("enemies/coral%u", 7L);
 }
 
 static void create_coral(GameActor* actor) {
@@ -140,10 +140,10 @@ const GameActorTable TAB_ELECTRIC_CORAL = {
 // ==========
 
 static void load_cloud() {
-	load_texture_num("enemies/fake_cloud%u", 3L, FALSE);
-	load_texture_num("props/cloud%u", 3L, FALSE);
+	load_texture_num("enemies/fake_cloud%u", 3L);
+	load_texture_num("props/cloud%u", 3L);
 
-	load_sound("fake_cloud", FALSE);
+	load_sound("fake_cloud");
 }
 
 static void create_cloud(GameActor* actor) {

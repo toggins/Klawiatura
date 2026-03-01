@@ -11,14 +11,14 @@
 // ======
 
 static void load() {
-	load_texture_num("enemies/bowser%u", 3L, FALSE);
-	load_texture_num("enemies/bowser_jump%u", 2L, FALSE);
-	load_texture_num("enemies/bowser_fire%u", 2L, FALSE);
-	load_texture_num("ui/bowser%u", 3L, FALSE);
+	load_texture_num("enemies/bowser%u", 3L);
+	load_texture_num("enemies/bowser_jump%u", 2L);
+	load_texture_num("enemies/bowser_fire%u", 2L);
+	load_texture_num("ui/bowser%u", 3L);
 
-	load_sound("bowser_fire", FALSE);
-	load_sound("bowser_hurt", FALSE);
-	load_sound("kick", FALSE);
+	load_sound("bowser_fire");
+	load_sound("bowser_hurt");
+	load_sound("kick");
 
 	load_actor(ACT_MISSILE_NAPALM);
 	load_actor(ACT_BOWSER_DEAD);
@@ -26,30 +26,30 @@ static void load() {
 
 static void load_special(const GameActor* actor) {
 	if (ANY_FLAG(actor, FLG_BOWSER_CHARGE))
-		load_texture_num("enemies/bowser_charge%u", 8L, FALSE);
+		load_texture_num("enemies/bowser_charge%u", 8L);
 
 	if (ANY_FLAG(actor, FLG_BOWSER_GUN)) {
-		load_texture("enemies/bowser_gun", FALSE);
+		load_texture("enemies/bowser_gun");
 
-		load_sound("bang", FALSE);
-		load_sound("bang4", FALSE);
+		load_sound("bang");
+		load_sound("bang4");
 
 		load_actor(ACT_BULLET_BILL);
 		load_actor(ACT_EXPLODE);
 	}
 
 	if (ANY_FLAG(actor, FLG_BOWSER_GIGA))
-		load_track("smrpg_smithy", FALSE);
+		load_track("smrpg_smithy");
 	else if (ANY_FLAG(actor, FLG_BOWSER_DEVASTATOR)
 		 || ALL_FLAG(actor, FLG_BOWSER_CHARGE | FLG_BOWSER_VOMIT | FLG_BOWSER_HAMMER))
-		load_track("yi_bowser", FALSE);
+		load_track("yi_bowser");
 	else if (game_state.flags & GF_LOST)
-		load_track("smb3_bowser", FALSE);
+		load_track("smb3_bowser");
 	else
-		load_track("smrpg_bowser", FALSE);
+		load_track("smrpg_bowser");
 
 	if (game_state.flags & GF_LOST)
-		load_track("win3", FALSE);
+		load_track("win3");
 }
 
 static void create(GameActor* actor) {
@@ -446,11 +446,11 @@ const GameActorTable TAB_BOWSER = {
 // ============
 
 static void load_corpse() {
-	load_texture_num("enemies/bowser_dead%u", 2L, FALSE);
+	load_texture_num("enemies/bowser_dead%u", 2L);
 
-	load_sound("bowser_dead", FALSE);
-	load_sound("bowser_fall", FALSE);
-	load_sound("bowser_lava", FALSE);
+	load_sound("bowser_dead");
+	load_sound("bowser_fall");
+	load_sound("bowser_lava");
 
 	load_actor(ACT_LAVA_BUBBLE);
 }

@@ -5,6 +5,7 @@
 #include "K_cmd.h"
 #include "K_config.h"
 #include "K_discord.h"
+#include "K_editor.h"
 #include "K_file.h"
 #include "K_menu.h"
 #include "K_misc.h"
@@ -73,13 +74,13 @@ static int last_secret = -1;
 
 static void load_secrets() {
 	for (SecretType i = 0; i < SECR_SIZE; i++) {
-		load_sound(SECRETS[i].sound, TRUE);
-		load_track(SECRETS[i].track, TRUE);
+		load_transient_sound(SECRETS[i].sound);
+		load_transient_track(SECRETS[i].track);
 	}
 
-	load_sound("type", TRUE);
-	load_sound("thwomp", TRUE);
-	load_track("it_makes_me_burn", TRUE);
+	load_transient_sound("type");
+	load_transient_sound("thwomp");
+	load_transient_track("it_makes_me_burn");
 }
 
 static void update_menu_track();
@@ -601,24 +602,24 @@ static void join_found_lobby() {
 }
 
 void load_menu() {
-	load_texture("ui/disclaimer", TRUE);
-	load_texture("ui/background", TRUE);
-	load_texture("ui/shortcut", TRUE);
+	load_transient_texture("ui/disclaimer");
+	load_transient_texture("ui/background");
+	load_transient_texture("ui/shortcut");
 
-	load_font("main", TRUE);
+	load_transient_font("main");
 
-	load_sound("switch", TRUE);
-	load_sound("select", TRUE);
-	load_sound("toggle", TRUE);
-	load_sound("enter", TRUE);
-	load_sound("on", TRUE);
-	load_sound("off", TRUE);
-	load_sound("bump", TRUE);
-	load_sound("connect", TRUE);
-	load_sound("disconnect", TRUE);
+	load_transient_sound("switch");
+	load_transient_sound("select");
+	load_transient_sound("toggle");
+	load_transient_sound("enter");
+	load_transient_sound("on");
+	load_transient_sound("off");
+	load_transient_sound("bump");
+	load_transient_sound("connect");
+	load_transient_sound("disconnect");
 
-	load_track("title", TRUE);
-	load_track("yi_score", TRUE);
+	load_transient_track("title");
+	load_transient_track("yi_score");
 
 	load_secrets();
 }
@@ -948,6 +949,8 @@ void draw_menu() {
 
 	if (cur_menu >= MEN_INGAME)
 		draw_game();
+	if (is_editing_level())
+		draw_editor();
 
 	if (cur_menu == MEN_INGAME_PAUSE) {
 		batch_pos(B_XYZ(0.f, 0.f, -10000.f)), batch_color(B_RGBA(0, 0, 0, 128));

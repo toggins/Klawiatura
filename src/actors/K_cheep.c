@@ -28,10 +28,10 @@ static void create(GameActor* actor) {
 // ================
 
 static void load_blue() {
-	load_texture_num("enemies/cheep_blue%u", 2L, FALSE);
+	load_texture_num("enemies/cheep_blue%u", 2L);
 
-	load_sound("stomp", FALSE);
-	load_sound("kick", FALSE);
+	load_sound("stomp");
+	load_sound("kick");
 
 	load_actor(ACT_POINTS);
 }
@@ -109,9 +109,9 @@ const GameActorTable TAB_CHEEP_CHEEP_BLUE = {
 // =================
 
 static void load_spiky() {
-	load_texture_num("enemies/cheep_spiky%u", 2L, FALSE);
+	load_texture_num("enemies/cheep_spiky%u", 2L);
 
-	load_sound("kick", FALSE);
+	load_sound("kick");
 
 	load_actor(ACT_POINTS);
 }
@@ -201,7 +201,7 @@ const GameActorTable TAB_CHEEP_CHEEP_SPIKY = {
 // =========
 
 static void load_bass() {
-	load_texture_num("enemies/bass%u", 4L, FALSE);
+	load_texture_num("enemies/bass%u", 4L);
 
 	load_actor(ACT_WATER_SPLASH);
 	load_actor(ACT_POINTS);

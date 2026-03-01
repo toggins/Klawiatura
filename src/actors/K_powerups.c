@@ -34,9 +34,9 @@ static void collide_powerup(GameActor* actor, GameActor* from, PlayerPower power
 // ========
 
 static void load_mushroom() {
-	load_texture("items/mushroom", FALSE);
+	load_texture("items/mushroom");
 
-	load_sound("grow", FALSE);
+	load_sound("grow");
 
 	load_actor(ACT_POINTS);
 }
@@ -101,7 +101,7 @@ const GameActorTable TAB_MUSHROOM = {
 // ============
 
 static void load_1up_mushroom() {
-	load_texture("items/mushroom_1up", FALSE);
+	load_texture("items/mushroom_1up");
 	load_actor(ACT_POINTS);
 }
 
@@ -131,7 +131,7 @@ const GameActorTable TAB_MUSHROOM_1UP = {
 // ===============
 
 static void load_poison_mushroom() {
-	load_texture_num("items/mushroom_poison%u", 2L, FALSE);
+	load_texture_num("items/mushroom_poison%u", 2L);
 	load_actor(ACT_EXPLODE);
 }
 
@@ -167,9 +167,9 @@ const GameActorTable TAB_MUSHROOM_POISON = {.load = load_poison_mushroom,
 // ===========
 
 static void load_flower() {
-	load_texture_num("items/flower%u", 4L, FALSE);
+	load_texture_num("items/flower%u", 4L);
 
-	load_sound("grow", FALSE);
+	load_sound("grow");
 
 	load_actor(ACT_POINTS);
 }
@@ -204,8 +204,8 @@ const GameActorTable TAB_FIRE_FLOWER = {
 // ========
 
 static void load_beetroot() {
-	load_texture_num("items/beetroot%u", 3L, FALSE);
-	load_sound("grow", FALSE);
+	load_texture_num("items/beetroot%u", 3L);
+	load_sound("grow");
 	load_actor(ACT_POINTS);
 }
 
@@ -252,11 +252,11 @@ const GameActorTable TAB_BEETROOT = {
 // =========
 
 static void load_lui() {
-	load_texture_num("items/lui%u", 5L, FALSE);
-	load_texture_num("items/lui_bounce%u", 3L, FALSE);
+	load_texture_num("items/lui%u", 5L);
+	load_texture_num("items/lui_bounce%u", 3L);
 
-	load_sound("kick", FALSE);
-	load_sound("grow", FALSE);
+	load_sound("kick");
+	load_sound("grow");
 
 	load_actor(ACT_POINTS);
 }
@@ -353,9 +353,9 @@ const GameActorTable TAB_LUI = {
 // ===========
 
 static void load_hammer() {
-	load_texture("items/hammer_suit", FALSE);
+	load_texture("items/hammer_suit");
 
-	load_sound("grow", FALSE);
+	load_sound("grow");
 
 	load_actor(ACT_POINTS);
 }
@@ -389,12 +389,12 @@ const GameActorTable TAB_HAMMER_SUIT = {
 // =======
 
 static void load_starman() {
-	load_texture_num("items/starman%u", 4L, FALSE);
+	load_texture_num("items/starman%u", 4L);
 
-	load_sound("grow", FALSE);
-	load_sound("starman", FALSE);
+	load_sound("grow");
+	load_sound("starman");
 
-	load_track("starman", FALSE);
+	load_track("starman");
 }
 
 static void create_starman(GameActor* actor) {
