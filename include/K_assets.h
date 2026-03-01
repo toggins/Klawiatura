@@ -38,9 +38,9 @@ typedef struct {
 	}                                                                                                              \
                                                                                                                        \
 	void clear_##M() {                                                                                             \
-		clear_asset_map_PRO(&(M), nuke_##A);                                                                   \
+		clear_asset_map_pro(&(M), nuke_##A);                                                                   \
 	}
 
 void load_num_pro(const char*, Uint32, void (*)(const char*));
-void clear_asset_map_PRO(StTinyMap** target, void (*nuke)(void*));
+void clear_asset_map_pro(StTinyMap** target, void (*nuke)(void*));
 void clear_assets();

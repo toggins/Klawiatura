@@ -12,7 +12,7 @@ void clear_assets() {
 	clear_textures(), clear_fonts(), clear_sounds(), clear_tracks();
 }
 
-void clear_asset_map_PRO(StTinyMap** target, void (*nuke)(void*)) {
+void clear_asset_map_pro(StTinyMap** target, void (*nuke)(void*)) {
 	StTinyMap* new = NewTinyMap();
 
 	StIterator it = StMapIter(*target);
