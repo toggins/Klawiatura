@@ -402,13 +402,10 @@ Bool update_game() {
 
 	update_interp_parameters();
 
-	Bool skip_events = TRUE;
 	if (!NutPunch_IsReady() && kb_pressed(KB_EDIT))
 		set_editing_level(!is_editing_level());
-	else
-		skip_events = FALSE;
 
-	if (skip_events && !NutPunch_IsReady())
+	if (paused && !NutPunch_IsReady())
 		return TRUE;
 
 	if (!i_am_spectating())
