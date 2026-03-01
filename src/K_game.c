@@ -76,7 +76,7 @@ static Bool paused = FALSE;
 
 void pause_gamestate() {
 	paused = TRUE;
-	if (!is_in_netgame())
+	if (!NutPunch_IsReady())
 		pause_audio_state(TRUE);
 	input_wipeout();
 }
@@ -154,7 +154,7 @@ void start_game() {
 }
 
 void continue_game() {
-	if (!is_in_netgame()) {
+	if (!NutPunch_IsReady()) {
 		start_game();
 		return;
 	}
@@ -357,6 +357,7 @@ static Bool handle_advance(const GekkoGameEvent* event) {
 		ctx->players[i].score = game_state.players[i].score;
 	}
 
+	continue_game();
 	return TRUE;
 }
 
@@ -402,10 +403,10 @@ Bool update_game() {
 
 	update_interp_parameters();
 
-	if (paused && !is_in_netgame())
+	if (paused && !NutPunch_IsReady())
 		return TRUE;
 
-	if (!is_in_netgame() && kb_pressed(KB_EDIT))
+	if (!NutPunch_IsReady() && kb_pressed(KB_EDIT))
 		set_editing_level(!is_editing_level());
 
 	if (!i_am_spectating())
