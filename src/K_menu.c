@@ -938,10 +938,13 @@ void update_menu() {
 
 void draw_menu() {
 	start_drawing();
+
 	if (cur_menu == MEN_INTRO)
 		goto draw_intro;
 
 	batch_reset();
+	clear_color(0.f, 0.f, 0.f, 1.f);
+
 	batch_sprite("ui/background");
 
 	if (cur_menu >= MEN_INGAME)
@@ -1124,7 +1127,7 @@ void draw_menu() {
 	goto jobwelldone;
 
 draw_intro:
-	clear_color(0, 0, 0, 1);
+	clear_color(0.f, 0.f, 0.f, 1.f);
 
 	float a = 1.f, ticks = totalticks();
 	if (ticks < 25.f)
@@ -1243,12 +1246,12 @@ Bool set_menu(MenuType next_menu) {
 		cur_menu = next_menu;
 
 		extern void pause_gamestate(), unpause_gamestate();
-		if (cur_menu == MEN_INGAME_PLAYING)
-			pause_gamestate();
-		else
+		if (next_menu == MEN_INGAME_PLAYING)
 			unpause_gamestate();
+		else
+			pause_gamestate();
 
-		return FALSE;
+		return TRUE;
 	}
 
 	if (next_menu == MEN_RESULTS) // HACK: ghosting doesn't return to main menu from results???

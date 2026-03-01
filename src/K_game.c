@@ -72,13 +72,17 @@ static InterpState interp = {0};
 // PAUSE
 // =====
 
+static Bool paused = FALSE;
+
 void pause_gamestate() {
+	paused = TRUE;
 	if (!NutPunch_IsReady())
 		pause_audio_state(TRUE);
 	input_wipeout();
 }
 
 void unpause_gamestate() {
+	paused = FALSE;
 	pause_audio_state(FALSE);
 	input_wipeout();
 }
@@ -243,7 +247,7 @@ void interpolate() {
 
 static void add_local_inputs() {
 	GameInput input = 0;
-	if (!typing_what()) {
+	if (!paused && !typing_what()) {
 		input |= kb_down(KB_UP) * GI_UP;
 		input |= kb_down(KB_LEFT) * GI_LEFT;
 		input |= kb_down(KB_DOWN) * GI_DOWN;
@@ -595,14 +599,12 @@ void draw_game() {
 	if (!game_exists())
 		return;
 
-	start_drawing();
 	batch_reset();
 	batch_sprite("ui/sidebar_l"), batch_sprite("ui/sidebar_r");
 
 	push_surface(game_surface);
 
 	perform_camera_magic();
-	// clear_color(0.f, 0.f, 0.f, 1.f);
 	clear_depth(1.f);
 
 	draw_tilemaps();
