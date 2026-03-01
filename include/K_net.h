@@ -37,7 +37,7 @@ enum {
 };
 
 void net_init(), net_teardown();
-Bool is_in_netgame();
+Bool is_in_netgame(), is_host(), is_client();
 
 const char* get_hostname();
 void set_hostname(const char*);

@@ -109,7 +109,7 @@ static void deactivate_secret(SecretType idx) {
 
 static MenuType cur_menu;
 static void update_secrets() {
-	const Bool slave = is_in_netgame() && !NutPunch_IsMaster(NutPunch_LocalPeer()),
+	const Bool slave = is_in_netgame() && is_client(),
 		   handicapped = slave || cur_menu == MEN_INTRO || cur_menu == MEN_JOINING_LOBBY;
 	for (SecretType i = 0; i < SECR_SIZE; i++) {
 		Secret* secret = &SECRETS[i];
@@ -269,7 +269,7 @@ static void set_spectate(int flip) {
 }
 
 static void start_multiplayer() {
-	if (!NutPunch_IsMaster(NutPunch_LocalPeer()))
+	if (is_client())
 		return;
 
 	char* data = net_buffer();
@@ -283,19 +283,15 @@ static void start_multiplayer() {
 	start_online_game(TRUE);
 }
 
-static Bool is_client() {
-	return !NutPunch_IsMaster(NutPunch_LocalPeer());
-}
-
 static Bool disable_start() {
-	if (NutPunch_IsMaster(NutPunch_LocalPeer()))
+	if (is_host())
 		for (int i = 0; i < MAX_PEERS; i++)
 			if (NutPunch_PeerAlive(i) && !peer_is_spectating(i))
 				return FALSE;
 	return TRUE;
 }
 
-FMT_OPTION(start, NutPunch_IsMaster(NutPunch_LocalPeer()) ? "Start!" : "Waiting for host");
+FMT_OPTION(start, is_host() ? "Start!" : "Waiting for host");
 
 // Options
 FMT_OPTION(name, CLIENT.user.name);
@@ -682,7 +678,7 @@ static void update_joining_lobby() {
 		show_error("Failed to %s lobby:\n\n%s", net_verb(), net_error());
 	} else if (is_in_netgame()) {
 		push_user_data();
-		(NutPunch_IsMaster(NutPunch_LocalPeer()) ? push_lobby_data : pull_lobby_data)();
+		(is_host() ? push_lobby_data : pull_lobby_data)();
 		play_generic_sound("connect");
 		set_menu(MEN_LOBBY);
 	}
@@ -717,7 +713,7 @@ static void update_inlobby() {
 		return;
 	}
 
-	if (!NutPunch_IsMaster(NutPunch_LocalPeer()))
+	if (is_client())
 		pull_lobby_data();
 }
 
@@ -1319,7 +1315,7 @@ static void select_level() {
 	const int m = MEN_LEVEL_SELECT;
 	const char* name = OPTIONS[m][(int)MENUS[m].option].name;
 	SDL_strlcpy(CLIENT.game.level, name, CLIENT_STRING_MAX);
-	if (NutPunch_IsMaster(NutPunch_LocalPeer()))
+	if (is_host())
 		push_lobby_data();
 	prev_menu();
 }

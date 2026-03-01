@@ -36,6 +36,14 @@ Bool is_in_netgame() {
 	return NutPunch_IsReady();
 }
 
+Bool is_host() {
+	return NutPunch_MasterPeer() == NutPunch_LocalPeer();
+}
+
+Bool is_client() {
+	return NutPunch_MasterPeer() != NutPunch_LocalPeer();
+}
+
 /// Returns the current hostname.
 ///
 /// If the hostname is an IPv4 or IPv6 address, returns `(custom IP)` instead.
@@ -132,7 +140,7 @@ void net_newframe() {
 			continue;
 
 		PacketType pack = *(PacketType*)data;
-		if (pack >= PT_MASTER_ONLY && !NutPunch_IsMaster(peer))
+		if (pack >= PT_MASTER_ONLY && NutPunch_MasterPeer() != peer)
 			continue; // FUCK YOU
 
 		switch (pack) {
@@ -142,12 +150,12 @@ void net_newframe() {
 			break;
 
 		case PT_START:
-			if (!NutPunch_IsMaster(NutPunch_LocalPeer()))
+			if (is_client())
 				start_online_game(TRUE);
 			break;
 
 		case PT_CONTINUE:
-			if (NutPunch_IsMaster(NutPunch_LocalPeer()))
+			if (is_host())
 				break;
 
 			GameContext* ctx = init_game_context();

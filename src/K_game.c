@@ -159,7 +159,7 @@ void continue_game() {
 		return;
 	}
 
-	if (!NutPunch_IsMaster(NutPunch_LocalPeer()))
+	if (is_client())
 		return;
 
 	char *data = net_buffer(), *cursor = data;

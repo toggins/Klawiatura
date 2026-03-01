@@ -27,14 +27,14 @@ set(SDL_AUDIO OFF CACHE INTERNAL "")
 set(SDL_CAMERA OFF CACHE INTERNAL "")
 FetchContent_Declare(SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG release-3.4.0)
+    GIT_TAG release-3.4.2)
 FetchContent_MakeAvailable(SDL3)
 list(APPEND LIBS SDL3::SDL3-static)
 
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG c9e695ef7709d9f2e5d8e44e36e27b56b881366f)
+    GIT_TAG f3dc84d7a07a94d334901ec0dcc87bb844e26d22)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
 
 # GLAD (2.0.8, OpenGL 3.3 Core)
@@ -55,7 +55,7 @@ FetchContent_Declare(cglm
 FetchContent_MakeAvailable(cglm)
 list(APPEND LIBS cglm)
 
-# FMOD Core API (2.03.11)
+# FMOD Core API (2.03.12)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
 list(APPEND LIBS fmod)
 
@@ -69,14 +69,14 @@ list(APPEND LIBS yyjson)
 # S_fixed
 FetchContent_Declare(S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
-    GIT_TAG 1869c0adcf4ae770afecf0b5e875cf399ee7ce98)
+    GIT_TAG aa1cb5e1a8b1b086f0c0049814e69b61550b755a)
 FetchContent_MakeAvailable(S_fixed)
 list(APPEND LIBS S_fixed)
 
 # S_tructures
 FetchContent_Declare(S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
-    GIT_TAG 2bb14085172b06afeca00783c7b4f30fe3210b68)
+    GIT_TAG 821c34b46d386f4a52cac7d10c64d88e1c3c05f4)
 FetchContent_MakeAvailable(S_tructures)
 list(APPEND LIBS S_tructures)
 
@@ -85,7 +85,7 @@ set(NUTPUNCH_STAGING ON CACHE INTERNAL "")
 set(NUTPUNCH_BUILD_SERVER ON CACHE INTERNAL "")
 FetchContent_Declare(NutPunch
     GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG 52ac85b759edd99ba384677bb4b7ea513afbabb2)
+    GIT_TAG 1d178302f6b32eff4808e5e3d458595a85e43fb6)
 FetchContent_MakeAvailable(NutPunch)
 list(APPEND LIBS NutPunch)
 
@@ -97,7 +97,7 @@ FetchContent_Declare(GekkoNet
 FetchContent_MakeAvailable(GekkoNet)
 list(APPEND LIBS GekkoNet)
 
-# Discord Social SDK (1.7.13152)
+# Discord Social SDK (1.8.14026)
 set(KLAW_DISCORD OFF CACHE INTERNAL "Use Discord Social SDK")
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/discord)
 if(KLAW_DISCORD)
