@@ -30,9 +30,10 @@ enum {
 
 typedef Uint8 PacketType;
 enum {
-	PT_START,
-	PT_CONTINUE,
 	PT_CHAT,
+	PT_MASTER_ONLY, // packets after this point are accepted only from the lobby's master
+	PT_START = PT_MASTER_ONLY,
+	PT_CONTINUE,
 };
 
 void net_init(), net_teardown();

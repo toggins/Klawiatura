@@ -121,8 +121,9 @@ void net_newframe() {
 			show_error("Net error:\n%s", last_error);
 			nuke_game();
 		}
-	} else
+	} else {
 		last_error = NULL;
+	}
 
 	char* data = net_buffer();
 	while (NutPunch_HasMessage(PCH_LOBBY)) {
@@ -130,17 +131,22 @@ void net_newframe() {
 		if (size < sizeof(PacketType))
 			continue;
 
-		switch (*(PacketType*)data) {
+		PacketType pack = *(PacketType*)data;
+		if (pack >= PT_MASTER_ONLY && !NutPunch_IsMaster(peer))
+			continue; // FUCK YOU
+
+		switch (pack) {
+		case PT_CHAT:
+			if (size > sizeof(PacketType))
+				push_chat_message(peer, data + sizeof(PacketType), size - (int)sizeof(PacketType));
+			break;
+
 		case PT_START:
-			if (!NutPunch_IsMaster(peer))
-				break; // FUCK YOU
 			if (!NutPunch_IsMaster(NutPunch_LocalPeer()))
 				start_online_game(TRUE);
 			break;
 
 		case PT_CONTINUE:
-			if (!NutPunch_IsMaster(peer))
-				break; // FUCK YOU
 			if (NutPunch_IsMaster(NutPunch_LocalPeer()))
 				break;
 
@@ -161,11 +167,6 @@ void net_newframe() {
 			}
 
 			start_online_game(FALSE);
-			break;
-
-		case PT_CHAT:
-			if (size > sizeof(PacketType))
-				push_chat_message(peer, data + sizeof(PacketType), size - (int)sizeof(PacketType));
 			break;
 
 		default:
