@@ -409,7 +409,7 @@ BIND_OPTION(chat, KB_CHAT);
 #undef BIND_OPTION
 
 static void update_intro(), reset_credits(), enter_multiplayer_note(), update_find_lobbies(), update_joining_lobby(),
-	enter_lobby(), update_inlobby(), show_levels(), update_playing(), update_pause(), restart_session(),
+	enter_lobby(), update_inlobby(), show_levels(), update_playing(), update_pause(), restart_at_a_cost(),
 	exit_to_main(), resume();
 
 static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_disconnect(MenuType),
@@ -548,7 +548,7 @@ static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_INGAME_PLAYING] = {},
 	[MEN_INGAME_PAUSE] = {
 		{"Resume Game", .button = resume},
-		{"%s", FORMAT(restart), .button = restart_session},
+		{"%s", FORMAT(restart), .button = restart_at_a_cost},
 		{"%s", FORMAT(exit), .button = exit_to_main},
 	},
 };
@@ -742,16 +742,11 @@ void enter_gaming_menu() {
 	set_menu(MEN_INGAME_PLAYING);
 }
 
-static void restart_session() {
+static void restart_at_a_cost() {
 	// FIXME: Update this if replays are implemented.
 
 	if (NutPunch_IsReady())
 		goto no_can_restart;
-
-	if (game_state.flags & GF_HELL) {
-		restart_game_session();
-		return;
-	}
 
 	PlayerID can_restart = numplayers();
 	for (PlayerID i = 0L; i < numplayers(); i++) {
@@ -767,7 +762,10 @@ static void restart_session() {
 	if (can_restart <= 0L) {
 	no_can_restart:
 		play_generic_sound("bump");
+		return;
 	}
+
+	restart_game_session();
 }
 
 static void exit_to_main() {
