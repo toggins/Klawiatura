@@ -2,7 +2,8 @@
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "file",
     "files.exclude": {
-        ".cache": true
+        ".cache": true,
+        "build/_deps": true
     },
     "files.associations": {
         "*.h": "c"
@@ -13,7 +14,9 @@
     "cmake.generator": "Ninja",
     "cmake.exportCompileCommandsFile": true,
     "cmake.debugConfig": {
-        "args": ["-skip_intro"]
+        "args": [
+            "-skip_intro"
+        ]
     },
     "[c]": {
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
