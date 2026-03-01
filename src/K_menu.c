@@ -437,7 +437,7 @@ static Menu MENUS[MEN_SIZE] = {
 		      .leave = maybe_leave_lobby},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
-	[MEN_INGAME_PLAYING] = {.from = MEN_INGAME_PAUSE, .update = update_playing},
+	[MEN_INGAME_PLAYING] = {.from = MEN_INGAME_PAUSE, .update = update_playing, .back_sound = "pause"},
 	[MEN_INGAME_PAUSE] = {"Paused", .update = update_pause},
 };
 
