@@ -20,8 +20,12 @@ void editor_baton_pass(GamePlayer* player, GameActor* self) {
 	float mx = 0.f, my = 0.f;
 	get_cursor_pos(&mx, &my);
 
-	const Fixed dx = kb_down(KB_RIGHT) - kb_down(KB_LEFT), dy = kb_down(KB_UP) - kb_down(KB_DOWN);
-	const Fixed angle = FxAtan2(-dy, dx), speed = dx || dy ? FxFrom(8L) : FxZero;
+	const Fixed dx = ANY_INPUT(player, GI_RIGHT) - ANY_INPUT(player, GI_LEFT),
+		    dy = ANY_INPUT(player, GI_UP) - ANY_INPUT(player, GI_DOWN), angle = FxAtan2(-dy, dx);
+
+	Fixed speed = ANY_INPUT(player, GI_RUN) ? FxFrom(20L) : FxFrom(8L);
+	if (!dx && !dy)
+		speed = FxZero;
 
 	VAL(self, X_SPEED) = FxMul(speed, FxCos(angle)), VAL(self, Y_SPEED) = FxMul(speed, FxSin(angle));
 	move_actor(self, POS_SPEED(self));
