@@ -414,7 +414,7 @@ static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_dis
 
 #define GHOST .ghost = TRUE
 #define NORETURN .noreturn = TRUE
-static Menu MENUS[MEN_SIZE] = {
+Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {NORETURN},
 	[MEN_ERROR] = {"Error", GHOST},
 	[MEN_RESULTS] = {},
@@ -450,7 +450,7 @@ static const char* NO_LOBBIES_FOUND = "No lobbies found";
 #define OINFO DISABLE, VIVID
 #define NOCLIENT .disable_if = is_client
 
-static Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
+Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_MAIN] = {
 		{"Singleplayer", .enter = MEN_SINGLEPLAYER},
 		{"Multiplayer", .enter = MEN_MULTIPLAYER_NOTE},

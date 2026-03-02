@@ -406,9 +406,6 @@ Bool update_game() {
 	if (paused && !NutPunch_IsReady())
 		return TRUE;
 
-	if (!NutPunch_IsReady() && kb_pressed(KB_EDIT))
-		set_editing_level(!is_editing_level());
-
 	if (!i_am_spectating())
 		add_local_inputs();
 
@@ -753,7 +750,9 @@ static void tick_game_state(const GameInput inputs[MAX_PLAYERS]) {
 		if (game_state.clock <= 0L || (game_state.time % 25L) != 0L)
 			break;
 
-		--game_state.clock;
+		if (!is_editing_level())
+			--game_state.clock;
+
 		if (game_state.clock <= 100L && !(game_state.flags & GF_HURRY)) {
 			play_state_sound("hurry", 0L, 0L, A_NULL);
 			game_state.flags |= GF_HURRY;

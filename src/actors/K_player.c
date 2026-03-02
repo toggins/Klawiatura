@@ -1,5 +1,6 @@
 
 #include "K_editor.h"
+#include "K_input.h"
 #include "K_string.h"
 #include "K_tick.h"
 
@@ -697,6 +698,9 @@ static void tick(GameActor* actor) {
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}
+
+	if (kb_pressed(KB_EDIT))
+		set_editing_level(!is_editing_level());
 
 	if (is_editing_level()) {
 		editor_baton_pass(player, actor);

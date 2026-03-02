@@ -1,4 +1,5 @@
 #include "K_editor.h"
+#include "K_input.h"
 #include "K_video.h"
 
 static Bool editing = FALSE;
@@ -15,10 +16,22 @@ void load_editor() {
 	load_texture("tiles/tank");
 }
 
-void editor_baton_pass(GamePlayer* player, GameActor* self) {}
+void editor_baton_pass(GamePlayer* player, GameActor* self) {
+	float mx = 0.f, my = 0.f;
+	get_cursor_pos(&mx, &my);
+
+	const Fixed dx = kb_down(KB_RIGHT) - kb_down(KB_LEFT), dy = kb_down(KB_UP) - kb_down(KB_DOWN);
+	const Fixed angle = FxAtan2(-dy, dx), speed = dx || dy ? FxFrom(8L) : FxZero;
+
+	VAL(self, X_SPEED) = FxMul(speed, FxCos(angle)), VAL(self, Y_SPEED) = FxMul(speed, FxSin(angle));
+	move_actor(self, POS_SPEED(self));
+}
 
 void draw_editor() {
+	float mx = 0.f, my = 0.f;
+	get_cursor_pos(&mx, &my);
+
 	batch_reset();
-	batch_pos(B_XY(0, 0));
+	batch_pos(B_XY(mx, my));
 	batch_sprite("tiles/tank");
 }

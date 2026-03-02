@@ -88,3 +88,6 @@ void show_error(const char*, ...);
 
 void populate_results(), show_results();
 const char* who_is_winner(int);
+
+extern Menu MENUS[MEN_SIZE];
+extern Option OPTIONS[MEN_SIZE][MAX_OPTIONS];
