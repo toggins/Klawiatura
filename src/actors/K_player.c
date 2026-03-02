@@ -1341,6 +1341,7 @@ static void load_corpse() {
 static void create_corpse(GameActor* actor) {
 	actor->depth = -FxOne;
 	VAL(actor, PLAYER_INDEX) = (ActorValue)NULLPLAY;
+	set_editing_level(FALSE);
 }
 
 static void tick_corpse(GameActor* actor) {
@@ -1349,6 +1350,26 @@ static void tick_corpse(GameActor* actor) {
 		FLAG_ON(actor, FLG_DESTROY);
 		return;
 	}
+
+	// !!! CLIENT-SIDE !!! never triggers in mp i'm so cool
+
+	if (kb_pressed(KB_EDIT))
+		set_editing_level(!is_editing_level());
+
+	if (is_editing_level()) {
+		FLAG_ON(actor, FLG_DESTROY);
+
+		GameActor* jesus = create_actor(ACT_PLAYER, actor->pos);
+		VAL(jesus, PLAYER_INDEX) = VAL(actor, PLAYER_INDEX);
+		VAL(jesus, X_SPEED) = VAL(actor, X_SPEED), VAL(jesus, Y_SPEED) = FxFrom(-12L);
+		get_player(owner(jesus))->lives++;
+
+		set_editing_level(FALSE);
+
+		return;
+	}
+
+	// !!! CLIENT-SIDE !!!
 
 	GameActor* autoscroll = get_actor(game_state.autoscroll);
 	if (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS))
