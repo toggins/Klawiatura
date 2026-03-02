@@ -10,6 +10,7 @@
 #include "K_menu.h"
 #include "K_misc.h"
 #include "K_net.h"
+#include "K_secrets.h"
 #include "K_string.h"
 #include "K_tick.h"
 #include "K_video.h"
@@ -49,119 +50,12 @@ static const char* credits[] = {
 };
 static float credits_y = SCREEN_HEIGHT;
 
-// =======
-// SECRETS
-// =======
-
-static Secret SECRETS[SECR_SIZE] = {
-	[SECR_KEVIN] = {
-		.name = "KEVIN",
-		.inputs = {KB_SECRET_K, KB_SECRET_E, KB_SECRET_V, KB_SECRET_I, KB_SECRET_N, NULLBIND},
-		.cmd = &CLIENT.game.kevin,
-		.sound = "kevin_on", .track = "human_like_predator",
-	},
-	[SECR_FRED] = {
-		.name = "FRED",
-		.inputs = {KB_SECRET_F, KB_SECRET_R, KB_SECRET_E, KB_SECRET_D, NULLBIND},
-		.cmd = &CLIENT.game.fred,
-		.sound = "clone_dead2", .track = "bassbin_bangin",
-	},
-};
-
-static int secret_state = 0;
-static float secret_lerp = 0.f;
-static int last_secret = -1;
-
-static void load_secrets() {
-	for (SecretType i = 0; i < SECR_SIZE; i++) {
-		load_transient_sound(SECRETS[i].sound);
-		load_transient_track(SECRETS[i].track);
-	}
-
-	load_transient_sound("type");
-	load_transient_sound("thwomp");
-	load_transient_track("it_makes_me_burn");
-}
-
-static void update_menu_track();
-static void activate_secret(SecretType idx) {
-	SECRETS[idx].active = TRUE;
-	SECRETS[idx].state = SECRETS[idx].type_time = 0;
-	*(SECRETS[idx].cmd) = TRUE;
-
-	if (last_secret == idx)
-		last_secret = -1;
-	play_generic_sound(SECRETS[idx].sound);
-	update_menu_track();
-	push_lobby_data();
-}
-
-static void deactivate_secret(SecretType idx) {
-	SECRETS[idx].active = FALSE;
-	SECRETS[idx].state = SECRETS[idx].type_time = 0;
-	*(SECRETS[idx].cmd) = FALSE;
-
-	if (last_secret == idx)
-		last_secret = -1;
-	update_menu_track();
-	push_lobby_data();
-}
-
-static MenuType cur_menu;
-static void update_secrets() {
-	const Bool slave = is_in_netgame() && is_client(),
-		   handicapped = slave || cur_menu == MEN_INTRO || cur_menu == MEN_JOINING_LOBBY;
-	for (SecretType i = 0; i < SECR_SIZE; i++) {
-		Secret* secret = &SECRETS[i];
-
-		if (secret->active) {
-			if (!*secret->cmd)
-				deactivate_secret(i);
-			continue;
-		} else if (*secret->cmd) {
-			activate_secret(i);
-			continue;
-		}
-
-		if (secret->type_time > 0)
-			if (--secret->type_time <= 0) {
-				secret->state = 0;
-				if (last_secret == i)
-					last_secret = -1;
-				continue;
-			}
-
-		if (handicapped || (last_secret >= 0 && last_secret != i) || !kb_pressed(secret->inputs[secret->state]))
-			continue;
-		if (secret->inputs[++secret->state] != NULLBIND) {
-			last_secret = i;
-			secret->type_time = TICKRATE;
-			play_generic_sound("type");
-			continue;
-		}
-
-		activate_secret(i);
-	}
-
-	if (handicapped || !kb_pressed(KB_SECRET_BAIL))
-		return;
-
-	int cancelled = 0;
-	for (SecretType i = 0; i < SECR_SIZE; i++) {
-		if (!SECRETS[i].active)
-			continue;
-		deactivate_secret(i);
-		++cancelled;
-	}
-	if (cancelled > 0)
-		play_generic_sound("thwomp");
-}
-
 // ===========================================================
 // THE ACTUAL THING WE'RE SUPPOSED TO IMPLEMENT IN THIS SOURCE
 // ===========================================================
 
-static MenuType cur_menu = MEN_NULL;
+// sadly can't leave this static anymore.....
+MenuType cur_menu = MEN_NULL;
 
 static GameWinner winners[MAX_PLAYERS] = {0};
 static Bool losers = FALSE;
@@ -550,7 +444,7 @@ Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	},
 };
 
-static void update_menu_track() {
+void update_menu_track() {
 	const char* track = NULL;
 	switch (cur_menu) {
 	default: {
@@ -776,23 +670,6 @@ static void maybe_disconnect(MenuType next) {
 		disconnect();
 }
 
-static const char* keve() {
-	if (last_secret >= 0) {
-		static char buf[MAX_SECRET_INPUTS + 1] = "";
-		SDL_strlcpy(buf, SECRETS[last_secret].name, SECRETS[last_secret].state + 1);
-		return buf;
-	}
-
-	if (CLIENT.game.kevin && CLIENT.game.fred)
-		return "NOSTALIGA";
-
-	const char* str = NULL;
-	for (SecretType i = 0; i < SECR_SIZE; i++)
-		if (SECRETS[i].active)
-			str = SECRETS[i].name;
-	return str;
-}
-
 static Bool is_option_disabled(const Option* opt) {
 	if (opt->disable_if && opt->disable_if())
 		return TRUE;
@@ -915,7 +792,8 @@ void update_menu() {
 		if (last_menu != cur_menu)
 			continue;
 
-		update_secrets();
+		if (cur_menu < MEN_INGAME)
+			update_secrets();
 		select_menu_option();
 
 		if (kb_pressed(KB_PAUSE)) {
@@ -960,10 +838,15 @@ void draw_menu() {
 		}
 
 	const float lk = 0.125f * dt();
+
+	extern float secret_lerp;
 	secret_lerp = glm_lerp(secret_lerp, has_secret, SDL_min(lk, 1.f));
 
-	const Uint8 fade_red = (CLIENT.game.kevin && CLIENT.game.fred) ? 255 : 32;
-	const Uint8 fade_alpha = (Uint8)(secret_lerp * 255.f);
+	Uint8 fade_red = (CLIENT.game.kevin && CLIENT.game.fred) ? 255 : 32;
+	Uint8 fade_alpha = (Uint8)(secret_lerp * 255.f);
+	if (cur_menu >= MEN_INGAME)
+		fade_red = 0, fade_alpha = 0;
+
 	batch_pos(B_XY(-SCREEN_WIDTH, 0));
 	batch_colors((Uint8[4][4]){
 		{fade_red, 0, 0, 0         },
@@ -1103,20 +986,8 @@ void draw_menu() {
 	}
 
 	draw_chat();
-
-	batch_pos(B_XY(HALF_SCREEN_WIDTH + ((fade_red >= 255) ? (SDL_rand(3) - SDL_rand(3)) : 0.f),
-		SCREEN_HEIGHT - 48.f - ((fade_red >= 255) ? SDL_rand(5) : 0.f)));
-	batch_color(B_RGB(255, 96, 96));
-	batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-	const float kscale = 1.f + ((0.84f + SDL_sinf(totalticks() / 32.f) * 0.16f) * secret_lerp);
-	batch_scale(B_SCALE(kscale));
-	batch_string("main", 24.f, keve());
-
-	if (cur_menu != MEN_JOINING_LOBBY && cur_menu != MEN_LOBBY) {
-		batch_pos(B_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 48.f)), batch_scale(B_SCALE(1.f));
-		batch_color(B_ALPHA(128 * secret_lerp)), batch_align(B_ALIGN(FA_CENTER, FA_TOP));
-		batch_string("main", 24, fmt("[%s] Deactivate", kb_label(KB_SECRET_BAIL)));
-	}
+	if (cur_menu < MEN_INGAME)
+		draw_secrets(fade_red);
 
 	goto jobwelldone;
 

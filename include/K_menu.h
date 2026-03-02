@@ -2,10 +2,9 @@
 
 #include <SDL3/SDL_stdinc.h>
 
-#include "K_input.h"
+#include "K_misc.h"
 
 #define MAX_OPTIONS 16L
-#define MAX_SECRET_INPUTS 5L
 
 typedef enum {
 	MEN_NULL,
@@ -60,24 +59,6 @@ typedef struct {
 	float cursor;
 } Menu;
 
-typedef enum {
-	SECR_KEVIN,
-	SECR_FRED,
-	SECR_SIZE,
-} SecretType;
-
-typedef struct {
-	const char* name;
-	Keybind inputs[MAX_SECRET_INPUTS + 1];
-
-	Bool* cmd;
-	const char *sound, *track;
-
-	size_t state;
-	Uint8 type_time;
-	Bool active;
-} Secret;
-
 void load_menu();
 
 void menu_init();
@@ -85,6 +66,8 @@ void update_menu(), draw_menu();
 
 Bool set_menu(MenuType), prev_menu();
 void show_error(const char*, ...);
+
+void update_menu_track();
 
 void populate_results(), show_results();
 const char* who_is_winner(int);
