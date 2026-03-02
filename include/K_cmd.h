@@ -1,11 +1,7 @@
 #pragma once
 
-#include <SDL3/SDL_stdinc.h>
-
 #define CLIENT_STRING_MAX (NUTPUNCH_FIELD_DATA_MAX)
-
-#include "K_game.h"
-#include "K_net.h" // IWYU pragma: keep
+#include "K_net.h"
 
 #define CMD_OPT(ident) cmd_set_##ident
 #define MAKE_FLAG(ident) MAKE_OPTION_PRO(ident, Bool, false, true)
