@@ -1362,7 +1362,9 @@ static void tick_corpse(GameActor* actor) {
 		GameActor* jesus = create_actor(ACT_PLAYER, actor->pos);
 		VAL(jesus, PLAYER_INDEX) = VAL(actor, PLAYER_INDEX);
 		VAL(jesus, X_SPEED) = VAL(actor, X_SPEED), VAL(jesus, Y_SPEED) = FxFrom(-12L);
-		get_player(owner(jesus))->lives++;
+
+		GamePlayer* player = get_player(owner(jesus));
+		player->actor = jesus->id, player->lives++;
 
 		set_editing_level(FALSE);
 
