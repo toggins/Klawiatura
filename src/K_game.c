@@ -422,48 +422,45 @@ byebye_game:
 }
 
 static mat4 proj = GLM_MAT4_IDENTITY;
-static vec2 camera_offset_morsel = {0.f, 0.f};
+static vec2 morsel = {0};
 
 static void perform_camera_magic() {
 	static vec2 cpos = GLM_VEC2_ZERO;
 	VideoCamera* camera = &video_state.camera;
-	camera_offset_morsel[0] = camera_offset_morsel[1] = 0.f;
 
-	Bool morsel = TRUE;
-	Fixed xx = FxZero, yy = FxZero;
-	float bx1 = 0.f, by1 = 0.f, bx2 = 0.f, by2 = 0.f;
-
+	float xx = 0.f, yy = 0.f, bx1 = 0.f, by1 = 0.f, bx2 = 0.f, by2 = 0.f;
 	const InterpActor* iautoscroll = get_interp(get_actor(game_state.autoscroll));
 	const GamePlayer* player = get_player(view_player);
 
 	if (iautoscroll) {
-		xx = iautoscroll->pos.x + F_HALF_SCREEN_WIDTH;
-		yy = iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT;
-		bx1 = HALF_SCREEN_WIDTH, by1 = HALF_SCREEN_HEIGHT;
-		bx2 = Fx2Int(game_state.size.x - F_HALF_SCREEN_WIDTH);
-		by2 = Fx2Int(game_state.size.y - F_HALF_SCREEN_HEIGHT);
+		xx = Fx2Float(iautoscroll->pos.x + F_HALF_SCREEN_WIDTH);
+		yy = Fx2Float(iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT);
+
+		bx1 = HALF_SCREEN_WIDTH;
+		by1 = HALF_SCREEN_HEIGHT;
+
+		bx2 = Fx2Float(game_state.size.x - F_HALF_SCREEN_WIDTH);
+		by2 = Fx2Float(game_state.size.y - F_HALF_SCREEN_HEIGHT);
 	} else if (player) {
 		const InterpActor* ipawn = get_interp(get_actor(player->actor));
-		if (ipawn)
-			xx = ipawn->pos.x, yy = ipawn->pos.y;
-		else
-			xx = player->pos.x, yy = player->pos.y;
+		if (ipawn) {
+			xx = Fx2Float(ipawn->pos.x);
+			yy = Fx2Float(ipawn->pos.y);
+		} else {
+			xx = Fx2Float(player->pos.x);
+			yy = Fx2Float(player->pos.y);
+		}
 
-		bx1 = Fx2Int(player->bounds.start.x + F_HALF_SCREEN_WIDTH);
-		by1 = Fx2Int(player->bounds.start.y + F_HALF_SCREEN_HEIGHT);
-		bx2 = Fx2Int(player->bounds.end.x - F_HALF_SCREEN_WIDTH);
-		by2 = Fx2Int(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
-	} else {
-		morsel = FALSE;
+		bx1 = Fx2Float(player->bounds.start.x + F_HALF_SCREEN_WIDTH);
+		by1 = Fx2Float(player->bounds.start.y + F_HALF_SCREEN_HEIGHT);
+
+		bx2 = Fx2Float(player->bounds.end.x - F_HALF_SCREEN_WIDTH);
+		by2 = Fx2Float(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
 	}
 
-	if (morsel) {
-		camera->pos[0] = Fx2Int(xx), camera->pos[1] = Fx2Int(yy);
-		camera->pos[0] = SDL_clamp(camera->pos[0], bx1, bx2);
-		camera->pos[1] = SDL_clamp(camera->pos[1], by1, by2);
-		camera_offset_morsel[0] = SDL_clamp(Fx2Float(xx), bx1, bx2) - camera->pos[0];
-		camera_offset_morsel[1] = camera->pos[1] - SDL_clamp(Fx2Float(yy), by1, by2);
-	}
+	xx = SDL_clamp(xx, bx1, bx2), yy = SDL_clamp(yy, by1, by2);
+	camera->pos[0] = SDL_truncf(xx), camera->pos[1] = SDL_truncf(yy);
+	morsel[0] = xx - SDL_truncf(xx), morsel[1] = yy - SDL_truncf(yy);
 
 	if (camera->lerp_time[0] < camera->lerp_time[1]) {
 		glm_vec2_lerp(camera->from, camera->pos, camera->lerp_time[0] / camera->lerp_time[1], cpos);
@@ -2010,29 +2007,8 @@ void draw_actor_offset(
 	const InterpActor* iactor = get_interp(actor);
 	const float sprout = VAL(actor, SPROUT), z = (sprout > FxZero) ? 21.f : Fx2Float(actor->depth);
 	batch_reset();
-	batch_pos(B_XYZ(Fx2Int(iactor->pos.x) + offs[0], Fx2Int(iactor->pos.y + sprout) + offs[1], z + offs[2]));
-	batch_angle(angle), batch_color(color);
-	batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
-	batch_sprite(name);
-}
-
-// Variant of `draw_actor()` that works around some jittering issues (i.e. players on platforms, autoscrolling).
-void draw_actor_no_jitter(const GameActor* actor, const char* name, float angle, const Uint8 color[4]) {
-	if (actor->type == ACT_PLAYER && get_actor(VAL(actor, PLAYER_PLATFORM)) == NULL) {
-		const GameActor* autoscroll = get_actor(game_state.autoscroll);
-		if (autoscroll == NULL || !ANY_FLAG(autoscroll, FLG_SCROLL_TANKS)
-			|| (VAL(actor, PLAYER_GROUND) > 0L && actor->pos.y < (autoscroll->pos.y + FxFrom(415L))))
-		{
-			draw_actor(actor, name, angle, color);
-			return;
-		}
-	}
-
-	const InterpActor* iactor = get_interp(actor);
-	const float sprout = Fx2Float(VAL(actor, SPROUT)), z = sprout > 0.f ? 21.f : Fx2Float(actor->depth);
-	batch_reset();
-	batch_pos(B_XYZ((int)(Fx2Float(iactor->pos.x) - camera_offset_morsel[0]),
-		(int)(Fx2Float(iactor->pos.y) + sprout + camera_offset_morsel[1]), z));
+	batch_pos(B_XYZ(SDL_truncf(Fx2Float(iactor->pos.x) - morsel[0]),
+		SDL_truncf(Fx2Float(iactor->pos.y + sprout) + morsel[1]), z));
 	batch_angle(angle), batch_color(color);
 	batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 	batch_sprite(name);
