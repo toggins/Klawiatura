@@ -106,6 +106,7 @@ GameContext* init_game_context() {
 }
 
 static void start_game_state();
+
 void start_game() {
 	set_editing_level(FALSE);
 
@@ -400,6 +401,13 @@ Bool update_game() {
 	// Safety net, NutPunch errors can nuke the game at any moment.
 	if (game_session == NULL)
 		goto byebye_game;
+
+	if (kb_pressed(KB_EDIT)) {
+		if (is_editing_level())
+			restart_game_session(), set_editing_level(FALSE);
+		else
+			set_editing_level(TRUE);
+	}
 
 	update_interp_parameters();
 
@@ -1014,13 +1022,6 @@ static void start_game_state() {
 
 	game_state.checkpoint = game_context.checkpoint;
 
-	//
-	//
-	//
-	// DATA LOADER
-	//
-	//
-	//
 	load_texture_num("ui/coins%u", 3L);
 	load_texture_num("markers/water%u", 8L);
 
@@ -1036,11 +1037,7 @@ static void start_game_state() {
 	load_sound("chat");
 
 	//
-	//
-	//
 	// LEVEL LOADER
-	//
-	//
 	//
 	const char* kla = find_data_file(fmt("data/levels/%s.*", game_context.level), NULL);
 	if (kla == NULL) {

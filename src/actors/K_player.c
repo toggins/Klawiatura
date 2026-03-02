@@ -1,6 +1,4 @@
-
 #include "K_editor.h"
-#include "K_input.h"
 #include "K_string.h"
 #include "K_tick.h"
 
@@ -699,9 +697,6 @@ static void tick(GameActor* actor) {
 		return;
 	}
 
-	if (kb_pressed(KB_EDIT))
-		set_editing_level(!is_editing_level());
-
 	if (is_editing_level()) {
 		editor_baton_pass(player, actor);
 		return;
@@ -1352,9 +1347,6 @@ static void tick_corpse(GameActor* actor) {
 	}
 
 	// !!! CLIENT-SIDE !!! never triggers in mp i'm so cool
-
-	if (kb_pressed(KB_EDIT))
-		set_editing_level(!is_editing_level());
 
 	if (is_editing_level()) {
 		FLAG_ON(actor, FLG_DESTROY);

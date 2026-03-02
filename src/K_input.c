@@ -1,3 +1,4 @@
+#include "K_editor.h"
 #include "K_file.h"
 #include "K_input.h"
 #include "K_log.h"
@@ -219,8 +220,8 @@ const char* input_device() {
 #define CHECK_KB(table, kb) (((table) & (1 << (kb))) != 0)
 
 Bool kb_pressed(Keybind kb) {
-	// HACK: hardcode RMB for pause.
-	if (kb == KB_PAUSE && mb_pressed(SDL_BUTTON_RMASK))
+	// HACK: hardcode RMB for pause UNLESS level-editing, in which case it has special meaning.
+	if (kb == KB_PAUSE && !is_editing_level() && mb_pressed(SDL_BUTTON_RMASK))
 		return TRUE;
 	return CHECK_KB(kb_now, kb) && !CHECK_KB(kb_then, kb);
 }
