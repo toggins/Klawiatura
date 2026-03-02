@@ -429,47 +429,42 @@ static void perform_camera_magic() {
 	VideoCamera* camera = &video_state.camera;
 	camera_offset_morsel[0] = camera_offset_morsel[1] = 0.f;
 
+	Bool morsel = TRUE;
+	Fixed xx = FxZero, yy = FxZero;
+	float bx1 = 0.f, by1 = 0.f, bx2 = 0.f, by2 = 0.f;
+
+	const InterpActor* iautoscroll = get_interp(get_actor(game_state.autoscroll));
 	const GamePlayer* player = get_player(view_player);
-	const GameActor* autoscroll = get_actor(game_state.autoscroll);
 
-#define MORSEL()                                                                                                       \
-	do {                                                                                                           \
-		camera->pos[0] = Fx2Int(xx), camera->pos[1] = Fx2Int(yy);                                              \
-		camera->pos[0] = SDL_clamp(camera->pos[0], bx1, bx2);                                                  \
-		camera->pos[1] = SDL_clamp(camera->pos[1], by1, by2);                                                  \
-		camera_offset_morsel[0] = SDL_clamp(Fx2Float(xx), bx1, bx2) - camera->pos[0];                          \
-		camera_offset_morsel[1] = camera->pos[1] - SDL_clamp(Fx2Float(yy), by1, by2);                          \
-	} while (0)
-
-	if (autoscroll) {
-		const InterpActor* iautoscroll = get_interp(autoscroll);
-		if (!iautoscroll)
-			goto skip_morsel;
-
-		const Fixed xx = iautoscroll->pos.x + F_HALF_SCREEN_WIDTH,
-			    yy = iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT;
-		const float bx1 = HALF_SCREEN_WIDTH, by1 = HALF_SCREEN_HEIGHT,
-			    bx2 = Fx2Int(game_state.size.x - F_HALF_SCREEN_WIDTH),
-			    by2 = Fx2Int(game_state.size.y - F_HALF_SCREEN_HEIGHT);
-		MORSEL();
+	if (iautoscroll) {
+		xx = iautoscroll->pos.x + F_HALF_SCREEN_WIDTH;
+		yy = iautoscroll->pos.y + F_HALF_SCREEN_HEIGHT;
+		bx1 = HALF_SCREEN_WIDTH, by1 = HALF_SCREEN_HEIGHT;
+		bx2 = Fx2Int(game_state.size.x - F_HALF_SCREEN_WIDTH);
+		by2 = Fx2Int(game_state.size.y - F_HALF_SCREEN_HEIGHT);
 	} else if (player) {
-		Fixed xx = FxZero, yy = FxZero;
-
 		const InterpActor* ipawn = get_interp(get_actor(player->actor));
 		if (ipawn)
 			xx = ipawn->pos.x, yy = ipawn->pos.y;
 		else
 			xx = player->pos.x, yy = player->pos.y;
 
-		const float bx1 = Fx2Int(player->bounds.start.x + F_HALF_SCREEN_WIDTH),
-			    by1 = Fx2Int(player->bounds.start.y + F_HALF_SCREEN_HEIGHT),
-			    bx2 = Fx2Int(player->bounds.end.x - F_HALF_SCREEN_WIDTH),
-			    by2 = Fx2Int(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
-		MORSEL();
+		bx1 = Fx2Int(player->bounds.start.x + F_HALF_SCREEN_WIDTH);
+		by1 = Fx2Int(player->bounds.start.y + F_HALF_SCREEN_HEIGHT);
+		bx2 = Fx2Int(player->bounds.end.x - F_HALF_SCREEN_WIDTH);
+		by2 = Fx2Int(player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
+	} else {
+		morsel = FALSE;
 	}
-#undef MORSEL
 
-skip_morsel:
+	if (morsel) {
+		camera->pos[0] = Fx2Int(xx), camera->pos[1] = Fx2Int(yy);
+		camera->pos[0] = SDL_clamp(camera->pos[0], bx1, bx2);
+		camera->pos[1] = SDL_clamp(camera->pos[1], by1, by2);
+		camera_offset_morsel[0] = SDL_clamp(Fx2Float(xx), bx1, bx2) - camera->pos[0];
+		camera_offset_morsel[1] = camera->pos[1] - SDL_clamp(Fx2Float(yy), by1, by2);
+	}
+
 	if (camera->lerp_time[0] < camera->lerp_time[1]) {
 		glm_vec2_lerp(camera->from, camera->pos, camera->lerp_time[0] / camera->lerp_time[1], cpos);
 		camera->lerp_time[0] += dt();
