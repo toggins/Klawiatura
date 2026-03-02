@@ -34,6 +34,7 @@ enum {
 	PT_MASTER_ONLY, // packets after this point are accepted only from the lobby's master
 	PT_START = PT_MASTER_ONLY,
 	PT_CONTINUE,
+	PT_RESULTS,
 };
 
 void net_init(), net_teardown();

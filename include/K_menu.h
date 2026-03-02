@@ -69,7 +69,8 @@ void show_error(const char*, ...);
 
 void update_menu_track();
 
-void populate_results(), show_results();
+void populate_results();
+Bool show_results(Bool);
 const char* who_is_winner(int);
 
 extern Menu MENUS[MEN_SIZE];

@@ -337,10 +337,8 @@ static Bool handle_advance(const GekkoGameEvent* event) {
 	if (!(game_state.flags & GF_END))
 		return TRUE;
 
-	if (!game_state.next[0]) {
-		show_results();
-		return FALSE;
-	}
+	if (!game_state.next[0])
+		return !show_results(FALSE);
 
 	GameContext* ctx = init_game_context();
 	extern GameState game_state;
@@ -363,9 +361,15 @@ static Bool handle_advance(const GekkoGameEvent* event) {
 }
 
 static Bool handle_session_update() {
+	GekkoSession* last_session = game_session;
+
 	int count = 0;
 	GekkoGameEvent** updates = gekko_update_session(game_session, &count);
 	for (int i = 0; i < count; i++) {
+		// Failsafe, game can replace sessions during level transition.
+		if (game_session != last_session)
+			break;
+
 		GekkoGameEvent* event = updates[i];
 		switch (event->type) {
 		case GekkoSaveEvent:
@@ -2004,8 +2008,8 @@ void draw_actor_offset(
 	const InterpActor* iactor = get_interp(actor);
 	const float sprout = VAL(actor, SPROUT), z = (sprout > FxZero) ? 21.f : Fx2Float(actor->depth);
 	batch_reset();
-	batch_pos(B_XYZ(SDL_truncf(Fx2Float(iactor->pos.x) - morsel[0]),
-		SDL_truncf(Fx2Float(iactor->pos.y + sprout) + morsel[1]), z));
+	batch_pos(B_XYZ(SDL_truncf(Fx2Float(iactor->pos.x) - morsel[0]) + offs[0],
+		SDL_truncf(Fx2Float(iactor->pos.y + sprout) + morsel[1]) + offs[1], z + offs[2]));
 	batch_angle(angle), batch_color(color);
 	batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 	batch_sprite(name);

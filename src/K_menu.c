@@ -143,7 +143,6 @@ static void do_join_fr() {
 
 // Lobby
 FMT_OPTION(active_lobby, get_lobby_id(), in_public_lobby() ? "" : " (Unlisted)");
-FMT_OPTION(lobby_limit, NutPunch_GetMaxPlayers());
 FMT_OPTION(spectate, i_am_spectating() ? "Spectator" : "Player");
 
 // Ingame
@@ -311,7 +310,7 @@ static void maybe_save_config(MenuType), cleanup_lobby_list(MenuType), maybe_dis
 Menu MENUS[MEN_SIZE] = {
 	[MEN_NULL] = {NORETURN},
 	[MEN_ERROR] = {"Error", GHOST},
-	[MEN_RESULTS] = {},
+	[MEN_RESULTS] = {GHOST},
 	[MEN_INTRO] = {NORETURN, .update = update_intro},
 	[MEN_MAIN] = {"Mario Together", NORETURN, .enter = reset_credits},
 	[MEN_LEVEL_SELECT] = {"Level Select", .enter = show_levels},
@@ -430,7 +429,6 @@ Option OPTIONS[MEN_SIZE][MAX_OPTIONS] = {
 	[MEN_LOBBY] = {
 		{"%s%s", DISABLE, FORMAT(active_lobby)},
 		{},
-		{"Players: %d", DISABLE, FORMAT(lobby_limit)},
 		{LEVEL_SELECT_OPTION, NOCLIENT},
 		{},
 		{"Enter as: %s", FORMAT(spectate), .flip = set_spectate},
@@ -780,9 +778,11 @@ void update_menu() {
 	float ahead = 0.f;
 	if (cur_menu == MEN_INGAME_PLAYING) {
 		extern GekkoSession* game_session;
-		gekko_network_poll(game_session);
-		ahead = gekko_frames_ahead(game_session);
-		ahead = SDL_clamp(ahead, 0, 2);
+		if (game_session != NULL) { // Failsafe. Netcode can boot to results at any point.
+			gekko_network_poll(game_session);
+			ahead = gekko_frames_ahead(game_session);
+			ahead = SDL_clamp(ahead, 0, 2);
+		}
 	}
 
 	for (new_frame(ahead); got_ticks(); next_tick()) {
@@ -796,12 +796,9 @@ void update_menu() {
 			update_secrets();
 		select_menu_option();
 
-		if (kb_pressed(KB_PAUSE)) {
+		if (kb_pressed(KB_PAUSE) && prev_menu()) {
 			const char* sound = MENUS[cur_menu].back_sound;
-			if (!sound)
-				sound = "select";
-			if (prev_menu())
-				play_generic_sound(sound);
+			play_generic_sound(sound ? sound : "select");
 		}
 	}
 
@@ -1041,7 +1038,17 @@ void populate_results() {
 	}
 }
 
-void show_results() {
+Bool show_results(Bool forced) {
+	if (!forced) {
+		if (is_client())
+			return FALSE;
+
+		char* data = net_buffer();
+		*(PacketType*)data = PT_RESULTS;
+		for (int i = 0; i < MAX_PEERS; i++)
+			NutPunch_SendReliably(PCH_LOBBY, i, data, sizeof(PacketType));
+	}
+
 	for (int i = 0; i < MAX_OPTIONS; i++) {
 		OPTIONS[MEN_RESULTS][i].name = "";
 		OPTIONS[MEN_RESULTS][i].disabled = TRUE;
@@ -1088,6 +1095,7 @@ void show_results() {
 		}
 
 	set_menu(MEN_RESULTS);
+	return TRUE;
 }
 
 const char* who_is_winner(int idx) {

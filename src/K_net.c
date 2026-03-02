@@ -140,7 +140,7 @@ void net_newframe() {
 			continue;
 
 		PacketType pack = *(PacketType*)data;
-		if (pack >= PT_MASTER_ONLY && NutPunch_MasterPeer() != peer)
+		if (pack >= PT_MASTER_ONLY && (NutPunch_MasterPeer() != peer || is_host()))
 			continue; // FUCK YOU
 
 		switch (pack) {
@@ -150,12 +150,12 @@ void net_newframe() {
 			break;
 
 		case PT_START:
-			if (is_client())
-				start_online_game(TRUE);
+
+			start_online_game(TRUE);
 			break;
 
 		case PT_CONTINUE:
-			if (is_host())
+			if (size <= sizeof(PacketType))
 				break;
 
 			GameContext* ctx = init_game_context();
@@ -175,6 +175,13 @@ void net_newframe() {
 			}
 
 			start_online_game(FALSE);
+			break;
+
+		case PT_RESULTS:
+			if (game_exists()) {
+				show_results(TRUE);
+				nuke_game();
+			}
 			break;
 
 		default:
