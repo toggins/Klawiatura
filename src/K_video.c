@@ -307,6 +307,18 @@ void set_fullscreen(Bool fullscreen) {
 	get_resolution(&window_width, &window_height);
 }
 
+Bool get_install_MAX() {
+	return !get_fullscreen() && (SDL_GetWindowFlags(window) & SDL_WINDOW_MAXIMIZED);
+}
+
+void set_install_MAX(Bool MAX) {
+	if (MAX)
+		SDL_MaximizeWindow(window);
+	else
+		SDL_SetWindowSize(window, window_width, window_height);
+	SDL_SyncWindow(window);
+}
+
 int get_framerate() {
 	return framerate;
 }

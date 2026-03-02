@@ -82,7 +82,12 @@ void input_keydown(SDL_KeyboardEvent event) {
 	cur_controller = 0;
 
 	if (event.mod & SDL_KMOD_ALT && event.scancode == SDL_SCANCODE_RETURN) {
-		set_fullscreen(!get_fullscreen());
+		if (get_install_MAX())
+			set_fullscreen(TRUE);
+		else if (get_fullscreen())
+			set_fullscreen(FALSE);
+		else
+			set_install_MAX(TRUE);
 	} else if (scanning_what() != NULLBIND) {
 		if (event.scancode == SDL_SCANCODE_ESCAPE)
 			stop_scanning();

@@ -80,6 +80,7 @@ static const ConfigOption OPTIONS[] = {
 	{"width",        .r_int = get_width,          .w_int = set_width         },
 	{"height",       .r_int = get_height,         .w_int = set_height        },
 	{"fullscreen",   .r_bool = get_fullscreen,    .w_bool = set_fullscreen   },
+	{"install_MAX",  .r_bool = get_install_MAX,   .w_bool = set_install_MAX  },
 	{"framerate",    .r_int = get_framerate,      .w_int = set_framerate     },
 	{"vsync",        .r_bool = get_vsync,         .w_bool = set_vsync        },
 	{"filter",       .r_bool = get_filter,        .w_bool = set_filter       },
