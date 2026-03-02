@@ -105,8 +105,13 @@ if(KLAW_DISCORD)
 endif()
 
 # Build
+
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
 file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/include/*.h)
+
+set(CONFIGURE_FILE ${CMAKE_BINARY_DIR}/generated/K_cmake.h)
+configure_file(${CMAKE_SOURCE_DIR}/include/K_cmake.h.in ${CONFIGURE_FILE} @ONLY)
+list(APPEND HEADERS ${CONFIGURE_FILE})
 
 set(CONTROLLER_DB ${sdl_gamecontrollerdb_SOURCE_DIR}/gamecontrollerdb.txt)
 
@@ -114,7 +119,7 @@ set(RESFILE ${CMAKE_SOURCE_DIR}/res/Klawiatura.rc)
 add_executable(Klawiatura ${SOURCES} ${HEADERS} ${RESFILE})
 
 target_include_directories(Klawiatura
-    PRIVATE ${CMAKE_SOURCE_DIR}/include ${NESTED})
+    PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/generated)
 target_link_libraries(Klawiatura PRIVATE ${LIBS})
 target_compile_definitions(Klawiatura
     PUBLIC _POSIX_C_SOURCE=200112L _WIN32_WINNT=0x0501 WINVER=0x0501)

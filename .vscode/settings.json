@@ -6,7 +6,8 @@
         "build/_deps": true
     },
     "files.associations": {
-        "*.h": "c"
+        "*.h": "c",
+        "*.h.in": "c"
     },
     "C_Cpp.intelliSenseEngine": "disabled",
     "clangd.enable": true,

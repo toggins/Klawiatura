@@ -1,0 +1,3 @@
+#pragma once
+#define GAME_NAME "@PROJECT_NAME@"
+#define GAME_VERSION "@PROJECT_VERSION@"
