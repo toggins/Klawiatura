@@ -4,7 +4,7 @@
 
 #include "actors/K_autoscroll.h"
 #include "actors/K_enemies.h"
-#include "actors/K_missiles.h" // IWYU pragma: keep
+#include "actors/K_missiles.h" // IWYU pragma: keep (false positive)
 #include "actors/K_platform.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"

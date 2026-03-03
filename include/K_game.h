@@ -4,7 +4,6 @@
 typedef Sint8 PlayerID;
 
 #include "K_audio.h"
-#include "K_cmake.h" // IWYU pragma: keep
 #include "K_cmd.h"
 #include "K_math.h"
 

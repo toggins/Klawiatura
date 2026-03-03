@@ -2,11 +2,11 @@
 #include <SDL3/SDL_timer.h>
 
 #include "K_assets.h"
+#include "K_cmake.h"
 #include "K_cmd.h"
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
-#include "K_memory.h" // IWYU pragma: keep
 #include "K_string.h"
 #include "K_video.h"
 

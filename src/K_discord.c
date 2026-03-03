@@ -1,11 +1,14 @@
 #ifdef K_DISCORD
+
 #include <cdiscord.h>
-#endif
 
 #include "K_discord.h"
-#include "K_game.h"
-#include "K_log.h" // IWYU pragma: keep
 #include "K_menu.h"
+
+#endif
+
+#include "K_game.h"
+#include "K_log.h"
 
 #ifdef K_DISCORD
 

@@ -4,8 +4,8 @@
 #include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_stdinc.h>
 
+#include "K_cmake.h"
 #include "K_file.h"
-#include "K_game.h"
 #include "K_log.h"
 #include "K_misc.h"
 #include "K_string.h"

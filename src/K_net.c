@@ -8,6 +8,7 @@
 #define NutPunch_Log INFO
 
 #include "K_chat.h"
+#include "K_cmake.h"
 #include "K_discord.h"
 #include "K_log.h"
 #include "K_menu.h"

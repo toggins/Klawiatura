@@ -20,6 +20,7 @@
 #include <S_fixed.h>
 
 #include "K_audio.h"
+#include "K_cmake.h"
 #include "K_cmd.h"
 #include "K_config.h"
 #include "K_discord.h"

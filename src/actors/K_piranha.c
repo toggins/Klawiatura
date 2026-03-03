@@ -2,7 +2,7 @@
 #include "K_string.h"
 
 #include "actors/K_enemies.h"
-#include "actors/K_missiles.h" // IWYU pragma: keep
+#include "actors/K_missiles.h" // IWYU pragma: keep (false positive)
 #include "actors/K_player.h"
 
 enum {

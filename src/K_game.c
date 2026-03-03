@@ -13,8 +13,8 @@
 
 #include "actors/K_autoscroll.h"
 #include "actors/K_block.h"
-#include "actors/K_checkpoint.h" // IWYU pragma: keep
-#include "actors/K_enemies.h"    // IWYU pragma: keep
+#include "actors/K_checkpoint.h" // IWYU pragma: keep (false positive)
+#include "actors/K_enemies.h"    // IWYU pragma: keep (false positive)
 #include "actors/K_player.h"
 #include "actors/K_powerups.h"
 #include "actors/K_warp.h"
@@ -213,7 +213,7 @@ void nuke_game() {
 
 static void nuke_game_to_menu() {
 	nuke_game();
-	clear_assets(), load_menu();
+	clear_assets();
 }
 
 static Uint32 check_game_state();

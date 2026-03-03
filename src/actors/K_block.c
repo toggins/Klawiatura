@@ -1,9 +1,9 @@
 #include "K_game.h"
 
 #include "actors/K_block.h"
-#include "actors/K_coin.h" // IWYU pragma: keep
+#include "actors/K_coin.h" // IWYU pragma: keep (false positive)
 #include "actors/K_koopa.h"
-#include "actors/K_player.h" // IWYU pragma: keep
+#include "actors/K_player.h" // IWYU pragma: keep (false positive)
 #include "actors/K_powerups.h"
 
 // ================

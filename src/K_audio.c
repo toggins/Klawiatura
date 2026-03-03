@@ -5,7 +5,6 @@
 #include "K_file.h"
 #include "K_game.h"
 #include "K_log.h"
-#include "K_memory.h" // IWYU pragma: keep
 #include "K_string.h"
 
 extern ClientInfo CLIENT;
