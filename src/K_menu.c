@@ -628,8 +628,7 @@ static void resume() {
 }
 
 void enter_gaming_menu() {
-	if (cur_menu != MEN_ERROR)
-		set_menu(MEN_INGAME_PLAYING);
+	set_menu(MEN_INGAME_PLAYING);
 }
 
 static void restart_at_a_cost() {

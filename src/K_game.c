@@ -105,7 +105,7 @@ GameContext* init_game_context() {
 	return &queue_game_context;
 }
 
-static void start_game_state();
+static Bool start_game_state();
 
 void start_game() {
 	set_editing_level(FALSE);
@@ -146,7 +146,9 @@ void start_game() {
 
 	start_audio_state();
 	start_video_state();
-	start_game_state();
+	if (!start_game_state())
+		return;
+
 	from_scratch();
 	input_wipeout();
 
@@ -1012,7 +1014,7 @@ static void read_string(const char** buf, char* dest, Uint32 maxlen) {
 
 #define FLOAT_OFFS(idx) (*((float*)(buf + sizeof(float[(idx)]))))
 #define BYTE_OFFS(idx) (*((Uint8*)(buf + sizeof(Uint8[(idx)]))))
-static void start_game_state() {
+static Bool start_game_state() {
 	nuke_game_state();
 
 	for (PlayerID i = 0L; i < game_context.num_players; i++)
@@ -1280,10 +1282,11 @@ static void start_game_state() {
 	play_state_track(TS_MAIN, track_name[0], PLAY_LOOPING, 0L);
 
 	update_discord_status(level_name);
-	return;
+	return TRUE;
 
 level_fail:
 	nuke_game_to_menu();
+	return FALSE;
 }
 #undef FLOAT_OFFS
 #undef BYTE_OFFS
