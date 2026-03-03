@@ -408,12 +408,21 @@ Bool update_game() {
 	if (game_session == NULL)
 		goto byebye_game;
 
+	// !!! CLIENT-SIDE !!!
+
 	if (kb_pressed(KB_EDIT)) {
-		if (is_editing_level())
-			restart_game_session(), set_editing_level(FALSE);
-		else
+		if (is_editing_level()) { // restart the level to test it
+			restart_game_session();
+			set_editing_level(FALSE);
+		} else {
 			set_editing_level(TRUE);
+		}
 	}
+
+	if (kb_pressed(KB_NOCLIP))
+		set_noclipping(!is_noclipping());
+
+	// !!! CLIENT-SIDE !!!
 
 	update_interp_parameters();
 

@@ -697,10 +697,8 @@ static void tick(GameActor* actor) {
 		return;
 	}
 
-	if (is_editing_level()) {
-		editor_baton_pass(player, actor);
+	if (editor_baton_pass(player, actor))
 		return;
-	}
 
 	if (ANY_FLAG(actor, FLG_PLAYER_RESPAWN)) {
 		if (touching_solid(HITBOX(actor), SOL_SOLID)) {
@@ -1348,7 +1346,7 @@ static void tick_corpse(GameActor* actor) {
 
 	// !!! CLIENT-SIDE !!! never triggers in mp i'm so cool
 
-	if (is_editing_level()) {
+	if (is_noclipping()) {
 		FLAG_ON(actor, FLG_DESTROY);
 
 		GameActor* jesus = create_actor(ACT_PLAYER, actor->pos);
