@@ -411,12 +411,10 @@ Bool update_game() {
 	// !!! CLIENT-SIDE !!!
 
 	if (kb_pressed(KB_EDIT)) {
-		if (is_editing_level()) { // restart the level to test it
+		if (is_editing_level()) // restart the level to test it
 			restart_game_session();
-			set_editing_level(FALSE);
-		} else {
+		else
 			set_editing_level(TRUE);
-		}
 	}
 
 	if (kb_pressed(KB_NOCLIP))
