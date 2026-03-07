@@ -2018,8 +2018,8 @@ void draw_actor_offset(
 	const InterpActor* iactor = get_interp(actor);
 	const float sprout = VAL(actor, SPROUT), z = (sprout > FxZero) ? 21.f : Fx2Float(actor->depth);
 	batch_reset();
-	batch_pos(B_XYZ(SDL_truncf(Fx2Float(iactor->pos.x) - morsel[0]) + offs[0],
-		SDL_truncf(Fx2Float(iactor->pos.y + sprout) + morsel[1]) + offs[1], z + offs[2]));
+	batch_pos(B_XYZ(SDL_truncf(FxToFloat(iactor->pos.x) - morsel[0] + offs[0]),
+		SDL_truncf(FxToFloat(iactor->pos.y + sprout) - morsel[1] + offs[1]), z + offs[2]));
 	batch_angle(angle), batch_color(color);
 	batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 	batch_sprite(name);

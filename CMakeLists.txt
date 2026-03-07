@@ -69,7 +69,7 @@ list(APPEND LIBS yyjson)
 # S_fixed
 FetchContent_Declare(S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
-    GIT_TAG aa1cb5e1a8b1b086f0c0049814e69b61550b755a)
+    GIT_TAG 7efd4348acb3ab31db0c709fba72ee4f276c5504)
 FetchContent_MakeAvailable(S_fixed)
 list(APPEND LIBS S_fixed)
 
