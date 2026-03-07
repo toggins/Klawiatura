@@ -2,6 +2,7 @@
 
 #include <cdiscord.h>
 
+#include "K_cmake.h"
 #include "K_discord.h"
 #include "K_menu.h"
 
