@@ -23,7 +23,11 @@ enum {
 
 	// Utility
 	KB_CHAT,
-	KB_DEBUG_ERROR_SCREEN,
+
+	// Debugging
+	KB_DEBUG_EDIT,
+	KB_DEBUG_NOCLIP,
+	KB_DEBUG_SHOW_ERROR_SCREEN,
 
 	// Non-rebindables
 	KB_PAUSE,
@@ -32,9 +36,6 @@ enum {
 	KB_UI_DOWN,
 	KB_UI_RIGHT,
 	KB_UI_ENTER,
-
-	KB_EDIT,
-	KB_NOCLIP,
 
 	KB_SECRET_D,
 	KB_SECRET_E,

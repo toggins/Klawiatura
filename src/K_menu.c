@@ -774,7 +774,7 @@ NO_SELECT_CYKA:
 }
 
 void update_menu() {
-	if (kb_pressed(KB_DEBUG_ERROR_SCREEN))
+	if (kb_pressed(KB_DEBUG_SHOW_ERROR_SCREEN))
 		show_error("debugging...");
 
 	float ahead = 0.f;

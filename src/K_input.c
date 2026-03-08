@@ -15,6 +15,7 @@ static KeybindState kb_incoming = 0, kb_repeating = 0; // Event-specific
 #define NO_AXIS .axis = SDL_GAMEPAD_AXIS_INVALID
 #define NO_GAMEPAD NO_BUTTON, NO_AXIS
 #define NEGATIVE .negative = TRUE
+
 Bindings BINDS[KB_SIZE] = {
 	[KB_UP] = {"Up", KEY(UP), BUTTON(DPAD_UP), AXIS(LEFTY), NEGATIVE},
 	[KB_LEFT] = {"Left", KEY(LEFT), BUTTON(DPAD_LEFT), AXIS(LEFTX), NEGATIVE},
@@ -25,7 +26,6 @@ Bindings BINDS[KB_SIZE] = {
 	[KB_RUN] = {"Run", KEY(X), NO_BUTTON, AXIS(RIGHT_TRIGGER)},
 
 	[KB_CHAT] = {"Open Chat", KEY(T), NO_GAMEPAD},
-	[KB_DEBUG_ERROR_SCREEN] = {"(Debug) Show an Error Screen", KEY(F9), NO_GAMEPAD},
 
 	[KB_PAUSE] = {"Pause", KEY(ESCAPE), BUTTON(START), NO_AXIS},
 	[KB_UI_UP] = {"UI Up", KEY(UP), BUTTON(DPAD_UP), AXIS(LEFTY), NEGATIVE},
@@ -33,9 +33,6 @@ Bindings BINDS[KB_SIZE] = {
 	[KB_UI_DOWN] = {"UI Down", KEY(DOWN), BUTTON(DPAD_DOWN), AXIS(LEFTY)},
 	[KB_UI_RIGHT] = {"UI Right", KEY(RIGHT), BUTTON(DPAD_RIGHT), AXIS(LEFTX)},
 	[KB_UI_ENTER] = {"UI Enter", KEY(RETURN), BUTTON(SOUTH), NO_AXIS},
-
-	[KB_EDIT] = {"Edit level", KEY(GRAVE), NO_GAMEPAD},
-	[KB_NOCLIP] = {"Noclip", KEY(V), NO_GAMEPAD},
 
 	[KB_SECRET_D] = {"D", KEY(D), NO_GAMEPAD},
 	[KB_SECRET_E] = {"E", KEY(E), NO_GAMEPAD},
@@ -47,7 +44,12 @@ Bindings BINDS[KB_SIZE] = {
 	[KB_SECRET_V] = {"V", KEY(V), NO_GAMEPAD},
 
 	[KB_SECRET_BAIL] = {"Deactivate Mode", KEY(BACKSPACE), BUTTON(BACK), NO_AXIS},
+
+	[KB_DEBUG_EDIT] = {"Edit level", KEY(GRAVE), NO_GAMEPAD},
+	[KB_DEBUG_NOCLIP] = {"Noclip", KEY(V), NO_GAMEPAD},
+	[KB_DEBUG_SHOW_ERROR_SCREEN] = {"(Debug) Show an Error Screen", KEY(F9), NO_GAMEPAD},
 };
+
 #undef KEY
 #undef BUTTON
 #undef NO_BUTTON

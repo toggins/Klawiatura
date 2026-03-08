@@ -410,14 +410,14 @@ Bool update_game() {
 
 	// !!! CLIENT-SIDE !!!
 
-	if (kb_pressed(KB_EDIT)) {
+	if (kb_pressed(KB_DEBUG_EDIT)) {
 		if (is_editing_level()) // restart the level to test it
 			restart_game_session();
 		else
 			set_editing_level(TRUE);
 	}
 
-	if (kb_pressed(KB_NOCLIP))
+	if (kb_pressed(KB_DEBUG_NOCLIP))
 		set_noclipping(!is_noclipping());
 
 	// !!! CLIENT-SIDE !!!
