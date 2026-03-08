@@ -170,9 +170,8 @@ static void start_multiplayer() {
 	for (int i = 0; i < MAX_PEERS; i++)
 		if (NutPunch_PeerAlive(i))
 			NutPunch_SendReliably(PCH_LOBBY, i, data, sizeof(PacketType));
+	NutPunch_Flush();
 
-	// FIXME: Starting a session right after sending a start packet will
-	//        delay the packet until the host has loaded in. This sucks.
 	start_online_game(TRUE);
 }
 
