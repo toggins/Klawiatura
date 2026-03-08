@@ -5,7 +5,7 @@
 static Bool editing = FALSE, noclipping = FALSE;
 
 Bool is_editing_level() {
-	return editing && !is_in_netgame();
+	return !is_in_netgame() && editing;
 }
 
 void set_editing_level(Bool value) {
@@ -15,7 +15,7 @@ void set_editing_level(Bool value) {
 }
 
 Bool is_noclipping() {
-	return is_editing_level() || noclipping;
+	return !is_in_netgame() && (is_editing_level() || noclipping);
 }
 
 void set_noclipping(Bool value) {
