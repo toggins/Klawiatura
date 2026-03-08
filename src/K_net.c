@@ -144,23 +144,24 @@ void net_newframe() {
 		if (pack >= PT_MASTER_ONLY && (NutPunch_MasterPeer() != peer || is_host()))
 			continue; // FUCK YOU
 
+		char* cursor = data + sizeof(PacketType);
+		size -= sizeof(PacketType);
+
 		switch (pack) {
 		case PT_CHAT:
-			if (size > sizeof(PacketType))
-				push_chat_message(peer, data + sizeof(PacketType), size - (int)sizeof(PacketType));
+			if (size > 0)
+				push_chat_message(peer, cursor, size);
 			break;
 
 		case PT_START:
-
 			start_online_game(TRUE);
 			break;
 
 		case PT_CONTINUE:
-			if (size <= sizeof(PacketType))
+			if (size <= 0)
 				break;
 
 			GameContext* ctx = init_game_context();
-			char* cursor = data;
 
 			cursor += sizeof(PacketType);
 			SDL_strlcpy(ctx->level, cursor, CLIENT_STRING_MAX), cursor += CLIENT_STRING_MAX;
@@ -179,7 +180,7 @@ void net_newframe() {
 			break;
 
 		case PT_RESULTS:
-			if (game_exists()) {
+			if (!size && game_exists()) {
 				show_results(TRUE);
 				nuke_game();
 			}

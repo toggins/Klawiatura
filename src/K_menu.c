@@ -780,10 +780,10 @@ void update_menu() {
 	float ahead = 0.f;
 	if (cur_menu == MEN_INGAME_PLAYING) {
 		extern GekkoSession* game_session;
-		if (game_session != NULL) { // Failsafe. Netcode can boot to results at any point.
+		if (game_session) { // Failsafe. Netcode can boot to results at any point.
 			gekko_network_poll(game_session);
 			ahead = gekko_frames_ahead(game_session);
-			ahead = SDL_clamp(ahead, 0, 2);
+			ahead = SDL_clamp(ahead, 0.f, 2.f);
 		}
 	}
 
