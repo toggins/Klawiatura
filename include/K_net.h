@@ -45,7 +45,7 @@ void set_hostname(const char*);
 Bool in_public_server();
 
 // Interface
-void net_newframe();
+void net_update();
 const char *net_error(), *net_verb();
 void disconnect();
 

@@ -122,7 +122,7 @@ const char* net_verb() {
 	return verb;
 }
 
-void net_newframe() {
+void net_update() {
 	if (NutPunch_Update() == NPS_Error) {
 		last_error = NutPunch_GetLastError();
 		disconnect();

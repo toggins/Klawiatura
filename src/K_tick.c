@@ -2,7 +2,6 @@
 
 #include "K_chat.h"
 #include "K_input.h"
-#include "K_net.h"
 #include "K_tick.h"
 
 static Uint64 last_time = 0;
@@ -25,10 +24,7 @@ void new_frame(float ahead) {
 }
 
 Bool got_ticks() {
-	if (pending_ticks < 1.f)
-		return FALSE;
-	net_newframe();
-	return TRUE;
+	return pending_ticks >= 1.f;
 }
 
 void next_tick() {

@@ -774,18 +774,19 @@ NO_SELECT_CYKA:
 }
 
 void update_menu() {
-	if (kb_pressed(KB_DEBUG_SHOW_ERROR_SCREEN))
-		show_error("debugging...");
+	net_update();
 
 	float ahead = 0.f;
-	if (cur_menu == MEN_INGAME_PLAYING) {
-		extern GekkoSession* game_session;
-		if (game_session) { // Failsafe. Netcode can boot to results at any point.
-			gekko_network_poll(game_session);
-			ahead = gekko_frames_ahead(game_session);
-			ahead = SDL_clamp(ahead, 0.f, 2.f);
-		}
+	extern GekkoSession* game_session;
+
+	if (cur_menu == MEN_INGAME_PLAYING && game_session) { // Failsafe. Netcode can boot to results at any point.
+		gekko_network_poll(game_session), NutPunch_Flush();
+		ahead = gekko_frames_ahead(game_session);
+		ahead = SDL_clamp(ahead, 0.f, 2.f);
 	}
+
+	if (kb_pressed(KB_DEBUG_SHOW_ERROR_SCREEN))
+		show_error("debugging...");
 
 	for (new_frame(ahead); got_ticks(); next_tick()) {
 		int last_menu = cur_menu;
