@@ -163,7 +163,6 @@ void net_update() {
 
 			GameContext* ctx = init_game_context();
 
-			cursor += sizeof(PacketType);
 			SDL_strlcpy(ctx->level, cursor, CLIENT_STRING_MAX), cursor += CLIENT_STRING_MAX;
 			ctx->flags = *(GameFlag*)cursor, cursor += sizeof(GameFlag);
 			ctx->checkpoint = *(ActorID*)cursor, cursor += sizeof(ActorID);
@@ -180,7 +179,7 @@ void net_update() {
 			break;
 
 		case PT_RESULTS:
-			if (!size && game_exists()) {
+			if (game_exists()) {
 				show_results(TRUE);
 				nuke_game();
 			}
