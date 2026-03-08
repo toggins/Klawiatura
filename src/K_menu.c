@@ -774,6 +774,9 @@ NO_SELECT_CYKA:
 }
 
 void update_menu() {
+	if (kb_pressed(KB_DEBUG_ERROR_SCREEN))
+		show_error("debugging...");
+
 	float ahead = 0.f;
 	if (cur_menu == MEN_INGAME_PLAYING) {
 		extern GekkoSession* game_session;
@@ -1126,15 +1129,12 @@ Bool set_menu(MenuType next_menu) {
 		return TRUE;
 	}
 
-	if (next_menu == MEN_RESULTS) // HACK: ghosting doesn't return to main menu from results???
-		MENUS[MEN_RESULTS].from = MENUS[MEN_INGAME_PLAYING].from;
-	else if (cur_menu < MEN_INGAME && MENUS[cur_menu].from != next_menu) {
-		if (MENUS[next_menu].noreturn)
-			MENUS[next_menu].from = MEN_NULL;
-		else if (MENUS[cur_menu].ghost)
-			MENUS[next_menu].from = MENUS[cur_menu].from;
-		else
-			MENUS[next_menu].from = cur_menu;
+	if (MENUS[cur_menu].from != next_menu) {
+		MENUS[next_menu].from = MENUS[next_menu].noreturn ? MEN_NULL : cur_menu;
+		while (MENUS[MENUS[next_menu].from].ghost)
+			MENUS[next_menu].from = MENUS[MENUS[next_menu].from].from;
+		if (MENUS[next_menu].from >= MEN_INGAME)
+			MENUS[next_menu].from = MENUS[MEN_INGAME_PLAYING].from;
 	}
 
 	if (MENUS[cur_menu].leave != NULL)

@@ -25,6 +25,7 @@ Bindings BINDS[KB_SIZE] = {
 	[KB_RUN] = {"Run", KEY(X), NO_BUTTON, AXIS(RIGHT_TRIGGER)},
 
 	[KB_CHAT] = {"Open Chat", KEY(T), NO_GAMEPAD},
+	[KB_DEBUG_ERROR_SCREEN] = {"(Debug) Show an Error Screen", KEY(F9), NO_GAMEPAD},
 
 	[KB_PAUSE] = {"Pause", KEY(ESCAPE), BUTTON(START), NO_AXIS},
 	[KB_UI_UP] = {"UI Up", KEY(UP), BUTTON(DPAD_UP), AXIS(LEFTY), NEGATIVE},

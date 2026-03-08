@@ -23,6 +23,7 @@ enum {
 
 	// Utility
 	KB_CHAT,
+	KB_DEBUG_ERROR_SCREEN,
 
 	// Non-rebindables
 	KB_PAUSE,
