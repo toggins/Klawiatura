@@ -1127,8 +1127,7 @@ Bool set_menu(MenuType next_menu) {
 	}
 
 	// HACK: Don't fucking softlock the error/results screen. What's wrong with you?
-	if (cur_menu >= MEN_INGAME && (next_menu == MEN_ERROR || next_menu == MEN_RESULTS)
-		&& MENUS[MEN_INGAME_PLAYING].from > MEN_NULL)
+	if (cur_menu >= MEN_INGAME && next_menu <= MEN_POSTGAME && MENUS[MEN_INGAME_PLAYING].from > MEN_NULL)
 		MENUS[next_menu].from = MENUS[MEN_INGAME_PLAYING].from;
 
 	if (MENUS[cur_menu].leave != NULL)

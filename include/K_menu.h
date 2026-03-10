@@ -9,6 +9,7 @@ typedef enum {
 	MEN_EXIT, // going "back" to this menu exits the game
 	MEN_ERROR,
 	MEN_RESULTS,
+	MEN_POSTGAME = MEN_RESULTS, // menus before this point can appear right after a game session
 	MEN_INTRO,
 	MEN_MAIN,
 	MEN_LEVEL_SELECT,
@@ -22,8 +23,7 @@ typedef enum {
 	MEN_FIND_LOBBY,
 	MEN_JOINING_LOBBY,
 	MEN_LOBBY,
-	// "ingame" menu marker since they're handled a bit differently
-	MEN_INGAME,
+	MEN_INGAME, // menus after this point are "ingame" and handled a bit differently
 	MEN_INGAME_PLAYING = MEN_INGAME,
 	MEN_INGAME_PAUSE,
 	MEN_SIZE,
