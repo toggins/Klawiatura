@@ -238,6 +238,16 @@ void interpolate() {
 	if (!game_exists())
 		return;
 
+	if (get_framerate() <= TICKRATE) {
+		for (const GameActor* actor = get_actor(game_state.live_actors); actor;
+			actor = get_actor(actor->previous))
+		{
+			InterpActor* iactor = &interp.actors[actor->id];
+			iactor->pos = iactor->from;
+		}
+		return;
+	}
+
 	register const Fixed ftick = FxFrom(pendingticks());
 	for (const GameActor* actor = get_actor(game_state.live_actors); actor; actor = get_actor(actor->previous)) {
 		InterpActor* iactor = &interp.actors[actor->id];
