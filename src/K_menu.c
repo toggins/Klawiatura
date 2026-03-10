@@ -1,21 +1,15 @@
+#include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_misc.h>
 
-#include "K_audio.h"
 #include "K_chat.h"
-#include "K_cmd.h"
 #include "K_config.h"
 #include "K_discord.h"
 #include "K_editor.h"
 #include "K_file.h"
 #include "K_menu.h"
-#include "K_misc.h"
-#include "K_net.h"
 #include "K_secrets.h"
 #include "K_string.h"
 #include "K_tick.h"
-#include "K_video.h"
-
-#include "SDL3/SDL_filesystem.h"
 
 extern Bool permadeath, quickstart;
 
@@ -326,8 +320,8 @@ Menu MENUS[MEN_SIZE] = {
 		      .leave = maybe_leave_lobby},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
-	[MEN_INGAME_PLAYING] = {.from = MEN_INGAME_PAUSE, .update = update_playing, .back_sound = "pause"},
-	[MEN_INGAME_PAUSE] = {"Paused", .update = update_pause},
+	[MEN_INGAME_PLAYING] = {.from = MEN_INGAME_PAUSE, .update = update_playing},
+	[MEN_INGAME_PAUSE] = {"Paused", .update = update_pause, .back_sound = "pause"},
 };
 
 static const char* NO_LOBBIES_FOUND = "No lobbies found";
@@ -1118,25 +1112,22 @@ Bool set_menu(MenuType next_menu) {
 	if ((cur_menu == MEN_INGAME_PLAYING && next_menu == MEN_INGAME_PAUSE)
 		|| (cur_menu == MEN_INGAME_PAUSE && next_menu == MEN_INGAME_PLAYING))
 	{
-		MENUS[MEN_INGAME_PAUSE].from = MEN_INGAME_PLAYING;
-		cur_menu = next_menu;
-
 		extern void pause_gamestate(), unpause_gamestate();
 		if (next_menu == MEN_INGAME_PLAYING)
 			unpause_gamestate();
 		else
 			pause_gamestate();
-
-		return TRUE;
 	}
 
-	if (MENUS[cur_menu].from != next_menu) {
+	if (MENUS[cur_menu].from != next_menu && cur_menu < MEN_INGAME) {
 		MENUS[next_menu].from = MENUS[next_menu].noreturn ? MEN_NULL : cur_menu;
 		while (MENUS[MENUS[next_menu].from].ghost)
 			MENUS[next_menu].from = MENUS[MENUS[next_menu].from].from;
-		if (MENUS[next_menu].from >= MEN_INGAME)
-			MENUS[next_menu].from = MENUS[MEN_INGAME_PLAYING].from;
 	}
+
+	// HACK: Don't fucking softlock the error screen. What's wrong with you?
+	if (cur_menu >= MEN_INGAME && next_menu == MEN_ERROR && MENUS[MEN_INGAME_PLAYING].from > MEN_NULL)
+		MENUS[MEN_ERROR].from = MENUS[MEN_INGAME_PLAYING].from;
 
 	if (MENUS[cur_menu].leave != NULL)
 		MENUS[cur_menu].leave(next_menu);
@@ -1162,9 +1153,9 @@ Bool set_menu(MenuType next_menu) {
 }
 
 Bool prev_menu() {
-	if (cur_menu == MEN_INGAME_PLAYING)
-		return set_menu(MEN_INGAME_PAUSE);
-	return set_menu(MENUS[cur_menu].from);
+	return set_menu((cur_menu == MEN_INGAME_PLAYING)
+				? MEN_INGAME_PAUSE
+				: ((cur_menu == MEN_INGAME_PAUSE) ? MEN_INGAME_PLAYING : MENUS[cur_menu].from));
 }
 
 static float volume_toggle_impl(float volume, int flip) {
