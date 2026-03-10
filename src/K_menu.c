@@ -783,9 +783,6 @@ void update_menu() {
 		ahead = SDL_clamp(ahead, 0.f, 2.f);
 	}
 
-	if (kb_pressed(KB_DEBUG_SHOW_ERROR_SCREEN))
-		show_error("debugging...");
-
 	for (new_frame(ahead); got_ticks(); next_tick()) {
 		int last_menu = cur_menu;
 		if (MENUS[cur_menu].update != NULL)

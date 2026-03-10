@@ -26,7 +26,7 @@ enum {
 	// Debugging
 	KB_DEBUG_EDIT,
 	KB_DEBUG_NOCLIP,
-	KB_DEBUG_SHOW_ERROR_SCREEN,
+	KB_DEBUG_SCREEN,
 
 	// Non-rebindables
 	KB_PAUSE,

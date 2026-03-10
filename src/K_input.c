@@ -1,3 +1,5 @@
+#include <SDL3/SDL_clipboard.h>
+
 #include "K_editor.h"
 #include "K_file.h"
 #include "K_input.h"
@@ -44,9 +46,9 @@ Bindings BINDS[KB_SIZE] = {
 
 	[KB_SECRET_BAIL] = {"Deactivate Mode", KEY(BACKSPACE), BUTTON(BACK), NO_AXIS},
 
-	[KB_DEBUG_EDIT] = {"Edit level", KEY(GRAVE), NO_GAMEPAD},
+	[KB_DEBUG_EDIT] = {"Edit Level", KEY(GRAVE), NO_GAMEPAD},
 	[KB_DEBUG_NOCLIP] = {"Noclip", KEY(V), NO_GAMEPAD},
-	[KB_DEBUG_SHOW_ERROR_SCREEN] = {"(Debug) Show an Error Screen", KEY(F9), NO_GAMEPAD},
+	[KB_DEBUG_SCREEN] = {"Debug Screen", KEY(F9), NO_GAMEPAD},
 };
 
 #undef KEY
@@ -107,6 +109,10 @@ void input_keydown(SDL_KeyboardEvent event) {
 			kb_now |= mask;
 			kb_repeating |= mask;
 		}
+	} else if ((event.mod & SDL_KMOD_CTRL) && event.scancode == SDL_SCANCODE_C) {
+		SDL_SetClipboardText(text);
+	} else if ((event.mod & SDL_KMOD_CTRL) && event.scancode == SDL_SCANCODE_V && SDL_HasClipboardText()) {
+		SDL_strlcat(text, SDL_GetClipboardText(), text_size);
 	} else if (event.scancode == SDL_SCANCODE_BACKSPACE) {
 		char* back = text + SDL_strlen(text);
 		if (SDL_StepBackUTF8(text, (const char**)&back))
