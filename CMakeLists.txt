@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.27.0 FATAL_ERROR)
 
-project(Klawiatura VERSION 1.2.0
+project(Klawiatura VERSION 1.3.0
     DESCRIPTION "Mario Forever Online"
     LANGUAGES C CXX)
 
