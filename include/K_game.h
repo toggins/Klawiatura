@@ -502,8 +502,8 @@ void displace_actor_soft(GameActor*);
 void encode_actor_string(GameActor*, ActorValue, const Sint8[ACTOR_STRING_MAX]);
 void decode_actor_string(const GameActor*, ActorValue, Sint8[ACTOR_STRING_MAX]);
 
-void draw_actor(const GameActor*, const char*, float, const Uint8[4]);
-void draw_actor_offset(const GameActor*, const char*, const float[3], float, const Uint8[4]);
+void draw_actor(const GameActor*, const char*, float, const Uint8[4], Bool);
+void draw_actor_offset(const GameActor*, const char*, const float[3], float, const Uint8[4], Bool);
 void draw_dead(const GameActor*);
 void quake_at_actor(const GameActor*, float);
 

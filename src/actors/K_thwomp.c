@@ -122,11 +122,11 @@ static void draw(const GameActor* actor) {
 			break;
 		}
 
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, "enemies/thwomp0", 0.f, B_WHITE);
+	draw_actor(actor, "enemies/thwomp0", 0.f, B_WHITE, FALSE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {

@@ -67,7 +67,7 @@ static void tick_mushroom(GameActor* actor) {
 
 static void draw_mushroom(const GameActor* actor) {
 	if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
-		draw_actor(actor, "items/mushroom", 0.f, B_WHITE);
+		draw_actor(actor, "items/mushroom", 0.f, B_WHITE, FALSE);
 }
 
 static void collide_mushroom(GameActor* actor, GameActor* from) {
@@ -107,7 +107,7 @@ static void load_1up_mushroom() {
 
 static void draw_1up_mushroom(const GameActor* actor) {
 	if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
-		draw_actor(actor, "items/mushroom_1up", 0.f, B_WHITE);
+		draw_actor(actor, "items/mushroom_1up", 0.f, B_WHITE, FALSE);
 }
 
 static void collide_1up_mushroom(GameActor* actor, GameActor* from) {
@@ -144,7 +144,7 @@ static void draw_poison_mushroom(const GameActor* actor) {
 	if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
 		draw_actor(actor,
 			fmt("items/mushroom_poison%u", (int)((float)game_state.time / 11.11111111111111f) % 2L), 0.f,
-			B_WHITE);
+			B_WHITE, FALSE);
 }
 
 static void collide_poison_mushroom(GameActor* actor, GameActor* from) {
@@ -185,7 +185,7 @@ static void create_flower(GameActor* actor) {
 
 static void draw_flower(const GameActor* actor) {
 	const char* tex = fmt("items/flower%u", (int)((float)game_state.time / 3.703703703703704f) % 4L);
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 static void collide_flower(GameActor* actor, GameActor* from) {
@@ -233,7 +233,7 @@ static void draw_beetroot(const GameActor* actor) {
 		break;
 	}
 
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 static void collide_beetroot(GameActor* actor, GameActor* from) {
@@ -333,7 +333,7 @@ static void draw_lui(const GameActor* actor) {
 			break;
 		}
 
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 static void collide_lui(GameActor* actor, GameActor* from) {
@@ -370,7 +370,7 @@ static void create_hammer(GameActor* actor) {
 }
 
 static void draw_hammer(const GameActor* actor) {
-	draw_actor(actor, "items/hammer_suit", 0.f, B_WHITE);
+	draw_actor(actor, "items/hammer_suit", 0.f, B_WHITE, FALSE);
 }
 
 static void collide_hammer(GameActor* actor, GameActor* from) {
@@ -421,7 +421,7 @@ static void tick_starman(GameActor* actor) {
 
 static void draw_starman(const GameActor* actor) {
 	const char* tex = fmt("items/starman%u", (int)((float)game_state.time / 2.040816326530612f) % 4L);
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 static void collide_starman(GameActor* actor, GameActor* from) {

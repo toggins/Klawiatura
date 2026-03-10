@@ -224,7 +224,7 @@ static void draw(const GameActor* actor) {
 		break;
 	}
 
-	draw_actor_offset(actor, tex, B_XY(0.f, -bump), 0.f, B_WHITE);
+	draw_actor_offset(actor, tex, B_XY(0.f, -bump), 0.f, B_WHITE, FALSE);
 }
 
 static void on_bottom(GameActor* actor, GameActor* from) {
@@ -354,7 +354,7 @@ static void draw_brick(const GameActor* actor) {
 	}
 
 	draw_actor_offset(actor, ANY_FLAG(actor, FLG_BLOCK_GRAY) ? "items/brick_gray" : "items/brick", B_XY(0.f, -bump),
-		0.f, B_WHITE);
+		0.f, B_WHITE, FALSE);
 }
 
 const GameActorTable TAB_BRICK_BLOCK = {
@@ -477,7 +477,7 @@ static void draw_note(const GameActor* actor) {
 	}
 
 	const Sint8 bx = (Sint8)(VAL(actor, X_TOUCH) * bump), by = (Sint8)(VAL(actor, Y_TOUCH) * bump);
-	draw_actor_offset(actor, tex, B_XY(bx, by), 0.f, B_WHITE);
+	draw_actor_offset(actor, tex, B_XY(bx, by), 0.f, B_WHITE, FALSE);
 }
 
 static void note_top(GameActor* actor, GameActor* from) {

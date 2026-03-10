@@ -30,7 +30,7 @@ static void tick_explode(GameActor* actor) {
 
 static void draw_explode(const GameActor* actor) {
 	const char* tex = fmt("effects/explode%u", VAL(actor, EFFECT_FRAME) / 100L);
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 const GameActorTable TAB_EXPLODE = {
@@ -67,7 +67,7 @@ static void tick_shard(GameActor* actor) {
 
 static void draw_shard(const GameActor* actor) {
 	draw_actor(actor, ANY_FLAG(actor, FLG_BLOCK_GRAY) ? "effects/shard_gray" : "effects/shard",
-		Fx2Float(VAL(actor, BRICK_SHARD_ANGLE)), B_WHITE);
+		Fx2Float(VAL(actor, BRICK_SHARD_ANGLE)), B_WHITE, FALSE);
 }
 
 const GameActorTable TAB_BRICK_SHARD = {
@@ -97,7 +97,7 @@ static void tick_splash(GameActor* actor) {
 
 static void draw_splash(const GameActor* actor) {
 	const char* tex = fmt("effects/water%u", VAL(actor, EFFECT_FRAME) / 10L);
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 const GameActorTable TAB_WATER_SPLASH = {
@@ -193,7 +193,7 @@ static void tick_lava(GameActor* actor) {
 }
 
 static void draw_lava(const GameActor* actor) {
-	draw_actor(actor, fmt("effects/lava%u", VAL(actor, EFFECT_FRAME) / 100L), 0.f, B_WHITE);
+	draw_actor(actor, fmt("effects/lava%u", VAL(actor, EFFECT_FRAME) / 100L), 0.f, B_WHITE, FALSE);
 }
 
 const GameActorTable TAB_LAVA_SPLASH = {

@@ -62,7 +62,7 @@ static void draw(const GameActor* actor) {
 	}
 
 	const char* tex = fmt("enemies/lava%u", (int)((float)game_state.time / 9.090909090909091f) % 8L);
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {
@@ -166,7 +166,7 @@ static void tick_podoboo(GameActor* actor) {
 
 static void draw_podoboo(const GameActor* actor) {
 	const char* tex = fmt("enemies/podoboo%u", (int)((float)game_state.time / 1.666666666666667f) % 3L);
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 static void collide_podoboo(GameActor* actor, GameActor* from) {

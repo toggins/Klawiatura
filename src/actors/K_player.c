@@ -1206,7 +1206,13 @@ static void draw(const GameActor* actor) {
 	// !!! CLIENT-SIDE !!!
 	const float a = (localplayer() == player->id) ? 255L : 191L;
 	// !!! CLIENT-SIDE !!!
-	draw_actor(actor, tex, 0.f, B_ALPHA(a));
+
+	const GameActor* autoscroll = get_actor(game_state.autoscroll);
+	const Bool antijitter = (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS)
+					&& (actor->pos.y + FxOne) >= (autoscroll->pos.y + IntToFx(416L)))
+	                        || get_actor(VAL(actor, PLAYER_PLATFORM)) != NULL;
+
+	draw_actor(actor, tex, 0.f, B_ALPHA(a), antijitter);
 
 	if (VAL(actor, PLAYER_STARMAN) > 0L) {
 		float r = 0.9725490196078431f, g = 0.f, b = 0.f;
@@ -1241,7 +1247,7 @@ static void draw(const GameActor* actor) {
 
 		batch_stencil(B_STENCIL(r, g, b, 1.f));
 		batch_blend(B_BLEND(GL_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA, GL_ONE));
-		draw_actor(actor, tex, 0.f, B_ALPHA(a));
+		draw_actor(actor, tex, 0.f, B_ALPHA(a), antijitter);
 		batch_blend(B_BLEND_NORMAL), batch_stencil(B_NO_STENCIL);
 	}
 
@@ -1444,7 +1450,8 @@ static void tick_corpse(GameActor* actor) {
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, "player/mario/dead", 0.f, B_ALPHA((localplayer() == get_owner_id(actor)) ? 255L : 191L));
+	draw_actor(
+		actor, "player/mario/dead", 0.f, B_ALPHA((localplayer() == get_owner_id(actor)) ? 255L : 191L), TRUE);
 
 	if (!ANY_FLAG(actor, FLG_PLAYER_JACKASS))
 		return;
@@ -1488,7 +1495,8 @@ static void tick_effect(GameActor* actor) {
 static void draw_effect(const GameActor* actor) {
 	draw_actor(actor, get_player_texture(VAL(actor, PLAYER_EFFECT_POWER), VAL(actor, PLAYER_EFFECT_FRAME)), 0.f,
 		B_ALPHA(((localplayer() == get_owner_id(actor)) ? 1.f : 0.75f)
-			* Fx2Int(VAL(actor, PLAYER_EFFECT_ALPHA))));
+			* Fx2Int(VAL(actor, PLAYER_EFFECT_ALPHA))),
+		FALSE);
 }
 
 static PlayerID effect_owner(const GameActor* actor) {

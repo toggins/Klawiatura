@@ -46,7 +46,7 @@ static void draw(const GameActor* actor) {
 		tex = ANY_FLAG(actor, FLG_SPRING_GREEN) ? "markers/spring_green2" : "markers/spring2";
 		break;
 	}
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {

@@ -36,7 +36,7 @@ static void draw_cloud(const GameActor* actor) {
 		tex = "props/cloud2";
 		break;
 	}
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 const GameActorTable TAB_CLOUD = {.load = load_cloud, .create = create, .draw = draw_cloud};
@@ -63,7 +63,7 @@ static void draw_bush(const GameActor* actor) {
 		tex = "props/bush2";
 		break;
 	}
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 const GameActorTable TAB_BUSH = {.load = load_bush, .create = create, .draw = draw_bush};
@@ -154,7 +154,7 @@ static void draw_face(const GameActor* actor) {
 				break;
 			}
 	}
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 const GameActorTable TAB_CLOUD_FACE = {.load = load_face, .create = create_face, .tick = tick_face, .draw = draw_face};
@@ -249,7 +249,7 @@ static void load_waterfall() {
 static void draw_waterfall(const GameActor* actor) {
 	const char* tex = fmt(
 		"bg/waterfall%u", ((int)((float)game_state.time / 2.439024390243902f) + VAL(actor, PROP_FRAME)) % 4L);
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, FALSE);
 }
 
 const GameActorTable TAB_WATERFALL = {.load = load_waterfall, .create = create, .draw = draw_waterfall};

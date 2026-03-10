@@ -1999,18 +1999,23 @@ void decode_actor_string(const GameActor* actor, ActorValue offset, Sint8 dst[AC
 /// Generic interpolated actor drawing function.
 //
 // Formula for current static actor frame: `(game_state.time / ((TICKRATE * 2) / speed)) % frames`
-void draw_actor(const GameActor* actor, const char* name, float angle, const Uint8 color[4]) {
-	draw_actor_offset(actor, name, B_ORIGIN, angle, color);
+void draw_actor(const GameActor* actor, const char* name, float angle, const Uint8 color[4], Bool antijitter) {
+	draw_actor_offset(actor, name, B_ORIGIN, angle, color, antijitter);
 }
 
 // Variant of `draw_actor()` with an offset.
-void draw_actor_offset(
-	const GameActor* actor, const char* name, const float offs[3], float angle, const Uint8 color[4]) {
+void draw_actor_offset(const GameActor* actor, const char* name, const float offs[3], float angle, const Uint8 color[4],
+	Bool antijitter) {
 	const InterpActor* iactor = get_interp(actor);
-	const float sprout = VAL(actor, SPROUT), z = (sprout > FxZero) ? 21.f : Fx2Float(actor->depth);
+	const Fixed sprout = VAL(actor, SPROUT);
+	const float z = (sprout > FxZero) ? 21.f : Fx2Float(actor->depth);
 	batch_reset();
-	batch_pos(B_XYZ(SDL_truncf(FxToFloat(iactor->pos.x) - morsel[0] + offs[0]),
-		SDL_truncf(FxToFloat(iactor->pos.y + sprout) - morsel[1] + offs[1]), z + offs[2]));
+	if (antijitter)
+		batch_pos(B_XYZ(SDL_truncf(FxToFloat(iactor->pos.x) - morsel[0] + offs[0]),
+			SDL_truncf(FxToFloat(iactor->pos.y + sprout) - morsel[1] + offs[1]), z + offs[2]));
+	else
+		batch_pos(B_XYZ(
+			FxToInt(iactor->pos.x) + offs[0], FxToInt(iactor->pos.y + sprout) + offs[1], z + offs[2]));
 	batch_angle(angle), batch_color(color);
 	batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
 	batch_sprite(name);

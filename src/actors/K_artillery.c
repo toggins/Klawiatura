@@ -36,7 +36,7 @@ static void tick_bullet(GameActor* actor) {
 }
 
 static void draw_bullet(const GameActor* actor) {
-	draw_actor(actor, "enemies/bullet", 0.f, B_WHITE);
+	draw_actor(actor, "enemies/bullet", 0.f, B_WHITE, FALSE);
 }
 
 static void collide_bullet(GameActor* actor, GameActor* from) {
@@ -169,7 +169,7 @@ static void tick_spike_cannon(GameActor* actor) {
 }
 
 static void draw_spike_cannon(const GameActor* actor) {
-	draw_actor(actor, "enemies/spike_cannon", 0.f, B_WHITE);
+	draw_actor(actor, "enemies/spike_cannon", 0.f, B_WHITE, FALSE);
 }
 
 const GameActorTable TAB_SPIKE_CANNON = {.is_solid = always_solid,
@@ -208,7 +208,7 @@ static void tick_spike(GameActor* actor) {
 }
 
 static void draw_spike(const GameActor* actor) {
-	draw_actor(actor, "missiles/spike_ball", Fx2Float(VAL(actor, ARTILLERY_ANGLE)), B_WHITE);
+	draw_actor(actor, "missiles/spike_ball", Fx2Float(VAL(actor, ARTILLERY_ANGLE)), B_WHITE, FALSE);
 }
 
 static void collide_spike(GameActor* actor, GameActor* from) {
@@ -240,7 +240,7 @@ static void tick_spike_effect(GameActor* actor) {
 
 static void draw_spike_effect(const GameActor* actor) {
 	draw_actor(actor, "missiles/spike_ball", Fx2Float(VAL(actor, ARTILLERY_ANGLE)),
-		B_ALPHA(VAL(actor, ARTILLERY_ALPHA)));
+		B_ALPHA(VAL(actor, ARTILLERY_ALPHA)), FALSE);
 }
 
 const GameActorTable TAB_SPIKE_BALL_EFFECT = {

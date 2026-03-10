@@ -308,7 +308,7 @@ static void draw(const GameActor* actor) {
 		else if (hurt < 10.f)
 			a = (Uint8)glm_lerp(255.f, (float)a, hurt / 10.f);
 	}
-	draw_actor(actor, tex, 0.f, B_ALPHA(a));
+	draw_actor(actor, tex, 0.f, B_ALPHA(a), FALSE);
 
 	if (ANY_FLAG(actor, FLG_BOWSER_GUN)) {
 		const InterpActor* iactor = get_interp(actor);
@@ -499,7 +499,7 @@ static void tick_corpse(GameActor* actor) {
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, fmt("enemies/bowser_dead%u", (game_state.time / 2L) % 2L), 0.f, B_WHITE);
+	draw_actor(actor, fmt("enemies/bowser_dead%u", (game_state.time / 2L) % 2L), 0.f, B_WHITE, FALSE);
 }
 
 static void draw_corpse_hud(const GameActor* actor) {

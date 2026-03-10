@@ -37,7 +37,7 @@ static void tick_wheel(GameActor* actor) {
 }
 
 static void draw_left_wheel(const GameActor* actor) {
-	draw_actor(actor, fmt("tiles/wheel_l%u", Fx2Int(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, B_WHITE);
+	draw_actor(actor, fmt("tiles/wheel_l%u", Fx2Int(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, B_WHITE, FALSE);
 }
 
 static void draw_wheel(const GameActor* actor) {
@@ -50,7 +50,7 @@ static void draw_wheel(const GameActor* actor) {
 }
 
 static void draw_right_wheel(const GameActor* actor) {
-	draw_actor(actor, fmt("tiles/wheel_r%u", Fx2Int(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, B_WHITE);
+	draw_actor(actor, fmt("tiles/wheel_r%u", Fx2Int(VAL(actor, WHEEL_FRAME)) % 3L), 0.f, B_WHITE, FALSE);
 }
 
 const GameActorTable TAB_WHEEL_LEFT = {

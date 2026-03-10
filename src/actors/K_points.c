@@ -105,7 +105,7 @@ static void draw(const GameActor* actor) {
 		break;
 	}
 
-	draw_actor(actor, tex, 0.f, B_WHITE);
+	draw_actor(actor, tex, 0.f, B_WHITE, TRUE);
 }
 
 static PlayerID owner(const GameActor* actor) {

@@ -33,12 +33,12 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-	draw_actor(
-		actor, fmt("enemies/goomba%u", (int)((float)game_state.time / 9.090909090909091f) % 2L), 0.f, B_WHITE);
+	draw_actor(actor, fmt("enemies/goomba%u", (int)((float)game_state.time / 9.090909090909091f) % 2L), 0.f,
+		B_WHITE, FALSE);
 }
 
 static void draw_corpse(const GameActor* actor) {
-	draw_actor(actor, "enemies/goomba0", 0.f, B_WHITE);
+	draw_actor(actor, "enemies/goomba0", 0.f, B_WHITE, FALSE);
 }
 
 static void cleanup(GameActor* actor) {
@@ -132,7 +132,7 @@ static void tick_flat(GameActor* actor) {
 }
 
 static void draw_flat(const GameActor* actor) {
-	draw_actor(actor, "enemies/goomba_flat", 0.f, B_WHITE);
+	draw_actor(actor, "enemies/goomba_flat", 0.f, B_WHITE, FALSE);
 }
 
 const GameActorTable TAB_GOOMBA_FLAT = {.load = load_flat, .create = create_flat, .tick = tick_flat, .draw = draw_flat};
