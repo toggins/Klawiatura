@@ -230,7 +230,9 @@ void start_drawing() {
 void stop_drawing() {
 	submit_batch();
 	SDL_GL_SwapWindow(window);
+}
 
+void limit_framerate() {
 	if (framerate <= 0)
 		return;
 	const Uint64 current_frame_time = SDL_GetTicksNS();

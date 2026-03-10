@@ -200,7 +200,7 @@ typedef struct {
 extern VideoState video_state;
 
 void video_init(Bool), video_teardown();
-void start_drawing(), stop_drawing();
+void start_drawing(), stop_drawing(), limit_framerate();
 void get_draw_area(DrawArea*);
 
 // State

@@ -170,6 +170,7 @@ static int realmain() {
 
 		audio_update();
 		discord_update();
+		limit_framerate();
 	}
 
 teardown:
