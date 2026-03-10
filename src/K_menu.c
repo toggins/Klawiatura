@@ -313,10 +313,8 @@ Menu MENUS[MEN_SIZE] = {
 	[MEN_LOBBY_ID] = {"Join a Lobby"},
 	[MEN_FIND_LOBBY]
 	= {"Find Lobbies", .update = update_find_lobbies, .enter = list_lobbies, .leave = cleanup_lobby_list},
-	[MEN_JOINING_LOBBY] = {"Please wait...", .update = update_joining_lobby, .back_sound = "disconnect",
-		      .leave = maybe_disconnect, GHOST},
-	[MEN_LOBBY] = {"Lobby", .back_sound = "disconnect", .enter = enter_lobby, .update = update_inlobby,
-		      .leave = maybe_leave_lobby},
+	[MEN_JOINING_LOBBY] = {"Please wait...", .update = update_joining_lobby, .leave = maybe_disconnect, GHOST},
+	[MEN_LOBBY] = {"Lobby", .enter = enter_lobby, .update = update_inlobby, .leave = maybe_leave_lobby},
 	[MEN_OPTIONS] = {"Options", .leave = maybe_save_config},
 	[MEN_CONTROLS] = {"Controls", .leave = maybe_save_config},
 	[MEN_INGAME_PLAYING] = {.from = MEN_INGAME_PAUSE, .update = update_playing},
@@ -580,8 +578,10 @@ static void enter_lobby() {
 }
 
 static void maybe_leave_lobby(MenuType next) {
-	if (next < MEN_INGAME && next != MEN_LEVEL_SELECT && next != MEN_RESULTS && next != MEN_ERROR)
+	if (next < MEN_INGAME && next != MEN_LEVEL_SELECT && next != MEN_RESULTS && next != MEN_ERROR) {
 		disconnect();
+		play_generic_sound("disconnect");
+	}
 }
 
 static void update_inlobby() {
@@ -658,8 +658,11 @@ static void exit_to_main() {
 }
 
 static void maybe_disconnect(MenuType next) {
-	if (next != MEN_LOBBY && next != MEN_JOINING_LOBBY)
+	if (next != MEN_LOBBY && next != MEN_JOINING_LOBBY) {
 		disconnect();
+		if (cur_menu != MEN_FIND_LOBBY)
+			play_generic_sound("disconnect");
+	}
 }
 
 static Bool is_option_disabled(const Option* opt) {
