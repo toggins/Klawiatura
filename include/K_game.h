@@ -449,12 +449,19 @@ typedef struct {
 	PlayerID (*owner)(const GameActor*);
 } GameActorTable;
 
+typedef Uint8 GameSessionStatus;
+enum {
+	GSES_OK,
+	GSES_BREAK,
+	GSES_EXIT,
+};
+
 extern GameState game_state;
 
 GameContext* init_game_context();
 
 void start_game(), nuke_game();
-void continue_game(), restart_game_session();
+GameSessionStatus continue_game(), restart_game_session();
 Bool game_exists();
 Bool update_game();
 void draw_game();

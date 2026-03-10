@@ -153,14 +153,14 @@ void start_game() {
 	enter_gaming_menu();
 }
 
-void continue_game() {
+GameSessionStatus continue_game() {
 	if (!NutPunch_IsReady()) {
 		start_game();
-		return;
+		return GSES_BREAK;
 	}
 
 	if (is_client())
-		return;
+		return GSES_OK;
 
 	char *data = net_buffer(), *cursor = data;
 	*(PacketType*)cursor = PT_CONTINUE, cursor += sizeof(PacketType);
@@ -185,6 +185,7 @@ void continue_game() {
 		NutPunch_SendReliably(PCH_LOBBY, i, data, (int)(cursor - data));
 
 	start_game();
+	return GSES_BREAK;
 }
 
 Bool game_exists() {
@@ -241,10 +242,7 @@ void interpolate() {
 	if (get_framerate() <= TICKRATE) {
 		for (const GameActor* actor = get_actor(game_state.live_actors); actor;
 			actor = get_actor(actor->previous))
-		{
-			InterpActor* iactor = &interp.actors[actor->id];
-			iactor->pos = iactor->from;
-		}
+			interp.actors[actor->id].pos = actor->pos;
 		return;
 	}
 
@@ -315,7 +313,7 @@ static Bool handle_session_events() {
 	return TRUE;
 }
 
-void restart_game_session() {
+GameSessionStatus restart_game_session() {
 	GameContext* ctx = init_game_context();
 	SDL_strlcpy(ctx->level, game_context.level, sizeof(ctx->level));
 	ctx->flags |= GF_REPLAY | GF_TRY_HELL;
@@ -326,7 +324,8 @@ void restart_game_session() {
 		ctx->players[i].score = game_state.players[i].score;
 	}
 	ctx->checkpoint = game_state.checkpoint;
-	continue_game();
+
+	return continue_game();
 }
 
 static Bool handle_advance(const GekkoGameEvent* event) {
@@ -338,16 +337,14 @@ static Bool handle_advance(const GekkoGameEvent* event) {
 	tick_game_state(inputs);
 	tick_audio_state();
 
-	if (game_state.flags & GF_RESTART) {
-		restart_game_session();
-		return TRUE;
-	}
+	if (game_state.flags & GF_RESTART)
+		return restart_game_session();
 
 	if (!(game_state.flags & GF_END))
-		return TRUE;
+		return GSES_OK;
 
 	if (!game_state.next[0])
-		return !show_results(FALSE);
+		return show_results(FALSE) ? GSES_EXIT : GSES_OK;
 
 	GameContext* ctx = init_game_context();
 	extern GameState game_state;
@@ -365,20 +362,13 @@ static Bool handle_advance(const GekkoGameEvent* event) {
 		ctx->players[i].score = game_state.players[i].score;
 	}
 
-	continue_game();
-	return TRUE;
+	return continue_game();
 }
 
 static Bool handle_session_update() {
-	GekkoSession* last_session = game_session;
-
 	int count = 0;
 	GekkoGameEvent** updates = gekko_update_session(game_session, &count);
 	for (int i = 0; i < count; i++) {
-		// Failsafe, game can replace sessions during level transition.
-		if (game_session != last_session)
-			break;
-
 		GekkoGameEvent* event = updates[i];
 		switch (event->type) {
 		case GekkoSaveEvent:
@@ -398,8 +388,14 @@ static Bool handle_session_update() {
 			break;
 
 		case GekkoAdvanceEvent:
-			if (!handle_advance(event))
+			switch (handle_advance(event)) {
+			default:
+				break;
+			case GSES_BREAK:
+				return TRUE;
+			case GSES_EXIT:
 				return FALSE;
+			}
 			break;
 
 		default:
