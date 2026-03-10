@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL_stdinc.h>
+
 typedef Sint8 PlayerID;
 
 #include "K_audio.h"
@@ -42,7 +43,7 @@ typedef Uint32 ActorFlag;
 #define F_HALF_SCREEN_HEIGHT Fhalf(F_SCREEN_HEIGHT)
 
 #ifndef K_VIDEO_H
-#include "K_video.h" // IWYU pragma: keep
+#include "K_video.h" // IWYU pragma: export
 #endif
 
 typedef Sint16 ActorID;

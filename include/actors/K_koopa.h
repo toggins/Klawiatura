@@ -1,3 +1,5 @@
+#pragma once
+
 #include "actors/K_enemies.h"
 
 enum {

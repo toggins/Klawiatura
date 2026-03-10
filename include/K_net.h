@@ -9,7 +9,6 @@
 #define LOBBY_STRING_MAX (sizeof(NutPunch_LobbyId))
 
 #include "K_game.h"
-#include "K_misc.h"
 
 #define MAX_PEERS (NUTPUNCH_MAX_PLAYERS)
 #define NET_BUFFER_SIZE (NUTPUNCH_BUFFER_SIZE)

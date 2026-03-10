@@ -1,4 +1,3 @@
-#include "K_game.h"
 #include "K_string.h"
 
 #include "actors/K_block.h"

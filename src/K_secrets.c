@@ -1,4 +1,3 @@
-#include "K_audio.h"
 #include "K_cmd.h"
 #include "K_menu.h"
 #include "K_secrets.h"
@@ -27,13 +26,13 @@ static int last_secret = -1;
 
 void load_secrets() {
 	for (SecretType i = 0; i < SECR_SIZE; i++) {
-		load_transient_sound(SECRETS[i].sound);
-		load_transient_track(SECRETS[i].track);
+		load_persistent_sound(SECRETS[i].sound);
+		load_persistent_track(SECRETS[i].track);
 	}
 
-	load_transient_sound("type");
-	load_transient_sound("thwomp");
-	load_transient_track("it_makes_me_burn");
+	load_persistent_sound("type");
+	load_persistent_sound("thwomp");
+	load_persistent_track("it_makes_me_burn");
 }
 
 static void activate_secret(SecretType idx) {

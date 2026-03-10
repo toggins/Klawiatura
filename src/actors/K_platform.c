@@ -1,7 +1,7 @@
 #include "K_string.h"
 
 #include "actors/K_platform.h"
-#include "actors/K_player.h" // IWYU pragma: keep (false positive)
+#include "actors/K_player.h" // IWYU pragma: export
 
 static void load_special(const GameActor* actor) {
 	switch (VAL(actor, PLATFORM_TYPE)) {

@@ -1,16 +1,16 @@
 #pragma once
 
-#include "K_memory.h" // IWYU pragma: keep
+#include "K_memory.h" // IWYU pragma: export
 #include "K_misc.h"
 
 typedef struct {
 	char* name;
-	Bool transient;
+	Bool persistent;
 } AssetBase;
 
 #define ASSET_HEAD(M, T, A)                                                                                            \
 	void load_##A##_pro(const char*, Bool);                                                                        \
-	void load_##A(const char*), load_transient_##A(const char*);                                                   \
+	void load_##A(const char*), load_persistent_##A(const char*);                                                  \
 	void load_##A##_num(const char*, Uint32);                                                                      \
 	const T* get_##A(const char*);                                                                                 \
 	const T* get_##A##_key(StTinyKey);                                                                             \
@@ -21,7 +21,7 @@ typedef struct {
 		load_##A##_pro(name, FALSE);                                                                           \
 	}                                                                                                              \
                                                                                                                        \
-	void load_transient_##A(const char* name) {                                                                    \
+	void load_persistent_##A(const char* name) {                                                                   \
 		load_##A##_pro(name, TRUE);                                                                            \
 	}                                                                                                              \
                                                                                                                        \

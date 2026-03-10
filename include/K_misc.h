@@ -2,7 +2,7 @@
 
 #include <SDL3/SDL_stdinc.h>
 
-#define entries(A) (sizeof(A) / sizeof(*(A)))
+#define ENTRIES(A) (sizeof(A) / sizeof(*(A)))
 
 // FUCK YOU `minwindef.h`
 #ifdef FALSE

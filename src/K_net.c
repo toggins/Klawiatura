@@ -12,7 +12,6 @@
 #include "K_discord.h"
 #include "K_log.h"
 #include "K_menu.h"
-#include "K_misc.h"
 #include "K_net.h"
 
 static char hostname[256] = "";
@@ -341,7 +340,7 @@ static GekkoNetResult** net_receive(int* packet_count) {
 	char* data = net_buffer();
 	*packet_count = 0;
 
-	while (NutPunch_HasMessage(PCH_GAME) && *packet_count < entries(packets)) {
+	while (NutPunch_HasMessage(PCH_GAME) && *packet_count < ENTRIES(packets)) {
 		int size = NET_BUFFER_SIZE, peer = NutPunch_NextMessage(PCH_GAME, data, &size);
 		GekkoNetResult* res = SDL_malloc(sizeof(GekkoNetResult));
 

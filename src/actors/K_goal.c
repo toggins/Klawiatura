@@ -1,5 +1,3 @@
-#include "K_game.h"
-
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 

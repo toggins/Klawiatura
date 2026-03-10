@@ -1,4 +1,3 @@
-#include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_misc.h>
 
 #include "K_chat.h"
@@ -224,7 +223,7 @@ BOOL_OPTION(fullscreen, get_fullscreen, set_fullscreen);
 FMT_OPTION(framerate, get_framerate());
 static void flip_framerate(int flip) {
 	static const int ranges[] = {0, 30, 50, 60, 75, 120, 144, 165, 180, 240, 360};
-	const int fps = get_framerate(), len = entries(ranges);
+	const int fps = get_framerate(), len = ENTRIES(ranges);
 	if (flip >= 0) {
 		for (int i = 0; i < len; i++)
 			if (fps < ranges[i]) {
@@ -483,24 +482,26 @@ static void join_found_lobby() {
 }
 
 void load_menu() {
-	load_transient_texture("ui/disclaimer");
-	load_transient_texture("ui/background");
-	load_transient_texture("ui/shortcut");
+	load_persistent_texture("ui/disclaimer");
+	load_persistent_texture("ui/background");
+	load_persistent_texture("ui/shortcut");
 
-	load_transient_font("main");
+	load_persistent_font("main");
 
-	load_transient_sound("switch");
-	load_transient_sound("select");
-	load_transient_sound("toggle");
-	load_transient_sound("enter");
-	load_transient_sound("on");
-	load_transient_sound("off");
-	load_transient_sound("bump");
-	load_transient_sound("connect");
-	load_transient_sound("disconnect");
+	load_persistent_sound("switch");
+	load_persistent_sound("select");
+	load_persistent_sound("toggle");
+	load_persistent_sound("enter");
+	load_persistent_sound("on");
+	load_persistent_sound("off");
+	load_persistent_sound("bump");
+	load_persistent_sound("connect");
+	load_persistent_sound("disconnect");
+	load_persistent_sound("chat");
+	load_persistent_sound("pause");
 
-	load_transient_track("title");
-	load_transient_track("yi_score");
+	load_persistent_track("title");
+	load_persistent_track("yi_score");
 
 	load_secrets();
 }
@@ -911,10 +912,10 @@ void draw_menu() {
 
 	case MEN_MAIN: {
 		credits_y -= dt() * 0.5f;
-		if (credits_y <= ((float)entries(credits) * -18.f))
+		if (credits_y <= ((float)ENTRIES(credits) * -18.f))
 			credits_y = SCREEN_HEIGHT;
 
-		for (int i = 0; i < entries(credits); i++) {
+		for (int i = 0; i < ENTRIES(credits); i++) {
 			const float y = credits_y + ((float)i * 18.f);
 			if (y >= (SCREEN_HEIGHT - 18.f) || y <= 0.f)
 				continue;
@@ -1096,7 +1097,7 @@ Bool show_results(Bool forced) {
 }
 
 const char* who_is_winner(int idx) {
-	return (idx < 0 || idx >= entries(winners)) ? NULL : winners[idx].name;
+	return (idx < 0 || idx >= ENTRIES(winners)) ? NULL : winners[idx].name;
 }
 
 Bool set_menu(MenuType next_menu) {
@@ -1125,9 +1126,10 @@ Bool set_menu(MenuType next_menu) {
 			MENUS[next_menu].from = MENUS[MENUS[next_menu].from].from;
 	}
 
-	// HACK: Don't fucking softlock the error screen. What's wrong with you?
-	if (cur_menu >= MEN_INGAME && next_menu == MEN_ERROR && MENUS[MEN_INGAME_PLAYING].from > MEN_NULL)
-		MENUS[MEN_ERROR].from = MENUS[MEN_INGAME_PLAYING].from;
+	// HACK: Don't fucking softlock the error/results screen. What's wrong with you?
+	if (cur_menu >= MEN_INGAME && (next_menu == MEN_ERROR || next_menu == MEN_RESULTS)
+		&& MENUS[MEN_INGAME_PLAYING].from > MEN_NULL)
+		MENUS[next_menu].from = MENUS[MEN_INGAME_PLAYING].from;
 
 	if (MENUS[cur_menu].leave != NULL)
 		MENUS[cur_menu].leave(next_menu);

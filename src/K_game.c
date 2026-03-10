@@ -1,5 +1,3 @@
-#include "K_assets.h"
-#include "K_cmd.h"
 #include "K_discord.h"
 #include "K_editor.h"
 #include "K_file.h"
@@ -7,14 +5,13 @@
 #include "K_input.h"
 #include "K_log.h"
 #include "K_menu.h"
-#include "K_net.h"
 #include "K_string.h"
 #include "K_tick.h"
 
 #include "actors/K_autoscroll.h"
 #include "actors/K_block.h"
-#include "actors/K_checkpoint.h" // IWYU pragma: keep (false positive)
-#include "actors/K_enemies.h"    // IWYU pragma: keep (false positive)
+#include "actors/K_checkpoint.h" // IWYU pragma: export
+#include "actors/K_enemies.h"    // IWYU pragma: export
 #include "actors/K_player.h"
 #include "actors/K_powerups.h"
 #include "actors/K_warp.h"
@@ -1039,15 +1036,9 @@ static Bool start_game_state() {
 	load_texture_num("markers/water%u", 8L);
 
 	load_font("hud");
-	load_font("main");
 
 	load_sound("hurry");
 	load_sound("tick");
-	load_sound("pause");
-	load_sound("switch");
-	load_sound("select");
-	load_sound("bump");
-	load_sound("chat");
 
 	//
 	// LEVEL LOADER

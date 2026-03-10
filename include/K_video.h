@@ -8,7 +8,7 @@
 #define CGLM_ALL_UNALIGNED
 #define CGLM_FORCE_DEPTH_ZERO_TO_ONE
 #define CGLM_FORCE_LEFT_HANDED
-#include <cglm/cglm.h> // IWYU pragma: keep
+#include <cglm/cglm.h>
 
 #include "K_game.h"
 

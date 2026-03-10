@@ -1,7 +1,5 @@
 #pragma once
 
-#include <SDL3/SDL_stdinc.h>
-
 #include "K_misc.h"
 
 #define TICKRATE 50L

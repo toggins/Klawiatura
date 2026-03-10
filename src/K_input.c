@@ -2,7 +2,6 @@
 #include "K_file.h"
 #include "K_input.h"
 #include "K_log.h"
-#include "K_video.h"
 
 static KeybindState kb_then = 0, kb_now = 0;           // Tick-specific
 static KeybindState kb_incoming = 0, kb_repeating = 0; // Event-specific

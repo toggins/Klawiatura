@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SDL3/SDL_filesystem.h>
+
 #include <yyjson.h>
 
 #define JSON_READ_FLAGS (YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS)

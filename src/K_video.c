@@ -1,11 +1,8 @@
 #include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_timer.h>
 
-#include "K_assets.h"
 #include "K_cmake.h"
-#include "K_cmd.h"
 #include "K_file.h"
-#include "K_game.h"
 #include "K_log.h"
 #include "K_string.h"
 #include "K_video.h"
@@ -40,8 +37,6 @@ static TileMap* last_tilemap = NULL;
 static Uint64 last_frame_time = 0;
 
 VideoState video_state = {0};
-
-extern ClientInfo CLIENT;
 
 #define CHECK_GL_EXTENSION(ext)                                                                                        \
 	EXPECT((ext), "Missing OpenGL extension: " #ext "\nAt least OpenGL 3.3 with shader support is required.");
@@ -400,7 +395,7 @@ static void nuke_texture(void* ptr) {
 
 ASSET_SRC(textures, Texture, texture);
 
-void load_texture_pro(const char* name, Bool transient) {
+void load_texture_pro(const char* name, Bool persistent) {
 	if (!name || !*name || get_texture(name))
 		return;
 
@@ -419,7 +414,7 @@ void load_texture_pro(const char* name, Bool transient) {
 	}
 
 	texture.base.name = SDL_strdup(name);
-	texture.base.transient = transient;
+	texture.base.persistent = persistent;
 	texture.size[0] = surface->w, texture.size[1] = surface->h;
 
 	glGenTextures(1, &(texture.texture));
@@ -465,7 +460,7 @@ static void nuke_font(void* ptr) {
 
 ASSET_SRC(fonts, Font, font);
 
-void load_font_pro(const char* name, Bool transient) {
+void load_font_pro(const char* name, Bool persistent) {
 	if (name == NULL || get_font(name) != NULL)
 		return;
 
@@ -495,9 +490,9 @@ void load_font_pro(const char* name, Bool transient) {
 	const StTinyKey tkey = StHashStr(tname);
 	Texture* tex = StMapGet(textures, tkey);
 	if (tex != NULL)
-		tex->base.transient |= transient;
+		tex->base.persistent |= persistent;
 	else {
-		load_texture_pro(tname, transient);
+		load_texture_pro(tname, persistent);
 		tex = StMapGet(textures, tkey);
 	}
 	if (tex == NULL) {
@@ -507,7 +502,7 @@ void load_font_pro(const char* name, Bool transient) {
 	}
 
 	font.base.name = SDL_strdup(name);
-	font.base.transient = transient;
+	font.base.persistent = persistent;
 	font.texture_key = tkey;
 	font.height = (float)yyjson_get_num(yyjson_obj_get(root, "height"));
 	font.spacing = (float)yyjson_get_num(yyjson_obj_get(root, "spacing"));

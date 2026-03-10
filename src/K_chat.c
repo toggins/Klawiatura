@@ -1,10 +1,6 @@
-#include <SDL3/SDL_stdinc.h>
-
-#include "K_audio.h"
 #include "K_chat.h"
 #include "K_input.h"
 #include "K_log.h"
-#include "K_misc.h"
 #include "K_net.h"
 #include "K_string.h"
 #include "K_tick.h"
@@ -20,7 +16,7 @@ void push_chat_message(int from, const char* text, int size) {
 	if (size <= 0)
 		return;
 
-	for (int i = entries(chat_hist) - 1; i >= 1; i--)
+	for (int i = ENTRIES(chat_hist) - 1; i >= 1; i--)
 		chat_hist[i] = chat_hist[i - 1];
 
 	static char buf[sizeof(chat_message)] = {0};
@@ -55,7 +51,7 @@ static void draw_chat_hist() {
 	const float y = SCREEN_HEIGHT - 12.f - (1.5 * chat_fs);
 	const Uint8 a = (typing_what() == chat_message) ? 255 : 192;
 	batch_reset();
-	for (int i = 0; i < entries(chat_hist); i++) {
+	for (int i = 0; i < ENTRIES(chat_hist); i++) {
 		if (chat_hist[i].lifetime <= 0.f)
 			break;
 		const float fade = chat_hist[i].lifetime / TICKRATE;
@@ -74,16 +70,16 @@ static void draw_chat_message() {
 
 void tick_chat_hist() {
 	const float delta = dt();
-	for (int i = 0; i < entries(chat_hist); i++) {
+	for (int i = 0; i < ENTRIES(chat_hist); i++) {
 		if (chat_hist[i].lifetime > 0.f)
 			chat_hist[i].lifetime -= delta;
 		if (chat_hist[i].lifetime <= 0.f) {
-			if (i >= (entries(chat_hist) - 1))
+			if (i >= (ENTRIES(chat_hist) - 1))
 				SDL_zero(chat_hist[i]);
 			else {
-				for (int j = i; j < entries(chat_hist) - 1; j++)
+				for (int j = i; j < ENTRIES(chat_hist) - 1; j++)
 					chat_hist[j] = chat_hist[j + 1];
-				SDL_zero(chat_hist[entries(chat_hist) - 1]);
+				SDL_zero(chat_hist[ENTRIES(chat_hist) - 1]);
 			}
 		}
 	}

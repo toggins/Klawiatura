@@ -1,5 +1,3 @@
-#include <SDL3/SDL_stdinc.h>
-
 #include "K_string.h"
 
 const char* vfmt(const char* fmt_pattern, va_list args) {

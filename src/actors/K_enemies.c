@@ -1,5 +1,4 @@
 #include "actors/K_artillery.h"
-#include "actors/K_enemies.h"
 #include "actors/K_koopa.h"
 #include "actors/K_lakitu.h"
 #include "actors/K_missiles.h"

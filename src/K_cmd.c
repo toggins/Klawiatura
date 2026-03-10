@@ -1,5 +1,3 @@
-#include <SDL3/SDL.h>
-
 #include "K_cmd.h"
 #include "K_log.h"
 

@@ -1,6 +1,3 @@
-#include <SDL3/SDL_filesystem.h>
-#include <SDL3/SDL_stdinc.h>
-
 #include "K_cmake.h"
 #include "K_file.h"
 #include "K_log.h"

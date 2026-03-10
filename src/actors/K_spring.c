@@ -1,4 +1,4 @@
-#include "actors/K_player.h" // IWYU pragma: keep (false positive)
+#include "actors/K_player.h" // IWYU pragma: export
 
 enum {
 	VAL_SPRING_FRAME = VAL_CUSTOM,

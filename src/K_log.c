@@ -2,7 +2,6 @@
 // ^ required for `exit(EXIT_FAILURE)` below. DO NOT TOUCH YOU FUCKER
 
 #include <SDL3/SDL_messagebox.h>
-#include <SDL3/SDL_stdinc.h>
 
 #include "K_cmake.h"
 #include "K_file.h"
@@ -21,7 +20,7 @@ void handle_fatal(const char* file, int line, const char* func, const char* fmt,
 	SDL_MessageBoxData data = {0};
 	data.window = window, data.message = buf;
 	data.title = GAME_NAME, data.flags = SDL_MESSAGEBOX_ERROR;
-	data.buttons = butts, data.numbuttons = entries(butts);
+	data.buttons = butts, data.numbuttons = ENTRIES(butts);
 
 	va_list args = {0};
 	va_start(args, fmt);

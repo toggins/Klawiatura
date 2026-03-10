@@ -1,6 +1,6 @@
 #include "K_string.h"
 
-#include "actors/K_checkpoint.h" // IWYU pragma: keep???
+#include "actors/K_checkpoint.h" // IWYU pragma: export
 #include "actors/K_points.h"
 
 static void load() {

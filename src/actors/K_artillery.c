@@ -85,8 +85,8 @@ const GameActorTable TAB_BULLET_BILL = {.load = load_bullet,
 // ============
 
 static void load_blaster() {
-	load_transient_sound("bang");
-	load_transient_sound("bang4");
+	load_sound("bang");
+	load_sound("bang4");
 
 	load_actor(ACT_BULLET_BILL);
 	load_actor(ACT_EXPLODE);

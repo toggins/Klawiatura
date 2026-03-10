@@ -1,6 +1,5 @@
 #include "K_editor.h"
 #include "K_input.h"
-#include "K_video.h"
 
 static Bool editing = FALSE, noclipping = FALSE;
 

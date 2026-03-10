@@ -3,11 +3,8 @@
 #include "K_audio.h"
 #include "K_cmd.h"
 #include "K_file.h"
-#include "K_game.h"
 #include "K_log.h"
 #include "K_string.h"
-
-extern ClientInfo CLIENT;
 
 static FMOD_SYSTEM* speaker = NULL;
 
@@ -104,7 +101,7 @@ static void nuke_sound(void* ptr) {
 
 ASSET_SRC(sounds, Sound, sound);
 
-void load_sound_pro(const char* name, Bool transient) {
+void load_sound_pro(const char* name, Bool persistent) {
 	if (!name || !*name || get_sound(name))
 		return;
 
@@ -118,7 +115,7 @@ void load_sound_pro(const char* name, Bool transient) {
 	ASSUME(result == FMOD_OK, "Sound \"%s\" fail: %s", name, FMOD_ErrorString(result));
 
 	sound.base.name = SDL_strdup(name);
-	sound.base.transient = transient;
+	sound.base.persistent = persistent;
 	sound.sound = data;
 	FMOD_Sound_GetLength(data, &(sound.length), FMOD_TIMEUNIT_MS);
 
@@ -133,7 +130,7 @@ static void nuke_track(void* ptr) {
 
 ASSET_SRC(tracks, Track, track);
 
-void load_track_pro(const char* name, Bool transient) {
+void load_track_pro(const char* name, Bool persistent) {
 	if (!name || !*name || get_track(name))
 		return;
 
@@ -147,7 +144,7 @@ void load_track_pro(const char* name, Bool transient) {
 	ASSUME(result == FMOD_OK, "Track \"%s\" fail: %s", name, FMOD_ErrorString(result));
 
 	track.base.name = SDL_strdup(name);
-	track.base.transient = transient;
+	track.base.persistent = persistent;
 	track.stream = data;
 	FMOD_Sound_GetLength(data, &(track.length), FMOD_TIMEUNIT_MS);
 

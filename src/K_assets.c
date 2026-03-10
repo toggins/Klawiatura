@@ -1,5 +1,4 @@
 #include "K_assets.h"
-#include "K_audio.h"
 #include "K_video.h"
 
 void load_num_pro(const char* pattern, Uint32 n, void (*load)(const char*)) {
@@ -20,7 +19,7 @@ void clear_asset_map_pro(StTinyMap** target, void (*nuke)(void*)) {
 		StTinyBucket* bucket = it.bucket;
 
 		AssetBase* asset = bucket->data;
-		if (!asset->transient)
+		if (!asset->persistent)
 			continue;
 		StMapPut(new, bucket->key, asset, (int)bucket->size)->cleanup = nuke;
 		bucket->cleanup = NULL;
