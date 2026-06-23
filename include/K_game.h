@@ -1,0 +1,324 @@
+#pragma once
+
+#include "K_cmake.h" // IWYU pragma: export
+#include "K_math.h"
+#include "K_memory.h" // IWYU pragma: export
+
+typedef Sint8 PlayerID;
+
+#define MAX_PLAYERS 8
+#define NULL_PLAYER ((PlayerID)(-1))
+
+#define DEFAULT_LIVES 4
+#define MAX_PROJECTILES 2
+#define MAX_SINKING_PROJECTILES 6
+
+#define MAX_ACTORS 1000
+#define NULL_ACTOR ((ActorID)(-1))
+
+#define MAX_VALUES 32
+
+#define MAX_CELLS 128
+#define GRID_SIZE (MAX_CELLS * MAX_CELLS)
+#define CELL_SIZE Int2Fx(256)
+#define NULL_CELL ((Sint32)(-1))
+
+typedef Fixed ActorValue;
+typedef Uint32 ActorFlag;
+
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
+#define HALF_SCREEN_WIDTH (SCREEN_WIDTH >> 1)
+#define HALF_SCREEN_HEIGHT (SCREEN_HEIGHT >> 1)
+#define F_SCREEN_WIDTH Int2Fx(SCREEN_WIDTH)
+#define F_SCREEN_HEIGHT Int2Fx(SCREEN_HEIGHT)
+#define F_HALF_SCREEN_WIDTH Fhalf(F_SCREEN_WIDTH)
+#define F_HALF_SCREEN_HEIGHT Fhalf(F_SCREEN_HEIGHT)
+
+typedef Sint16 ActorID;
+
+typedef Uint8 GameInput;
+enum {
+    GI_UP = 1 << 0,
+    GI_LEFT = 1 << 1,
+    GI_DOWN = 1 << 2,
+    GI_RIGHT = 1 << 3,
+    GI_JUMP = 1 << 4,
+    GI_RUN = 1 << 5,
+    GI_FIRE = 1 << 6,
+};
+
+typedef Uint16 GameFlags;
+enum {
+    GF_END = 1 << 0,       // Game session should end
+    GF_RESTARTED = 1 << 1, // Level was restarted
+
+    GF_HURRY = 1 << 2, // Time <= 100
+
+    GF_HARDCORE = 1 << 3, // Hardcore World level
+    GF_FUNNY = 1 << 4,    // Funny Tanks? level
+    GF_LOST = 1 << 5,     // Lost Map level
+    GF_AMBUSH = 1 << 6,   // Ambush level
+};
+
+typedef Uint8 GameSequenceType;
+enum {
+    GS_NONE,
+    GS_LOSE,
+    GS_WIN,
+    GS_AMBUSH,
+    GS_AMBUSH_END,
+    GS_BOWSER_END,
+    GS_SECRET,
+};
+
+typedef Uint8 ActorType;
+enum {
+    ACT_NULL,
+
+    ACT_SOLID,
+    ACT_SOLID_TOP,
+    ACT_SOLID_SLOPE,
+    ACT_PLAYER_SPAWN,
+    ACT_PLAYER,
+    ACT_PLAYER_EFFECT,
+    ACT_PLAYER_DEAD,
+
+    ACT_SIZE,
+};
+
+typedef Uint8 PlayerPower;
+enum {
+    POW_SMALL,
+    POW_BIG,
+    POW_FIRE,
+    POW_BEETROOT,
+    POW_LUI,
+    POW_HAMMER,
+};
+
+typedef Uint8 PlayerFrame;
+enum {
+    PF_IDLE,
+    PF_WALK1,
+    PF_WALK2,
+    PF_WALK3,
+    PF_JUMP,
+    PF_FALL,
+    PF_DUCK,
+    PF_FIRE,
+    PF_SWIM1,
+    PF_SWIM2,
+    PF_SWIM3,
+    PF_SWIM4,
+    PF_SWIM5,
+    PF_GROW1,
+    PF_GROW2,
+    PF_GROW3,
+    PF_GROW4,
+    PF_DEAD,
+};
+
+typedef Uint8 SolidType;
+enum {
+    SOL_SOLID = 1 << 0,
+    SOL_TOP = 1 << 1,
+    SOL_BOTTOM = 1 << 2,
+    SOL_ALL = SOL_SOLID | SOL_TOP | SOL_BOTTOM,
+};
+
+typedef Uint8 PlatformType;
+enum {
+    PLAT_NORMAL,
+    PLAT_SMALL,
+    PLAT_CLOUD,
+    PLAT_CASTLE,
+    PLAT_CASTLE_BIG,
+    PLAT_CASTLE_BUTTON,
+};
+
+typedef struct {
+    Sint8 lives;
+    Uint8 coins;
+    PlayerPower power;
+    Uint32 score;
+} GamePlayerContext;
+
+typedef struct {
+    PlayerID num_players;
+    GameFlags flags;
+    ActorID checkpoint;
+    Uint64 seed;
+    TinyHash level;
+
+    GamePlayerContext players[MAX_PLAYERS];
+} GameContext;
+
+#pragma pack(push, 1)
+
+typedef struct {
+    GameFlags flags;
+    Uint64 seed;
+    TinyHash level;
+    ActorID checkpoint;
+
+    // Players...
+    // Characters...
+} GameContextPacket;
+
+#pragma pack(pop)
+
+typedef struct {
+    PlayerID id;
+    GameInput input, last_input;
+
+    Sint8 lives;
+    Uint8 coins;
+    PlayerPower power;
+
+    ActorID actor;
+    ActorID projectiles[MAX_PROJECTILES], sinking_projectiles[MAX_SINKING_PROJECTILES];
+    FVec2 pos;
+    FRect bounds;
+
+    Uint32 score;
+} GamePlayer;
+
+#define ANY_INPUT(player, inp) (((player)->input & (inp)) != 0)
+#define ALL_INPUT(player, inp) (((player)->input & (inp)) == (inp))
+#define ANY_LAST_INPUT(player, inp) (((player)->last_input & (inp)) != 0)
+#define ALL_LAST_INPUT(player, inp) (((player)->last_input & (inp)) == (inp))
+#define ANY_PRESSED(player, inp) (ANY_INPUT(player, inp) && !ANY_LAST_INPUT(player, inp))
+#define ALL_PRESSED(player, inp) (ALL_INPUT(player, inp) && !ALL_LAST_INPUT(player, inp))
+#define ANY_RELEASED(player, inp) (!ANY_INPUT(player, inp) && ANY_LAST_INPUT(player, inp))
+#define ALL_RELEASED(player, inp) (!ALL_INPUT(player, inp) && ALL_LAST_INPUT(player, inp))
+
+typedef struct {
+    GameSequenceType type;
+    PlayerID activator;
+    Uint16 time;
+} GameSequence;
+
+enum {
+    VAL_X_SPEED,
+    VAL_Y_SPEED,
+    VAL_X_TOUCH,
+    VAL_Y_TOUCH,
+    VAL_SPROUT,
+    VAL_CUSTOM
+};
+
+#define VAL(actor, val) ((actor)->values[VAL_##val])
+#define VAL_TICK(actor, val)                                                                                           \
+    do {                                                                                                               \
+        if (VAL(actor, val) > 0L)                                                                                      \
+            --VAL(actor, val);                                                                                         \
+    } while (0)
+
+#define ANY_FLAG(actor, flag) (((actor)->flags & (flag)) != 0)
+#define ALL_FLAG(actor, flag) (((actor)->flags & (flag)) == (flag))
+
+#define FLAG_ON(actor, flag) ((actor)->flags |= (flag))
+#define FLAG_OFF(actor, flag) ((actor)->flags &= ~(flag))
+
+#define TOGGLE_FLAG(actor, flag) (ANY_FLAG(actor, flag) ? FLAG_OFF(actor, flag) : FLAG_ON(actor, flag))
+
+typedef Uint32 ActorFlags;
+enum {
+    FLG_VISIBLE = 1 << 0,
+    FLG_DESTROY = 1 << 1,
+    FLG_X_FLIP = 1 << 2,
+    FLG_Y_FLIP = 1 << 3,
+    FLG_FREEZE = 1 << 4,
+#define CUSTOM_FLAG(idx) (1 << (5 + (idx)))
+};
+
+typedef struct {
+    ActorID id;
+    ActorType type;
+    ActorID previous, next;
+
+    ActorID previous_cell, next_cell;
+    Sint32 cell;
+
+    FVec2 pos;
+    FRect box;
+    Fixed depth;
+
+    ActorFlag flags;
+    ActorValue values[MAX_VALUES];
+} GameActor;
+
+typedef struct {
+    GameFlags flags;
+    GameSequence sequence;
+
+    GamePlayer players[MAX_PLAYERS];
+
+    ActorID spawn, checkpoint;
+
+    Fixed water;
+    Sint32 clock;
+
+    Uint64 seed;
+    Uint64 time;
+
+    ActorID live_actors, next_actor;
+    GameActor actors[MAX_ACTORS];
+    ActorID grid[GRID_SIZE];
+} GameState;
+
+typedef struct {
+    SolidType (*is_solid)(const GameActor*);
+    void (*load)();
+    void (*init)(GameActor*), (*create)(GameActor*);
+    void (*pre_tick)(GameActor*), (*tick)(GameActor*), (*post_tick)(GameActor*);
+    void (*draw)(const GameActor*), (*draw_dead)(const GameActor*), (*draw_hud)(const GameActor*);
+    void (*cleanup)(GameActor*);
+    void (*collide)(GameActor*, GameActor*);
+    void (*on_left)(GameActor*, GameActor*), (*on_right)(GameActor*, GameActor*);
+    void (*on_top)(GameActor*, GameActor*), (*on_bottom)(GameActor*, GameActor*);
+    PlayerID (*owner)(const GameActor*);
+} GameActorTable;
+
+extern GameState* GAME_STATE;
+
+void game_init();
+
+GameContext* init_game_context();
+
+void start_game(), nuke_game();
+void poll_game();
+float frames_ahead();
+void tick_game(), draw_game();
+Bool go_to_results(Bool);
+void boot_from_game(const char*);
+
+const GameContext* gamecontext();
+
+PlayerID localplayer(), viewplayer();
+void set_view_player(const GamePlayer*);
+GamePlayer *get_player(PlayerID), *get_owner(const GameActor*);
+GameActor *respawn_player(GamePlayer*), *nearest_player_actor(const FVec2);
+
+void load_actor(ActorType);
+GameActor *create_actor(ActorType, const FVec2), *get_actor(ActorID);
+void replace_actors(ActorType, ActorType);
+
+void move_actor(GameActor*, const FVec2);
+
+Bool below_level(const GameActor*);
+Bool in_any_view(const GameActor*, Fixed, Bool);
+Bool in_player_view(const GameActor*, const GamePlayer*, Fixed, Bool);
+
+void collide_actor(GameActor*);
+Bool touching_solid(const FRect, SolidType);
+void displace_actor(GameActor*, Fixed, Bool);
+void displace_actor_soft(GameActor*);
+
+void draw_actor(const GameActor*, const char*, float, const Uint8[4], Bool);
+void draw_actor_offset(const GameActor*, const char*, const float[3], float, const Uint8[4], Bool);
+void draw_dead(const GameActor*);
+void quake_at_actor(const GameActor*, float);
+
+Sint32 rng(Sint32);

@@ -1,4 +1,5 @@
 #include "K_string.h"
+#include "K_tick.h"
 
 #define FMT_SIZE 1024
 #define FMT_PADDING 256
@@ -31,4 +32,8 @@ const char* fmt(const char* pattern, ...) {
     va_end(args);
 
     return res;
+}
+
+const char* caret(Bool active) {
+    return active ? ((SDL_fmodf(totalticks(), TICKRATE) < ((float)TICKRATE * 0.5f)) ? "|" : " ") : "";
 }

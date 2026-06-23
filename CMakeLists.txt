@@ -46,11 +46,6 @@ list(APPEND LIBS SDL3::SDL3-static)
 set(SDLMIXER_AIFF OFF CACHE INTERNAL "")
 set(SDLMIXER_VOC OFF CACHE INTERNAL "")
 set(SDLMIXER_AU OFF CACHE INTERNAL "")
-set(SDLMIXER_FLAC OFF CACHE INTERNAL "")
-set(SDLMIXER_MOD OFF CACHE INTERNAL "")
-set(SDLMIXER_MP3 OFF CACHE INTERNAL "")
-set(SDLMIXER_MIDI OFF CACHE INTERNAL "")
-set(SDLMIXER_AIFF OFF CACHE INTERNAL "")
 set(SDLMIXER_WAVPACK OFF CACHE INTERNAL "")
 
 FetchContent_Declare(SDL3_mixer
@@ -121,7 +116,7 @@ set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
 
 FetchContent_Declare(S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
-    GIT_TAG 484e78265ec3e58cf57bfe7aa09b53d48b60300f
+    GIT_TAG d774d4337d2dd95b6e50357ccda02a7450f63af8
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(S_tructures)
 
@@ -129,7 +124,7 @@ list(APPEND LIBS S_tructures)
 
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG a390c4163fb0f9f8b20de883df1373f21dcfdf8e
+	GIT_TAG f68ac749032ca66491e3ff9151eb7ecbdb289621
 	EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(NutBlast)
 

@@ -1,11 +1,15 @@
 #include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_platform_defines.h>
-#include <SDL3/SDL_timer.h>
 
 #include "K_cmake.h"
 #include "K_file.h"
 #include "K_log.h"
 #include "K_string.h"
+
+typedef struct Mod {
+    const char* path;
+    struct Mod *previous, *next;
+} Mod;
 
 static const char *base_path = NULL, *user_path = NULL;
 
@@ -15,7 +19,7 @@ void file_init(const char** mods, size_t num_mods) {
     base_path = SDL_GetBasePath();
     EXPECT(base_path, "Failed to get base path: %s", SDL_GetError());
 
-    user_path = SDL_GetPrefPath("toggins", GAME_CODENAME);
+    user_path = SDL_GetPrefPath("toggins", GAME_NAME);
     EXPECT(user_path, "Failed to get user path: %s", SDL_GetError());
 
     // Load mods

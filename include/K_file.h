@@ -10,11 +10,6 @@
 #define JSON_READ_FLAGS (YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS)
 #define JSON_WRITE_FLAGS (YYJSON_WRITE_PRETTY | YYJSON_WRITE_NEWLINE_AT_END)
 
-typedef struct Mod {
-    const char* path;
-    struct Mod *previous, *next;
-} Mod;
-
 void file_init(const char**, size_t), file_teardown();
 void load_mod(const char*);
 
