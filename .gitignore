@@ -4,5 +4,5 @@ compile_commands.json
 /__*
 *.bak
 
-/real_*.bat
-test*.bat
+modsrc/placeholder*
+test.bat

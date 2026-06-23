@@ -1,9 +1,0 @@
-#pragma once
-
-#include "K_misc.h"
-
-#define TICKRATE 50L
-
-Bool got_ticks();
-void from_scratch(), new_frame(float), next_tick();
-float dt(), totalticks(), pendingticks();

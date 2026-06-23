@@ -1,32 +1,31 @@
 {
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "file",
-    "files.exclude": {
-        ".cache": true,
-        "build/_deps": true
-    },
-    "files.associations": {
-        "*.h": "c",
-        "*.h.in": "c"
-    },
     "C_Cpp.intelliSenseEngine": "disabled",
     "clangd.enable": true,
     "clangd.enableCodeCompletion": true,
+    "clangd.arguments": ["--header-insertion=never"],
     "cmake.generator": "Ninja",
     "cmake.exportCompileCommandsFile": true,
     "cmake.debugConfig": {
-        "args": [
-            "-skip_intro"
-        ]
+        "args": ["-mod", "../modsrc/MarioForever/", "-mod", "../modsrc/MarioTogether/"]
+    },
+    "files.exclude": {
+        ".cache": true,
+        "__cmake*": true
+    },
+    "files.associations": {
+        "*.h": "c",
+        "*.h.in": "c",
+        ".clang*": "yaml"
     },
     "[c]": {
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
     },
-    "[cmake]": {
-        "editor.defaultFormatter": null,
-        "editor.formatOnSave": false
+    "yaml.schemas": {
+        "https://www.schemastore.org/clangd.json": ".clangd"
     },
-    "[markdown]": {
-        "editor.defaultFormatter": "yzhang.markdown-all-in-one"
-    }
+    "prettier.printWidth": 120,
+    "prettier.tabWidth": 4,
+    "prettier.trailingComma": "none"
 }

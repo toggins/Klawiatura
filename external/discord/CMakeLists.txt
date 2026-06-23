@@ -6,7 +6,7 @@ add_library(discord SHARED IMPORTED GLOBAL)
 
 if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk")
     if(${CMAKE_SIZEOF_VOID_P} STREQUAL 4)
-        message(NOTICE "32-bit OS detected; excluding Discord functionality")
+        message(NOTICE "32-bit environment detected; excluding Discord functionality")
     elseif(WIN32) # NOTE: use the debug libraries by default and override to release for release builds only. not setting a default fails at configure-time.
         set_property(TARGET discord PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk/bin/debug/discord_partner_sdk.dll")
         set_property(TARGET discord PROPERTY IMPORTED_IMPLIB "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk/lib/debug/discord_partner_sdk.lib")

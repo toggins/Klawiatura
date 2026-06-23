@@ -19,10 +19,10 @@ jobs:
       matrix:
         include:
           - { name: Linux }
-          - { name: WinXP, mingw: 32 }
+          - { name: Win32, mingw: 32 }
           - { name: Win64, mingw: 64 }
     env:
-      CACHE_BUST: 3
+      CACHE_BUST: 1
       OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
       MINGW_ARCH: ${{ matrix.mingw == 32 && 'i686' || 'x86_64' }}
       MINGW_PACKAGES: >-
@@ -41,20 +41,18 @@ jobs:
       - name: Silence `git init` warning
         run: git config --global init.defaultBranch master
       - name: Checkout
-        uses: actions/checkout@v6
-      - name: Source proprietary SDKs
+        uses: actions/checkout@v7
+      - name: Source Discord Social SDK
         run: |
-          function trash() {
-            cd external/$1; git init
-            git pull https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/$1.git master
-          }
-          (trash fmod) & (trash discord) & wait
+          cd external/discord; git init
+          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/discord.git
+          git pull origin master
       - name: Restore source timestamps for crazy CMake caching benefits
         uses: chetan/git-restore-mtime-action@v2
       - name: Install dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          version: 1.3
+          version: 1.4
           packages: >-
             python3-jinja2
             libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev
@@ -74,22 +72,21 @@ jobs:
         uses: actions/cache@v5
         with:
           path: build
-          key: K${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
+          key: ${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            K${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-
-            K${{ env.CACHE_BUST }}-${{ matrix.name }}-
+            ${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-
+            ${{ env.CACHE_BUST }}-${{ matrix.name }}-
       - name: Configure
         run: |
           cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
             ${{ matrix.mingw && env.MINGW_SHEBANG || '' }} \
-            ${{ github.ref_name == 'tracing' && '-D NUTPUNCH_TRACING=1' || '' }} \
             -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
       - name: Build
-        run: cmake --build build --target Klawiatura
+        run: cmake --build build --target all
       - name: Package
         run: cmake --build build --target package
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           draft: ${{ github.ref_name != 'master' }}
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}

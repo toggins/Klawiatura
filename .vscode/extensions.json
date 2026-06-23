@@ -1,7 +1,3 @@
 {
-    "recommendations": [
-        "llvm-vs-code-extensions.vscode-clangd",
-        "ms-vscode.cmake-tools",
-        "yzhang.markdown-all-in-one"
-    ]
+    "recommendations": ["llvm-vs-code-extensions.vscode-clangd", "ms-vscode.cmake-tools"]
 }

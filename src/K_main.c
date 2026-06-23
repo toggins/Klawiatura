@@ -1,237 +1,87 @@
+#include <stdio.h> // required for `printf()`
+
+#define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include "K_log.h"
-
-#define S_TRUCTURES_IMPLEMENTATION
-#define S_TRUCTURES_NOSTD
-
-#define StAlloc SDL_malloc
-#define StFree SDL_free
-#define StMemset SDL_memset
-#define StMemcpy SDL_memcpy
-#define StLog WARN
-#define StDie() handle_fatal(__FILE__, __LINE__, __func__, "Out of memory!!!")
-
-#include <S_tructures.h>
-
-#define FIX_IMPLEMENTATION
-#define FIX_NOSTD
-#include <S_fixed.h>
-
 #include "K_cmake.h"
 #include "K_cmd.h"
-#include "K_config.h"
-#include "K_discord.h"
 #include "K_file.h"
-#include "K_input.h"
-#include "K_menu.h"
+#include "K_log.h"
+#include "K_os.h"
 
-static void cmd_skip_intro(), cmd_ip(), cmd_level(), cmd_kevin(), cmd_fred(), cmd_string(), cmd_host(), cmd_join();
-MAKE_OPTION(data_path, NULL);
-MAKE_OPTION(config_path, NULL);
+static const char** mods = NULL;
+static size_t num_mods = 0;
+
+static void cmd_mod() {
+    const char* path = next_arg();
+    if (path == NULL)
+        return;
+
+    ++num_mods;
+    mods = (const char**)SDL_realloc((void*)mods, num_mods * sizeof(*mods));
+    EXPECT(mods, "Failed to reallocate mods list");
+    mods[num_mods - 1] = path;
+}
+
 MAKE_FLAG(force_shader);
 
 CmdArg CMDLINE[] = {
-	{"-s", "-force_shader", CMD_OPT(force_shader)},
-	{"-i", "-skip_intro",   cmd_skip_intro       },
-	{"-d", "-data",         CMD_OPT(data_path)   },
-	{"-c", "-config",       CMD_OPT(config_path) },
-	{"-K", "-kevin",        cmd_kevin            },
-	{"-F", "-fred",         cmd_fred             },
-	{"-a", "-ip",           cmd_ip               },
-	{"-l", "-level",        cmd_level            },
-	{"-S", "-string",       cmd_string           },
-	{"-h", "-host",         cmd_host             },
-	{"-j", "-join",         cmd_join             },
-	{NULL, NULL,            NULL                 },
+    {"-m", "-mod",          cmd_mod              },
+    {"-s", "-force_shader", CMD_OPT(force_shader)},
+    {NULL, NULL,            NULL                 },
 };
-
-ClientInfo CLIENT = {
-	.user.name = "", // filled in later in `K_config.c`
-	.input.delay = 1,
-	.game.players = 2,
-	.game.level = "test",
-	.lobby.name = "", // filled in later in `K_menu.c`
-	.lobby.public = TRUE,
-};
-
-Bool quickstart = FALSE, permadeath = FALSE;
-static MenuType starting_menu = MEN_INTRO;
-static int realmain();
 
 static void show_disclaimer() {
-	// Windose cmd starts a new line when you type `.\Klawiatura.exe` and press Enter, but
-	// doesn't break that line for us. So here goes an extra line break at the start:
-	printf("\n");
-	printf("[" GAME_NAME " " GAME_VERSION " - MARIO FOREVER ONLINE]\n");
-	printf("\n");
-	printf("DISCLAIMER:\n");
-	printf("This is a free, open-source project not created for any sort of profit.\n");
-	printf("All assets belong to Nintendo.\n");
-	printf("We do not condone any commercial use of this project.\n");
-	printf("\n");
+    printf("\n");
+    printf("[" GAME_NAME " " GAME_VERSION "]\n");
+    printf("DISCLAIMER:\n");
+    printf("This is a free, open-source project not created for any sort of profit.\n");
+    printf("We do not condone any commercial use of this project.\n");
+    printf("Mario and related characters (c) Nintendo.\n");
+    printf("\n");
 }
 
-int main(int argc, char* argv[]) {
-	fix_stdio(), show_disclaimer();
-	handle_cmdline(argc, argv);
-	return realmain();
+SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
+    (void)appstate;
+
+    fix_stdio();
+    show_disclaimer();
+    handle_cmdline(argc, argv);
+
+    log_init();
+    EXPECT(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS),
+        "Failed to initialize SDL: %s", SDL_GetError());
+    file_init(mods, num_mods);
+
+    INFO("Init OK");
+    return SDL_APP_CONTINUE;
 }
 
-static void handle_sdl_event(SDL_Event event) {
-	switch (event.type) {
-	case SDL_EVENT_KEY_DOWN:
-		input_keydown(event.key);
-		break;
-	case SDL_EVENT_KEY_UP:
-		input_keyup(event.key);
-		break;
-	case SDL_EVENT_MOUSE_BUTTON_DOWN:
-		input_mbdown(event.button);
-		break;
-	case SDL_EVENT_MOUSE_BUTTON_UP:
-		input_mbup(event.button);
-		break;
-	case SDL_EVENT_GAMEPAD_ADDED:
-		input_gamepadon(event.gdevice);
-		break;
-	case SDL_EVENT_GAMEPAD_REMOVED:
-		input_gamepadoff(event.gdevice);
-		break;
-	case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
-		input_buttondown(event.gbutton);
-		break;
-	case SDL_EVENT_GAMEPAD_BUTTON_UP:
-		input_buttonup(event.gbutton);
-		break;
-	case SDL_EVENT_GAMEPAD_AXIS_MOTION:
-		input_axis(event.gaxis);
-		break;
-	case SDL_EVENT_TEXT_INPUT:
-		input_text_input(event.text);
-		break;
-	case SDL_EVENT_WINDOW_RESIZED:
-		set_resolution(event.window.data1, event.window.data2, FALSE);
-		break;
-	default:
-		break;
-	}
+SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
+    (void)appstate;
+
+    switch (event->type) {
+    case SDL_EVENT_QUIT:
+        return SDL_APP_SUCCESS;
+    default:
+        break;
+    }
+
+    return SDL_APP_CONTINUE;
 }
 
-static int realmain() {
-	extern void log_init();
-	log_init();
+SDL_AppResult SDL_AppIterate(void* appstate) {
+    (void)appstate;
 
-	EXPECT(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS), "SDL_Init fail: %s", SDL_GetError());
-
-	extern void populate_actors_table();
-	populate_actors_table();
-
-	file_init(data_path), video_init(force_shader), audio_init();
-	input_init(), config_init(config_path), discord_init(), net_init(), menu_init();
-
-	if (quickstart) {
-		GameContext* ctx = init_game_context();
-		SDL_strlcpy(ctx->level, CLIENT.game.level, sizeof(ctx->level));
-		ctx->flags |= GF_TRY_HELL;
-		start_game();
-	} else {
-		switch (starting_menu) {
-		default:
-			break;
-
-		case MEN_HOST_LOBBY:
-			set_menu(MEN_MAIN), set_menu(MEN_MULTIPLAYER), set_menu(MEN_HOST_LOBBY);
-			host_lobby(CLIENT.lobby.name);
-			starting_menu = MEN_JOINING_LOBBY;
-			break;
-
-		case MEN_LOBBY_ID:
-			set_menu(MEN_MAIN), set_menu(MEN_MULTIPLAYER), set_menu(MEN_LOBBY_ID);
-			join_lobby(CLIENT.lobby.name);
-			starting_menu = MEN_JOINING_LOBBY;
-			break;
-		}
-
-		set_menu(starting_menu);
-	}
-
-	while (!permadeath) {
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			if (event.type == SDL_EVENT_QUIT)
-				goto teardown;
-			handle_sdl_event(event);
-		}
-
-		update_menu();
-		draw_menu();
-
-		audio_update();
-		discord_update();
-		limit_framerate();
-	}
-
-teardown:
-	nuke_game(), net_teardown(), discord_teardown(), config_teardown(), input_teardown();
-	audio_teardown(), video_teardown(), file_teardown();
-	SDL_Quit();
-
-	return EXIT_SUCCESS;
+    return SDL_APP_CONTINUE;
 }
 
-static void cmd_skip_intro() {
-	if (starting_menu == MEN_INTRO)
-		starting_menu = MEN_MAIN;
-}
+void SDL_AppQuit(void* appstate, SDL_AppResult result) {
+    (void)appstate;
+    (void)result;
 
-static void cmd_ip() {
-	set_hostname(next_arg());
-}
-
-static void cmd_level() {
-	SDL_strlcpy(CLIENT.game.level, next_arg(), sizeof(CLIENT.game.level));
-	if (!quickstart) {
-		quickstart = TRUE;
-		INFO("Running in quickstart mode");
-	}
-}
-
-static void cmd_kevin() {
-	if (!CLIENT.game.kevin) {
-		CLIENT.game.kevin = TRUE;
-		INFO("Kevin mode activated. Good luck...");
-	}
-}
-
-static void cmd_fred() {
-	if (!CLIENT.game.fred) {
-		CLIENT.game.fred = TRUE;
-		INFO("Fred mode activated. Good luck...");
-	}
-}
-
-static void cmd_string() {
-	Sint8 in[ACTOR_STRING_MAX + 1] = {0};
-	GameActor out = {0};
-
-	SDL_strlcpy((char*)in, next_arg(), sizeof(in));
-	encode_actor_string(&out, 0, in);
-
-	FATAL("String \"%s\" encoded to [%i,%i,%i,%i]", in, out.values[0], out.values[1], out.values[2], out.values[3]);
-}
-
-static void cmd_host() {
-	SDL_strlcpy(CLIENT.lobby.name, next_arg(), sizeof(CLIENT.lobby.name));
-	CLIENT.lobby.public = (Bool)SDL_strtoul(next_arg(), NULL, 10);
-	CLIENT.game.players = (PlayerID)SDL_strtoul(next_arg(), NULL, 10);
-	SDL_clamp(CLIENT.game.players, 2, MAX_PLAYERS);
-	SDL_strlcpy(CLIENT.game.level, next_arg(), sizeof(CLIENT.game.level));
-	starting_menu = MEN_HOST_LOBBY;
-}
-
-static void cmd_join() {
-	SDL_strlcpy(CLIENT.lobby.name, next_arg(), sizeof(CLIENT.lobby.name));
-	starting_menu = MEN_LOBBY_ID;
+    file_teardown();
+    INFO("Quit OK");
+    log_teardown();
 }

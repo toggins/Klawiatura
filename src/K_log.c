@@ -1,54 +1,74 @@
-#include <stdlib.h>
-// ^ required for `exit(EXIT_FAILURE)` below. DO NOT TOUCH YOU FUCKER
+#include <stdlib.h> // required for `exit(EXIT_FAILURE)`, `fprintf()` and `fflush`
 
 #include <SDL3/SDL_messagebox.h>
+#include <SDL3/SDL_platform_defines.h>
 
 #include "K_cmake.h"
 #include "K_file.h"
 #include "K_log.h"
-#include "K_misc.h"
 #include "K_string.h"
 
-void handle_fatal(const char* file, int line, const char* func, const char* fmt, ...) {
-	static char buf[512] = "";
-	extern SDL_Window* window;
+void handle_fatal(const char* file, int line, const char* func, const char* format, ...) {
+    // extern SDL_Window* WINDOW;
 
-	static SDL_MessageBoxButtonData butts[1] = {0};
-	butts[0].text = "Exit";
-	butts[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT | SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
+    // SDL_MessageBoxButtonData buttons[] = {
+    //     {.text = "Exit", .flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT | SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT}
+    // };
 
-	SDL_MessageBoxData data = {0};
-	data.window = window, data.message = buf;
-	data.title = GAME_NAME, data.flags = SDL_MESSAGEBOX_ERROR;
-	data.buttons = butts, data.numbuttons = ENTRIES(butts);
+    // va_list args = {0};
+    // va_start(args, format);
+    // const char* message = fmt("Sorry, " GAME_NAME " encountered a fatal error!\n\nFile: %s:%d\nFunction: %s()\n\n%s",
+    //     log_basename(file), line, func, vfmt(format, args));
+    // va_end(args);
 
-	va_list args = {0};
-	va_start(args, fmt);
-	SDL_snprintf(buf, sizeof(buf),
-		"Sorry, " GAME_NAME " encountered a fatal error!\n\nFile: %s:%d\nFunction: %s()\n\n%s",
-		log_basename(file), line, func, vfmt(fmt, args));
-	va_end(args);
+    // SDL_MessageBoxData data = {
+    //     .window = WINDOW,
+    //     .message = message,
+    //     .title = GAME_NAME,
+    //     .flags = SDL_MESSAGEBOX_ERROR,
+    //     .buttons = buttons,
+    //     .numbuttons = SDL_arraysize(buttons),
+    // };
 
-	SDL_ShowMessageBox(&data, NULL);
-	exit(EXIT_FAILURE);
+    // SDL_ShowMessageBox(&data, NULL);
+
+    va_list args = {0};
+    va_start(args, format);
+    WTF("Sorry, " GAME_NAME " encountered a fatal error!\n\nFile: %s:%d\nFunction: %s()\n\n%s", log_basename(file),
+        line, func, vfmt(format, args));
+    va_end(args);
+
+    exit(EXIT_FAILURE);
 }
 
 const char* log_basename(const char* path) {
-	return file_basename(path);
+    return file_basename(path);
 }
 
 static const char* log_levels[SDL_LOG_PRIORITY_COUNT] = {
-	[SDL_LOG_PRIORITY_INFO] = "INFO",
-	[SDL_LOG_PRIORITY_WARN] = "WARN",
-	[SDL_LOG_PRIORITY_ERROR] = "ERROR",
-	[SDL_LOG_PRIORITY_CRITICAL] = "FATAL",
+    [SDL_LOG_PRIORITY_INFO] = "INFO",
+    [SDL_LOG_PRIORITY_WARN] = "WARN",
+    [SDL_LOG_PRIORITY_ERROR] = "ERROR",
+    [SDL_LOG_PRIORITY_CRITICAL] = "FATAL",
 };
 
 static void klaw_logger(void* userdata, int category, SDL_LogPriority priority, const char* message) {
-	fprintf(stderr, "[%s] %s\n", log_levels[priority], message);
-	fflush(stderr);
+    (void)userdata;
+    (void)category;
+
+    FILE* const stream =
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+        stdout;
+#else
+        stderr;
+#endif
+
+    fprintf(stream, "[%s] %s\n", log_levels[priority], message);
+    fflush(stream);
 }
 
 void log_init() {
-	SDL_SetLogOutputFunction(klaw_logger, NULL);
+    SDL_SetLogOutputFunction(klaw_logger, NULL);
 }
+
+void log_teardown() {}

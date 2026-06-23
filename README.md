@@ -12,47 +12,21 @@ Mario Forever with rollback netcode.
 ## Multiplayer
 
 > [!TIP]
-> **Discord integration is here!** You can invite other players to your lobbies through Discord, as long as you're using the public NutPuncher instance; otherwise, the integration is implicitly disabled.
+> **Discord integration is here!** You can invite other players to your lobbies through Discord, as long as they can connect to the same server as you.
 
 > [!NOTE]
-> If you're unable to connect to other players, check [NutPunch's troubleshooting section](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#troubleshooting).
+> If you're unable to connect to other players, check [NutBlast's troubleshooting section](https://nutblast.schwung.us/?tab=readme-ov-file#troubleshooting).
 
-Multiplayer is the main kicker of this project. Networking is purely peer-to-peer. You can host and find lobbies through NutPuncher servers. Lobbies can hold up to 4 players. For custom servers, host a [NutPuncher](https://github.com/Schwungus/nutpunch) server and connect to it using `-ip`.
+Multiplayer is the main kicker of this project. You can host and find lobbies through NutBlast servers. Lobbies can hold up to 8 players. For custom servers, host a [NutBlaster](https://nutblast.schwung.us) and set your server address to it in the settings.
 
 ## Launch options
 
 You can adjust Klawiatura with these launch options:
 
-| Command               | Arguments                         | Description                                                                                                                                                                                       |
-| --------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-s`, `-force_shader` |                                   | Skip checking supported OpenGL extensions. Useful if running under RenderDoc or WSL, where the checks fail even if the game runs fine otherwise.                                                  |
-| `-i`, `-skip_intro`   |                                   | Skips the disclaimer screen.                                                                                                                                                                      |
-| `-d`, `-data`         | `<path>`                          | Path of the data folder to load assets from.                                                                                                                                                      |
-| `-c`, `-config`       | `<path>`                          | Path of the config file. Disables config saving.                                                                                                                                                  |
-| `-K`, `-kevin`        |                                   | Awakens Kevin.                                                                                                                                                                                    |
-| `-F`, `-fred`         |                                   | Awakens Fred.                                                                                                                                                                                     |
-| `-a`, `-ip`           | `<ip>`                            | IP address of the [NutPuncher](https://github.com/Schwungus/nutpunch) server. (Default: [the public NutPunch instance](https://github.com/Schwungus/nutpunch?tab=readme-ov-file#public-instance)) |
-| `-l`, `-level`        | `<name>`                          | Level file to load. Quickstarts the game in singleplayer.                                                                                                                                         |
-| `-S`, `-string`       | `<string>`                        | Converts a 16-character string into `int32_t[4]` and closes the application. Only used for debugging and level editing.                                                                           |
-| `-h`, `-host`         | `<id> <public> <players> <level>` | Hosts a lobby on launch.                                                                                                                                                                          |
-| `-j`, `-join`         | `<id>`                            | Joins the specified lobby on launch.                                                                                                                                                              |
-
-You can add these options to a desktop shortcut:
-
-1. Right-click Klawiatura.exe → Create shortcut.
-2. Right-click the shortcut → select "Properties".
-3. Append the desired options to the "Target" field (as seen on the screenshot).
-4. Click "OK".
-
-Here's how it should look:
-
-<p align="center"><img src=".github/assets/shortcut-properties.png"></p>
-
-Or you can just use a batch file with the following contents:
-
-```bat
-start cmd /c ./Klawiatura.exe <your launch options here> ^& pause
-```
+| Command               | Arguments | Description                                                                                                                                                                                              |
+| --------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-m`, `-mod`          | `<path>`  | Adds a mod folder to load assets from. Prefix with `$` to get a path relative to the game's base folder.<br>If no mods are specified, the game will add `$MarioForever` and `$MarioTogether` by default. |
+| `-s`, `-force_shader` |           | Skip checking supported OpenGL extensions. Useful if running under RenderDoc or WSL, where the checks fail even if the game runs fine otherwise.                                                         |
 
 ## Building This Yourself
 
@@ -66,16 +40,10 @@ You will need a system-wide install of the `jinja2` Python module for our depend
 py -m pip install jinja2
 ```
 
-### [FMOD Engine 2.03.12](https://www.fmod.com/download#fmodengine)
-
-**Windows**: move everything in `C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core` to `external\fmod\windows`.
-
-**Linux**: move everything in `fmodstudioapi20311linux` to `external/fmod/linux`.
-
-### [Discord Social SDK 1.8.14026](https://discord.com/developers/social-sdk) (Optional)
+### [Discord Social SDK 1.9.15332](https://discord.com/developers/social-sdk) (Optional)
 
 > [!NOTE]
-> If the SDK is not present or the build environment is 32-bit, most of the functions in `K_discord.c` will become no-ops.
+> If the SDK is not present, the functions in [K_discord.c](src/K_discord.c) will be stubbed.
 
 Move the `discord_social_sdk` folder from their ZIP download to `external/discord`.
 
@@ -103,12 +71,11 @@ Listing some of the things we learned the hard way that you should consider:
 
 All of the assets belong to Nintendo. This is a free, open-source project not created for any sort of profit. We do not condone any commercial use of this project.
 
-- [SDL](https://github.com/libsdl-org/SDL), [SDL_image](https://github.com/libsdl-org/SDL_image), [SDL_GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB) © Sam Lantinga ([Zlib License](https://github.com/libsdl-org/SDL_mixer/blob/main/LICENSE.txt))
-- [GLAD](https://github.com/Dav1dde/glad) © David Herberth ([MIT License](https://github.com/Dav1dde/glad/blob/glad2/LICENSE)). Currently used for OpenGL.
+- [SDL](https://github.com/libsdl-org/SDL), [SDL_GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB), [SDL_mixer](https://github.com/libsdl-org/SDL_mixer) © Sam Lantinga ([Zlib License](https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt))
+- [GLAD](https://github.com/Dav1dde/glad) © David Herberth ([MIT License](https://github.com/Dav1dde/glad/blob/glad2/LICENSE))
 - [cglm](https://github.com/recp/cglm) © Recep Aslantas ([MIT License](https://github.com/recp/cglm/blob/master/LICENSE))
 - [yyjson](https://github.com/ibireme/yyjson) © Yaoyuan Guo ([MIT License](https://github.com/ibireme/yyjson/blob/master/LICENSE))
 - [GekkoNet](https://github.com/HeatXD/GekkoNet) © Jamie Meyer ([BSD-2-Clause License](https://github.com/HeatXD/GekkoNet/blob/main/LICENSE))
-- [FMOD Core](https://www.fmod.com/) © Firelight Technologies Pty Ltd. ([FMOD License](https://www.fmod.com/licensing)) Currently used for audio.
 - [Discord Social SDK](https://discord.com/developers/social-sdk) © Discord
 
 Module music provided by [modarchive.org](https://modarchive.org).

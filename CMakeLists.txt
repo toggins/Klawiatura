@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.27.0 FATAL_ERROR)
 
-project(Klawiatura VERSION 1.3.0
+project(Klawiatura VERSION 1.4.0
     DESCRIPTION "Mario Forever Online"
     LANGUAGES C CXX)
 
@@ -13,90 +13,140 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
 set(BUILD_SHARED_LIBS OFF)
+if(NOT EMSCRIPTEN)
+    set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
+endif()
+
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
 
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
-# SDL3 (3.4.0)
+# SDL3 (3.4.10)
+set(SDL_EMSCRIPTEN_PERSISTENT_PATH /storage CACHE INTERNAL "")
 set(SDL_SHARED OFF CACHE INTERNAL "")
 set(SDL_STATIC ON CACHE INTERNAL "")
 set(SDL_TEST_LIBRARY OFF CACHE INTERNAL "")
 set(SDL_RENDER OFF CACHE INTERNAL "")
+set(SDL_AUDIO ON CACHE INTERNAL "")
 set(SDL_GPU OFF CACHE INTERNAL "")
-set(SDL_AUDIO OFF CACHE INTERNAL "")
 set(SDL_CAMERA OFF CACHE INTERNAL "")
+
 FetchContent_Declare(SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG release-3.4.2)
+    GIT_TAG release-3.4.10
+    EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(SDL3)
+
 list(APPEND LIBS SDL3::SDL3-static)
+
+# SDL_mixer (3.2.4)
+set(SDLMIXER_AIFF OFF CACHE INTERNAL "")
+set(SDLMIXER_VOC OFF CACHE INTERNAL "")
+set(SDLMIXER_AU OFF CACHE INTERNAL "")
+set(SDLMIXER_FLAC OFF CACHE INTERNAL "")
+set(SDLMIXER_MOD OFF CACHE INTERNAL "")
+set(SDLMIXER_MP3 OFF CACHE INTERNAL "")
+set(SDLMIXER_MIDI OFF CACHE INTERNAL "")
+set(SDLMIXER_AIFF OFF CACHE INTERNAL "")
+set(SDLMIXER_WAVPACK OFF CACHE INTERNAL "")
+
+FetchContent_Declare(SDL3_mixer
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
+    GIT_TAG release-3.2.4
+    EXCLUDE_FROM_ALL)
+FetchContent_MakeAvailable(SDL3_mixer)
+
+list(APPEND LIBS SDL3_mixer::SDL3_mixer-static)
 
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG f3dc84d7a07a94d334901ec0dcc87bb844e26d22)
+    GIT_TAG e24bb1ce0fe74f7d981e870aade0cc956d54bfe2
+    EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
 
-# GLAD (2.0.8, OpenGL 3.3 Core)
+# GLAD (2.0.8, OpenGL 3.3 Core OR OpenGL ES 3.0)
 FetchContent_Declare(glad
     GIT_REPOSITORY https://github.com/Dav1dde/glad.git
     GIT_TAG v2.0.8
-    SOURCE_SUBDIR cmake)
+    SOURCE_SUBDIR cmake
+    EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(glad)
-glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
-list(APPEND LIBS glad_gl_core_33)
+
+if(EMSCRIPTEN)
+    glad_add_library(glad_gles2_30 REPRODUCIBLE STATIC API gles2=3.0)
+    list(APPEND LIBS glad_gles2_30)
+else()
+    glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
+    list(APPEND LIBS glad_gl_core_33)
+endif()
 
 # cglm
 set(CGLM_SHARED OFF CACHE INTERNAL "")
 set(CGLM_STATIC ON CACHE INTERNAL "")
+
 FetchContent_Declare(cglm
     GIT_REPOSITORY https://github.com/recp/cglm.git
-    GIT_TAG v0.9.6)
+    GIT_TAG v0.9.6
+    EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(cglm)
-list(APPEND LIBS cglm)
 
-# FMOD Core API (2.03.12)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/fmod)
-list(APPEND LIBS fmod)
+list(APPEND LIBS cglm)
 
 # yyjson (0.12.0)
 FetchContent_Declare(yyjson
     GIT_REPOSITORY https://github.com/ibireme/yyjson.git
-    GIT_TAG 0.12.0)
+    GIT_TAG 0.12.0
+    EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(yyjson)
+
 list(APPEND LIBS yyjson)
 
 # S_fixed
+set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
+
 FetchContent_Declare(S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
-    GIT_TAG 7efd4348acb3ab31db0c709fba72ee4f276c5504)
+    GIT_TAG a47e3dd349e4b85006e1b756ea0164a76d4fe579
+    EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(S_fixed)
+
 list(APPEND LIBS S_fixed)
 
 # S_tructures
+set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
+
 FetchContent_Declare(S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
-    GIT_TAG 821c34b46d386f4a52cac7d10c64d88e1c3c05f4)
+    GIT_TAG 484e78265ec3e58cf57bfe7aa09b53d48b60300f
+    EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(S_tructures)
+
 list(APPEND LIBS S_tructures)
 
-# NutPunch
-set(NUTPUNCH_BUILD_SERVER ON CACHE INTERNAL "")
-FetchContent_Declare(NutPunch
-    GIT_REPOSITORY https://github.com/Schwungus/nutpunch.git
-    GIT_TAG 081e2f5def2d74aaa9c7b733368f4170e5cc6413)
-FetchContent_MakeAvailable(NutPunch)
-list(APPEND LIBS NutPunch)
+FetchContent_Declare(NutBlast
+	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
+	GIT_TAG a390c4163fb0f9f8b20de883df1373f21dcfdf8e
+	EXCLUDE_FROM_ALL)
+FetchContent_MakeAvailable(NutBlast)
+
+list(APPEND LIBS NutBlast)
 
 # GekkoNet
 set(NO_ASIO_BUILD ON CACHE INTERNAL "")
+
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG v20260224163038-7be848c)
+    GIT_TAG v20260620121632-bce8ddd
+    EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(GekkoNet)
+
 list(APPEND LIBS GekkoNet)
 
-# Discord Social SDK (1.8.14026)
+# Discord Social SDK (1.9.15332)
 set(KLAW_DISCORD OFF CACHE INTERNAL "Use Discord Social SDK")
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/discord)
 if(KLAW_DISCORD)
@@ -104,6 +154,9 @@ if(KLAW_DISCORD)
 endif()
 
 # Build
+if(EMSCRIPTEN)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+endif()
 
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
 file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/include/*.h)
@@ -115,60 +168,60 @@ list(APPEND HEADERS ${CONFIGURE_FILE})
 set(CONTROLLER_DB ${sdl_gamecontrollerdb_SOURCE_DIR}/gamecontrollerdb.txt)
 
 set(RESFILE ${CMAKE_SOURCE_DIR}/res/Klawiatura.rc)
-add_executable(Klawiatura ${SOURCES} ${HEADERS} ${RESFILE})
+add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${HEADERS} ${RESFILE})
 
-target_include_directories(Klawiatura
+if(EMSCRIPTEN)
+    target_link_options(${PROJECT_NAME} PRIVATE
+        "SHELL:-s MIN_WEBGL_VERSION=2"
+        "SHELL:-s MAX_WEBGL_VERSION=2"
+        "SHELL:-s ALLOW_MEMORY_GROWTH=1")
+endif()
+
+target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/generated)
-target_link_libraries(Klawiatura PRIVATE ${LIBS})
-target_compile_definitions(Klawiatura
-    PUBLIC _POSIX_C_SOURCE=200112L _WIN32_WINNT=0x0501 WINVER=0x0501)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})
 
 if(KLAW_DISCORD)
-    target_compile_definitions(Klawiatura PUBLIC K_DISCORD=1)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE K_DISCORD=1)
 endif()
 
-if(WIN32)
-    set(FLAG "$<IF:$<BOOL:${MSVC}>,/SUBSYSTEM:WINDOWS,-mwindows>")
-    target_link_options(Klawiatura PRIVATE ${FLAG})
-endif()
-
-set(RUNTIME_DLLS "$<TARGET_RUNTIME_DLLS:Klawiatura>" CACHE INTERNAL "")
+set(RUNTIME_DLLS "$<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>" CACHE INTERNAL "")
 function(append_dll TARGET)
     set(DLL "$<TARGET_PROPERTY:${TARGET},IMPORTED_LOCATION>")
     set(RUNTIME_DLLS "$<LIST:APPEND,${RUNTIME_DLLS},${DLL}>" CACHE INTERNAL "")
 endfunction()
 
 if(LINUX)
-    target_link_options(Klawiatura PRIVATE -Wl,-rpath,./)
-    append_dll(fmod)
+    target_link_options(${PROJECT_NAME} PRIVATE -Wl,-rpath,./)
     if(KLAW_DISCORD)
         append_dll(discord)
     endif()
 endif()
 
-add_custom_command(TARGET Klawiatura POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:Klawiatura>
-    ${RUNTIME_DLLS} ${CONTROLLER_DB} $<TARGET_FILE:NutPuncher>
+if(EMSCRIPTEN)
+    target_link_options(${PROJECT_NAME} PRIVATE
+        "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/modsrc@assets"
+        "SHELL:--preload-file ${CONTROLLER_DB}@gamecontrollerdb.txt")
+else()
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        ${RUNTIME_DLLS} ${CONTROLLER_DB}
 
-    COMMAND ${CMAKE_COMMAND} -E remove_directory
-    $<TARGET_FILE_DIR:Klawiatura>/data
+        COMMAND ${CMAKE_COMMAND} -E remove_directory
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
 
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/modsrc $<TARGET_FILE_DIR:Klawiatura>/data
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/modsrc $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
 
-    COMMAND_EXPAND_LISTS)
+        COMMAND_EXPAND_LISTS)
 
-install(TARGETS Klawiatura RUNTIME DESTINATION . COMPONENT Klawiatura)
-install(FILES
-    README.md UNLICENSE res/console.bat ${CONTROLLER_DB} ${RUNTIME_DLLS} $<TARGET_FILE:NutPuncher>
-    DESTINATION . COMPONENT Klawiatura)
-install(DIRECTORY modsrc/ DESTINATION data COMPONENT Klawiatura)
-# Has all the README .pngs:
-install(DIRECTORY .github/assets
-    DESTINATION .github COMPONENT Klawiatura)
+    install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION . COMPONENT ${PROJECT_NAME})
+    install(FILES ${CONTROLLER_DB} ${RUNTIME_DLLS} DESTINATION . COMPONENT ${PROJECT_NAME})
+    install(DIRECTORY modsrc/ DESTINATION data COMPONENT ${PROJECT_NAME})
+endif()
 
 set(CPACK_GENERATOR ZIP)
 set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 set(CPACK_COMPONENTS_GROUPING ALL_COMPONENTS_IN_ONE)
-set(CPACK_COMPONENTS_ALL Klawiatura)
+set(CPACK_COMPONENTS_ALL ${PROJECT_NAME})
 include(CPack)

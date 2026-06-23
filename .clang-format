@@ -1,10 +1,14 @@
 ColumnLimit: 120
-IndentWidth: 8
-ContinuationIndentWidth: 8
-UseTab: AlignWithSpaces
+IndentWidth: 4
+ContinuationIndentWidth: 4
+AccessModifierOffset: -2
+UseTab: Never
 AlignArrayOfStructures: Left
+AlignAfterOpenBracket: false
 BreakBeforeBinaryOperators: All
 BreakBeforeBraces: Custom
+BreakAfterReturnType: Automatic
+PenaltyReturnTypeOnItsOwnLine: 0
 BraceWrapping:
   AfterControlStatement: MultiLine
 SpaceAfterCStyleCast: false
@@ -17,11 +21,10 @@ AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterReturnType: None
-AccessModifierOffset: -8
 IndentCaseBlocks: false
 IndentCaseLabels: false
-AlignAfterOpenBracket: DontAlign
 RemoveBracesLLVM: true
+InsertBraces: true
 IncludeBlocks: Regroup
 IncludeIsMainRegex: "a{999}" # no main includes
 SortIncludes: CaseSensitive
