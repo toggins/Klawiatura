@@ -41,7 +41,7 @@ jobs:
       - name: Silence `git init` warning
         run: git config --global init.defaultBranch master
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Source proprietary SDKs
         run: |
           function trash() {
@@ -89,7 +89,7 @@ jobs:
       - name: Package
         run: cmake --build build --target package
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           draft: ${{ github.ref_name != 'master' }}
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
