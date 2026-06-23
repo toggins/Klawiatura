@@ -156,11 +156,6 @@ const GameInput* read_replay() {
     if (replay_cursor >= replay_size)
         return NULL;
 
-    const PlayerID num_players = gamecontext()->num_players;
-    for (PlayerID i = 0; i < num_players; i++)
-        rbuffer_read8(&last_input[i]);
-    rbuffer_read32(&last_checksum);
-
     return last_input;
 }
 
