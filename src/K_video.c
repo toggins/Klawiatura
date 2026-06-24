@@ -470,7 +470,7 @@ void load_texture(const char* name, Bool persistent) {
 
     Texture texture = {0};
 
-    SDL_Surface* surface = SDL_LoadPNG_IO(stream_data_file(fmt("textures/%s.png", name)), TRUE);
+    SDL_Surface* surface = SDL_LoadPNG_IO(stream_data_file(fmt("textures/%s.png", name), NULL), TRUE);
     ASSUME(surface, "Failed to load texture \"%s\": %s", name, SDL_GetError());
 
     texture.base.name = SDL_strdup(name);

@@ -95,17 +95,26 @@ static void* load_file(const char* path, const char* pattern, size_t* size) {
     return buffer;
 }
 
-static SDL_IOStream* stream_file(const char* path, const char* pattern, Bool write) {
-    char** files = SDL_GlobDirectory(path, pattern, 0, NULL);
+static SDL_IOStream* stream_file(const char* path, const char* pattern, Bool write, const char* ignore_ext) {
+    int count = 0;
+    char** files = SDL_GlobDirectory(path, pattern, 0, &count);
     if (files == NULL)
         return NULL;
 
     SDL_IOStream* io = NULL;
-    if (files[0] != NULL) {
-        const char* filename = fmt("%s%s", path, files[0]);
+    for (int i = 0; i < count; i++) {
+        if (ignore_ext != NULL) {
+            const char* ext = SDL_strrchr(files[i], '.');
+            if (ext != NULL && SDL_strcmp(ext, ignore_ext) == 0)
+                continue;
+        }
+
+        const char* filename = fmt("%s%s", path, files[i]);
         io = SDL_IOFromFile(filename, write ? "wb" : "rb");
         if (io == NULL)
             WTF("Failed to stream file \"%s\": %s", filename, SDL_GetError());
+
+        break;
     }
     SDL_free((void*)files);
 
@@ -140,7 +149,7 @@ yyjson_doc* read_json(const char* str, size_t len) {
 }
 
 SDL_IOStream* stream_base_file(const char* filename) {
-    return stream_file(base_path, filename, FALSE);
+    return stream_file(base_path, filename, FALSE, NULL);
 }
 
 void* load_data_file(const char* filename, size_t* size) {
@@ -153,9 +162,9 @@ void* load_data_file(const char* filename, size_t* size) {
     return NULL;
 }
 
-SDL_IOStream* stream_data_file(const char* filename) {
+SDL_IOStream* stream_data_file(const char* filename, const char* ignore_ext) {
     for (const Mod* mod = last_mod; mod != NULL; mod = mod->previous) {
-        SDL_IOStream* io = stream_file(mod->path, filename, FALSE);
+        SDL_IOStream* io = stream_file(mod->path, filename, FALSE, ignore_ext);
         if (io != NULL)
             return io;
     }

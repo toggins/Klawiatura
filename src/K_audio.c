@@ -28,7 +28,7 @@ static MIX_Mixer* speaker = NULL;
 static MIX_Group *sound_group = NULL, *system_group = NULL, *music_group = NULL;
 static SDL_PropertiesID loop_properties = 0;
 
-static float master_volume = 0.5f, sound_volume = 1.f, music_volume = 0.5f;
+static float master_volume = 0.5f, sound_volume = 1.f, music_volume = 1.f;
 static float mixer_volume = 1.0f;
 
 static TinyMap sounds = {0}, tracks = {0};
@@ -265,7 +265,7 @@ void load_sound(const char* name, Bool persistent) {
 
     Sound sound = {0};
 
-    sound.internal = MIX_LoadAudio_IO(speaker, stream_data_file(fmt("sounds/%s.wav", name)), TRUE, TRUE);
+    sound.internal = MIX_LoadAudio_IO(speaker, stream_data_file(fmt("sounds/%s.*", name), NULL), TRUE, TRUE);
     ASSUME(sound.internal, "Failed to load sound \"%s\": %s", name, SDL_GetError());
 
     sound.base.name = SDL_strdup(name);
@@ -285,12 +285,12 @@ static void nuke_track(void* ptr) {
 ASSET_SRC(tracks, Track, track);
 
 void load_track(const char* name, Bool persistent) {
-    if (name == NULL || get_track(name))
+    if (name == NULL || get_track(name) != NULL)
         return;
 
     Track track = {0};
 
-    track.internal = MIX_LoadAudio_IO(speaker, stream_data_file(fmt("tracks/%s.ogg", name)), FALSE, TRUE);
+    track.internal = MIX_LoadAudio_IO(speaker, stream_data_file(fmt("tracks/%s.*", name), ".json"), FALSE, TRUE);
     ASSUME(track.internal, "Failed to load track \"%s\": %s", name, SDL_GetError());
 
     track.base.name = SDL_strdup(name);

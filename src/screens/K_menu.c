@@ -1,5 +1,12 @@
+#include "K_audio.h"
 #include "K_interface.h"
 #include "K_video.h"
+
+static void start() {
+    load_track("title", FALSE);
+
+    play_generic_track(GTS_MAIN, "title", PLAY_LOOPING);
+}
 
 static void draw() {
     clear_color(1.f, 1.f, 1.f, 1.f);
@@ -13,6 +20,7 @@ static void draw_ui() {
 }
 
 const ScreenTable TAB_MENU = {
+    .start = start,
     .draw = draw,
     .draw_ui = draw_ui,
 };

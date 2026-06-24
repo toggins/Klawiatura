@@ -18,7 +18,7 @@ yyjson_doc* read_json(const char*, size_t);
 SDL_IOStream* stream_base_file(const char*);
 
 void* load_data_file(const char*, size_t*);
-SDL_IOStream* stream_data_file(const char*);
+SDL_IOStream* stream_data_file(const char*, const char*);
 yyjson_doc* load_data_json(const char*);
 void iterate_data_files(const char*, Bool, void (*)(const char*, void*, size_t, void*), void*);
 
