@@ -134,7 +134,7 @@ NetID get_lobby_id();
 const char* get_lobby_string(const char*);
 Sint32 get_lobby_number(const char*);
 Bool in_private_lobby();
-void toggle_spectator(), toggle_ready();
+void toggle_spectator();
 
 void find_lobbies();
 const LobbyInfo* get_lobby_list(size_t);

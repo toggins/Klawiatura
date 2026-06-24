@@ -85,21 +85,21 @@ static void on_lobbies_found(const NutBlast_Lobby* lobbies, size_t count) {
     }
 }
 
-static void on_master_changed(NetID old_master, NetID new_master) {
+static void on_master_changed(NetID old_master) {
     (void)old_master;
 
-    chat_message(LFMT("chat_hosting", 's', get_peer_name(new_master)), B_YELLOW);
+    chat_message(LFMT("chat_hosting", 's', get_peer_name(get_master_peer())), B_YELLOW);
 }
 
-static void on_peer_data_changed(NetID pid, const char* key, const char* old_value, const char* new_value) {
-    if (SDL_strcmp(key, "name") == 0) {
-        chat_message(LFMT("chat_changed_name", 's', old_value, 's', new_value), B_YELLOW);
+static void on_peer_data_changed(NetID pid, NutBlast_FieldDiff diff) {
+    if (SDL_strcmp(diff.name, "name") == 0) {
+        chat_message(LFMT("chat_changed_name", 's', diff.old_value, 's', diff.new_value), B_YELLOW);
         return;
     }
 
-    if (SDL_strcmp(key, "spectator") == 0) {
+    if (SDL_strcmp(diff.name, "spectator") == 0) {
         chat_message(
-            LFMT((SDL_atoi(new_value) > 0) ? "chat_spectator_on" : "chat_spectator_off", 's', get_peer_name(pid)),
+            LFMT((SDL_atoi(diff.new_value) > 0) ? "chat_spectator_on" : "chat_spectator_off", 's', get_peer_name(pid)),
             B_YELLOW);
         return;
     }
@@ -115,8 +115,20 @@ static void clear_peer_tables() {
     SDL_zeroa(spectator_peers);
 }
 
+void net_logger(NutBlast_LogLevel level, const char* message) {
+    switch (level) {
+    default:
+        INFO("%s", message);
+        break;
+    case NB_LogError:
+        WTF("%s", message);
+        break;
+    }
+}
+
 void net_init() {
-    NutBlast_SetGameID("K" GAME_VERSION);
+    NutBlast_SetLogger(net_logger);
+    NutBlast_SetGameID(GAME_NAME " " GAME_VERSION);
     NutBlast_SetMaxChannels(PCH_SIZE);
 
     NutBlast_OnDisconnected(on_disconnected);
@@ -131,7 +143,8 @@ void net_init() {
 
 static void connect_state_success() {
     connect_state = CONN_SUCCESS;
-    clear_chat(), chat_message(LFMT("chat_connected"), B_YELLOW);
+    clear_chat();
+    chat_message(LFMT("chat_connected"), B_YELLOW);
     update_discord_status();
 }
 
@@ -419,14 +432,10 @@ void toggle_spectator() {
     NutBlast_SetPeerField("spectator", fmt("%u", !get_peer_number(get_local_peer(), "spectator")));
 }
 
-void toggle_ready() {
-    NutBlast_SetPeerField("ready", fmt("%u", !get_peer_number(get_local_peer(), "ready")));
-}
-
 void find_lobbies() {
     set_last_error(NULL);
     clear_lobby_list();
-    NutBlast_FindLobbies();
+    NutBlast_FindLobbies(20);
 }
 
 const LobbyInfo* get_lobby_list(size_t idx) {

@@ -146,7 +146,6 @@ void video_init(Bool force_shader) {
     CHECK_GL_EXTENSION(GLAD_GL_ARB_shader_objects);
     CHECK_GL_EXTENSION(GLAD_GL_ARB_vertex_shader);
     CHECK_GL_EXTENSION(GLAD_GL_ARB_fragment_shader);
-    CHECK_GL_EXTENSION(GLAD_GL_ARB_texture_non_power_of_two);
 #endif
 
 vi_bypass:
@@ -466,7 +465,7 @@ static void nuke_texture(void* ptr) {
 ASSET_SRC(textures, Texture, texture);
 
 void load_texture(const char* name, Bool persistent) {
-    if (name == NULL || get_texture(name))
+    if (name == NULL || get_texture(name) != NULL)
         return;
 
     Texture texture = {0};
@@ -529,7 +528,7 @@ static void nuke_sprite(void* ptr) {
 ASSET_SRC(sprites, Sprite, sprite);
 
 void load_sprite(const char* name, Bool persistent) {
-    if (name == NULL || get_sprite(name))
+    if (name == NULL || get_sprite(name) != NULL)
         return;
 
     Sprite sprite = {0};
@@ -608,14 +607,11 @@ static void nuke_font(void* ptr) {
 ASSET_SRC(fonts, Font, font);
 
 void load_font(const char* name, Bool persistent) {
-    if (name == NULL || get_font(name))
+    if (name == NULL || get_font(name) != NULL)
         return;
-
-    Font font = {0};
 
     yyjson_doc* json = load_data_json(fmt("fonts/%s.json", name));
-    if (json == NULL)
-        return;
+    ASSUME(json, "Font \"%s\" not found", name);
 
     yyjson_val* root = yyjson_doc_get_root(json);
     if (!yyjson_is_obj(root)) {
@@ -624,13 +620,19 @@ void load_font(const char* name, Bool persistent) {
         return;
     }
 
+    Font font = {0};
+
     font.base.name = SDL_strdup(name);
     EXPECT(font.base.name, "Failed to allocate name for font \"%s\"", name);
     font.base.persistent = persistent;
 
+    yyjson_val* jval = yyjson_obj_get(root, "size");
+    const float size = yyjson_is_num(jval) ? (float)yyjson_get_num(jval) : 1.f;
+
     size_t i = 0, n = 0;
     yyjson_val *key = NULL, *value = NULL;
-    yyjson_obj_foreach(root, i, n, key, value) {
+    jval = yyjson_obj_get(root, "glyphs");
+    yyjson_obj_foreach(jval, i, n, key, value) {
         const char* tname = yyjson_get_str(key);
         if (tname == NULL || !yyjson_is_obj(value))
             continue;
@@ -671,10 +673,10 @@ void load_font(const char* name, Bool persistent) {
             glyph.texture_key = tkey;
 
             yyjson_val* jarray = yyjson_obj_get(gvalue, "bounds");
-            glyph.bounds[0] = (float)yyjson_get_num(yyjson_arr_get(jarray, 0));
-            glyph.bounds[1] = (float)yyjson_get_num(yyjson_arr_get(jarray, 1));
-            glyph.bounds[2] = (float)yyjson_get_num(yyjson_arr_get(jarray, 2));
-            glyph.bounds[3] = (float)yyjson_get_num(yyjson_arr_get(jarray, 3));
+            glyph.bounds[0] = (float)yyjson_get_num(yyjson_arr_get(jarray, 0)) / size;
+            glyph.bounds[1] = (float)yyjson_get_num(yyjson_arr_get(jarray, 1)) / size;
+            glyph.bounds[2] = (float)yyjson_get_num(yyjson_arr_get(jarray, 2)) / size;
+            glyph.bounds[3] = (float)yyjson_get_num(yyjson_arr_get(jarray, 3)) / size;
 
             const float width = (float)texture->size[0], height = (float)texture->size[1];
             jarray = yyjson_obj_get(gvalue, "uvs");
@@ -683,7 +685,7 @@ void load_font(const char* name, Bool persistent) {
             glyph.uvs[2] = (float)yyjson_get_num(yyjson_arr_get(jarray, 2)) / width;
             glyph.uvs[3] = (float)yyjson_get_num(yyjson_arr_get(jarray, 3)) / height;
 
-            glyph.advance = (float)yyjson_get_num(yyjson_obj_get(gvalue, "advance"));
+            glyph.advance = (float)yyjson_get_num(yyjson_obj_get(gvalue, "advance")) / size;
 
             TinyMapPut(&font.glyphs, gid, &glyph, sizeof(glyph));
         }

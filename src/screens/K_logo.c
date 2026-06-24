@@ -1,3 +1,8 @@
 #include "K_interface.h"
 
-const ScreenTable TAB_LOGO = {};
+void start() {
+    WARN("There's no logo yet!");
+    set_screen(SCR_MENU, NULL);
+}
+
+const ScreenTable TAB_LOGO = {.start = start};

@@ -11,6 +11,8 @@
 #define MAX_PROMPT 100
 #define MAX_LINES 5
 
+#define CHAT_SIZE 24
+
 static char prompt[MAX_PROMPT] = {0};
 static struct {
     Uint8 color[4];
@@ -98,31 +100,35 @@ void draw_chat() {
     batch_reset();
     batch_align(B_BOTTOM_LEFT);
 
-    float y = SCREEN_HEIGHT - 48.f;
+    float y = SCREEN_HEIGHT - 24.f - CHAT_SIZE;
     for (size_t i = 0; i < MAX_LINES; i++) {
         const char* lstr = lines[i].str;
-        if (lstr == NULL || (!typing && lines[i].time <= 0))
+        if (lstr == NULL)
             break;
 
-        const float x = 24.f;
+        const float lh = string_height_wrap("main", CHAT_SIZE, lstr, SCREEN_WIDTH - 32.f);
+        if (!typing && (lines[i].time <= 0 || (y - lh) < (SCREEN_HEIGHT - 24.f - ((MAX_LINES + 1) * CHAT_SIZE))))
+            break;
+
         const Uint8* color = lines[i].color;
-        const float a = (typing ? 1.f : (SDL_min(lines[i].time, (float)TICKRATE) / (float)TICKRATE)) * (float)color[3];
+        const float a
+            = (typing ? 1.f : (0.6f * (SDL_min(lines[i].time, (float)TICKRATE) / (float)TICKRATE))) * (float)color[3];
 
-        batch_pos(B_XY(x, y));
+        batch_pos(B_XY(16.f, y));
         batch_color(B_RGBA(color[0], color[1], color[2], a));
-        batch_string_wrap("main", 12.f, lstr, SCREEN_WIDTH - 48.f);
+        batch_string_wrap("main", CHAT_SIZE, lstr, SCREEN_WIDTH - 32.f);
 
-        y -= string_height_wrap("main", 12.f, lstr, SCREEN_WIDTH - 48.f);
+        y -= lh;
     }
 
     if (typing) {
         const char* lstr = fmt("%s%s", prompt, caret(TRUE));
-        const float xmax = SCREEN_WIDTH - 48.f - string_width("main", 12.f, prompt);
-        const float x = SDL_min(24.f, xmax), y = SCREEN_HEIGHT - 32.f;
+        const float xmax = SCREEN_WIDTH - 32.f - string_width("main", CHAT_SIZE, prompt);
+        const float x = SDL_min(16.f, xmax);
 
-        batch_pos(B_XY(x, y));
+        batch_pos(B_XY(x, SCREEN_HEIGHT - 16.f));
         batch_color(B_WHITE);
-        batch_string("main", 12.f, lstr);
+        batch_string("main", CHAT_SIZE, lstr);
     }
 
     set_shader(SH_MAIN);
