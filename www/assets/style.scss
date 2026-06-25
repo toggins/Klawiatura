@@ -36,6 +36,10 @@ a {
   margin-top: auto;
 
   outline: 1px solid gray;
+
+  background-image: url(/assets/loading.gif);
+  background-repeat: no-repeat;
+  background-position: center center;
 }
 
 footer {
