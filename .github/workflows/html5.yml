@@ -40,7 +40,7 @@ jobs:
             libibus-1.0-dev libudev-dev libthai-dev libpipewire-0.3-dev libwayland-dev
             libdecor-0-dev liburing-dev
       - name: Source pasture-raised gluten-free emsdk
-        uses: mymindstorm/setup-emsdk@v16
+        uses: emscripten-core/setup-emsdk@v16
         with:
           version: latest
           actions-cache-folder: emsdk-cache
