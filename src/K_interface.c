@@ -5,6 +5,7 @@
 #include "K_input.h"
 #include "K_interface.h"
 #include "K_locale.h"
+#include "K_string.h"
 #include "K_tick.h"
 #include "K_video.h"
 
@@ -49,7 +50,11 @@ void interface_init() {
     POPULATE_UIS_TABLE();
 
     load_font("main", TRUE);
-    set_screen(SCR_LOGO, NULL);
+    load_sound("ui/switch", TRUE);
+    load_sound("ui/select", TRUE);
+    load_sound("ui/toggle", TRUE);
+
+    set_screen(SCR_MENU, NULL);
 }
 
 static void destroy_ui(UI*);
@@ -326,9 +331,65 @@ Bool tick_catalog(Catalog* catalog, UI* in) {
     return (!kb_pressed(KB_PAUSE) || set_menu(catalog, menus[catalog->current].from));
 }
 
-void draw_options(const Option* options, size_t curopt, float y) {}
+void draw_options(const Option* options, size_t curopt) {
+    batch_reset();
 
-void draw_catalog(const Catalog* catalog) {}
+    float oy = 48.f;
+    for (size_t i = 0; i < MAX_OPTIONS; i++) {
+        const Option* option = &options[i];
+        if (option->name == NULL && option->fmt == NULL) {
+            oy += 24.f;
+            continue;
+        }
+
+        const char* ostr = (option->fmt == NULL) ? LFMT(option->name) : option->fmt(i);
+        const Uint8 a = (option->disabled != NULL && option->disabled()) ? 100 : 255;
+
+        batch_pos(B_XY(32.f, oy));
+        batch_color(B_ALPHA(a));
+        batch_string("main", 24.f, ostr);
+
+        oy += 24.f;
+    }
+
+    const Option* selopt = &options[curopt];
+    if ((selopt->name == NULL && selopt->fmt == NULL) || (selopt->disabled != NULL && selopt->disabled()))
+        return;
+
+    batch_pos(B_XY(28.f + (SDL_sinf(totalticks() * 0.2f) * 4.f), 48.f + (curopt * 24.f)));
+    batch_color(B_WHITE);
+    batch_align(B_TOP_RIGHT);
+    batch_string("main", 24.f, ">");
+}
+
+void draw_catalog(const Catalog* catalog) {
+    const Menu* menu = &catalog->menus[catalog->current];
+    if (menu->draw != NULL && !menu->draw())
+        return;
+
+    if (menu->name != NULL || menu->fmt != NULL) {
+        const char* mstr = (menu->fmt == NULL) ? LFMT(menu->name) : menu->fmt();
+
+        batch_reset();
+        batch_pos(B_XY(32.f, 16.f));
+        batch_color(B_RGB(255, 160, 160));
+        batch_string("main", 24.f, mstr);
+    }
+
+    draw_options(catalog->options[catalog->current], menu->option);
+
+    if (menu->from > 0 || topui() != NULL) {
+        batch_reset();
+        batch_pos(B_XY(SCREEN_WIDTH - 16.f, SCREEN_HEIGHT - 16.f));
+        batch_color(B_ALPHA(153));
+        batch_align(B_BOTTOM_RIGHT);
+        batch_string("main", 24.f,
+            (typing_what() == NULL || typing_in_chat())
+                ? fmt("[%s] %s", kb_label(KB_PAUSE), LFMT((scanning_what() == NULL_KEYBIND) ? "back" : "cancel"))
+                : fmt("[%s] %s\n[%s] %s", SDL_GetScancodeName(SDL_SCANCODE_RETURN), LFMT("submit"),
+                      SDL_GetScancodeName(SDL_SCANCODE_ESCAPE), LFMT("cancel")));
+    }
+}
 
 Bool always_disabled() {
     return TRUE;

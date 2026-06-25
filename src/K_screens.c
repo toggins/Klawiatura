@@ -7,7 +7,6 @@
 void POPULATE_SCREENS_TABLE() {
     extern const ScreenTable* SCREENS[SCR_SIZE];
 
-    SCREEN(LOGO);
     SCREEN(MENU);
     SCREEN(GAME);
 

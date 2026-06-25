@@ -112,7 +112,7 @@ void draw_chat() {
 
         const Uint8* color = lines[i].color;
         const float a
-            = (typing ? 1.f : (0.6f * (SDL_min(lines[i].time, (float)TICKRATE) / (float)TICKRATE))) * (float)color[3];
+            = (typing ? 1.f : (0.75f * (SDL_min(lines[i].time, (float)TICKRATE) / (float)TICKRATE))) * (float)color[3];
 
         batch_pos(B_XY(16.f, y));
         batch_color(B_RGBA(color[0], color[1], color[2], a));
