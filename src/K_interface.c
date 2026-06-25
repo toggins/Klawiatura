@@ -1,3 +1,5 @@
+#include <SDL3/SDL_platform_defines.h>
+
 #include "K_audio.h"
 #include "K_chat.h"
 #include "K_cmd.h"
@@ -134,11 +136,23 @@ iu_dont_change:
         UI_CALL(top_ui, draw);
     draw_chat();
 
-    if (to_screen != SCR_NULL) {
+    if (to_screen == SCR_NULL) {
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+        if (!window_focused()) {
+            batch_reset();
+            batch_color(B_RGBA(0, 0, 0, 128));
+            batch_rectangle(NULL, B_SCREEN);
+            batch_pos(B_HALF_SCREEN);
+            batch_color(B_WHITE);
+            batch_align(B_CENTER);
+            batch_string("main", 24.f, LFMT("click_to_focus"));
+        }
+#endif
+    } else {
         batch_reset();
         batch_pos(B_HALF_SCREEN);
         batch_align(B_CENTER);
-        batch_string("main", 16.f, "LOADING");
+        batch_string("main", 24.f, "LOADING");
     }
 
     stop_drawing();
