@@ -109,7 +109,14 @@ void video_init(Bool force_shader) {
 #endif
 
     // Window
-    WINDOW = SDL_CreateWindow(GAME_NAME, window_width, window_height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    WINDOW = SDL_CreateWindow(
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+        NULL
+#else
+        GAME_NAME
+#endif
+        ,
+        window_width, window_height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     EXPECT(WINDOW, "Failed to create window: %s", SDL_GetError());
 
     // OpenGL
