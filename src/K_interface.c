@@ -14,10 +14,10 @@
             SCREENS[(type)]->fn();                                                                                     \
     } while (FALSE)
 
-#define SCREEN_CALL(type, fn, val)                                                                                     \
+#define SCREEN_CALL(type, fn, ...)                                                                                     \
     do {                                                                                                               \
         if (SCREENS[(type)] != NULL && SCREENS[(type)]->fn != NULL)                                                    \
-            SCREENS[(type)]->fn(val);                                                                                  \
+            SCREENS[(type)]->fn(__VA_ARGS__);                                                                          \
     } while (FALSE)
 
 #define UI_CALL_STATIC(type, fn)                                                                                       \
@@ -29,7 +29,7 @@
 #define UI_CALL(ui, fn)                                                                                                \
     do {                                                                                                               \
         if (UIS[(ui)->type] != NULL && UIS[(ui)->type]->fn != NULL)                                                    \
-            UIS[(ui)->type]->fn(ui);                                                                                   \
+            UIS[(ui)->type]->fn((ui));                                                                                 \
     } while (FALSE)
 
 // `extern` in S_screens.c
@@ -53,6 +53,7 @@ void interface_init() {
 }
 
 static void destroy_ui(UI*);
+
 void interface_update() {
     if (to_screen == SCR_NULL)
         goto iu_dont_change;

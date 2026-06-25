@@ -2,7 +2,7 @@
 #include "K_interface.h"
 #include "K_video.h"
 
-static void start() {
+static void start(const char*) {
     load_track("title", FALSE);
 
     play_generic_track(GTS_MAIN, "title", PLAY_LOOPING);

@@ -1,6 +1,6 @@
 #include "K_interface.h"
 
-void start() {
+void start(const char*) {
     WARN("There's no logo yet!");
     set_screen(SCR_MENU, NULL);
 }

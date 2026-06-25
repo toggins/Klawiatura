@@ -198,7 +198,8 @@ if(EMSCRIPTEN)
     target_link_options(${PROJECT_NAME} PRIVATE
         "SHELL:-s MIN_WEBGL_VERSION=2"
         "SHELL:-s MAX_WEBGL_VERSION=2"
-        "SHELL:-s ALLOW_MEMORY_GROWTH=1")
+        "SHELL:-s ALLOW_MEMORY_GROWTH=1"
+        "SHELL:-s ASYNCIFY=1")
 endif()
 
 target_include_directories(${PROJECT_NAME}
