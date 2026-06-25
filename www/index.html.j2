@@ -20,22 +20,20 @@
             box-sizing: border-box;
         }
 
-        #root {
+        body {
+            display: flex;
             width: 100vw;
             height: 100vh;
+        }
 
-            display: flex;
-            flex-flow: column nowrap;
-            align-items: center;
-            justify-content: center;
+        #canvas {
+            margin: auto;
         }
     </style>
 </head>
 
 <body>
-    <div id="root">
-        <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-    </div>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
     <script type="text/javascript">
         var Module = {
