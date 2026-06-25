@@ -30,15 +30,20 @@ jobs:
       - name: Install dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          version: 1.0
+          version: 1.1
           packages: >-
-            python3-jinja2 emscripten nodejs htmlmin
+            python3-jinja2 nodejs
             libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev
             libsndio-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev
             libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev libdrm-dev
             libgbm-dev libgl1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev
             libibus-1.0-dev libudev-dev libthai-dev libpipewire-0.3-dev libwayland-dev
             libdecor-0-dev liburing-dev
+      - name: Source pasture-raised gluten-free emsdk
+        uses: mymindstorm/setup-emsdk@v16
+        with:
+          version: latest
+          actions-cache-folder: emsdk-cache
       - name: Cache build dir
         id: cache-build
         uses: actions/cache@v6
