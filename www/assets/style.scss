@@ -1,0 +1,43 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 9pt;
+  line-height: 1.5;
+  color: white;
+  text-align: center;
+
+  background-color: #2f2f2f;
+}
+
+a {
+  color: #649ec5;
+}
+
+#canvas {
+  width: fit-content;
+  height: fit-content;
+  margin-top: auto;
+
+  border: 1px solid gray;
+}
+
+footer {
+  margin-top: auto;
+}
