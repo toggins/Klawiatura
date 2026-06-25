@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   publish:
-    name: Build binaries for ${{ matrix.name }}
+    name: Build the HTML5 dist
     runs-on: ubuntu-24.04
     environment:
       name: github-pages
@@ -21,7 +21,7 @@ jobs:
       pages: write
       id-token: write
     env:
-      CACHE_BUST: 1
+      CACHE_BUST: 2
     steps:
       - name: Checkout
         uses: actions/checkout@v7
