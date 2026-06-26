@@ -1,3 +1,16 @@
 {
-    "title": "Mario Together"
+    // Options
+    "opt_singleplayer": "Singleplayer",
+    "opt_multiplayer": "Multiplayer",
+    "opt_replays": "Replays",
+    "opt_options": "Options",
+    "opt_exit": "Exit",
+    "opt_no_replays": "You don't have any replays yet!",
+    "opt_how_to_record": "Press {0} to record later.",
+
+    // Misc
+    "credits": "DISCLAIMER:  This is a free, open-source project not created for any sort of profit. We do not condone any commercial use of this project. Mario and related characters (c) Nintendo.      CREDITS:  [MARIO FOREVER] Michal Gdaniec, Maurycy Zarzycki, Lukham    [PROGRAMMING] toggins, nonk    [BETA TESTING] Collin, CST1229, Jaydex, LooPeR231, Mightcer, miyameon, Nerton17, ReflexGURU, SerafimGWS, Usered    [SPECIAL THANKS] HeatXD, Xykijun      For a better experience, play Mario Forever: Community Edition at mfce.rnx.su!",
+    "back": "Back",
+    "submit": "Submit",
+    "cancel": "Cancel"
 }

@@ -538,7 +538,6 @@ void load_sprite(const char* name, Bool persistent) {
     if (name == NULL || get_sprite(name) != NULL)
         return;
 
-    Sprite sprite = {0};
     const char* tname = NULL;
 
     yyjson_doc* json = load_data_json(fmt("textures/%s.json", name));
@@ -572,8 +571,12 @@ void load_sprite(const char* name, Bool persistent) {
         texture->base.persistent |= persistent;
     }
 
+    Sprite sprite = {0};
+
     sprite.base.name = SDL_strdup(name);
     EXPECT(sprite.base.name, "Failed to allocate name for sprite \"%s\"", name);
+    sprite.base.persistent = persistent;
+
     sprite.texture_key = tkey;
 
     yyjson_val* jarray = yyjson_obj_get(root, "size");
@@ -901,7 +904,7 @@ void batch_reset_hard() {
     batch_texture(blank_texture);
     batch_tile(B_NO_TILE);
     batch_filter(TRUE);
-    batch_alpha_test(0.5f);
+    batch_alpha_test(0.f);
     batch_stencil(B_NO_STENCIL);
     batch_blend(BM_NORMAL);
     batch_test_depth(TRUE);

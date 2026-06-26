@@ -61,6 +61,7 @@ ClientInfo CLIENT = {
     .server = "",
     .lobby_limit = MAX_PEERS,
     .input_delay = 2,
+    .texture_filter = TRUE,
     .show_hud = TRUE,
 };
 

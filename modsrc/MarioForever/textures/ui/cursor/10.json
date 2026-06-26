@@ -1,0 +1,6 @@
+{
+    "texture": "ui/cursor",
+    "size": [30, 28],
+    "offset": [17, 16],
+    "uvs": [65, 1, 95, 29]
+}

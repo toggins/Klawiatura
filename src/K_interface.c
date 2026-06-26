@@ -46,12 +46,16 @@ const UITable* UIS[UI_SIZE] = {NULL};
 
 static UI *root_ui = NULL, *top_ui = NULL;
 
+static Uint8 cursor_frame = 0;
+
 void interface_init() {
     extern void POPULATE_SCREENS_TABLE(), POPULATE_UIS_TABLE();
     POPULATE_SCREENS_TABLE();
     POPULATE_UIS_TABLE();
 
+    load_sprite_num("ui/cursor/%u", 12, TRUE);
     load_font("main", TRUE);
+    load_font("header", TRUE);
     load_sound("ui/switch", TRUE);
     load_sound("ui/select", TRUE);
     load_sound("ui/toggle", TRUE);
@@ -93,6 +97,15 @@ iu_dont_change:
     for (new_frame(); got_ticks(); next_tick()) {
         // Chat
         chat_update();
+
+        // Cursor
+        if (cursor_frame > 0) {
+            cursor_frame += 6;
+            if (cursor_frame >= 120)
+                cursor_frame = 0;
+        } else if (SDL_fmodf(totalticks(), 5.f) < 1.f && SDL_rand(20) == 10) {
+            ++cursor_frame;
+        }
 
         // UI
         UIFlags should_block = 0;
@@ -345,35 +358,34 @@ Bool tick_catalog(Catalog* catalog, UI* in) {
     return (!kb_pressed(KB_PAUSE) || set_menu(catalog, menus[catalog->current].from));
 }
 
-void draw_options(const Option* options, size_t curopt) {
+void draw_options(const Option* options, size_t curopt, float y) {
     batch_reset();
+    batch_align(B_ALIGN(FA_CENTER, FA_TOP));
 
-    float oy = 48.f;
+    float oy = y;
     for (size_t i = 0; i < MAX_OPTIONS; i++) {
         const Option* option = &options[i];
         if (option->name == NULL && option->fmt == NULL) {
-            oy += 24.f;
+            oy += 32.f;
             continue;
         }
 
         const char* ostr = (option->fmt == NULL) ? LFMT(option->name) : option->fmt(i);
-        const Uint8 a = (option->disabled != NULL && option->disabled()) ? 100 : 255;
+        const Bool disabled = option->disabled != NULL && option->disabled();
 
-        batch_pos(B_XY(32.f, oy));
-        batch_color(B_ALPHA(a));
-        batch_string("main", 24.f, ostr);
+        batch_pos(B_XY(HALF_SCREEN_WIDTH, oy));
+        batch_colors(disabled ? B_MF_GRAY : ((i == curopt) ? B_MF_PINK : B_MF_WHITE));
+        batch_string("header", 32.f, ostr);
 
-        oy += 24.f;
+        if (i == curopt && !disabled) {
+            batch_pos(
+                B_XY(HALF_SCREEN_WIDTH - (float)((int)(string_width("header", 32.f, ostr) * 0.5f)) - 16.f, oy + 16.f));
+            batch_color(B_WHITE);
+            batch_sprite(fmt("ui/cursor/%u", cursor_frame / 10));
+        }
+
+        oy += 32.f;
     }
-
-    const Option* selopt = &options[curopt];
-    if ((selopt->name == NULL && selopt->fmt == NULL) || (selopt->disabled != NULL && selopt->disabled()))
-        return;
-
-    batch_pos(B_XY(28.f + (SDL_sinf(totalticks() * 0.2f) * 4.f), 48.f + (curopt * 24.f)));
-    batch_color(B_WHITE);
-    batch_align(B_TOP_RIGHT);
-    batch_string("main", 24.f, ">");
 }
 
 void draw_catalog(const Catalog* catalog) {
@@ -385,19 +397,20 @@ void draw_catalog(const Catalog* catalog) {
         const char* mstr = (menu->fmt == NULL) ? LFMT(menu->name) : menu->fmt();
 
         batch_reset();
-        batch_pos(B_XY(32.f, 16.f));
-        batch_color(B_RGB(255, 160, 160));
-        batch_string("main", 24.f, mstr);
+        batch_pos(B_XY(HALF_SCREEN_WIDTH, 16.f));
+        batch_colors(B_MF_YELLOW);
+        batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+        batch_string("header", 32.f, mstr);
     }
 
-    draw_options(catalog->options[catalog->current], menu->option);
+    draw_options(catalog->options[catalog->current], menu->option, 56.f);
 
     if (menu->from > 0 || topui() != NULL) {
         batch_reset();
-        batch_pos(B_XY(SCREEN_WIDTH - 16.f, SCREEN_HEIGHT - 16.f));
-        batch_color(B_ALPHA(153));
-        batch_align(B_BOTTOM_RIGHT);
-        batch_string("main", 24.f,
+        batch_pos(B_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 16.f));
+        batch_colors(B_MF_BLUE);
+        batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+        batch_string("header", 32.f,
             (typing_what() == NULL || typing_in_chat())
                 ? fmt("[%s] %s", kb_label(KB_PAUSE), LFMT((scanning_what() == NULL_KEYBIND) ? "back" : "cancel"))
                 : fmt("[%s] %s\n[%s] %s", SDL_GetScancodeName(SDL_SCANCODE_RETURN), LFMT("submit"),
