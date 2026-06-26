@@ -25,8 +25,9 @@ a {
 }
 
 #canvas {
-  width: 640px;
-  height: 480px;
+  aspect-ratio: 640 / 480;
+  width: calc(min(640px, 100%));
+  height: auto;
 
   outline: 1px solid gray;
 
