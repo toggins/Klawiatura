@@ -1,4 +1,5 @@
 #include <SDL3/SDL_clipboard.h>
+#include <SDL3/SDL_platform_defines.h>
 
 #include "K_chat.h"
 #include "K_file.h"
@@ -88,10 +89,12 @@ static void stop_typing_fr(Bool confirmed) {
 }
 
 void input_keydown(SDL_KeyboardEvent event) {
+#ifndef SDL_PLATFORM_EMSCRIPTEN
     if ((event.mod & SDL_KMOD_ALT) && event.scancode == SDL_SCANCODE_RETURN) {
         set_fullscreen(!get_fullscreen());
         return;
     }
+#endif
 
     if (scanning_what() != NULL_KEYBIND) {
         if (event.scancode == SDL_SCANCODE_ESCAPE) {
