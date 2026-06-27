@@ -33,11 +33,7 @@ a {
 }
 
 #canvas {
-  aspect-ratio: 640 / 480;
-  width: calc(min(640px, 100%));
-  height: auto;
   margin: 0 auto;
-
   outline: 1px solid gray;
 
   background-image: url(/assets/loading.gif);
