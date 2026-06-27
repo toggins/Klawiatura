@@ -55,5 +55,6 @@
     "credits": "DISCLAIMER:  This is a free, open-source project not created for any sort of profit. We do not condone any commercial use of this project. Mario and related characters (c) Nintendo.      CREDITS:  [MARIO FOREVER] Michal Gdaniec, Maurycy Zarzycki, Lukham    [PROGRAMMING] toggins, nonk    [BETA TESTING] Collin, CST1229, Jaydex, LooPeR231, Mightcer, miyameon, Nerton17, ReflexGURU, SerafimGWS, Usered    [SPECIAL THANKS] HeatXD, Xykijun      For a better experience, play Mario Forever: Community Edition at mfce.rnx.su!",
     "back": "Back",
     "submit": "Submit",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "click_to_focus": "Click here to focus"
 }
