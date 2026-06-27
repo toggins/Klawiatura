@@ -356,7 +356,7 @@ static void framerate_cycle(Sint8 cycle) {
 
     const int fps = get_framerate();
     if (cycle >= 0) {
-        for (size_t i = 0; i < len; i++) {
+        for (int i = 0; i < len; i++) {
             if (fps < ranges[i]) {
                 set_framerate(ranges[i]);
                 return;
@@ -364,7 +364,7 @@ static void framerate_cycle(Sint8 cycle) {
         }
         set_framerate(ranges[0]);
     } else {
-        for (size_t i = len - 2; i >= 0; i--) {
+        for (int i = (int)len - 2; i >= 0; i--) {
             if (fps > ranges[i]) {
                 set_framerate(ranges[i]);
                 return;
