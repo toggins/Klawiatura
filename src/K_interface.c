@@ -60,7 +60,7 @@ void interface_init() {
     load_sound("ui/select", TRUE);
     load_sound("ui/toggle", TRUE);
 
-    set_screen(SCR_MENU, NULL);
+    set_screen(SCR_LOGO, NULL);
 }
 
 static void destroy_ui(UI*);

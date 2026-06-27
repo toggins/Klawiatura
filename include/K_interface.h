@@ -17,6 +17,7 @@ typedef Uint8 ScreenType;
 enum {
     SCR_NULL,
 
+    SCR_LOGO,
     SCR_MENU,
     SCR_MAP,
     SCR_GAME,
