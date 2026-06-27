@@ -290,6 +290,8 @@ Bool previous_menu(Catalog* catalog) {
 }
 
 void tick_options(Catalog* catalog, Option* options, size_t* curopt) {
+    const size_t oldopt = *curopt;
+
 #define CHECKOPT                                                                                                       \
     const Option* option = &options[*curopt];                                                                          \
     if ((option->name == NULL && option->fmt == NULL) || (option->disabled != NULL && option->disabled())) {           \
@@ -315,13 +317,19 @@ void tick_options(Catalog* catalog, Option* options, size_t* curopt) {
         CHECKOPT;
         --change;
     }
+
 #undef CHECKOPT
+
+    if (oldopt != *curopt)
+        play_generic_sound("ui/switch", 0);
 
     const Sint8 cycle = (Sint8)((Sint8)kb_repeated(KB_UI_RIGHT) - (Sint8)kb_repeated(KB_UI_LEFT));
     if (cycle != 0) {
         const Option* option = &options[*curopt];
-        if ((option->disabled == NULL || !option->disabled()) && option->cycle != NULL)
+        if ((option->disabled == NULL || !option->disabled()) && option->cycle != NULL) {
             option->cycle(cycle);
+            play_generic_sound("ui/toggle", 0);
+        }
     }
 
     if (kb_pressed(KB_UI_ENTER)) {
@@ -336,6 +344,8 @@ void tick_options(Catalog* catalog, Option* options, size_t* curopt) {
 
             if (option->prompt != NULL)
                 start_typing(option->prompt, option->prompt_size, option->submit);
+
+            play_generic_sound("ui/select", 0);
         }
     }
 }
@@ -355,10 +365,21 @@ Bool tick_catalog(Catalog* catalog, UI* in) {
     Option* options = catalog->options[catalog->current];
     tick_options(catalog, options, &menus[catalog->current].option);
 
-    return (!kb_pressed(KB_PAUSE) || set_menu(catalog, menus[catalog->current].from));
+    if (kb_pressed(KB_PAUSE)) {
+        if (set_menu(catalog, menus[catalog->current].from)) {
+            play_generic_sound("ui/select", 0);
+        } else if (in != NULL) {
+            play_generic_sound("ui/select", 0);
+            return FALSE;
+        }
+    }
+
+    return TRUE;
 }
 
 void draw_options(const Option* options, size_t curopt, float y) {
+    static const float OPTION_WRAP = SCREEN_WIDTH - 64.f;
+
     batch_reset();
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
 
@@ -375,16 +396,18 @@ void draw_options(const Option* options, size_t curopt, float y) {
 
         batch_pos(B_XY(HALF_SCREEN_WIDTH, oy));
         batch_colors(disabled ? B_MF_GRAY : ((i == curopt) ? B_MF_PINK : B_MF_WHITE));
-        batch_string("header", 32.f, ostr);
+        batch_string_wrap("header", 32.f, ostr, OPTION_WRAP);
 
+        const float oh = string_height_wrap("header", 32.f, ostr, OPTION_WRAP);
         if (i == curopt && !disabled) {
-            batch_pos(
-                B_XY(HALF_SCREEN_WIDTH - (float)((int)(string_width("header", 32.f, ostr) * 0.5f)) - 16.f, oy + 16.f));
+            batch_pos(B_XY(
+                HALF_SCREEN_WIDTH - (float)((int)(string_width_wrap("header", 32.f, ostr, OPTION_WRAP) * 0.5f)) - 16.f,
+                oy + (oh * 0.5f)));
             batch_color(B_WHITE);
             batch_sprite(fmt("ui/cursor/%u", cursor_frame / 10));
         }
 
-        oy += 32.f;
+        oy += oh;
     }
 }
 

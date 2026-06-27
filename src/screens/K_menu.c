@@ -250,7 +250,7 @@ static void replay_option() {
 }
 
 static void options_option() {
-    // TODO
+    create_ui(UI_OPTIONS, NULL);
 }
 
 // ======
@@ -279,7 +279,8 @@ static void tick() {
 static void draw_ui() {
     batch_reset();
 
-    if (CATALOG.current == MEN_MAIN) {
+    const UI* ui = topui();
+    if (CATALOG.current == MEN_MAIN && (ui == NULL || ui->type != UI_OPTIONS)) {
         batch_sprite("ui/backgrounds/main");
         batch_pos(B_XY(HALF_SCREEN_WIDTH, 116.f));
         batch_sprite("logos/mario_forever");
@@ -287,7 +288,7 @@ static void draw_ui() {
         batch_sprite("ui/backgrounds/options");
     }
 
-    if (topui())
+    if (ui != NULL)
         return;
 
     draw_catalog(&CATALOG);
