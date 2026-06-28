@@ -1076,10 +1076,11 @@ static float string_width_fast(const Font* font, float size, const char* str) {
         if (glyph == NULL)
             continue;
 
-        if (bytes > 0)
-            cx += glyph->advance * xscale;
-        const float extend = cx + (glyph->bounds[2] * xscale);
-        width = SDL_max(width, extend);
+        const float advance = glyph->advance * xscale, extend = glyph->bounds[2] * xscale;
+        const float should_extend = cx + SDL_max(advance, extend);
+        width = SDL_max(width, should_extend);
+
+        cx += advance;
     }
 
     return width;
@@ -1203,11 +1204,11 @@ static float string_width_wrap_fast(const Font* font, float size, const char* st
         size_t advbytes = bytes - i;
         const size_t last_advbytes = advbytes;
 
-        size_t gid = SDL_StepUTF8(&adv, &advbytes);
+        const size_t gid = SDL_StepUTF8(&adv, &advbytes);
         const Bool space = SDL_isspace((int)gid);
 
-        Glyph* glyph = (gid == '\n') ? NULL : (Glyph*)TinyMapGet(&font->glyphs, space ? ' ' : gid);
-        float gwidth = (glyph == NULL) ? 0.f : (glyph->advance * xscale);
+        const Glyph* glyph = (gid == '\n') ? NULL : (Glyph*)TinyMapGet(&font->glyphs, space ? ' ' : gid);
+        float gadv = (glyph == NULL) ? 0.f : (glyph->advance * xscale);
 
         i += (Sint32)(last_advbytes - advbytes) - 1;
 
@@ -1215,7 +1216,7 @@ static float string_width_wrap_fast(const Font* font, float size, const char* st
             if (space)
                 end_pos = i;
 
-            if ((cx + gwidth) > wrap) {
+            if ((cx + gadv) > wrap) {
                 if (end_pos <= 0)
                     end_pos = i;
                 if (i == end_pos)
@@ -1233,7 +1234,7 @@ static float string_width_wrap_fast(const Font* font, float size, const char* st
             if (!measure) {
                 cx = 0.f;
                 i = start_pos;
-                gwidth = 0.f;
+                gadv = 0.f;
             }
         } else if (i == end_pos) {
             cx = 0.f;
@@ -1242,10 +1243,12 @@ static float string_width_wrap_fast(const Font* font, float size, const char* st
             measure = TRUE;
         }
 
-        if (cx > 0.f || !space)
-            cx += gwidth;
+        const float extend = (glyph == NULL) ? 0.f : (glyph->bounds[2] * xscale);
+        const float should_extend = cx + SDL_max(gadv, extend);
+        width = SDL_max(width, should_extend);
 
-        width = SDL_max(width, cx);
+        if (cx > 0.f || !space)
+            cx += gadv;
     }
 
     return width;
@@ -1273,10 +1276,10 @@ static float string_height_wrap_fast(const Font* font, float size, const char* s
         size_t advbytes = bytes - i;
         const size_t last_advbytes = advbytes;
 
-        size_t gid = SDL_StepUTF8(&adv, &advbytes);
+        const size_t gid = SDL_StepUTF8(&adv, &advbytes);
         const Bool space = SDL_isspace((int)gid);
 
-        Glyph* glyph = (gid == '\n') ? NULL : (Glyph*)TinyMapGet(&font->glyphs, space ? ' ' : gid);
+        const Glyph* glyph = (gid == '\n') ? NULL : (Glyph*)TinyMapGet(&font->glyphs, space ? ' ' : gid);
         float gwidth = (glyph == NULL) ? 0.f : (glyph->advance * xscale);
 
         i += (Sint32)(last_advbytes - advbytes) - 1;
@@ -1336,7 +1339,7 @@ void batch_string_wrap(const char* name, float size, const char* str, float wrap
     // Origin
     float ox = batch.pos[0] - (batch.offset[0] * batch.scale[0]);
     float oy = batch.pos[1] - (batch.offset[1] * batch.scale[1]);
-    float oz = batch.pos[2] - batch.offset[2];
+    const float oz = batch.pos[2] - batch.offset[2];
 
     // Horizontal alignment
     switch (batch.align[0]) {
@@ -1375,10 +1378,10 @@ void batch_string_wrap(const char* name, float size, const char* str, float wrap
         size_t advbytes = bytes - i;
         const size_t last_advbytes = advbytes;
 
-        size_t gid = SDL_StepUTF8(&adv, &advbytes);
+        const size_t gid = SDL_StepUTF8(&adv, &advbytes);
         const Bool space = SDL_isspace((int)gid);
 
-        Glyph* glyph = (gid == '\n') ? NULL : (Glyph*)TinyMapGet(&font->glyphs, space ? ' ' : gid);
+        const Glyph* glyph = (gid == '\n') ? NULL : (Glyph*)TinyMapGet(&font->glyphs, space ? ' ' : gid);
         float gwidth = (glyph == NULL) ? 0.f : (glyph->advance * xscale);
         if (glyph != NULL) {
             const Texture* texture = get_texture_key(glyph->texture_key);
