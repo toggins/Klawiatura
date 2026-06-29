@@ -1,9 +1,16 @@
 #include "K_game.h"
+#include "K_locale.h"
 #include "K_log.h"
 #include "K_net.h" // IWYU pragma: export
 
-// `extern` in S_actors.c
+// `extern` in K_actors.c
 const GameActorTable* ACTORS[ACT_SIZE] = {0};
+
+static const GameCharacter CHARACTERS[CHR_SIZE] = {
+    [CHR_MARIO] = {
+        .name = "Mario",
+    },
+};
 
 static PlayerID local_player = NULL_PLAYER, view_player = NULL_PLAYER;
 
@@ -19,6 +26,43 @@ static char boot_reason[256] = "";
 void game_init() {
     extern void POPULATE_ACTORS_TABLE();
     POPULATE_ACTORS_TABLE();
+}
+
+const GameCharacter* get_character(PlayerCharacter cid) {
+    return (cid < 0 || cid >= CHR_SIZE) ? NULL : &CHARACTERS[cid];
+}
+
+const char* get_character_name(PlayerCharacter cid) {
+    const GameCharacter* character = get_character(cid);
+    return (character == NULL) ? NULL : character->name;
+}
+
+const char* get_powerup_name(PlayerPowerup powerup) {
+    switch (powerup) {
+    default:
+        return LFMT("val_none");
+    case POW_SUPER_MUSHROOM:
+        return LFMT("val_super_mushroom");
+    case POW_FIRE_FLOWER:
+        return LFMT("val_fire_flower");
+    case POW_BEETROOT:
+        return LFMT("val_beetroot");
+    case POW_GREEN_LUI:
+        return LFMT("val_green_lui");
+    }
+}
+
+Sint8 get_powerup_cost(PlayerPowerup powerup) {
+    switch (powerup) {
+    default:
+        return 0;
+    case POW_SUPER_MUSHROOM:
+        return 1;
+    case POW_FIRE_FLOWER:
+    case POW_BEETROOT:
+    case POW_GREEN_LUI:
+        return 2;
+    }
 }
 
 void poll_game() {

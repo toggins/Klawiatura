@@ -35,13 +35,13 @@
             UIS[(ui)->type]->fn((ui));                                                                                 \
     } while (FALSE)
 
-// `extern` in S_screens.c
+// `extern` in K_screens.c
 const ScreenTable* SCREENS[SCR_SIZE] = {NULL};
 
 static ScreenType current_screen = SCR_NULL, to_screen = SCR_NULL;
 static const char* to_secret = NULL;
 
-// `extern` in S_uis.c
+// `extern` in K_uis.c
 const UITable* UIS[UI_SIZE] = {NULL};
 
 static UI *root_ui = NULL, *top_ui = NULL;

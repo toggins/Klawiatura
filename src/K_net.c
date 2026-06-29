@@ -139,6 +139,9 @@ void net_init() {
     NutBlast_OnPeerMetadataChanged(on_peer_data_changed);
 
     clear_peer_tables();
+
+    load_sound("ui/join", TRUE);
+    load_sound("ui/leave", TRUE);
 }
 
 static void connect_state_success() {
@@ -432,6 +435,10 @@ void toggle_spectator() {
     NutBlast_SetPeerField("spectator", fmt("%u", !get_peer_number(get_local_peer(), "spectator")));
 }
 
+void kick_peer(NetID pid) {
+    NutBlast_Kick(pid);
+}
+
 void find_lobbies() {
     set_last_error(NULL);
     clear_lobby_list();
@@ -448,6 +455,8 @@ size_t get_lobby_list_count() {
 
 void push_user_data() {
     NutBlast_SetPeerField("name", CLIENT.name);
+    NutBlast_SetPeerField("character", fmt("%u", CLIENT.character));
+    NutBlast_SetPeerField("powerup", fmt("%u", CLIENT.powerup));
 }
 
 void peers_to_players(Uint8** cur) {

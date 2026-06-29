@@ -40,6 +40,7 @@ enum {
     UI_QUESTION,
     UI_PAUSE,
     UI_OPTIONS,
+    UI_KICK,
 
     UI_SIZE,
 };

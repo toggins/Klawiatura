@@ -404,7 +404,9 @@ static void draw(const UI* ui) {
 
     if (get_screen() != SCR_MENU) {
         batch_reset();
+        batch_pos(B_XY(-1000.f, -1000.f));
         batch_color(B_RGBA(0, 0, 0, 128));
+        batch_rectangle(NULL, B_SIZE(3000.f));
     }
 
     draw_catalog(&CATALOG);

@@ -7,7 +7,9 @@
 void POPULATE_UIS_TABLE() {
     extern const UITable* UIS[UI_SIZE];
 
+    DUI(MESSAGE);
     DUI(OPTIONS);
+    DUI(KICK);
 
     static const UITable TAB_NULL = {NULL};
     UIS[UI_NULL] = &TAB_NULL;

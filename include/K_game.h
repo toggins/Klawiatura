@@ -87,14 +87,20 @@ enum {
     ACT_SIZE,
 };
 
-typedef Uint8 PlayerPower;
+typedef Uint8 PlayerCharacter;
 enum {
-    POW_SMALL,
-    POW_BIG,
-    POW_FIRE,
+    CHR_MARIO,
+    CHR_SIZE,
+};
+
+typedef Uint8 PlayerPowerup;
+enum {
+    POW_NONE,
+    POW_SUPER_MUSHROOM,
+    POW_FIRE_FLOWER,
     POW_BEETROOT,
-    POW_LUI,
-    POW_HAMMER,
+    POW_GREEN_LUI,
+    POW_SIZE,
 };
 
 typedef Uint8 PlayerFrame;
@@ -138,9 +144,14 @@ enum {
 };
 
 typedef struct {
+    const char* name;
+} GameCharacter;
+
+typedef struct {
     Sint8 lives;
     Uint8 coins;
-    PlayerPower power;
+    PlayerCharacter character;
+    PlayerPowerup powerup;
     Uint32 score;
 } GamePlayerContext;
 
@@ -174,7 +185,7 @@ typedef struct {
 
     Sint8 lives;
     Uint8 coins;
-    PlayerPower power;
+    PlayerPowerup powerup;
 
     ActorID actor;
     ActorID projectiles[MAX_PROJECTILES], sinking_projectiles[MAX_SINKING_PROJECTILES];
@@ -284,6 +295,12 @@ typedef struct {
 extern GameState* GAME_STATE;
 
 void game_init();
+
+const GameCharacter* get_character(PlayerCharacter);
+const char* get_character_name(PlayerCharacter);
+
+const char* get_powerup_name(PlayerPowerup);
+Sint8 get_powerup_cost(PlayerPowerup);
 
 GameContext* init_game_context();
 

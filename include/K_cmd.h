@@ -20,6 +20,8 @@ typedef struct {
 typedef struct {
     char name[CLIENT_STRING_MAX];
     char language[CLIENT_STRING_MAX];
+    PlayerCharacter character;
+    PlayerPowerup powerup;
     Bool record_replay;
 
     Bool seen_online_notice;
