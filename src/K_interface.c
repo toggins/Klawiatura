@@ -97,9 +97,14 @@ void interface_update() {
 
     current_screen = to_screen;
     to_screen = SCR_NULL;
-    SCREEN_CALL(current_screen, start, to_secret, to_secret_size);
-    SDL_free(to_secret);
+
+    void* secret = to_secret;
+    const size_t secret_size = to_secret_size;
     to_secret = NULL;
+    to_secret_size = 0;
+
+    SCREEN_CALL(current_screen, start, secret, secret_size);
+    SDL_free(secret);
 
     update_discord_status();
     input_wipeout();
@@ -219,6 +224,7 @@ void set_screen(ScreenType type, const void* secret, size_t secret_size) {
 
     SDL_free((void*)to_secret);
     to_secret = NULL;
+    to_secret_size = 0;
 
     if (secret != NULL && secret_size > 0) {
         to_secret = SDL_malloc(secret_size);
