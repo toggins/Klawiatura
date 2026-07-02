@@ -1,4 +1,4 @@
-name: Build and release binaries
+name: Build and release distributions
 
 on:
   push:
@@ -11,9 +11,19 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CRAZY_AHH_DEPS: >-
+    python3-jinja2
+    libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev
+    libsndio-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev
+    libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev libdrm-dev
+    libgbm-dev libgl1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev
+    libibus-1.0-dev libudev-dev libthai-dev libpipewire-0.3-dev libwayland-dev
+    libdecor-0-dev liburing-dev
+
 jobs:
-  release:
-    name: Build binaries for ${{ matrix.name }}
+  release-desktop:
+    name: Publishn ${{ matrix.name }} binaries
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -56,13 +66,7 @@ jobs:
         with:
           version: 1.4
           packages: >-
-            python3-jinja2
-            libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev
-            libsndio-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev
-            libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev libdrm-dev
-            libgbm-dev libgl1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev
-            libibus-1.0-dev libudev-dev libthai-dev libpipewire-0.3-dev libwayland-dev
-            libdecor-0-dev liburing-dev
+            ${{ env.CRAZY_AHH_DEPS }}
             ${{ matrix.mingw && env.MINGW_PACKAGES || '' }}
       - name: Symlink MinGW compiler binaries
         if: matrix.mingw
@@ -94,3 +98,51 @@ jobs:
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
           prerelease: ${{ github.ref_name == 'master' }}
           files: build/${{ env.OUTNAME }}.zip
+
+  release-html5:
+    name: Publish the HTML5 build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.publish.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    env:
+      CACHE_BUST: 2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Restore source timestamps for crazy CMake caching benefits
+        uses: chetan/git-restore-mtime-action@v2
+      - name: Install dependencies
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          version: 1.1
+          packages: ${{ env.CRAZY_AHH_DEPS }} nodejs
+      - name: Source pasture-raised gluten-free emsdk
+        uses: emscripten-core/setup-emsdk@v16
+        with:
+          version: latest
+          actions-cache-folder: emsdk-cache
+      - name: Cache build dir
+        id: cache-build
+        uses: actions/cache@v6
+        with:
+          path: build
+          key: ${{ env.CACHE_BUST }}-Web-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: |
+            ${{ env.CACHE_BUST }}-Web-${{ github.ref_name }}-
+            ${{ env.CACHE_BUST }}-Web-
+      - name: Configure
+        run: emcmake cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --target Klawiatura
+      - name: Prepare for distibution
+        run: cp -vr build/Klawiatura.{js,wasm,data} www
+      - name: Publish
+        id: publish
+        uses: nonk123/sanity-action@master
+        with:
+          push_to_github_pages: true
