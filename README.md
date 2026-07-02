@@ -5,17 +5,23 @@
 <img align="right" src=".github/assets/icon-upscaled.png">
 
 > [!TIP]
-> Check out [the releases](https://github.com/toggins/Klawiatura/releases/latest) to get started.
+> Check out [the releases](https://github.com/toggins/Klawiatura/releases/latest) or [play in your browser](https://mario.games.nonk.dev) to get started.
 
-Mario Forever with rollback netcode.
+Klawiatura is an enhanced port of Mario Forever 4.0 that has
+
+- Native support for Windows, Linux and Emscripten
+- Online multiplayer with up to 8 players
+- A basic mod system with custom worlds and levels
+
+Written in plain C.
 
 ## Multiplayer
 
 > [!TIP]
-> **Discord integration is here!** You can invite other players to your lobbies through Discord, as long as they can connect to the same server as you.
+> **Discord integration is available for 64-bit binaries.** You can invite other players to your lobbies through Discord, as long as they can connect to the same server as you.
 
 > [!NOTE]
-> If you're unable to connect to other players, check [NutBlast's troubleshooting section](https://nutblast.schwung.us/?tab=readme-ov-file#troubleshooting).
+> If you can't see other players in your lobby, check [NutBlast's troubleshooting section](https://nutblast.schwung.us/?tab=readme-ov-file#troubleshooting).
 
 Multiplayer is the main kicker of this project. You can host and find lobbies through NutBlast servers. Lobbies can hold up to 8 players. For custom servers, host a [NutBlaster](https://nutblast.schwung.us) and set your server address to it in the settings.
 
@@ -43,7 +49,7 @@ py -m pip install jinja2
 ### [Discord Social SDK 1.9.15332](https://discord.com/developers/social-sdk) (Optional)
 
 > [!NOTE]
-> If the SDK is not present, the functions in [K_discord.c](src/K_discord.c) will be stubbed.
+> If the SDK is not present, Discord integration will be disabled.
 
 Move the `discord_social_sdk` folder from their ZIP download to `external/discord`.
 
