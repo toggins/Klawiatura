@@ -47,9 +47,8 @@ void worlds_init() {
 
     TinyMapIterator iter = TinyMapIter(&worlds);
 
-    const World* world = get_world_key(world_array[0]);
-    if (world != NULL)
-        SDL_strlcpy(CLIENT.world, world->name, sizeof(CLIENT.world));
+    if (TinyDLength(world_array) > 0)
+        SDL_strlcpy(CLIENT.world, get_world_key(world_array[0])->name, sizeof(CLIENT.world));
 }
 
 void worlds_teardown() {
