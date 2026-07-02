@@ -11,11 +11,7 @@
 #include "K_tick.h"
 #include "K_video.h"
 
-#define SCREEN_CALL_STATIC(type, fn)                                                                                   \
-    do {                                                                                                               \
-        if (SCREENS[(type)] != NULL && SCREENS[(type)]->fn != NULL)                                                    \
-            SCREENS[(type)]->fn();                                                                                     \
-    } while (FALSE)
+#include "uis/K_message.h"
 
 #define SCREEN_CALL(type, fn, ...)                                                                                     \
     do {                                                                                                               \
@@ -23,30 +19,34 @@
             SCREENS[(type)]->fn(__VA_ARGS__);                                                                          \
     } while (FALSE)
 
-#define UI_CALL_STATIC(type, fn)                                                                                       \
+#define UI_CALL_STATIC(type, fn, ...)                                                                                  \
     do {                                                                                                               \
         if (UIS[(type)] != NULL && UIS[(type)]->fn != NULL)                                                            \
-            UIS[(type)]->fn();                                                                                         \
+            UIS[(type)]->fn(__VA_ARGS__);                                                                              \
     } while (FALSE)
 
-#define UI_CALL(ui, fn)                                                                                                \
+#define UI_CALL(ui, fn, ...)                                                                                           \
     do {                                                                                                               \
         if (UIS[(ui)->type] != NULL && UIS[(ui)->type]->fn != NULL)                                                    \
-            UIS[(ui)->type]->fn((ui));                                                                                 \
+            UIS[(ui)->type]->fn((ui), ##__VA_ARGS__);                                                                  \
     } while (FALSE)
 
 // `extern` in K_screens.c
 const ScreenTable* SCREENS[SCR_SIZE] = {NULL};
 
 static ScreenType current_screen = SCR_NULL, to_screen = SCR_NULL;
-static const char* to_secret = NULL;
+
+static void* to_secret = NULL;
+static size_t to_secret_size = 0;
 
 // `extern` in K_uis.c
 const UITable* UIS[UI_SIZE] = {NULL};
 
 static UI *root_ui = NULL, *top_ui = NULL;
-
 static Uint8 cursor_frame = 0;
+
+static Bool boot_state = FALSE;
+static const char* boot_reason = NULL;
 
 void interface_init() {
     extern void POPULATE_SCREENS_TABLE(), POPULATE_UIS_TABLE();
@@ -59,27 +59,48 @@ void interface_init() {
     load_sound("ui/switch", TRUE);
     load_sound("ui/select", TRUE);
     load_sound("ui/toggle", TRUE);
+    load_sound("ui/error", TRUE);
 
-    set_screen(SCR_LOGO, NULL);
+    set_screen(SCR_LOGO, NULL, 0);
+}
+
+static const char* fmt_boot() {
+    return boot_reason;
+}
+
+static void cancel_boot() {
+    if (current_screen == SCR_MENU) {
+        boot_state = FALSE;
+        SDL_free((void*)boot_reason);
+        boot_reason = NULL;
+    } else {
+        set_screen(SCR_MENU, NULL, 0);
+    }
 }
 
 static void destroy_ui(UI*);
-
 void interface_update() {
     if (to_screen == SCR_NULL)
         goto iu_dont_change;
 
     destroy_ui(root_ui);
 
-    SCREEN_CALL_STATIC(current_screen, end);
+    SCREEN_CALL(current_screen, end);
     if (current_screen != to_screen) {
         audio_wipeout();
         clear_assets();
     }
 
+    boot_state = FALSE;
+    SDL_free((void*)boot_reason);
+    boot_reason = NULL;
+
     current_screen = to_screen;
     to_screen = SCR_NULL;
-    SCREEN_CALL(current_screen, start, to_secret);
+    SCREEN_CALL(current_screen, start, to_secret, to_secret_size);
+    SDL_free(to_secret);
+    to_secret = NULL;
+
     update_discord_status();
     input_wipeout();
     from_scratch();
@@ -95,6 +116,24 @@ iu_dont_change:
 
     poll_game();
     for (new_frame(); got_ticks(); next_tick()) {
+        // Booter
+        if (!boot_state && boot_reason != NULL) {
+            UI* message = create_ui(UI_MESSAGE, NULL);
+            if (message == NULL) {
+                cancel_boot();
+            } else {
+                message->flags |= UIF_MEGABLOCK;
+                UIMessageData* userdata = message->userdata;
+                userdata->fmt = fmt_boot;
+                userdata->cancel = cancel_boot;
+
+                play_generic_sound("ui/error", PLAY_SYSTEM);
+                boot_state = TRUE;
+            }
+
+            WARN("Booted: %s", boot_reason);
+        }
+
         // Chat
         chat_update();
 
@@ -133,7 +172,7 @@ iu_dont_change:
             pause_audio_state(TRUE);
         } else {
             pause_audio_state(FALSE);
-            SCREEN_CALL_STATIC(current_screen, tick);
+            SCREEN_CALL(current_screen, tick);
         }
 
         // Transition
@@ -142,26 +181,14 @@ iu_dont_change:
     }
 
     start_drawing();
-    SCREEN_CALL_STATIC(current_screen, draw);
+    SCREEN_CALL(current_screen, draw);
     start_drawing_ui();
-    SCREEN_CALL_STATIC(current_screen, draw_ui);
+    SCREEN_CALL(current_screen, draw_ui);
     if (top_ui != NULL)
         UI_CALL(top_ui, draw);
     draw_chat();
 
-    if (to_screen == SCR_NULL) {
-#ifdef SDL_PLATFORM_EMSCRIPTEN
-        if (!window_focused()) {
-            batch_reset();
-            batch_color(B_RGBA(0, 0, 0, 128));
-            batch_rectangle(NULL, B_SCREEN);
-            batch_pos(B_HALF_SCREEN);
-            batch_color(B_WHITE);
-            batch_align(B_CENTER);
-            batch_string("main", 24.f, LFMT("click_to_focus"));
-        }
-#endif
-    } else {
+    if (to_screen != SCR_NULL) {
         batch_reset();
         batch_pos(B_HALF_SCREEN);
         batch_align(B_CENTER);
@@ -173,7 +200,9 @@ iu_dont_change:
 
 void interface_teardown() {
     destroy_ui(root_ui);
-    SCREEN_CALL_STATIC(current_screen, end);
+    SCREEN_CALL(current_screen, end);
+    SDL_free(to_secret);
+    SDL_free((void*)boot_reason);
 }
 
 void permadeath() {
@@ -184,10 +213,28 @@ ScreenType get_screen() {
     return current_screen;
 }
 
-void set_screen(ScreenType type, const char* secret) {
+void set_screen(ScreenType type, const void* secret, size_t secret_size) {
     ASSUME(type > SCR_NULL && type < SCR_SIZE, "Going to invalid screen %u?", type);
     to_screen = type;
-    to_secret = secret;
+
+    SDL_free((void*)to_secret);
+    to_secret = NULL;
+
+    if (secret != NULL && secret_size > 0) {
+        to_secret = SDL_malloc(secret_size);
+        EXPECT(to_secret, "Failed to allocate secret for screen %u", type);
+        SDL_memcpy(to_secret, secret, secret_size);
+        to_secret_size = secret_size;
+    }
+}
+
+void boot_to_menu(const char* reason) {
+    if (boot_reason != NULL || boot_state || reason == NULL)
+        return;
+
+    SDL_free((void*)boot_reason);
+    boot_reason = SDL_strdup(reason);
+    EXPECT(boot_reason, "Failed to allocate boot reason \"%s\"", reason);
 }
 
 void load_ui(UIType type) {

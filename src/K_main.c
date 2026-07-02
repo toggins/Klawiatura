@@ -31,19 +31,18 @@
 #include "K_locale.h"
 #include "K_os.h"
 #include "K_video.h"
+#include "K_worlds.h"
 
 static const char** mods = NULL;
-static size_t num_mods = 0;
 
 static void cmd_mod() {
     const char* path = next_arg();
     if (path == NULL)
         return;
 
-    ++num_mods;
-    mods = (const char**)SDL_realloc((void*)mods, num_mods * sizeof(*mods));
-    EXPECT(mods, "Failed to reallocate mods list");
-    mods[num_mods - 1] = path;
+    if (mods == NULL)
+        mods = (const char**)MakeTinyDPro(sizeof(mods), sizeof(*mods));
+    mods = (const char**)TinyDAppendPro((void*)mods, (void*)&path);
 }
 
 MAKE_FLAG(force_shader);
@@ -55,8 +54,8 @@ CmdArg CMDLINE[] = {
 };
 
 ClientInfo CLIENT = {
-    .name = "Player",
-    .language = "en",
+    .name = DEFAULT_NAME,
+    .language = DEFAULT_LANGUAGE,
     .show_user_messages = TRUE,
     .server = "",
     .lobby_limit = MAX_PEERS,
@@ -75,9 +74,7 @@ static void show_disclaimer() {
     printf("\n");
 }
 
-SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
-    (void)appstate;
-
+SDL_AppResult SDL_AppInit(void**, int argc, char* argv[]) {
     fix_stdio();
     show_disclaimer();
     handle_cmdline(argc, argv);
@@ -85,7 +82,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     log_init();
     EXPECT(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS),
         "Failed to initialize SDL: %s", SDL_GetError());
-    file_init(mods, num_mods);
+    file_init(mods);
     video_init(force_shader);
     audio_init();
     locale_init();
@@ -94,15 +91,14 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     discord_init();
     interface_init();
     game_init();
+    worlds_init();
     chat_init();
     net_init();
 
     return SDL_APP_CONTINUE;
 }
 
-SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
-    (void)appstate;
-
+SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
     switch (event->type) {
     case SDL_EVENT_QUIT:
         return SDL_APP_SUCCESS;
@@ -140,9 +136,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
     return SDL_APP_CONTINUE;
 }
 
-SDL_AppResult SDL_AppIterate(void* appstate) {
-    (void)appstate;
-
+SDL_AppResult SDL_AppIterate(void*) {
     net_update();
     interface_update();
     audio_update();
@@ -153,12 +147,10 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     return SDL_APP_CONTINUE;
 }
 
-void SDL_AppQuit(void* appstate, SDL_AppResult result) {
-    (void)appstate;
-    (void)result;
-
+void SDL_AppQuit(void*, SDL_AppResult) {
     net_teardown();
     chat_teardown();
+    worlds_teardown();
     interface_teardown();
     discord_teardown();
     config_teardown();

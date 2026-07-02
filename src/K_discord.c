@@ -17,9 +17,7 @@
 
 static Discord_Client discord = {0};
 
-static void log_callback(Discord_String dstr, Discord_LoggingSeverity level, void* userdata) {
-    (void)userdata;
-
+static void log_callback(Discord_String dstr, Discord_LoggingSeverity level, void*) {
     switch (level) {
     default:
         INFO("%.*s", (int)dstr.size, dstr.ptr);
@@ -33,15 +31,10 @@ static void log_callback(Discord_String dstr, Discord_LoggingSeverity level, voi
     }
 }
 
-static void rpc_callback(Discord_ClientResult* result, void* userdata) {}
+static void rpc_callback(Discord_ClientResult*, void*) {}
 
-static void invite_callback(Discord_String secret, void* userdata) {
-    (void)userdata;
-
-    // GROSS HACK: Store payload in a unique buffer to get around `fmt()` limitations.
-    static char payload[128] = {0};
-    SDL_snprintf(payload, sizeof(payload), "%.*s", (int)secret.size, secret.ptr);
-    set_screen(SCR_MENU, payload);
+static void invite_callback(Discord_String secret, void*) {
+    set_screen(SCR_MENU, secret.ptr, secret.size);
 }
 
 #endif

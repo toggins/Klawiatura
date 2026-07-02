@@ -48,31 +48,19 @@ static GenericTrackChannel generic_tracks[MAX_GENERIC_TRACKS] = {
 static AudioState *desired_audio_state = NULL, *actual_audio_state = NULL;
 static void *state_sound_channels[MAX_STATE_SOUNDS] = {NULL}, *state_track_channels[MAX_STATE_TRACKS] = {NULL};
 
-void mix_sound(void* userdata, MIX_Group* group, const SDL_AudioSpec* spec, float* pcm, int samples) {
-    (void)userdata;
-    (void)group;
-    (void)spec;
-
+void mix_sound(void*, MIX_Group*, const SDL_AudioSpec*, float* pcm, int samples) {
     const float vol = sound_volume * mixer_volume;
     for (int i = 0; i < samples; i++)
         pcm[i] *= vol;
 }
 
-void mix_system(void* userdata, MIX_Group* group, const SDL_AudioSpec* spec, float* pcm, int samples) {
-    (void)userdata;
-    (void)group;
-    (void)spec;
-
+void mix_system(void*, MIX_Group*, const SDL_AudioSpec*, float* pcm, int samples) {
     const float vol = sound_volume * master_volume;
     for (int i = 0; i < samples; i++)
         pcm[i] *= vol;
 }
 
-void mix_music(void* userdata, MIX_Group* group, const SDL_AudioSpec* spec, float* pcm, int samples) {
-    (void)userdata;
-    (void)group;
-    (void)spec;
-
+void mix_music(void*, MIX_Group*, const SDL_AudioSpec*, float* pcm, int samples) {
     const float vol = music_volume * mixer_volume;
     for (int i = 0; i < samples; i++)
         pcm[i] *= vol;

@@ -9,6 +9,7 @@ void POPULATE_SCREENS_TABLE() {
 
     SCREEN(LOGO);
     SCREEN(MENU);
+    SCREEN(MAP);
     SCREEN(GAME);
 
     static const ScreenTable TAB_NULL = {NULL};

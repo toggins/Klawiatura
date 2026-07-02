@@ -4,6 +4,7 @@
 #include "K_cmake.h"
 #include "K_file.h"
 #include "K_log.h"
+#include "K_memory.h" // IWYU pragma: export
 #include "K_string.h"
 
 typedef struct Mod {
@@ -15,7 +16,7 @@ static const char *base_path = NULL, *user_path = NULL;
 
 static Mod *mods = NULL, *last_mod = NULL;
 
-void file_init(const char** mods, size_t num_mods) {
+void file_init(const char** load_mods) {
     base_path = SDL_GetBasePath();
     EXPECT(base_path, "Failed to get base path: %s", SDL_GetError());
 
@@ -23,13 +24,13 @@ void file_init(const char** mods, size_t num_mods) {
     EXPECT(user_path, "Failed to get user path: %s", SDL_GetError());
 
     // Load mods
-    if (mods == NULL) {
+    if (load_mods == NULL) {
         load_mod("$MarioForever");
         load_mod("$MarioTogether");
     } else {
-        for (size_t i = 0; i < num_mods; i++)
-            load_mod(mods[i]);
-        SDL_free((void*)mods);
+        for (size_t i = 0, n = TinyDLength((void*)load_mods); i < n; i++)
+            load_mod(load_mods[i]);
+        FreeTinyD((void*)load_mods);
     }
 }
 
@@ -183,7 +184,7 @@ yyjson_doc* load_data_json(const char* filename) {
 }
 
 void iterate_data_files(const char* pattern, Bool load_files,
-    void (*callback)(const char* filename, void* buffer, size_t size, void* userdata), void* userdata) {
+    void (*callback)(const char* filename, const void* buffer, size_t size, void* userdata), void* userdata) {
     int count = 0;
     for (const Mod* mod = mods; mod != NULL; mod = mod->next) {
         char** files = SDL_GlobDirectory(mod->path, pattern, 0, &count);
@@ -192,9 +193,9 @@ void iterate_data_files(const char* pattern, Bool load_files,
 
         for (int i = 0; i < count; i++) {
             size_t size = 0;
-            void* buffer = load_files ? SDL_LoadFile(fmt("%s%s", mod->path, files[i]), &size) : NULL;
+            const void* buffer = load_files ? SDL_LoadFile(fmt("%s%s", mod->path, files[i]), &size) : NULL;
             callback(files[i], buffer, size, userdata);
-            SDL_free(buffer);
+            SDL_free((void*)buffer);
         }
 
         SDL_free((void*)files);
@@ -210,7 +211,7 @@ yyjson_doc* load_user_json(const char* filename) {
 }
 
 void iterate_user_files(const char* pattern, Bool load_files,
-    void (*callback)(const char* filename, void* buffer, size_t size, void* userdata), void* userdata) {
+    void (*callback)(const char* filename, const void* buffer, size_t size, void* userdata), void* userdata) {
     int count = 0;
     char** files = SDL_GlobDirectory(user_path, pattern, 0, &count);
     if (files == NULL)
@@ -218,9 +219,9 @@ void iterate_user_files(const char* pattern, Bool load_files,
 
     for (int i = 0; i < count; i++) {
         size_t size = 0;
-        void* buffer = load_files ? SDL_LoadFile(fmt("%s%s", user_path, files[i]), &size) : NULL;
+        const void* buffer = load_files ? SDL_LoadFile(fmt("%s%s", user_path, files[i]), &size) : NULL;
         callback(files[i], buffer, size, userdata);
-        SDL_free(buffer);
+        SDL_free((void*)buffer);
     }
 
     SDL_free((void*)files);
@@ -286,4 +287,55 @@ void read_string(SDL_IOStream* io, char* ptr, size_t size) {
 
     if (i >= size && size > 0)
         ptr[size - 1] = '\0';
+}
+
+/// Calculates the "game" hash for mod parity.
+/// The hash is only affected by mods that contain worlds and levels, so resource packs are client-side.
+///
+/// Each world and level will have their own hash that is tested on load to prevent further desyncs.
+void CALCULATE_GAME_HASH(Uint32* ptr) {
+    Uint32 mid = 1;
+    int count = 0;
+    for (const Mod* mod = mods; mod != NULL; mod = mod->next) {
+        Uint32 subhash = 0;
+
+        char** files = SDL_GlobDirectory(mod->path, "worlds/*", 0, &count);
+        if (files != NULL) {
+            if (count > 0) {
+                for (int i = 0; i < count; i++) {
+                    size_t len = 0;
+                    Uint8* data = SDL_LoadFile(fmt("%s%s", mod->path, files[i]), &len);
+                    for (size_t j = 0; j < len; j++)
+                        subhash += data[j];
+                    SDL_free(data);
+                }
+
+                *ptr += subhash * mid;
+            }
+
+            SDL_free((void*)files);
+        }
+
+        files = SDL_GlobDirectory(mod->path, "levels/*", 0, &count);
+        if (files != NULL) {
+            if (count > 0) {
+                for (int i = 0; i < count; i++) {
+                    size_t len = 0;
+                    Uint8* data = SDL_LoadFile(fmt("%s%s", mod->path, files[i]), &len);
+                    for (size_t j = 0; j < len; j++)
+                        subhash += data[j];
+                    SDL_free(data);
+                }
+
+                *ptr += subhash * mid;
+            }
+
+            SDL_free((void*)files);
+        }
+
+        if (subhash > 0)
+            ++mid;
+    }
+
+    INFO("Game hash is %u", *ptr);
 }

@@ -296,20 +296,20 @@ extern GameState* GAME_STATE;
 
 void game_init();
 
+Uint32 get_game_hash();
+
 const GameCharacter* get_character(PlayerCharacter);
 const char* get_character_name(PlayerCharacter);
 
 const char* get_powerup_name(PlayerPowerup);
 Sint8 get_powerup_cost(PlayerPowerup);
 
-GameContext* init_game_context();
+GameContext init_game_context();
 
-void start_game(), nuke_game();
+void start_game(GameContext*), nuke_game();
 void poll_game();
 float frames_ahead();
 void tick_game(), draw_game();
-Bool go_to_results(Bool);
-void boot_from_game(const char*);
 
 const GameContext* gamecontext();
 

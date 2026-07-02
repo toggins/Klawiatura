@@ -218,6 +218,14 @@ enum {
     STO_INVERT,
 };
 
+typedef struct {
+    void* internal;
+} TileBatch;
+
+typedef struct {
+    TinyMap batches;
+} TileMap;
+
 void video_init(Bool), video_teardown();
 void start_drawing(), start_drawing_ui(), stop_drawing();
 void limit_framerate();

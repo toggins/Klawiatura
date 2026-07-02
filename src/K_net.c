@@ -7,6 +7,7 @@
 #include "K_chat.h"
 #include "K_cmd.h"
 #include "K_discord.h"
+#include "K_interface.h"
 #include "K_locale.h"
 #include "K_log.h"
 #include "K_net.h"
@@ -16,7 +17,7 @@
 
 #define MAX_GAME_PACKETS 32
 
-static char last_error[256] = "";
+static const char* last_error = NULL;
 
 static ConnectState connect_state = CONN_NONE;
 
@@ -26,10 +27,8 @@ static size_t lobby_list_count = 0;
 static NetID player_peers[MAX_PLAYERS] = {0}, spectator_peers[MAX_PEERS] = {0};
 
 static void set_last_error(const char* error) {
-    if (error == NULL)
-        last_error[0] = '\0';
-    else
-        SDL_snprintf(last_error, sizeof(last_error), "%s", error);
+    SDL_free((void*)last_error);
+    last_error = (error == NULL || error[0] == '\0') ? NULL : SDL_strdup(error);
 }
 
 static void on_disconnected(const char* reason) {
@@ -44,10 +43,14 @@ static void on_peer_joined(NetID pid) {
 static void on_peer_left(NetID pid) {
     if (!nuke_spectator_peer(pid)) {
         for (size_t i = 0; i < SDL_arraysize(player_peers); i++) {
-            if (player_peers[i] == pid) {
-                boot_from_game(LFMT("msg_player_left", 's', get_peer_name(pid)));
-                break;
-            }
+            if (player_peers[i] != pid)
+                continue;
+
+            if (get_screen() != SCR_MENU)
+                boot_to_menu(LFMT("msg_player_left", 's', get_peer_name(pid)));
+
+            player_peers[i] = 0;
+            break;
         }
     }
 
@@ -74,25 +77,31 @@ static void on_lobbies_found(const NutBlast_Lobby* lobbies, size_t count) {
         return;
     }
 
-    for (size_t i = 0; i < lobby_list_count; i++) {
+    for (size_t i = 0; i < count; i++) {
         const NutBlast_Lobby* ldata = &lobbies[i];
         LobbyInfo* lobby = &lobby_list[i];
 
         lobby->peers = ldata->players;
         lobby->capacity = ldata->capacity;
         lobby->id = ldata->id;
-        lobby->name = SDL_strdup(ldata->name);
+
+        for (size_t j = 0; j < ldata->field_count; j++) {
+            const NutBlast_LobbyField* field = &ldata->metadata[j];
+            if (SDL_strcmp(field->key, NUTBLAST_FIELD_LOBBY_NAME) == 0) {
+                lobby->name = SDL_strdup(
+                    (SDL_strnlen(field->value, 33) > 32) ? fmt("%.*s...", 32, field->value) : field->value);
+                break;
+            }
+        }
     }
 }
 
-static void on_master_changed(NetID old_master) {
-    (void)old_master;
-
+static void on_master_changed(NetID) {
     chat_message(LFMT("chat_hosting", 's', get_peer_name(get_master_peer())), B_YELLOW);
 }
 
 static void on_peer_data_changed(NetID pid, NutBlast_FieldDiff diff) {
-    if (SDL_strcmp(diff.name, "name") == 0) {
+    if (SDL_strcmp(diff.name, NUTBLAST_FIELD_PLAYER_NAME) == 0) {
         chat_message(LFMT("chat_changed_name", 's', diff.old_value, 's', diff.new_value), B_YELLOW);
         return;
     }
@@ -103,11 +112,6 @@ static void on_peer_data_changed(NetID pid, NutBlast_FieldDiff diff) {
             B_YELLOW);
         return;
     }
-}
-
-static void push_lobby_data(Bool private, Uint8 peers) {
-    NutBlast_SetListed(!private);
-    NutBlast_SetMaxPlayers(peers);
 }
 
 static void clear_peer_tables() {
@@ -128,7 +132,7 @@ void net_logger(NutBlast_LogLevel level, const char* message) {
 
 void net_init() {
     NutBlast_SetLogger(net_logger);
-    NutBlast_SetGameID(GAME_NAME " " GAME_VERSION);
+    NutBlast_SetGameID(fmt(GAME_NAME " " GAME_VERSION " %X", get_game_hash()));
     NutBlast_SetMaxChannels(PCH_SIZE);
 
     NutBlast_OnDisconnected(on_disconnected);
@@ -136,7 +140,7 @@ void net_init() {
     NutBlast_OnPlayerLeft(on_peer_left);
     NutBlast_OnLobbiesFound(on_lobbies_found);
     NutBlast_OnMasterChanged(on_master_changed);
-    NutBlast_OnPeerMetadataChanged(on_peer_data_changed);
+    NutBlast_OnPlayerMetadataChanged(on_peer_data_changed);
 
     clear_peer_tables();
 
@@ -151,10 +155,6 @@ static void connect_state_success() {
     update_discord_status();
 }
 
-static Bool has_last_error() {
-    return last_error[0] != '\0';
-}
-
 void net_update() {
     NutBlast_Update();
 
@@ -163,7 +163,7 @@ void net_update() {
         break;
 
     case CONN_CONNECTING: {
-        const int state = !has_last_error() ? is_connected() : -1;
+        const int state = (last_error == NULL) ? is_connected() : -1;
         if (state > 0) {
             connect_state_success();
             INFO("Connect state ended successfully");
@@ -207,10 +207,14 @@ void net_update() {
                 break;
 
             for (size_t i = 0; i < SDL_arraysize(player_peers); i++) {
-                if (player_peers[i] == from) {
-                    boot_from_game(LFMT("msg_player_bailed", 's', get_peer_name(player_peers[i])));
-                    break;
-                }
+                if (player_peers[i] != from)
+                    continue;
+
+                if (get_screen() != SCR_MENU)
+                    boot_to_menu(LFMT("msg_player_bailed", 's', get_peer_name(player_peers[i])));
+
+                player_peers[i] = 0;
+                break;
             }
 
             break;
@@ -250,7 +254,7 @@ Bool is_connected() {
 }
 
 Bool is_host() {
-    return get_master_peer() == get_local_peer();
+    return !is_connected() || get_master_peer() == get_local_peer();
 }
 
 Bool is_client() {
@@ -262,7 +266,7 @@ ConnectState get_connect_state() {
 }
 
 const char* net_error() {
-    return has_last_error() ? last_error : NULL;
+    return last_error;
 }
 
 const NetID* get_peers() {
@@ -278,21 +282,19 @@ NetID get_master_peer() {
 }
 
 const char* get_peer_name(NetID pid) {
-    return get_peer_string(pid, "name");
+    return get_peer_string(pid, NUTBLAST_FIELD_PLAYER_NAME);
 }
 
 int get_peer_ping(NetID pid) {
-    (void)pid;
-
     return (get_local_peer() == pid) ? NutBlast_ServerPing() : NutBlast_PlayerPing(pid);
 }
 
 const char* get_peer_string(NetID pid, const char* key) {
-    return NutBlast_GetPeerField(pid, key);
+    return NutBlast_GetPlayerField(pid, key);
 }
 
 Sint32 get_peer_number(NetID pid, const char* key) {
-    const char* data = NutBlast_GetPeerField(pid, key);
+    const char* data = NutBlast_GetPlayerField(pid, key);
     return (data == NULL) ? 0 : SDL_atoi(data);
 }
 
@@ -381,10 +383,13 @@ Bool i_am_spectating() {
 void host_lobby() {
     set_last_error(NULL);
 
-    push_lobby_data(CLIENT.private_lobby, CLIENT.lobby_limit);
-    push_user_data();
-    NutBlast_Host(0, fmt("%s'%s Lobby", CLIENT.name, (CLIENT.name[SDL_utf8strlen(CLIENT.name) - 1] == 's') ? "" : "s"),
-        CLIENT.lobby_limit, !CLIENT.private_lobby);
+    NutBlast_SetLobbyField(NUTBLAST_FIELD_LOBBY_NAME,
+        (CLIENT.name[0] == '\0')
+            ? "Lobby"
+            : fmt("%s'%s Lobby", CLIENT.name, (CLIENT.name[SDL_strlen(CLIENT.name) - 1] == 's') ? "" : "s"));
+    update_lobby_data();
+    update_peer_data();
+    NutBlast_Host(0, CLIENT.lobby_limit, !CLIENT.private_lobby);
 
     connect_state = CONN_CONNECTING;
 }
@@ -392,8 +397,8 @@ void host_lobby() {
 void join_lobby(NetID lid) {
     set_last_error(NULL);
 
-    push_user_data();
-    NutBlast_SetPeerField("spectator", "0"); // GROSS HACK: pre-set `spectator` to trigger diff the first time.
+    update_peer_data();
+    NutBlast_SetPlayerField("spectator", "0"); // GROSS HACK: pre-set `spectator` to trigger diff the first time.
     NutBlast_Join(lid);
 
     connect_state = CONN_CONNECTING;
@@ -401,13 +406,16 @@ void join_lobby(NetID lid) {
 
 void disconnect() {
     NutBlast_Disconnect();
-    if (has_last_error()) {
-        WARN("Disconnected with error: %s", last_error);
-        boot_from_game(fmt("%s\n%s", LFMT("msg_disconnected"), last_error));
+    if (last_error == NULL) {
+        if (get_screen() != SCR_MENU)
+            boot_to_menu(LFMT("msg_disconnected"));
     } else {
-        boot_from_game(LFMT("msg_disconnected"));
+        WARN("Disconnected with error: %s", last_error);
+        if (get_screen() != SCR_MENU)
+            boot_to_menu(fmt("%s\n%s", LFMT("msg_disconnected"), last_error));
     }
 
+    NutBlast_PurgeMetadata();
     clear_lobby_list();
     clear_peer_tables();
     set_hostname(CLIENT.server);
@@ -416,6 +424,10 @@ void disconnect() {
 
 NetID get_lobby_id() {
     return NutBlast_GetLobbyID();
+}
+
+const char* get_lobby_name() {
+    return NutBlast_GetLobbyField(NUTBLAST_FIELD_LOBBY_NAME);
 }
 
 const char* get_lobby_string(const char* key) {
@@ -432,7 +444,7 @@ Bool in_private_lobby() {
 }
 
 void toggle_spectator() {
-    NutBlast_SetPeerField("spectator", fmt("%u", !get_peer_number(get_local_peer(), "spectator")));
+    NutBlast_SetPlayerField("spectator", fmt("%u", !get_peer_number(get_local_peer(), "spectator")));
 }
 
 void kick_peer(NetID pid) {
@@ -453,10 +465,14 @@ size_t get_lobby_list_count() {
     return lobby_list_count;
 }
 
-void push_user_data() {
-    NutBlast_SetPeerField("name", CLIENT.name);
-    NutBlast_SetPeerField("character", fmt("%u", CLIENT.character));
-    NutBlast_SetPeerField("powerup", fmt("%u", CLIENT.powerup));
+void update_lobby_data() {
+    NutBlast_SetLobbyField("world", CLIENT.world[0] == '\0' ? NULL : CLIENT.world);
+}
+
+void update_peer_data() {
+    NutBlast_SetPlayerField(NUTBLAST_FIELD_PLAYER_NAME, CLIENT.name);
+    NutBlast_SetPlayerField("character", fmt("%u", CLIENT.character));
+    NutBlast_SetPlayerField("powerup", fmt("%u", CLIENT.powerup));
 }
 
 void peers_to_players(Uint8** cur) {

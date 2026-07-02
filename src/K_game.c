@@ -1,3 +1,4 @@
+#include "K_file.h"
 #include "K_game.h"
 #include "K_locale.h"
 #include "K_log.h"
@@ -11,6 +12,8 @@ static const GameCharacter CHARACTERS[CHR_SIZE] = {
         .name = "Mario",
     },
 };
+
+static Uint32 game_hash = 0;
 
 static PlayerID local_player = NULL_PLAYER, view_player = NULL_PLAYER;
 
@@ -26,6 +29,13 @@ static char boot_reason[256] = "";
 void game_init() {
     extern void POPULATE_ACTORS_TABLE();
     POPULATE_ACTORS_TABLE();
+
+    extern void CALCULATE_GAME_HASH(Uint32*);
+    CALCULATE_GAME_HASH(&game_hash);
+}
+
+Uint32 get_game_hash() {
+    return game_hash;
 }
 
 const GameCharacter* get_character(PlayerCharacter cid) {

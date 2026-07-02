@@ -36,7 +36,7 @@ set(SDL_CAMERA OFF CACHE INTERNAL "")
 
 FetchContent_Declare(SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG release-3.4.10
+    GIT_TAG release-3.4.12
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(SDL3)
 
@@ -88,7 +88,7 @@ list(APPEND LIBS SDL3_mixer::SDL3_mixer-static)
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG e24bb1ce0fe74f7d981e870aade0cc956d54bfe2
+    GIT_TAG 513c72e34569e0f471dde7aa26eecb23946c3ef7
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
 
@@ -153,7 +153,7 @@ list(APPEND LIBS S_tructures)
 
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG 31a988d79dc8bc5c8e059a33cf20d63b040eee91
+	GIT_TAG 5f072d15b68a9ed7e87fd4dbfd2271677beaf95c
 	EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(NutBlast)
 
@@ -164,7 +164,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG v20260620121632-bce8ddd
+    GIT_TAG v20260629200724-02c447c
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(GekkoNet)
 

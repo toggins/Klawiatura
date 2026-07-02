@@ -30,14 +30,14 @@ static const char* get_name() {
     return CLIENT.name;
 }
 static void set_name(const char* name) {
-    SDL_strlcpy(CLIENT.name, name, sizeof(CLIENT.name));
+    SDL_strlcpy(CLIENT.name, (name == NULL || name[0] == '\0') ? DEFAULT_NAME : name, sizeof(CLIENT.name));
 }
 
 static const char* get_language() {
     return CLIENT.language;
 }
 static void set_language(const char* code) {
-    SDL_strlcpy(CLIENT.language, code, sizeof(CLIENT.language));
+    SDL_strlcpy(CLIENT.language, (code == NULL || code[0] == '\0') ? DEFAULT_LANGUAGE : code, sizeof(CLIENT.language));
     apply_language(CLIENT.language);
 }
 

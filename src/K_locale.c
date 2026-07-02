@@ -1,3 +1,4 @@
+#include "K_cmd.h"
 #include "K_file.h"
 #include "K_locale.h"
 #include "K_log.h"
@@ -15,7 +16,7 @@ static void nuke_language(void* ptr) {
     FreeTinyMap(&language->strings);
 }
 
-static void iterate_language_file(const char* filename, void* buffer, size_t size, void* userdata) {
+static void iterate_language_file(const char* filename, const void* buffer, size_t size, void* userdata) {
     yyjson_doc* json = read_json(buffer, size);
     ASSUME(json, "Failed to read language \"%s\"", filename);
 
@@ -46,7 +47,7 @@ static void iterate_language_file(const char* filename, void* buffer, size_t siz
         }
 
         Bool* found_default = userdata;
-        if (!*found_default && SDL_strcmp(language->name, "en") == 0) {
+        if (!*found_default && SDL_strcmp(language->name, DEFAULT_LANGUAGE) == 0) {
             default_language = language;
             *found_default = TRUE;
         }

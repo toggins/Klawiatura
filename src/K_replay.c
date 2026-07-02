@@ -86,9 +86,7 @@ static void rbuffer_write_string(const char* src) {
     replay_cursor += len;
 }
 
-const char* load_replay(const char* file) {
-    (void)file;
-
+const char* load_replay(const char*) {
     end_replay();
 
     return "msg_replay_missing";

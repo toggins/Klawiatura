@@ -26,7 +26,7 @@ enum {
 };
 
 typedef struct {
-    void (*start)(const char*);
+    void (*start)(const void*, size_t);
     void (*tick)();
     void (*draw)(), (*draw_ui)();
     void (*end)();
@@ -104,7 +104,9 @@ void interface_init(), interface_update(), interface_teardown();
 void permadeath();
 
 ScreenType get_screen();
-void set_screen(ScreenType, const char*);
+void set_screen(ScreenType, const void*, size_t);
+
+void boot_to_menu(const char*);
 
 void load_ui(UIType);
 UI* create_ui(UIType, UI*);

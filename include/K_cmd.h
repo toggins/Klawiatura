@@ -2,6 +2,9 @@
 
 #include "K_net.h"
 
+#define DEFAULT_NAME "Player"
+#define DEFAULT_LANGUAGE "en"
+
 #define CMD_OPT(ident) cmd_set_##ident
 #define MAKE_FLAG(ident) MAKE_OPTION_PRO(ident, Bool, FALSE, TRUE)
 #define MAKE_OPTION(ident, default) MAKE_OPTION_PRO(ident, const char*, default, next_arg())
@@ -20,6 +23,8 @@ typedef struct {
 typedef struct {
     char name[CLIENT_STRING_MAX];
     char language[CLIENT_STRING_MAX];
+
+    char world[64];
     PlayerCharacter character;
     PlayerPowerup powerup;
     Bool record_replay;

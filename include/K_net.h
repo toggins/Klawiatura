@@ -131,6 +131,7 @@ Bool i_am_spectating();
 
 void host_lobby(), join_lobby(NetID), disconnect();
 NetID get_lobby_id();
+const char* get_lobby_name();
 const char* get_lobby_string(const char*);
 Sint32 get_lobby_number(const char*);
 Bool in_private_lobby();
@@ -141,7 +142,7 @@ void find_lobbies();
 const LobbyInfo* get_lobby_list(size_t);
 size_t get_lobby_list_count();
 
-void push_user_data();
+void update_lobby_data(), update_peer_data();
 
 void peers_to_players(Uint8**);
 PlayerID populate_game(GekkoSession*, PlayerID);

@@ -102,9 +102,7 @@ static Catalog CATALOG = {
 // MENUS
 // =====
 
-static void enter_language_menu(MenuType from) {
-    (void)from;
-
+static void enter_language_menu(MenuType) {
     SDL_zeroa(CATALOG.options[MEN_LANGUAGE]);
 
     size_t i = 0;
@@ -123,46 +121,34 @@ static void enter_language_menu(MenuType from) {
 // OPTIONS
 // =======
 
-static const char* fmt_name(size_t idx) {
-    (void)idx;
-
+static const char* fmt_name(size_t) {
     return fmt("%s: %s%s", LFMT("opt_name"), CLIENT.name, caret(typing_what() == CLIENT.name));
 }
 
-static void submit_name(Bool confirmed) {
-    (void)confirmed;
-
-    push_user_data();
+static void submit_name(Bool) {
+    if (CLIENT.name[0] == '\0')
+        SDL_strlcpy(CLIENT.name, DEFAULT_NAME, sizeof(CLIENT.name));
+    update_peer_data();
 }
 
-static const char* fmt_language(size_t idx) {
-    (void)idx;
-
+static const char* fmt_language(size_t) {
     return fmt("%s: %s (%s)", LFMT("opt_language"), LFMT(CLIENT.language), CLIENT.language);
 }
 
-static const char* fmt_server(size_t idx) {
-    (void)idx;
-
+static const char* fmt_server(size_t) {
     return (typing_what() == CLIENT.server) ? fmt("%s:\n%s%s", LFMT("opt_server"), CLIENT.server, caret(TRUE))
                                             : LFMT("opt_change_server");
 }
 
-static void submit_server(Bool confirmed) {
-    (void)confirmed;
-
+static void submit_server(Bool) {
     set_hostname(CLIENT.server);
 }
 
-static const char* fmt_show_user_messages(size_t idx) {
-    (void)idx;
-
+static const char* fmt_show_user_messages(size_t) {
     return fmt("%s: %s", LFMT("opt_show_user_messages"), LFMT(CLIENT.show_user_messages ? "val_yes" : "val_no"));
 }
 
-static void show_user_messages_cycle(Sint8 cycle) {
-    (void)cycle;
-
+static void show_user_messages_cycle(Sint8) {
     CLIENT.show_user_messages = !CLIENT.show_user_messages;
 }
 
@@ -177,16 +163,12 @@ static void language_option() {
     apply_language(CLIENT.language);
 }
 
-static const char* fmt_device(size_t idx) {
-    (void)idx;
-
+static const char* fmt_device(size_t) {
     return fmt("%s: %s", LFMT("opt_device"), input_device());
 }
 
 #define KEYBIND_OPTION(name, kb)                                                                                       \
-    static const char* fmt_##name(size_t idx) {                                                                        \
-        (void)idx;                                                                                                     \
-                                                                                                                       \
+    static const char* fmt_##name(size_t) {                                                                            \
         return fmt("%s: %s", LFMT("kb_" #name), (scanning_what() == (kb)) ? LFMT("val_scanning") : kb_label(kb));      \
     }                                                                                                                  \
                                                                                                                        \
@@ -206,9 +188,7 @@ KEYBIND_OPTION(record_replay, KB_RECORD_REPLAY);
 
 #undef KEYBIND_OPTION
 
-static const char* fmt_resolution(size_t idx) {
-    (void)idx;
-
+static const char* fmt_resolution(size_t) {
     int width = 0, height = 0;
     get_resolution(&width, &height);
     return fmt("%s: %ix%i", LFMT("opt_resolution"), width, height);
@@ -239,33 +219,23 @@ static void resolution_cycle(Sint8 cycle) {
     }
 }
 
-static const char* fmt_fullscreen(size_t idx) {
-    (void)idx;
-
+static const char* fmt_fullscreen(size_t) {
     return fmt("%s: %s", LFMT("opt_fullscreen"), LFMT(get_fullscreen() ? "val_on" : "val_off"));
 }
 
-static void fullscreen_cycle(Sint8 cycle) {
-    (void)cycle;
-
+static void fullscreen_cycle(Sint8) {
     set_fullscreen(!get_fullscreen());
 }
 
-static const char* fmt_vsync(size_t idx) {
-    (void)idx;
-
+static const char* fmt_vsync(size_t) {
     return fmt("%s: %s", LFMT("opt_vsync"), LFMT(get_vsync() ? "val_on" : "val_off"));
 }
 
-static void vsync_cycle(Sint8 cycle) {
-    (void)cycle;
-
+static void vsync_cycle(Sint8) {
     set_vsync(!get_vsync());
 }
 
-static const char* fmt_master_volume(size_t idx) {
-    (void)idx;
-
+static const char* fmt_master_volume(size_t) {
     return fmt("%s: %u%%", LFMT("opt_master_volume"), (Uint8)(get_volume() * 100.f));
 }
 
@@ -279,9 +249,7 @@ static void master_volume_cycle(Sint8 cycle) {
     set_volume((float)percent / 100.f);
 }
 
-static const char* fmt_sound_volume(size_t idx) {
-    (void)idx;
-
+static const char* fmt_sound_volume(size_t) {
     return fmt("%s: %u%%", LFMT("opt_sound_volume"), (Uint8)(get_sound_volume() * 100.f));
 }
 
@@ -295,9 +263,7 @@ static void sound_volume_cycle(Sint8 cycle) {
     set_sound_volume((float)percent / 100.f);
 }
 
-static const char* fmt_music_volume(size_t idx) {
-    (void)idx;
-
+static const char* fmt_music_volume(size_t) {
     return fmt("%s: %u%%", LFMT("opt_music_volume"), (Uint8)(get_music_volume() * 100.f));
 }
 
@@ -311,21 +277,15 @@ static void music_volume_cycle(Sint8 cycle) {
     set_music_volume((float)percent / 100.f);
 }
 
-static const char* fmt_audio_in_background(size_t idx) {
-    (void)idx;
-
+static const char* fmt_audio_in_background(size_t) {
     return fmt("%s: %s", LFMT("opt_audio_in_background"), LFMT(CLIENT.audio_in_background ? "val_on" : "val_off"));
 }
 
-static void audio_in_background_cycle(Sint8 cycle) {
-    (void)cycle;
-
+static void audio_in_background_cycle(Sint8) {
     CLIENT.audio_in_background = !CLIENT.audio_in_background;
 }
 
-static const char* fmt_input_delay(size_t idx) {
-    (void)idx;
-
+static const char* fmt_input_delay(size_t) {
     return fmt("%s: %s", LFMT("opt_input_delay"),
         LFMT((CLIENT.input_delay == 1) ? "val_frame" : "val_frames", 'd', CLIENT.input_delay));
 }
@@ -341,16 +301,12 @@ static void input_delay_cycle(Sint8 cycle) {
     }
 }
 
-static const char* fmt_framerate(size_t idx) {
-    (void)idx;
-
+static const char* fmt_framerate(size_t) {
     return fmt("%s: %s", LFMT("opt_framerate"),
         (get_framerate() <= 0) ? LFMT("val_unlimited") : LFMT("val_fps", 'd', get_framerate()));
 }
 
 static void framerate_cycle(Sint8 cycle) {
-    (void)cycle;
-
     static const int ranges[] = {0, 30, 50, 60, 75, 120, 144, 165, 180, 240, 360, 480};
     const size_t len = SDL_arraysize(ranges);
 
@@ -374,15 +330,11 @@ static void framerate_cycle(Sint8 cycle) {
     }
 }
 
-static const char* fmt_texture_filter(size_t idx) {
-    (void)idx;
-
+static const char* fmt_texture_filter(size_t) {
     return fmt("%s: %s", LFMT("opt_texture_filter"), LFMT(CLIENT.texture_filter ? "val_linear" : "val_nearest"));
 }
 
-static void texture_filter_cycle(Sint8 cycle) {
-    (void)cycle;
-
+static void texture_filter_cycle(Sint8) {
     CLIENT.texture_filter = !CLIENT.texture_filter;
 }
 
@@ -399,9 +351,7 @@ static void tick(UI* ui) {
         ui->flags |= UIF_DESTROY;
 }
 
-static void draw(const UI* ui) {
-    (void)ui;
-
+static void draw(const UI*) {
     if (get_screen() != SCR_MENU) {
         batch_reset();
         batch_pos(B_XY(-1000.f, -1000.f));
@@ -412,9 +362,7 @@ static void draw(const UI* ui) {
     draw_catalog(&CATALOG);
 }
 
-static void cleanup(UI* ui) {
-    (void)ui;
-
+static void cleanup(UI*) {
     save_config();
 }
 

@@ -9,6 +9,7 @@
 #include "K_string.h"
 #include "K_tick.h"
 #include "K_video.h"
+#include "K_worlds.h"
 
 #include "uis/K_message.h"
 
@@ -30,12 +31,12 @@ static const char* replay_error = NULL;
 
 static void enter_replays_menu(MenuType), leave_replays_menu(MenuType), enter_lobby_list_menu(MenuType),
     tick_lobby_list_menu(), enter_lobby_menu(MenuType), leave_lobby_menu(MenuType), tick_lobby_menu();
-static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_menu(), kick_player_disabled();
+static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_menu(), kick_player_disabled(), start_disabled();
 
 static const char *fmt_max_peers(size_t), *fmt_visibility(size_t), *fmt_lobby(), *fmt_character(size_t),
-    *fmt_powerup(size_t), *fmt_enter_as(size_t);
+    *fmt_powerup(size_t), *fmt_enter_as(size_t), *fmt_world(size_t), *fmt_start(size_t);
 static void multiplayer_option(), options_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8), host_option(),
-    character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option();
+    character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option(), world_cycle(Sint8);
 
 static Catalog CATALOG = {
 	.current = MEN_MAIN,
@@ -91,12 +92,12 @@ static Catalog CATALOG = {
 		},
 
         [MEN_SINGLEPLAYER] = {
-            {.name = "opt_world"},
+            {.fmt = fmt_world, .cycle = world_cycle},
             {},
             {.fmt = fmt_character, .cycle = character_cycle},
             {.fmt = fmt_powerup, .cycle = powerup_cycle},
             {},
-            {.name = "opt_start"},
+            {.fmt = fmt_start, .disabled = start_disabled},
         },
 
 		[MEN_MULTIPLAYER] = {
@@ -112,7 +113,7 @@ static Catalog CATALOG = {
 		},
 
         [MEN_LOBBY] = {
-            {.name = "opt_world"},
+            {.fmt = fmt_world, .disabled = is_client, .cycle = world_cycle},
             {.fmt = fmt_enter_as, .cycle = enter_as_cycle},
             {.fmt = fmt_character, .cycle = character_cycle},
             {.fmt = fmt_powerup, .cycle = powerup_cycle},
@@ -131,10 +132,13 @@ static Bool draw_main_menu() {
     draw_options(CATALOG.options[MEN_MAIN], CATALOG.menus[MEN_MAIN].option, HALF_SCREEN_HEIGHT);
 
     batch_reset();
-    batch_pos(B_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 24.f));
+    batch_pos(B_XY(64.f, SCREEN_HEIGHT - 24.f));
     batch_color(B_ALPHA(160));
-    batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+    batch_align(B_BOTTOM_LEFT);
     batch_string("main", 24.f, GAME_NAME " " GAME_VERSION);
+    batch_pos(B_XY(SCREEN_WIDTH - 64.f, SCREEN_HEIGHT - 24.f));
+    batch_align(B_BOTTOM_RIGHT);
+    batch_string("main", 24.f, fmt("GameHash: %u", get_game_hash()));
 
     const char* credits = LFMT("credits");
     const float wrap = string_width("main", 16.f, credits) + SCREEN_WIDTH;
@@ -150,9 +154,7 @@ static Bool draw_main_menu() {
     return FALSE;
 }
 
-static void enter_lobby_list_menu(MenuType from) {
-    (void)from;
-
+static void enter_lobby_list_menu(MenuType) {
     find_lobbies();
     SDL_zeroa(CATALOG.options[MEN_LOBBY_LIST]);
 }
@@ -181,10 +183,7 @@ static void tick_lobby_list_menu() {
 }
 
 static void replay_option();
-static void iterate_replay_file(const char* filename, void* buffer, size_t size, void* userdata) {
-    (void)buffer;
-    (void)size;
-
+static void iterate_replay_file(const char* filename, const void*, size_t, void* userdata) {
     size_t* idx = userdata;
     if (*idx >= MAX_OPTIONS)
         return;
@@ -196,16 +195,12 @@ static void iterate_replay_file(const char* filename, void* buffer, size_t size,
     ++*idx;
 }
 
-static void enter_replays_menu(MenuType from) {
-    (void)from;
-
+static void enter_replays_menu(MenuType) {
     leave_replays_menu(MEN_NULL);
     iterate_user_files("replays/*.rpl", FALSE, iterate_replay_file, &(size_t){0});
 }
 
-static void leave_replays_menu(MenuType to) {
-    (void)to;
-
+static void leave_replays_menu(MenuType) {
     for (size_t i = 0; i < MAX_OPTIONS; i++) {
         Option* option = &CATALOG.options[MEN_REPLAYS][i];
         SDL_free((void*)option->name);
@@ -229,12 +224,12 @@ static Bool draw_replays_menu() {
 }
 
 static const char* fmt_lobby() {
-    return LFMT(in_private_lobby() ? "opt_private_lobby" : "opt_public_lobby");
+    const char* lname = get_lobby_name();
+    return fmt("%s (%s)", (lname != NULL && SDL_strnlen(lname, 33) > 32) ? fmt("%.*s...", 32, lname) : lname,
+        LFMT(in_private_lobby() ? "val_private" : "val_public"));
 }
 
-static void leave_lobby_menu(MenuType from) {
-    (void)from;
-
+static void leave_lobby_menu(MenuType) {
     disconnect();
     play_generic_sound("ui/disconnect", PLAY_SYSTEM);
 }
@@ -322,9 +317,28 @@ static Bool draw_lobby_menu() {
 // OPTIONS
 // =======
 
-static const char* fmt_character(size_t idx) {
-    (void)idx;
+static const char* fmt_world(size_t) {
+    const World* world = get_world(is_connected() ? get_lobby_string("world") : CLIENT.world);
+    return fmt("%s: %s", LFMT("opt_world"), (world == NULL) ? NULL : LFMT(fmt("wld_%s", world->name)));
+}
 
+static void world_cycle(Sint8 cycle) {
+    if (is_connected()) {
+        const char* world = get_lobby_string("world");
+        if (world != NULL)
+            SDL_strlcpy(CLIENT.world, world, sizeof(CLIENT.world));
+    }
+
+    const char* wstr
+        = (cycle > 0) ? next_world_from(CLIENT.world) : ((cycle < 0) ? last_world_from(CLIENT.world) : NULL);
+    if (wstr == NULL)
+        CLIENT.world[0] = '\0';
+    else
+        SDL_strlcpy(CLIENT.world, wstr, sizeof(CLIENT.world));
+    update_lobby_data();
+}
+
+static const char* fmt_character(size_t) {
     return fmt("%s: %s", LFMT("opt_character"), get_character_name(CLIENT.character));
 }
 
@@ -341,12 +355,10 @@ static void character_cycle(Sint8 cycle) {
             --CLIENT.character;
     }
 
-    push_user_data();
+    update_peer_data();
 }
 
-static const char* fmt_powerup(size_t idx) {
-    (void)idx;
-
+static const char* fmt_powerup(size_t) {
     const Sint8 cost = get_powerup_cost(CLIENT.powerup);
     return fmt(
         "%s: %s%s", LFMT("opt_powerup"), get_powerup_name(CLIENT.powerup), (cost > 0) ? fmt(" (-%i)", cost) : "");
@@ -365,7 +377,21 @@ static void powerup_cycle(Sint8 cycle) {
             --CLIENT.powerup;
     }
 
-    push_user_data();
+    update_peer_data();
+}
+
+static const char* fmt_start(size_t) {
+    if (is_client())
+        return LFMT("opt_waiting_for_host");
+
+    if (get_world(CLIENT.world) == NULL)
+        return LFMT("opt_invalid_world");
+
+    return LFMT("opt_start");
+}
+
+static Bool start_disabled() {
+    return is_client() || get_world(CLIENT.world) == NULL;
 }
 
 static void saw_online_notice() {
@@ -395,9 +421,7 @@ static void multiplayer_option() {
     userdata->cancel = saw_online_notice;
 }
 
-static const char* fmt_max_peers(size_t idx) {
-    (void)idx;
-
+static const char* fmt_max_peers(size_t) {
     return fmt("%s: %u", LFMT("opt_max_peers"), CLIENT.lobby_limit);
 }
 
@@ -415,15 +439,11 @@ static void max_peers_cycle(Sint8 cycle) {
     }
 }
 
-static const char* fmt_visibility(size_t idx) {
-    (void)idx;
-
+static const char* fmt_visibility(size_t) {
     return fmt("%s: %s", LFMT("opt_visibility"), LFMT(CLIENT.private_lobby ? "val_private" : "val_public"));
 }
 
-static void visibility_cycle(Sint8 cycle) {
-    (void)cycle;
-
+static void visibility_cycle(Sint8) {
     CLIENT.private_lobby = !CLIENT.private_lobby;
 }
 
@@ -480,16 +500,12 @@ static void lobby_option() {
     prompt_connect();
 }
 
-static const char* fmt_enter_as(size_t idx) {
-    (void)idx;
-
+static const char* fmt_enter_as(size_t) {
     return fmt("%s: %s", LFMT("opt_enter_as"),
         LFMT((get_peer_number(get_local_peer(), "spectator") > 0) ? "val_spectator" : "val_player"));
 }
 
-static void enter_as_cycle(Sint8 cycle) {
-    (void)cycle;
-
+static void enter_as_cycle(Sint8) {
     toggle_spectator();
 }
 
@@ -513,7 +529,7 @@ static void options_option() {
 // SCREEN
 // ======
 
-static void start(const char* secret) {
+static void start(const void* secret, size_t secret_size) {
     load_sprite("ui/backgrounds/main", FALSE);
     load_sprite("ui/backgrounds/options", FALSE);
     load_sprite("logos/mario_forever", FALSE);
@@ -529,7 +545,7 @@ static void start(const char* secret) {
     if (secret == NULL)
         goto s_no_secret;
 
-    yyjson_doc* json = read_json(secret, SDL_strlen(secret));
+    yyjson_doc* json = read_json(secret, secret_size);
     if (json == NULL)
         goto s_no_secret;
 

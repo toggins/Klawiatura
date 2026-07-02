@@ -5,9 +5,7 @@
 #include "K_tick.h"
 #include "K_video.h"
 
-void start(const char* secret) {
-    (void)secret;
-
+void start(const void*, size_t) {
     load_sprite("logos/buziol", FALSE);
     load_sound("logo", FALSE);
     load_sound("logo2", FALSE);
@@ -18,7 +16,7 @@ void start(const char* secret) {
 
 void tick() {
     if (totalticks() > 280.f || kb_pressed(KB_UI_ENTER))
-        set_screen(SCR_MENU, NULL);
+        set_screen(SCR_MENU, NULL, 0);
 }
 
 void draw() {
