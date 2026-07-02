@@ -34,7 +34,7 @@ static void enter_replays_menu(MenuType), leave_replays_menu(MenuType), enter_lo
 static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_menu(), kick_player_disabled(), start_disabled();
 
 static const char *fmt_max_peers(size_t), *fmt_visibility(size_t), *fmt_lobby(), *fmt_character(size_t),
-    *fmt_powerup(size_t), *fmt_enter_as(size_t), *fmt_world(size_t), *fmt_start(size_t);
+    *fmt_powerup(size_t), *fmt_enter_as(size_t), *fmt_world(size_t), *fmt_start(size_t), *fmt_kick_player(size_t);
 static void multiplayer_option(), options_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8), host_option(),
     character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option(), world_cycle(Sint8);
 
@@ -118,8 +118,8 @@ static Catalog CATALOG = {
             {.fmt = fmt_character, .cycle = character_cycle},
             {.fmt = fmt_powerup, .cycle = powerup_cycle},
             {.name = "opt_options", .callback = options_option},
-            {.name = "opt_kick_player", .disabled = kick_player_disabled, .callback = kick_player_option},
-            {.name = "opt_start"},
+            {.fmt = fmt_kick_player, .disabled = kick_player_disabled, .callback = kick_player_option},
+            {.fmt = fmt_start, .disabled = start_disabled},
         }
 	}
 };
@@ -507,6 +507,10 @@ static const char* fmt_enter_as(size_t) {
 
 static void enter_as_cycle(Sint8) {
     toggle_spectator();
+}
+
+static const char* fmt_kick_player(size_t) {
+    return is_client() ? NULL : LFMT("opt_kick_player");
 }
 
 static Bool kick_player_disabled() {
