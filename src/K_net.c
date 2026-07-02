@@ -31,8 +31,8 @@ static void set_last_error(const char* error) {
     last_error = (error == NULL || error[0] == '\0') ? NULL : SDL_strdup(error);
 }
 
-static void on_disconnected(const char* reason) {
-    set_last_error(reason);
+static void on_disconnected(NutBlast_Reason reason) {
+    set_last_error((SDL_strcmp(reason.code, NUTBLAST_ERROR_OK) == 0) ? NULL : reason.code);
 }
 
 static void on_peer_joined(NetID pid) {
@@ -40,21 +40,26 @@ static void on_peer_joined(NetID pid) {
     play_generic_sound("ui/join", PLAY_SYSTEM);
 }
 
-static void on_peer_left(NetID pid) {
+static void on_peer_left(NetID pid, NutBlast_Reason reason) {
+    const Bool has_reason = SDL_strcmp(reason.code, NUTBLAST_ERROR_OK) != 0;
+
     if (!nuke_spectator_peer(pid)) {
         for (size_t i = 0; i < SDL_arraysize(player_peers); i++) {
             if (player_peers[i] != pid)
                 continue;
 
-            if (get_screen() != SCR_MENU)
-                boot_to_menu(LFMT("msg_player_left", 's', get_peer_name(pid)));
+            if (get_screen() != SCR_MENU) {
+                const char* lstr = LFMT("msg_player_left", 's', get_peer_name(pid));
+                boot_to_menu(has_reason ? fmt("%s\n%s", lstr, reason.code) : lstr);
+            }
 
             player_peers[i] = 0;
             break;
         }
     }
 
-    chat_message(LFMT("chat_left", 's', get_peer_name(pid)), B_YELLOW);
+    const char* lstr = LFMT("chat_left", 's', get_peer_name(pid));
+    chat_message(has_reason ? fmt("%s (%s)", lstr, reason.code) : lstr, B_YELLOW);
     play_generic_sound("ui/leave", PLAY_SYSTEM);
 }
 

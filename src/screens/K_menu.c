@@ -236,22 +236,26 @@ static void leave_lobby_menu(MenuType) {
 
 static const char* fmt_disconnected() {
     const char* error = net_error();
-    return (error == NULL) ? LFMT("msg_disconnected") : fmt("%s\n\n%s", LFMT("msg_disconnected"), error);
+    return (error == NULL) ? LFMT("msg_disconnected") : fmt("%s\n(%s)", LFMT("msg_disconnected"), error);
+}
+
+static void cancel_error() {
+    previous_menu(&CATALOG);
 }
 
 static void tick_lobby_menu() {
     if (is_connected())
         return;
 
-    previous_menu(&CATALOG);
-
     UI* message = create_ui(UI_MESSAGE, NULL);
-    if (message == NULL)
-        return;
-
-    UIMessageData* userdata = message->userdata;
-    userdata->title = "msg_error";
-    userdata->fmt = fmt_disconnected;
+    if (message == NULL) {
+        cancel_error();
+    } else {
+        UIMessageData* userdata = message->userdata;
+        userdata->title = "msg_error";
+        userdata->fmt = fmt_disconnected;
+        userdata->cancel = cancel_error;
+    }
 }
 
 static Bool draw_lobby_menu() {
