@@ -107,12 +107,11 @@ static void start(const void* secret, size_t secret_size) {
             {255, 255, 255, 255}
         };
 
-        for (size_t j = 0, arrn = yyjson_arr_size(jarray), n = SDL_min(4, arrn); j < n; j++) {
-            yyjson_val* jcolor = yyjson_arr_get(jarray, j);
-            colors[j][0] = (Uint8)yyjson_get_uint(yyjson_arr_get(jcolor, 0));
-            colors[j][1] = (Uint8)yyjson_get_uint(yyjson_arr_get(jcolor, 1));
-            colors[j][2] = (Uint8)yyjson_get_uint(yyjson_arr_get(jcolor, 2));
-            colors[j][3] = (Uint8)yyjson_get_uint(yyjson_arr_get(jcolor, 3));
+        for (size_t j = 0; j < yyjson_arr_size(jarray) && j < 4; j++) {
+            yyjson_val* const jcolor = yyjson_arr_get(jarray, j);
+
+            for (size_t k = 0; k < 4; k++)
+                colors[j][k] = (Uint8)yyjson_get_uint(yyjson_arr_get(jcolor, k));
         }
 
         add_tilemap(world_state->tilemap, sprite, pos, has_size ? size : NULL, flip, tile, colors);
