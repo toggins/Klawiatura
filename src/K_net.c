@@ -340,8 +340,8 @@ Bool nuke_spectator_peer(NetID pid) {
 
 Uint8 get_lobby_player_count() {
     Uint8 count = 0;
-    for (const NetID* ptr = get_peers(); *ptr > 0; ptr++)
-        if (get_peer_number(*ptr, "spectator") <= 0)
+    for (const NetID* pids = get_peers(); *pids > 0; pids++)
+        if (get_peer_number(*pids, "spectator") <= 0)
             ++count;
 
     return count;
@@ -349,8 +349,8 @@ Uint8 get_lobby_player_count() {
 
 Uint8 get_lobby_spectator_count() {
     Uint8 count = 0;
-    for (const NetID* ptr = get_peers(); *ptr > 0; ptr++)
-        if (get_peer_number(*ptr, "spectator") > 0)
+    for (const NetID* pids = get_peers(); *pids > 0; pids++)
+        if (get_peer_number(*pids, "spectator") > 0)
             ++count;
 
     return count;
@@ -487,13 +487,14 @@ void peers_to_players(Uint8** cur) {
 
     // Fill player-to-peer and spectator-to-peer tables
     if (is_connected()) {
-        for (const NetID* ptr = get_peers(); *ptr > 0; ptr++) {
-            if (num_players >= SDL_arraysize(player_peers) || get_peer_number(*ptr, "spectator") > 0) {
+        for (const NetID* pids = get_peers(); *pids > 0; pids++) {
+            const NetID pid = *pids;
+            if (num_players >= SDL_arraysize(player_peers) || get_peer_number(pid, "spectator") > 0) {
                 if (num_spectators < SDL_arraysize(spectator_peers))
-                    spectator_peers[num_spectators++] = *ptr;
+                    spectator_peers[num_spectators++] = pid;
             } else {
                 if (num_players < SDL_arraysize(player_peers))
-                    player_peers[num_players++] = *ptr;
+                    player_peers[num_players++] = pid;
             }
         }
     }
@@ -622,11 +623,11 @@ void send_reliable_packet(PacketChannel channel, NetID pid, const Uint8* data, i
 }
 
 void spread_packet(PacketChannel channel, const Uint8* data, int size) {
-    for (const NetID* ptr = get_peers(); *ptr > 0; ptr++)
-        send_packet(channel, *ptr, data, size);
+    for (const NetID* pids = get_peers(); *pids > 0; pids++)
+        send_packet(channel, *pids, data, size);
 }
 
 void spread_reliable_packet(PacketChannel channel, const Uint8* data, int size) {
-    for (const NetID* ptr = get_peers(); *ptr > 0; ptr++)
-        send_reliable_packet(channel, *ptr, data, size);
+    for (const NetID* pids = get_peers(); *pids > 0; pids++)
+        send_reliable_packet(channel, *pids, data, size);
 }

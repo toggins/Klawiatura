@@ -13,7 +13,7 @@
 void file_init(const char**), file_teardown();
 void load_mod(const char*);
 
-yyjson_doc* read_json(const char*, size_t);
+yyjson_doc* read_json(const char*, size_t, const char**);
 
 SDL_IOStream* stream_base_file(const char*);
 

@@ -30,12 +30,12 @@
     }
 
 typedef struct {
-    GLuint vao, vbo;
-} SubmodelInternal;
-
-typedef struct {
     GLuint fbo, texture[SURF_SIZE];
 } SurfaceInternal;
+
+typedef struct {
+    GLuint vao, vbo;
+} TileBatchInternal;
 
 typedef struct {
     const char* name;
@@ -1713,6 +1713,198 @@ void pop_surface() {
     }
 
     current_surface = surface;
+}
+
+// ========
+// TILEMAPS
+// ========
+
+TileMap* create_tilemap() {
+    TileMap* tilemap = SDL_calloc(1, sizeof(*tilemap));
+    EXPECT(tilemap, "Failed to allocate tilemap");
+    return tilemap;
+}
+
+void destroy_tilemap(TileMap* tilemap) {
+    if (tilemap != NULL) {
+        FreeTinyMap(&tilemap->batches);
+        SDL_free(tilemap);
+    }
+}
+
+static void nuke_tile_batch(void* ptr) {
+    TileBatch* tile_batch = ptr;
+
+    TileBatchInternal* tbdata = tile_batch->internal;
+    glDeleteVertexArrays(1, &tbdata->vao);
+    glDeleteBuffers(1, &tbdata->vbo);
+    SDL_free(tbdata);
+
+    SDL_free(tile_batch->vertices);
+}
+
+static void tile_batch_vertex(TileBatch* tile_batch, const float pos[3], const Uint8 color[4], const float uv[2]) {
+    if (tile_batch->vertex_count >= tile_batch->vertex_capacity) {
+        const size_t new_size = tile_batch->vertex_capacity * 2;
+        EXPECT(new_size >= tile_batch->vertex_capacity, "Capacity overflow in tile batch");
+        tile_batch->vertices = SDL_realloc(tile_batch->vertices, new_size * sizeof(Vertex));
+        EXPECT(tile_batch->vertices, "Out of memory for tile batch");
+        tile_batch->vertex_capacity = new_size;
+
+        glBindBuffer(GL_ARRAY_BUFFER, ((TileBatchInternal*)tile_batch->internal)->vbo);
+        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * tile_batch->vertex_capacity), NULL, GL_STATIC_DRAW);
+    }
+
+    tile_batch->vertices[tile_batch->vertex_count++] = (Vertex){
+        .position = {pos[0], pos[1], pos[2]},
+        .color = {color[0], color[1], color[2], color[3]},
+        .uv = {uv[0], uv[1]},
+    };
+    tile_batch->transparent |= color[3] < 255;
+}
+
+static void tile_batch_sprite(TileBatch* tile_batch, const Sprite* sprite, const float pos[3], const float size[2],
+    const Bool flip[2], const Bool tile[2], const Uint8 colors[4][4]) {
+    tile_batch->tile[0] |= tile[0];
+    tile_batch->tile[1] |= tile[1];
+
+    const float x = pos[0] - ((sprite == NULL || tile[0]) ? 0.f : sprite->offset[0]),
+                y = pos[1] - ((sprite == NULL || tile[1]) ? 0.f : sprite->offset[1]);
+
+    float w = 1.f, h = 1.f;
+    if (size == NULL) {
+        if (sprite != NULL) {
+            w = sprite->size[0];
+            h = sprite->size[1];
+        }
+    } else {
+        w = size[0];
+        h = size[1];
+    }
+
+    float u1 = 0.f, v1 = 0.f, u2 = 1.f, v2 = 1.f;
+    if (sprite != NULL) {
+        if (tile[0]) {
+            *(flip[0] ? &u1 : &u2) = w / sprite->size[0];
+        } else {
+            u1 = sprite->uvs[flip[0] ? 2 : 0];
+            u2 = sprite->uvs[flip[0] ? 0 : 2];
+        }
+        if (tile[1]) {
+            *(flip[1] ? &v1 : &v2) = h / sprite->size[1];
+        } else {
+            v1 = sprite->uvs[flip[1] ? 3 : 1];
+            v2 = sprite->uvs[flip[1] ? 1 : 3];
+        }
+    }
+
+    const float x2 = x + w, y2 = y + h;
+    tile_batch_vertex(tile_batch, B_XYZ(x, y2, pos[2]), colors[2], B_UV(u1, v2));
+    tile_batch_vertex(tile_batch, B_XYZ(x, y, pos[2]), colors[0], B_UV(u1, v1));
+    tile_batch_vertex(tile_batch, B_XYZ(x2, y, pos[2]), colors[1], B_UV(u2, v1));
+    tile_batch_vertex(tile_batch, B_XYZ(x2, y, pos[2]), colors[1], B_UV(u2, v1));
+    tile_batch_vertex(tile_batch, B_XYZ(x2, y2, pos[2]), colors[3], B_UV(u2, v2));
+    tile_batch_vertex(tile_batch, B_XYZ(x, y2, pos[2]), colors[2], B_UV(u1, v2));
+}
+
+void add_tilemap(TileMap* tilemap, const char* name, const float pos[3], const float size[2], const Bool flip[2],
+    const Bool tile[2], const Uint8 colors[4][4]) {
+    if (tilemap == NULL)
+        return;
+
+    const TinyHash key = StHashStr(name);
+    const Sprite* sprite = get_sprite_key(key);
+    if (sprite == NULL && name != NULL) {
+        WARN("Unknown sprite \"%s\"", name);
+        return;
+    }
+
+    TileBatch* tile_batch = (TileBatch*)TinyMapGet(&tilemap->batches, key);
+    if (tile_batch != NULL) {
+        tile_batch_sprite(tile_batch, sprite, pos, size, flip, tile, colors);
+        return;
+    }
+
+    tile_batch = &(TileBatch){0};
+    tile_batch->texture_key = (sprite == NULL) ? key : sprite->texture_key;
+
+    tile_batch->vertex_capacity = 6;
+    tile_batch->vertices = SDL_calloc(tile_batch->vertex_capacity, sizeof(*tile_batch->vertices));
+    EXPECT(tile_batch->vertices, "Failed to allocate tile batch vertices");
+
+    TileBatchInternal* tbdata = SDL_calloc(1, sizeof(*tbdata));
+    EXPECT(tbdata, "Failed to allocate tile batch data");
+
+    glGenVertexArrays(1, &tbdata->vao);
+    glBindVertexArray(tbdata->vao);
+
+    glGenBuffers(1, &tbdata->vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, tbdata->vbo);
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * tile_batch->vertex_capacity), NULL, GL_STATIC_DRAW);
+
+    // NOLINTBEGIN(performance-no-int-to-ptr)
+    glEnableVertexAttribArray(VATT_POSITION);
+    glVertexAttribPointer(VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+    glEnableVertexAttribArray(VATT_COLOR);
+    glVertexAttribPointer(VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+    glEnableVertexAttribArray(VATT_UV);
+    glVertexAttribPointer(VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+    // NOLINTEND(performance-no-int-to-ptr)
+
+    tile_batch->internal = tbdata;
+
+    tile_batch_sprite(tile_batch, sprite, pos, size, flip, tile, colors);
+    TinyBucket* bucket = TinyMapPut(&tilemap->batches, key, tile_batch, sizeof(*tile_batch));
+    bucket->cleanup = nuke_tile_batch;
+
+    if (tilemap->first_batch == NULL) {
+        tilemap->first_batch = bucket->data;
+    } else {
+        TileBatch* tb = tilemap->first_batch;
+        while (tb != NULL) {
+            if (tb->next == NULL) {
+                tb->next = bucket->data;
+                break;
+            }
+
+            tb = tb->next;
+        }
+    }
+}
+
+void draw_tilemap(const TileMap* tilemap) {
+    if (tilemap == NULL)
+        return;
+
+    submit_batch();
+
+    set_float_uniform(UNI_ALPHA_TEST, batch.alpha_test);
+    set_vec4_uniform(UNI_STENCIL, batch.stencil);
+    set_mat4_uniform(UNI_MVP, *get_mvp_matrix());
+    apply_batch();
+
+    const Sint32 filter = (batch.filter && CLIENT.texture_filter) ? GL_LINEAR : GL_NEAREST;
+
+    for (const TileBatch* tile_batch = tilemap->first_batch; tile_batch != NULL; tile_batch = tile_batch->next) {
+        const TileBatchInternal* tbdata = tile_batch->internal;
+
+        glBindVertexArray(tbdata->vao);
+        glBindBuffer(GL_ARRAY_BUFFER, tbdata->vbo);
+        glBufferSubData(
+            GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(Vertex) * tile_batch->vertex_count), tile_batch->vertices);
+
+        // Apply texture
+        const Texture* texture = get_texture_key(tile_batch->texture_key);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, (texture == NULL) ? blank_texture : *(GLuint*)texture->internal);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tile_batch->tile[0] ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tile_batch->tile[1] ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+
+        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)tile_batch->vertex_count);
+    }
 }
 
 // =====

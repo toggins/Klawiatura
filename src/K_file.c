@@ -140,11 +140,14 @@ static yyjson_doc* load_json(const char* path, const char* pattern) {
     return json;
 }
 
-yyjson_doc* read_json(const char* str, size_t len) {
+yyjson_doc* read_json(const char* str, size_t len, const char** err) {
     yyjson_read_err error = {0};
     yyjson_doc* json = yyjson_read_opts((char*)str, len, JSON_READ_FLAGS, NULL, &error);
-    if (json == NULL)
+    if (json == NULL) {
+        if (err != NULL)
+            *err = error.msg;
         WTF("Failed to read JSON: %s", error.msg);
+    }
 
     return json;
 }

@@ -218,12 +218,21 @@ enum {
     STO_INVERT,
 };
 
-typedef struct {
+typedef struct TileBatch {
+    Bool transparent, tile[2];
+    TinyHash texture_key;
+
+    size_t vertex_count, vertex_capacity;
+    Vertex* vertices;
+
+    struct TileBatch* next;
+
     void* internal;
 } TileBatch;
 
 typedef struct {
     TinyMap batches;
+    TileBatch* first_batch;
 } TileMap;
 
 void video_init(Bool), video_teardown();
@@ -302,5 +311,12 @@ void destroy_surface(Surface*);
 void check_surface(Surface*), dispose_surface(Surface*);
 void resize_surface(Surface*, Uint16, Uint16);
 void push_surface(Surface*), pop_surface();
+
+// Tilemaps
+TileMap* create_tilemap();
+void destroy_tilemap(TileMap*);
+void
+add_tilemap(TileMap*, const char*, const float[3], const float[2], const Bool[2], const Bool[2], const Uint8[4][4]);
+void draw_tilemap(const TileMap*);
 
 #endif

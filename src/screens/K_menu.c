@@ -36,7 +36,8 @@ static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_menu(), kick_playe
 static const char *fmt_max_peers(size_t), *fmt_visibility(size_t), *fmt_lobby(), *fmt_character(size_t),
     *fmt_powerup(size_t), *fmt_enter_as(size_t), *fmt_world(size_t), *fmt_start(size_t), *fmt_kick_player(size_t);
 static void multiplayer_option(), options_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8), host_option(),
-    character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option(), world_cycle(Sint8);
+    character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option(), world_cycle(Sint8),
+    start_option();
 
 static Catalog CATALOG = {
 	.current = MEN_MAIN,
@@ -97,7 +98,7 @@ static Catalog CATALOG = {
             {.fmt = fmt_character, .cycle = character_cycle},
             {.fmt = fmt_powerup, .cycle = powerup_cycle},
             {},
-            {.fmt = fmt_start, .disabled = start_disabled},
+            {.fmt = fmt_start, .disabled = start_disabled, .callback = start_option},
         },
 
 		[MEN_MULTIPLAYER] = {
@@ -119,7 +120,7 @@ static Catalog CATALOG = {
             {.fmt = fmt_powerup, .cycle = powerup_cycle},
             {.name = "opt_options", .callback = options_option},
             {.fmt = fmt_kick_player, .disabled = kick_player_disabled, .callback = kick_player_option},
-            {.fmt = fmt_start, .disabled = start_disabled},
+            {.fmt = fmt_start, .disabled = start_disabled, .callback = start_option},
         }
 	}
 };
@@ -276,8 +277,8 @@ static Bool draw_lobby_menu() {
     py += PEER_SIZE;
 
     Uint8 line = 0;
-    for (const NetID* ptr = get_peers(); *ptr > 0; ptr++) {
-        const NetID pid = *ptr;
+    for (const NetID* pids = get_peers(); *pids > 0; pids++) {
+        const NetID pid = *pids;
         const Bool is_master = get_master_peer() == pid;
         batch_color((get_local_peer() == pid) ? (is_master ? B_RGB(255, 144, 80) : B_YELLOW)
                                               : (is_master ? B_RGB(255, 160, 160) : B_WHITE));
@@ -396,6 +397,41 @@ static const char* fmt_start(size_t) {
 
 static Bool start_disabled() {
     return is_client() || get_world(CLIENT.world) == NULL;
+}
+
+static void start_option() {
+    if (is_client())
+        return;
+
+    const TinyHash key = StHashStr(CLIENT.world);
+    if (get_world_key(key) == NULL)
+        return;
+
+    WorldContext ctx = init_world_context();
+    ctx.world = key;
+
+    if (is_connected()) {
+        PlayerID i = 0;
+        for (const NetID* pids = get_peers(); *pids > 0; pids++) {
+            const NetID pid = *pids;
+
+            GamePlayerContext* pctx = &ctx.players[i];
+            pctx->character = get_peer_number(pid, "character");
+            pctx->powerup = get_peer_number(pid, "powerup");
+            pctx->lives = (Sint8)(pctx->lives - get_powerup_cost(pctx->powerup));
+
+            if (++i >= SDL_arraysize(ctx.players))
+                break;
+        }
+        ctx.num_players = i;
+    } else {
+        GamePlayerContext* pctx = &ctx.players[0];
+        pctx->character = CLIENT.character;
+        pctx->powerup = CLIENT.powerup;
+        pctx->lives = (Sint8)(pctx->lives - get_powerup_cost(pctx->powerup));
+    }
+
+    set_screen(SCR_MAP, &ctx, sizeof(ctx));
 }
 
 static void saw_online_notice() {
@@ -553,7 +589,7 @@ static void start(const void* secret, size_t secret_size) {
     if (secret == NULL)
         goto s_no_secret;
 
-    yyjson_doc* json = read_json(secret, secret_size);
+    yyjson_doc* json = read_json(secret, secret_size, NULL);
     if (json == NULL)
         goto s_no_secret;
 

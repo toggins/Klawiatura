@@ -28,8 +28,8 @@ static void create(UI* ui) {
 
     UIKickData* userdata = ui->userdata;
     size_t i = 0;
-    for (const NetID* ptr = get_peers(); *ptr > 0; ptr++) {
-        const NetID pid = *ptr;
+    for (const NetID* pids = get_peers(); *pids > 0; pids++) {
+        const NetID pid = *pids;
         if (get_local_peer() == pid || get_master_peer() == pid)
             continue;
 

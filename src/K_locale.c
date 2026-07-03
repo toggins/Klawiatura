@@ -17,7 +17,7 @@ static void nuke_language(void* ptr) {
 }
 
 static void iterate_language_file(const char* filename, const void* buffer, size_t size, void* userdata) {
-    yyjson_doc* json = read_json(buffer, size);
+    yyjson_doc* json = read_json(buffer, size, NULL);
     ASSUME(json, "Failed to read language \"%s\"", filename);
 
     yyjson_val* root = yyjson_doc_get_root(json);

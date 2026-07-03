@@ -12,8 +12,9 @@ static void nuke_world(void* ptr) {
 }
 
 static void iterate_world_file(const char* filename, const void* buffer, size_t size, void*) {
-    yyjson_doc* json = read_json(buffer, size);
-    ASSUME(json, "Failed to read world \"%s\"", filename);
+    const char* error = NULL;
+    yyjson_doc* json = read_json(buffer, size, &error);
+    ASSUME(json, "Failed to read world \"%s\": %s", filename, error);
 
     const char* name = filename_no_ext(file_basename(filename));
 
@@ -96,4 +97,14 @@ const char* last_world_from(const char* name) {
     if (world == NULL && n > 0)
         world = get_world_key(world_array[0]);
     return (world == NULL) ? NULL : world->name;
+}
+
+WorldContext init_world_context() {
+    WorldContext ctx = {0};
+
+    ctx.num_players = 1;
+    for (size_t i = 0; i < SDL_arraysize(ctx.players); i++)
+        ctx.players[i].lives = DEFAULT_LIVES;
+
+    return ctx;
 }

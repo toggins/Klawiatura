@@ -1,1 +1,50 @@
-{}
+{
+    "map": {
+        "size": [810, 480],
+        "track": "riot_11",
+        "backdrops": [
+            {
+                "sprite": "maps/background",
+                "pos": [-31, 0, 100],
+                "size": [1869, 499],
+                "tile": [true, false]
+            },
+            {
+                "sprite": "maps/1",
+                "pos": [33, 42, 50]
+            },
+            {
+                "sprite": "maps/cloud",
+                "pos": [78, 77, 50]
+            },
+            {
+                "sprite": "maps/cloud",
+                "pos": [146, 105, 50]
+            },
+            {
+                "sprite": "maps/cloud",
+                "pos": [219, 82, 50]
+            },
+            {
+                "sprite": "maps/cloud",
+                "pos": [271, 38, 50]
+            },
+            {
+                "sprite": "maps/cloud",
+                "pos": [294, 118, 50]
+            },
+            {
+                "sprite": "maps/cloud",
+                "pos": [339, 59, 50]
+            },
+            {
+                "sprite": "maps/cloud",
+                "pos": [384, 85, 50]
+            },
+            {
+                "sprite": "maps/cloud",
+                "pos": [480, 64, 50]
+            }
+        ]
+    }
+}
