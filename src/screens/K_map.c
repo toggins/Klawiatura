@@ -25,7 +25,7 @@ static void start(const void* secret, size_t secret_size) {
         "Invalid player count in world context! Expected 1..%i, got %i", MAX_PLAYERS, world_context.num_players);
 
     const World* world = get_world_key(world_context.world);
-    EXPECT(world, "Invalid world hash %" PRIu64, world_context.world);
+    EXPECT(world, "Invalid world hash %" SDL_PRIu64, world_context.world);
 
     size_t size = 0;
     const void* buffer = load_data_file(fmt("worlds/%s.json", world->name), &size);
