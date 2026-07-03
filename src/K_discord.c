@@ -81,7 +81,7 @@ void update_discord_status() {
     if (is_connected()) {
         const NetID lobby_id = get_lobby_id();
 
-        const char* text = fmt("%s %llu", CLIENT.server, lobby_id);
+        const char* text = fmt("%s %" PRIu64, CLIENT.server, lobby_id);
         const Uint32 party_id = SDL_crc32(0, text, SDL_strlen(text));
 
         text = fmt("%X", party_id);

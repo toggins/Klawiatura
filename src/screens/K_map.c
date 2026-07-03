@@ -25,7 +25,7 @@ static void start(const void* secret, size_t secret_size) {
         "Invalid player count in world context! Expected 1..%i, got %i", MAX_PLAYERS, world_context.num_players);
 
     const World* world = get_world_key(world_context.world);
-    EXPECT(world, "Invalid world hash %llu", world_context.world);
+    EXPECT(world, "Invalid world hash %" PRIu64, world_context.world);
 
     size_t size = 0;
     const void* buffer = load_data_file(fmt("worlds/%s.json", world->name), &size);
@@ -106,12 +106,13 @@ static void start(const void* secret, size_t secret_size) {
             {255, 255, 255, 255},
             {255, 255, 255, 255}
         };
+
         for (size_t j = 0, arrn = yyjson_arr_size(jarray), n = SDL_min(4, arrn); j < n; j++) {
             yyjson_val* jcolor = yyjson_arr_get(jarray, j);
-            colors[j][0] = yyjson_get_uint(yyjson_arr_get(jcolor, 0));
-            colors[j][1] = yyjson_get_uint(yyjson_arr_get(jcolor, 1));
-            colors[j][2] = yyjson_get_uint(yyjson_arr_get(jcolor, 2));
-            colors[j][3] = yyjson_get_uint(yyjson_arr_get(jcolor, 3));
+            colors[j][0] = (Uint8)yyjson_get_uint(yyjson_arr_get(jcolor, 0));
+            colors[j][1] = (Uint8)yyjson_get_uint(yyjson_arr_get(jcolor, 1));
+            colors[j][2] = (Uint8)yyjson_get_uint(yyjson_arr_get(jcolor, 2));
+            colors[j][3] = (Uint8)yyjson_get_uint(yyjson_arr_get(jcolor, 3));
         }
 
         add_tilemap(world_state->tilemap, sprite, pos, has_size ? size : NULL, flip, tile, colors);
