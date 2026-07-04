@@ -199,6 +199,7 @@ if(EMSCRIPTEN)
         "SHELL:-s MIN_WEBGL_VERSION=2"
         "SHELL:-s MAX_WEBGL_VERSION=2"
         "SHELL:-s ALLOW_MEMORY_GROWTH=1"
+        "SHELL:-s TEXTDECODER=2"
         "SHELL:-s ASYNCIFY=1")
 endif()
 
