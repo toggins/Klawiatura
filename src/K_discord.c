@@ -113,8 +113,12 @@ void update_discord_status() {
         break;
 
     case SCR_MENU: {
-        Discord_Activity_SetDetails(&activity, is_connected() ? &STATIC_STRING("In Lobby") : &STATIC_STRING("Menu"));
+        Discord_Activity_SetDetails(&activity, is_connected() ? &STATIC_STRING("Lobby") : &STATIC_STRING("Menu"));
+        break;
+    }
 
+    case SCR_MAP: {
+        Discord_Activity_SetDetails(&activity, &STATIC_STRING("Map"));
         break;
     }
 
