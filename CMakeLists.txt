@@ -153,7 +153,7 @@ list(APPEND LIBS S_tructures)
 
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG 30164b35426d38e6bf40c9b726b440876fdde696
+	GIT_TAG c55b5cad15f59aefc1de30264246774c52fda117
 	EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(NutBlast)
 
@@ -197,8 +197,7 @@ add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${HEADERS} ${RESFILE})
 if(EMSCRIPTEN)
     target_link_options(${PROJECT_NAME} PRIVATE
         "SHELL:-s MIN_WEBGL_VERSION=2"
-        "SHELL:-s MAX_WEBGL_VERSION=2"
-        "SHELL:-s ASYNCIFY=1")
+        "SHELL:-s MAX_WEBGL_VERSION=2")
 endif()
 
 target_include_directories(${PROJECT_NAME}
