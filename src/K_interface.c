@@ -129,6 +129,7 @@ iu_dont_change:
             } else {
                 message->flags |= UIF_MEGABLOCK;
                 UIMessageData* userdata = message->userdata;
+                userdata->title = "msg_error";
                 userdata->fmt = fmt_boot;
                 userdata->cancel = cancel_boot;
 
