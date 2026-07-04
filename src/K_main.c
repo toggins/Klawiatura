@@ -42,7 +42,7 @@ static void cmd_mod() {
 
     if (mods == NULL)
         mods = (const char**)MakeTinyDPro(sizeof(mods), sizeof(*mods));
-    mods = (const char**)TinyDAppendPro((void*)mods, (void*)&path);
+    mods = (const char**)TinyDPush((void*)mods, (void*)&path);
 }
 
 MAKE_FLAG(force_shader);

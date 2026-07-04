@@ -10,6 +10,21 @@
 #include "K_worlds.h"
 
 typedef struct {
+    float y, y_speed;
+} MapLabel;
+
+typedef struct {
+    Uint8 frame;
+    float pos[2], speed[2];
+} MapBubble;
+
+typedef struct {
+    Bool swimming;
+    float pos[2], speed, frame;
+    MapBubble* bubbles;
+} MapPlayer;
+
+typedef struct {
     Bool cross;
     Sint32 pos[2];
 } MapPoint;
@@ -21,10 +36,11 @@ typedef struct {
 typedef struct {
     Uint16 size[2];
     Sint32 camera_pos[2];
+    Sint32 water[4];
 
-    float title_y, title_y_speed;
+    MapLabel label;
+    MapPlayer player;
 
-    float player_pos[2], player_speed, player_frame;
     size_t current_node, current_point;
 
     const char *title, *track;
@@ -131,39 +147,47 @@ static void start(const void* secret, size_t secret_size) {
         add_tilemap(map_state->tilemap, sprite, pos, has_size ? size : NULL, flip, tile, colors);
     }
 
-    jarray = yyjson_arr_get(yyjson_obj_get(jmap, "paths"), WORLD_CONTEXT.level);
-    for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
-        yyjson_val* jpoint = yyjson_arr_get(jarray, i);
-        if (!yyjson_is_arr(jpoint))
-            continue;
+    yyjson_val* jpath = yyjson_arr_get(yyjson_obj_get(jmap, "paths"), WORLD_CONTEXT.level);
+    if (yyjson_is_obj(jpath)) {
+        jarray = yyjson_obj_get(jpath, "nodes");
+        for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
+            yyjson_val* jnode = yyjson_arr_get(jarray, i);
+            if (!yyjson_is_arr(jnode))
+                continue;
 
-        if (map_state->path == NULL)
-            map_state->path = MakeTinyDPro(sizeof(MapPathNode), sizeof(MapPathNode));
+            if (map_state->path == NULL)
+                map_state->path = MakeTinyDPro(sizeof(MapPathNode), sizeof(MapPathNode));
 
-        MapPathNode node = {0};
-        node.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jpoint, 0));
-        node.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jpoint, 1));
+            MapPathNode node = {0};
+            node.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jnode, 0));
+            node.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jnode, 1));
 
-        map_state->path = TinyDAppendPro(map_state->path, &node);
+            map_state->path = TinyDPush(map_state->path, &node);
+        }
+
+        jarray = yyjson_obj_get(jpath, "water");
+        map_state->water[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 0));
+        map_state->water[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 1));
+        map_state->water[2] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 2));
+        map_state->water[3] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 3));
     }
 
     if (map_state->path != NULL) {
         jarray = yyjson_obj_get(jmap, "points");
         for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
             yyjson_val* jpoint = yyjson_arr_get(jarray, i);
-            if (!yyjson_is_obj(jpoint))
+            if (!yyjson_is_arr(jpoint))
                 continue;
 
             if (map_state->points == NULL)
                 map_state->points = MakeTinyDPro(sizeof(MapPoint), sizeof(MapPoint));
 
             MapPoint point = {0};
-            yyjson_val* jarr2 = yyjson_obj_get(jpoint, "pos");
-            point.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarr2, 0));
-            point.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarr2, 1));
-            point.cross = yyjson_get_bool(yyjson_obj_get(jpoint, "cross"));
+            point.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jpoint, 0));
+            point.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jpoint, 1));
+            point.cross = yyjson_get_bool(yyjson_arr_get(jpoint, 2));
 
-            map_state->points = TinyDAppendPro(map_state->points, &point);
+            map_state->points = TinyDPush(map_state->points, &point);
         }
     }
 
@@ -182,14 +206,18 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite_num("ui/map/point/%u", 6, FALSE);
     load_sprite_num("ui/map/cross/%u", 11, FALSE);
 
-    const GamePlayerContext* pctx = &WORLD_CONTEXT.players[0];
-    load_sprite(get_character_sprite(pctx->character, pctx->powerup, PF_WALK1), FALSE);
-    load_sprite(get_character_sprite(pctx->character, pctx->powerup, PF_WALK2), FALSE);
-    load_sprite(get_character_sprite(pctx->character, pctx->powerup, PF_WALK3), FALSE);
-
     load_sprite(map_state->title, FALSE);
-    if (map_state->path == NULL)
+    if (map_state->path == NULL) {
         load_sprite_num("ui/map/world/completed/%u", 16, FALSE);
+    } else {
+        const GamePlayerContext* pctx = &WORLD_CONTEXT.players[0];
+        for (PlayerFrame i = PF_WALK1; i <= (PlayerFrame)PF_WALK3; i++)
+            load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), FALSE);
+        for (PlayerFrame i = PF_SWIM1; i <= (PlayerFrame)PF_SWIM8; i++)
+            load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), FALSE);
+
+        load_sprite("ui/map/bubble", FALSE);
+    }
 
     load_sprite("ui/map/logo", FALSE);
     load_sprite("ui/bezel_l", FALSE);
@@ -203,27 +231,27 @@ static void start(const void* secret, size_t secret_size) {
     map_state->surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
 
     if (map_state->path != NULL) {
-        map_state->title_y = -69.f;
+        map_state->label.y = -69.f;
 
         const MapPathNode* node = &map_state->path[0];
-        map_state->player_pos[0] = (float)node->pos[0];
-        map_state->player_pos[1] = (float)node->pos[1];
-        map_state->player_speed = 1.f;
+        map_state->player.pos[0] = (float)node->pos[0];
+        map_state->player.pos[1] = (float)node->pos[1];
+        map_state->player.speed = 1.f;
 
         const size_t n = TinyDLength(map_state->points);
         while (map_state->current_point < n) {
-            if (map_state->player_pos[0] < (float)map_state->points[map_state->current_point].pos[0])
+            if (map_state->player.pos[0] < (float)map_state->points[map_state->current_point].pos[0])
                 break;
 
             ++map_state->current_point;
         }
 
         map_state->camera_pos[0]
-            = SDL_clamp(map_state->player_pos[0], HALF_SCREEN_WIDTH, map_state->size[0] - HALF_SCREEN_WIDTH);
+            = SDL_clamp(map_state->player.pos[0], HALF_SCREEN_WIDTH, map_state->size[0] - HALF_SCREEN_WIDTH);
         map_state->camera_pos[1]
-            = SDL_clamp(map_state->player_pos[1], HALF_SCREEN_HEIGHT, map_state->size[1] - HALF_SCREEN_HEIGHT);
+            = SDL_clamp(map_state->player.pos[1], HALF_SCREEN_HEIGHT, map_state->size[1] - HALF_SCREEN_HEIGHT);
     } else {
-        map_state->title_y = -102.f;
+        map_state->label.y = -102.f;
 
         map_state->camera_pos[0] = map_state->size[0] - HALF_SCREEN_WIDTH;
         map_state->camera_pos[1] = HALF_SCREEN_HEIGHT;
@@ -239,49 +267,49 @@ static void end() {
     destroy_tilemap(map_state->tilemap);
     FreeTinyD(map_state->points);
     FreeTinyD(map_state->path);
+    FreeTinyD(map_state->player.bubbles);
     SDL_free(map_state);
 }
 
 static void tick() {
-    map_state->title_y += map_state->title_y_speed;
-    map_state->title_y_speed += 0.4f;
-    if (map_state->title_y > 16.f) {
-        map_state->title_y -= map_state->title_y_speed;
-        map_state->title_y_speed = (map_state->title_y_speed * -0.5f) - 1.f;
+    map_state->label.y += map_state->label.y_speed;
+    map_state->label.y_speed += 0.4f;
+    if (map_state->label.y > 16.f) {
+        map_state->label.y -= map_state->label.y_speed;
+        map_state->label.y_speed = (map_state->label.y_speed * -0.5f) - 1.f;
     }
 
     Bool can_move = FALSE;
     if (map_state->path != NULL) {
+        MapPlayer* player = &map_state->player;
+
         if (map_state->current_node < TinyDLength(map_state->path)) {
-            if ((map_state->player_speed <= 1.f
-                    && (kb_pressed(KB_JUMP) || kb_pressed(KB_FIRE) || kb_pressed(KB_UI_ENTER)))
-                || (map_state->player_speed > 1.f && map_state->player_speed < 12.5f))
+            if ((player->speed <= 1.f && (kb_pressed(KB_JUMP) || kb_pressed(KB_FIRE) || kb_pressed(KB_UI_ENTER)))
+                || (player->speed > 1.f && player->speed < 12.5f))
             {
-                map_state->player_speed += map_state->player_speed;
-                if (map_state->player_speed > 12.5f)
-                    map_state->player_speed = 12.5f;
+                player->speed += player->speed;
+                if (player->speed > 12.5f)
+                    player->speed = 12.5f;
             }
 
             const MapPathNode* node = &map_state->path[map_state->current_node];
             const float nx = (float)node->pos[0], ny = (float)node->pos[1];
 
-            const float dir = SDL_atan2f(ny - map_state->player_pos[1], nx - map_state->player_pos[0]);
-            map_state->player_pos[0] += SDL_cosf(dir) * map_state->player_speed;
-            map_state->player_pos[1] += SDL_sinf(dir) * map_state->player_speed;
+            const float dir = SDL_atan2f(ny - player->pos[1], nx - player->pos[0]);
+            player->pos[0] += SDL_cosf(dir) * player->speed;
+            player->pos[1] += SDL_sinf(dir) * player->speed;
 
-            if (SDL_sqrtf(SDL_powf(nx - map_state->player_pos[0], 2.f) + SDL_powf(ny - map_state->player_pos[1], 2.f))
-                < map_state->player_speed)
-            {
-                map_state->player_pos[0] = nx;
-                map_state->player_pos[1] = ny;
+            if (SDL_sqrtf(SDL_powf(nx - player->pos[0], 2.f) + SDL_powf(ny - player->pos[1], 2.f)) < player->speed) {
+                player->pos[0] = nx;
+                player->pos[1] = ny;
                 ++map_state->current_node;
             }
 
-            map_state->player_frame += 0.48f;
+            player->frame += player->swimming ? 0.14f : 0.48f;
 
             const Sint32 xmax = map_state->size[0] - HALF_SCREEN_WIDTH, ymax = map_state->size[1] - HALF_SCREEN_HEIGHT;
-            map_state->camera_pos[0] = SDL_clamp(map_state->player_pos[0], HALF_SCREEN_WIDTH, xmax);
-            map_state->camera_pos[1] = SDL_clamp(map_state->player_pos[1], HALF_SCREEN_HEIGHT, ymax);
+            map_state->camera_pos[0] = SDL_clamp(player->pos[0], HALF_SCREEN_WIDTH, xmax);
+            map_state->camera_pos[1] = SDL_clamp(player->pos[1], HALF_SCREEN_HEIGHT, ymax);
         } else {
             if (kb_pressed(KB_JUMP) && is_leader()) {
                 WorldContext ctx = WORLD_CONTEXT;
@@ -290,12 +318,51 @@ static void tick() {
                 set_screen(SCR_MAP, &ctx, sizeof(ctx));
             }
 
-            map_state->player_frame += 0.12f;
+            player->frame += player->swimming ? 0.14f : 0.12f;
             can_move = TRUE;
         }
 
+        if ((player->pos[0] - 8.f) < (float)map_state->water[2] && (player->pos[0] + 8.f) > (float)map_state->water[0]
+            && (player->pos[1] - 30.f) < (float)map_state->water[3] && player->pos[1] > (float)map_state->water[1])
+        {
+            if (!player->swimming) {
+                player->frame = 0.f;
+                player->swimming = TRUE;
+            }
+        } else if (player->swimming) {
+            player->frame = 0.f;
+            player->swimming = FALSE;
+        }
+
+        if (player->swimming) {
+            if (player->bubbles == NULL)
+                player->bubbles = MakeTinyDPro(sizeof(MapBubble), sizeof(MapBubble));
+
+            MapBubble bubble = {0};
+            bubble.pos[0] = player->pos[0] - 1.f;
+            bubble.pos[1] = player->pos[1] - 10.f + (float)SDL_rand(8) - (float)SDL_rand(8);
+            const float dir = SDL_PI_F + ((float)SDL_rand(8) * (SDL_PI_F / 16.f));
+            bubble.speed[0] = SDL_cosf(dir) * 1.375f;
+            bubble.speed[1] = SDL_sinf(dir) * 1.375f;
+
+            player->bubbles = TinyDPush(player->bubbles, &bubble);
+        }
+
+        size_t i = TinyDLength(player->bubbles);
+        while (i-- > 0) {
+            MapBubble* bubble = &player->bubbles[i];
+            if (++bubble->frame >= 11) {
+                player->bubbles = TinyDErase(player->bubbles, i);
+                continue;
+            }
+
+            bubble->pos[0] += bubble->speed[0];
+            bubble->pos[1] += bubble->speed[1];
+            bubble->speed[1] += 0.2f;
+        }
+
         if (map_state->current_point < TinyDLength(map_state->points)
-            && map_state->player_pos[0] >= (float)map_state->points[map_state->current_point].pos[0])
+            && player->pos[0] >= (float)map_state->points[map_state->current_point].pos[0])
         {
             ++map_state->current_point;
         }
@@ -315,6 +382,8 @@ static void tick() {
 static void draw_ui() {
     push_surface(map_state->surface);
     clear_depth(1.f);
+
+    batch_filter(FALSE);
 
     // World
     mat4 proj = GLM_MAT4_IDENTITY_INIT;
@@ -336,11 +405,25 @@ static void draw_ui() {
             batch_sprite(point->cross ? fmt("ui/map/cross/%u", t % 11) : fmt("ui/map/point/%u", t % 6));
         }
 
-        batch_pos(B_XY((int)map_state->player_pos[0], (int)map_state->player_pos[1]));
+        const MapPlayer* player = &map_state->player;
+        for (size_t i = 0; i < TinyDLength(player->bubbles); i++) {
+            const MapBubble* bubble = &player->bubbles[i];
+
+            batch_pos(B_XYZ((int)bubble->pos[0], (int)bubble->pos[1], 1.f));
+            const float scale = 1.f - ((float)bubble->frame / 11.f);
+            batch_scale(B_SIZE(scale));
+            batch_sprite("ui/map/bubble");
+        }
+
+        batch_pos(B_XY((int)player->pos[0], (int)player->pos[1]));
         batch_scale(B_SIZE(0.5f));
+
         const GamePlayerContext* pctx = &WORLD_CONTEXT.players[0];
-        batch_sprite(get_character_sprite(
-            pctx->character, pctx->powerup, PF_WALK1 + (int)SDL_fmodf(map_state->player_frame, 3.f)));
+        batch_sprite(get_character_sprite(pctx->character, pctx->powerup,
+            player->swimming ? ((player->frame < 6.f) ? (PF_SWIM1 + (int)player->frame)
+                                                      : (PF_SWIM7 + (int)SDL_fmodf(player->frame, 2.f)))
+                             : (PF_WALK1 + (int)SDL_fmodf(player->frame, 3.f))));
+
         batch_scale(B_SIZE(1.f));
     }
 
@@ -353,13 +436,13 @@ static void draw_ui() {
     apply_matrices();
 
     batch_reset();
-    batch_pos(B_XY(HALF_SCREEN_WIDTH, (int)map_state->title_y));
+    batch_pos(B_XY(HALF_SCREEN_WIDTH, (int)map_state->label.y));
 
     batch_sprite(map_state->title);
     if (map_state->path == NULL) {
         const Sprite* tspr = get_sprite(map_state->title);
         const float tb = (tspr == NULL) ? 0.f : (tspr->size[1] - tspr->offset[1]);
-        batch_pos(B_XY(HALF_SCREEN_WIDTH, (int)map_state->title_y + tb));
+        batch_pos(B_XY(HALF_SCREEN_WIDTH, (int)map_state->label.y + tb));
         batch_sprite(fmt("ui/map/world/completed/%u", (Uint32)(totalticks() * 0.5f) % 16));
     }
 
@@ -382,6 +465,7 @@ static void draw_ui() {
 
     batch_write_depth(TRUE);
     batch_test_depth(TRUE);
+    batch_filter(TRUE);
 
     pop_surface();
 

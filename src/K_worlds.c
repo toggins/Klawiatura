@@ -41,7 +41,7 @@ static void iterate_world_file(const char* filename, const void* buffer, size_t 
 
     const TinyHash key = StHashStr(name);
     if (TinyMapGet(&worlds, key) == NULL)
-        world_array = TinyDAppendPro(world_array, &key);
+        world_array = TinyDPush(world_array, &key);
     TinyMapPut(&worlds, key, &world, sizeof(world))->cleanup = nuke_world;
 }
 
