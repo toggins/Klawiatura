@@ -28,15 +28,14 @@ static void submit_chat_message(Bool confirmed) {
     if (!confirmed || prompt[0] == '\0')
         return;
 
-    const int len = (int)SDL_strnlen(prompt, sizeof(prompt));
+    const size_t len = SDL_strlen(prompt);
     if (len <= 0)
         return;
 
-    const int size = (int)sizeof(PacketType) + len;
-    Uint8* data = net_buffer();
-    *(PacketType*)data = PT_CHAT;
-    SDL_memcpy((char*)(data + sizeof(PacketType)), prompt, len);
-    spread_reliable_packet(PCH_LOBBY, data, size);
+    Buffer buffer = net_buffer();
+    write_buffer8(&buffer, &(PacketType){PT_CHAT});
+    write_buffer_string(&buffer, prompt, len);
+    spread_reliable_packet(PCH_LOBBY, buffer.data, buffer_tell(buffer));
 
     chat_message(fmt("%s: %s", CLIENT.name, prompt), B_WHITE);
 }

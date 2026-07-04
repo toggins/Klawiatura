@@ -14,6 +14,7 @@
 #include "K_replay.h"
 #include "K_string.h"
 #include "K_video.h"
+#include "K_worlds.h"
 
 #define MAX_GAME_PACKETS 32
 
@@ -185,36 +186,35 @@ void net_update() {
 
     NutBlast_Message msg = {0};
     while (NutBlast_NextMessage(PCH_LOBBY, &msg)) {
-        size_t size = msg.size;
-        if (size < sizeof(PacketType))
+        if (msg.size < sizeof(PacketType))
             continue;
 
-        const Uint8* data = (Uint8*)msg.data;
-        const NetID from = msg.from;
-
-        const PacketType ptype = *(PacketType*)data;
-        if (ptype >= PT_MASTER_ONLY && (get_master_peer() != from || is_host()))
+        const PacketType ptype = *(PacketType*)msg.data;
+        if ((ptype >= PT_LEADER_ONLY && ptype < PT_MASTER_ONLY)
+            && (get_leading_peer() != msg.from && get_master_peer() != msg.from))
+        {
+            continue;
+        }
+        if (ptype >= PT_MASTER_ONLY && get_master_peer() != msg.from)
             continue;
 
-        data += sizeof(PacketType);
-        size -= sizeof(PacketType);
-
+        Buffer mbuf = buffer_from((void*)(msg.data + sizeof(PacketType)), msg.size - 1);
         switch (ptype) {
         default:
             break;
 
         case PT_CHAT: {
-            if (size > 0 && CLIENT.show_user_messages)
-                chat_message(fmt("%s: %.*s", get_peer_name(from), size, data), B_WHITE);
+            if (mbuf.size > 0 && CLIENT.show_user_messages)
+                chat_message(fmt("%s: %.*s", get_peer_name(msg.from), mbuf.size, mbuf.data), B_WHITE);
             break;
         }
 
         case PT_BAIL: {
-            if (nuke_spectator_peer(from))
+            if (nuke_spectator_peer(msg.from))
                 break;
 
             for (size_t i = 0; i < SDL_arraysize(player_peers); i++) {
-                if (player_peers[i] != from)
+                if (player_peers[i] != msg.from)
                     continue;
 
                 if (get_screen() != SCR_MENU)
@@ -227,13 +227,42 @@ void net_update() {
             break;
         }
 
-        case PT_START: {
-            INFO("Got start packet");
+        case PT_WORLD: {
+            INFO("World packet from %s (%" SDL_PRIu64 ")", get_peer_name(msg.from), msg.from);
+
+            WorldContext ctx = init_world_context();
+            read_buffer64(&mbuf, &ctx.world);
+            read_buffer8(&mbuf, &ctx.level);
+
+            read_buffer8(&mbuf, (Uint8*)&ctx.num_players);
+            ctx.num_players = SDL_min(ctx.num_players, SDL_arraysize(ctx.players));
+            for (PlayerID i = 0; i < ctx.num_players; i++) {
+                read_buffer8(&mbuf, &ctx.players[i].character);
+                read_buffer8(&mbuf, &ctx.players[i].powerup);
+                read_buffer8(&mbuf, (Uint8*)&ctx.players[i].lives);
+                read_buffer8(&mbuf, &ctx.players[i].coins);
+                read_buffer32(&mbuf, (Uint32*)&ctx.players[i].score);
+            }
+
+            set_screen(SCR_MAP, &ctx, sizeof(ctx));
             break;
         }
 
-        case PT_END: {
-            INFO("Got end packet");
+        case PT_PLAYERS: {
+            clear_peer_tables();
+
+            Uint8 num_players = 0;
+            read_buffer8(&mbuf, &num_players);
+            num_players = SDL_min(num_players, SDL_arraysize(player_peers));
+            for (Uint8 i = 0; i < num_players; i++)
+                read_buffer64(&mbuf, &player_peers[i]);
+
+            Uint8 num_spectators = 0;
+            read_buffer8(&mbuf, &num_spectators);
+            num_spectators = SDL_min(num_spectators, SDL_arraysize(spectator_peers));
+            for (Uint8 i = 0; i < num_spectators; i++)
+                read_buffer64(&mbuf, &spectator_peers[i]);
+
             break;
         }
         }
@@ -257,7 +286,7 @@ void set_hostname(const char* hn) {
 }
 
 Bool is_connected() {
-    return NutBlast_IsReady();
+    return NutBlast_IsReady() && peer_exists(get_master_peer());
 }
 
 Bool is_host() {
@@ -266,6 +295,10 @@ Bool is_host() {
 
 Bool is_client() {
     return !is_host();
+}
+
+Bool is_leader() {
+    return get_leading_peer() == get_local_peer();
 }
 
 ConnectState get_connect_state() {
@@ -281,11 +314,19 @@ const NetID* get_peers() {
 }
 
 NetID get_local_peer() {
-    return NutBlast_GetOurID();
+    return is_connected() ? NutBlast_GetOurID() : 0;
 }
 
 NetID get_master_peer() {
     return NutBlast_GetMasterID();
+}
+
+NetID get_leading_peer() {
+    for (size_t i = 0; i < SDL_arraysize(player_peers); i++)
+        if (player_peers[i] > 0)
+            return player_peers[i];
+
+    return get_master_peer();
 }
 
 const char* get_peer_name(NetID pid) {
@@ -482,35 +523,36 @@ void update_peer_data() {
     NutBlast_SetPlayerField("powerup", fmt("%u", CLIENT.powerup));
 }
 
-void peers_to_players(Uint8** cur) {
+void peers_to_players() {
     clear_peer_tables();
 
     Uint8 num_players = 0, num_spectators = 0;
 
     // Fill player-to-peer and spectator-to-peer tables
-    if (is_connected()) {
-        for (const NetID* pids = get_peers(); *pids > 0; pids++) {
-            const NetID pid = *pids;
-            if (num_players >= SDL_arraysize(player_peers) || get_peer_number(pid, "spectator") > 0) {
-                if (num_spectators < SDL_arraysize(spectator_peers))
-                    spectator_peers[num_spectators++] = pid;
-            } else {
-                if (num_players < SDL_arraysize(player_peers))
-                    player_peers[num_players++] = pid;
-            }
+    for (const NetID* pids = get_peers(); *pids > 0; pids++) {
+        const NetID pid = *pids;
+        if (num_players >= SDL_arraysize(player_peers) || get_peer_number(pid, "spectator") > 0) {
+            if (num_spectators < SDL_arraysize(spectator_peers))
+                spectator_peers[num_spectators++] = pid;
+        } else {
+            if (num_players < SDL_arraysize(player_peers))
+                player_peers[num_players++] = pid;
         }
     }
 
-    // Append to buffer
-    if (cur != NULL) {
-        BUFFER_WRITE8(*cur, &num_players);
-        for (Uint8 i = 0; i < num_players; i++)
-            BUFFER_WRITE64(*cur, &player_peers[i]);
+    // Send table to peers
+    Buffer buffer = net_buffer();
+    write_buffer8(&buffer, &(PacketType){PT_PLAYERS});
 
-        BUFFER_WRITE8(*cur, &num_spectators);
-        for (Uint8 i = 0; i < num_spectators; i++)
-            BUFFER_WRITE64(*cur, &spectator_peers[i]);
-    }
+    write_buffer8(&buffer, &num_players);
+    for (Uint8 i = 0; i < num_players; i++)
+        write_buffer64(&buffer, &player_peers[i]);
+
+    write_buffer8(&buffer, &num_spectators);
+    for (Uint8 i = 0; i < num_spectators; i++)
+        write_buffer64(&buffer, &spectator_peers[i]);
+
+    spread_reliable_packet(PCH_LOBBY, buffer.data, buffer_tell(buffer));
 }
 
 static void net_send(GekkoNetAddress* gn_addr, const char* data, int len) {
@@ -611,25 +653,44 @@ PlayerID populate_game(GekkoSession* session, PlayerID num_players) {
     return (PlayerID)local;
 }
 
-Uint8* net_buffer() {
+Buffer net_buffer() {
     static Uint8 data[NET_BUFFER_SIZE] = {0};
-    return data;
+    return buffer_from(data, sizeof(data));
 }
 
-void send_packet(PacketChannel channel, NetID pid, const Uint8* data, int size) {
-    NutBlast_SendTo(channel, pid, (char*)data, size);
+void send_packet(PacketChannel channel, NetID pid, const Uint8* data, size_t size) {
+    NutBlast_SendTo(channel, pid, (char*)data, (int)size);
 }
 
-void send_reliable_packet(PacketChannel channel, NetID pid, const Uint8* data, int size) {
-    NutBlast_SendReliablyTo(channel, pid, (char*)data, size);
+void send_reliable_packet(PacketChannel channel, NetID pid, const Uint8* data, size_t size) {
+    NutBlast_SendReliablyTo(channel, pid, (char*)data, (int)size);
 }
 
-void spread_packet(PacketChannel channel, const Uint8* data, int size) {
+void spread_packet(PacketChannel channel, const Uint8* data, size_t size) {
     for (const NetID* pids = get_peers(); *pids > 0; pids++)
         send_packet(channel, *pids, data, size);
 }
 
-void spread_reliable_packet(PacketChannel channel, const Uint8* data, int size) {
+void spread_reliable_packet(PacketChannel channel, const Uint8* data, size_t size) {
     for (const NetID* pids = get_peers(); *pids > 0; pids++)
         send_reliable_packet(channel, *pids, data, size);
+}
+
+void spread_world_packet(const WorldContext* ctx) {
+    Buffer buffer = net_buffer();
+    write_buffer8(&buffer, &(PacketType){PT_WORLD});
+
+    write_buffer64(&buffer, &ctx->world);
+    write_buffer8(&buffer, &ctx->level);
+
+    write_buffer8(&buffer, (Uint8*)&ctx->num_players);
+    for (PlayerID i = 0; i < ctx->num_players; i++) {
+        write_buffer8(&buffer, &ctx->players[i].character);
+        write_buffer8(&buffer, &ctx->players[i].powerup);
+        write_buffer8(&buffer, (Uint8*)&ctx->players[i].lives);
+        write_buffer8(&buffer, &ctx->players[i].coins);
+        write_buffer32(&buffer, (Uint32*)&ctx->players[i].score);
+    }
+
+    spread_reliable_packet(PCH_LOBBY, buffer.data, buffer_tell(buffer));
 }

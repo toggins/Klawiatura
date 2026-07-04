@@ -43,7 +43,7 @@ static void start(const void* secret, size_t secret_size) {
         "Invalid player count in world context! Expected 1..%i, got %i", MAX_PLAYERS, WORLD_CONTEXT.num_players);
 
     const World* world = get_world_key(WORLD_CONTEXT.world);
-    EXPECT(world, "Invalid world hash %" SDL_PRIu64, WORLD_CONTEXT.world);
+    EXPECT(world, "Invalid world key %" SDL_PRIu64, WORLD_CONTEXT.world);
 
     size_t size = 0;
     const void* buffer = load_data_file(fmt("worlds/%s.json", world->name), &size);
@@ -68,16 +68,10 @@ static void start(const void* secret, size_t secret_size) {
         yyjson_get_type_desc(jmap));
 
     map_state = SDL_calloc(1, sizeof(*map_state));
-    EXPECT(map_state, "Failed to allocate world state");
+    EXPECT(map_state, "Failed to allocate map state");
 
     map_state->title = SDL_strdup(fmt("ui/map/world/%s", world->name));
-    EXPECT(map_state->title, "Failed to allocate world title");
-
-    const char* track = yyjson_get_str(yyjson_obj_get(jmap, "track"));
-    if (track != NULL) {
-        map_state->track = SDL_strdup(track);
-        EXPECT(map_state->track, "Failed to allocate world track name");
-    }
+    EXPECT(map_state->title, "Failed to allocate map title");
 
     yyjson_val* jarray = yyjson_obj_get(jmap, "size");
     map_state->size[0] = yyjson_get_uint(yyjson_arr_get(jarray, 0));
@@ -137,24 +131,6 @@ static void start(const void* secret, size_t secret_size) {
         add_tilemap(map_state->tilemap, sprite, pos, has_size ? size : NULL, flip, tile, colors);
     }
 
-    jarray = yyjson_obj_get(jmap, "points");
-    for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
-        yyjson_val* jpoint = yyjson_arr_get(jarray, i);
-        if (!yyjson_is_obj(jpoint))
-            continue;
-
-        if (map_state->points == NULL)
-            map_state->points = MakeTinyDPro(sizeof(MapPoint), sizeof(MapPoint));
-
-        MapPoint point = {0};
-        yyjson_val* jarr2 = yyjson_obj_get(jpoint, "pos");
-        point.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarr2, 0));
-        point.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarr2, 1));
-        point.cross = yyjson_get_bool(yyjson_obj_get(jpoint, "cross"));
-
-        map_state->points = TinyDAppendPro(map_state->points, &point);
-    }
-
     jarray = yyjson_arr_get(yyjson_obj_get(jmap, "paths"), WORLD_CONTEXT.level);
     for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
         yyjson_val* jpoint = yyjson_arr_get(jarray, i);
@@ -169,6 +145,32 @@ static void start(const void* secret, size_t secret_size) {
         node.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jpoint, 1));
 
         map_state->path = TinyDAppendPro(map_state->path, &node);
+    }
+
+    if (map_state->path != NULL) {
+        jarray = yyjson_obj_get(jmap, "points");
+        for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
+            yyjson_val* jpoint = yyjson_arr_get(jarray, i);
+            if (!yyjson_is_obj(jpoint))
+                continue;
+
+            if (map_state->points == NULL)
+                map_state->points = MakeTinyDPro(sizeof(MapPoint), sizeof(MapPoint));
+
+            MapPoint point = {0};
+            yyjson_val* jarr2 = yyjson_obj_get(jpoint, "pos");
+            point.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarr2, 0));
+            point.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarr2, 1));
+            point.cross = yyjson_get_bool(yyjson_obj_get(jpoint, "cross"));
+
+            map_state->points = TinyDAppendPro(map_state->points, &point);
+        }
+    }
+
+    const char* track = (map_state->path == NULL) ? "yi_score" : yyjson_get_str(yyjson_obj_get(jmap, "track"));
+    if (track != NULL) {
+        map_state->track = SDL_strdup(track);
+        EXPECT(map_state->track, "Failed to allocate map track name");
     }
 
     yyjson_doc_free(json);
@@ -186,6 +188,9 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite(get_character_sprite(pctx->character, pctx->powerup, PF_WALK3), FALSE);
 
     load_sprite(map_state->title, FALSE);
+    if (map_state->path == NULL)
+        load_sprite_num("ui/map/world/completed/%u", 16, FALSE);
+
     load_sprite("ui/map/logo", FALSE);
     load_sprite("ui/bezel_l", FALSE);
     load_sprite("ui/bezel_r", FALSE);
@@ -196,9 +201,10 @@ static void start(const void* secret, size_t secret_size) {
     // ==================
 
     map_state->surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
-    map_state->title_y = -69.f;
 
     if (map_state->path != NULL) {
+        map_state->title_y = -69.f;
+
         const MapPathNode* node = &map_state->path[0];
         map_state->player_pos[0] = (float)node->pos[0];
         map_state->player_pos[1] = (float)node->pos[1];
@@ -217,7 +223,9 @@ static void start(const void* secret, size_t secret_size) {
         map_state->camera_pos[1]
             = SDL_clamp(map_state->player_pos[1], HALF_SCREEN_HEIGHT, map_state->size[1] - HALF_SCREEN_HEIGHT);
     } else {
-        map_state->camera_pos[0] = HALF_SCREEN_WIDTH;
+        map_state->title_y = -102.f;
+
+        map_state->camera_pos[0] = map_state->size[0] - HALF_SCREEN_WIDTH;
         map_state->camera_pos[1] = HALF_SCREEN_HEIGHT;
     }
 
@@ -275,9 +283,10 @@ static void tick() {
             map_state->camera_pos[0] = SDL_clamp(map_state->player_pos[0], HALF_SCREEN_WIDTH, xmax);
             map_state->camera_pos[1] = SDL_clamp(map_state->player_pos[1], HALF_SCREEN_HEIGHT, ymax);
         } else {
-            if (kb_pressed(KB_JUMP)) {
+            if (kb_pressed(KB_JUMP) && is_leader()) {
                 WorldContext ctx = WORLD_CONTEXT;
                 ++ctx.level;
+                spread_world_packet(&ctx);
                 set_screen(SCR_MAP, &ctx, sizeof(ctx));
             }
 
@@ -290,6 +299,8 @@ static void tick() {
         {
             ++map_state->current_point;
         }
+    } else if (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE)) {
+        set_screen(SCR_MENU, NULL, 0);
     }
 
     if (can_move) {
@@ -315,7 +326,7 @@ static void draw_ui() {
 
     draw_tilemap(map_state->tilemap);
 
-    if (map_state->path != NULL && map_state->points != NULL) {
+    if (map_state->path != NULL) {
         batch_reset();
 
         const Uint32 t = (Uint32)(totalticks() * 0.5f);
@@ -343,19 +354,29 @@ static void draw_ui() {
 
     batch_reset();
     batch_pos(B_XY(HALF_SCREEN_WIDTH, (int)map_state->title_y));
+
     batch_sprite(map_state->title);
+    if (map_state->path == NULL) {
+        const Sprite* tspr = get_sprite(map_state->title);
+        const float tb = (tspr == NULL) ? 0.f : (tspr->size[1] - tspr->offset[1]);
+        batch_pos(B_XY(HALF_SCREEN_WIDTH, (int)map_state->title_y + tb));
+        batch_sprite(fmt("ui/map/world/completed/%u", (Uint32)(totalticks() * 0.5f) % 16));
+    }
+
     batch_pos(B_SCREEN);
     batch_sprite("ui/map/logo");
 
-    if (map_state->current_node >= TinyDLength(map_state->path) && SDL_fmodf(totalticks(), 25.f) < 12.5f) {
+    if (map_state->path != NULL && map_state->current_node >= TinyDLength(map_state->path)
+        && SDL_fmodf(totalticks(), 25.f) < 12.5f)
+    {
         batch_pos(B_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 24.f));
         batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-        if (is_host()) {
+        if (is_leader()) {
             batch_colors(B_MF_GREEN);
             batch_string("header", 32.f, LFMT("opt_press", 's', kb_label(KB_JUMP)));
         } else {
             batch_colors(B_MF_WHITE);
-            batch_string("header", 32.f, LFMT("opt_waiting_for_host"));
+            batch_string("header", 32.f, LFMT("opt_waiting_for_leader"));
         }
     }
 

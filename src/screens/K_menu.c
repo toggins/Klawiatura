@@ -31,7 +31,8 @@ static const char* replay_error = NULL;
 
 static void enter_replays_menu(MenuType), leave_replays_menu(MenuType), enter_lobby_list_menu(MenuType),
     tick_lobby_list_menu(), enter_lobby_menu(MenuType), leave_lobby_menu(MenuType), tick_lobby_menu();
-static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_menu(), kick_player_disabled(), start_disabled();
+static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_menu(), kick_player_disabled(), start_disabled(),
+    character_disabled();
 
 static const char *fmt_max_peers(size_t), *fmt_visibility(size_t), *fmt_lobby(), *fmt_character(size_t),
     *fmt_powerup(size_t), *fmt_enter_as(size_t), *fmt_world(size_t), *fmt_start(size_t), *fmt_kick_player(size_t);
@@ -116,8 +117,8 @@ static Catalog CATALOG = {
         [MEN_LOBBY] = {
             {.fmt = fmt_world, .disabled = is_client, .cycle = world_cycle},
             {.fmt = fmt_enter_as, .cycle = enter_as_cycle},
-            {.fmt = fmt_character, .cycle = character_cycle},
-            {.fmt = fmt_powerup, .cycle = powerup_cycle},
+            {.fmt = fmt_character, .disabled = character_disabled, .cycle = character_cycle},
+            {.fmt = fmt_powerup, .disabled = character_disabled, .cycle = powerup_cycle},
             {.name = "opt_options", .callback = options_option},
             {.fmt = fmt_kick_player, .disabled = kick_player_disabled, .callback = kick_player_option},
             {.fmt = fmt_start, .disabled = start_disabled, .callback = start_option},
@@ -362,6 +363,10 @@ static const char* fmt_character(size_t idx) {
     return fmt("%s: %s", LFMT("opt_character"), get_character_name(CLIENT.character));
 }
 
+static Bool character_disabled() {
+    return get_peer_number(get_local_peer(), "spectator") > 0;
+}
+
 static void character_cycle(Sint8 cycle) {
     if (cycle > 0) {
         if (CLIENT.character >= (CHR_SIZE - 1))
@@ -433,6 +438,8 @@ static void start_option() {
     ctx.world = key;
 
     if (is_connected()) {
+        peers_to_players();
+
         PlayerID i = 0;
         for (const NetID* pids = get_peers(); *pids > 0; pids++) {
             const NetID pid = *pids;
@@ -448,6 +455,8 @@ static void start_option() {
                 break;
         }
         ctx.num_players = i;
+
+        spread_world_packet(&ctx);
     } else {
         GamePlayerContext* pctx = &ctx.players[0];
         pctx->character = CLIENT.character;
@@ -647,10 +656,14 @@ static void start(const void* secret, size_t secret_size) {
     prompt_connect();
     got_invite = TRUE;
 
+    yyjson_doc_free(json);
+
 s_no_secret:
-    if (got_invite || !is_connected())
+    if (got_invite || !is_connected()) {
+        set_menu(&CATALOG, MEN_MAIN);
         for (MenuType i = 0; i < (MenuType)MEN_SIZE; i++)
             CATALOG.menus[i].from = MEN_NULL;
+    }
 }
 
 static void end() {

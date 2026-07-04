@@ -3,6 +3,7 @@
 #include <gekkonet.h>
 
 #include "K_misc.h"
+#include "K_worlds.h"
 
 #define CLIENT_STRING_MAX 32
 
@@ -10,80 +11,23 @@ typedef Uint64 NetID;
 
 typedef Uint8 PacketType;
 enum {
+    PT_INVALID,
+
     PT_CHAT,
     PT_BAIL,
 
+    PT_LEADER_ONLY,
+    PT_WORLD,
+    PT_GAME,
+
     PT_MASTER_ONLY,
-    PT_START,
-    PT_END,
+    PT_PLAYERS,
 };
 
 #include "K_game.h"
 
 #define NET_BUFFER_SIZE 1024
 #define MAX_PEERS 8
-
-#define BUFFER_START(buf, cur) Uint8*(cur) = (buf);
-
-#define BUFFER_READ8(cur, dest)                                                                                        \
-    do {                                                                                                               \
-        *(Uint8*)(dest) = *(Uint8*)(cur);                                                                              \
-        (cur) += sizeof(Uint8);                                                                                        \
-    } while (FALSE);
-
-#define BUFFER_READ16(cur, dest)                                                                                       \
-    do {                                                                                                               \
-        *(Uint16*)(dest) = SDL_Swap16BE(*(Uint16*)(cur));                                                              \
-        (cur) += sizeof(Uint16);                                                                                       \
-    } while (FALSE);
-
-#define BUFFER_READ32(cur, dest)                                                                                       \
-    do {                                                                                                               \
-        *(Uint32*)(dest) = SDL_Swap32BE(*(Uint32*)(cur));                                                              \
-        (cur) += sizeof(Uint32);                                                                                       \
-    } while (FALSE);
-
-#define BUFFER_READ64(cur, dest)                                                                                       \
-    do {                                                                                                               \
-        *(Uint64*)(dest) = SDL_Swap64BE(*(Uint64*)(cur));                                                              \
-        (cur) += sizeof(Uint64);                                                                                       \
-    } while (FALSE);
-
-#define BUFFER_READ_STRING(cur, dest, size)                                                                            \
-    do {                                                                                                               \
-        SDL_strlcpy((char*)(dest), (char*)(cur), size);                                                                \
-        (cur) += (size);                                                                                               \
-    } while (FALSE);
-
-#define BUFFER_WRITE8(cur, src)                                                                                        \
-    do {                                                                                                               \
-        *(Uint8*)(cur) = *(Uint8*)(src);                                                                               \
-        (cur) += sizeof(Uint8);                                                                                        \
-    } while (FALSE);
-
-#define BUFFER_WRITE16(cur, src)                                                                                       \
-    do {                                                                                                               \
-        *(Uint16*)(cur) = SDL_Swap16BE(*(Uint16*)(src));                                                               \
-        (cur) += sizeof(Uint16);                                                                                       \
-    } while (FALSE);
-
-#define BUFFER_WRITE32(cur, src)                                                                                       \
-    do {                                                                                                               \
-        *(Uint32*)(cur) = SDL_Swap32BE(*(Uint32*)(src));                                                               \
-        (cur) += sizeof(Uint32);                                                                                       \
-    } while (FALSE);
-
-#define BUFFER_WRITE64(cur, src)                                                                                       \
-    do {                                                                                                               \
-        *(Uint64*)(cur) = SDL_Swap64BE(*(Uint64*)(src));                                                               \
-        (cur) += sizeof(Uint64);                                                                                       \
-    } while (FALSE);
-
-#define BUFFER_WRITE_STRING(cur, src, size)                                                                            \
-    do {                                                                                                               \
-        SDL_strlcpy((char*)(cur), (char*)(src), size);                                                                 \
-        (cur) += (size);                                                                                               \
-    } while (FALSE);
 
 typedef Uint8 ConnectState;
 enum {
@@ -110,12 +54,12 @@ void net_init(), net_update(), net_teardown();
 void net_flush();
 
 void set_hostname(const char*);
-Bool is_connected(), is_host(), is_client();
+Bool is_connected(), is_host(), is_client(), is_leader();
 ConnectState get_connect_state();
 const char* net_error();
 
 const NetID* get_peers();
-NetID get_local_peer(), get_master_peer();
+NetID get_local_peer(), get_master_peer(), get_leading_peer();
 const char* get_peer_name(NetID);
 int get_peer_ping(NetID);
 const char* get_peer_string(NetID, const char*);
@@ -144,10 +88,11 @@ size_t get_lobby_list_count();
 
 void update_lobby_data(), update_peer_data();
 
-void peers_to_players(Uint8**);
+void peers_to_players();
 PlayerID populate_game(GekkoSession*, PlayerID);
 
-Uint8* net_buffer();
-void send_packet(PacketChannel, NetID, const Uint8*, int),
-    send_reliable_packet(PacketChannel, NetID, const Uint8*, int);
-void spread_packet(PacketChannel, const Uint8*, int), spread_reliable_packet(PacketChannel, const Uint8*, int);
+Buffer net_buffer();
+void send_packet(PacketChannel, NetID, const Uint8*, size_t),
+    send_reliable_packet(PacketChannel, NetID, const Uint8*, size_t);
+void spread_packet(PacketChannel, const Uint8*, size_t), spread_reliable_packet(PacketChannel, const Uint8*, size_t);
+void spread_world_packet(const WorldContext*), spread_game_packet(const GameContext*);

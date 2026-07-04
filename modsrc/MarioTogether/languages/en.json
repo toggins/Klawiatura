@@ -71,6 +71,7 @@
     "opt_change_server": "Change Server Address",
     "opt_server": "Server Address",
     "opt_press": "Press {0}",
+    "opt_waiting_for_leader": "Waiting for leader",
 
     "val_off": "Off",
     "val_on": "On",
