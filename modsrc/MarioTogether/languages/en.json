@@ -44,7 +44,8 @@
     "opt_enter_as": "Enter as",
     "opt_kick_player": "Kick a Player",
     "opt_invalid_world": "Invalid World",
-    "opt_waiting_for_host": "Waiting for Host",
+    "opt_not_enough_players": "Not enough players",
+    "opt_waiting_for_host": "Waiting for host",
     "opt_peer": "Peer",
     "opt_ping": "Ping",
     "opt_no_replays": "You don't have any replays yet!",
@@ -69,6 +70,7 @@
     "opt_show_user_messages": "Show User Messages",
     "opt_change_server": "Change Server Address",
     "opt_server": "Server Address",
+    "opt_press": "Press {0}",
 
     "val_off": "Off",
     "val_on": "On",

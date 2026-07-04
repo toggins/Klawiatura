@@ -386,17 +386,20 @@ static void powerup_cycle(Sint8 cycle) {
 }
 
 static const char* fmt_start(size_t) {
-    if (is_client())
-        return LFMT("opt_waiting_for_host");
-
     if (get_world(CLIENT.world) == NULL)
         return LFMT("opt_invalid_world");
+
+    if (get_lobby_player_count() < 1)
+        return LFMT("opt_not_enough_players");
+
+    if (is_client())
+        return LFMT("opt_waiting_for_host");
 
     return LFMT("opt_start");
 }
 
 static Bool start_disabled() {
-    return is_client() || get_world(CLIENT.world) == NULL;
+    return is_client() || get_world(CLIENT.world) == NULL || get_lobby_player_count() < 1;
 }
 
 static void start_option() {
@@ -414,6 +417,8 @@ static void start_option() {
         PlayerID i = 0;
         for (const NetID* pids = get_peers(); *pids > 0; pids++) {
             const NetID pid = *pids;
+            if (get_peer_number(pid, "spectator") > 0)
+                continue;
 
             GamePlayerContext* pctx = &ctx.players[i];
             pctx->character = get_peer_number(pid, "character");
