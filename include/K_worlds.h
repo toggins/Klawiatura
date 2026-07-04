@@ -16,6 +16,8 @@ typedef struct {
     GamePlayerContext players[MAX_PLAYERS];
 } WorldContext;
 
+extern WorldContext WORLD_CONTEXT;
+
 void worlds_init(), worlds_teardown();
 
 const World *get_world(const char*), *get_world_key(TinyHash);

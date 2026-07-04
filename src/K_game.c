@@ -10,6 +10,100 @@ const GameActorTable* ACTORS[ACT_SIZE] = {0};
 static const GameCharacter CHARACTERS[CHR_SIZE] = {
     [CHR_MARIO] = {
         .name = "Mario",
+        .sprites = {
+            [POW_NONE] = {
+                [PF_IDLE] = "characters/mario/small/idle",
+                [PF_WALK1] = "characters/mario/small/walk0",
+                [PF_WALK2] = "characters/mario/small/walk1",
+                [PF_WALK3] = "characters/mario/small/walk2",
+                [PF_JUMP] = "characters/mario/small/jump",
+                [PF_FALL] = "characters/mario/small/fall",
+                [PF_SWIM1] = "characters/mario/small/swim0",
+                [PF_SWIM2] = "characters/mario/small/swim1",
+                [PF_SWIM3] = "characters/mario/small/swim2",
+                [PF_SWIM4] = "characters/mario/small/swim3",
+                [PF_SWIM5] = "characters/mario/small/swim4",
+                [PF_GROW1] = "characters/mario/small/grow0",
+                [PF_GROW2] = "characters/mario/small/grow1",
+                [PF_GROW3] = "characters/mario/small/grow2",
+                [PF_DEAD] = "characters/mario/small/dead",
+            },
+            [POW_SUPER_MUSHROOM] = {
+                [PF_IDLE] = "characters/mario/super/idle",
+                [PF_WALK1] = "characters/mario/super/walk0",
+                [PF_WALK2] = "characters/mario/super/walk1",
+                [PF_WALK3] = "characters/mario/super/walk2",
+                [PF_JUMP] = "characters/mario/super/jump",
+                [PF_FALL] = "characters/mario/super/fall",
+                [PF_DUCK] = "characters/mario/super/duck",
+                [PF_SWIM1] = "characters/mario/super/swim0",
+                [PF_SWIM2] = "characters/mario/super/swim1",
+                [PF_SWIM3] = "characters/mario/super/swim2",
+                [PF_SWIM4] = "characters/mario/super/swim3",
+                [PF_SWIM5] = "characters/mario/super/swim4",
+                [PF_GROW1] = "characters/mario/super/grow0",
+                [PF_GROW2] = "characters/mario/super/grow1",
+                [PF_GROW3] = "characters/mario/super/grow2",
+            },
+            [POW_FIRE_FLOWER] = {
+                [PF_IDLE] = "characters/mario/fire/idle",
+                [PF_WALK1] = "characters/mario/fire/walk0",
+                [PF_WALK2] = "characters/mario/fire/walk1",
+                [PF_WALK3] = "characters/mario/fire/walk2",
+                [PF_JUMP] = "characters/mario/fire/jump",
+                [PF_FALL] = "characters/mario/fire/fall",
+                [PF_DUCK] = "characters/mario/fire/duck",
+                [PF_FIRE1] = "characters/mario/fire/fire0",
+                [PF_FIRE2] = "characters/mario/fire/fire1",
+                [PF_SWIM1] = "characters/mario/fire/swim0",
+                [PF_SWIM2] = "characters/mario/fire/swim1",
+                [PF_SWIM3] = "characters/mario/fire/swim2",
+                [PF_SWIM4] = "characters/mario/fire/swim3",
+                [PF_SWIM5] = "characters/mario/fire/swim4",
+                [PF_GROW1] = "characters/mario/fire/grow0",
+                [PF_GROW2] = "characters/mario/fire/grow1",
+                [PF_GROW3] = "characters/mario/fire/grow2",
+                [PF_GROW4] = "characters/mario/fire/grow3",
+            },
+            [POW_BEETROOT] = {
+                [PF_IDLE] = "characters/mario/beetroot/idle",
+                [PF_WALK1] = "characters/mario/beetroot/walk0",
+                [PF_WALK2] = "characters/mario/beetroot/walk1",
+                [PF_WALK3] = "characters/mario/beetroot/walk2",
+                [PF_JUMP] = "characters/mario/beetroot/jump",
+                [PF_FALL] = "characters/mario/beetroot/fall",
+                [PF_DUCK] = "characters/mario/beetroot/duck",
+                [PF_FIRE1] = "characters/mario/beetroot/fire0",
+                [PF_FIRE2] = "characters/mario/beetroot/fire1",
+                [PF_SWIM1] = "characters/mario/beetroot/swim0",
+                [PF_SWIM2] = "characters/mario/beetroot/swim1",
+                [PF_SWIM3] = "characters/mario/beetroot/swim2",
+                [PF_SWIM4] = "characters/mario/beetroot/swim3",
+                [PF_SWIM5] = "characters/mario/beetroot/swim4",
+                [PF_GROW1] = "characters/mario/beetroot/grow0",
+                [PF_GROW2] = "characters/mario/beetroot/grow1",
+                [PF_GROW3] = "characters/mario/beetroot/grow2",
+                [PF_GROW4] = "characters/mario/beetroot/grow3",
+            },
+            [POW_GREEN_LUI] = {
+                [PF_IDLE] = "characters/mario/lui/idle",
+                [PF_WALK1] = "characters/mario/lui/walk0",
+                [PF_WALK2] = "characters/mario/lui/walk1",
+                [PF_WALK3] = "characters/mario/lui/walk2",
+                [PF_JUMP] = "characters/mario/lui/jump",
+                [PF_FALL] = "characters/mario/lui/fall",
+                [PF_DUCK] = "characters/mario/lui/duck",
+                [PF_SWIM1] = "characters/mario/lui/swim0",
+                [PF_SWIM2] = "characters/mario/lui/swim1",
+                [PF_SWIM3] = "characters/mario/lui/swim2",
+                [PF_SWIM4] = "characters/mario/lui/swim3",
+                [PF_SWIM5] = "characters/mario/lui/swim4",
+                [PF_GROW1] = "characters/mario/lui/grow0",
+                [PF_GROW2] = "characters/mario/lui/grow1",
+                [PF_GROW3] = "characters/mario/lui/grow2",
+                [PF_GROW4] = "characters/mario/lui/grow3",
+            }
+        }
     },
 };
 
@@ -45,6 +139,12 @@ const GameCharacter* get_character(PlayerCharacter cid) {
 const char* get_character_name(PlayerCharacter cid) {
     const GameCharacter* character = get_character(cid);
     return (character == NULL) ? NULL : character->name;
+}
+
+const char* get_character_sprite(PlayerCharacter cid, PlayerPowerup powerup, PlayerFrame frame) {
+    return (cid < 0 || cid >= CHR_SIZE || powerup < 0 || powerup >= POW_SIZE || frame < 0 || frame >= PF_SIZE)
+               ? NULL
+               : CHARACTERS[cid].sprites[powerup][frame];
 }
 
 const char* get_powerup_name(PlayerPowerup powerup) {

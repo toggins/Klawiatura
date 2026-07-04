@@ -112,7 +112,8 @@ enum {
     PF_JUMP,
     PF_FALL,
     PF_DUCK,
-    PF_FIRE,
+    PF_FIRE1,
+    PF_FIRE2,
     PF_SWIM1,
     PF_SWIM2,
     PF_SWIM3,
@@ -123,6 +124,8 @@ enum {
     PF_GROW3,
     PF_GROW4,
     PF_DEAD,
+    PF_WIN,
+    PF_SIZE,
 };
 
 typedef Uint8 SolidType;
@@ -144,7 +147,7 @@ enum {
 };
 
 typedef struct {
-    const char* name;
+    const char *name, *sprites[POW_SIZE][PF_SIZE];
 } GameCharacter;
 
 typedef struct {
@@ -299,7 +302,7 @@ void game_init();
 Uint32 get_game_hash();
 
 const GameCharacter* get_character(PlayerCharacter);
-const char* get_character_name(PlayerCharacter);
+const char *get_character_name(PlayerCharacter), *get_character_sprite(PlayerCharacter, PlayerPowerup, PlayerFrame);
 
 const char* get_powerup_name(PlayerPowerup);
 Sint8 get_powerup_cost(PlayerPowerup);

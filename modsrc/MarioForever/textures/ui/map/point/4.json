@@ -1,0 +1,6 @@
+{
+    "texture": "ui/map/point",
+    "size": [14, 13],
+    "offset": [7, 6],
+    "uvs": [33, 1, 47, 14]
+}

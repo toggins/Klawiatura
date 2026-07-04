@@ -6,6 +6,8 @@
 static TinyMap worlds = {0};
 static TinyHash* world_array = NULL;
 
+WorldContext WORLD_CONTEXT = {0};
+
 static void nuke_world(void* ptr) {
     World* world = ptr;
     SDL_free((void*)world->name);
