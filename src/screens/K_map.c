@@ -152,7 +152,7 @@ static void start(const void* secret, size_t secret_size) {
         point.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarr2, 1));
         point.cross = yyjson_get_bool(yyjson_obj_get(jpoint, "cross"));
 
-        map_state->points = TinyDAppend(map_state->points, point);
+        map_state->points = TinyDAppendPro(map_state->points, &point);
     }
 
     jarray = yyjson_arr_get(yyjson_obj_get(jmap, "paths"), WORLD_CONTEXT.level);
@@ -168,7 +168,7 @@ static void start(const void* secret, size_t secret_size) {
         node.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jpoint, 0));
         node.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jpoint, 1));
 
-        map_state->path = TinyDAppend(map_state->path, node);
+        map_state->path = TinyDAppendPro(map_state->path, &node);
     }
 
     yyjson_doc_free(json);

@@ -5,7 +5,10 @@
 #include "K_tick.h"
 #include "K_video.h"
 
-void start(const void*, size_t) {
+void start(const void* secret, size_t secret_size) {
+    (void)secret;
+    (void)secret_size;
+
     load_sprite("logos/buziol", FALSE);
     load_sound("logo", FALSE);
     load_sound("logo2", FALSE);

@@ -45,7 +45,10 @@ static const char* log_levels[SDL_LOG_PRIORITY_COUNT] = {
     [SDL_LOG_PRIORITY_CRITICAL] = "FATAL",
 };
 
-static void klaw_logger(void*, int, SDL_LogPriority priority, const char* message) {
+static void klaw_logger(void* userdata, int category, SDL_LogPriority priority, const char* message) {
+    (void)userdata;
+    (void)category;
+
     FILE* const stream =
 #ifdef SDL_PLATFORM_EMSCRIPTEN
         stdout;

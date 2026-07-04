@@ -155,7 +155,9 @@ static Bool draw_main_menu() {
     return FALSE;
 }
 
-static void enter_lobby_list_menu(MenuType) {
+static void enter_lobby_list_menu(MenuType from) {
+    (void)from;
+
     find_lobbies();
     SDL_zeroa(CATALOG.options[MEN_LOBBY_LIST]);
 }
@@ -184,7 +186,10 @@ static void tick_lobby_list_menu() {
 }
 
 static void replay_option();
-static void iterate_replay_file(const char* filename, const void*, size_t, void* userdata) {
+static void iterate_replay_file(const char* filename, const void* buffer, size_t size, void* userdata) {
+    (void)buffer;
+    (void)size;
+
     size_t* idx = userdata;
     if (*idx >= MAX_OPTIONS)
         return;
@@ -196,12 +201,16 @@ static void iterate_replay_file(const char* filename, const void*, size_t, void*
     ++*idx;
 }
 
-static void enter_replays_menu(MenuType) {
+static void enter_replays_menu(MenuType from) {
+    (void)from;
+
     leave_replays_menu(MEN_NULL);
     iterate_user_files("replays/*.rpl", FALSE, iterate_replay_file, &(size_t){0});
 }
 
-static void leave_replays_menu(MenuType) {
+static void leave_replays_menu(MenuType to) {
+    (void)to;
+
     for (size_t i = 0; i < MAX_OPTIONS; i++) {
         Option* option = &CATALOG.options[MEN_REPLAYS][i];
         SDL_free((void*)option->name);
@@ -230,7 +239,9 @@ static const char* fmt_lobby() {
         LFMT(in_private_lobby() ? "val_private" : "val_public"));
 }
 
-static void leave_lobby_menu(MenuType) {
+static void leave_lobby_menu(MenuType to) {
+    (void)to;
+
     disconnect();
     play_generic_sound("ui/disconnect", PLAY_SYSTEM);
 }
@@ -322,7 +333,9 @@ static Bool draw_lobby_menu() {
 // OPTIONS
 // =======
 
-static const char* fmt_world(size_t) {
+static const char* fmt_world(size_t idx) {
+    (void)idx;
+
     const World* world = get_world(is_connected() ? get_lobby_string("world") : CLIENT.world);
     return fmt("%s: %s", LFMT("opt_world"), (world == NULL) ? NULL : LFMT(fmt("wld_%s", world->name)));
 }
@@ -343,7 +356,9 @@ static void world_cycle(Sint8 cycle) {
     update_lobby_data();
 }
 
-static const char* fmt_character(size_t) {
+static const char* fmt_character(size_t idx) {
+    (void)idx;
+
     return fmt("%s: %s", LFMT("opt_character"), get_character_name(CLIENT.character));
 }
 
@@ -363,7 +378,9 @@ static void character_cycle(Sint8 cycle) {
     update_peer_data();
 }
 
-static const char* fmt_powerup(size_t) {
+static const char* fmt_powerup(size_t idx) {
+    (void)idx;
+
     const Sint8 cost = get_powerup_cost(CLIENT.powerup);
     return fmt(
         "%s: %s%s", LFMT("opt_powerup"), get_powerup_name(CLIENT.powerup), (cost > 0) ? fmt(" (-%i)", cost) : "");
@@ -385,7 +402,9 @@ static void powerup_cycle(Sint8 cycle) {
     update_peer_data();
 }
 
-static const char* fmt_start(size_t) {
+static const char* fmt_start(size_t idx) {
+    (void)idx;
+
     if (get_world(CLIENT.world) == NULL)
         return LFMT("opt_invalid_world");
 
@@ -466,7 +485,9 @@ static void multiplayer_option() {
     userdata->cancel = saw_online_notice;
 }
 
-static const char* fmt_max_peers(size_t) {
+static const char* fmt_max_peers(size_t idx) {
+    (void)idx;
+
     return fmt("%s: %u", LFMT("opt_max_peers"), CLIENT.lobby_limit);
 }
 
@@ -484,11 +505,15 @@ static void max_peers_cycle(Sint8 cycle) {
     }
 }
 
-static const char* fmt_visibility(size_t) {
+static const char* fmt_visibility(size_t idx) {
+    (void)idx;
+
     return fmt("%s: %s", LFMT("opt_visibility"), LFMT(CLIENT.private_lobby ? "val_private" : "val_public"));
 }
 
-static void visibility_cycle(Sint8) {
+static void visibility_cycle(Sint8 cycle) {
+    (void)cycle;
+
     CLIENT.private_lobby = !CLIENT.private_lobby;
 }
 
@@ -545,16 +570,22 @@ static void lobby_option() {
     prompt_connect();
 }
 
-static const char* fmt_enter_as(size_t) {
+static const char* fmt_enter_as(size_t idx) {
+    (void)idx;
+
     return fmt("%s: %s", LFMT("opt_enter_as"),
         LFMT((get_peer_number(get_local_peer(), "spectator") > 0) ? "val_spectator" : "val_player"));
 }
 
-static void enter_as_cycle(Sint8) {
+static void enter_as_cycle(Sint8 cycle) {
+    (void)cycle;
+
     toggle_spectator();
 }
 
-static const char* fmt_kick_player(size_t) {
+static const char* fmt_kick_player(size_t idx) {
+    (void)idx;
+
     return is_client() ? NULL : LFMT("opt_kick_player");
 }
 

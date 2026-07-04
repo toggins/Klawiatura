@@ -74,7 +74,9 @@ static void show_disclaimer() {
     printf("\n");
 }
 
-SDL_AppResult SDL_AppInit(void**, int argc, char* argv[]) {
+SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
+    (void)appstate;
+
     fix_stdio();
     show_disclaimer();
     handle_cmdline(argc, argv);
@@ -98,7 +100,9 @@ SDL_AppResult SDL_AppInit(void**, int argc, char* argv[]) {
     return SDL_APP_CONTINUE;
 }
 
-SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
+SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
+    (void)appstate;
+
     switch (event->type) {
     case SDL_EVENT_QUIT:
         return SDL_APP_SUCCESS;
@@ -136,7 +140,9 @@ SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
     return SDL_APP_CONTINUE;
 }
 
-SDL_AppResult SDL_AppIterate(void*) {
+SDL_AppResult SDL_AppIterate(void* appstate) {
+    (void)appstate;
+
     net_update();
     interface_update();
     audio_update();
@@ -147,7 +153,10 @@ SDL_AppResult SDL_AppIterate(void*) {
     return SDL_APP_CONTINUE;
 }
 
-void SDL_AppQuit(void*, SDL_AppResult) {
+void SDL_AppQuit(void* appstate, SDL_AppResult result) {
+    (void)appstate;
+    (void)result;
+
     net_teardown();
     chat_teardown();
     worlds_teardown();

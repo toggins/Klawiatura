@@ -101,7 +101,9 @@ static void on_lobbies_found(const NutBlast_Lobby* lobbies, size_t count) {
     }
 }
 
-static void on_master_changed(NetID) {
+static void on_master_changed(NetID pid) {
+    (void)pid;
+
     chat_message(LFMT("chat_hosting", 's', get_peer_name(get_master_peer())), B_YELLOW);
 }
 
