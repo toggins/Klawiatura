@@ -220,16 +220,27 @@ void net_update() {
 
         case PT_WORLD: {
             INFO("World packet from %s (%" SDL_PRIu64 ")", get_peer_name(msg.from), msg.from);
+            if (get_game_player_count() < 1) {
+                WTF("Player peer table wasn't filled before world packet arrived?");
+                break;
+            }
 
             WorldContext ctx = init_world_context();
             read_buffer64(&mbuf, &ctx.world);
             read_buffer8(&mbuf, &ctx.level);
 
             read_buffer8(&mbuf, (Uint8*)&ctx.winner);
-            ctx.winner = SDL_min(ctx.winner, SDL_arraysize(ctx.players));
+            if (ctx.winner < 0 || ctx.winner >= SDL_arraysize(ctx.players)) {
+                WTF("Bad world winner (%i)", ctx.winner);
+                break;
+            }
 
             read_buffer8(&mbuf, (Uint8*)&ctx.num_players);
-            ctx.num_players = SDL_min(ctx.num_players, SDL_arraysize(ctx.players));
+            if (ctx.num_players <= 0 || ctx.num_players > SDL_arraysize(ctx.players)) {
+                WTF("Bad world player count (%i)", ctx.num_players);
+                break;
+            }
+
             for (PlayerID i = 0; i < ctx.num_players; i++) {
                 read_buffer8(&mbuf, &ctx.players[i].character);
                 read_buffer8(&mbuf, &ctx.players[i].powerup);
