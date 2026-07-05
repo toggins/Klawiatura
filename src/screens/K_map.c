@@ -34,6 +34,7 @@ typedef struct {
 } MapPathNode;
 
 typedef struct {
+    Bool show_logo;
     Uint16 size[2];
     Sint32 camera_pos[2];
     Sint32 water[4];
@@ -87,6 +88,7 @@ static void start(const void* secret, size_t secret_size) {
 
     map_state = SDL_calloc(1, sizeof(*map_state));
     EXPECT(map_state, "Failed to allocate map state");
+    map_state->show_logo = TRUE;
 
     map_state->title = SDL_strdup(fmt("ui/map/world/%s", world->name));
     EXPECT(map_state->title, "Failed to allocate map title");
@@ -113,6 +115,8 @@ static void start(const void* secret, size_t secret_size) {
             (float)yyjson_get_num(yyjson_arr_get(jarr2, 1)),
             (float)yyjson_get_num(yyjson_arr_get(jarr2, 2)),
         };
+        if (pos[1] > 379.f)
+            map_state->show_logo = FALSE;
 
         jarr2 = yyjson_obj_get(jbackdrop, "size");
         const Bool has_size = yyjson_is_arr(jarr2);
@@ -224,7 +228,9 @@ static void start(const void* secret, size_t secret_size) {
         load_sprite("ui/map/bubble", FALSE);
     }
 
-    load_sprite("ui/map/logo", FALSE);
+    if (map_state->show_logo)
+        load_sprite("ui/map/logo", FALSE);
+
     load_sprite("ui/bezel_l", FALSE);
     load_sprite("ui/bezel_r", FALSE);
     load_track(map_state->track, FALSE);
@@ -455,8 +461,10 @@ static void draw_ui() {
         batch_sprite(fmt("ui/map/world/completed/%u", (Uint32)(totalticks() * 0.5f) % 16));
     }
 
-    batch_pos(B_SCREEN);
-    batch_sprite("ui/map/logo");
+    if (map_state->show_logo) {
+        batch_pos(B_SCREEN);
+        batch_sprite("ui/map/logo");
+    }
 
     if (map_state->path != NULL && map_state->current_node >= TinyDLength(map_state->path)
         && SDL_fmodf(totalticks(), 25.f) < 12.5f)
