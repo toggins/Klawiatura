@@ -148,6 +148,7 @@ static void start(const void* secret, size_t secret_size) {
     }
 
     yyjson_val* jpath = yyjson_arr_get(yyjson_obj_get(jmap, "paths"), WORLD_CONTEXT.level);
+    Uint32 offset = 0;
     if (yyjson_is_obj(jpath)) {
         jarray = yyjson_obj_get(jpath, "nodes");
         for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
@@ -170,6 +171,8 @@ static void start(const void* secret, size_t secret_size) {
         map_state->water[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 1));
         map_state->water[2] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 2));
         map_state->water[3] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 3));
+
+        offset = yyjson_get_uint(yyjson_obj_get(jpath, "offset"));
     }
 
     if (map_state->path != NULL) {
@@ -257,7 +260,7 @@ static void start(const void* secret, size_t secret_size) {
         map_state->camera_pos[1] = HALF_SCREEN_HEIGHT;
     }
 
-    play_generic_track(GTS_MAIN, map_state->track, PLAY_LOOPING);
+    play_generic_track(GTS_MAIN, map_state->track, PLAY_LOOPING, offset);
 }
 
 static void end() {

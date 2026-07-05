@@ -626,7 +626,7 @@ static void start(const void* secret, size_t secret_size) {
     load_sound("ui/disconnect", FALSE);
     load_track("title", FALSE);
 
-    play_generic_track(GTS_MAIN, "title", PLAY_LOOPING);
+    play_generic_track(GTS_MAIN, "title", PLAY_LOOPING, 0);
 
     // Handle invite JSON
     Bool got_invite = FALSE;

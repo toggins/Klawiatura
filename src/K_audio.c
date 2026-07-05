@@ -17,6 +17,7 @@ enum {
 typedef struct {
     GenericTrackFlags flags;
 
+    Uint32 offset;
     float volume[3], time[2];
     float melt_volume, interrupt_volume;
 
@@ -331,7 +332,7 @@ void play_generic_sound(const char* name, PlayFlags flags) {
     MIX_PlayTrack(channel, 0);
 }
 
-void play_generic_track(GenericTrackSlot slot, const char* name, PlayFlags flags) {
+void play_generic_track(GenericTrackSlot slot, const char* name, PlayFlags flags, Uint32 offset) {
     if (slot < 0 || slot >= MAX_GENERIC_TRACKS)
         return;
 
@@ -340,7 +341,7 @@ void play_generic_track(GenericTrackSlot slot, const char* name, PlayFlags flags
     WHATEVER(track, "Unknown track \"%s\"", name);
 
     GenericTrackChannel* gtchan = &generic_tracks[slot];
-    if (gtchan->key == key) {
+    if (gtchan->key == key && gtchan->offset == offset) {
         if (gtchan->flags & GTF_MELT)
             gtchan->flags &= ~GTF_MELT;
         return;
@@ -365,8 +366,10 @@ void play_generic_track(GenericTrackSlot slot, const char* name, PlayFlags flags
     } else {
         MIX_PlayTrack(gtchan->channel, 0);
     }
+    MIX_SetTrackPlaybackPosition(gtchan->channel, MIX_TrackMSToFrames(gtchan->channel, (Sint64)offset));
 
     gtchan->key = key;
+    gtchan->offset = offset;
 }
 
 void stop_generic_track(GenericTrackSlot slot) {

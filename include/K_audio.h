@@ -38,19 +38,20 @@ typedef Uint8 GenericTrackSlot;
 enum {
     GTS_MAIN,
     GTS_EVENT,
-    GTS_FANFARE,
     MAX_GENERIC_TRACKS,
 };
 
 typedef Uint8 StateTrackSlot;
 enum {
     STS_MAIN,
+    STS_POWER,
+    STS_FANFARE,
     MAX_STATE_TRACKS,
 };
 
 typedef struct {
     PlayFlags flags;
-    float offset;
+    Uint32 offset;
     float pos[2];
 
     TinyHash sound_key;
@@ -59,7 +60,7 @@ typedef struct {
 typedef struct {
     Uint8 hash;
     PlayFlags flags;
-    float offset;
+    Uint32 offset;
     float volume[3], time[2];
 
     TinyHash track_key;
@@ -90,7 +91,7 @@ ASSET_HEAD(tracks, Track, track);
 // Generic Sounds
 void play_generic_sound(const char*, PlayFlags);
 
-void play_generic_track(GenericTrackSlot, const char*, PlayFlags);
+void play_generic_track(GenericTrackSlot, const char*, PlayFlags, Uint32);
 void stop_generic_track(GenericTrackSlot);
 void fade_generic_track(GenericTrackSlot, float, float);
 void melt_generic_track(GenericTrackSlot);
