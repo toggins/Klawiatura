@@ -140,7 +140,7 @@ static Bool draw_main_menu() {
     batch_string("main", 24.f, GAME_NAME " " GAME_VERSION);
     batch_pos(B_XY(SCREEN_WIDTH - 64.f, SCREEN_HEIGHT - 24.f));
     batch_align(B_BOTTOM_RIGHT);
-    batch_string("main", 24.f, fmt("GameHash: %u", get_game_hash()));
+    batch_string("main", 24.f, fmt("Checksum: %u", get_game_hash()));
 
     const char* credits = LFMT("credits");
     const float wrap = string_width("main", 16.f, credits) + SCREEN_WIDTH;

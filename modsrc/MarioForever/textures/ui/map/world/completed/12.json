@@ -1,6 +1,6 @@
 {
     "texture": "ui/map/world/completed",
     "size": [205, 32],
-    "offset": [110, -1],
+    "offset": [115, -1],
     "uvs": [1, 139, 206, 171]
 }
