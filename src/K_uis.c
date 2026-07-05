@@ -10,6 +10,7 @@ void POPULATE_UIS_TABLE() {
     DUI(MESSAGE);
     DUI(OPTIONS);
     DUI(KICK);
+    DUI(PAUSE);
 
     static const UITable TAB_NULL = {NULL};
     UIS[UI_NULL] = &TAB_NULL;

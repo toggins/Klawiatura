@@ -234,6 +234,7 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite("ui/bezel_l", FALSE);
     load_sprite("ui/bezel_r", FALSE);
     load_track(map_state->track, FALSE);
+    load_ui(UI_PAUSE);
 
     // ==================
     // START OF MAP FRAME
@@ -283,6 +284,12 @@ static void end() {
 }
 
 static void tick() {
+    if (topui() == NULL && kb_pressed(KB_PAUSE)) {
+        create_ui(UI_PAUSE, NULL);
+        if (!is_connected())
+            return;
+    }
+
     map_state->label.y += map_state->label.y_speed;
     map_state->label.y_speed += 0.4f;
     if (map_state->label.y > 16.f) {

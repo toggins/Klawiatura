@@ -72,6 +72,8 @@
     "opt_server": "Server Address",
     "opt_press": "Press {0}",
     "opt_waiting_for_leader": "Waiting for leader",
+    "opt_return_to_title": "Return to Title",
+    "opt_return_to_lobby": "Return to Lobby",
 
     "val_off": "Off",
     "val_on": "On",
@@ -119,7 +121,7 @@
     "close": "Close",
     "cancel": "Cancel",
     "continue": "Continue",
-    "click_to_focus": "Click here to focus",
+    "paused": "Paused",
 
     "chat_connected": "Connected!",
     "chat_joined": "{0} joined",
