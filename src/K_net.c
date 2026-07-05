@@ -686,6 +686,7 @@ void spread_world_packet(const WorldContext* ctx) {
     write_buffer64(&buffer, &ctx->world);
     write_buffer8(&buffer, &ctx->level);
 
+    write_buffer8(&buffer, (Uint8*)&ctx->winner);
     write_buffer8(&buffer, (Uint8*)&ctx->num_players);
     for (PlayerID i = 0; i < ctx->num_players; i++) {
         write_buffer8(&buffer, &ctx->players[i].character);
