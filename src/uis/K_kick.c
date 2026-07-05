@@ -58,6 +58,13 @@ static void tick(UI* ui) {
 
 static void draw(const UI* ui) {
     batch_reset();
+
+    if (get_screen() != SCR_MENU) {
+        batch_pos(B_XY(-1000.f, -1000.f));
+        batch_color(B_RGBA(0, 0, 0, 128));
+        batch_rectangle(NULL, B_SIZE(3000.f));
+    }
+
     batch_pos(B_XY(HALF_SCREEN_WIDTH, 16.f));
     batch_colors(B_MF_YELLOW);
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));

@@ -32,8 +32,12 @@ static void set_last_error(const char* error) {
     last_error = (error == NULL || error[0] == '\0') ? NULL : SDL_strdup(error);
 }
 
+static Bool from_on_disconnected = FALSE;
 static void on_disconnected(NutBlast_Reason reason) {
     set_last_error((SDL_strcmp(reason.code, NUTBLAST_ERROR_OK) == 0) ? NULL : reason.code);
+    from_on_disconnected = TRUE;
+    disconnect();
+    from_on_disconnected = FALSE;
 }
 
 static void on_peer_joined(NetID pid) {
@@ -103,12 +107,14 @@ static void on_lobbies_found(const NutBlast_Lobby* lobbies, size_t count) {
 }
 
 static void on_master_changed(NetID pid) {
-    (void)pid;
-
-    chat_message(LFMT("chat_hosting", 's', get_peer_name(get_master_peer())), B_YELLOW);
+    if (pid > 0)
+        chat_message(LFMT("chat_hosting", 's', get_peer_name(get_master_peer())), B_YELLOW);
 }
 
 static void on_peer_data_changed(NetID pid, NutBlast_FieldDiff diff) {
+    if (diff.old_value == NULL)
+        return;
+
     if (SDL_strcmp(diff.name, NUTBLAST_FIELD_PLAYER_NAME) == 0) {
         chat_message(LFMT("chat_changed_name", 's', diff.old_value, 's', diff.new_value), B_YELLOW);
         return;
@@ -156,32 +162,17 @@ void net_init() {
     load_sound("ui/leave", TRUE);
 }
 
-static void connect_state_success() {
-    connect_state = CONN_SUCCESS;
-    clear_chat();
-    chat_message(LFMT("chat_connected"), B_YELLOW);
-    update_discord_status();
-}
-
 void net_update() {
     NutBlast_Update();
 
-    switch (connect_state) {
-    default:
-        break;
+    if (connect_state == CONN_CONNECTING && NutBlast_IsReady()) {
+        connect_state = CONN_CONNECTED;
 
-    case CONN_CONNECTING: {
-        const int state = (last_error == NULL) ? is_connected() : -1;
-        if (state > 0) {
-            connect_state_success();
-            INFO("Connect state ended successfully");
-        } else if (state < 0) {
-            connect_state = CONN_FAIL;
-            WARN("Connect state ended in failure");
-        }
+        clear_chat();
+        chat_message(LFMT("chat_connected"), B_YELLOW);
+        update_discord_status();
 
-        break;
-    }
+        INFO("Connect state ended successfully");
     }
 
     NutBlast_Message msg = {0};
@@ -289,7 +280,7 @@ void set_hostname(const char* hn) {
 }
 
 Bool is_connected() {
-    return NutBlast_IsReady() && peer_exists(get_master_peer());
+    return connect_state == CONN_CONNECTED;
 }
 
 Bool is_host() {
@@ -440,6 +431,7 @@ void host_lobby() {
             : fmt("%s'%s Lobby", CLIENT.name, (CLIENT.name[SDL_strlen(CLIENT.name) - 1] == 's') ? "" : "s"));
     update_lobby_data();
     update_peer_data();
+    NutBlast_SetPlayerField("spectator", "0"); // GROSS HACK: pre-set `spectator` to trigger diff the first time.
     NutBlast_Host(0, CLIENT.lobby_limit, !CLIENT.private_lobby);
 
     connect_state = CONN_CONNECTING;
@@ -456,7 +448,15 @@ void join_lobby(NetID lid) {
 }
 
 void disconnect() {
-    NutBlast_Disconnect();
+    if (connect_state == CONN_CONNECTING)
+        WTF("Connect state ended in failure");
+    connect_state = CONN_DISCONNECTED;
+
+    if (!from_on_disconnected) {
+        NutBlast_Disconnect();
+        clear_lobby_list();
+    }
+
     if (last_error == NULL) {
         if (get_screen() != SCR_MENU)
             boot_to_menu(LFMT("msg_disconnected"));
@@ -467,7 +467,6 @@ void disconnect() {
     }
 
     NutBlast_PurgeMetadata();
-    clear_lobby_list();
     clear_peer_tables();
     set_hostname(CLIENT.server);
     update_discord_status();
@@ -679,6 +678,13 @@ void spread_reliable_packet(PacketChannel channel, const Uint8* data, size_t siz
         send_reliable_packet(channel, *pids, data, size);
 }
 
+void spread_reliable_packet_to_players(PacketChannel channel, const Uint8* data, size_t size) {
+    for (size_t i = 0; i < SDL_arraysize(player_peers); i++)
+        send_reliable_packet(channel, player_peers[i], data, size);
+    for (size_t i = 0; i < SDL_arraysize(spectator_peers); i++)
+        send_reliable_packet(channel, spectator_peers[i], data, size);
+}
+
 void spread_world_packet(const WorldContext* ctx) {
     Buffer buffer = net_buffer();
     write_buffer8(&buffer, &(PacketType){PT_WORLD});
@@ -696,5 +702,5 @@ void spread_world_packet(const WorldContext* ctx) {
         write_buffer32(&buffer, (Uint32*)&ctx->players[i].score);
     }
 
-    spread_reliable_packet(PCH_LOBBY, buffer.data, buffer_tell(buffer));
+    spread_reliable_packet_to_players(PCH_LOBBY, buffer.data, buffer_tell(buffer));
 }

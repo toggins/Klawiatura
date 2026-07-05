@@ -531,22 +531,24 @@ static Bool wait_connecting() {
     default:
         return FALSE;
 
-    case CONN_FAIL: {
+    case CONN_DISCONNECTED: {
         UI* message = create_ui(UI_MESSAGE, NULL);
         if (message == NULL)
             return TRUE;
 
         UIMessageData* userdata = message->userdata;
         userdata->text = "msg_connection_failed";
+
+        return TRUE;
     }
 
-    case CONN_SUCCESS:
+    case CONN_CONNECTED:
         return TRUE;
     }
 }
 
 static void finish_connecting() {
-    if (get_connect_state() == CONN_SUCCESS) {
+    if (is_connected()) {
         set_menu(&CATALOG, MEN_LOBBY);
         play_generic_sound("ui/connect", PLAY_SYSTEM);
     }

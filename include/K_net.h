@@ -33,8 +33,8 @@ typedef Uint8 ConnectState;
 enum {
     CONN_NONE,
     CONN_CONNECTING,
-    CONN_SUCCESS,
-    CONN_FAIL,
+    CONN_CONNECTED,
+    CONN_DISCONNECTED,
 };
 
 typedef Uint8 PacketChannel;
@@ -95,4 +95,5 @@ Buffer net_buffer();
 void send_packet(PacketChannel, NetID, const Uint8*, size_t),
     send_reliable_packet(PacketChannel, NetID, const Uint8*, size_t);
 void spread_packet(PacketChannel, const Uint8*, size_t), spread_reliable_packet(PacketChannel, const Uint8*, size_t);
+void spread_reliable_packet_to_players(PacketChannel, const Uint8*, size_t);
 void spread_world_packet(const WorldContext*), spread_game_packet(const GameContext*);
