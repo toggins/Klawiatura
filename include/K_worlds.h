@@ -12,7 +12,7 @@ typedef struct {
     TinyHash world;
     Uint8 level;
 
-    PlayerID num_players;
+    PlayerID winner, num_players;
     GamePlayerContext players[MAX_PLAYERS];
 } WorldContext;
 

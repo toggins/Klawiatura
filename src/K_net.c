@@ -234,6 +234,9 @@ void net_update() {
             read_buffer64(&mbuf, &ctx.world);
             read_buffer8(&mbuf, &ctx.level);
 
+            read_buffer8(&mbuf, (Uint8*)&ctx.winner);
+            ctx.winner = SDL_min(ctx.winner, SDL_arraysize(ctx.players));
+
             read_buffer8(&mbuf, (Uint8*)&ctx.num_players);
             ctx.num_players = SDL_min(ctx.num_players, SDL_arraysize(ctx.players));
             for (PlayerID i = 0; i < ctx.num_players; i++) {

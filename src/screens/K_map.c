@@ -55,6 +55,8 @@ static MapState* map_state = NULL;
 static void start(const void* secret, size_t secret_size) {
     EXPECT(secret_size == sizeof(WorldContext), "Secret isn't WorldContext?");
     WORLD_CONTEXT = *(WorldContext*)secret;
+    EXPECT(WORLD_CONTEXT.winner >= 0 && WORLD_CONTEXT.winner < MAX_PLAYERS,
+        "Invalid winner in world context! Expected 0..%i, got %i", MAX_PLAYERS - 1, WORLD_CONTEXT.winner);
     EXPECT(WORLD_CONTEXT.num_players >= 1 && WORLD_CONTEXT.num_players <= MAX_PLAYERS,
         "Invalid player count in world context! Expected 1..%i, got %i", MAX_PLAYERS, WORLD_CONTEXT.num_players);
 
@@ -213,7 +215,7 @@ static void start(const void* secret, size_t secret_size) {
     if (map_state->path == NULL) {
         load_sprite_num("ui/map/world/completed/%u", 16, FALSE);
     } else {
-        const GamePlayerContext* pctx = &WORLD_CONTEXT.players[0];
+        const GamePlayerContext* pctx = &WORLD_CONTEXT.players[WORLD_CONTEXT.winner];
         for (PlayerFrame i = PF_WALK1; i <= (PlayerFrame)PF_WALK3; i++)
             load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), FALSE);
         for (PlayerFrame i = PF_SWIM1; i <= (PlayerFrame)PF_SWIM8; i++)
@@ -425,7 +427,7 @@ static void draw_ui() {
         batch_pos(B_XY((int)player->pos[0], (int)player->pos[1]));
         batch_scale(B_SIZE(0.5f));
 
-        const GamePlayerContext* pctx = &WORLD_CONTEXT.players[0];
+        const GamePlayerContext* pctx = &WORLD_CONTEXT.players[WORLD_CONTEXT.winner];
         batch_sprite(get_character_sprite(pctx->character, pctx->powerup,
             player->swimming ? ((player->frame < 6.f) ? (PF_SWIM1 + (int)player->frame)
                                                       : (PF_SWIM7 + (int)SDL_fmodf(player->frame, 2.f)))
