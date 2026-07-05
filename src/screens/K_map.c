@@ -399,8 +399,12 @@ static void draw_ui() {
         batch_reset();
 
         const Uint32 t = (Uint32)(totalticks() * 0.5f);
+        Uint8 cross = 0;
         for (size_t i = 0; i < map_state->current_point; i++) {
             const MapPoint* point = &map_state->points[i];
+            if (point->cross && ++cross > WORLD_CONTEXT.level)
+                break;
+
             batch_pos(B_XYZ(point->pos[0], point->pos[1], 10.f));
             batch_sprite(point->cross ? fmt("ui/map/cross/%u", t % 11) : fmt("ui/map/point/%u", t % 6));
         }
