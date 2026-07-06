@@ -28,12 +28,14 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+
     strategy:
       matrix:
         include:
           - { name: Linux }
           - { name: Win32, mingw: 32 }
           - { name: Win64, mingw: 64 }
+
     env:
       CACHE_BUST: 1
       OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
@@ -50,18 +52,23 @@ jobs:
         -D CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER
         -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY
         -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
+
     steps:
       - name: Silence `git init` warning
         run: git config --global init.defaultBranch master
+
       - name: Checkout
         uses: actions/checkout@v7
+
       - name: Source Discord Social SDK
         run: |
           cd external/discord; git init
           git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/discord.git
           git pull origin master
+
       - name: Restore source timestamps for crazy CMake caching benefits
         uses: chetan/git-restore-mtime-action@v2
+
       - name: Install dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
@@ -74,6 +81,7 @@ jobs:
         run: |
           sudo ln -sf /usr/bin/${MINGW_ARCH}-w64-mingw32-gcc{-win32,}
           sudo ln -sf /usr/bin/${MINGW_ARCH}-w64-mingw32-g++{-win32,}
+
       - name: Cache build dir
         id: cache-build
         uses: actions/cache@v6
@@ -83,15 +91,19 @@ jobs:
           restore-keys: |
             ${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-
             ${{ env.CACHE_BUST }}-${{ matrix.name }}-
+
       - name: Configure
         run: |
           cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
             ${{ matrix.mingw && env.MINGW_SHEBANG || '' }} \
             -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
+
       - name: Build
         run: cmake --build build --target all
+
       - name: Package
         run: cmake --build build --target package
+
       - name: Release
         uses: softprops/action-gh-release@v3
         with:
@@ -115,18 +127,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
       - name: Restore source timestamps for crazy CMake caching benefits
         uses: chetan/git-restore-mtime-action@v2
+
       - name: Install dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           version: 1.1
           packages: ${{ env.CRAZY_AHH_DEPS }} nodejs
+
       - name: Source pasture-raised gluten-free emsdk
         uses: emscripten-core/setup-emsdk@main
         with:
           version: latest
           actions-cache-folder: emsdk-cache
+
       - name: Cache build dir
         id: cache-build
         uses: actions/cache@v6
@@ -136,12 +152,16 @@ jobs:
           restore-keys: |
             ${{ env.CACHE_BUST }}-Web-${{ github.ref_name }}-
             ${{ env.CACHE_BUST }}-Web-
+
       - name: Configure
         run: emcmake cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release
+
       - name: Build
         run: cmake --build build --target Klawiatura
+
       - name: Prepare for distibution
         run: cp -vr build/Klawiatura.{js,wasm,data} www
+
       - name: Publish
         id: publish
         uses: nonk123/sanity-action@master
