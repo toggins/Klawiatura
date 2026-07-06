@@ -37,6 +37,7 @@ typedef struct {
 
 typedef struct {
     Bool lost_map;
+    Uint8 transition;
     Uint16 size[2];
     Sint32 camera_pos[2];
     Sint32 water[4];
@@ -335,15 +336,37 @@ static void tick() {
             map_state->camera_pos[0] = SDL_clamp(player->pos[0], HALF_SCREEN_WIDTH, xmax);
             map_state->camera_pos[1] = SDL_clamp(player->pos[1], HALF_SCREEN_HEIGHT, ymax);
         } else {
-            if (kb_pressed(KB_JUMP) && is_leader()) {
-                WorldContext ctx = WORLD_CONTEXT;
-                ++ctx.level;
-                spread_world_packet(&ctx);
-                set_screen(SCR_MAP, &ctx, sizeof(ctx));
+            if (map_state->transition <= 0) {
+                can_move = TRUE;
+
+                if (kb_pressed(KB_JUMP) && is_leader()) {
+                    if (map_state->lost_map)
+                        play_generic_sound("coin", 0);
+                    else
+                        melt_generic_track(GTS_MAIN);
+                    ++map_state->transition;
+                }
+            } else {
+                ++map_state->transition;
+
+                Bool go = FALSE;
+                if (map_state->lost_map) {
+                    go = map_state->transition >= 54;
+                } else {
+                    if (map_state->transition == 25)
+                        play_generic_sound("ui/enter", 0);
+                    go = map_state->transition >= 70;
+                }
+
+                if (go) {
+                    WorldContext ctx = WORLD_CONTEXT;
+                    ++ctx.level;
+                    spread_world_packet(&ctx);
+                    set_screen(SCR_MAP, &ctx, sizeof(ctx));
+                }
             }
 
             player->frame += player->swimming ? 0.14f : 0.12f;
-            can_move = TRUE;
         }
 
         if ((player->pos[0] - 8.f) < (float)map_state->water[2] && (player->pos[0] + 8.f) > (float)map_state->water[0]
@@ -411,7 +434,10 @@ static void tick() {
                 point->appear += player->appear_speed;
             }
         }
-    } else if (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE)) {
+    } else if (map_state->transition <= 0) {
+        if (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE))
+            ++map_state->transition;
+    } else if (++map_state->transition >= 101) {
         set_screen(SCR_MENU, NULL, 0);
     }
 
@@ -502,18 +528,49 @@ static void draw_ui() {
         batch_sprite("ui/map/logo");
     }
 
-    if (map_state->path != NULL && map_state->current_node >= TinyDLength(map_state->path)
-        && SDL_fmodf(totalticks(), 25.f) < 12.5f)
-    {
-        batch_pos(B_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 24.f));
-        batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-        if (is_leader()) {
-            batch_colors(B_MF_GREEN);
-            batch_string("header", 32.f, LFMT("opt_press", 's', kb_label(KB_JUMP)));
-        } else {
-            batch_colors(B_MF_WHITE);
-            batch_string("header", 32.f, LFMT("opt_waiting_for_leader"));
+    // Transition
+    if (map_state->transition <= 0) {
+        if (map_state->path != NULL && map_state->current_node >= TinyDLength(map_state->path)
+            && SDL_fmodf(totalticks(), 25.f) < 12.5f)
+        {
+            batch_pos(B_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 24.f));
+            batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+            if (is_leader()) {
+                batch_colors(B_MF_GREEN);
+                batch_string("header", 32.f, LFMT("opt_press", 's', kb_label(KB_JUMP)));
+            } else {
+                batch_colors(B_MF_WHITE);
+                batch_string("header", 32.f, LFMT("opt_waiting_for_leader"));
+            }
         }
+    } else if (map_state->path == NULL) {
+        batch_pos(B_ORIGIN);
+        batch_color(B_RGBA(0, 0, 0, (float)(map_state->transition / 101.f) * 255.f));
+        batch_rectangle(NULL, B_SCREEN_SIZE);
+    } else if (map_state->lost_map) {
+        if (map_state->transition > 9) {
+            batch_pos(B_ORIGIN);
+            batch_color(B_RGBA(0, 0, 0, ((float)(map_state->transition - 9) / 45.f) * 255.f));
+            batch_rectangle(NULL, B_SCREEN_SIZE);
+        }
+    } else if (map_state->transition > 25) {
+        clear_stencil(0);
+
+        batch_write_color(FALSE, FALSE, FALSE, FALSE);
+        batch_test_stencil(TRUE);
+        batch_stencil_func(STF_ALWAYS, 1, 1);
+        batch_stencil_op(STO_REPLACE, STO_REPLACE, STO_REPLACE);
+        batch_pos(B_HALF_SCREEN);
+        batch_color(B_WHITE);
+        batch_circle(NULL, (1.f - ((float)(map_state->transition - 25) / 45.f)) * 400.f);
+        batch_write_color(TRUE, TRUE, TRUE, TRUE);
+
+        batch_stencil_func(STF_GREATER, 1, 1);
+        batch_stencil_op(STO_KEEP, STO_KEEP, STO_KEEP);
+        batch_pos(B_ORIGIN);
+        batch_color(B_BLACK);
+        batch_rectangle(NULL, B_SCREEN_SIZE);
+        batch_test_stencil(FALSE);
     }
 
     batch_write_depth(TRUE);
