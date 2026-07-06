@@ -19,12 +19,14 @@ typedef struct {
 } MapBubble;
 
 typedef struct {
+    Uint8 appear_speed;
     Bool swimming;
     float pos[2], speed, frame;
     MapBubble* bubbles;
 } MapPlayer;
 
 typedef struct {
+    Uint8 appear;
     Bool cross;
     Sint32 pos[2];
 } MapPoint;
@@ -42,7 +44,7 @@ typedef struct {
     MapLabel label;
     MapPlayer player;
 
-    size_t current_node, current_point;
+    size_t current_node;
 
     const char *title, *track;
     Surface* surface;
@@ -249,13 +251,14 @@ static void start(const void* secret, size_t secret_size) {
         map_state->player.pos[0] = (float)node->pos[0];
         map_state->player.pos[1] = (float)node->pos[1];
         map_state->player.speed = 1.f;
+        map_state->player.appear_speed = 1;
 
-        const size_t n = TinyDLength(map_state->points);
-        while (map_state->current_point < n) {
-            if (map_state->player.pos[0] < (float)map_state->points[map_state->current_point].pos[0])
+        for (size_t i = 0, n = TinyDLength(map_state->points); i < n; i++) {
+            MapPoint* point = &map_state->points[i];
+            if ((map_state->player.pos[0] + 8.f) < (float)(point->pos[0] + 7))
                 break;
 
-            ++map_state->current_point;
+            point->appear = 21;
         }
 
         map_state->camera_pos[0]
@@ -302,9 +305,10 @@ static void tick() {
         MapPlayer* player = &map_state->player;
 
         if (map_state->current_node < TinyDLength(map_state->path)) {
-            if ((player->speed <= 1.f && (kb_pressed(KB_JUMP) || kb_pressed(KB_FIRE) || kb_pressed(KB_UI_ENTER)))
-                || (player->speed > 1.f && player->speed < 12.5f))
-            {
+            if (player->appear_speed <= 1) {
+                if (kb_pressed(KB_JUMP) || kb_pressed(KB_FIRE) || kb_pressed(KB_UI_ENTER))
+                    player->appear_speed += 5;
+            } else if (player->speed < 12.5f) {
                 player->speed += player->speed;
                 if (player->speed > 12.5f)
                     player->speed = 12.5f;
@@ -379,10 +383,31 @@ static void tick() {
             bubble->speed[1] += 0.2f;
         }
 
-        if (map_state->current_point < TinyDLength(map_state->points)
-            && player->pos[0] >= (float)map_state->points[map_state->current_point].pos[0])
-        {
-            ++map_state->current_point;
+        Uint8 cross = 0;
+        for (size_t i = 0, n = TinyDLength(map_state->points); i < n; i++) {
+            MapPoint* point = &map_state->points[i];
+            if (point->cross && ++cross > WORLD_CONTEXT.level)
+                break;
+
+            if (point->appear <= 0) {
+                if ((player->pos[0] - 8.f) < (float)(point->pos[0] + 7)
+                    && (player->pos[0] + 8.f) > (float)(point->pos[0] - 7)
+                    && (player->pos[1] - 30.f) < (float)(point->pos[1] + 7)
+                    && player->pos[1] > (float)(point->pos[1] - 6))
+                {
+                    point->appear += player->appear_speed;
+
+                    size_t j = i;
+                    while (j-- > 0) {
+                        if (map_state->points[j].appear > 0)
+                            break;
+
+                        map_state->points[j].appear += player->appear_speed;
+                    }
+                }
+            } else if (point->appear <= 20) {
+                point->appear += player->appear_speed;
+            }
         }
     } else if (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE)) {
         set_screen(SCR_MENU, NULL, 0);
@@ -418,10 +443,12 @@ static void draw_ui() {
 
         const Uint32 t = (Uint32)(totalticks() * 0.5f);
         Uint8 cross = 0;
-        for (size_t i = 0; i < map_state->current_point; i++) {
+        for (size_t i = 0, n = TinyDLength(map_state->points); i < n; i++) {
             const MapPoint* point = &map_state->points[i];
             if (point->cross && ++cross > WORLD_CONTEXT.level)
                 break;
+            if (point->appear <= 20)
+                continue;
 
             batch_pos(B_XYZ(point->pos[0], point->pos[1], 10.f));
             batch_sprite(point->cross ? fmt("ui/map/cross/%u", t % 11) : fmt("ui/map/point/%u", t % 6));
