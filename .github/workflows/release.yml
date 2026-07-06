@@ -111,7 +111,7 @@ jobs:
       pages: write
       id-token: write
     env:
-      CACHE_BUST: 2
+      CACHE_BUST: 3
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -123,7 +123,7 @@ jobs:
           version: 1.1
           packages: ${{ env.CRAZY_AHH_DEPS }} nodejs
       - name: Source pasture-raised gluten-free emsdk
-        uses: emscripten-core/setup-emsdk@v16
+        uses: emscripten-core/setup-emsdk@main
         with:
           version: latest
           actions-cache-folder: emsdk-cache
