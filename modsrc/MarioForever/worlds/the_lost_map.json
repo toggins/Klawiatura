@@ -1,5 +1,6 @@
 {
     "map": {
+        "lost_map": true,
         "size": [1070, 480],
         "track": "mk64_frappe_snowland",
         "backdrops": [
