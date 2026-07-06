@@ -100,6 +100,7 @@
 
 #define B_WH(w, h) ((float[2]){(w), (h)})
 #define B_SIZE(x) B_WH(x, x)
+#define B_SCREEN_SIZE B_WH(SCREEN_WIDTH, SCREEN_HEIGHT)
 
 typedef Uint8 VertexAttribute;
 enum {
@@ -278,14 +279,13 @@ void batch_color(const Uint8[4]), batch_colors(const Uint8[4][4]), batch_stencil
 void batch_flip(const Bool[2]), batch_tile(const Bool[2]), batch_align(const FontAlignment[2]);
 void batch_filter(Bool), batch_alpha_test(float);
 void batch_blend(BlendMode);
-void batch_write_color(Bool);
+void batch_write_color(Bool, Bool, Bool, Bool);
 void batch_test_depth(Bool), batch_write_depth(Bool);
-void batch_test_stencil(Bool), batch_write_stencil(Bool), batch_stencil_mask(Uint8),
-    batch_stencil_func(StencilFunction, Uint8, Uint8),
+void batch_test_stencil(Bool), batch_stencil_mask(Uint8), batch_stencil_func(StencilFunction, Uint8, Uint8),
     batch_stencil_op(StencilOperation, StencilOperation, StencilOperation);
 void batch_reset(), batch_reset_hard();
 
-void batch_rectangle(const char*, const float[2]);
+void batch_rectangle(const char*, const float[2]), batch_circle(const char*, float);
 void batch_sprite(const char*), batch_surface(const Surface*);
 float string_width(const char*, float, const char*), string_height(const char*, float, const char*);
 void batch_string(const char*, float, const char*);

@@ -45,8 +45,9 @@ typedef struct {
 
 typedef struct {
     Bool filter;
+    Bool write_color[4];
     Bool test_depth, write_depth;
-    Bool test_stencil, write_stencil;
+    Bool test_stencil;
     Bool flip[2], tile[2];
     Uint8 color[4][4];
     FontAlignment align[2];
@@ -749,7 +750,10 @@ void batch_stencil(const float stencil[4]) {
         submit_batch();
     }
 
-    SDL_memcpy(batch.stencil, stencil, sizeof(batch.stencil));
+    batch.stencil[0] = stencil[0];
+    batch.stencil[1] = stencil[1];
+    batch.stencil[2] = stencil[2];
+    batch.stencil[3] = stencil[3];
 }
 
 void batch_flip(const Bool flip[2]) {
@@ -796,6 +800,21 @@ void batch_blend(BlendMode blend) {
     }
 }
 
+void batch_write_color(Bool r, Bool g, Bool b, Bool a) {
+    if (batch.write_color[0] != r || batch.write_color[1] != g || batch.write_color[2] != b
+        || batch.write_color[3] != a)
+    {
+        submit_batch();
+    }
+
+    batch.write_color[0] = r;
+    batch.write_color[1] = g;
+    batch.write_color[2] = b;
+    batch.write_color[3] = a;
+    glColorMask(batch.write_color[0] ? GL_TRUE : GL_FALSE, batch.write_color[1] ? GL_TRUE : GL_FALSE,
+        batch.write_color[2] ? GL_TRUE : GL_FALSE, batch.write_color[3] ? GL_TRUE : GL_FALSE);
+}
+
 HARD_BATCH_FUNC(Bool, test_depth);
 
 void batch_write_depth(Bool write_depth) {
@@ -807,7 +826,6 @@ void batch_write_depth(Bool write_depth) {
 }
 
 HARD_BATCH_FUNC(Bool, test_stencil);
-HARD_BATCH_FUNC(Bool, write_stencil);
 
 void batch_stencil_mask(Uint8 stencil_mask) {
     if (batch.stencil_mask != stencil_mask)
@@ -882,7 +900,6 @@ void batch_stencil_op(StencilOperation stencil_fail, StencilOperation depth_fail
     batch.stencil_op[0] = stencil_fail;
     batch.stencil_op[1] = depth_fail;
     batch.stencil_op[2] = depth_pass;
-
     glStencilOp(
         sto_to_glenum(batch.stencil_op[0]), sto_to_glenum(batch.stencil_op[1]), sto_to_glenum(batch.stencil_op[2]));
 }
@@ -907,10 +924,10 @@ void batch_reset_hard() {
     batch_alpha_test(0.f);
     batch_stencil(B_NO_STENCIL);
     batch_blend(BM_NORMAL);
+    batch_write_color(TRUE, TRUE, TRUE, TRUE);
     batch_test_depth(TRUE);
     batch_write_depth(TRUE);
     batch_test_stencil(FALSE);
-    batch_write_stencil(FALSE);
     batch_stencil_mask(255);
     batch_stencil_func(STF_ALWAYS, 0, 255);
     batch_stencil_op(STO_KEEP, STO_KEEP, STO_KEEP);
@@ -1049,6 +1066,30 @@ void batch_rectangle(const char* name, const float size[2]) {
     batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
     batch_vertex(B_XYZ(p4[0], p4[1], p4[2]), batch.color[3], B_UV(u2, v2));
     batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
+}
+
+/// Adds a circle to the batch.
+void batch_circle(const char* name, float radius) {
+    const Texture* texture = get_texture(name);
+    batch_texture((texture == NULL) ? blank_texture : *(GLuint*)texture->internal);
+
+    const float x = batch.pos[0] - (batch.offset[0] * batch.scale[0]),
+                y = batch.pos[1] - (batch.offset[1] * batch.scale[1]), z = batch.pos[2];
+    const float xrad = radius * batch.scale[0], yrad = radius * batch.scale[1];
+    static const Uint8 n = 64;
+    for (Uint8 i = 0; i < n; i++) {
+        const float forward = (SDL_PI_F * 2.f) * ((float)i / (float)n);
+        const float up = (SDL_PI_F * 2.f) * ((float)(i + 1) / (float)n);
+
+        const float nx1 = SDL_cosf(forward), ny1 = SDL_sinf(forward);
+        const float nx2 = SDL_cosf(up), ny2 = SDL_sinf(up);
+
+        batch_vertex(B_XYZ(x, y, z), batch.color[0], B_UV(0.5f, 0.5f));
+        batch_vertex(B_XYZ(x + (nx1 * xrad), y + (ny1 * yrad), z), batch.color[1],
+            B_UV(0.5f + (nx1 * 0.5f), 0.5f + (ny1 * 0.5f)));
+        batch_vertex(B_XYZ(x + (nx2 * xrad), y + (ny2 * yrad), z), batch.color[1],
+            B_UV(0.5f + (nx2 * 0.5f), 0.5f + (ny2 * 0.5f)));
+    }
 }
 
 static float string_width_fast(const Font* font, float size, const char* str) {
