@@ -6,7 +6,9 @@
 #include "K_discord.h"
 #include "K_file.h" // IWYU pragma: export
 #include "K_interface.h"
+#include "K_locale.h"
 #include "K_string.h"
+#include "K_worlds.h"
 
 #ifdef K_DISCORD
 
@@ -17,7 +19,9 @@
 
 static Discord_Client discord = {0};
 
-static void log_callback(Discord_String dstr, Discord_LoggingSeverity level, void*) {
+static void log_callback(Discord_String dstr, Discord_LoggingSeverity level, void* userdata) {
+    (void)userdata;
+
     switch (level) {
     default:
         INFO("%.*s", (int)dstr.size, dstr.ptr);
@@ -31,9 +35,11 @@ static void log_callback(Discord_String dstr, Discord_LoggingSeverity level, voi
     }
 }
 
-static void rpc_callback(Discord_ClientResult*, void*) {}
+static void rpc_callback(Discord_ClientResult* result, void* userdata) {}
 
-static void invite_callback(Discord_String secret, void*) {
+static void invite_callback(Discord_String secret, void* userdata) {
+    (void)userdata;
+
     set_screen(SCR_MENU, secret.ptr, secret.size);
 }
 
@@ -118,7 +124,14 @@ void update_discord_status() {
     }
 
     case SCR_MAP: {
-        Discord_Activity_SetDetails(&activity, &STATIC_STRING("Map"));
+        const World* world = get_world_key(WORLD_CONTEXT.world);
+        if (world == NULL) {
+            Discord_Activity_SetDetails(&activity, &STATIC_STRING("In Game"));
+            break;
+        }
+
+        const char* name = LFMT(fmt("wld_%s", world->name));
+        Discord_Activity_SetDetails(&activity, &DYNAMIC_STRING(name));
         break;
     }
 
