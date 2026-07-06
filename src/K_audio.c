@@ -178,12 +178,12 @@ void audio_update() {
 
 #define GTVOLUME(flg, vol)                                                                                             \
     if (gtchan->flags & (flg)) {                                                                                       \
-        gtchan->vol -= deltaticks() / (float)TICKRATE;                                                                 \
+        gtchan->vol -= 0.0390625f * deltaticks();                                                                      \
         if (gtchan->vol < 0.f)                                                                                         \
             gtchan->vol = 0.f;                                                                                         \
         update_volume = TRUE;                                                                                          \
     } else if (gtchan->vol < 1.f) {                                                                                    \
-        gtchan->vol += deltaticks() / (float)TICKRATE;                                                                 \
+        gtchan->vol += 0.0390625f * deltaticks();                                                                      \
         if (gtchan->vol > 1.f)                                                                                         \
             gtchan->vol = 1.f;                                                                                         \
         update_volume = TRUE;                                                                                          \
