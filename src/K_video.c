@@ -496,18 +496,7 @@ void load_texture(const char* name, Bool persistent) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
-    GLint img_internal = GL_RGBA8, img_format = GL_RGBA;
-    switch (surface->format) {
-    case SDL_PIXELFORMAT_RGB24: {
-        img_internal = GL_RGB8;
-        img_format = GL_RGB;
-        break;
-    }
-
-    case SDL_PIXELFORMAT_RGBA32:
-        break;
-
-    default: {
+    if (surface->format != SDL_PIXELFORMAT_RGBA32) {
         SDL_Surface* temp = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
         SDL_DestroySurface(surface);
         if (temp == NULL) {
@@ -517,12 +506,9 @@ void load_texture(const char* name, Bool persistent) {
         }
 
         surface = temp;
-        break;
-    }
     }
 
-    glTexImage2D(
-        GL_TEXTURE_2D, 0, img_internal, surface->w, surface->h, 0, img_format, GL_UNSIGNED_BYTE, surface->pixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
     SDL_DestroySurface(surface);
 
     TinyDictPut(&textures, name, &texture, sizeof(texture))->cleanup = nuke_texture;
