@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.28.0 FATAL_ERROR)
 
 project(Klawiatura VERSION 1.4.0
     DESCRIPTION "Mario Forever Online"
@@ -13,9 +13,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
 set(BUILD_SHARED_LIBS OFF)
-if(NOT EMSCRIPTEN)
-    set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
-endif()
 
 if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -149,7 +146,7 @@ list(APPEND LIBS S_tructures)
 
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG 2c6f73f29d5ec367c90d650e5dfcf3e01c13defd
+	GIT_TAG 19633b12f4a66a11ef5578a1a225025e286c4045
 	EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(NutBlast)
 
@@ -192,6 +189,8 @@ add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${HEADERS} ${RESFILE})
 
 if(EMSCRIPTEN)
     target_link_options(${PROJECT_NAME} PRIVATE
+        "SHELL:-sASYNCIFY"
+        "SHELL:-sEXPORTED_RUNTIME_METHODS=HEAPF32,HEAPU32,HEAPU8"
         "SHELL:-s MIN_WEBGL_VERSION=2"
         "SHELL:-s MAX_WEBGL_VERSION=2")
 endif()
