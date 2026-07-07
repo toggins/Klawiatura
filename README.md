@@ -7,13 +7,24 @@
 > [!TIP]
 > Check out [the releases](https://github.com/toggins/Klawiatura/releases/latest) or [play in your browser](https://mario.games.nonk.dev) to get started.
 
-Klawiatura is an enhanced port of Mario Forever 4.0 that has
+Klawiatura is an enhanced port of Mario Forever 4.0, written in plain C.
+
+### Features
 
 - Native support for Windows, Linux and Emscripten
-- Online multiplayer with up to 8 players
 - A basic mod system with custom worlds and levels
+- **Online multiplayer with up to 8 players**
 
-Written in plain C.
+### Changes from Mario Forever 4.0
+
+- Restorations:
+  - Original map screens (1.16.1 - 3.0)
+  - Checkpoints in main worlds (4.4+)
+  - Hammer Bro fights (5.08+)
+- Enhancements:
+  - Minor graphics and audio fixes
+  - Stereo sound panning
+  - Coyote time (2 frames) and longer crouch sliding
 
 ## Multiplayer
 
