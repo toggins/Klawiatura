@@ -37,7 +37,7 @@ list(APPEND LIBS SDL3::SDL3-static)
 
 FetchContent_Declare(Fluidsynth
     GIT_REPOSITORY https://github.com/Schwungus/fluidsynth-emscripten.git
-    GIT_TAG f154ea42d5f3eb854e9f84b806f8d2158886b3a9
+    GIT_TAG 279999696528f69a08df53a9ec7505a0bc9b6b33
     OVERRIDE_FIND_PACKAGE
     EXCLUDE_FROM_ALL)
 
