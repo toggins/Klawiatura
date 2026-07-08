@@ -127,7 +127,7 @@ set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
 
 FetchContent_Declare(S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
-    GIT_TAG a47e3dd349e4b85006e1b756ea0164a76d4fe579
+    GIT_TAG 70b3044b3d758108828e2054683c21faf744b3de
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(S_fixed)
 
@@ -146,7 +146,7 @@ list(APPEND LIBS S_tructures)
 
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG 19633b12f4a66a11ef5578a1a225025e286c4045
+	GIT_TAG 0d927e834bab3658d76fbbe4bd9296c920c0162e
 	EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(NutBlast)
 
@@ -218,7 +218,7 @@ endif()
 
 if(EMSCRIPTEN)
     target_link_options(${PROJECT_NAME} PRIVATE
-        "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/modsrc@assets"
+        "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/assets@"
         "SHELL:--preload-file ${CONTROLLER_DB}@gamecontrollerdb.txt")
 else()
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -229,13 +229,13 @@ else()
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/modsrc $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
+        ${CMAKE_SOURCE_DIR}/assets/data $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
 
         COMMAND_EXPAND_LISTS)
 
     install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION . COMPONENT ${PROJECT_NAME})
     install(FILES ${CONTROLLER_DB} ${RUNTIME_DLLS} DESTINATION . COMPONENT ${PROJECT_NAME})
-    install(DIRECTORY modsrc/ DESTINATION data COMPONENT ${PROJECT_NAME})
+    install(DIRECTORY assets/ DESTINATION . COMPONENT ${PROJECT_NAME})
 endif()
 
 set(CPACK_GENERATOR ZIP)

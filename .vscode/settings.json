@@ -8,7 +8,7 @@
     "cmake.generator": "Ninja",
     "cmake.exportCompileCommandsFile": true,
     "cmake.debugConfig": {
-        "args": ["-mod", "../modsrc/MarioForever/", "-mod", "../modsrc/MarioTogether/"]
+        "args": ["-mod", "../assets/data/MarioForever/", "-mod", "../assets/data/MarioTogether/"]
     },
     "files.exclude": {
         ".cache": true,

@@ -50,14 +50,8 @@ void load_mod(const char* path) {
     if (plen > 0 && path[plen - 1] != '/')
         path = fmt("%s/", path);
 
-    if (path[0] == '$') {
-        path =
-#ifdef SDL_PLATFORM_EMSCRIPTEN
-            fmt("/assets/%s", path + 1);
-#else
-            fmt("%sdata/%s", base_path, path + 1);
-#endif
-    }
+    if (path[0] == '$')
+        path = fmt("%sdata/%s", base_path, path + 1);
 
     SDL_PathInfo pinfo = {0};
     SDL_GetPathInfo(path, &pinfo);
