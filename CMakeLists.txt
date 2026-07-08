@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.28.0 FATAL_ERROR)
 
-set(CMAKE_SKIP_INSTALL_RULES TRUE)
-
 project(Klawiatura VERSION 1.4.0
     DESCRIPTION "Mario Forever Online"
     LANGUAGES C CXX)
@@ -38,13 +36,12 @@ list(APPEND LIBS SDL3::SDL3-static)
 # Fluidsynth
 
 FetchContent_Declare(Fluidsynth
-    GIT_REPOSITORY https://github.com/FluidSynth/fluidsynth.git
-    GIT_TAG v2.5.6
+    GIT_REPOSITORY https://github.com/Schwungus/fluidsynth-emscripten.git
+    GIT_TAG faa56f41158b6ae4d4c6604fdd2c9febce830a1a
     OVERRIDE_FIND_PACKAGE
     EXCLUDE_FROM_ALL)
 
 FetchContent_MakeAvailable(Fluidsynth)
-add_library(FluidSynth::libfluidsynth ALIAS libfluidsynth)
 
 # SDL_mixer (3.2.4)
 
@@ -212,6 +209,7 @@ add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${HEADERS} ${RESFILE})
 
 if(EMSCRIPTEN)
     target_link_options(${PROJECT_NAME} PRIVATE
+        "SHELL:-sALLOW_MEMORY_GROWTH"
         "SHELL:-sASYNCIFY"
         "SHELL:-sEXPORTED_RUNTIME_METHODS=HEAPF32,HEAPU32,HEAPU8"
         "SHELL:-sMIN_WEBGL_VERSION=2"
