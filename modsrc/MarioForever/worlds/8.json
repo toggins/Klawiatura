@@ -4,62 +4,8 @@
         "track": "federation",
         "backdrops": [
             {
-                "sprite": "maps/background",
-                "pos": [0, 0, 100],
-                "size": [1869, 499],
-                "tile": [true, true]
-            },
-            {
                 "sprite": "maps/8",
-                "pos": [93, 84, 50]
-            },
-            {
-                "sprite": "maps/dark_cloud",
-                "pos": [87, 89, 50]
-            },
-            {
-                "sprite": "maps/dark_cloud",
-                "pos": [195, 122, 50]
-            },
-            {
-                "sprite": "maps/dark_cloud",
-                "pos": [295, 100, 50]
-            },
-            {
-                "sprite": "maps/dark_cloud",
-                "pos": [352, 64, 50]
-            },
-            {
-                "sprite": "maps/dark_cloud",
-                "pos": [399, 86, 50]
-            },
-            {
-                "sprite": "maps/dark_cloud",
-                "pos": [480, 64, 50]
-            },
-            {
-                "sprite": "maps/dark_cloud",
-                "pos": [664, 140, 50]
-            },
-            {
-                "sprite": "maps/dark_cloud",
-                "pos": [772, 173, 50]
-            },
-            {
-                "sprite": "maps/dark_cloud",
-                "pos": [872, 151, 50]
-            },
-            {
-                "sprite": "maps/dark_cloud",
-                "pos": [929, 115, 50]
-            },
-            {
-                "sprite": "maps/dark_cloud",
-                "pos": [976, 137, 50]
-            },
-            {
-                "sprite": "maps/dark_cloud",
-                "pos": [1057, 115, 50]
+                "pos": [0, 0, 50]
             }
         ],
         "points": [
@@ -113,21 +59,21 @@
             },
             {
                 "nodes": [
-                    [107, 280],
-                    [220, 280]
+                    [108, 279],
+                    [221, 279]
                 ]
             },
             {
                 "nodes": [
-                    [225, 281],
-                    [503, 281]
+                    [222, 278],
+                    [500, 278]
                 ]
             },
             {
                 "offset": 45204,
                 "nodes": [
-                    [502, 280],
-                    [623, 280]
+                    [501, 279],
+                    [622, 279]
                 ]
             }
         ]

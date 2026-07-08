@@ -4,78 +4,8 @@
         "track": "yet_another_bonus",
         "backdrops": [
             {
-                "sprite": "maps/background",
-                "pos": [0, 0, 100],
-                "size": [1869, 499],
-                "tile": [true, true]
-            },
-            {
                 "sprite": "maps/6",
-                "pos": [43, 74, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [46, 77, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [114, 105, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [187, 82, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [239, 38, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [262, 118, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [307, 59, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [352, 85, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [448, 64, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1232, 105, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1300, 133, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1373, 110, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1425, 66, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1448, 146, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1493, 87, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1538, 113, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1634, 92, 50]
+                "pos": [0, 0, 50]
             }
         ],
         "points": [
@@ -195,20 +125,20 @@
             },
             {
                 "nodes": [
-                    [104, 299],
-                    [616, 299]
+                    [104, 298],
+                    [616, 298]
                 ]
             },
             {
                 "nodes": [
-                    [604, 298],
-                    [1451, 298]
+                    [616, 299],
+                    [1463, 299]
                 ]
             },
             {
                 "nodes": [
-                    [1452, 298],
-                    [1694, 298]
+                    [1461, 298],
+                    [1703, 298]
                 ]
             }
         ]

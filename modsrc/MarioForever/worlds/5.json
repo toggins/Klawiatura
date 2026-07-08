@@ -4,130 +4,8 @@
         "track": "in_the_kitchen",
         "backdrops": [
             {
-                "sprite": "maps/background",
-                "pos": [0, 0, 100],
-                "size": [1869, 499],
-                "tile": [true, true]
-            },
-            {
                 "sprite": "maps/5",
-                "pos": [60, 174, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [14, 141, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [82, 169, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [155, 146, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [207, 102, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [230, 182, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [275, 123, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [320, 149, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [416, 128, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [574, 153, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [642, 181, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [715, 158, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [767, 114, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [790, 194, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [835, 135, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [880, 161, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [976, 140, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1051, 117, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1119, 145, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1192, 122, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1244, 78, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1267, 158, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1312, 99, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1357, 125, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1453, 104, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1549, 148, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1617, 176, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1690, 153, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1742, 109, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1765, 189, 50]
+                "pos": [0, 0, 50]
             }
         ],
         "points": [
@@ -215,16 +93,16 @@
             },
             {
                 "nodes": [
-                    [115, 301],
-                    [628, 301]
+                    [115, 302],
+                    [628, 302]
                 ]
             },
             {
                 "nodes": [
-                    [665, 301],
-                    [1172, 301],
-                    [1172, 291],
-                    [1191, 291]
+                    [628, 302],
+                    [1172, 302],
+                    [1172, 292],
+                    [1191, 292]
                 ]
             }
         ]

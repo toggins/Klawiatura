@@ -36,7 +36,6 @@ typedef struct {
 } MapPathNode;
 
 typedef struct {
-    Bool lost_map;
     Uint8 transition;
     Uint16 size[2];
     Sint32 camera_pos[2];
@@ -91,7 +90,6 @@ static void start(const void* secret, size_t secret_size) {
 
     map_state = SDL_calloc(1, sizeof(*map_state));
     EXPECT(map_state, "Failed to allocate map state");
-    map_state->lost_map = yyjson_get_bool(yyjson_obj_get(jmap, "lost_map"));
 
     map_state->title = SDL_strdup(fmt("ui/map/world/%s", world->name));
     EXPECT(map_state->title, "Failed to allocate map title");
@@ -229,15 +227,10 @@ static void start(const void* secret, size_t secret_size) {
         load_sprite("ui/map/bubble", FALSE);
     }
 
-    if (map_state->lost_map) {
-        load_sound("coin", FALSE);
-    } else {
-        load_sprite("ui/map/logo", FALSE);
-        load_sound("ui/enter", FALSE);
-    }
-
+    load_sprite("ui/map/logo", FALSE);
     load_sprite("ui/bezel_l", FALSE);
     load_sprite("ui/bezel_r", FALSE);
+    load_sound("ui/enter", FALSE);
     load_track(map_state->track, FALSE);
     load_ui(UI_PAUSE);
 
@@ -340,25 +333,16 @@ static void tick() {
                 can_move = TRUE;
 
                 if (kb_pressed(KB_JUMP) && is_leader()) {
-                    if (map_state->lost_map)
-                        play_generic_sound("coin", 0);
-                    else
-                        melt_generic_track(GTS_MAIN);
+                    melt_generic_track(GTS_MAIN);
                     ++map_state->transition;
                 }
             } else {
                 ++map_state->transition;
 
-                Bool go = FALSE;
-                if (map_state->lost_map) {
-                    go = map_state->transition >= 54;
-                } else {
-                    if (map_state->transition == 25)
-                        play_generic_sound("ui/enter", 0);
-                    go = map_state->transition >= 70;
-                }
+                if (map_state->transition == 25)
+                    play_generic_sound("ui/enter", 0);
 
-                if (go) {
+                if (map_state->transition >= 70) {
                     WorldContext ctx = WORLD_CONTEXT;
                     ++ctx.level;
                     spread_world_packet(&ctx);
@@ -437,8 +421,14 @@ static void tick() {
     } else if (map_state->transition <= 0) {
         if (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE))
             ++map_state->transition;
-    } else if (++map_state->transition >= 101) {
-        set_screen(SCR_MENU, NULL, 0);
+    } else {
+        ++map_state->transition;
+
+        if (map_state->transition == 65)
+            melt_generic_track(GTS_MAIN);
+
+        if (map_state->transition >= 101)
+            set_screen(SCR_MENU, NULL, 0);
     }
 
     if (can_move) {
@@ -523,10 +513,8 @@ static void draw_ui() {
         batch_sprite(fmt("ui/map/world/completed/%u", (Uint32)(totalticks() * 0.5f) % 16));
     }
 
-    if (!map_state->lost_map) {
-        batch_pos(B_SCREEN);
-        batch_sprite("ui/map/logo");
-    }
+    batch_pos(B_SCREEN);
+    batch_sprite("ui/map/logo");
 
     // Transition
     if (map_state->transition <= 0) {
@@ -547,12 +535,6 @@ static void draw_ui() {
         batch_pos(B_ORIGIN);
         batch_color(B_RGBA(0, 0, 0, (float)(map_state->transition / 101.f) * 255.f));
         batch_rectangle(NULL, B_SCREEN_SIZE);
-    } else if (map_state->lost_map) {
-        if (map_state->transition > 9) {
-            batch_pos(B_ORIGIN);
-            batch_color(B_RGBA(0, 0, 0, ((float)(map_state->transition - 9) / 45.f) * 255.f));
-            batch_rectangle(NULL, B_SCREEN_SIZE);
-        }
     } else if (map_state->transition > 25) {
         clear_stencil(0);
 

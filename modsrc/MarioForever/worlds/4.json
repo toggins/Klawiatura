@@ -4,130 +4,8 @@
         "track": "trancoi",
         "backdrops": [
             {
-                "sprite": "maps/background",
-                "pos": [0, 0, 100],
-                "size": [1869, 499],
-                "tile": [true, true]
-            },
-            {
                 "sprite": "maps/4",
-                "pos": [68, 120, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [46, 141, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [114, 169, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [187, 146, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [239, 102, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [262, 182, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [307, 123, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [352, 149, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [448, 128, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [494, 141, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [562, 169, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [635, 146, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1280, 62, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [687, 102, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [710, 182, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [755, 123, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [800, 149, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [896, 128, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1166, 141, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1234, 169, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1307, 146, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1359, 102, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1382, 182, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1427, 123, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1472, 149, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1568, 128, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1582, 77, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1650, 105, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1723, 82, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1775, 38, 50]
+                "pos": [0, 0, 50]
             }
         ],
         "points": [
@@ -258,28 +136,28 @@
             },
             {
                 "nodes": [
-                    [118, 278],
-                    [666, 278]
+                    [115, 276],
+                    [663, 276]
                 ]
             },
             {
                 "nodes": [
-                    [650, 277],
-                    [779, 277],
-                    [779, 259],
-                    [828, 259],
-                    [826, 226],
-                    [971, 226],
-                    [971, 196],
-                    [1051, 196],
-                    [1051, 213],
-                    [1195, 213],
-                    [1195, 228],
-                    [1227, 228],
-                    [1227, 245],
-                    [1259, 245],
-                    [1259, 277],
-                    [1290, 277]
+                    [663, 275],
+                    [792, 275],
+                    [792, 257],
+                    [841, 257],
+                    [839, 224],
+                    [984, 224],
+                    [984, 194],
+                    [1064, 194],
+                    [1064, 211],
+                    [1208, 211],
+                    [1208, 226],
+                    [1240, 226],
+                    [1240, 243],
+                    [1272, 243],
+                    [1272, 275],
+                    [1303, 275]
                 ]
             },
             {

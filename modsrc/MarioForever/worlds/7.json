@@ -4,138 +4,8 @@
         "track": "the_golden_ages",
         "backdrops": [
             {
-                "sprite": "maps/background",
-                "pos": [0, 0, 100],
-                "size": [1869, 499],
-                "tile": [true, true]
-            },
-            {
                 "sprite": "maps/7",
-                "pos": [23, 129, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [18, 100, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [86, 128, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [159, 105, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [211, 61, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [234, 141, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [279, 82, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [324, 108, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [420, 87, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [501, 128, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [569, 156, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [642, 133, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [694, 89, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [717, 169, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [762, 110, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [807, 136, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [903, 115, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [974, 109, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1042, 137, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1115, 114, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1167, 70, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1190, 150, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1235, 91, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1280, 117, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1376, 96, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1432, 86, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1500, 114, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1573, 91, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1625, 47, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1648, 127, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1693, 68, 50]
-            },
-            {
-                "sprite": "maps/cloud",
-                "pos": [1738, 94, 50]
+                "pos": [0, 0, 50]
             }
         ],
         "points": [
@@ -275,29 +145,29 @@
             {
                 "offset": 76800,
                 "nodes": [
-                    [55, 260],
-                    [601, 260]
+                    [60, 261],
+                    [606, 261]
                 ]
             },
             {
                 "offset": 76800,
                 "nodes": [
-                    [600, 259],
-                    [617, 259],
-                    [616, 349],
-                    [974, 349],
-                    [974, 237]
+                    [605, 260],
+                    [622, 260],
+                    [621, 350],
+                    [973, 350],
+                    [973, 238]
                 ],
-                "water": [615, 272, 900, 341]
+                "water": [620, 273, 905, 342]
             },
             {
                 "offset": 76800,
                 "nodes": [
-                    [974, 236],
-                    [988, 236],
-                    [988, 259],
-                    [1694, 259],
-                    [1694, 288]
+                    [973, 238],
+                    [992, 238],
+                    [992, 261],
+                    [1694, 261],
+                    [1694, 290]
                 ]
             }
         ]
