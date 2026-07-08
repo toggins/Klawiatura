@@ -86,10 +86,8 @@ void interface_update() {
     destroy_ui(root_ui);
 
     SCREEN_CALL(current_screen, end);
-    if (current_screen != to_screen) {
-        audio_wipeout();
-        clear_assets();
-    }
+    audio_wipeout();
+    clear_assets();
 
     boot_state = FALSE;
     SDL_free((void*)boot_reason);
