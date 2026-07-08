@@ -303,7 +303,22 @@ void load_track(const char* name, Bool persistent) {
 
     Track track = {0};
 
-    track.internal = MIX_LoadAudio_IO(speaker, stream_data_file(fmt("tracks/%s.*", name), ".json"), FALSE, TRUE);
+    SDL_PropertiesID props = SDL_CreateProperties();
+
+    SDL_SetPointerProperty(props, MIX_PROP_AUDIO_LOAD_PREFERRED_MIXER_POINTER, speaker);
+    SDL_SetNumberProperty(props, MIX_PROP_AUDIO_LOAD_PREDECODE_BOOLEAN, FALSE);
+    SDL_SetNumberProperty(props, MIX_PROP_AUDIO_LOAD_CLOSEIO_BOOLEAN, TRUE);
+
+    SDL_IOStream* const io = stream_data_file(fmt("tracks/%s.*", name), ".json");
+    SDL_SetPointerProperty(props, MIX_PROP_AUDIO_LOAD_IOSTREAM_POINTER, io);
+
+    // the constants aren't even exposed for some reason...
+    SDL_SetPointerProperty(props, "SDL_mixer.decoder.fluidsynth.soundfont_iostream", stream_data_file("gm.sf2", NULL));
+
+    track.internal = MIX_LoadAudioWithProperties(props);
+
+    SDL_DestroyProperties(props);
+
     ASSUME(track.internal, "Failed to load track \"%s\": %s", name, SDL_GetError());
 
     track.base.name = SDL_strdup(name);
