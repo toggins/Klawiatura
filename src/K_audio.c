@@ -15,6 +15,11 @@ enum {
 };
 
 typedef struct {
+    TinyHash key;
+    MIX_Track* channel;
+} GenericSoundChannel;
+
+typedef struct {
     GenericTrackFlags flags;
 
     Uint32 offset;
@@ -34,7 +39,7 @@ static float mixer_volume = 1.0f;
 
 static TinyMap sounds = {0}, tracks = {0};
 
-static MIX_Track* generic_sounds[MAX_GENERIC_SOUNDS] = {NULL};
+static GenericSoundChannel generic_sounds[MAX_GENERIC_SOUNDS] = {0};
 static size_t next_generic_sound = 0;
 
 static GenericTrackChannel generic_tracks[MAX_GENERIC_TRACKS] = {
@@ -109,13 +114,13 @@ void audio_init() {
     SDL_SetNumberProperty(loop_properties, MIX_PROP_PLAY_LOOPS_NUMBER, -1);
 
     for (size_t i = 0; i < MAX_GENERIC_SOUNDS; i++) {
-        generic_sounds[i] = MIX_CreateTrack(speaker);
-        if (generic_sounds[i] == NULL) {
+        generic_sounds[i].channel = MIX_CreateTrack(speaker);
+        if (generic_sounds[i].channel == NULL) {
             WTF("Failed to create generic sound channels: %s", SDL_GetError());
             break;
         }
 
-        MIX_SetTrackGroup(generic_sounds[i], sound_group);
+        MIX_SetTrackGroup(generic_sounds[i].channel, sound_group);
     }
 
     for (GenericTrackSlot i = 0; i < (GenericTrackSlot)MAX_GENERIC_TRACKS; i++) {
@@ -206,7 +211,7 @@ void audio_teardown() {
 
     SDL_DestroyProperties(loop_properties);
     for (size_t i = 0; i < MAX_GENERIC_SOUNDS; i++)
-        MIX_DestroyTrack(generic_sounds[i]);
+        MIX_DestroyTrack(generic_sounds[i].channel);
     for (size_t i = 0; i < MAX_GENERIC_TRACKS; i++)
         MIX_DestroyTrack(generic_tracks[i].channel);
     MIX_DestroyGroup(sound_group);
@@ -217,11 +222,18 @@ void audio_teardown() {
 }
 
 void audio_wipeout() {
-    for (size_t i = 0; i < MAX_GENERIC_SOUNDS; i++)
-        MIX_StopTrack(generic_sounds[i], 0);
+    for (size_t i = 0; i < MAX_GENERIC_SOUNDS; i++) {
+        const Sound* sound = get_sound_key(generic_sounds[i].key);
+        if (sound == NULL || !sound->base.persistent)
+            MIX_StopTrack(generic_sounds[i].channel, 0);
+    }
     next_generic_sound = 0;
 
-    stop_generic_track(MAX_GENERIC_TRACKS);
+    for (size_t i = 0; i < MAX_GENERIC_TRACKS; i++) {
+        const Track* track = get_track_key(generic_tracks[i].key);
+        if (track == NULL || !track->base.persistent)
+            stop_generic_track(i);
+    }
 }
 
 float get_volume() {
@@ -321,15 +333,17 @@ trk_no_json:
 // ==============
 
 void play_generic_sound(const char* name, PlayFlags flags) {
-    const Sound* sound = get_sound(name);
+    const TinyHash key = StHashStr(name);
+    const Sound* sound = get_sound_key(key);
     WHATEVER(sound, "Unknown sound \"%s\"", name);
 
-    MIX_Track* channel = generic_sounds[next_generic_sound];
+    GenericSoundChannel* channel = &generic_sounds[next_generic_sound];
     next_generic_sound = (next_generic_sound + 1) % MAX_GENERIC_SOUNDS;
 
-    MIX_SetTrackGroup(channel, (flags & PLAY_SYSTEM) ? system_group : sound_group);
-    MIX_SetTrackAudio(channel, sound->internal);
-    MIX_PlayTrack(channel, 0);
+    channel->key = key;
+    MIX_SetTrackGroup(channel->channel, (flags & PLAY_SYSTEM) ? system_group : sound_group);
+    MIX_SetTrackAudio(channel->channel, sound->internal);
+    MIX_PlayTrack(channel->channel, 0);
 }
 
 void play_generic_track(GenericTrackSlot slot, const char* name, PlayFlags flags, Uint32 offset) {
