@@ -131,6 +131,16 @@ enum {
     PF_SIZE,
 };
 
+typedef Uint8 PlayerVoice;
+enum {
+    PV_READY,
+    PV_CHECKPOINT1,
+    PV_CHECKPOINT2,
+    PV_CHECKPOINT3,
+    PV_PANIC,
+    PV_SIZE,
+};
+
 typedef Uint8 SolidType;
 enum {
     SOL_SOLID = 1 << 0,
@@ -150,7 +160,7 @@ enum {
 };
 
 typedef struct {
-    const char *name, *sprites[POW_SIZE][PF_SIZE];
+    const char *name, *sprites[POW_SIZE][PF_SIZE], *voices[PV_SIZE];
 } GameCharacter;
 
 typedef struct {
@@ -305,7 +315,8 @@ void game_init();
 Uint32 get_game_hash();
 
 const GameCharacter* get_character(PlayerCharacter);
-const char *get_character_name(PlayerCharacter), *get_character_sprite(PlayerCharacter, PlayerPowerup, PlayerFrame);
+const char *get_character_name(PlayerCharacter), *get_character_sprite(PlayerCharacter, PlayerPowerup, PlayerFrame),
+    *get_character_voice(PlayerCharacter, PlayerVoice);
 
 const char* get_powerup_name(PlayerPowerup);
 Sint8 get_powerup_cost(PlayerPowerup);

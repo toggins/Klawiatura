@@ -117,6 +117,13 @@ static const GameCharacter CHARACTERS[CHR_SIZE] = {
                 [PF_GROW3] = "characters/mario/lui/grow2",
                 [PF_GROW4] = "characters/mario/lui/grow3",
             }
+        },
+        .voices = {
+            [PV_READY] = "vo/mario/ready",
+            [PV_CHECKPOINT1] = "vo/mario/checkpoint0",
+            [PV_CHECKPOINT2] = "vo/mario/checkpoint1",
+            [PV_CHECKPOINT3] = "vo/mario/checkpoint2",
+            [PV_PANIC] = "vo/mario/panic",
         }
     },
 };
@@ -159,6 +166,10 @@ const char* get_character_sprite(PlayerCharacter cid, PlayerPowerup powerup, Pla
     return (cid < 0 || cid >= CHR_SIZE || powerup < 0 || powerup >= POW_SIZE || frame < 0 || frame >= PF_SIZE)
                ? NULL
                : CHARACTERS[cid].sprites[powerup][frame];
+}
+
+const char* get_character_voice(PlayerCharacter cid, PlayerVoice voice) {
+    return (cid < 0 || cid >= CHR_SIZE || voice < 0 || voice >= PV_SIZE) ? NULL : CHARACTERS[cid].voices[voice];
 }
 
 const char* get_powerup_name(PlayerPowerup powerup) {

@@ -36,7 +36,7 @@ typedef struct {
 } MapPathNode;
 
 typedef struct {
-    Uint8 transition;
+    Uint8 transition, ambush;
     Uint16 size[2];
     Sint32 camera_pos[2];
     Sint32 water[4];
@@ -155,6 +155,8 @@ static void start(const void* secret, size_t secret_size) {
     yyjson_val* jpath = yyjson_arr_get(yyjson_obj_get(jmap, "paths"), WORLD_CONTEXT.level);
     Uint32 offset = 0;
     if (yyjson_is_obj(jpath)) {
+        map_state->ambush = yyjson_get_bool(yyjson_obj_get(jpath, "ambush"));
+
         jarray = yyjson_obj_get(jpath, "nodes");
         for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
             yyjson_val* jnode = yyjson_arr_get(jarray, i);
@@ -225,12 +227,18 @@ static void start(const void* secret, size_t secret_size) {
             load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), FALSE);
 
         load_sprite("ui/map/bubble", FALSE);
+
+        if (map_state->ambush > 0) {
+            load_sprite("ui/map/bro", FALSE);
+            load_sound("ambush", FALSE);
+            load_sound(get_character_voice(pctx->character, PV_PANIC), FALSE);
+        }
     }
 
     load_sprite("ui/map/logo", FALSE);
     load_sprite("ui/bezel_l", FALSE);
     load_sprite("ui/bezel_r", FALSE);
-    load_sound("ui/enter", FALSE);
+    load_sound("ui/enter", TRUE);
     load_track(map_state->track, FALSE);
     load_ui(UI_PAUSE);
 
@@ -329,6 +337,23 @@ static void tick() {
             map_state->camera_pos[0] = SDL_clamp(player->pos[0], HALF_SCREEN_WIDTH, xmax);
             map_state->camera_pos[1] = SDL_clamp(player->pos[1], HALF_SCREEN_HEIGHT, ymax);
         } else {
+            if (map_state->ambush > 0 && map_state->ambush <= 33) {
+                switch (map_state->ambush++) {
+                default:
+                    break;
+
+                case 1:
+                case 18:
+                    play_generic_sound("ambush", 0);
+                    break;
+
+                case 33:
+                    play_generic_sound(
+                        get_character_voice(WORLD_CONTEXT.players[WORLD_CONTEXT.winner].character, PV_PANIC), 0);
+                    break;
+                }
+            }
+
             if (map_state->transition <= 0) {
                 can_move = TRUE;
 
@@ -482,7 +507,8 @@ static void draw_ui() {
             batch_sprite("ui/map/bubble");
         }
 
-        batch_pos(B_XY((int)player->pos[0], (int)player->pos[1]));
+        const float px = (float)(int)player->pos[0], py = (float)(int)player->pos[1];
+        batch_pos(B_XY(px, py));
         batch_scale(B_SIZE(0.5f));
 
         const GamePlayerContext* pctx = &WORLD_CONTEXT.players[WORLD_CONTEXT.winner];
@@ -492,6 +518,11 @@ static void draw_ui() {
                              : (PF_WALK1 + (int)SDL_fmodf(player->frame, 3.f))));
 
         batch_scale(B_SIZE(1.f));
+
+        if (map_state->ambush > 1 && map_state->current_node >= TinyDLength(map_state->path)) {
+            batch_pos(B_XY(px + 24.f, py - SDL_fabsf(SDL_sinf(totalticks() * 12.f * (SDL_PI_F / 180.f)) * 10.f)));
+            batch_sprite("ui/map/bro");
+        }
     }
 
     // HUD
