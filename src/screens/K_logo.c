@@ -10,8 +10,8 @@ void start(const void* secret, size_t secret_size) {
     (void)secret_size;
 
     load_sprite("logos/buziol", AKL_NEVER);
-    load_sound("logo", AKL_ONCE);
-    load_sound("logo2", AKL_ONCE);
+    load_sound("logo", AKL_NEVER);
+    load_sound("logo2", AKL_NEVER);
 
     play_generic_sound("logo", 0);
     play_generic_sound("logo2", 0);
