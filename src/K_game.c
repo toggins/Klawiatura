@@ -164,7 +164,7 @@ const char* get_character_name(PlayerCharacter cid) {
 }
 
 const char* get_character_cursor(PlayerCharacter cid) {
-    return (cid < 0 || cid >= CHR_SIZE) ? "%u" : CHARACTERS[cid].cursor;
+    return (cid < 0 || cid >= CHR_SIZE || CHARACTERS[cid].cursor == NULL) ? "%u" : CHARACTERS[cid].cursor;
 }
 
 const char* get_character_sprite(PlayerCharacter cid, PlayerPowerup powerup, PlayerFrame frame) {
