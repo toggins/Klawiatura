@@ -224,14 +224,14 @@ void audio_teardown() {
 void audio_wipeout() {
     for (size_t i = 0; i < MAX_GENERIC_SOUNDS; i++) {
         const Sound* sound = get_sound_key(generic_sounds[i].key);
-        if (sound == NULL || !sound->base.persistent)
+        if (sound == NULL || sound->base.keep <= AKL_NEVER)
             MIX_StopTrack(generic_sounds[i].channel, 0);
     }
     next_generic_sound = 0;
 
     for (size_t i = 0; i < MAX_GENERIC_TRACKS; i++) {
         const Track* track = get_track_key(generic_tracks[i].key);
-        if (track == NULL || !track->base.persistent)
+        if (track == NULL || track->base.keep <= AKL_NEVER)
             stop_generic_track(i);
     }
 }
@@ -272,9 +272,8 @@ static void nuke_sound(void* ptr) {
 
 ASSET_SRC(sounds, Sound, sound);
 
-void load_sound(const char* name, Bool persistent) {
-    if (name == NULL || get_sound(name))
-        return;
+void load_sound(const char* name, AssetKeepLevel keep) {
+    CHECK_ASSET(sounds);
 
     Sound sound = {0};
 
@@ -283,7 +282,7 @@ void load_sound(const char* name, Bool persistent) {
 
     sound.base.name = SDL_strdup(name);
     EXPECT(sound.base.name, "Failed to allocate name for sound \"%s\"", name);
-    sound.base.persistent = persistent;
+    sound.base.keep = keep;
     sound.length = MIX_AudioFramesToMS(sound.internal, MIX_GetAudioDuration(sound.internal));
 
     TinyDictPut(&sounds, name, &sound, sizeof(sound))->cleanup = nuke_sound;
@@ -297,9 +296,8 @@ static void nuke_track(void* ptr) {
 
 ASSET_SRC(tracks, Track, track);
 
-void load_track(const char* name, Bool persistent) {
-    if (name == NULL || get_track(name) != NULL)
-        return;
+void load_track(const char* name, AssetKeepLevel keep) {
+    CHECK_ASSET(tracks);
 
     Track track = {0};
 
@@ -308,7 +306,7 @@ void load_track(const char* name, Bool persistent) {
 
     track.base.name = SDL_strdup(name);
     EXPECT(track.base.name, "Failed to allocate name for track \"%s\"", name);
-    track.base.persistent = persistent;
+    track.base.keep = keep;
     track.length = MIX_AudioFramesToMS(track.internal, MIX_GetAudioDuration(track.internal));
 
     yyjson_doc* json = load_data_json(fmt("tracks/%s.json", name));

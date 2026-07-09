@@ -1,6 +1,7 @@
 #pragma once
 
 #include "K_assets.h"
+#include "K_misc.h"
 
 #define MAX_GENERIC_SOUNDS 8
 #define MAX_STATE_SOUNDS 16
@@ -84,8 +85,6 @@ void set_music_volume(float);
 
 // Assets
 ASSET_HEAD(sounds, Sound, sound);
-void load_sound_num(const char*, Uint32, Bool);
-
 ASSET_HEAD(tracks, Track, track);
 
 // Generic Sounds

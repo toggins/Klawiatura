@@ -53,13 +53,13 @@ void interface_init() {
     POPULATE_SCREENS_TABLE();
     POPULATE_UIS_TABLE();
 
-    load_sprite_num("ui/cursor/%u", 12, TRUE);
-    load_font("main", TRUE);
-    load_font("header", TRUE);
-    load_sound("ui/switch", TRUE);
-    load_sound("ui/select", TRUE);
-    load_sound("ui/toggle", TRUE);
-    load_sound("ui/error", TRUE);
+    load_sprite_num("ui/cursor/%u", 12, AKL_ALWAYS);
+    load_font("main", AKL_ALWAYS);
+    load_font("header", AKL_ALWAYS);
+    load_sound("ui/switch", AKL_ALWAYS);
+    load_sound("ui/select", AKL_ALWAYS);
+    load_sound("ui/toggle", AKL_ALWAYS);
+    load_sound("ui/error", AKL_ALWAYS);
 
     set_screen(SCR_LOGO, NULL, 0);
 }

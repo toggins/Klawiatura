@@ -9,16 +9,17 @@ void start(const void* secret, size_t secret_size) {
     (void)secret;
     (void)secret_size;
 
-    load_sprite("logos/buziol", FALSE);
-    load_sound("logo", FALSE);
-    load_sound("logo2", FALSE);
+    load_sprite("logos/buziol", AKL_NEVER);
+    load_sound("logo", AKL_ONCE);
+    load_sound("logo2", AKL_ONCE);
 
     play_generic_sound("logo", 0);
     play_generic_sound("logo2", 0);
 }
 
+// 150 + 130
 void tick() {
-    if (totalticks() > 280.f || kb_pressed(KB_UI_ENTER))
+    if (totalticks() > 280.f || kb_pressed(KB_JUMP) || kb_pressed(KB_UI_ENTER))
         set_screen(SCR_MENU, NULL, 0);
 }
 
@@ -32,7 +33,7 @@ void draw_ui() {
 
     const float t = totalticks();
     batch_color(
-        B_ALPHA(((t < 33.5f) ? (t / 33.5f) : ((t > 235.f) ? ((t < 280.f) ? (1.f - ((t - 235.f) / 45.f)) : 0.f) : 1.f))
+        B_ALPHA(((t < 33.5f) ? (t / 33.5f) : ((t > 150.f) ? ((t < 278.f) ? (1.f - ((t - 278.f) / 128.f)) : 0.f) : 1.f))
                 * 255.f));
 
     batch_alpha_test(0.9f);

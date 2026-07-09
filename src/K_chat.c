@@ -21,7 +21,7 @@ static struct {
 } lines[MAX_LINES] = {0};
 
 void chat_init() {
-    load_sound("ui/chat", TRUE);
+    load_sound("ui/chat", AKL_ALWAYS);
 }
 
 static void submit_chat_message(Bool confirmed) {

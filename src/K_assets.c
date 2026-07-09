@@ -1,6 +1,5 @@
 #include "K_assets.h"
 #include "K_audio.h"
-#include "K_string.h"
 #include "K_video.h"
 
 void clear_assets() {
@@ -19,8 +18,14 @@ void clear_asset_map(TinyMap* target, void (*nuke)(void*)) {
         TinyBucket* bucket = it.bucket;
 
         AssetBase* asset = bucket->data;
-        if (!asset->persistent)
+        switch (asset->keep) {
+        default:
             continue;
+        case AKL_ONCE:
+            asset->keep = AKL_NEVER;
+        case AKL_ALWAYS:
+            break;
+        }
 
         TinyMapPut(&new, bucket->hash, asset, (int)bucket->data_size)->cleanup = nuke;
         bucket->cleanup = NULL;
@@ -28,9 +33,4 @@ void clear_asset_map(TinyMap* target, void (*nuke)(void*)) {
 
     FreeTinyMap(target);
     *target = new;
-}
-
-void load_asset_num(const char* pattern, Uint32 n, Bool persistent, void (*load)(const char*, Bool)) {
-    for (Uint32 i = 0; i < n; i++)
-        load(fmt(pattern, i), persistent);
 }

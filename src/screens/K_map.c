@@ -108,7 +108,7 @@ static void start(const void* secret, size_t secret_size) {
             map_state->tilemap = create_tilemap();
 
         const char* sprite = yyjson_get_str(yyjson_obj_get(jbackdrop, "sprite"));
-        load_sprite(sprite, FALSE);
+        load_sprite(sprite, AKL_NEVER);
 
         yyjson_val* jarr2 = yyjson_obj_get(jbackdrop, "pos");
         const float pos[3] = {
@@ -213,33 +213,33 @@ static void start(const void* secret, size_t secret_size) {
     // MAIN ASSETS
     // ===========
 
-    load_sprite_num("ui/map/point/%u", 6, FALSE);
-    load_sprite_num("ui/map/cross/%u", 11, FALSE);
+    load_sprite_num("ui/map/point/%u", 6, AKL_NEVER);
+    load_sprite_num("ui/map/cross/%u", 11, AKL_NEVER);
 
-    load_sprite(map_state->title, FALSE);
+    load_sprite(map_state->title, AKL_NEVER);
     if (map_state->path == NULL) {
-        load_sprite_num("ui/map/world/completed/%u", 16, FALSE);
+        load_sprite_num("ui/map/world/completed/%u", 16, AKL_NEVER);
     } else {
         const GamePlayerContext* pctx = &WORLD_CONTEXT.players[WORLD_CONTEXT.winner];
         for (PlayerFrame i = PF_WALK1; i <= (PlayerFrame)PF_WALK3; i++)
-            load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), FALSE);
+            load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), AKL_NEVER);
         for (PlayerFrame i = PF_SWIM1; i <= (PlayerFrame)PF_SWIM8; i++)
-            load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), FALSE);
+            load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), AKL_NEVER);
 
-        load_sprite("ui/map/bubble", FALSE);
+        load_sprite("ui/map/bubble", AKL_NEVER);
 
         if (map_state->ambush > 0) {
-            load_sprite("ui/map/bro", FALSE);
-            load_sound("ambush", FALSE);
-            load_sound(get_character_voice(pctx->character, PV_PANIC), FALSE);
+            load_sprite("ui/map/bro", AKL_NEVER);
+            load_sound("ambush", AKL_NEVER);
+            load_sound(get_character_voice(pctx->character, PV_PANIC), AKL_NEVER);
         }
     }
 
-    load_sprite("ui/map/logo", FALSE);
-    load_sprite("ui/bezel_l", FALSE);
-    load_sprite("ui/bezel_r", FALSE);
-    load_sound("ui/enter", TRUE);
-    load_track(map_state->track, FALSE);
+    load_sprite("ui/map/logo", AKL_NEVER);
+    load_sprite("ui/bezel_l", AKL_NEVER);
+    load_sprite("ui/bezel_r", AKL_NEVER);
+    load_sound("ui/enter", AKL_ONCE);
+    load_track(map_state->track, AKL_NEVER);
     load_ui(UI_PAUSE);
 
     // ==================

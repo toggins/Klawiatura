@@ -472,9 +472,8 @@ static void nuke_texture(void* ptr) {
 
 ASSET_SRC(textures, Texture, texture);
 
-void load_texture(const char* name, Bool persistent) {
-    if (name == NULL || get_texture(name) != NULL)
-        return;
+void load_texture(const char* name, AssetKeepLevel keep) {
+    CHECK_ASSET(textures);
 
     Texture texture = {0};
 
@@ -483,7 +482,7 @@ void load_texture(const char* name, Bool persistent) {
 
     texture.base.name = SDL_strdup(name);
     EXPECT(texture.base.name, "Failed to allocate name for texture \"%s\"", name);
-    texture.base.persistent = persistent;
+    texture.base.keep = keep;
     texture.size[0] = surface->w;
     texture.size[1] = surface->h;
 
@@ -521,9 +520,8 @@ static void nuke_sprite(void* ptr) {
 
 ASSET_SRC(sprites, Sprite, sprite);
 
-void load_sprite(const char* name, Bool persistent) {
-    if (name == NULL || get_sprite(name) != NULL)
-        return;
+void load_sprite(const char* name, AssetKeepLevel keep) {
+    CHECK_ASSET(sprites);
 
     const char* tname = NULL;
 
@@ -547,7 +545,7 @@ void load_sprite(const char* name, Bool persistent) {
     const TinyHash tkey = StHashStr(tname);
     Texture* texture = (Texture*)TinyMapGet(&textures, tkey);
     if (texture == NULL) {
-        load_texture(tname, persistent);
+        load_texture(tname, keep);
         texture = (Texture*)TinyMapGet(&textures, tkey);
         if (texture == NULL) {
             WTF("Failed to load sprite \"%s\", invalid texture \"%s\"", name, tname);
@@ -555,14 +553,15 @@ void load_sprite(const char* name, Bool persistent) {
             return;
         }
     } else {
-        texture->base.persistent |= persistent;
+        if (texture->base.keep < keep)
+            texture->base.keep = keep;
     }
 
     Sprite sprite = {0};
 
     sprite.base.name = SDL_strdup(name);
     EXPECT(sprite.base.name, "Failed to allocate name for sprite \"%s\"", name);
-    sprite.base.persistent = persistent;
+    sprite.base.keep = keep;
 
     sprite.texture_key = tkey;
 
@@ -603,9 +602,8 @@ static void nuke_font(void* ptr) {
 
 ASSET_SRC(fonts, Font, font);
 
-void load_font(const char* name, Bool persistent) {
-    if (name == NULL || get_font(name) != NULL)
-        return;
+void load_font(const char* name, AssetKeepLevel keep) {
+    CHECK_ASSET(fonts);
 
     yyjson_doc* json = load_data_json(fmt("fonts/%s.json", name));
     ASSUME(json, "Font \"%s\" not found", name);
@@ -621,7 +619,7 @@ void load_font(const char* name, Bool persistent) {
 
     font.base.name = SDL_strdup(name);
     EXPECT(font.base.name, "Failed to allocate name for font \"%s\"", name);
-    font.base.persistent = persistent;
+    font.base.keep = keep;
 
     yyjson_val* jval = yyjson_obj_get(root, "size");
     const float size = yyjson_is_num(jval) ? (float)yyjson_get_num(jval) : 1.f;
@@ -637,10 +635,11 @@ void load_font(const char* name, Bool persistent) {
         const TinyHash tkey = StHashStr(tname);
         Texture* texture = (Texture*)TinyMapGet(&textures, tkey);
         if (texture == NULL) {
-            load_texture(tname, persistent);
+            load_texture(tname, keep);
             texture = (Texture*)TinyMapGet(&textures, tkey);
         } else {
-            texture->base.persistent |= persistent;
+            if (texture->base.keep < keep)
+                texture->base.keep = keep;
         }
         if (texture == NULL) {
             WTF("Font \"%s\" has invalid texture \"%s\"", name, tname);

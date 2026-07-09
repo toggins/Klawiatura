@@ -2,6 +2,7 @@
 #define K_VIDEO_H
 
 #include "K_assets.h"
+#include "K_misc.h"
 #include "K_vmath.h" // IWYU pragma: export
 
 // Shortcut macros for graphic functions
@@ -266,11 +267,7 @@ void set_mat4_uniform(UniformType, const float[4][4]);
 
 // Assets
 ASSET_HEAD(textures, Texture, texture);
-void load_texture_num(const char*, Uint32, Bool);
-
 ASSET_HEAD(sprites, Sprite, sprite);
-void load_sprite_num(const char*, Uint32, Bool);
-
 ASSET_HEAD(fonts, Font, font);
 
 // Batch

@@ -621,12 +621,12 @@ static void options_option() {
 // ======
 
 static void start(const void* secret, size_t secret_size) {
-    load_sprite("ui/backgrounds/main", FALSE);
-    load_sprite("ui/backgrounds/options", FALSE);
-    load_sprite("logos/mario_forever", FALSE);
-    load_sound("ui/connect", FALSE);
-    load_sound("ui/disconnect", FALSE);
-    load_track("title", FALSE);
+    load_sprite("ui/backgrounds/main", AKL_NEVER);
+    load_sprite("ui/backgrounds/options", AKL_NEVER);
+    load_sprite("logos/mario_forever", AKL_NEVER);
+    load_sound("ui/connect", AKL_NEVER);
+    load_sound("ui/disconnect", AKL_NEVER);
+    load_track("title", AKL_NEVER);
 
     play_generic_track(GTS_MAIN, "title", PLAY_LOOPING, 0);
 

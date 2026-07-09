@@ -158,8 +158,8 @@ void net_init() {
 
     clear_peer_tables();
 
-    load_sound("ui/join", TRUE);
-    load_sound("ui/leave", TRUE);
+    load_sound("ui/join", AKL_ALWAYS);
+    load_sound("ui/leave", AKL_ALWAYS);
 }
 
 void net_update() {

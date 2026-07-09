@@ -32,7 +32,7 @@ static void return_to_title_option() {
 }
 
 static void load() {
-    load_sound("ui/pause", FALSE);
+    load_sound("ui/pause", AKL_NEVER);
 }
 
 static void create(UI* ui) {
