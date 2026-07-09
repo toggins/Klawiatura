@@ -9,6 +9,7 @@ const GameActorTable* ACTORS[ACT_SIZE] = {0};
 static const GameCharacter CHARACTERS[CHR_SIZE] = {
     [CHR_MARIO] = {
         .name = "Mario",
+        .cursor = "characters/mario/cursor/%u",
         .sprites = {
             [POW_NONE] = {
                 [PF_IDLE] = "characters/mario/small/idle",
@@ -160,6 +161,10 @@ const GameCharacter* get_character(PlayerCharacter cid) {
 const char* get_character_name(PlayerCharacter cid) {
     const GameCharacter* character = get_character(cid);
     return (character == NULL) ? NULL : character->name;
+}
+
+const char* get_character_cursor(PlayerCharacter cid) {
+    return (cid < 0 || cid >= CHR_SIZE) ? "%u" : CHARACTERS[cid].cursor;
 }
 
 const char* get_character_sprite(PlayerCharacter cid, PlayerPowerup powerup, PlayerFrame frame) {

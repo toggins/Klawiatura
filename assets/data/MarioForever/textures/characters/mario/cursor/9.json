@@ -1,5 +1,5 @@
 {
-    "texture": "ui/cursor",
+    "texture": "characters/mario/cursor",
     "size": [30, 28],
     "offset": [17, 16],
     "uvs": [97, 1, 127, 29]

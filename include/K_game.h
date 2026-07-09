@@ -160,7 +160,7 @@ enum {
 };
 
 typedef struct {
-    const char *name, *sprites[POW_SIZE][PF_SIZE], *voices[PV_SIZE];
+    const char *name, *cursor, *sprites[POW_SIZE][PF_SIZE], *voices[PV_SIZE];
 } GameCharacter;
 
 typedef struct {
@@ -315,7 +315,8 @@ void game_init();
 Uint32 get_game_hash();
 
 const GameCharacter* get_character(PlayerCharacter);
-const char *get_character_name(PlayerCharacter), *get_character_sprite(PlayerCharacter, PlayerPowerup, PlayerFrame),
+const char *get_character_name(PlayerCharacter), *get_character_cursor(PlayerCharacter),
+    *get_character_sprite(PlayerCharacter, PlayerPowerup, PlayerFrame),
     *get_character_voice(PlayerCharacter, PlayerVoice);
 
 const char* get_powerup_name(PlayerPowerup);

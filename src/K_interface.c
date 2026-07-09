@@ -53,7 +53,8 @@ void interface_init() {
     POPULATE_SCREENS_TABLE();
     POPULATE_UIS_TABLE();
 
-    load_sprite_num("ui/cursor/%u", 12, AKL_ALWAYS);
+    for (PlayerCharacter i = 0; i < (PlayerCharacter)CHR_SIZE; i++)
+        load_sprite_num(get_character_cursor(i), 12, AKL_ALWAYS);
     load_font("main", AKL_ALWAYS);
     load_font("header", AKL_ALWAYS);
     load_sound("ui/switch", AKL_ALWAYS);
@@ -456,7 +457,7 @@ void draw_options(const Option* options, size_t curopt, float y) {
                 HALF_SCREEN_WIDTH - (float)((int)(string_width_wrap("header", 32.f, ostr, OPTION_WRAP) * 0.5f)) - 16.f,
                 oy + (oh * 0.5f)));
             batch_color(B_WHITE);
-            batch_sprite(fmt("ui/cursor/%u", cursor_frame / 10));
+            batch_sprite(fmt(get_character_cursor(CLIENT.character), cursor_frame / 10));
         }
 
         oy += oh;
