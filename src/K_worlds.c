@@ -1,5 +1,7 @@
 #include "K_cmd.h"
 #include "K_file.h"
+#include "K_interface.h"
+#include "K_locale.h"
 #include "K_log.h"
 #include "K_worlds.h"
 
@@ -33,9 +35,11 @@ static void iterate_world_file(const char* filename, const void* buffer, size_t 
 
     world.name = SDL_strdup(name);
     EXPECT(world.name, "Failed to allocate world \"%s\" name", name);
+
     for (size_t i = 0; i < size; i++)
         world.hash += ((Uint8*)buffer)[i];
-    INFO("World \"%s\" hash is %u", name, world.hash);
+
+    world.has_map = yyjson_is_obj(yyjson_obj_get(root, "map"));
 
     yyjson_doc_free(json);
 
@@ -111,4 +115,17 @@ WorldContext init_world_context() {
         ctx.players[i].lives = DEFAULT_LIVES;
 
     return ctx;
+}
+
+void jump_to_world(const WorldContext* ctx) {
+    if (ctx == NULL || !is_leader())
+        return;
+
+    const World* world = get_world_key(ctx->world);
+    EXPECT(world, "Invalid world key %" SDL_PRIu64, ctx->world);
+
+    ASSUME(world->has_map, "Not implemented yet");
+
+    spread_world_packet(ctx);
+    set_screen(SCR_MAP, ctx, sizeof(*ctx));
 }

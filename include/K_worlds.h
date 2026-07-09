@@ -6,6 +6,7 @@
 typedef struct {
     const char* name;
     Uint32 hash;
+    Bool has_map;
 } World;
 
 typedef struct {
@@ -24,3 +25,4 @@ const World *get_world(const char*), *get_world_key(TinyHash);
 const char *next_world_from(const char*), *last_world_from(const char*);
 
 WorldContext init_world_context();
+void jump_to_world(const WorldContext*);

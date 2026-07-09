@@ -28,6 +28,7 @@
 #include "K_file.h"
 #include "K_input.h"
 #include "K_interface.h"
+#include "K_levels.h"
 #include "K_locale.h"
 #include "K_os.h"
 #include "K_video.h"
@@ -94,6 +95,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     interface_init();
     game_init();
     worlds_init();
+    levels_init();
     chat_init();
     net_init();
 
@@ -159,6 +161,7 @@ void SDL_AppQuit(void* appstate, SDL_AppResult result) {
 
     net_teardown();
     chat_teardown();
+    levels_teardown();
     worlds_teardown();
     interface_teardown();
     discord_teardown();

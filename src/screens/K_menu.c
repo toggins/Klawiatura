@@ -455,8 +455,6 @@ static void start_option() {
                 break;
         }
         ctx.num_players = i;
-
-        spread_world_packet(&ctx);
     } else {
         GamePlayerContext* pctx = &ctx.players[0];
         pctx->character = CLIENT.character;
@@ -464,7 +462,7 @@ static void start_option() {
         pctx->lives = (Sint8)(pctx->lives - get_powerup_cost(pctx->powerup));
     }
 
-    set_screen(SCR_MAP, &ctx, sizeof(ctx));
+    jump_to_world(&ctx);
 }
 
 static void saw_online_notice() {

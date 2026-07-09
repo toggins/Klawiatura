@@ -226,7 +226,14 @@ void net_update() {
             }
 
             WorldContext ctx = init_world_context();
+
             read_buffer64(&mbuf, &ctx.world);
+            const World* world = get_world_key(ctx.world);
+            if (world == NULL) {
+                WTF("Invalid world key %" SDL_PRIu64, ctx.world);
+                break;
+            }
+
             read_buffer8(&mbuf, &ctx.level);
 
             read_buffer8(&mbuf, (Uint8*)&ctx.winner);
@@ -249,7 +256,11 @@ void net_update() {
                 read_buffer32(&mbuf, (Uint32*)&ctx.players[i].score);
             }
 
-            set_screen(SCR_MAP, &ctx, sizeof(ctx));
+            if (world->has_map)
+                set_screen(SCR_MAP, &ctx, sizeof(ctx));
+            else
+                WORLD_CONTEXT = ctx;
+
             break;
         }
 
@@ -258,13 +269,21 @@ void net_update() {
 
             Uint8 num_players = 0;
             read_buffer8(&mbuf, &num_players);
-            num_players = SDL_min(num_players, SDL_arraysize(player_peers));
+            if (num_players <= 0 || num_players > SDL_arraysize(player_peers)) {
+                WTF("Bad peer player count (%i)", num_players);
+                break;
+            }
+
             for (Uint8 i = 0; i < num_players; i++)
                 read_buffer64(&mbuf, &player_peers[i]);
 
             Uint8 num_spectators = 0;
             read_buffer8(&mbuf, &num_spectators);
-            num_spectators = SDL_min(num_spectators, SDL_arraysize(spectator_peers));
+            if (num_spectators < 0 || num_spectators > SDL_arraysize(spectator_peers)) {
+                WTF("Bad peer spectator count (%i)", num_spectators);
+                break;
+            }
+
             for (Uint8 i = 0; i < num_spectators; i++)
                 read_buffer64(&mbuf, &spectator_peers[i]);
 

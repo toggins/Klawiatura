@@ -370,8 +370,7 @@ static void tick() {
                 if (map_state->transition >= 70) {
                     WorldContext ctx = WORLD_CONTEXT;
                     ++ctx.level;
-                    spread_world_packet(&ctx);
-                    set_screen(SCR_MAP, &ctx, sizeof(ctx));
+                    jump_to_world(&ctx);
                 }
             }
 
