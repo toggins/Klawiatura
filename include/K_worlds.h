@@ -25,12 +25,11 @@ typedef struct {
     WorldPlayerContext players[MAX_PLAYERS];
 } WorldContext;
 
-extern WorldContext WORLD_CONTEXT;
-
 void worlds_init(), worlds_teardown();
 
 const World *get_world(const char*), *get_world_key(TinyHash);
 const char *next_world_from(const char*), *last_world_from(const char*);
 
 WorldContext init_world_context();
-void jump_to_world(const WorldContext*);
+void jump_to_world(const WorldContext*), start_world(const WorldContext*);
+const WorldContext* worldcontext();

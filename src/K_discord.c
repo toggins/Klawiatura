@@ -124,7 +124,7 @@ void update_discord_status() {
     }
 
     case SCR_MAP: {
-        const World* world = get_world_key(WORLD_CONTEXT.world);
+        const World* world = get_world_key(worldcontext()->world);
         if (world == NULL) {
             Discord_Activity_SetDetails(&activity, &STATIC_STRING("In Game"));
             break;

@@ -260,7 +260,7 @@ void net_update() {
             if (world->has_map)
                 set_screen(SCR_MAP, &ctx, sizeof(ctx));
             else
-                WORLD_CONTEXT = ctx;
+                start_world(&ctx);
 
             break;
         }

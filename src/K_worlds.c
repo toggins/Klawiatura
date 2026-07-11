@@ -7,7 +7,7 @@
 static TinyMap worlds = {0};
 static TinyHash* world_array = NULL;
 
-WorldContext WORLD_CONTEXT = {0};
+static WorldContext world_context = {0};
 
 static void nuke_world(void* ptr) {
     World* world = ptr;
@@ -127,4 +127,18 @@ void jump_to_world(const WorldContext* ctx) {
 
     spread_world_packet(ctx);
     set_screen(SCR_MAP, ctx, sizeof(*ctx));
+}
+
+void start_world(const WorldContext* ctx) {
+    EXPECT(ctx, "World context is null?");
+    world_context = *ctx;
+
+    EXPECT(world_context.winner >= 0 && world_context.winner < MAX_PLAYERS,
+        "Invalid winner in world context! Expected 0..%i, got %i", MAX_PLAYERS - 1, world_context.winner);
+    EXPECT(world_context.num_players >= 1 && world_context.num_players <= MAX_PLAYERS,
+        "Invalid player count in world context! Expected 1..%i, got %i", MAX_PLAYERS, world_context.num_players);
+}
+
+const WorldContext* worldcontext() {
+    return &world_context;
 }

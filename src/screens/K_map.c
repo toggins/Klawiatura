@@ -57,14 +57,11 @@ static MapState* map_state = NULL;
 
 static void start(const void* secret, size_t secret_size) {
     EXPECT(secret_size == sizeof(WorldContext), "Secret isn't WorldContext?");
-    WORLD_CONTEXT = *(WorldContext*)secret;
-    EXPECT(WORLD_CONTEXT.winner >= 0 && WORLD_CONTEXT.winner < MAX_PLAYERS,
-        "Invalid winner in world context! Expected 0..%i, got %i", MAX_PLAYERS - 1, WORLD_CONTEXT.winner);
-    EXPECT(WORLD_CONTEXT.num_players >= 1 && WORLD_CONTEXT.num_players <= MAX_PLAYERS,
-        "Invalid player count in world context! Expected 1..%i, got %i", MAX_PLAYERS, WORLD_CONTEXT.num_players);
+    start_world((WorldContext*)secret);
+    const WorldContext* wctx = worldcontext();
 
-    const World* world = get_world_key(WORLD_CONTEXT.world);
-    EXPECT(world, "Invalid world key %" SDL_PRIu64, WORLD_CONTEXT.world);
+    const World* world = get_world_key(wctx->world);
+    EXPECT(world, "Invalid world key %" SDL_PRIu64, wctx->world);
 
     size_t size = 0;
     const void* buffer = load_data_file(fmt("worlds/%s.json", world->name), &size);
@@ -152,7 +149,7 @@ static void start(const void* secret, size_t secret_size) {
         add_tilemap(map_state->tilemap, sprite, pos, has_size ? size : NULL, flip, tile, colors);
     }
 
-    yyjson_val* jpath = yyjson_arr_get(yyjson_obj_get(jmap, "paths"), WORLD_CONTEXT.level);
+    yyjson_val* jpath = yyjson_arr_get(yyjson_obj_get(jmap, "paths"), wctx->level);
     Uint32 offset = 0;
     if (yyjson_is_obj(jpath)) {
         map_state->ambush = yyjson_get_bool(yyjson_obj_get(jpath, "ambush"));
@@ -220,7 +217,7 @@ static void start(const void* secret, size_t secret_size) {
     if (map_state->path == NULL) {
         load_sprite_num("ui/map/world/completed/%u", 16, AKL_NEVER);
     } else {
-        const WorldPlayerContext* pctx = &WORLD_CONTEXT.players[WORLD_CONTEXT.winner];
+        const WorldPlayerContext* pctx = &wctx->players[wctx->winner];
         for (PlayerFrame i = PF_WALK1; i <= (PlayerFrame)PF_WALK3; i++)
             load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), AKL_NEVER);
         for (PlayerFrame i = PF_SWIM1; i <= (PlayerFrame)PF_SWIM8; i++)
@@ -347,10 +344,11 @@ static void tick() {
                     play_generic_sound("ambush", 0);
                     break;
 
-                case 33:
-                    play_generic_sound(
-                        get_character_voice(WORLD_CONTEXT.players[WORLD_CONTEXT.winner].character, PV_PANIC), 0);
+                case 33: {
+                    const WorldContext* wctx = worldcontext();
+                    play_generic_sound(get_character_voice(wctx->players[wctx->winner].character, PV_PANIC), 0);
                     break;
+                }
                 }
             }
 
@@ -368,7 +366,7 @@ static void tick() {
                     play_generic_sound("ui/enter", 0);
 
                 if (map_state->transition >= 70) {
-                    WorldContext ctx = WORLD_CONTEXT;
+                    WorldContext ctx = *worldcontext();
                     ++ctx.level;
                     jump_to_world(&ctx);
                 }
@@ -419,7 +417,7 @@ static void tick() {
         Uint8 cross = 0;
         for (size_t i = 0, n = TinyDLength(map_state->points); i < n; i++) {
             MapPoint* point = &map_state->points[i];
-            if (point->cross && ++cross > WORLD_CONTEXT.level)
+            if (point->cross && ++cross > worldcontext()->level)
                 break;
 
             if (point->appear <= 0) {
@@ -483,11 +481,13 @@ static void draw_ui() {
     if (map_state->path != NULL) {
         batch_reset();
 
+        const WorldContext* wctx = worldcontext();
+
         const Uint32 t = (Uint32)(totalticks() * 0.5f);
         Uint8 cross = 0;
         for (size_t i = 0, n = TinyDLength(map_state->points); i < n; i++) {
             const MapPoint* point = &map_state->points[i];
-            if (point->cross && ++cross > WORLD_CONTEXT.level)
+            if (point->cross && ++cross > worldcontext()->level)
                 break;
             if (point->appear <= 20)
                 continue;
@@ -510,7 +510,7 @@ static void draw_ui() {
         batch_pos(B_XY(px, py));
         batch_scale(B_SIZE(0.5f));
 
-        const WorldPlayerContext* pctx = &WORLD_CONTEXT.players[WORLD_CONTEXT.winner];
+        const WorldPlayerContext* pctx = &wctx->players[wctx->winner];
         batch_sprite(get_character_sprite(pctx->character, pctx->powerup,
             player->swimming ? ((player->frame < 6.f) ? (PF_SWIM1 + (int)player->frame)
                                                       : (PF_SWIM7 + (int)SDL_fmodf(player->frame, 2.f)))
