@@ -164,6 +164,7 @@ typedef struct {
 } GameCharacter;
 
 typedef struct {
+    Bool xscroll;
     Sint8 lives;
     Uint8 coins;
     PlayerCharacter character;
@@ -308,6 +309,12 @@ typedef struct {
     PlayerID (*owner)(const GameActor*);
 } GameActorTable;
 
+typedef struct {
+    FVec2 size;
+    FRect bounds;
+} LevelInfo;
+
+extern LevelInfo* LEVEL_INFO;
 extern GameState* GAME_STATE;
 
 void game_init();

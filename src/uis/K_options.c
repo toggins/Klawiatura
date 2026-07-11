@@ -7,6 +7,8 @@
 #include "K_string.h"
 #include "K_video.h"
 
+#include "uis/K_message.h"
+
 enum {
     MEN_NULL,
 
@@ -25,12 +27,13 @@ static const char *fmt_language(size_t), *fmt_name(size_t), *fmt_server(size_t),
     *fmt_master_volume(size_t), *fmt_sound_volume(size_t), *fmt_music_volume(size_t), *fmt_audio_in_background(size_t),
     *fmt_input_delay(size_t), *fmt_device(size_t), *fmt_up(size_t), *fmt_left(size_t), *fmt_down(size_t),
     *fmt_right(size_t), *fmt_jump(size_t), *fmt_run(size_t), *fmt_fire(size_t), *fmt_chat(size_t),
-    *fmt_record_replay(size_t), *fmt_framerate(size_t), *fmt_texture_filter(size_t);
+    *fmt_record_replay(size_t), *fmt_framerate(size_t), *fmt_texture_filter(size_t), *fmt_xscroll(size_t);
 static void enter_language_menu(MenuType), submit_name(Bool), submit_server(Bool), show_user_messages_cycle(Sint8),
     language_option(), resolution_cycle(Sint8), fullscreen_cycle(Sint8), master_volume_cycle(Sint8),
     sound_volume_cycle(Sint8), music_volume_cycle(Sint8), audio_in_background_cycle(Sint8), vsync_cycle(Sint8),
     input_delay_cycle(Sint8), up_option(), left_option(), down_option(), right_option(), jump_option(), run_option(),
-    fire_option(), chat_option(), record_replay_option(), framerate_cycle(Sint8), texture_filter_cycle(Sint8);
+    fire_option(), chat_option(), record_replay_option(), framerate_cycle(Sint8), texture_filter_cycle(Sint8),
+    xscroll_cycle(Sint8);
 
 static Catalog CATALOG = {
 	.current = MEN_MAIN,
@@ -48,6 +51,7 @@ static Catalog CATALOG = {
 		[MEN_MAIN] = {
             {.fmt = fmt_name, OPTION_PROMPT(CLIENT.name), .submit = submit_name},
 			{.fmt = fmt_language, .menu = MEN_LANGUAGE},
+            {.fmt = fmt_xscroll, .cycle = xscroll_cycle},
 			{},
 			{.name = "opt_controls", .menu = MEN_CONTROLS},
 			{.name = "opt_video", .menu = MEN_VIDEO},
@@ -141,6 +145,33 @@ static const char* fmt_language(size_t idx) {
     (void)idx;
 
     return fmt("%s: %s (%s)", LFMT("opt_language"), LFMT(CLIENT.language), CLIENT.language);
+}
+
+static const char* fmt_xscroll(size_t idx) {
+    (void)idx;
+
+    return fmt("%s: %s", LFMT("opt_xscroll"), LFMT(CLIENT.xscroll ? "val_on" : "val_off"));
+}
+
+static void saw_xscroll_notice() {
+    CLIENT.seen_xscroll_notice = TRUE;
+}
+
+static void xscroll_cycle(Sint8 cycle) {
+    (void)cycle;
+
+    CLIENT.xscroll = !CLIENT.xscroll;
+
+    if (CLIENT.seen_xscroll_notice || get_screen() != SCR_GAME)
+        return;
+
+    UI* message = create_ui(UI_MESSAGE, topui());
+    if (message == NULL)
+        return;
+    UIMessageData* userdata = message->userdata;
+    userdata->title = "msg_notice";
+    userdata->text = "msg_xscroll_notice";
+    userdata->cancel = saw_xscroll_notice;
 }
 
 static const char* fmt_server(size_t idx) {

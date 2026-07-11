@@ -41,6 +41,8 @@ static void set_language(const char* code) {
     apply_language(CLIENT.language);
 }
 
+CVAR(xscroll, Bool)
+
 CVAR(show_user_messages, Bool)
 
 CVAR(seen_online_notice, Bool)
@@ -87,6 +89,7 @@ CVAR(audio_in_background, Bool)
 static const ConfigOption OPTIONS[] = {
     CVAR(name, string),
     CVAR(language, string),
+    CVAR(xscroll, bool),
     CVAR(width, int),
     CVAR(height, int),
     CVAR(fullscreen, bool),

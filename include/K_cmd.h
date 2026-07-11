@@ -27,7 +27,7 @@ typedef struct {
     char world[64];
     PlayerCharacter character;
     PlayerPowerup powerup;
-    Bool record_replay;
+    Bool xscroll, seen_xscroll_notice, record_replay;
 
     Bool seen_online_notice;
     char server[64];

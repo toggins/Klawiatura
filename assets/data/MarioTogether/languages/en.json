@@ -52,6 +52,7 @@
     "opt_how_to_record": "Press {0} to record later.",
     "opt_name": "Name",
     "opt_language": "Language",
+    "opt_xscroll": "XScroll",
     "opt_controls": "Controls",
     "opt_video": "Video",
     "opt_audio": "Audio",
@@ -98,6 +99,7 @@
     "val_green_lui": "Green Lui",
 
     "msg_notice": "Notice",
+    "msg_xscroll_notice": "\"XScroll\" will be applied in the next level.",
     "msg_online_notice": "Klawiatura uses direct peer-to-peer connections for online play.\n\nAllow Klawiatura through your firewall and exclude it from VPNs to properly communicate with other players over the network.\n\nBy default, you will connect to a public signalling server. For private or LAN sessions, host your own server and change the server address through Network options.",
     "msg_connecting": "Connecting...",
     "msg_error": "Error",

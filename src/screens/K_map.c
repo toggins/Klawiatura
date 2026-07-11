@@ -220,7 +220,7 @@ static void start(const void* secret, size_t secret_size) {
     if (map_state->path == NULL) {
         load_sprite_num("ui/map/world/completed/%u", 16, AKL_NEVER);
     } else {
-        const GamePlayerContext* pctx = &WORLD_CONTEXT.players[WORLD_CONTEXT.winner];
+        const WorldPlayerContext* pctx = &WORLD_CONTEXT.players[WORLD_CONTEXT.winner];
         for (PlayerFrame i = PF_WALK1; i <= (PlayerFrame)PF_WALK3; i++)
             load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), AKL_NEVER);
         for (PlayerFrame i = PF_SWIM1; i <= (PlayerFrame)PF_SWIM8; i++)
@@ -510,7 +510,7 @@ static void draw_ui() {
         batch_pos(B_XY(px, py));
         batch_scale(B_SIZE(0.5f));
 
-        const GamePlayerContext* pctx = &WORLD_CONTEXT.players[WORLD_CONTEXT.winner];
+        const WorldPlayerContext* pctx = &WORLD_CONTEXT.players[WORLD_CONTEXT.winner];
         batch_sprite(get_character_sprite(pctx->character, pctx->powerup,
             player->swimming ? ((player->frame < 6.f) ? (PF_SWIM1 + (int)player->frame)
                                                       : (PF_SWIM7 + (int)SDL_fmodf(player->frame, 2.f)))

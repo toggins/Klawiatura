@@ -446,7 +446,7 @@ static void start_option() {
             if (get_peer_number(pid, "spectator") > 0)
                 continue;
 
-            GamePlayerContext* pctx = &ctx.players[i];
+            WorldPlayerContext* pctx = &ctx.players[i];
             pctx->character = get_peer_number(pid, "character");
             pctx->powerup = get_peer_number(pid, "powerup");
             pctx->lives = (Sint8)(pctx->lives - get_powerup_cost(pctx->powerup));
@@ -456,7 +456,7 @@ static void start_option() {
         }
         ctx.num_players = i;
     } else {
-        GamePlayerContext* pctx = &ctx.players[0];
+        WorldPlayerContext* pctx = &ctx.players[0];
         pctx->character = CLIENT.character;
         pctx->powerup = CLIENT.powerup;
         pctx->lives = (Sint8)(pctx->lives - get_powerup_cost(pctx->powerup));

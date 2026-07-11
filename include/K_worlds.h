@@ -10,11 +10,19 @@ typedef struct {
 } World;
 
 typedef struct {
+    Sint8 lives;
+    Uint8 coins;
+    PlayerCharacter character;
+    PlayerPowerup powerup;
+    Uint32 score;
+} WorldPlayerContext;
+
+typedef struct {
     TinyHash world;
     Uint8 level;
 
     PlayerID winner, num_players;
-    GamePlayerContext players[MAX_PLAYERS];
+    WorldPlayerContext players[MAX_PLAYERS];
 } WorldContext;
 
 extern WorldContext WORLD_CONTEXT;
