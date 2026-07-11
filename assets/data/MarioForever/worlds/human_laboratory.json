@@ -1,1 +1,9 @@
-{}
+{
+    "levels": [
+        "human_laboratory_1",
+        "human_laboratory_2",
+        "human_laboratory_3",
+        "human_laboratory_4",
+        "human_laboratory_5"
+    ]
+}

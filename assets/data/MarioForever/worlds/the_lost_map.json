@@ -160,5 +160,13 @@
                 ]
             }
         ]
-    }
+    },
+    "levels": [
+        "the_lost_map_1",
+        "the_lost_map_2",
+        "the_lost_map_3",
+        "the_lost_map_4",
+        "the_lost_map_5",
+        "the_lost_map_6"
+    ]
 }
