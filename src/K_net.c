@@ -27,6 +27,16 @@ static size_t lobby_list_count = 0;
 
 static NetID player_peers[MAX_PLAYERS] = {0}, spectator_peers[MAX_PEERS] = {0};
 
+static void on_ready() {
+    if (connect_state == CONN_CONNECTING)
+        INFO("Connect state ended successfully");
+    connect_state = CONN_CONNECTED;
+
+    clear_chat();
+    chat_message(LFMT("chat_connected"), B_YELLOW);
+    update_discord_status();
+}
+
 static void set_last_error(const char* error) {
     SDL_free((void*)last_error);
     last_error = (error == NULL || error[0] == '\0') ? NULL : SDL_strdup(error);
@@ -149,6 +159,7 @@ void net_init() {
     NutBlast_SetGameID(fmt(GAME_NAME " " GAME_VERSION " %X", get_game_hash()));
     NutBlast_SetMaxChannels(PCH_SIZE);
 
+    NutBlast_OnReady(on_ready);
     NutBlast_OnDisconnected(on_disconnected);
     NutBlast_OnPlayerJoined(on_peer_joined);
     NutBlast_OnPlayerLeft(on_peer_left);
@@ -164,16 +175,6 @@ void net_init() {
 
 void net_update() {
     NutBlast_Update();
-
-    if (connect_state == CONN_CONNECTING && NutBlast_IsReady()) {
-        connect_state = CONN_CONNECTED;
-
-        clear_chat();
-        chat_message(LFMT("chat_connected"), B_YELLOW);
-        update_discord_status();
-
-        INFO("Connect state ended successfully");
-    }
 
     NutBlast_Message msg = {0};
     while (NutBlast_NextMessage(PCH_LOBBY, &msg)) {
@@ -551,6 +552,7 @@ void update_lobby_data() {
 
 void update_peer_data() {
     NutBlast_SetPlayerField(NUTBLAST_FIELD_PLAYER_NAME, CLIENT.name);
+    NutBlast_SetPlayerField("xscroll", fmt("%u", CLIENT.xscroll));
     NutBlast_SetPlayerField("character", fmt("%u", CLIENT.character));
     NutBlast_SetPlayerField("powerup", fmt("%u", CLIENT.powerup));
 }
