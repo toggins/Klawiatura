@@ -1,7 +1,10 @@
+#include "K_cmd.h"
 #include "K_game.h"
+#include "K_interface.h"
+#include "K_levels.h"
 #include "K_locale.h"
 #include "K_log.h"
-#include "K_net.h" // IWYU pragma: export
+#include "K_net.h"
 
 // `extern` in K_actors.c
 const GameActorTable* ACTORS[ACT_SIZE] = {0};
@@ -137,6 +140,8 @@ static GekkoSession* game_session = NULL;
 
 GameContext queue_game_context = {0};
 static GameContext game_context = {0};
+
+static LevelInfo* level_info = NULL;
 GameState* GAME_STATE = NULL;
 
 static Uint8 boot_state = 0;
@@ -229,6 +234,55 @@ void boot_from_game(const char* reason) {
 // =======
 // CONTEXT
 // =======
+
+GameContext init_game_context(const WorldContext* wctx, TinyHash level) {
+    GameContext gctx = {.level = level, .checkpoint = NULL_ACTOR};
+
+    if (wctx == NULL) {
+        gctx.num_players = 1;
+        for (size_t i = 0; i < SDL_arraysize(gctx.players); i++)
+            gctx.players[i].lives = DEFAULT_LIVES;
+    } else {
+        gctx.num_players = wctx->num_players;
+        for (size_t i = 0; i < SDL_arraysize(gctx.players); i++) {
+            GamePlayerContext* gpctx = &gctx.players[i];
+            const WorldPlayerContext* wpctx = &wctx->players[i];
+
+            gpctx->character = wpctx->character;
+            gpctx->powerup = wpctx->powerup;
+            gpctx->lives = wpctx->lives;
+            gpctx->coins = wpctx->coins;
+            gpctx->score = wpctx->score;
+        }
+    }
+
+    if (is_connected())
+        for (PlayerID i = 0, n = (PlayerID)get_game_player_count(); i < n; i++)
+            gctx.players[i].xscroll = get_peer_bool(player_to_peer(i), "xscroll");
+    else
+        gctx.players[0].xscroll = CLIENT.xscroll;
+
+    return gctx;
+}
+
+void jump_to_game(const GameContext* ctx) {
+    if (ctx == NULL || !is_leader())
+        return;
+
+    const Level* level = get_level_key(ctx->level);
+    ASSUME(level, "Invalid level key %" SDL_PRIu64, ctx->level);
+
+    spread_game_packet(ctx);
+    set_screen(SCR_GAME, ctx, sizeof(*ctx));
+}
+
+void start_game(const GameContext* ctx) {
+    EXPECT(ctx, "Game context is null?");
+    game_context = *ctx;
+
+    EXPECT(game_context.num_players >= 1 && game_context.num_players <= MAX_PLAYERS,
+        "Invalid player count in game context! Expected 1..%i, got %i", MAX_PLAYERS, game_context.num_players);
+}
 
 const GameContext* gamecontext() {
     return &game_context;

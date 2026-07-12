@@ -1,7 +1,7 @@
 #include "K_audio.h"
-#include "K_file.h"
 #include "K_input.h"
 #include "K_interface.h"
+#include "K_levels.h"
 #include "K_locale.h"
 #include "K_net.h"
 #include "K_string.h"
@@ -44,6 +44,7 @@ typedef struct {
     MapLabel label;
     MapPlayer player;
 
+    TinyHash level;
     size_t current_node;
 
     const char *title, *track;
@@ -63,19 +64,9 @@ static void start(const void* secret, size_t secret_size) {
     const World* world = get_world_key(wctx->world);
     EXPECT(world, "Invalid world key %" SDL_PRIu64, wctx->world);
 
-    size_t size = 0;
-    const void* buffer = load_data_file(fmt("worlds/%s.json", world->name), &size);
-    EXPECT(buffer, "Failed to load world \"%s\"", world->name);
-
-    Uint32 hash = 0;
-    for (size_t i = 0; i < size; i++)
-        hash += ((Uint8*)buffer)[i];
-    EXPECT(hash == world->hash, "World \"%s\" file was tampered with!", world->name);
-
     const char* error = NULL;
-    yyjson_doc* json = read_json(buffer, size, &error);
-    EXPECT(json, "Failed to parse world \"%s\": %s", world->name, error);
-    SDL_free((void*)buffer);
+    yyjson_doc* json = load_world_json(world->name, &error);
+    EXPECT(json, "Failed to load world \"%s\": %s", world->name, error);
 
     yyjson_val* root = yyjson_doc_get_root(json);
     EXPECT(yyjson_is_obj(root), "Expected world \"%s\" JSON root as object, got %s", world->name,
@@ -197,6 +188,8 @@ static void start(const void* secret, size_t secret_size) {
             map_state->points = TinyDPush(map_state->points, &point);
         }
     }
+
+    map_state->level = StHashStr(yyjson_get_str(yyjson_arr_get(yyjson_obj_get(root, "levels"), wctx->level)));
 
     const char* track = (map_state->path == NULL) ? "yi_score" : yyjson_get_str(yyjson_obj_get(jmap, "track"));
     if (track != NULL) {
@@ -366,9 +359,15 @@ static void tick() {
                     play_generic_sound("ui/enter", 0);
 
                 if (map_state->transition >= 70) {
-                    WorldContext ctx = *worldcontext();
-                    ++ctx.level;
-                    jump_to_world(&ctx);
+                    const Level* level = get_level_key(map_state->level);
+                    if (level == NULL) {
+                        WorldContext wctx = *worldcontext();
+                        ++wctx.level;
+                        jump_to_world(&wctx);
+                    } else {
+                        GameContext gctx = init_game_context(worldcontext(), map_state->level);
+                        jump_to_game(&gctx);
+                    }
                 }
             }
 

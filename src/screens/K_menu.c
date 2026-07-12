@@ -300,8 +300,8 @@ static Bool draw_lobby_menu() {
 
         batch_pos(B_XY(168.f, py));
         batch_string("main", PEER_SIZE,
-            (get_peer_number(pid, "spectator") > 0) ? LFMT("val_spectator")
-                                                    : get_character_name(get_peer_number(pid, "character")));
+            (get_peer_bool(pid, "spectator")) ? LFMT("val_spectator")
+                                              : get_character_name(get_peer_number(pid, "character")));
 
         batch_pos(B_XY(320.f, py));
         batch_string("main", PEER_SIZE, get_powerup_name(get_peer_number(pid, "powerup")));
@@ -364,7 +364,7 @@ static const char* fmt_character(size_t idx) {
 }
 
 static Bool character_disabled() {
-    return get_peer_number(get_local_peer(), "spectator") > 0;
+    return get_peer_bool(get_local_peer(), "spectator");
 }
 
 static void character_cycle(Sint8 cycle) {
@@ -434,34 +434,10 @@ static void start_option() {
     if (get_world_key(key) == NULL)
         return;
 
-    WorldContext ctx = init_world_context();
-    ctx.world = key;
-
-    if (is_connected()) {
+    if (is_connected())
         peers_to_players();
 
-        PlayerID i = 0;
-        for (const NetID* pids = get_peers(); *pids > 0; pids++) {
-            const NetID pid = *pids;
-            if (get_peer_number(pid, "spectator") > 0)
-                continue;
-
-            WorldPlayerContext* pctx = &ctx.players[i];
-            pctx->character = get_peer_number(pid, "character");
-            pctx->powerup = get_peer_number(pid, "powerup");
-            pctx->lives = (Sint8)(pctx->lives - get_powerup_cost(pctx->powerup));
-
-            if (++i >= SDL_arraysize(ctx.players))
-                break;
-        }
-        ctx.num_players = i;
-    } else {
-        WorldPlayerContext* pctx = &ctx.players[0];
-        pctx->character = CLIENT.character;
-        pctx->powerup = CLIENT.powerup;
-        pctx->lives = (Sint8)(pctx->lives - get_powerup_cost(pctx->powerup));
-    }
-
+    WorldContext ctx = init_world_context(key);
     jump_to_world(&ctx);
 }
 
@@ -583,7 +559,7 @@ static const char* fmt_enter_as(size_t idx) {
     (void)idx;
 
     return fmt("%s: %s", LFMT("opt_enter_as"),
-        LFMT((get_peer_number(get_local_peer(), "spectator") > 0) ? "val_spectator" : "val_player"));
+        LFMT((get_peer_bool(get_local_peer(), "spectator")) ? "val_spectator" : "val_player"));
 }
 
 static void enter_as_cycle(Sint8 cycle) {

@@ -2,6 +2,7 @@
 #include "K_file.h"
 #include "K_interface.h"
 #include "K_log.h"
+#include "K_string.h"
 #include "K_worlds.h"
 
 static TinyMap worlds = {0};
@@ -106,27 +107,88 @@ const char* last_world_from(const char* name) {
     return (world == NULL) ? NULL : world->name;
 }
 
-WorldContext init_world_context() {
-    WorldContext ctx = {0};
+yyjson_doc* load_world_json(const char* name, const char** err) {
+    const World* world = get_world(name);
+    if (world == NULL) {
+        if (err != NULL)
+            *err = "World not found";
 
-    ctx.num_players = 1;
+        return NULL;
+    }
+
+    size_t size = 0;
+    const void* buffer = load_data_file(fmt("worlds/%s.json", world->name), &size);
+    if (buffer == NULL) {
+        if (err != NULL)
+            *err = "Failed to load world file";
+
+        return NULL;
+    }
+
+    Uint32 hash = 0;
+    for (size_t i = 0; i < size; i++)
+        hash += ((Uint8*)buffer)[i];
+    if (hash != world->hash) {
+        if (err != NULL)
+            *err = "World file was tampered with!";
+
+        SDL_free((void*)buffer);
+        return NULL;
+    }
+
+    yyjson_doc* json = read_json(buffer, size, err);
+    SDL_free((void*)buffer);
+
+    return json;
+}
+
+WorldContext init_world_context(TinyHash world) {
+    WorldContext ctx = {.world = world, .num_players = 1};
+
     for (size_t i = 0; i < SDL_arraysize(ctx.players); i++)
         ctx.players[i].lives = DEFAULT_LIVES;
+
+    if (is_connected()) {
+        ctx.num_players = (PlayerID)get_game_player_count();
+        for (size_t i = 0; i < ctx.num_players; i++) {
+            const NetID pid = player_to_peer((PlayerID)i);
+            WorldPlayerContext* pctx = &ctx.players[i];
+
+            pctx->character = get_peer_number(pid, "character");
+            pctx->powerup = get_peer_number(pid, "powerup");
+            pctx->lives = (Sint8)(pctx->lives - get_powerup_cost(pctx->powerup));
+        }
+    } else {
+        WorldPlayerContext* pctx = &ctx.players[0];
+        pctx->character = CLIENT.character;
+        pctx->powerup = CLIENT.powerup;
+        pctx->lives = (Sint8)(pctx->lives - get_powerup_cost(pctx->powerup));
+    }
 
     return ctx;
 }
 
-void jump_to_world(const WorldContext* ctx) {
-    if (ctx == NULL || !is_leader())
+void jump_to_world(const WorldContext* wctx) {
+    if (wctx == NULL || !is_leader())
         return;
 
-    const World* world = get_world_key(ctx->world);
-    EXPECT(world, "Invalid world key %" SDL_PRIu64, ctx->world);
+    const World* world = get_world_key(wctx->world);
+    ASSUME(world, "Invalid world key %" SDL_PRIu64, wctx->world);
 
-    ASSUME(world->has_map, "Not implemented yet");
+    spread_world_packet(wctx);
+    if (world->has_map) {
+        set_screen(SCR_MAP, wctx, sizeof(*wctx));
+        return;
+    }
 
-    spread_world_packet(ctx);
-    set_screen(SCR_MAP, ctx, sizeof(*ctx));
+    const char* error = NULL;
+    yyjson_doc* json = load_world_json(world->name, &error);
+    ASSUME(json, "Failed to load world \"%s\": %s", world->name, error);
+
+    GameContext gctx = init_game_context(wctx,
+        StHashStr(yyjson_get_str(yyjson_arr_get(yyjson_obj_get(yyjson_doc_get_root(json), "levels"), wctx->level))));
+    yyjson_doc_free(json);
+    jump_to_game(&gctx);
 }
 
 void start_world(const WorldContext* ctx) {

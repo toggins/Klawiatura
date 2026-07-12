@@ -103,6 +103,8 @@ enum {
     POW_SIZE,
 };
 
+#include "K_worlds.h"
+
 typedef Uint8 PlayerFrame;
 enum {
     PF_IDLE,
@@ -176,25 +178,10 @@ typedef struct {
     PlayerID num_players;
     GameFlags flags;
     ActorID checkpoint;
-    Uint64 seed;
     TinyHash level;
 
     GamePlayerContext players[MAX_PLAYERS];
 } GameContext;
-
-#pragma pack(push, 1)
-
-typedef struct {
-    GameFlags flags;
-    Uint64 seed;
-    TinyHash level;
-    ActorID checkpoint;
-
-    // Players...
-    // Characters...
-} GameContextPacket;
-
-#pragma pack(pop)
 
 typedef struct {
     PlayerID id;
@@ -329,14 +316,16 @@ const char *get_character_name(PlayerCharacter), *get_character_cursor(PlayerCha
 const char* get_powerup_name(PlayerPowerup);
 Sint8 get_powerup_cost(PlayerPowerup);
 
-GameContext init_game_context();
+GameContext init_game_context(const struct WorldContext*, TinyHash);
 
-void start_game(GameContext*), nuke_game();
+void jump_to_game(const GameContext*);
+void start_game(const GameContext*), nuke_game();
 void poll_game();
 float frames_ahead();
 void tick_game(), draw_game();
 
 const GameContext* gamecontext();
+const LevelInfo* levelinfo();
 
 PlayerID localplayer(), viewplayer();
 void set_view_player(const GamePlayer*);

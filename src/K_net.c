@@ -8,6 +8,7 @@
 #include "K_cmd.h"
 #include "K_discord.h"
 #include "K_interface.h"
+#include "K_levels.h"
 #include "K_locale.h"
 #include "K_log.h"
 #include "K_net.h"
@@ -226,7 +227,7 @@ void net_update() {
                 break;
             }
 
-            WorldContext ctx = init_world_context();
+            WorldContext ctx = {0};
 
             read_buffer64(&mbuf, &ctx.world);
             const World* world = get_world_key(ctx.world);
@@ -236,6 +237,7 @@ void net_update() {
             }
 
             read_buffer8(&mbuf, &ctx.level);
+            read_buffer16(&mbuf, &ctx.flags);
 
             read_buffer8(&mbuf, (Uint8*)&ctx.winner);
             if (ctx.winner < 0 || ctx.winner >= SDL_arraysize(ctx.players)) {
@@ -262,6 +264,45 @@ void net_update() {
             else
                 start_world(&ctx);
 
+            break;
+        }
+
+        case PT_GAME: {
+            INFO("Game packet from %s (%" SDL_PRIu64 ")", get_peer_name(msg.from), msg.from);
+            if (get_game_player_count() < 1) {
+                WTF("Player peer table wasn't filled before game packet arrived?");
+                break;
+            }
+
+            GameContext ctx = {0};
+
+            read_buffer16(&mbuf, &ctx.flags);
+
+            read_buffer64(&mbuf, &ctx.level);
+            const Level* level = get_level_key(ctx.level);
+            if (level == NULL) {
+                WTF("Invalid level key %" SDL_PRIu64, ctx.level);
+                break;
+            }
+
+            read_buffer16(&mbuf, (Uint16*)&ctx.checkpoint);
+
+            read_buffer8(&mbuf, (Uint8*)&ctx.num_players);
+            if (ctx.num_players <= 0 || ctx.num_players > SDL_arraysize(ctx.players)) {
+                WTF("Bad game player count (%i)", ctx.num_players);
+                break;
+            }
+
+            for (PlayerID i = 0; i < ctx.num_players; i++) {
+                read_buffer8(&mbuf, &ctx.players[i].xscroll);
+                read_buffer8(&mbuf, &ctx.players[i].character);
+                read_buffer8(&mbuf, &ctx.players[i].powerup);
+                read_buffer8(&mbuf, (Uint8*)&ctx.players[i].lives);
+                read_buffer8(&mbuf, &ctx.players[i].coins);
+                read_buffer32(&mbuf, (Uint32*)&ctx.players[i].score);
+            }
+
+            set_screen(SCR_GAME, &ctx, sizeof(ctx));
             break;
         }
 
@@ -366,9 +407,13 @@ const char* get_peer_string(NetID pid, const char* key) {
     return NutBlast_GetPlayerField(pid, key);
 }
 
-Sint32 get_peer_number(NetID pid, const char* key) {
+Sint64 get_peer_number(NetID pid, const char* key) {
     const char* data = NutBlast_GetPlayerField(pid, key);
     return (data == NULL) ? 0 : SDL_atoi(data);
+}
+
+Bool get_peer_bool(NetID pid, const char* key) {
+    return get_peer_number(pid, key) > 0;
 }
 
 Bool peer_exists(NetID pid) {
@@ -409,7 +454,7 @@ Bool nuke_spectator_peer(NetID pid) {
 Uint8 get_lobby_player_count() {
     Uint8 count = 0;
     for (const NetID* pids = get_peers(); *pids > 0; pids++)
-        if (get_peer_number(*pids, "spectator") <= 0)
+        if (!get_peer_bool(*pids, "spectator"))
             ++count;
 
     return count;
@@ -418,7 +463,7 @@ Uint8 get_lobby_player_count() {
 Uint8 get_lobby_spectator_count() {
     Uint8 count = 0;
     for (const NetID* pids = get_peers(); *pids > 0; pids++)
-        if (get_peer_number(*pids, "spectator") > 0)
+        if (get_peer_bool(*pids, "spectator"))
             ++count;
 
     return count;
@@ -515,9 +560,13 @@ const char* get_lobby_string(const char* key) {
     return NutBlast_GetLobbyField(key);
 }
 
-Sint32 get_lobby_number(const char* key) {
-    const char* data = NutBlast_GetLobbyField(key);
+Sint64 get_lobby_number(const char* key) {
+    const char* data = get_lobby_string(key);
     return (data == NULL) ? 0 : SDL_atoi(data);
+}
+
+Bool get_lobby_bool(const char* key) {
+    return get_lobby_number(key) > 0;
 }
 
 Bool in_private_lobby() {
@@ -565,7 +614,7 @@ void peers_to_players() {
     // Fill player-to-peer and spectator-to-peer tables
     for (const NetID* pids = get_peers(); *pids > 0; pids++) {
         const NetID pid = *pids;
-        if (num_players >= SDL_arraysize(player_peers) || get_peer_number(pid, "spectator") > 0) {
+        if (num_players >= SDL_arraysize(player_peers) || get_peer_bool(pid, "spectator")) {
             if (num_spectators < SDL_arraysize(spectator_peers))
                 spectator_peers[num_spectators++] = pid;
         } else {
@@ -718,15 +767,43 @@ void spread_reliable_packet_to_players(PacketChannel channel, const Uint8* data,
 }
 
 void spread_world_packet(const WorldContext* ctx) {
+    if (ctx == NULL)
+        return;
+
     Buffer buffer = net_buffer();
     write_buffer8(&buffer, &(PacketType){PT_WORLD});
 
     write_buffer64(&buffer, &ctx->world);
     write_buffer8(&buffer, &ctx->level);
+    write_buffer16(&buffer, &ctx->flags);
 
     write_buffer8(&buffer, (Uint8*)&ctx->winner);
     write_buffer8(&buffer, (Uint8*)&ctx->num_players);
     for (PlayerID i = 0; i < ctx->num_players; i++) {
+        write_buffer8(&buffer, &ctx->players[i].character);
+        write_buffer8(&buffer, &ctx->players[i].powerup);
+        write_buffer8(&buffer, (Uint8*)&ctx->players[i].lives);
+        write_buffer8(&buffer, &ctx->players[i].coins);
+        write_buffer32(&buffer, (Uint32*)&ctx->players[i].score);
+    }
+
+    spread_reliable_packet_to_players(PCH_LOBBY, buffer.data, buffer_tell(buffer));
+}
+
+void spread_game_packet(const GameContext* ctx) {
+    if (ctx == NULL)
+        return;
+
+    Buffer buffer = net_buffer();
+    write_buffer8(&buffer, &(PacketType){PT_GAME});
+
+    write_buffer16(&buffer, &ctx->flags);
+    write_buffer64(&buffer, &ctx->level);
+    write_buffer16(&buffer, (Uint16*)&ctx->checkpoint);
+
+    write_buffer8(&buffer, (Uint8*)&ctx->num_players);
+    for (PlayerID i = 0; i < ctx->num_players; i++) {
+        write_buffer8(&buffer, &ctx->players[i].xscroll);
         write_buffer8(&buffer, &ctx->players[i].character);
         write_buffer8(&buffer, &ctx->players[i].powerup);
         write_buffer8(&buffer, (Uint8*)&ctx->players[i].lives);
