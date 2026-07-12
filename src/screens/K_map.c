@@ -58,7 +58,7 @@ static MapState* map_state = NULL;
 
 static void start(const void* secret, size_t secret_size) {
     EXPECT(secret_size == sizeof(WorldContext), "Secret isn't WorldContext?");
-    start_world((WorldContext*)secret);
+    start_world(secret);
     const WorldContext* wctx = worldcontext();
 
     const World* world = get_world_key(wctx->world);
