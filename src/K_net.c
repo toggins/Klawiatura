@@ -701,7 +701,9 @@ PlayerID populate_game(GekkoSession* session, PlayerID num_players) {
     gekko_net_adapter_set(session, &adapter);
 
     if (i_am_spectating()) {
-        GekkoNetAddress addr = {.data = &player_peers[0], .size = sizeof(*player_peers)};
+        GekkoNetAddress addr = {0};
+        addr.data = &player_peers[0];
+        addr.size = sizeof(*player_peers);
         gekko_add_actor(session, GekkoRemotePlayer, &addr);
 
         return MAX_PLAYERS;
@@ -720,7 +722,9 @@ PlayerID populate_game(GekkoSession* session, PlayerID num_players) {
             gekko_add_actor(session, GekkoLocalPlayer, NULL);
             gekko_set_local_delay(session, local, CLIENT.input_delay);
         } else {
-            GekkoNetAddress addr = {.data = &player_peers[i], .size = sizeof(*player_peers)};
+            GekkoNetAddress addr = {0};
+            addr.data = &player_peers[i];
+            addr.size = sizeof(*player_peers);
             gekko_add_actor(session, GekkoRemotePlayer, &addr);
         }
 
@@ -740,7 +744,9 @@ PlayerID populate_game(GekkoSession* session, PlayerID num_players) {
             if (spectator_peers[i] <= 0)
                 continue;
 
-            GekkoNetAddress addr = {.data = &spectator_peers[i], .size = sizeof(*spectator_peers)};
+            GekkoNetAddress addr = {0};
+            addr.data = &spectator_peers[i];
+            addr.size = sizeof(*spectator_peers);
             gekko_add_actor(session, GekkoSpectator, &addr);
 
             INFO("- %s", get_peer_name(spectator_peers[i]));

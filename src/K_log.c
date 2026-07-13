@@ -11,26 +11,25 @@
 void handle_fatal(const char* file, int line, const char* func, const char* format, ...) {
     extern SDL_Window* WINDOW;
 
-    SDL_MessageBoxButtonData buttons[] = {
-        {.text = "Exit", .flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT | SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT}
-    };
-
     va_list args = {0};
     va_start(args, format);
     const char* message = fmt("Sorry, " GAME_NAME " encountered a fatal error!\n\nFile: %s:%d\nFunction: %s()\n\n%s",
         log_basename(file), line, func, vfmt(format, args));
     va_end(args);
 
-    SDL_MessageBoxData data = {
-        .window = WINDOW,
-        .message = message,
-        .title = GAME_NAME,
-        .flags = SDL_MESSAGEBOX_ERROR,
-        .buttons = buttons,
-        .numbuttons = SDL_arraysize(buttons),
-    };
+    SDL_MessageBoxButtonData button = {0};
+    button.text = "Exit";
+    button.flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT | SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
 
-    SDL_ShowMessageBox(&data, NULL);
+    SDL_MessageBoxData dialog = {0};
+    dialog.window = WINDOW;
+    dialog.message = message;
+    dialog.title = GAME_NAME;
+    dialog.flags = SDL_MESSAGEBOX_ERROR;
+    dialog.buttons = &button;
+    dialog.numbuttons = 1;
+
+    SDL_ShowMessageBox(&dialog, NULL);
     exit(EXIT_FAILURE);
 }
 

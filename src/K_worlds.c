@@ -143,7 +143,9 @@ yyjson_doc* load_world_json(const char* name, const char** err) {
 }
 
 WorldContext empty_world_context() {
-    WorldContext ctx = {.num_players = 1};
+    WorldContext ctx = {0};
+
+    ctx.num_players = 1;
 
     for (size_t i = 0; i < SDL_arraysize(ctx.players); i++)
         ctx.players[i].lives = DEFAULT_LIVES;

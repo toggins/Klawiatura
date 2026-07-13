@@ -61,7 +61,10 @@ static struct {
 static struct {
     SDL_JoystickID device;
     Keybind kb;
-} scanning = {.kb = NULL_KEYBIND};
+} scanning = {
+    .device = 0,
+    .kb = NULL_KEYBIND,
+};
 
 void input_init() {
     if (SDL_AddGamepadMappingsFromIO(stream_base_file("gamecontrollerdb.txt"), TRUE) < 0)

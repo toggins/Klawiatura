@@ -247,8 +247,11 @@ void boot_from_game(const char* reason) {
 // =======
 
 GameContext empty_game_context() {
-    GameContext ctx = {.checkpoint = NULL_ACTOR, .num_players = 1};
+    GameContext ctx = {0};
 
+    ctx.checkpoint = NULL_ACTOR;
+
+    ctx.num_players = 1;
     for (PlayerID i = 0; i < (PlayerID)SDL_arraysize(ctx.players); i++)
         ctx.players[i].lives = DEFAULT_LIVES;
 

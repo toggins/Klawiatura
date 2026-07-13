@@ -215,7 +215,9 @@ void interface_teardown() {
 }
 
 void permadeath() {
-    SDL_PushEvent(&(SDL_Event){.type = SDL_EVENT_QUIT});
+    SDL_Event event = {0};
+    event.type = SDL_EVENT_QUIT;
+    SDL_PushEvent(&event);
 }
 
 ScreenType get_screen() {
