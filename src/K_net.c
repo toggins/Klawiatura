@@ -701,9 +701,7 @@ PlayerID populate_game(GekkoSession* session, PlayerID num_players) {
     gekko_net_adapter_set(session, &adapter);
 
     if (i_am_spectating()) {
-        GekkoNetAddress addr = {0};
-        addr.size = sizeof(*player_peers);
-        addr.data = &player_peers[0];
+        GekkoNetAddress addr = {.data = &player_peers[0], .size = sizeof(*player_peers)};
         gekko_add_actor(session, GekkoRemotePlayer, &addr);
 
         return MAX_PLAYERS;
@@ -712,8 +710,8 @@ PlayerID populate_game(GekkoSession* session, PlayerID num_players) {
     // Fill players
     INFO("PLAYERS:");
 
-    Uint8 local = MAX_PLAYERS, tv = MAX_PLAYERS;
-    for (size_t i = 0; i < SDL_arraysize(player_peers); i++) {
+    PlayerID local = MAX_PLAYERS, tv = MAX_PLAYERS;
+    for (PlayerID i = 0; i < (PlayerID)SDL_arraysize(player_peers); i++) {
         if (player_peers[i] <= 0)
             continue;
 
@@ -722,9 +720,7 @@ PlayerID populate_game(GekkoSession* session, PlayerID num_players) {
             gekko_add_actor(session, GekkoLocalPlayer, NULL);
             gekko_set_local_delay(session, local, CLIENT.input_delay);
         } else {
-            GekkoNetAddress addr = {0};
-            addr.size = sizeof(*player_peers);
-            addr.data = &player_peers[i];
+            GekkoNetAddress addr = {.data = &player_peers[i], .size = sizeof(*player_peers)};
             gekko_add_actor(session, GekkoRemotePlayer, &addr);
         }
 
@@ -740,13 +736,11 @@ PlayerID populate_game(GekkoSession* session, PlayerID num_players) {
         INFO("");
         INFO("SPECTATORS:");
 
-        for (size_t i = 0; i < SDL_arraysize(spectator_peers); i++) {
+        for (Uint8 i = 0; i < (Uint8)SDL_arraysize(spectator_peers); i++) {
             if (spectator_peers[i] <= 0)
                 continue;
 
-            GekkoNetAddress addr = {0};
-            addr.size = sizeof(*spectator_peers);
-            addr.data = &spectator_peers[i];
+            GekkoNetAddress addr = {.data = &spectator_peers[i], .size = sizeof(*spectator_peers)};
             gekko_add_actor(session, GekkoSpectator, &addr);
 
             INFO("- %s", get_peer_name(spectator_peers[i]));
