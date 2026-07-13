@@ -119,7 +119,6 @@ typedef struct {
 typedef Uint8 ShaderType;
 enum {
     SH_MAIN,
-    SH_WAVE,
     SH_SIZE,
 };
 
@@ -129,8 +128,6 @@ enum {
     UNI_TEXTURE,
     UNI_ALPHA_TEST,
     UNI_STENCIL,
-    UNI_WAVE,
-    UNI_TIME,
     UNI_SIZE,
 };
 
@@ -237,6 +234,10 @@ typedef struct {
     TileBatch* first_batch;
 } TileMap;
 
+typedef struct {
+    TileMap* tilemap;
+} VideoState;
+
 void video_init(Bool), video_teardown();
 void start_drawing(), start_drawing_ui(), stop_drawing();
 void limit_framerate();
@@ -315,5 +316,9 @@ void destroy_tilemap(TileMap*);
 void
 add_tilemap(TileMap*, const char*, const float[3], const float[2], const Bool[2], const Bool[2], const Uint8[4][4]);
 void draw_tilemap(const TileMap*);
+
+// State
+void start_video_state(), tick_video_state(), nuke_video_state();
+VideoState* videostate();
 
 #endif

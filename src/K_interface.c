@@ -7,6 +7,7 @@
 #include "K_input.h"
 #include "K_interface.h"
 #include "K_locale.h"
+#include "K_replay.h"
 #include "K_string.h"
 #include "K_tick.h"
 #include "K_video.h"
@@ -112,10 +113,13 @@ void interface_update() {
 iu_dont_change:
     if (kb_pressed(KB_RECORD_REPLAY)) {
         CLIENT.record_replay = !CLIENT.record_replay;
-        if (CLIENT.record_replay)
-            chat_message(LFMT("chat_recording_soon"), B_GREEN);
-        else
-            chat_message(LFMT("chat_recording_cancelled"), B_RED);
+        if (CLIENT.record_replay) {
+            chat_message(LFMT("chat_recording_on"), B_GREEN);
+        } else {
+            if (get_replay_state() == RPS_RECORDING)
+                end_replay();
+            chat_message(LFMT("chat_recording_off"), B_RED);
+        }
     }
 
     poll_game();

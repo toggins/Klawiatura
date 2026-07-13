@@ -296,13 +296,34 @@ typedef struct {
     PlayerID (*owner)(const GameActor*);
 } GameActorTable;
 
+typedef Uint8 GameWarpID;
+#define MAX_GAME_WARPS 4
+
+typedef Uint8 GameStringID;
+enum {
+    GSTR_LABEL,
+    GSTR_TRACK_START,
+    GSTR_TRACK1 = GSTR_TRACK_START,
+    GSTR_TRACK2,
+    GSTR_TRACK3,
+    GSTR_TRACK4,
+    GSTR_TRACK_END = GSTR_TRACK4,
+    GSTR_SECRET_START,
+    GSTR_SECRET1 = GSTR_SECRET_START,
+    GSTR_SECRET2,
+    GSTR_SECRET3,
+    GSTR_SECRET4,
+    GSTR_SECRET_END = GSTR_SECRET4,
+    GSTR_SIZE,
+};
+
 typedef struct {
     FVec2 size;
     FRect bounds;
-} LevelInfo;
 
-extern LevelInfo* LEVEL_INFO;
-extern GameState* GAME_STATE;
+    TinyHash warps[MAX_GAME_WARPS];
+    const char* strings[GSTR_SIZE];
+} LevelInfo;
 
 void game_init();
 
@@ -316,7 +337,7 @@ const char *get_character_name(PlayerCharacter), *get_character_cursor(PlayerCha
 const char* get_powerup_name(PlayerPowerup);
 Sint8 get_powerup_cost(PlayerPowerup);
 
-GameContext init_game_context(const struct WorldContext*, TinyHash);
+GameContext empty_game_context(), init_game_context(const struct WorldContext*, TinyHash);
 
 void jump_to_game(const GameContext*);
 void start_game(const GameContext*), nuke_game();
@@ -326,6 +347,7 @@ void tick_game(), draw_game();
 
 const GameContext* gamecontext();
 const LevelInfo* levelinfo();
+GameState* gamestate();
 
 PlayerID localplayer(), viewplayer();
 void set_view_player(const GamePlayer*);

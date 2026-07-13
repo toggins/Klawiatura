@@ -1,6 +1,6 @@
-#include "K_file.h"
 #include "K_levels.h"
 #include "K_log.h"
+#include "K_string.h"
 
 static TinyMap levels = {0};
 
@@ -52,4 +52,39 @@ const Level* get_level(const char* name) {
 
 const Level* get_level_key(TinyHash key) {
     return (Level*)TinyMapGet(&levels, key);
+}
+
+yyjson_doc* load_level_json(const char* name, const char** err) {
+    const Level* level = get_level(name);
+    if (level == NULL) {
+        if (err != NULL)
+            *err = "Level not found";
+
+        return NULL;
+    }
+
+    size_t size = 0;
+    const void* buffer = load_data_file(fmt("levels/%s.json", level->name), &size);
+    if (buffer == NULL) {
+        if (err != NULL)
+            *err = "Failed to load level file";
+
+        return NULL;
+    }
+
+    Uint32 hash = 0;
+    for (size_t i = 0; i < size; i++)
+        hash += ((Uint8*)buffer)[i];
+    if (hash != level->hash) {
+        if (err != NULL)
+            *err = "Level file was tampered with!";
+
+        SDL_free((void*)buffer);
+        return NULL;
+    }
+
+    yyjson_doc* json = read_json(buffer, size, err);
+    SDL_free((void*)buffer);
+
+    return json;
 }

@@ -1,12 +1,15 @@
 #include "K_input.h"
 #include "K_interface.h"
 #include "K_net.h"
+#include "K_replay.h"
 
 static void start(const void* secret, size_t secret_size) {
     EXPECT(secret_size == sizeof(GameContext), "Secret isn't GameContext?");
-    start_game(secret);
 
     load_ui(UI_PAUSE);
+
+    start_game((GameContext*)secret);
+    start_replay();
 }
 
 static void tick() {
@@ -15,9 +18,18 @@ static void tick() {
         if (!is_connected())
             return;
     }
+
+    tick_game();
+}
+
+static void end() {
+    end_replay();
+    nuke_game();
 }
 
 const ScreenTable TAB_GAME = {
     .start = start,
     .tick = tick,
+    .draw_ui = draw_game,
+    .end = end,
 };

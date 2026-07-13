@@ -142,15 +142,22 @@ yyjson_doc* load_world_json(const char* name, const char** err) {
     return json;
 }
 
-WorldContext init_world_context(TinyHash world) {
-    WorldContext ctx = {.world = world, .num_players = 1};
+WorldContext empty_world_context() {
+    WorldContext ctx = {.num_players = 1};
 
     for (size_t i = 0; i < SDL_arraysize(ctx.players); i++)
         ctx.players[i].lives = DEFAULT_LIVES;
 
+    return ctx;
+}
+
+WorldContext init_world_context(TinyHash world) {
+    WorldContext ctx = empty_world_context();
+    ctx.world = world;
+
     if (is_connected()) {
         ctx.num_players = (PlayerID)get_game_player_count();
-        for (size_t i = 0; i < ctx.num_players; i++) {
+        for (PlayerID i = 0; i < ctx.num_players; i++) {
             const NetID pid = player_to_peer((PlayerID)i);
             WorldPlayerContext* pctx = &ctx.players[i];
 
@@ -192,7 +199,7 @@ void jump_to_world(const WorldContext* wctx) {
 }
 
 void start_world(const WorldContext* ctx) {
-    EXPECT(ctx, "World context is null?");
+    EXPECT(ctx, "Null world context?");
     world_context = *ctx;
 
     EXPECT(world_context.winner >= 0 && world_context.winner < MAX_PLAYERS,

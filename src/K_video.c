@@ -75,7 +75,6 @@ static Bool vsync = FALSE;
 #define SHD(idx, nm) [idx] = {.name = (nm), -1}
 static Shader SHADERS[SH_SIZE] = {
     SHD(SH_MAIN, "main"),
-    SHD(SH_WAVE, "wave"),
 };
 #undef SHD
 static Shader* current_shader = NULL;
@@ -90,6 +89,8 @@ static mat4 model_matrix = GLM_MAT4_IDENTITY_INIT, view_matrix = GLM_MAT4_IDENTI
             projection_matrix = GLM_MAT4_IDENTITY_INIT, mvp_matrix = GLM_MAT4_IDENTITY_INIT;
 
 static Uint64 last_frame_time = 0;
+
+static VideoState* video_state = NULL;
 
 #ifdef SDL_PLATFORM_EMSCRIPTEN
 #define CHECK_GL_EXTENSION(ext)                                                                                        \
@@ -253,8 +254,6 @@ vi_bypass:
         GET_UNIFORM(UNI_TEXTURE, "u_texture");
         GET_UNIFORM(UNI_ALPHA_TEST, "u_alpha_test");
         GET_UNIFORM(UNI_STENCIL, "u_stencil");
-        GET_UNIFORM(UNI_WAVE, "u_wave");
-        GET_UNIFORM(UNI_TIME, "u_time");
 #undef GET_UNIFORM
     }
 
@@ -1936,3 +1935,25 @@ void draw_tilemap(const TileMap* tilemap) {
 // =====
 // STATE
 // =====
+
+void start_video_state() {
+    video_state = SDL_calloc(1, sizeof(*video_state));
+    EXPECT(video_state, "Failed to allocate video state");
+
+    video_state->tilemap = create_tilemap();
+}
+
+void nuke_video_state() {
+    if (video_state == NULL)
+        return;
+
+    destroy_tilemap(video_state->tilemap);
+    SDL_free(video_state);
+    video_state = NULL;
+}
+
+void tick_video_state() {}
+
+VideoState* videostate() {
+    return video_state;
+}

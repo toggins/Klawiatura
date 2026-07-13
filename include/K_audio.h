@@ -96,10 +96,8 @@ void fade_generic_track(GenericTrackSlot, float, float);
 void melt_generic_track(GenericTrackSlot);
 
 // State Sounds
-void start_audio_state();
-void tick_audio_state(Bool);
+void start_audio_state(), tick_audio_state(Bool), nuke_audio_state();
 void save_audio_state(AudioState*), load_audio_state(const AudioState*);
-void nuke_audio_state();
 void pause_audio_state(Bool);
 
 void play_state_sound(const char*, PlayFlags, const float[2]);

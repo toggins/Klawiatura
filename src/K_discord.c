@@ -6,6 +6,7 @@
 #include "K_discord.h"
 #include "K_file.h" // IWYU pragma: export
 #include "K_interface.h"
+#include "K_levels.h"
 #include "K_locale.h"
 #include "K_string.h"
 #include "K_worlds.h"
@@ -136,7 +137,14 @@ void update_discord_status() {
     }
 
     case SCR_GAME: {
-        Discord_Activity_SetDetails(&activity, &STATIC_STRING("In Game"));
+        const Level* level = get_level_key(gamecontext()->level);
+        if (level == NULL) {
+            Discord_Activity_SetDetails(&activity, &STATIC_STRING("In Game"));
+            break;
+        }
+
+        const char* name = LFMT(fmt("lvl_%s", level->name));
+        Discord_Activity_SetDetails(&activity, &DYNAMIC_STRING(name));
         break;
     }
     }

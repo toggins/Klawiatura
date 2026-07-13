@@ -1,10 +1,20 @@
+#include "K_audio.h"
 #include "K_cmd.h"
 #include "K_game.h"
+#include "K_input.h"
 #include "K_interface.h"
 #include "K_levels.h"
 #include "K_locale.h"
 #include "K_log.h"
 #include "K_net.h"
+#include "K_replay.h"
+#include "K_string.h"
+#include "K_video.h"
+
+typedef struct {
+    GameState game;
+    AudioState audio;
+} SaveState;
 
 // `extern` in K_actors.c
 const GameActorTable* ACTORS[ACT_SIZE] = {0};
@@ -136,13 +146,14 @@ static Uint32 game_hash = 0;
 
 static PlayerID local_player = NULL_PLAYER, view_player = NULL_PLAYER;
 
+static Surface* game_surface = NULL;
 static GekkoSession* game_session = NULL;
 
 GameContext queue_game_context = {0};
 static GameContext game_context = {0};
 
 static LevelInfo* level_info = NULL;
-GameState* GAME_STATE = NULL;
+static GameState* game_state = NULL;
 
 static Uint8 boot_state = 0;
 static char boot_reason[256] = "";
@@ -235,14 +246,20 @@ void boot_from_game(const char* reason) {
 // CONTEXT
 // =======
 
-GameContext init_game_context(const WorldContext* wctx, TinyHash level) {
-    GameContext gctx = {.level = level, .checkpoint = NULL_ACTOR};
+GameContext empty_game_context() {
+    GameContext ctx = {.checkpoint = NULL_ACTOR, .num_players = 1};
 
-    if (wctx == NULL) {
-        gctx.num_players = 1;
-        for (size_t i = 0; i < SDL_arraysize(gctx.players); i++)
-            gctx.players[i].lives = DEFAULT_LIVES;
-    } else {
+    for (PlayerID i = 0; i < (PlayerID)SDL_arraysize(ctx.players); i++)
+        ctx.players[i].lives = DEFAULT_LIVES;
+
+    return ctx;
+}
+
+GameContext init_game_context(const WorldContext* wctx, TinyHash level) {
+    GameContext gctx = empty_game_context();
+    gctx.level = level;
+
+    if (wctx != NULL) {
         gctx.num_players = wctx->num_players;
         for (size_t i = 0; i < SDL_arraysize(gctx.players); i++) {
             GamePlayerContext* gpctx = &gctx.players[i];
@@ -276,19 +293,431 @@ void jump_to_game(const GameContext* ctx) {
     set_screen(SCR_GAME, ctx, sizeof(*ctx));
 }
 
+// =====
+// STATE
+// =====
+
+static void start_game_state() {
+    // Allocate state
+    game_state = SDL_calloc(1, sizeof(*game_state));
+    EXPECT(game_state, "Failed to allocate game state");
+
+    // Nullify entire state
+    for (PlayerID i = 0L; i < MAX_PLAYERS; i++) {
+        game_state->players[i].id = NULL_PLAYER;
+        game_state->players[i].actor = NULL_ACTOR;
+        for (ActorID j = 0L; j < MAX_PROJECTILES; j++)
+            game_state->players[i].projectiles[j] = NULL_ACTOR;
+        for (ActorID j = 0L; j < MAX_SINKING_PROJECTILES; j++)
+            game_state->players[i].sinking_projectiles[j] = NULL_ACTOR;
+    }
+
+    game_state->live_actors = NULL_ACTOR;
+    for (ActorID i = 0L; i < MAX_ACTORS; i++) {
+        game_state->actors[i].id = game_state->actors[i].previous = game_state->actors[i].next
+            = game_state->actors[i].previous_cell = game_state->actors[i].next_cell = NULL_ACTOR;
+    }
+    for (Sint32 i = 0L; i < GRID_SIZE; i++)
+        game_state->grid[i] = NULL_ACTOR;
+
+    game_state->spawn = game_state->checkpoint = NULL_ACTOR;
+    game_state->water = 2147483647;
+
+    game_state->clock = -1L;
+
+    game_state->sequence.activator = NULL_PLAYER;
+
+    // RNG seed is determined by game context
+    for (Uint64 i = 0; i < sizeof(game_context); i++)
+        game_state->seed += ((Uint8*)&game_context)[i];
+    INFO("Level seed is %" SDL_PRIu64, game_state->seed);
+
+    // Level info
+    level_info = SDL_calloc(1, sizeof(*level_info));
+    EXPECT(level_info, "Failed to allocate level info");
+
+    level_info->size.x = level_info->bounds.end.x = F_SCREEN_WIDTH;
+    level_info->size.y = level_info->bounds.end.y = F_SCREEN_HEIGHT;
+}
+
+static void load_level(TinyHash key) {
+    const Level* level = get_level_key(key);
+    EXPECT(level, "Invalid level key %" SDL_PRIu64, key);
+
+    const char* error = NULL;
+    yyjson_doc* json = load_level_json(level->name, &error);
+    EXPECT(json, "Failed to load level \"%s\": %s", level->name, error);
+
+    yyjson_val* root = yyjson_doc_get_root(json);
+
+    yyjson_val *jval = yyjson_obj_get(root, "strings"), *jval2 = NULL;
+
+#define PARSE_STRING(I, N)                                                                                             \
+    jval2 = yyjson_obj_get(jval, N);                                                                                   \
+    if (yyjson_is_str(jval2)) {                                                                                        \
+        level_info->strings[I] = SDL_strdup(yyjson_get_str(jval2));                                                    \
+        EXPECT(level_info->strings[I], "Failed to allocate level \"%s\" string \"" #N "\"", level->name);              \
+                                                                                                                       \
+        if ((I) >= GSTR_TRACK_START && (I) <= GSTR_TRACK_END)                                                          \
+            load_track(level_info->strings[I], AKL_NEVER);                                                             \
+    }
+
+    PARSE_STRING(GSTR_LABEL, "label");
+    PARSE_STRING(GSTR_TRACK1, "track1");
+    PARSE_STRING(GSTR_TRACK2, "track2");
+    PARSE_STRING(GSTR_TRACK3, "track3");
+    PARSE_STRING(GSTR_TRACK4, "track4");
+    PARSE_STRING(GSTR_SECRET1, "secret1");
+    PARSE_STRING(GSTR_SECRET2, "secret2");
+    PARSE_STRING(GSTR_SECRET3, "secret3");
+    PARSE_STRING(GSTR_SECRET4, "secret4");
+
+#undef PARSE_STRING
+
+    jval = yyjson_obj_get(root, "warps");
+    const size_t narr = yyjson_arr_size(jval);
+    for (GameWarpID i = 0, n = SDL_min(narr, MAX_GAME_WARPS); i < n; i++)
+        level_info->warps[i] = StHashStr(yyjson_get_str(yyjson_arr_get(jval, i)));
+
+    jval = yyjson_obj_get(root, "time");
+    if (yyjson_is_int(jval))
+        game_state->clock = (Sint32)yyjson_get_sint(jval);
+
+    yyjson_doc_free(json);
+}
+
 void start_game(const GameContext* ctx) {
-    EXPECT(ctx, "Game context is null?");
+    nuke_game();
+
+    // Context
+    EXPECT(ctx, "Null game context?");
+    EXPECT(ctx->num_players >= 1 && ctx->num_players <= MAX_PLAYERS,
+        "Invalid player count in game context! Expected 1..%i, got %i", MAX_PLAYERS, ctx->num_players);
     game_context = *ctx;
 
-    EXPECT(game_context.num_players >= 1 && game_context.num_players <= MAX_PLAYERS,
-        "Invalid player count in game context! Expected 1..%i, got %i", MAX_PLAYERS, game_context.num_players);
+    // States
+    start_video_state();
+    start_audio_state();
+    start_game_state();
+
+    // Load assets
+    load_sprite_num("ui/coins/%u", 4, AKL_NEVER);
+    load_sprite("ui/bezel_l", AKL_NEVER);
+    load_sprite("ui/bezel_r", AKL_NEVER);
+    load_font("hud", AKL_NEVER);
+
+    // Session
+    const Bool spectating = i_am_spectating();
+    gekko_create(&game_session, spectating ? GekkoSpectateSession : GekkoGameSession);
+
+    GekkoConfig cfg = {0};
+    cfg.num_players = game_context.num_players;
+    cfg.input_size = sizeof(GameInput);
+    cfg.state_size = sizeof(SaveState);
+    cfg.input_prediction_window = MAX_INPUT_DELAY;
+    cfg.desync_detection = TRUE;
+    if (spectating)
+        cfg.spectator_delay = MAX_INPUT_DELAY;
+    else
+        cfg.max_spectators = get_game_spectator_count();
+
+    gekko_start(game_session, &cfg);
+    local_player = view_player = populate_game(game_session, game_context.num_players);
+
+    // Surface
+    game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
+
+    // Initial game state
+    load_level(game_context.level);
+
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        GamePlayer* player = &game_state->players[i];
+        player->id = i;
+
+        const GamePlayerContext* pctx = &game_context.players[i];
+        player->powerup = pctx->powerup;
+        player->lives = pctx->lives;
+        player->coins = pctx->coins;
+        player->score = pctx->score;
+    }
+
+    play_state_track(STS_MAIN, level_info->strings[GSTR_TRACK1], PLAY_LOOPING);
+}
+
+static void nuke_game_state() {
+    SDL_free(game_state);
+    game_state = NULL;
+
+    if (level_info != NULL) {
+        for (GameStringID i = 0; i < (GameStringID)GSTR_SIZE; i++)
+            SDL_free((void*)level_info->strings[i]);
+
+        SDL_free(level_info);
+        level_info = NULL;
+    }
+}
+
+static void save_game_state(GameState* gs) {
+    *gs = *game_state;
+}
+
+static void load_game_state(const GameState* gs) {
+    *game_state = *gs;
+}
+
+static Uint32 check_game_state() {
+    Uint32 checksum = 0;
+    const Uint8* data = (Uint8*)game_state;
+    for (Uint32 i = 0; i < sizeof(*game_state); i++)
+        checksum += data[i];
+    return checksum;
+}
+
+static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        // Apply input
+        player->last_input = player->input;
+        player->input = inputs[i];
+    }
+
+    ++game_state->time;
+}
+
+void nuke_game() {
+    nuke_game_state();
+    nuke_audio_state();
+    nuke_video_state();
+    gekko_destroy(&game_session);
+    game_session = NULL;
+    destroy_surface(game_surface);
+    game_surface = NULL;
+}
+
+void tick_game() {
+    if (game_session == NULL || (game_state->flags & GF_END))
+        return;
+
+    if (get_replay_state() == RPS_PLAYING) {
+        const GameInput* input = read_replay();
+        if (input == NULL) {
+            boot_to_menu(LFMT("msg_replay_ended"));
+            return;
+        }
+
+        for (PlayerID i = 0; i < game_context.num_players; i++)
+            gekko_add_local_input(game_session, i, (void*)&input[i]);
+    } else {
+        // LOCAL PLAYER GLOSSARY:
+        // 0 .. (MAX_PLAYERS - 1) = Solo/online.
+        // MAX_PLAYERS or higher = Spectator.
+        if (local_player < MAX_PLAYERS) {
+            gekko_add_local_input(game_session, local_player,
+                &(GameInput){(kb_down(KB_UP) * GI_UP) | (kb_down(KB_LEFT) * GI_LEFT) | (kb_down(KB_DOWN) * GI_DOWN)
+                             | (kb_down(KB_RIGHT) * GI_RIGHT) | (kb_down(KB_JUMP) * GI_JUMP)
+                             | (kb_down(KB_RUN) * GI_RUN) | (kb_down(KB_FIRE) * GI_FIRE)});
+        }
+    }
+
+    net_flush();
+
+    int count = 0;
+    GekkoSessionEvent** events = gekko_session_events(game_session, &count);
+    for (int i = 0; i < count; i++) {
+        GekkoSessionEvent* event = events[i];
+        switch (event->type) {
+        case GekkoDesyncDetected: {
+            struct GekkoDesynced desync = event->data.desynced;
+
+            boot_to_menu(
+                LFMT("msg_player_desynced", 's', get_peer_name(player_to_peer((PlayerID)desync.remote_handle))));
+
+            WTF("Tick: %i", desync.frame);
+            WTF("Local Checksum: %i", desync.local_checksum);
+            WTF("Remote Checksum: %i", desync.remote_checksum);
+            return;
+        }
+
+        case GekkoPlayerConnected: {
+            struct GekkoConnected cn = event->data.connected;
+            INFO("%s %i connected", (cn.handle >= MAX_PLAYERS) ? "Spectator" : "Player", cn.handle + 1);
+            break;
+        }
+
+        case GekkoPlayerDisconnected: {
+            struct GekkoDisconnected dc = event->data.disconnected;
+            if (dc.handle >= get_game_player_count()) {
+                const PlayerID handle = (PlayerID)(dc.handle - get_game_player_count());
+                nuke_spectator_peer(spectator_to_peer(handle));
+                WARN("Spectator %i disconnected", handle + 1);
+                break;
+            }
+
+            boot_to_menu(LFMT("msg_player_disconnected", 's', get_peer_name(player_to_peer((PlayerID)dc.handle))));
+            return;
+        }
+
+        default:
+            break;
+        }
+    }
+
+    count = 0;
+    GekkoGameEvent** updates = gekko_update_session(game_session, &count);
+    for (int i = 0; i < count; i++) {
+        GekkoGameEvent* event = updates[i];
+        switch (event->type) {
+        case GekkoSaveEvent: {
+            static SaveState save = {0};
+            save_game_state(&save.game);
+            save_audio_state(&save.audio);
+
+            *event->data.save.state_len = sizeof(save);
+            *event->data.save.checksum = check_game_state();
+            SDL_memcpy(event->data.save.state, &save, sizeof(save));
+            break;
+        }
+
+        case GekkoLoadEvent: {
+            const SaveState* load = (SaveState*)(event->data.load.state);
+            load_game_state(&load->game);
+            load_audio_state(&load->audio);
+            break;
+        }
+
+        case GekkoAdvanceEvent: {
+            tick_game_state((GameInput*)event->data.adv.inputs);
+            tick_video_state();
+            tick_audio_state(event->data.adv.rolling_back);
+
+            switch (get_replay_state()) {
+            default:
+                break;
+
+            case RPS_RECORDING: {
+                write_replay(event->data.adv.frame, (GameInput*)event->data.adv.inputs, check_game_state());
+                break;
+            }
+
+            case RPS_PLAYING: {
+                const Uint32 game_checksum = check_game_state(), replay_checksum = get_replay_checksum();
+                if (game_checksum == replay_checksum)
+                    break;
+
+                WTF("REPLAY DESYNC");
+                WTF("Game checksum: %u", game_checksum);
+                WTF("Replay checksum: %u", replay_checksum);
+                boot_to_menu(LFMT("msg_replay_desynced"));
+                return;
+            }
+            }
+            break;
+        }
+
+        default:
+            break;
+        }
+    }
+}
+
+static void draw_game_state() {
+    clear_color(0.f, 0.f, 0.f, 1.f);
+    clear_depth(1.f);
+    batch_filter(FALSE);
+
+    const GamePlayer* player = get_player(view_player);
+    if (player == NULL)
+        return;
+
+    batch_write_depth(FALSE);
+    batch_test_depth(FALSE);
+
+    batch_reset();
+    batch_pos(B_XY(32.f, 16.f));
+    const char* cname = get_character_name(game_context.players[player->id].character);
+    batch_string("hud", 16.f, fmt("%s × %i", cname, player->lives));
+    batch_pos(B_XY(32.f + string_width("hud", 16.f, fmt("%s × 0", cname)), 34.f));
+    batch_align(B_TOP_RIGHT);
+    batch_string("hud", 16.f, fmt("%u", player->score));
+
+    batch_pos(B_XY(224.f, 34.f));
+    batch_sprite(fmt("ui/coins/%i", (int)((float)(game_state->time) / 6.25f) % 4));
+    batch_pos(B_XY(234.f, 34.f));
+    batch_align(B_TOP_LEFT);
+    batch_string("hud", 16.f, fmt(" × %u", player->coins));
+
+    const char* label = level_info->strings[GSTR_LABEL];
+    if (label != NULL) {
+        switch (label[0]) {
+        default: {
+            batch_pos(B_XY(432.f, 16.f));
+            batch_sprite(label);
+            break;
+        }
+
+        case '@': {
+            batch_pos(B_XY(432.f, 16.f));
+            batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+            batch_string("hud", 16.f, "WORLD");
+            batch_pos(B_XY(432.f, 34.f));
+            batch_string("hud", 16.f, LFMT(label + 1));
+            break;
+        }
+
+        case '$': {
+            batch_pos(B_XY(432.f, 34.f));
+            batch_align(B_CENTER);
+            batch_string("hud", 16.f, LFMT(label + 1));
+            break;
+        }
+        }
+    }
+
+    if (game_state->clock >= 0) {
+        batch_pos(B_XY(SCREEN_WIDTH - 32.f, 16.f));
+        batch_align(B_TOP_RIGHT);
+        batch_string("hud", 16.f, "TIME");
+        batch_pos(B_XY(SCREEN_WIDTH - 32.f, 34.f));
+        batch_string("hud", 16.f, fmt("%i", game_state->clock));
+    }
+
+    batch_test_depth(TRUE);
+    batch_write_depth(TRUE);
+
+    batch_filter(TRUE);
+}
+
+void draw_game() {
+    push_surface(game_surface);
+    draw_game_state();
+    pop_surface();
+
+    batch_reset();
+    batch_surface(game_surface);
+    batch_sprite("ui/bezel_l");
+    batch_sprite("ui/bezel_r");
 }
 
 const GameContext* gamecontext() {
     return &game_context;
 }
 
+const LevelInfo* levelinfo() {
+    return level_info;
+}
+
+GameState* gamestate() {
+    return game_state;
+}
+
 /// THIS IS A CLIENT-SIDE INDEX. DO NOT USE IN GAME STATE!!!
 PlayerID localplayer() {
     return local_player;
+}
+
+GamePlayer* get_player(PlayerID pid) {
+    return (pid < 0 || pid >= MAX_PLAYERS || game_state->players[pid].id != pid) ? NULL : &game_state->players[pid];
 }

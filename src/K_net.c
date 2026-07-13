@@ -227,7 +227,7 @@ void net_update() {
                 break;
             }
 
-            WorldContext ctx = {0};
+            WorldContext ctx = empty_world_context();
 
             read_buffer64(&mbuf, &ctx.world);
             const World* world = get_world_key(ctx.world);
@@ -274,7 +274,7 @@ void net_update() {
                 break;
             }
 
-            GameContext ctx = {0};
+            GameContext ctx = empty_game_context();
 
             read_buffer16(&mbuf, &ctx.flags);
 
@@ -307,6 +307,22 @@ void net_update() {
         }
 
         case PT_PLAYERS: {
+            Bool was_player = FALSE;
+            for (size_t i = 0; i < SDL_arraysize(player_peers); i++) {
+                if (player_peers[i] == get_local_peer()) {
+                    was_player = TRUE;
+                    break;
+                }
+            }
+            if (!was_player) {
+                for (size_t i = 0; i < SDL_arraysize(spectator_peers); i++) {
+                    if (spectator_peers[i] == get_local_peer()) {
+                        was_player = TRUE;
+                        break;
+                    }
+                }
+            }
+
             clear_peer_tables();
 
             Uint8 num_players = 0;
@@ -316,9 +332,6 @@ void net_update() {
                 break;
             }
 
-            for (Uint8 i = 0; i < num_players; i++)
-                read_buffer64(&mbuf, &player_peers[i]);
-
             Uint8 num_spectators = 0;
             read_buffer8(&mbuf, &num_spectators);
             if (num_spectators < 0 || num_spectators > SDL_arraysize(spectator_peers)) {
@@ -326,8 +339,14 @@ void net_update() {
                 break;
             }
 
+            for (Uint8 i = 0; i < num_players; i++)
+                read_buffer64(&mbuf, &player_peers[i]);
+
             for (Uint8 i = 0; i < num_spectators; i++)
                 read_buffer64(&mbuf, &spectator_peers[i]);
+
+            if (was_player && get_screen() != SCR_MENU)
+                boot_to_menu(LFMT("msg_kicked_from_game"));
 
             break;
         }
@@ -628,10 +647,11 @@ void peers_to_players() {
     write_buffer8(&buffer, &(PacketType){PT_PLAYERS});
 
     write_buffer8(&buffer, &num_players);
+    write_buffer8(&buffer, &num_spectators);
+
     for (Uint8 i = 0; i < num_players; i++)
         write_buffer64(&buffer, &player_peers[i]);
 
-    write_buffer8(&buffer, &num_spectators);
     for (Uint8 i = 0; i < num_spectators; i++)
         write_buffer64(&buffer, &spectator_peers[i]);
 
@@ -675,7 +695,7 @@ PlayerID populate_game(GekkoSession* session, PlayerID num_players) {
         for (PlayerID i = 0; i < num_players; i++)
             gekko_add_actor(session, GekkoLocalPlayer, NULL);
 
-        return NULL_PLAYER;
+        return 0;
     }
 
     gekko_net_adapter_set(session, &adapter);

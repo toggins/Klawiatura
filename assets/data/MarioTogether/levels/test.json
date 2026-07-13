@@ -1,3 +1,8 @@
 {
-    "label": "@Test"
+    "strings": {
+        "label": "$Test",
+        "track1": "smw_overworld",
+        "track2": "smw_underground"
+    },
+    "time": 360
 }

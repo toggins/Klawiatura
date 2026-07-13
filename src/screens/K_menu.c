@@ -6,6 +6,7 @@
 #include "K_interface.h"
 #include "K_locale.h"
 #include "K_net.h"
+#include "K_replay.h"
 #include "K_string.h"
 #include "K_tick.h"
 #include "K_video.h"
@@ -582,8 +583,19 @@ static void kick_player_option() {
     create_ui(UI_KICK, NULL);
 }
 
+static const char* fmt_replay_error() {
+    return fmt("%s\n%s", LFMT("msg_replay_load_error"), LFMT(replay_error));
+}
+
 static void replay_option() {
-    // TODO
+    replay_error
+        = load_replay(fmt("replays/%s.rpl", CATALOG.options[MEN_REPLAYS][CATALOG.menus[MEN_REPLAYS].option].name));
+    if (replay_error == NULL)
+        return;
+
+    UI* message = create_ui(UI_MESSAGE, NULL);
+    if (message != NULL)
+        ((UIMessageData*)message->userdata)->fmt = fmt_replay_error;
 }
 
 static void options_option() {

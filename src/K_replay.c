@@ -86,12 +86,52 @@ static void rbuffer_write_string(const char* src) {
     replay_cursor += len;
 }
 
-const char* load_replay(const char* blah) {
-    (void)blah;
-
+const char* load_replay(const char* file) {
     end_replay();
 
-    return "msg_replay_missing";
+    replay_buffer = load_user_file(file, &replay_size);
+    if (replay_buffer == NULL)
+        return "msg_replay_missing";
+
+    char header[sizeof(REPLAY_HEADER)] = "";
+    rbuffer_read_string(header, sizeof(header));
+    if (SDL_strncmp(header, REPLAY_HEADER, sizeof(header)) != 0) {
+        end_replay();
+        return "msg_replay_invalid";
+    }
+
+    char version[sizeof(GAME_VERSION)] = "";
+    rbuffer_read_string(version, sizeof(version));
+    if (SDL_strncmp(version, GAME_VERSION, sizeof(version)) != 0) {
+        end_replay();
+        return "msg_replay_version_mismatch";
+    }
+
+    Uint32 hash = 0;
+    rbuffer_read32(&hash);
+    if (hash != get_game_hash()) {
+        end_replay();
+        return "msg_replay_hash_mismatch";
+    }
+
+    GameContext ctx = empty_game_context();
+    rbuffer_read16(&ctx.flags);
+    rbuffer_read64(&ctx.level);
+    rbuffer_read16((Uint16*)&ctx.checkpoint);
+    rbuffer_read8((Uint8*)&ctx.num_players);
+    for (PlayerID i = 0; i < ctx.num_players; i++) {
+        rbuffer_read8(&ctx.players[i].xscroll);
+        rbuffer_read8(&ctx.players[i].character);
+        rbuffer_read8(&ctx.players[i].powerup);
+        rbuffer_read8((Uint8*)&ctx.players[i].lives);
+        rbuffer_read8(&ctx.players[i].coins);
+        rbuffer_read32(&ctx.players[i].score);
+    }
+
+    INFO("Starting replay: %s", file);
+    replay_state = RPS_PLAYING;
+    jump_to_game(&ctx);
+    return NULL;
 }
 
 void start_replay() {
@@ -100,7 +140,28 @@ void start_replay() {
 
     end_replay();
 
-    CLIENT.record_replay = FALSE;
+    replay_size = 16;
+    replay_buffer = SDL_malloc(replay_size);
+    ASSUME(replay_buffer, "Failed to allocate replay buffer");
+
+    rbuffer_write_string(REPLAY_HEADER);
+    rbuffer_write_string(GAME_VERSION);
+    rbuffer_write32(&(Uint32){get_game_hash()});
+
+    const GameContext* ctx = gamecontext();
+    rbuffer_write16(&ctx->flags);
+    rbuffer_write64(&ctx->level);
+    rbuffer_write16((Uint16*)&ctx->checkpoint);
+    rbuffer_write8((Uint8*)&ctx->num_players);
+    for (PlayerID i = 0; i < ctx->num_players; i++) {
+        rbuffer_write8(&ctx->players[i].xscroll);
+        rbuffer_write8(&ctx->players[i].character);
+        rbuffer_write8(&ctx->players[i].powerup);
+        rbuffer_write8((Uint8*)&ctx->players[i].lives);
+        rbuffer_write8(&ctx->players[i].coins);
+        rbuffer_write32(&ctx->players[i].score);
+    }
+
     replay_state = RPS_RECORDING;
     chat_message(LFMT("chat_recording"), B_GREEN);
 }
@@ -155,6 +216,11 @@ void end_replay() {
 const GameInput* read_replay() {
     if (replay_cursor >= replay_size)
         return NULL;
+
+    const PlayerID num_players = gamecontext()->num_players;
+    for (PlayerID i = 0; i < num_players; i++)
+        rbuffer_read8(&last_input[i]);
+    rbuffer_read32(&last_checksum);
 
     return last_input;
 }
