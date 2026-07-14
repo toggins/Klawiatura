@@ -386,6 +386,57 @@ static void load_level(TinyHash key) {
     if (yyjson_is_int(jval))
         game_state->clock = (Sint32)yyjson_get_sint(jval);
 
+    jval = yyjson_obj_get(root, "backdrops");
+    for (size_t i = 0, n = yyjson_arr_size(jval); i < n; i++) {
+        yyjson_val* jbackdrop = yyjson_arr_get(jval, i);
+        if (!yyjson_is_obj(jbackdrop))
+            continue;
+
+        const char* sprite = yyjson_get_str(yyjson_obj_get(jbackdrop, "sprite"));
+        load_sprite(sprite, AKL_NEVER);
+
+        jval2 = yyjson_obj_get(jbackdrop, "pos");
+        const float pos[3] = {
+            (float)yyjson_get_num(yyjson_arr_get(jval2, 0)),
+            (float)yyjson_get_num(yyjson_arr_get(jval2, 1)),
+            (float)yyjson_get_num(yyjson_arr_get(jval2, 2)),
+        };
+
+        jval2 = yyjson_obj_get(jbackdrop, "size");
+        const Bool has_size = yyjson_is_arr(jval2);
+        const float size[2] = {
+            (float)yyjson_get_num(yyjson_arr_get(jval2, 0)),
+            (float)yyjson_get_num(yyjson_arr_get(jval2, 1)),
+        };
+
+        jval2 = yyjson_obj_get(jbackdrop, "flip");
+        const Bool flip[2] = {
+            yyjson_get_bool(yyjson_arr_get(jval2, 0)),
+            yyjson_get_bool(yyjson_arr_get(jval2, 1)),
+        };
+
+        jval2 = yyjson_obj_get(jbackdrop, "tile");
+        const Bool tile[2] = {
+            yyjson_get_bool(yyjson_arr_get(jval2, 0)),
+            yyjson_get_bool(yyjson_arr_get(jval2, 1)),
+        };
+
+        jval2 = yyjson_obj_get(jbackdrop, "colors");
+        Uint8 colors[4][4] = {
+            {255, 255, 255, 255},
+            {255, 255, 255, 255},
+            {255, 255, 255, 255},
+            {255, 255, 255, 255}
+        };
+        for (size_t j = 0, n = yyjson_arr_size(jval2); j < n && j < 4; j++) {
+            yyjson_val* const jcolor = yyjson_arr_get(jval2, j);
+            for (size_t k = 0; k < 4; k++)
+                colors[j][k] = yyjson_get_uint(yyjson_arr_get(jcolor, k));
+        }
+
+        add_tilemap(videostate()->tilemap, sprite, pos, has_size ? size : NULL, flip, tile, colors);
+    }
+
     yyjson_doc_free(json);
 }
 
@@ -630,6 +681,8 @@ static void draw_game_state() {
     clear_color(0.f, 0.f, 0.f, 1.f);
     clear_depth(1.f);
     batch_filter(FALSE);
+
+    draw_tilemap(videostate()->tilemap);
 
     const GamePlayer* player = get_player(view_player);
     if (player == NULL)
