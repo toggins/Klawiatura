@@ -12,7 +12,6 @@
 #include <SDL3/SDL_video.h>
 
 #include "K_cmd.h"
-#include "K_file.h"
 #include "K_log.h"
 #include "K_string.h"
 #include "K_tick.h"
@@ -1894,6 +1893,58 @@ void add_tilemap(TileMap* tilemap, const char* name, const float pos[3], const f
 
             tb = tb->next;
         }
+    }
+}
+
+void read_tilemap(TileMap* tilemap, yyjson_val* jarray) {
+    for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
+        yyjson_val* jtile = yyjson_arr_get(jarray, i);
+        if (!yyjson_is_obj(jtile))
+            continue;
+
+        const char* sprite = yyjson_get_str(yyjson_obj_get(jtile, "sprite"));
+        load_sprite(sprite, AKL_NEVER);
+
+        yyjson_val* jval = yyjson_obj_get(jtile, "pos");
+        const float pos[3] = {
+            (float)yyjson_get_num(yyjson_arr_get(jval, 0)),
+            (float)yyjson_get_num(yyjson_arr_get(jval, 1)),
+            (float)yyjson_get_num(yyjson_arr_get(jval, 2)),
+        };
+
+        jval = yyjson_obj_get(jtile, "size");
+        const Bool has_size = yyjson_is_arr(jval);
+        const float size[2] = {
+            (float)yyjson_get_num(yyjson_arr_get(jval, 0)),
+            (float)yyjson_get_num(yyjson_arr_get(jval, 1)),
+        };
+
+        jval = yyjson_obj_get(jtile, "flip");
+        const Bool flip[2] = {
+            yyjson_get_bool(yyjson_arr_get(jval, 0)),
+            yyjson_get_bool(yyjson_arr_get(jval, 1)),
+        };
+
+        jval = yyjson_obj_get(jtile, "tile");
+        const Bool tile[2] = {
+            yyjson_get_bool(yyjson_arr_get(jval, 0)),
+            yyjson_get_bool(yyjson_arr_get(jval, 1)),
+        };
+
+        jval = yyjson_obj_get(jtile, "colors");
+        Uint8 colors[4][4] = {
+            {255, 255, 255, 255},
+            {255, 255, 255, 255},
+            {255, 255, 255, 255},
+            {255, 255, 255, 255}
+        };
+        for (size_t j = 0, n = yyjson_arr_size(jval); j < n && j < 4; j++) {
+            yyjson_val* const jcolor = yyjson_arr_get(jval, j);
+            for (size_t k = 0; k < 4; k++)
+                colors[j][k] = yyjson_get_uint(yyjson_arr_get(jcolor, k));
+        }
+
+        add_tilemap(tilemap, sprite, pos, has_size ? size : NULL, flip, tile, colors);
     }
 }
 

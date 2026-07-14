@@ -86,59 +86,8 @@ static void start(const void* secret, size_t secret_size) {
     map_state->size[0] = yyjson_get_uint(yyjson_arr_get(jarray, 0));
     map_state->size[1] = yyjson_get_uint(yyjson_arr_get(jarray, 1));
 
-    jarray = yyjson_obj_get(jmap, "backdrops");
-    for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
-        yyjson_val* jbackdrop = yyjson_arr_get(jarray, i);
-        if (!yyjson_is_obj(jbackdrop))
-            continue;
-
-        if (map_state->tilemap == NULL)
-            map_state->tilemap = create_tilemap();
-
-        const char* sprite = yyjson_get_str(yyjson_obj_get(jbackdrop, "sprite"));
-        load_sprite(sprite, AKL_NEVER);
-
-        yyjson_val* jarr2 = yyjson_obj_get(jbackdrop, "pos");
-        const float pos[3] = {
-            (float)yyjson_get_num(yyjson_arr_get(jarr2, 0)),
-            (float)yyjson_get_num(yyjson_arr_get(jarr2, 1)),
-            (float)yyjson_get_num(yyjson_arr_get(jarr2, 2)),
-        };
-
-        jarr2 = yyjson_obj_get(jbackdrop, "size");
-        const Bool has_size = yyjson_is_arr(jarr2);
-        const float size[2] = {
-            (float)yyjson_get_num(yyjson_arr_get(jarr2, 0)),
-            (float)yyjson_get_num(yyjson_arr_get(jarr2, 1)),
-        };
-
-        jarr2 = yyjson_obj_get(jbackdrop, "flip");
-        const Bool flip[2] = {
-            yyjson_get_bool(yyjson_arr_get(jarr2, 0)),
-            yyjson_get_bool(yyjson_arr_get(jarr2, 1)),
-        };
-
-        jarr2 = yyjson_obj_get(jbackdrop, "tile");
-        const Bool tile[2] = {
-            yyjson_get_bool(yyjson_arr_get(jarr2, 0)),
-            yyjson_get_bool(yyjson_arr_get(jarr2, 1)),
-        };
-
-        jarr2 = yyjson_obj_get(jbackdrop, "colors");
-        Uint8 colors[4][4] = {
-            {255, 255, 255, 255},
-            {255, 255, 255, 255},
-            {255, 255, 255, 255},
-            {255, 255, 255, 255}
-        };
-        for (size_t j = 0, n = yyjson_arr_size(jarr2); j < n && j < 4; j++) {
-            yyjson_val* const jcolor = yyjson_arr_get(jarr2, j);
-            for (size_t k = 0; k < 4; k++)
-                colors[j][k] = yyjson_get_uint(yyjson_arr_get(jcolor, k));
-        }
-
-        add_tilemap(map_state->tilemap, sprite, pos, has_size ? size : NULL, flip, tile, colors);
-    }
+    map_state->tilemap = create_tilemap();
+    read_tilemap(map_state->tilemap, yyjson_obj_get(jmap, "backdrops"));
 
     yyjson_val* jpath = yyjson_arr_get(yyjson_obj_get(jmap, "paths"), wctx->level);
     Uint32 offset = 0;

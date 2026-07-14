@@ -2,6 +2,7 @@
 #define K_VIDEO_H
 
 #include "K_assets.h"
+#include "K_file.h" // IWYU pragma: export
 #include "K_misc.h"
 #include "K_vmath.h" // IWYU pragma: export
 
@@ -315,6 +316,7 @@ TileMap* create_tilemap();
 void destroy_tilemap(TileMap*);
 void
 add_tilemap(TileMap*, const char*, const float[3], const float[2], const Bool[2], const Bool[2], const Uint8[4][4]);
+void read_tilemap(TileMap*, yyjson_val*);
 void draw_tilemap(const TileMap*);
 
 // State
