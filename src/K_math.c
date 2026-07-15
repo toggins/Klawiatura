@@ -65,6 +65,29 @@ FRect Radd(register FRect a, register FVec2 b) {
     return a;
 }
 
+/// Multiply a rectangle by a vector.
+FRect Rmul(register FRect a, register FVec2 b) {
+    const register Fixed x1 = a.start.x, y1 = a.start.y, x2 = a.end.x, y2 = a.end.y;
+
+    if (b.x >= Fx0) {
+        a.start.x = Fmul(x1, b.x);
+        a.end.x = Fmul(x2, b.x);
+    } else {
+        a.start.x = Fmul(-x2, b.x);
+        a.end.x = Fmul(-x1, b.x);
+    }
+
+    if (b.y >= Fx0) {
+        a.start.y = Fmul(y1, b.y);
+        a.end.y = Fmul(y2, b.y);
+    } else {
+        a.start.y = Fmul(-y2, b.y);
+        a.end.y = Fmul(-y1, b.y);
+    }
+
+    return a;
+}
+
 /// Flip a rectangle along the X-axis.
 FRect Rxflip(register FRect a) {
     const register Fixed x1 = a.start.x, x2 = a.end.x;

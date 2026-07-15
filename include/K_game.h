@@ -83,6 +83,7 @@ enum {
     ACT_PLAYER,
     ACT_PLAYER_EFFECT,
     ACT_PLAYER_DEAD,
+    ACT_DUMMY,
 
     ACT_SIZE,
 };
@@ -226,9 +227,9 @@ enum {
 #define VAL(actor, val) ((actor)->values[VAL_##val])
 #define VAL_TICK(actor, val)                                                                                           \
     do {                                                                                                               \
-        if (VAL(actor, val) > 0L)                                                                                      \
+        if (VAL(actor, val) > 0)                                                                                       \
             --VAL(actor, val);                                                                                         \
-    } while (0)
+    } while (FALSE)
 
 #define ANY_FLAG(actor, flag) (((actor)->flags & (flag)) != 0)
 #define ALL_FLAG(actor, flag) (((actor)->flags & (flag)) == (flag))
@@ -283,10 +284,12 @@ typedef struct {
     ActorID grid[GRID_SIZE];
 } GameState;
 
+SolidType always_solid(const GameActor*), always_top(const GameActor*), always_bottom(const GameActor*);
+
 typedef struct {
     SolidType (*is_solid)(const GameActor*);
-    void (*load)();
-    void (*init)(GameActor*), (*create)(GameActor*);
+    void (*load)(), (*load_special)(const GameActor*);
+    void (*create)(GameActor*);
     void (*pre_tick)(GameActor*), (*tick)(GameActor*), (*post_tick)(GameActor*);
     void (*draw)(const GameActor*), (*draw_dead)(const GameActor*), (*draw_hud)(const GameActor*);
     void (*cleanup)(GameActor*);

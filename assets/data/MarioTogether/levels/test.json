@@ -1,8 +1,7 @@
 {
     "strings": {
         "label": "$Test",
-        "track1": "smw_overworld",
-        "track2": "smw_underground"
+        "track1": "smw_overworld"
     },
     "time": 360,
     "backdrops": [
@@ -17,5 +16,17 @@
             ]
         }
     ],
-    "actors": []
+    "actors": [
+        {
+            "id": 8,
+            "pos": [64, 128, 20],
+            "values": [[5, 320]]
+        },
+        {
+            "id": 8,
+            "pos": [72, 140, 10],
+            "values": [[5, 256]],
+            "flags": 32
+        }
+    ]
 }

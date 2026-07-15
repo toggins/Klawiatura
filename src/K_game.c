@@ -11,6 +11,23 @@
 #include "K_string.h"
 #include "K_video.h"
 
+#define ACTOR_CALL_STATIC(type, fn, ...)                                                                               \
+    do {                                                                                                               \
+        if (ACTORS[(type)] != NULL && ACTORS[(type)]->fn != NULL)                                                      \
+            ACTORS[(type)]->fn(__VA_ARGS__);                                                                           \
+    } while (FALSE)
+
+#define ACTOR_CALL(act, fn, ...)                                                                                       \
+    do {                                                                                                               \
+        if (ACTORS[(act)->type] != NULL && ACTORS[(act)->type]->fn != NULL)                                            \
+            ACTORS[(act)->type]->fn((act), ##__VA_ARGS__);                                                             \
+    } while (FALSE)
+
+#define ACTOR_GET_SOLID(act)                                                                                           \
+    ((ACTORS[(act)->type] != NULL && ACTORS[(act)->type]->is_solid != NULL) ? ACTORS[(act)->type]->is_solid(act) : 0)
+
+#define ACTOR_IS_SOLID(act, types) (ACTOR_GET_SOLID(act) & (types))
+
 typedef struct {
     GameState game;
     AudioState audio;
@@ -306,27 +323,27 @@ static void start_game_state() {
     EXPECT(game_state, "Failed to allocate game state");
 
     // Nullify entire state
-    for (PlayerID i = 0L; i < MAX_PLAYERS; i++) {
+    for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
         game_state->players[i].id = NULL_PLAYER;
         game_state->players[i].actor = NULL_ACTOR;
-        for (ActorID j = 0L; j < MAX_PROJECTILES; j++)
+        for (ActorID j = 0; j < MAX_PROJECTILES; j++)
             game_state->players[i].projectiles[j] = NULL_ACTOR;
-        for (ActorID j = 0L; j < MAX_SINKING_PROJECTILES; j++)
+        for (ActorID j = 0; j < MAX_SINKING_PROJECTILES; j++)
             game_state->players[i].sinking_projectiles[j] = NULL_ACTOR;
     }
 
     game_state->live_actors = NULL_ACTOR;
-    for (ActorID i = 0L; i < MAX_ACTORS; i++) {
+    for (ActorID i = 0; i < MAX_ACTORS; i++) {
         game_state->actors[i].id = game_state->actors[i].previous = game_state->actors[i].next
             = game_state->actors[i].previous_cell = game_state->actors[i].next_cell = NULL_ACTOR;
     }
-    for (Sint32 i = 0L; i < GRID_SIZE; i++)
+    for (Sint32 i = 0; i < GRID_SIZE; i++)
         game_state->grid[i] = NULL_ACTOR;
 
     game_state->spawn = game_state->checkpoint = NULL_ACTOR;
     game_state->water = 2147483647;
 
-    game_state->clock = -1L;
+    game_state->clock = -1;
 
     game_state->sequence.activator = NULL_PLAYER;
 
@@ -378,7 +395,7 @@ static void load_level(TinyHash key) {
 #undef PARSE_STRING
 
     jval = yyjson_obj_get(root, "warps");
-    const size_t narr = yyjson_arr_size(jval);
+    size_t narr = yyjson_arr_size(jval);
     for (GameWarpID i = 0, n = SDL_min(narr, MAX_GAME_WARPS); i < n; i++)
         level_info->warps[i] = StHashStr(yyjson_get_str(yyjson_arr_get(jval, i)));
 
@@ -387,6 +404,55 @@ static void load_level(TinyHash key) {
         game_state->clock = (Sint32)yyjson_get_sint(jval);
 
     read_tilemap(videostate()->tilemap, yyjson_obj_get(root, "backdrops"));
+
+    jval = yyjson_obj_get(root, "actors");
+    narr = yyjson_arr_size(jval);
+    for (ActorID i = 0, n = SDL_min(narr, MAX_ACTORS); i < n; i++) {
+        jval2 = yyjson_arr_get(jval, i);
+        if (!yyjson_is_obj(jval2))
+            continue;
+
+        const ActorType type = yyjson_get_uint(yyjson_obj_get(jval2, "id"));
+
+        yyjson_val* jpos = yyjson_obj_get(jval2, "pos");
+        const FVec2 pos = {
+            Int2Fx(yyjson_get_sint(yyjson_arr_get(jpos, 0))),
+            Int2Fx(yyjson_get_sint(yyjson_arr_get(jpos, 1))),
+        };
+
+        GameActor* actor = create_actor(type, pos);
+        if (actor == NULL)
+            continue;
+
+        yyjson_val* jscale = yyjson_obj_get(jval2, "scale");
+        if (yyjson_is_arr(jscale)) {
+            actor->box = Rmul(actor->box, (FVec2){
+                                              (Fixed)yyjson_get_sint(yyjson_arr_get(jscale, 0)),
+                                              (Fixed)yyjson_get_sint(yyjson_arr_get(jscale, 1)),
+                                          });
+        }
+
+        actor->depth = Int2Fx(yyjson_get_sint(yyjson_arr_get(jpos, 2)));
+
+        yyjson_val* jvalues = yyjson_obj_get(jval2, "values");
+        const size_t nvarr = yyjson_arr_size(jvalues);
+        for (ActorValue j = 0, n = SDL_min(nvarr, MAX_VALUES); j < n; j++) {
+            yyjson_val* jvalue = yyjson_arr_get(jvalues, j);
+
+            const ActorValue idx = (ActorValue)yyjson_get_uint(yyjson_arr_get(jvalue, 0));
+            if (idx < 0 || idx >= MAX_VALUES) {
+                WTF("Invalid index %i for actor %i type %u", idx, i, type);
+                continue;
+            }
+
+            actor->values[idx] = (ActorValue)yyjson_get_sint(yyjson_arr_get(jvalue, 1));
+        }
+
+        actor->flags |= yyjson_get_uint(yyjson_obj_get(jval2, "flags"));
+
+        load_actor(type);
+        ACTOR_CALL(actor, load_special);
+    }
 
     yyjson_doc_free(json);
 }
@@ -478,6 +544,7 @@ static Uint32 check_game_state() {
     return checksum;
 }
 
+static void destroy_actor(GameActor*);
 static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
     for (PlayerID i = 0; i < game_context.num_players; i++) {
         GamePlayer* player = get_player(i);
@@ -488,6 +555,38 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         player->last_input = player->input;
         player->input = inputs[i];
     }
+
+    GameActor* actor = get_actor(game_state->live_actors);
+    while (actor != NULL) {
+        if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE)) {
+            if (VAL(actor, SPROUT) > 0)
+                --VAL(actor, SPROUT);
+            else
+                ACTOR_CALL(actor, pre_tick);
+        }
+
+        GameActor* next = get_actor(actor->previous);
+        if (ANY_FLAG(actor, FLG_DESTROY))
+            destroy_actor(actor);
+        actor = next;
+    }
+
+#define TICK_LOOP(ticker)                                                                                              \
+    actor = get_actor(game_state->live_actors);                                                                        \
+    while (actor != NULL) {                                                                                            \
+        if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE) && VAL(actor, SPROUT) <= 0)                                     \
+            ACTOR_CALL(actor, ticker);                                                                                 \
+                                                                                                                       \
+        GameActor* next = get_actor(actor->previous);                                                                  \
+        if (ANY_FLAG(actor, FLG_DESTROY))                                                                              \
+            destroy_actor(actor);                                                                                      \
+        actor = next;                                                                                                  \
+    }
+
+    TICK_LOOP(tick);
+    TICK_LOOP(post_tick);
+
+#undef TICK_LOOP
 
     ++game_state->time;
 }
@@ -628,16 +727,37 @@ void tick_game() {
     }
 }
 
+// NOLINTBEGIN(misc-no-recursion)
+static void iterate_and_draw_actor(const GameActor* actor) {
+    if (actor == NULL)
+        return;
+
+    const GameActor* next = get_actor(actor->previous);
+    if (!ANY_FLAG(actor, FLG_VISIBLE)) {
+        iterate_and_draw_actor(next);
+        return;
+    }
+
+    if (next != NULL && next->depth >= actor->depth) {
+        iterate_and_draw_actor(next);
+        ACTOR_CALL(actor, draw);
+    } else {
+        ACTOR_CALL(actor, draw);
+        iterate_and_draw_actor(next);
+    }
+}
+// NOLINTEND(misc-no-recursion)
+
 static void draw_game_state() {
-    clear_color(0.f, 0.f, 0.f, 1.f);
     clear_depth(1.f);
     batch_filter(FALSE);
 
     draw_tilemap(videostate()->tilemap);
+    iterate_and_draw_actor(get_actor(game_state->live_actors));
 
     const GamePlayer* player = get_player(view_player);
     if (player == NULL)
-        return;
+        goto dgs_no_hud;
 
     batch_write_depth(FALSE);
     batch_test_depth(FALSE);
@@ -691,9 +811,14 @@ static void draw_game_state() {
         batch_string("hud", 16.f, fmt("%i", game_state->clock));
     }
 
+    batch_pos(B_XY(32.f, 64.f));
+    batch_align(B_TOP_LEFT);
+    batch_string("hud", 32.f, fmt("%u", player->input));
+
     batch_test_depth(TRUE);
     batch_write_depth(TRUE);
 
+dgs_no_hud:
     batch_filter(TRUE);
 }
 
@@ -720,11 +845,181 @@ GameState* gamestate() {
     return game_state;
 }
 
+// =======
+// PLAYERS
+// =======
+
 /// THIS IS A CLIENT-SIDE INDEX. DO NOT USE IN GAME STATE!!!
 PlayerID localplayer() {
     return local_player;
 }
 
+/// THIS IS A CLIENT-SIDE INDEX. DO NOT USE IN GAME STATE!!!
+PlayerID viewplayer() {
+    return view_player;
+}
+
 GamePlayer* get_player(PlayerID pid) {
     return (pid < 0 || pid >= MAX_PLAYERS || game_state->players[pid].id != pid) ? NULL : &game_state->players[pid];
+}
+
+// ======
+// ACTORS
+// ======
+
+SolidType always_solid(const GameActor* actor) {
+    (void)actor;
+
+    return SOL_SOLID;
+}
+
+SolidType always_top(const GameActor* actor) {
+    (void)actor;
+
+    return SOL_TOP;
+}
+
+SolidType always_bottom(const GameActor* actor) {
+    (void)actor;
+
+    return SOL_BOTTOM;
+}
+
+void load_actor(ActorType type) {
+    if (type <= ACT_NULL || type >= ACT_SIZE)
+        WARN("Loading invalid actor type %u", type);
+    else
+        ACTOR_CALL_STATIC(type, load);
+}
+
+GameActor* create_actor(ActorType type, const FVec2 pos) {
+    if (type <= ACT_NULL || type >= ACT_SIZE) {
+        WARN("Creating invalid actor type %u", type);
+        return NULL;
+    }
+
+    ActorID index = game_state->next_actor;
+    GameActor* actor = NULL;
+    for (ActorID i = 0; i < MAX_ACTORS; i++) {
+        actor = &game_state->actors[index];
+        if (actor->id == NULL_ACTOR)
+            goto found;
+
+        index = (ActorID)((index + 1) % MAX_ACTORS);
+    }
+
+    WARN("Too many actors!!!");
+    return NULL;
+
+found:
+    SDL_zerop(actor);
+
+    actor->id = index;
+    actor->type = type;
+
+    actor->previous = game_state->live_actors;
+    actor->next = NULL_ACTOR;
+    GameActor* first = get_actor(game_state->live_actors);
+    if (first != NULL)
+        first->next = index;
+    game_state->live_actors = index;
+
+    actor->cell = NULL_CELL;
+    actor->previous_cell = actor->next_cell = NULL_ACTOR;
+    move_actor(actor, pos);
+
+    FLAG_ON(actor, FLG_VISIBLE);
+    ACTOR_CALL(actor, create);
+
+    game_state->next_actor = (ActorID)((index + 1) % MAX_ACTORS);
+    return actor;
+}
+
+static void destroy_actor(GameActor* actor) {
+    if (actor == NULL)
+        return;
+
+    const ActorType type = actor->type;
+    if (type <= ACT_NULL || type >= ACT_SIZE)
+        WARN("Destroying invalid actor type %u", type);
+    else
+        ACTOR_CALL(actor, cleanup);
+
+    // Unlink cell
+    if (actor->cell >= 0 && actor->cell < GRID_SIZE) {
+        GameActor* neighbor = get_actor(actor->previous_cell);
+        if (neighbor != NULL)
+            neighbor->next_cell = actor->next_cell;
+
+        neighbor = get_actor(actor->next_cell);
+        if (neighbor != NULL)
+            neighbor->previous_cell = actor->previous_cell;
+
+        if (game_state->grid[actor->cell] == actor->id)
+            game_state->grid[actor->cell] = actor->previous_cell;
+
+        actor->previous_cell = actor->next_cell = NULL_ACTOR;
+        actor->cell = NULL_CELL;
+    }
+
+    // Unlink list
+    GameActor* neighbor = get_actor(actor->previous);
+    if (neighbor != NULL)
+        neighbor->next = actor->next;
+
+    neighbor = get_actor(actor->next);
+    if (neighbor != NULL)
+        neighbor->previous = actor->previous;
+
+    if (game_state->live_actors == actor->id)
+        game_state->live_actors = actor->previous;
+
+    actor->previous = actor->next = NULL_ACTOR;
+
+    actor->id = NULL_ACTOR;
+    actor->type = ACT_NULL;
+}
+
+GameActor* get_actor(ActorID id) {
+    if (id < 0 || id >= MAX_ACTORS)
+        return NULL;
+
+    GameActor* actor = &game_state->actors[id];
+    return (actor->id == NULL_ACTOR) ? NULL : actor;
+}
+
+void move_actor(GameActor* actor, const FVec2 pos) {
+    if (actor == NULL)
+        return;
+
+    actor->pos = pos;
+    Sint32 cx = actor->pos.x / CELL_SIZE, cy = actor->pos.y / CELL_SIZE;
+    cx = SDL_clamp(cx, 0, MAX_CELLS - 1), cy = SDL_clamp(cy, 0, MAX_CELLS - 1);
+
+    const Sint32 cell = cx + (cy * MAX_CELLS);
+    if (cell == actor->cell)
+        return;
+
+    // Unlink old cell
+    if (actor->cell >= 0 && actor->cell < GRID_SIZE) {
+        GameActor* neighbor = get_actor(actor->previous_cell);
+        if (neighbor != NULL)
+            neighbor->next_cell = actor->next_cell;
+
+        neighbor = get_actor(actor->next_cell);
+        if (neighbor != NULL)
+            neighbor->previous_cell = actor->previous_cell;
+
+        if (game_state->grid[actor->cell] == actor->id)
+            game_state->grid[actor->cell] = actor->previous_cell;
+    }
+
+    // Link new cell
+    actor->cell = cell;
+    actor->previous_cell = game_state->grid[cell];
+    actor->next_cell = NULL_ACTOR;
+    GameActor* first = get_actor(game_state->grid[cell]);
+    if (first != NULL)
+        first->next_cell = actor->id;
+    game_state->grid[cell] = actor->id;
 }
