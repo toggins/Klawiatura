@@ -619,10 +619,18 @@ void tick_game() {
         // 0 .. (MAX_PLAYERS - 1) = Solo/online.
         // MAX_PLAYERS or higher = Spectator.
         if (local_player < MAX_PLAYERS) {
-            gekko_add_local_input(game_session, local_player,
-                &(GameInput){(kb_down(KB_UP) * GI_UP) | (kb_down(KB_LEFT) * GI_LEFT) | (kb_down(KB_DOWN) * GI_DOWN)
-                             | (kb_down(KB_RIGHT) * GI_RIGHT) | (kb_down(KB_JUMP) * GI_JUMP)
-                             | (kb_down(KB_RUN) * GI_RUN) | (kb_down(KB_FIRE) * GI_FIRE)});
+            GameInput input = 0;
+            if (topui() == NULL) {
+                input |= kb_down(KB_UP) * GI_UP;
+                input |= kb_down(KB_LEFT) * GI_LEFT;
+                input |= kb_down(KB_DOWN) * GI_DOWN;
+                input |= kb_down(KB_RIGHT) * GI_RIGHT;
+                input |= kb_down(KB_JUMP) * GI_JUMP;
+                input |= kb_down(KB_RUN) * GI_RUN;
+                input |= kb_down(KB_FIRE) * GI_FIRE;
+            }
+
+            gekko_add_local_input(game_session, local_player, &input);
         }
     }
 
