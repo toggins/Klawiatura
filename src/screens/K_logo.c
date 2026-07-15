@@ -33,7 +33,7 @@ void draw_ui() {
 
     const float t = totalticks();
     batch_color(
-        B_ALPHA(((t < 33.5f) ? (t / 33.5f) : ((t > 150.f) ? ((t < 278.f) ? (1.f - ((t - 278.f) / 128.f)) : 0.f) : 1.f))
+        B_ALPHA(((t < 33.5f) ? (t / 33.5f) : ((t > 150.f) ? ((t < 278.f) ? (1.f - ((t - 150.f) / 128.f)) : 0.f) : 1.f))
                 * 255.f));
 
     batch_alpha_test(0.9f);
