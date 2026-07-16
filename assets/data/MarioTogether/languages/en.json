@@ -175,6 +175,7 @@
     "msg_replay_missing": "Replay file not found.",
     "msg_replay_invalid": "Invalid replay file format.",
     "msg_replay_version_mismatch": "Replay was recorded under a different version.",
+    "msg_replay_hash_mismatch": "Replay was recorded with different mods.",
     "msg_to_4": "You found a secret warp to World 4!",
     "msg_to_hardcore_1": "You found a secret warp to Hardcore World 1!",
     "msg_to_goomba_party": "Welcome to the Goomba Party!",

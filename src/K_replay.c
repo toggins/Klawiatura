@@ -114,6 +114,10 @@ const char* load_replay(const char* file) {
         return "msg_replay_hash_mismatch";
     }
 
+    // TODO: Assign view player
+    PlayerID view_player = NULL_PLAYER;
+    rbuffer_read8((Uint8*)&view_player);
+
     GameContext ctx = empty_game_context();
     rbuffer_read16(&ctx.flags);
     rbuffer_read64(&ctx.level);
@@ -147,6 +151,8 @@ void start_replay() {
     rbuffer_write_string(REPLAY_HEADER);
     rbuffer_write_string(GAME_VERSION);
     rbuffer_write32(&(Uint32){get_game_hash()});
+
+    rbuffer_write8((Uint8*)&(PlayerID){viewplayer()});
 
     const GameContext* ctx = gamecontext();
     rbuffer_write16(&ctx->flags);
