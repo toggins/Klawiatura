@@ -27,7 +27,7 @@ static const char* fmt_return_to_title(size_t idx) {
 }
 
 static void return_to_title_option() {
-    spread_reliable_packet_to_players(PCH_LOBBY, &(PacketType){PT_BAIL}, sizeof(PacketType));
+    bail_from_game();
     set_screen(SCR_MENU, NULL, 0);
 }
 

@@ -139,12 +139,12 @@ static void on_peer_data_changed(NetID pid, NutBlast_FieldDiff diff) {
     }
 }
 
-static void clear_peer_tables() {
+static void clear_player_peer_tables() {
     SDL_zeroa(player_peers);
     SDL_zeroa(spectator_peers);
 }
 
-void net_logger(NutBlast_LogLevel level, const char* message) {
+static void net_logger(NutBlast_LogLevel level, const char* message) {
     switch (level) {
     default:
         INFO("%s", message);
@@ -168,10 +168,20 @@ void net_init() {
     NutBlast_OnMasterChanged(on_master_changed);
     NutBlast_OnPlayerMetadataChanged(on_peer_data_changed);
 
-    clear_peer_tables();
+    clear_player_peer_tables();
 
     load_sound("ui/join", AKL_ALWAYS);
     load_sound("ui/leave", AKL_ALWAYS);
+}
+
+static Bool i_am_in_tables() {
+    const NetID me = get_local_peer();
+
+    for (size_t i = 0; i < SDL_arraysize(player_peers); i++)
+        if (me == player_peers[i])
+            return TRUE;
+
+    return i_am_spectating();
 }
 
 void net_update() {
@@ -222,8 +232,8 @@ void net_update() {
 
         case PT_WORLD: {
             INFO("World packet from %s (%" SDL_PRIu64 ")", get_peer_name(msg.from), msg.from);
-            if (get_game_player_count() < 1) {
-                WTF("Player peer table wasn't filled before world packet arrived?");
+            if (!i_am_in_tables()) {
+                WTF("Not in player peer table, ignoring");
                 break;
             }
 
@@ -269,8 +279,8 @@ void net_update() {
 
         case PT_GAME: {
             INFO("Game packet from %s (%" SDL_PRIu64 ")", get_peer_name(msg.from), msg.from);
-            if (get_game_player_count() < 1) {
-                WTF("Player peer table wasn't filled before game packet arrived?");
+            if (!i_am_in_tables()) {
+                WTF("Not in player peer table, ignoring");
                 break;
             }
 
@@ -307,23 +317,25 @@ void net_update() {
         }
 
         case PT_PLAYERS: {
+            const NetID me = get_local_peer();
+
             Bool was_player = FALSE;
             for (size_t i = 0; i < SDL_arraysize(player_peers); i++) {
-                if (player_peers[i] == get_local_peer()) {
+                if (me == player_peers[i]) {
                     was_player = TRUE;
                     break;
                 }
             }
             if (!was_player) {
                 for (size_t i = 0; i < SDL_arraysize(spectator_peers); i++) {
-                    if (spectator_peers[i] == get_local_peer()) {
+                    if (me == spectator_peers[i]) {
                         was_player = TRUE;
                         break;
                     }
                 }
             }
 
-            clear_peer_tables();
+            clear_player_peer_tables();
 
             Uint8 num_players = 0;
             read_buffer8(&mbuf, &num_players);
@@ -447,6 +459,11 @@ Uint8 get_peer_limit() {
     return NutBlast_GetMaxPlayers();
 }
 
+void bail_from_game() {
+    spread_reliable_packet_to_players(PCH_LOBBY, &(PacketType){PT_BAIL}, sizeof(PacketType));
+    clear_player_peer_tables();
+}
+
 NetID player_to_peer(PlayerID pid) {
     return (pid < 0 || pid >= SDL_arraysize(player_peers)) ? 0 : player_peers[pid];
 }
@@ -490,7 +507,7 @@ Uint8 get_lobby_spectator_count() {
 
 Uint8 get_game_player_count() {
     Uint8 count = 0;
-    for (size_t i = 0; i < SDL_arraysize(player_peers); i++)
+    for (Uint8 i = 0; i < (Uint8)SDL_arraysize(player_peers); i++)
         if (player_peers[i] > 0)
             ++count;
 
@@ -499,7 +516,7 @@ Uint8 get_game_player_count() {
 
 Uint8 get_game_spectator_count() {
     Uint8 count = 0;
-    for (size_t i = 0; i < SDL_arraysize(spectator_peers); i++)
+    for (Uint8 i = 0; i < (Uint8)SDL_arraysize(spectator_peers); i++)
         if (spectator_peers[i] > 0)
             ++count;
 
@@ -510,8 +527,10 @@ Bool i_am_spectating() {
     if (!is_connected())
         return FALSE;
 
+    const NetID me = get_local_peer();
+
     for (size_t i = 0; i < SDL_arraysize(spectator_peers); i++)
-        if (get_local_peer() == spectator_peers[i])
+        if (me == spectator_peers[i])
             return TRUE;
 
     return FALSE;
@@ -562,7 +581,7 @@ void disconnect() {
     }
 
     NutBlast_PurgeMetadata();
-    clear_peer_tables();
+    clear_player_peer_tables();
     set_hostname(CLIENT.server);
     update_discord_status();
 }
@@ -619,14 +638,24 @@ void update_lobby_data() {
 }
 
 void update_peer_data() {
-    NutBlast_SetPlayerField(NUTBLAST_FIELD_PLAYER_NAME, CLIENT.name);
-    NutBlast_SetPlayerField("xscroll", fmt("%u", CLIENT.xscroll));
-    NutBlast_SetPlayerField("character", fmt("%u", CLIENT.character));
-    NutBlast_SetPlayerField("powerup", fmt("%u", CLIENT.powerup));
+    const NetID me = get_local_peer();
+
+    const char* field = get_peer_name(me);
+    if (field == NULL || SDL_strcmp(CLIENT.name, field) != 0)
+        NutBlast_SetPlayerField(NUTBLAST_FIELD_PLAYER_NAME, CLIENT.name);
+
+    if (CLIENT.xscroll != get_peer_number(me, "xscroll"))
+        NutBlast_SetPlayerField("xscroll", fmt("%u", CLIENT.xscroll));
+
+    if (CLIENT.character != get_peer_number(me, "character"))
+        NutBlast_SetPlayerField("character", fmt("%u", CLIENT.character));
+
+    if (CLIENT.powerup != get_peer_number(me, "powerup"))
+        NutBlast_SetPlayerField("powerup", fmt("%u", CLIENT.powerup));
 }
 
 void peers_to_players() {
-    clear_peer_tables();
+    clear_player_peer_tables();
 
     Uint8 num_players = 0, num_spectators = 0;
 
@@ -713,11 +742,12 @@ PlayerID populate_game(GekkoSession* session, PlayerID num_players) {
     INFO("PLAYERS:");
 
     PlayerID local = MAX_PLAYERS, tv = MAX_PLAYERS;
+    const NetID me = get_local_peer();
     for (PlayerID i = 0; i < (PlayerID)SDL_arraysize(player_peers); i++) {
         if (player_peers[i] <= 0)
             continue;
 
-        if (get_local_peer() == player_peers[i]) {
+        if (me == player_peers[i]) {
             local = i;
             gekko_add_actor(session, GekkoLocalPlayer, NULL);
             gekko_set_local_delay(session, local, CLIENT.input_delay);

@@ -68,6 +68,7 @@ Bool get_peer_bool(NetID, const char*);
 Bool peer_exists(NetID);
 Uint8 get_peer_count(), get_peer_limit();
 
+void bail_from_game();
 NetID player_to_peer(PlayerID), spectator_to_peer(PlayerID);
 Bool nuke_spectator_peer(NetID);
 Uint8 get_lobby_player_count(), get_lobby_spectator_count();
