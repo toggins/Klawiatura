@@ -57,6 +57,8 @@ static Catalog CATALOG = {
 			{.name = "opt_video", .menu = MEN_VIDEO},
 			{.name = "opt_audio", .menu = MEN_AUDIO},
             {.name = "opt_network", .menu = MEN_NETWORK},
+            {},
+            {.name = "opt_open_user_folder", .callback = open_user_folder},
 		},
 
 		[MEN_CONTROLS] = {

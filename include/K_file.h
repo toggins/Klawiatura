@@ -11,7 +11,8 @@
 #define JSON_WRITE_FLAGS (YYJSON_WRITE_PRETTY | YYJSON_WRITE_NEWLINE_AT_END)
 
 void file_init(const char**), file_teardown();
-void load_mod(const char*);
+
+void open_user_folder();
 
 yyjson_doc* read_json(const char*, size_t, const char**);
 

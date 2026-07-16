@@ -1,4 +1,5 @@
 #include <SDL3/SDL_filesystem.h>
+#include <SDL3/SDL_misc.h>
 #include <SDL3/SDL_platform_defines.h>
 
 #include "K_cmake.h"
@@ -15,6 +16,34 @@ typedef struct Mod {
 static const char *base_path = NULL, *user_path = NULL;
 
 static Mod *mods = NULL, *last_mod = NULL;
+
+static void load_mod(const char* path) {
+    const size_t plen = SDL_strlen(path);
+    if (plen > 0 && path[plen - 1] != '/')
+        path = fmt("%s/", path);
+
+    if (path[0] == '$')
+        path = fmt("%sdata/%s", base_path, path + 1);
+
+    SDL_PathInfo pinfo = {0};
+    SDL_GetPathInfo(path, &pinfo);
+    ASSUME(pinfo.type == SDL_PATHTYPE_DIRECTORY, "Invalid mod \"%s\"", path);
+
+    Mod* mod = SDL_calloc(1, sizeof(*mod));
+    EXPECT(mod, "Failed to allocate mod \"%s\"", path);
+
+    mod->path = SDL_strdup(path);
+    EXPECT(mod->path, "Failed to allocate path for mod \"%s\": %s", path, SDL_GetError());
+
+    if (mods == NULL)
+        mods = mod;
+    if (last_mod != NULL)
+        last_mod->next = mod;
+    mod->previous = last_mod;
+    last_mod = mod;
+
+    INFO("Added mod \"%s\"", path);
+}
 
 void file_init(const char** load_mods) {
     base_path = SDL_GetBasePath();
@@ -45,32 +74,8 @@ void file_teardown() {
     SDL_free((void*)user_path);
 }
 
-void load_mod(const char* path) {
-    const size_t plen = SDL_strlen(path);
-    if (plen > 0 && path[plen - 1] != '/')
-        path = fmt("%s/", path);
-
-    if (path[0] == '$')
-        path = fmt("%sdata/%s", base_path, path + 1);
-
-    SDL_PathInfo pinfo = {0};
-    SDL_GetPathInfo(path, &pinfo);
-    ASSUME(pinfo.type == SDL_PATHTYPE_DIRECTORY, "Invalid mod \"%s\"", path);
-
-    Mod* mod = SDL_calloc(1, sizeof(*mod));
-    EXPECT(mod, "Failed to allocate mod \"%s\"", path);
-
-    mod->path = SDL_strdup(path);
-    EXPECT(mod->path, "Failed to allocate path for mod \"%s\": %s", path, SDL_GetError());
-
-    if (mods == NULL)
-        mods = mod;
-    if (last_mod != NULL)
-        last_mod->next = mod;
-    mod->previous = last_mod;
-    last_mod = mod;
-
-    INFO("Added mod \"%s\"", path);
+void open_user_folder() {
+    SDL_OpenURL(fmt("file:///%s", user_path));
 }
 
 static void* load_file(const char* path, const char* pattern, size_t* size) {
