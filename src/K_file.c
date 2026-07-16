@@ -75,7 +75,11 @@ void file_teardown() {
 }
 
 void open_user_folder() {
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    WARN("Not implemented for Emscripten");
+#else
     SDL_OpenURL(fmt("file:///%s", user_path));
+#endif
 }
 
 static void* load_file(const char* path, const char* pattern, size_t* size) {

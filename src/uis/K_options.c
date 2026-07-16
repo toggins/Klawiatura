@@ -1,3 +1,5 @@
+#include <SDL3/SDL_platform_defines.h>
+
 #include "K_audio.h"
 #include "K_cmd.h"
 #include "K_config.h"
@@ -57,8 +59,10 @@ static Catalog CATALOG = {
 			{.name = "opt_video", .menu = MEN_VIDEO},
 			{.name = "opt_audio", .menu = MEN_AUDIO},
             {.name = "opt_network", .menu = MEN_NETWORK},
+#ifndef SDL_PLATFORM_EMSCRIPTEN
             {},
             {.name = "opt_open_user_folder", .callback = open_user_folder},
+#endif
 		},
 
 		[MEN_CONTROLS] = {
