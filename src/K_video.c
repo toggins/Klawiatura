@@ -313,7 +313,7 @@ void start_drawing_ui() {
 
     glm_mat4_identity(model_matrix);
     glm_mat4_identity(view_matrix);
-    glm_ortho(left, right, bottom, top, -16000, 16000, projection_matrix);
+    glm_ortho(left, right, bottom, top, -16000.f, 16000.f, projection_matrix);
     glm_mat4_mul(view_matrix, model_matrix, mvp_matrix);
     glm_mat4_mul(projection_matrix, mvp_matrix, mvp_matrix);
 }

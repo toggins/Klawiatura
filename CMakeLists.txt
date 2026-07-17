@@ -129,7 +129,7 @@ set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
 
 FetchContent_Declare(S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
-    GIT_TAG 70b3044b3d758108828e2054683c21faf744b3de
+    GIT_TAG 74bd2c38527fbbecd46bff9c0b9efb2c186d59ef
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(S_fixed)
 
@@ -148,7 +148,7 @@ list(APPEND LIBS S_tructures)
 
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG b05df5fdc4098444198e8c5aa7b5fdd1e6bbb9dc
+	GIT_TAG c0acc946315aa932308a59b767632e0ff8d0a17a
 	EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(NutBlast)
 

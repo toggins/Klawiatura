@@ -13,13 +13,12 @@ typedef struct {
     FVec2 start, end;
 } FRect;
 
-FVec2 Vadd(register FVec2, register FVec2), Vsub(register FVec2, register FVec2), Vmul(register FVec2, register FVec2),
-    Vdiv(register FVec2, register FVec2);
-FVec2 Vscale(register FVec2, register Fixed);
-Fixed Vdist(register FVec2, register FVec2), Vtheta(register FVec2, register FVec2);
-FVec2 Vlerp(register FVec2, register FVec2, register Fixed);
+FVec2 Vadd(FVec2, FVec2), Vsub(FVec2, FVec2), Vmul(FVec2, FVec2), Vdiv(FVec2, FVec2);
+FVec2 Vscale(FVec2, Fixed);
+Fixed Vdist(FVec2, FVec2), Vtheta(FVec2, FVec2);
+FVec2 Vlerp(FVec2, FVec2, Fixed), Vclamp(FVec2, FVec2, FVec2);
 
-FRect Radd(register FRect, register FVec2), Rmul(register FRect, register FVec2);
-FRect Rxflip(register FRect), Ryflip(register FRect);
-FVec2 Rcenter(register FRect);
-Bool Rcollide(register FRect, register FRect);
+FRect Radd(FRect, FVec2), Rmul(FRect, FVec2);
+FRect Rxflip(FRect), Ryflip(FRect);
+FVec2 Rcenter(FRect);
+Bool Rcollide(FRect, FRect);

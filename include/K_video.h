@@ -3,6 +3,7 @@
 
 #include "K_assets.h"
 #include "K_file.h" // IWYU pragma: export
+#include "K_math.h"
 #include "K_misc.h"
 #include "K_vmath.h" // IWYU pragma: export
 
@@ -236,6 +237,12 @@ typedef struct {
 } TileMap;
 
 typedef struct {
+    FVec2 pos, from;
+    float lerp_time, lerp_duration;
+} VideoCamera;
+
+typedef struct {
+    VideoCamera camera;
     TileMap* tilemap;
 } VideoState;
 

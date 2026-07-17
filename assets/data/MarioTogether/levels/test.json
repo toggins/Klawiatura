@@ -3,6 +3,8 @@
         "label": "$Test",
         "track1": "smw_overworld"
     },
+    "size": [7500, 1440],
+    "bounds": [0, 0, 7500, 480],
     "time": 360,
     "backdrops": [
         {
@@ -18,12 +20,12 @@
     ],
     "actors": [
         {
-            "id": 8,
+            "id": 254,
             "pos": [64, 128, 20],
             "values": [[5, 320]]
         },
         {
-            "id": 8,
+            "id": 254,
             "pos": [72, 140, 10],
             "values": [[5, 256]],
             "flags": 32

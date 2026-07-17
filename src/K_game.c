@@ -330,6 +330,8 @@ static void start_game_state() {
             game_state->players[i].projectiles[j] = NULL_ACTOR;
         for (ActorID j = 0; j < MAX_SINKING_PROJECTILES; j++)
             game_state->players[i].sinking_projectiles[j] = NULL_ACTOR;
+
+        game_state->players[i].lives = DEFAULT_LIVES;
     }
 
     game_state->live_actors = NULL_ACTOR;
@@ -399,9 +401,23 @@ static void load_level(TinyHash key) {
     for (GameWarpID i = 0, n = SDL_min(narr, MAX_GAME_WARPS); i < n; i++)
         level_info->warps[i] = StHashStr(yyjson_get_str(yyjson_arr_get(jval, i)));
 
+    jval = yyjson_obj_get(root, "size");
+    level_info->size.x = Int2Fx(yyjson_get_uint(yyjson_arr_get(jval, 0)));
+    level_info->size.y = Int2Fx(yyjson_get_uint(yyjson_arr_get(jval, 1)));
+
+    jval = yyjson_obj_get(root, "bounds");
+    level_info->bounds.start.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 0)));
+    level_info->bounds.start.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 1)));
+    level_info->bounds.end.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 2)));
+    level_info->bounds.end.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 3)));
+
     jval = yyjson_obj_get(root, "time");
     if (yyjson_is_int(jval))
         game_state->clock = (Sint32)yyjson_get_sint(jval);
+
+    jval = yyjson_obj_get(root, "water");
+    if (yyjson_is_int(jval))
+        game_state->water = Int2Fx(yyjson_get_sint(jval));
 
     read_tilemap(videostate()->tilemap, yyjson_obj_get(root, "backdrops"));
 
@@ -472,6 +488,7 @@ void start_game(const GameContext* ctx) {
     start_game_state();
 
     // Load assets
+    load_texture_num("markers/water/%u", 5, AKL_NEVER);
     load_sprite_num("ui/coins/%u", 4, AKL_NEVER);
     load_sprite("ui/bezel_l", AKL_NEVER);
     load_sprite("ui/bezel_r", AKL_NEVER);
@@ -499,18 +516,24 @@ void start_game(const GameContext* ctx) {
     game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
 
     // Initial game state
-    load_level(game_context.level);
-
     for (PlayerID i = 0; i < game_context.num_players; i++) {
         GamePlayer* player = &game_state->players[i];
         player->id = i;
 
         const GamePlayerContext* pctx = &game_context.players[i];
+        if (pctx->lives < 0)
+            continue;
+
         player->powerup = pctx->powerup;
         player->lives = pctx->lives;
         player->coins = pctx->coins;
         player->score = pctx->score;
     }
+
+    load_level(game_context.level);
+
+    for (PlayerID i = 0; i < game_context.num_players; i++)
+        respawn_player(get_player(i));
 
     play_state_track(STS_MAIN, level_info->strings[GSTR_TRACK1], PLAY_LOOPING);
 }
@@ -757,13 +780,31 @@ static void iterate_and_draw_actor(const GameActor* actor) {
 // NOLINTEND(misc-no-recursion)
 
 static void draw_game_state() {
+    static mat4 oview = GLM_MAT4_IDENTITY_INIT, view = GLM_MAT4_IDENTITY_INIT;
+
+    get_view_matrix(oview);
+
     clear_depth(1.f);
     batch_filter(FALSE);
+
+    const GamePlayer* player = get_player(view_player);
+
+    VideoCamera* camera = &videostate()->camera;
+    camera->pos = (player == NULL) ? Vadd(level_info->bounds.start, F_HALF_SCREEN)
+                                   : Vclamp(player->pos, Vadd(player->bounds.start, F_HALF_SCREEN),
+                                         Vsub(player->bounds.end, F_HALF_SCREEN));
+
+    const Sint32 cx = Fx2Int(camera->pos.x), cy = Fx2Int(camera->pos.y);
+    glm_look((vec3){(float)(cx - HALF_SCREEN_WIDTH), (float)(cy - HALF_SCREEN_HEIGHT), 0.f}, GLM_ZUP, GLM_YUP, view);
+    set_view_matrix(view);
+    apply_matrices();
 
     draw_tilemap(videostate()->tilemap);
     iterate_and_draw_actor(get_actor(game_state->live_actors));
 
-    const GamePlayer* player = get_player(view_player);
+    set_view_matrix(oview);
+    apply_matrices();
+
     if (player == NULL)
         goto dgs_no_hud;
 
@@ -869,6 +910,15 @@ PlayerID viewplayer() {
 
 GamePlayer* get_player(PlayerID pid) {
     return (pid < 0 || pid >= MAX_PLAYERS || game_state->players[pid].id != pid) ? NULL : &game_state->players[pid];
+}
+
+GameActor* respawn_player(GamePlayer* player) {
+    if (player == NULL || player->lives < 0)
+        return NULL;
+
+    player->bounds = level_info->bounds;
+
+    return NULL;
 }
 
 // ======

@@ -35,6 +35,9 @@ typedef Uint32 ActorFlag;
 #define F_HALF_SCREEN_WIDTH Fhalf(F_SCREEN_WIDTH)
 #define F_HALF_SCREEN_HEIGHT Fhalf(F_SCREEN_HEIGHT)
 
+#define F_SCREEN ((FVec2){F_SCREEN_WIDTH, F_SCREEN_HEIGHT})
+#define F_HALF_SCREEN ((FVec2){F_HALF_SCREEN_WIDTH, F_HALF_SCREEN_HEIGHT})
+
 typedef Sint16 ActorID;
 
 typedef Uint8 GameInput;
@@ -83,7 +86,8 @@ enum {
     ACT_PLAYER,
     ACT_PLAYER_EFFECT,
     ACT_PLAYER_DEAD,
-    ACT_DUMMY,
+
+    ACT_DUMMY = 254,
 
     ACT_SIZE,
 };
@@ -192,6 +196,7 @@ typedef struct {
     Uint8 coins;
     PlayerPowerup powerup;
 
+    Uint8 track;
     ActorID actor;
     ActorID projectiles[MAX_PROJECTILES], sinking_projectiles[MAX_SINKING_PROJECTILES];
     FVec2 pos;
@@ -271,9 +276,8 @@ typedef struct {
 
     GamePlayer players[MAX_PLAYERS];
 
-    ActorID spawn, checkpoint;
+    ActorID spawn, checkpoint, water;
 
-    Fixed water;
     Sint32 clock;
 
     Uint64 seed;
