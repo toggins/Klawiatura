@@ -17,7 +17,7 @@
 #include "K_video.h"
 #include "K_worlds.h"
 
-#define MAX_GAME_PACKETS 32
+#define MAX_GAME_PACKETS 64
 
 static const char* last_error = NULL;
 
