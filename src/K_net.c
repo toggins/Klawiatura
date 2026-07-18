@@ -189,15 +189,18 @@ void net_update() {
 
     NutBlast_Message msg = {0};
     while (NutBlast_NextMessage(PCH_LOBBY, &msg)) {
-        if (msg.size < sizeof(PacketType))
-            goto nu_message_end;
+        if (msg.size < sizeof(PacketType)) {
+            NutBlast_PopMessage(PCH_LOBBY);
+            continue;
+        }
 
         const PacketType ptype = *(PacketType*)msg.data;
         if ((ptype >= PT_LEADER_ONLY && ptype < PT_MASTER_ONLY && get_leading_peer() != msg.from
                 && get_master_peer() != msg.from)
             || (ptype >= PT_MASTER_ONLY && get_master_peer() != msg.from))
         {
-            goto nu_message_end;
+            NutBlast_PopMessage(PCH_LOBBY);
+            continue;
         }
 
         Buffer mbuf = buffer_from((void*)(msg.data + sizeof(PacketType)), msg.size - sizeof(PacketType));
@@ -362,7 +365,6 @@ void net_update() {
         }
         }
 
-    nu_message_end:
         NutBlast_PopMessage(PCH_LOBBY);
     }
 }
@@ -694,38 +696,43 @@ static void net_send(GekkoNetAddress* gn_addr, const char* data, int len) {
 
 static GekkoNetResult** net_receive(int* pcount) {
     static GekkoNetResult* packets[MAX_GAME_PACKETS] = {0};
+
+    SDL_memset((void*)packets, 0, sizeof(packets));
     *pcount = 0;
 
     NutBlast_Message msg = {0};
     while (*pcount < MAX_GAME_PACKETS && NutBlast_NextMessage(PCH_GAME, &msg)) {
         GekkoNetResult* res = SDL_malloc(sizeof(*res));
-        if (res == NULL)
-            goto nr_message_fail;
+        if (res == NULL) {
+            NutBlast_PopMessage(PCH_GAME);
+            break;
+        }
 
         res->addr.size = sizeof(NetID);
         res->addr.data = SDL_malloc(sizeof(NetID));
         if (res->addr.data == NULL) {
             SDL_free(res);
-            goto nr_message_fail;
+            NutBlast_PopMessage(PCH_GAME);
+            break;
+        } else {
+            *(NetID*)res->addr.data = msg.from;
         }
-        *(NetID*)res->addr.data = msg.from;
 
         res->data_len = msg.size;
         res->data = SDL_malloc(msg.size);
         if (res->data == NULL) {
             SDL_free(res->addr.data);
             SDL_free(res);
-            goto nr_message_fail;
+            NutBlast_PopMessage(PCH_GAME);
+            break;
+        } else {
+            SDL_memcpy(res->data, msg.data, msg.size);
         }
-        SDL_memcpy(res->data, msg.data, msg.size);
+
         NutBlast_PopMessage(PCH_GAME);
 
-        packets[(*pcount)++] = res;
-        continue;
-
-    nr_message_fail:
-        NutBlast_PopMessage(PCH_GAME);
-        break;
+        packets[*pcount] = res;
+        ++*pcount;
     }
 
     return packets;
