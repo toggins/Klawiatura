@@ -129,7 +129,7 @@ set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
 
 FetchContent_Declare(S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
-    GIT_TAG 74bd2c38527fbbecd46bff9c0b9efb2c186d59ef
+    GIT_TAG c80c5e96df051da9902bdd21afcc9aa09dbb0d40
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(S_fixed)
 
@@ -159,7 +159,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG v20260629200724-02c447c
+    GIT_TAG 93530688310f04cdbf217f7f782579732132318c
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(GekkoNet)
 
