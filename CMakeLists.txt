@@ -148,7 +148,7 @@ list(APPEND LIBS S_tructures)
 
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG 8a7a2ab2edc6e4779a2b0b344c7129aa07e47625
+	GIT_TAG 30a38b014d4368c6f28170278aff81b40a8678e5
 	EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(NutBlast)
 
@@ -159,7 +159,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG 8efb9b39780fa13ee10e6ce61f70661c3ff5a325
+    GIT_TAG 5a97d29c548ca7db716abf3a83c3526eded0c82d
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(GekkoNet)
 

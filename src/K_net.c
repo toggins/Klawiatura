@@ -190,18 +190,17 @@ void net_update() {
     NutBlast_Message msg = {0};
     while (NutBlast_NextMessage(PCH_LOBBY, &msg)) {
         if (msg.size < sizeof(PacketType))
-            continue;
+            goto nu_message_end;
 
         const PacketType ptype = *(PacketType*)msg.data;
-        if ((ptype >= PT_LEADER_ONLY && ptype < PT_MASTER_ONLY)
-            && (get_leading_peer() != msg.from && get_master_peer() != msg.from))
+        if ((ptype >= PT_LEADER_ONLY && ptype < PT_MASTER_ONLY && get_leading_peer() != msg.from
+                && get_master_peer() != msg.from)
+            || (ptype >= PT_MASTER_ONLY && get_master_peer() != msg.from))
         {
-            continue;
+            goto nu_message_end;
         }
-        if (ptype >= PT_MASTER_ONLY && get_master_peer() != msg.from)
-            continue;
 
-        Buffer mbuf = buffer_from((void*)(msg.data + sizeof(PacketType)), msg.size - 1);
+        Buffer mbuf = buffer_from((void*)(msg.data + sizeof(PacketType)), msg.size - sizeof(PacketType));
         switch (ptype) {
         default:
             break;
@@ -217,14 +216,13 @@ void net_update() {
                 break;
 
             for (size_t i = 0; i < SDL_arraysize(player_peers); i++) {
-                if (player_peers[i] != msg.from)
-                    continue;
+                if (player_peers[i] == msg.from) {
+                    if (get_screen() != SCR_MENU)
+                        boot_to_menu(LFMT("msg_player_bailed", 's', get_peer_name(player_peers[i])));
 
-                if (get_screen() != SCR_MENU)
-                    boot_to_menu(LFMT("msg_player_bailed", 's', get_peer_name(player_peers[i])));
-
-                player_peers[i] = 0;
-                break;
+                    player_peers[i] = 0;
+                    break;
+                }
             }
 
             break;
@@ -363,6 +361,9 @@ void net_update() {
             break;
         }
         }
+
+    nu_message_end:
+        NutBlast_PopMessage(PCH_LOBBY);
     }
 }
 
@@ -696,16 +697,16 @@ static GekkoNetResult** net_receive(int* pcount) {
     *pcount = 0;
 
     NutBlast_Message msg = {0};
-    while (NutBlast_NextMessage(PCH_GAME, &msg)) {
+    while (*pcount < MAX_GAME_PACKETS && NutBlast_NextMessage(PCH_GAME, &msg)) {
         GekkoNetResult* res = SDL_malloc(sizeof(*res));
         if (res == NULL)
-            break;
+            goto nr_message_fail;
 
         res->addr.size = sizeof(NetID);
         res->addr.data = SDL_malloc(sizeof(NetID));
         if (res->addr.data == NULL) {
             SDL_free(res);
-            break;
+            goto nr_message_fail;
         }
         *(NetID*)res->addr.data = msg.from;
 
@@ -714,13 +715,17 @@ static GekkoNetResult** net_receive(int* pcount) {
         if (res->data == NULL) {
             SDL_free(res->addr.data);
             SDL_free(res);
-            break;
+            goto nr_message_fail;
         }
         SDL_memcpy(res->data, msg.data, msg.size);
+        NutBlast_PopMessage(PCH_GAME);
 
         packets[(*pcount)++] = res;
-        if (*pcount >= MAX_GAME_PACKETS)
-            break;
+        continue;
+
+    nr_message_fail:
+        NutBlast_PopMessage(PCH_GAME);
+        break;
     }
 
     return packets;
