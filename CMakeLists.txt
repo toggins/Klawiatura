@@ -147,10 +147,19 @@ FetchContent_MakeAvailable(S_tructures)
 
 list(APPEND LIBS S_tructures)
 
+# NutBlast
+
+# nonk's local testing shidd
+
+#FetchContent_Declare(NutBlast
+#    SOURCE_DIR /home/nonk/Sources/NutBlast
+#    EXCLUDE_FROM_ALL)
+
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
 	GIT_TAG 30a38b014d4368c6f28170278aff81b40a8678e5
 	EXCLUDE_FROM_ALL)
+
 FetchContent_MakeAvailable(NutBlast)
 
 list(APPEND LIBS NutBlast)
