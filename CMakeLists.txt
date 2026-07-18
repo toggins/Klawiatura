@@ -159,7 +159,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG 93530688310f04cdbf217f7f782579732132318c
+    GIT_TAG 8efb9b39780fa13ee10e6ce61f70661c3ff5a325
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(GekkoNet)
 
