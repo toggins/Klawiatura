@@ -86,6 +86,8 @@ enum {
     ACT_PLAYER,
     ACT_PLAYER_EFFECT,
     ACT_PLAYER_DEAD,
+    ACT_CHECKPOINT,
+    ACT_WATER,
 
     ACT_DUMMY = 254,
 
@@ -346,7 +348,7 @@ Sint8 get_powerup_cost(PlayerPowerup);
 
 GameContext empty_game_context(), init_game_context(const struct WorldContext*, TinyHash);
 
-void jump_to_game(const GameContext*);
+void jump_to_game(const GameContext*, Bool);
 void start_game(const GameContext*), nuke_game();
 void poll_game();
 float frames_ahead();

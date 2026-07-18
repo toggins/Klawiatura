@@ -177,8 +177,8 @@ WorldContext init_world_context(TinyHash world) {
     return ctx;
 }
 
-void jump_to_world(const WorldContext* wctx) {
-    if (wctx == NULL || !is_leader())
+void jump_to_world(const WorldContext* wctx, Bool as_host) {
+    if (wctx == NULL || (as_host && !is_host()) || (!as_host && !is_leader()))
         return;
 
     const World* world = get_world_key(wctx->world);
@@ -197,7 +197,7 @@ void jump_to_world(const WorldContext* wctx) {
     GameContext gctx = init_game_context(wctx,
         StHashStr(yyjson_get_str(yyjson_arr_get(yyjson_obj_get(yyjson_doc_get_root(json), "levels"), wctx->level))));
     yyjson_doc_free(json);
-    jump_to_game(&gctx);
+    jump_to_game(&gctx, as_host);
 }
 
 void start_world(const WorldContext* ctx) {

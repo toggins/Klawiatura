@@ -35,5 +35,5 @@ const char *next_world_from(const char*), *last_world_from(const char*);
 yyjson_doc* load_world_json(const char*, const char**);
 
 WorldContext empty_world_context(), init_world_context(TinyHash);
-void jump_to_world(const WorldContext*), start_world(const WorldContext*);
+void jump_to_world(const WorldContext*, Bool), start_world(const WorldContext*);
 const WorldContext* worldcontext();

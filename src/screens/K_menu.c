@@ -439,7 +439,7 @@ static void start_option() {
         peers_to_players();
 
     WorldContext ctx = init_world_context(key);
-    jump_to_world(&ctx);
+    jump_to_world(&ctx, TRUE);
 }
 
 static void saw_online_notice() {

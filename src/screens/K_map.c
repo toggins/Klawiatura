@@ -312,10 +312,10 @@ static void tick() {
                     if (level == NULL) {
                         WorldContext wctx = *worldcontext();
                         ++wctx.level;
-                        jump_to_world(&wctx);
+                        jump_to_world(&wctx, FALSE);
                     } else {
                         GameContext gctx = init_game_context(worldcontext(), map_state->level);
-                        jump_to_game(&gctx);
+                        jump_to_game(&gctx, FALSE);
                     }
                 }
             }

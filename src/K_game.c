@@ -302,8 +302,8 @@ GameContext init_game_context(const WorldContext* wctx, TinyHash level) {
     return gctx;
 }
 
-void jump_to_game(const GameContext* ctx) {
-    if (ctx == NULL || !is_leader())
+void jump_to_game(const GameContext* ctx, Bool as_host) {
+    if (ctx == NULL || (as_host && !is_host()) || (!as_host && !is_leader()))
         return;
 
     const Level* level = get_level_key(ctx->level);
@@ -342,8 +342,7 @@ static void start_game_state() {
     for (Sint32 i = 0; i < GRID_SIZE; i++)
         game_state->grid[i] = NULL_ACTOR;
 
-    game_state->spawn = game_state->checkpoint = NULL_ACTOR;
-    game_state->water = 2147483647;
+    game_state->spawn = game_state->checkpoint = game_state->water = NULL_ACTOR;
 
     game_state->clock = -1;
 

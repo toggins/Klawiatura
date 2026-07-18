@@ -134,7 +134,7 @@ const char* load_replay(const char* file) {
 
     INFO("Starting replay: %s", file);
     replay_state = RPS_PLAYING;
-    jump_to_game(&ctx);
+    jump_to_game(&ctx, TRUE);
     return NULL;
 }
 
