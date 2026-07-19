@@ -188,15 +188,18 @@ void net_update() {
     NutBlast_Update();
 
     NutBlast_Message msg = {0};
-    while (NutBlast_NextMessage(PCH_LOBBY, &msg)) {
-        if (msg.size < sizeof(PacketType))
+    while (NutBlast_PeekMessage(PCH_LOBBY, &msg)) {
+        if (msg.size < sizeof(PacketType)) {
+            NutBlast_PopMessage(PCH_LOBBY);
             continue;
+        }
 
         const PacketType ptype = *(PacketType*)msg.data;
         if ((ptype >= PT_LEADER_ONLY && ptype < PT_MASTER_ONLY && get_leading_peer() != msg.from
                 && get_master_peer() != msg.from)
             || (ptype >= PT_MASTER_ONLY && get_master_peer() != msg.from))
         {
+            NutBlast_PopMessage(PCH_LOBBY);
             continue;
         }
 
@@ -361,6 +364,8 @@ void net_update() {
             break;
         }
         }
+
+        NutBlast_PopMessage(PCH_LOBBY);
     }
 }
 
@@ -697,7 +702,7 @@ static GekkoNetResult** net_receive(int* pcount) {
 
     NutBlast_Message msg = {0};
 
-    while (*pcount < MAX_GAME_PACKETS && NutBlast_NextMessage(PCH_GAME, &msg)) {
+    while (*pcount < MAX_GAME_PACKETS && NutBlast_PeekMessage(PCH_GAME, &msg)) {
         GekkoNetResult* res = SDL_malloc(sizeof(*res));
 
         if (res == NULL)
@@ -723,6 +728,8 @@ static GekkoNetResult** net_receive(int* pcount) {
         } else {
             SDL_memcpy(res->data, msg.data, msg.size);
         }
+
+        NutBlast_PopMessage(PCH_GAME);
 
         packets[(*pcount)++] = res;
     }
