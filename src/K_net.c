@@ -696,13 +696,16 @@ static GekkoNetResult** net_receive(int* pcount) {
     *pcount = 0;
 
     NutBlast_Message msg = {0};
+
     while (*pcount < MAX_GAME_PACKETS && NutBlast_NextMessage(PCH_GAME, &msg)) {
         GekkoNetResult* res = SDL_malloc(sizeof(*res));
+
         if (res == NULL)
             break;
 
         res->addr.size = sizeof(NetID);
         res->addr.data = SDL_malloc(sizeof(NetID));
+
         if (res->addr.data == NULL) {
             SDL_free(res);
             break;
@@ -712,6 +715,7 @@ static GekkoNetResult** net_receive(int* pcount) {
 
         res->data_len = msg.size;
         res->data = SDL_malloc(msg.size);
+
         if (res->data == NULL) {
             SDL_free(res->addr.data);
             SDL_free(res);
@@ -720,8 +724,7 @@ static GekkoNetResult** net_receive(int* pcount) {
             SDL_memcpy(res->data, msg.data, msg.size);
         }
 
-        packets[*pcount] = res;
-        ++*pcount;
+        packets[(*pcount)++] = res;
     }
 
     return packets;
