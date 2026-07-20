@@ -387,7 +387,7 @@ static const char* fmt_framerate(size_t idx) {
 }
 
 static void framerate_cycle(Sint8 cycle) {
-    static const int ranges[] = {0, 30, 50, 60, 75, 120, 144, 165, 180, 240, 360, 480};
+    static const int ranges[] = {0, 50, 60, 75, 120, 144, 165, 180, 240, 360, 480};
     const size_t len = SDL_arraysize(ranges);
 
     const int fps = get_framerate();
