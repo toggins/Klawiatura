@@ -147,14 +147,6 @@ FetchContent_MakeAvailable(S_tructures)
 
 list(APPEND LIBS S_tructures)
 
-# NutBlast
-
-# nonk's local testing shidd
-
-#FetchContent_Declare(NutBlast
-#    SOURCE_DIR /home/nonk/Sources/NutBlast
-#    EXCLUDE_FROM_ALL)
-
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
 	GIT_TAG 3f64007894abf0ec0577010640ec73397bc07164
@@ -169,7 +161,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG 5a97d29c548ca7db716abf3a83c3526eded0c82d
+    GIT_TAG v20260719222133-b5c6528
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(GekkoNet)
 
