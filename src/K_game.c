@@ -764,13 +764,12 @@ void tick_game() {
     }
 }
 
-void tick_interp() {
-    const int fps = get_framerate();
+void pre_interp_game() {
+    const GameActor* actor = NULL;
 
+    const int fps = get_framerate();
     if (fps > 0 && fps <= TICKRATE) {
-        for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL;
-            actor = get_actor(actor->previous))
-        {
+        FOR_EACH_ACTOR(actor) {
             InterpActor* iactor = &interp_actors[actor->id];
             iactor->type = actor->type;
             iactor->from = iactor->to = iactor->pos = actor->pos;
@@ -779,19 +778,25 @@ void tick_interp() {
         return;
     }
 
-    for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
-    {
+    FOR_EACH_ACTOR(actor) {
         InterpActor* iactor = &interp_actors[actor->id];
-
-        if (iactor->type != actor->type) {
+        if (iactor->type == actor->type) {
+            iactor->from = iactor->to;
+            iactor->to = actor->pos;
+        } else {
             iactor->type = actor->type;
             iactor->from = iactor->to = iactor->pos = actor->pos;
-
-            continue;
         }
+    }
+}
 
-        iactor->from = iactor->to;
-        iactor->to = actor->pos;
+void interp_game() {
+    const Fixed remainder = Float2Fx(pendingticks());
+
+    const GameActor* actor = NULL;
+    FOR_EACH_ACTOR(actor) {
+        InterpActor* iactor = &interp_actors[actor->id];
+        iactor->pos = Vlerp(iactor->from, actor->pos, remainder);
     }
 }
 
@@ -817,15 +822,6 @@ static void iterate_and_draw_actor(const GameActor* actor) {
 // NOLINTEND(misc-no-recursion)
 
 static void draw_game_state() {
-    // INTERPOLATE ACTORS FIRST
-    const Fixed remainder = Ffrac(Float2Fx(totalticks()));
-    for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
-    {
-        InterpActor* iactor = &interp_actors[actor->id];
-        iactor->pos = Vlerp(iactor->from, iactor->to, remainder);
-    }
-
-    // NOW DRAW STATE
     static mat4 oview = GLM_MAT4_IDENTITY_INIT, view = GLM_MAT4_IDENTITY_INIT;
 
     get_view_matrix(oview);
@@ -1090,7 +1086,7 @@ GameActor* get_actor(ActorID id) {
         return NULL;
 
     GameActor* actor = &game_state->actors[id];
-    return (actor->id == NULL_ACTOR) ? NULL : actor;
+    return (actor->id < 0 || actor->id >= MAX_ACTORS) ? NULL : actor;
 }
 
 void move_actor(GameActor* actor, const FVec2 pos) {
@@ -1133,7 +1129,7 @@ void move_actor(GameActor* actor, const FVec2 pos) {
 // INTERP
 // ======
 
-#define BAD_ACTOR(actor) ((actor) == NULL || (actor)->id < 0L || (actor)->id >= MAX_ACTORS)
+#define BAD_ACTOR(actor) ((actor) == NULL || (actor)->id < 0 || (actor)->id >= MAX_ACTORS)
 
 const InterpActor* get_interp(const GameActor* actor) {
     return (BAD_ACTOR(actor)) ? NULL : &interp_actors[actor->id];
@@ -1145,7 +1141,7 @@ void skip_interp(const GameActor* actor) {
 
     InterpActor* iactor = &interp_actors[actor->id];
     iactor->type = actor->type;
-    iactor->from = iactor->pos = actor->pos;
+    iactor->from = iactor->to = iactor->pos = actor->pos;
 }
 
 void align_interp(const GameActor* actor, const GameActor* from) {

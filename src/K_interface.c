@@ -123,72 +123,79 @@ iu_dont_change:
     }
 
     poll_game();
-    for (new_frame(); got_ticks(); next_tick()) {
-        // Booter
-        if (!boot_state && boot_reason != NULL) {
-            UI* message = create_ui(UI_MESSAGE, NULL);
-            if (message == NULL) {
-                cancel_boot();
+
+    new_frame();
+    if (got_ticks()) {
+        for (; got_ticks(); next_tick()) {
+            // Booter
+            if (!boot_state && boot_reason != NULL) {
+                UI* message = create_ui(UI_MESSAGE, NULL);
+                if (message == NULL) {
+                    cancel_boot();
+                } else {
+                    message->flags |= UIF_MEGABLOCK;
+                    UIMessageData* userdata = message->userdata;
+                    userdata->title = "msg_error";
+                    userdata->fmt = fmt_boot;
+                    userdata->cancel = cancel_boot;
+
+                    play_generic_sound("ui/error", PLAY_SYSTEM);
+                    boot_state = TRUE;
+                }
+
+                WARN("Booted: %s", boot_reason);
+            }
+
+            // Chat
+            chat_update();
+
+            // Cursor
+            if (cursor_frame > 0) {
+                cursor_frame += 6;
+                if (cursor_frame >= 120)
+                    cursor_frame = 0;
+            } else if (SDL_fmodf(totalticks(), 5.f) < 1.f && SDL_rand(20) == 10) {
+                ++cursor_frame;
+            }
+
+            // UI
+            UIFlags should_block = 0;
+            UI* ui = root_ui;
+            while (ui != NULL) {
+                if (ui->flags & UIF_DESTROY) {
+                    UI* killed = ui;
+                    ui = killed->parent;
+                    destroy_ui(killed);
+                    continue;
+                }
+
+                should_block |= ui->flags & (UIF_BLOCK | UIF_MEGABLOCK);
+
+                if (ui->child == NULL) {
+                    UI_CALL(ui, tick);
+                    break;
+                }
+
+                ui = ui->child;
+            }
+
+            // Screen
+            if (((should_block & UIF_BLOCK) && !is_connected()) || (should_block & UIF_MEGABLOCK)) {
+                pause_audio_state(TRUE);
             } else {
-                message->flags |= UIF_MEGABLOCK;
-                UIMessageData* userdata = message->userdata;
-                userdata->title = "msg_error";
-                userdata->fmt = fmt_boot;
-                userdata->cancel = cancel_boot;
-
-                play_generic_sound("ui/error", PLAY_SYSTEM);
-                boot_state = TRUE;
+                pause_audio_state(FALSE);
+                SCREEN_CALL(current_screen, tick);
             }
 
-            WARN("Booted: %s", boot_reason);
-        }
-
-        // Chat
-        chat_update();
-
-        // Cursor
-        if (cursor_frame > 0) {
-            cursor_frame += 6;
-            if (cursor_frame >= 120)
-                cursor_frame = 0;
-        } else if (SDL_fmodf(totalticks(), 5.f) < 1.f && SDL_rand(20) == 10) {
-            ++cursor_frame;
-        }
-
-        // UI
-        UIFlags should_block = 0;
-        UI* ui = root_ui;
-        while (ui != NULL) {
-            if (ui->flags & UIF_DESTROY) {
-                UI* killed = ui;
-                ui = killed->parent;
-                destroy_ui(killed);
-                continue;
-            }
-
-            should_block |= ui->flags & (UIF_BLOCK | UIF_MEGABLOCK);
-
-            if (ui->child == NULL) {
-                UI_CALL(ui, tick);
+            // Transition
+            if (to_screen != SCR_NULL)
                 break;
-            }
-
-            ui = ui->child;
         }
 
-        // Screen
-        if (((should_block & UIF_BLOCK) && !is_connected()) || (should_block & UIF_MEGABLOCK)) {
-            pause_audio_state(TRUE);
-        } else {
-            pause_audio_state(FALSE);
-            SCREEN_CALL(current_screen, tick);
-        }
-
-        // Transition
-        if (to_screen != SCR_NULL)
-            break;
+        SCREEN_CALL(current_screen, pre_interp);
     }
 
+    SCREEN_CALL(current_screen, interp);
     start_drawing();
     SCREEN_CALL(current_screen, draw);
     start_drawing_ui();

@@ -13,17 +13,13 @@ static void start(const void* secret, size_t secret_size) {
 }
 
 static void tick() {
-    Bool can_tick = TRUE;
     if (topui() == NULL && kb_pressed(KB_PAUSE)) {
         create_ui(UI_PAUSE, NULL);
         if (!is_connected())
-            can_tick = FALSE;
+            return;
     }
 
-    if (can_tick)
-        tick_game();
-
-    tick_interp();
+    tick_game();
 }
 
 static void end() {
@@ -34,6 +30,8 @@ static void end() {
 const ScreenTable TAB_GAME = {
     .start = start,
     .tick = tick,
+    .pre_interp = pre_interp_game,
+    .interp = interp_game,
     .draw_ui = draw_game,
     .end = end,
 };

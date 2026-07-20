@@ -28,6 +28,7 @@ enum {
 typedef struct {
     void (*start)(const void*, size_t);
     void (*tick)();
+    void (*pre_interp)(), (*interp)();
     void (*draw)(), (*draw_ui)();
     void (*end)();
 } ScreenTable;

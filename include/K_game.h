@@ -247,6 +247,9 @@ enum {
 
 #define TOGGLE_FLAG(actor, flag) (ANY_FLAG(actor, flag) ? FLAG_OFF(actor, flag) : FLAG_ON(actor, flag))
 
+#define FOR_EACH_ACTOR(AAA)                                                                                            \
+    for ((AAA) = get_actor(gamestate()->live_actors); (AAA) != NULL; (AAA) = get_actor((AAA)->previous))
+
 typedef Uint32 ActorFlags;
 enum {
     FLG_VISIBLE = 1 << 0,
@@ -359,7 +362,7 @@ void start_game(const GameContext*), nuke_game();
 void poll_game();
 float frames_ahead();
 void tick_game(), draw_game();
-void tick_interp();
+void pre_interp_game(), interp_game();
 
 const GameContext* gamecontext();
 const LevelInfo* levelinfo();
