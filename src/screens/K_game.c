@@ -13,13 +13,17 @@ static void start(const void* secret, size_t secret_size) {
 }
 
 static void tick() {
+    Bool can_tick = TRUE;
     if (topui() == NULL && kb_pressed(KB_PAUSE)) {
         create_ui(UI_PAUSE, NULL);
         if (!is_connected())
-            return;
+            can_tick = FALSE;
     }
 
-    tick_game();
+    if (can_tick)
+        tick_game();
+
+    tick_interp();
 }
 
 static void end() {

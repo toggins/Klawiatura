@@ -335,6 +335,11 @@ typedef struct {
     const char* strings[GSTR_SIZE];
 } LevelInfo;
 
+typedef struct {
+    ActorType type;
+    FVec2 from, to, pos;
+} InterpActor;
+
 void game_init();
 
 Uint32 get_game_hash();
@@ -354,6 +359,7 @@ void start_game(const GameContext*), nuke_game();
 void poll_game();
 float frames_ahead();
 void tick_game(), draw_game();
+void tick_interp();
 
 const GameContext* gamecontext();
 const LevelInfo* levelinfo();
@@ -385,3 +391,7 @@ void draw_dead(const GameActor*);
 void quake_at_actor(const GameActor*, float);
 
 Sint32 rng(Sint32);
+
+const InterpActor* get_interp(const GameActor*);
+void skip_interp(const GameActor*);
+void align_interp(const GameActor*, const GameActor*);

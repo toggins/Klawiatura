@@ -12,7 +12,8 @@ Klawiatura is an enhanced port of Mario Forever 4.0, written in plain C.
 ### Features
 
 - Native support for Windows, Linux and Emscripten
-- A basic mod system with custom worlds and levels
+- High framerates
+- Basic mod system with custom worlds and levels
 - **Online multiplayer with up to 8 players**
 
 ### Changes
@@ -24,7 +25,7 @@ Klawiatura is an enhanced port of Mario Forever 4.0, written in plain C.
 - Enhancements:
   - Minor graphics and audio fixes
   - Stereo sound panning
-  - Coyote time (2 frames) and longer crouch sliding
+  - Improved physics and interactions
 
 ## Multiplayer
 

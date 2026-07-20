@@ -9,6 +9,7 @@
 #include "K_net.h"
 #include "K_replay.h"
 #include "K_string.h"
+#include "K_tick.h"
 #include "K_video.h"
 
 #define ACTOR_CALL_STATIC(type, fn, ...)                                                                               \
@@ -171,6 +172,7 @@ static GameContext game_context = {0};
 
 static LevelInfo* level_info = NULL;
 static GameState* game_state = NULL;
+static InterpActor* interp_actors = NULL;
 
 static Uint8 boot_state = 0;
 static char boot_reason[256] = "";
@@ -487,6 +489,9 @@ void start_game(const GameContext* ctx) {
     start_audio_state();
     start_game_state();
 
+    interp_actors = SDL_calloc(MAX_ACTORS, sizeof(*interp_actors));
+    EXPECT(interp_actors, "Failed to allocate interpolation actors");
+
     // Load assets
     load_sprite_num("ui/coins/%u", 3, AKL_NEVER);
     load_sprite("ui/bezel_l", AKL_NEVER);
@@ -621,6 +626,8 @@ void nuke_game() {
     game_session = NULL;
     destroy_surface(game_surface);
     game_surface = NULL;
+    SDL_free(interp_actors);
+    interp_actors = NULL;
 }
 
 void tick_game() {
@@ -757,6 +764,37 @@ void tick_game() {
     }
 }
 
+void tick_interp() {
+    const int fps = get_framerate();
+
+    if (fps > 0 && fps <= TICKRATE) {
+        for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL;
+            actor = get_actor(actor->previous))
+        {
+            InterpActor* iactor = &interp_actors[actor->id];
+            iactor->type = actor->type;
+            iactor->from = iactor->to = iactor->pos = actor->pos;
+        }
+
+        return;
+    }
+
+    for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
+    {
+        InterpActor* iactor = &interp_actors[actor->id];
+
+        if (iactor->type != actor->type) {
+            iactor->type = actor->type;
+            iactor->from = iactor->to = iactor->pos = actor->pos;
+
+            continue;
+        }
+
+        iactor->from = iactor->to;
+        iactor->to = actor->pos;
+    }
+}
+
 // NOLINTBEGIN(misc-no-recursion)
 static void iterate_and_draw_actor(const GameActor* actor) {
     if (actor == NULL)
@@ -779,6 +817,15 @@ static void iterate_and_draw_actor(const GameActor* actor) {
 // NOLINTEND(misc-no-recursion)
 
 static void draw_game_state() {
+    // INTERPOLATE ACTORS FIRST
+    const Fixed remainder = Ffrac(Float2Fx(totalticks()));
+    for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
+    {
+        InterpActor* iactor = &interp_actors[actor->id];
+        iactor->pos = Vlerp(iactor->from, iactor->to, remainder);
+    }
+
+    // NOW DRAW STATE
     static mat4 oview = GLM_MAT4_IDENTITY_INIT, view = GLM_MAT4_IDENTITY_INIT;
 
     get_view_matrix(oview);
@@ -987,6 +1034,7 @@ found:
 
     FLAG_ON(actor, FLG_VISIBLE);
     ACTOR_CALL(actor, create);
+    skip_interp(actor);
 
     game_state->next_actor = (ActorID)((index + 1) % MAX_ACTORS);
     return actor;
@@ -1080,3 +1128,32 @@ void move_actor(GameActor* actor, const FVec2 pos) {
         first->next_cell = actor->id;
     game_state->grid[cell] = actor->id;
 }
+
+// ======
+// INTERP
+// ======
+
+#define BAD_ACTOR(actor) ((actor) == NULL || (actor)->id < 0L || (actor)->id >= MAX_ACTORS)
+
+const InterpActor* get_interp(const GameActor* actor) {
+    return (BAD_ACTOR(actor)) ? NULL : &interp_actors[actor->id];
+}
+
+void skip_interp(const GameActor* actor) {
+    if (BAD_ACTOR(actor))
+        return;
+
+    InterpActor* iactor = &interp_actors[actor->id];
+    iactor->type = actor->type;
+    iactor->from = iactor->pos = actor->pos;
+}
+
+void align_interp(const GameActor* actor, const GameActor* from) {
+    if (BAD_ACTOR(actor) || BAD_ACTOR(from))
+        return;
+
+    InterpActor *iactor = &interp_actors[actor->id], *ifrom = &interp_actors[from->id];
+    iactor->from = ifrom->pos;
+}
+
+#undef BAD_ACTOR

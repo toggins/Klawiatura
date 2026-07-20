@@ -54,7 +54,8 @@ static void draw_water(const GameActor* actor) {
     batch_reset();
 
     const VideoState* video_state = videostate();
-    const Sint32 ay = Fx2Int(actor->pos.y), cbottom = Fx2Int(video_state->camera.pos.y) + HALF_SCREEN_HEIGHT;
+    const Sint32 ay = Fx2Int(get_interp(actor)->pos.y),
+                 cbottom = Fx2Int(video_state->camera.pos.y) + HALF_SCREEN_HEIGHT;
     if (ay >= cbottom)
         return;
 
