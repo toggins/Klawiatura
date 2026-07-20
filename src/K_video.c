@@ -550,9 +550,8 @@ void load_sprite(const char* name, AssetKeepLevel keep) {
             yyjson_doc_free(json);
             return;
         }
-    } else {
-        if (texture->base.keep < keep)
-            texture->base.keep = keep;
+    } else if (texture->base.keep < keep) {
+        texture->base.keep = keep;
     }
 
     Sprite sprite = {0};
@@ -635,10 +634,10 @@ void load_font(const char* name, AssetKeepLevel keep) {
         if (texture == NULL) {
             load_texture(tname, keep);
             texture = (Texture*)TinyMapGet(&textures, tkey);
-        } else {
-            if (texture->base.keep < keep)
-                texture->base.keep = keep;
+        } else if (texture->base.keep < keep) {
+            texture->base.keep = keep;
         }
+
         if (texture == NULL) {
             WTF("Font \"%s\" has invalid texture \"%s\"", name, tname);
             continue;
