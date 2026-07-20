@@ -7,7 +7,7 @@
 > [!TIP]
 > Check out [the releases](https://github.com/toggins/Klawiatura/releases/latest) or [play in your browser](https://mario.games.nonk.dev) to get started.
 
-Klawiatura is an enhanced port of Mario Forever 4.0, written in plain C.
+**Klawiatura** (a.k.a. **Mario Together**) is an enhanced port of Mario Forever 4.0, written in plain C.
 
 ### Features
 
