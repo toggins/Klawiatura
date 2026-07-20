@@ -439,6 +439,9 @@ static void load_level(TinyHash key) {
         if (actor == NULL)
             continue;
 
+        if (yyjson_arr_size(jpos) > 2)
+            actor->depth = Int2Fx(yyjson_get_sint(yyjson_arr_get(jpos, 2)));
+
         yyjson_val* jscale = yyjson_obj_get(jval2, "scale");
         if (yyjson_is_arr(jscale)) {
             actor->box = Rmul(actor->box, (FVec2){
@@ -446,8 +449,6 @@ static void load_level(TinyHash key) {
                                               (Fixed)yyjson_get_sint(yyjson_arr_get(jscale, 1)),
                                           });
         }
-
-        actor->depth = Int2Fx(yyjson_get_sint(yyjson_arr_get(jpos, 2)));
 
         yyjson_val* jvalues = yyjson_obj_get(jval2, "values");
         const size_t nvarr = yyjson_arr_size(jvalues);
@@ -487,8 +488,7 @@ void start_game(const GameContext* ctx) {
     start_game_state();
 
     // Load assets
-    load_texture_num("markers/water/%u", 5, AKL_NEVER);
-    load_sprite_num("ui/coins/%u", 4, AKL_NEVER);
+    load_sprite_num("ui/coins/%u", 3, AKL_NEVER);
     load_sprite("ui/bezel_l", AKL_NEVER);
     load_sprite("ui/bezel_r", AKL_NEVER);
     load_font("hud", AKL_NEVER);
@@ -819,7 +819,7 @@ static void draw_game_state() {
     batch_string("hud", 16.f, fmt("%u", player->score));
 
     batch_pos(B_XY(224.f, 34.f));
-    batch_sprite(fmt("ui/coins/%i", (int)((float)(game_state->time) / 6.25f) % 4));
+    batch_sprite(fmt("ui/coins/%i", (int)((float)(game_state->time) / 6.25f) % 3));
     batch_pos(B_XY(234.f, 34.f));
     batch_align(B_TOP_LEFT);
     batch_string("hud", 16.f, fmt(" × %u", player->coins));
