@@ -791,12 +791,15 @@ void pre_interp_game() {
 }
 
 void interp_game() {
-    const Fixed remainder = Float2Fx(pendingticks());
+    const int fps = get_framerate();
+    if (fps > 0 && fps <= TICKRATE)
+        return;
 
+    const Fixed t = Float2Fx(pendingticks());
     const GameActor* actor = NULL;
     FOR_EACH_ACTOR(actor) {
         InterpActor* iactor = &interp_actors[actor->id];
-        iactor->pos = Vlerp(iactor->from, actor->pos, remainder);
+        iactor->pos = Vlerp(iactor->from, actor->pos, t);
     }
 }
 
