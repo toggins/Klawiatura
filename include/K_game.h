@@ -88,6 +88,7 @@ enum {
     ACT_PLAYER_DEAD,
     ACT_CHECKPOINT,
     ACT_WATER,
+    ACT_WATER_TRIGGER,
 
     ACT_DUMMY = 254,
 

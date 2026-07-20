@@ -7,6 +7,8 @@
 void POPULATE_ACTORS_TABLE() {
     extern const GameActorTable* ACTORS[ACT_SIZE];
 
+    ACTOR(WATER);
+    ACTOR(WATER_TRIGGER);
     ACTOR(DUMMY);
 
     static const GameActorTable TAB_NULL = {NULL};

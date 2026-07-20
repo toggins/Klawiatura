@@ -1,0 +1,5 @@
+{
+    "texture": "markers/water",
+    "size": [640, 16],
+    "uvs": [1, 1, 641, 17]
+}
