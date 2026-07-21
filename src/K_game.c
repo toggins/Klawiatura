@@ -540,8 +540,6 @@ void start_game(const GameContext* ctx) {
 
     for (PlayerID i = 0; i < game_context.num_players; i++)
         respawn_player(get_player(i));
-
-    play_state_track(STS_MAIN, level_info->strings[GSTR_TRACK1], PLAY_LOOPING);
 }
 
 static void nuke_game_state() {
@@ -956,6 +954,13 @@ PlayerID viewplayer() {
     return view_player;
 }
 
+static void try_play_track(Uint8 track) {
+    if (track < 0 || track > (GSTR_TRACK_END - GSTR_TRACK_START))
+        stop_state_track(STS_MAIN);
+    else
+        play_state_track(STS_MAIN, level_info->strings[GSTR_TRACK_START + track], PLAY_LOOPING);
+}
+
 /// !!! CLIENT-SIDE !!!
 void set_view_player(const GamePlayer* player) {
     if (player == NULL || view_player == player->id)
@@ -964,12 +969,8 @@ void set_view_player(const GamePlayer* player) {
     const GamePlayer* old_player = get_player(view_player);
     view_player = player->id;
 
-    if (old_player == NULL || player->track != old_player->track) {
-        if (player->track < 0 || player->track > (GSTR_TRACK_END - GSTR_TRACK_START))
-            stop_state_track(STS_MAIN);
-        else
-            play_state_track(STS_MAIN, level_info->strings[GSTR_TRACK_START + player->track], PLAY_LOOPING);
-    }
+    if (old_player == NULL || player->track != old_player->track)
+        try_play_track(player->track);
 }
 
 GamePlayer* get_player(PlayerID pid) {
@@ -1023,12 +1024,8 @@ void set_player_track(GamePlayer* player, Uint8 track) {
         return;
 
     player->track = track;
-    if (player->id == view_player) {
-        if (track < 0 || track > (GSTR_TRACK_END - GSTR_TRACK_START))
-            stop_state_track(STS_MAIN);
-        else
-            play_state_track(STS_MAIN, level_info->strings[GSTR_TRACK_START + track], PLAY_LOOPING);
-    }
+    if (player->id == view_player)
+        try_play_track(track);
 }
 
 // ======
