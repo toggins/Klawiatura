@@ -138,10 +138,10 @@ jobs:
             -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
 
       - name: Build
-        run: cmake --build build --target all --config Release
+        run: cmake --build build --target ALL_BUILD --config Release
 
       - name: Package
-        run: cmake --build build --target package --config Release
+        run: cmake --build build --target PACKAGE --config Release
 
       - name: Release
         uses: softprops/action-gh-release@v3
