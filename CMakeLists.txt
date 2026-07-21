@@ -24,6 +24,9 @@ endif()
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT IS_IPO_SUPPORTED)
+
 # SDL3 (3.4.10)
 set(SDL_EMSCRIPTEN_PERSISTENT_PATH /storage CACHE INTERNAL "")
 set(SDL_SHARED OFF CACHE INTERNAL "")
@@ -207,6 +210,15 @@ if(NOT MSVC AND NOT EMSCRIPTEN AND CMAKE_BUILD_TYPE STREQUAL "Release")
     add_custom_command(TARGET Klawiatura POST_BUILD
         COMMAND ${CMAKE_STRIP} $<TARGET_FILE:Klawiatura>
         COMMENT "Stripping release binary")
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL Release)
+    if(IS_IPO_SUPPORTED)
+        set_target_properties(Klawiatura PROPERTIES INTERPROCEDURAL_OPTIMIZATION ON)
+        message(STATUS "LTO enforced!")
+    else()
+        message(STATUS "LTO is not supported :(")
+    endif()
 endif()
 
 if(KLAW_DISCORD)
