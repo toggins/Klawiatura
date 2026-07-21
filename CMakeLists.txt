@@ -17,8 +17,6 @@ set(BUILD_SHARED_LIBS OFF)
 
 if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-else()
-    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif()
 
 include(FetchContent)
@@ -209,10 +207,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})
 if(CMAKE_BUILD_TYPE STREQUAL Release AND NOT MSVC AND NOT EMSCRIPTEN)
     target_compile_options(Klawiatura PRIVATE -ffunction-sections -fdata-sections)
     target_link_options(Klawiatura PRIVATE -Wl,--gc-sections) # -Wl,--icf=all
-
-    if(WIN32)
-        target_link_options(Klawiatura PRIVATE -lstdc++_s)
-    endif()
 endif()
 
 if(NOT MSVC AND NOT EMSCRIPTEN AND CMAKE_BUILD_TYPE STREQUAL "Release")
