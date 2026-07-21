@@ -17,6 +17,8 @@ set(BUILD_SHARED_LIBS OFF)
 
 if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+elseif(EMSCRIPTEN)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
 endif()
 
 include(FetchContent)
@@ -176,9 +178,6 @@ if(KLAW_DISCORD)
 endif()
 
 # Build
-if(EMSCRIPTEN)
-    set(CMAKE_EXECUTABLE_SUFFIX ".html")
-endif()
 
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
 file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/include/*.h)
@@ -203,6 +202,10 @@ endif()
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/generated)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})
+
+if(NOT MSVC)
+    target_link_options(Klawiatura PRIVATE -static-libgcc -static-libstdc++)
+endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL Release AND NOT MSVC AND NOT EMSCRIPTEN)
     target_compile_options(Klawiatura PRIVATE -ffunction-sections -fdata-sections)
