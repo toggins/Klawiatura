@@ -149,7 +149,7 @@ list(APPEND LIBS S_tructures)
 
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG 3f64007894abf0ec0577010640ec73397bc07164
+	GIT_TAG 11a895387fa648ef6cf14e158e812685f546513b
 	EXCLUDE_FROM_ALL)
 
 FetchContent_MakeAvailable(NutBlast)
