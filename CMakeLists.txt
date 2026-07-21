@@ -209,6 +209,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})
 if(CMAKE_BUILD_TYPE STREQUAL Release AND NOT MSVC AND NOT EMSCRIPTEN)
     target_compile_options(Klawiatura PRIVATE -ffunction-sections -fdata-sections)
     target_link_options(Klawiatura PRIVATE -Wl,--gc-sections) # -Wl,--icf=all
+
+    if(WIN32)
+        target_link_options(Klawiatura PRIVATE -lstdc++_s)
+    endif()
 endif()
 
 if(NOT MSVC AND NOT EMSCRIPTEN AND CMAKE_BUILD_TYPE STREQUAL "Release")
