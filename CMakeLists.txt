@@ -206,6 +206,11 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/generated)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})
 
+if(CMAKE_BUILD_TYPE STREQUAL Release AND NOT MSVC AND NOT EMSCRIPTEN)
+    target_compile_options(Klawiatura PRIVATE -ffunction-sections -fdata-sections)
+    target_link_options(Klawiatura PRIVATE -Wl,--gc-sections) # -Wl,--icf=all
+endif()
+
 if(NOT MSVC AND NOT EMSCRIPTEN AND CMAKE_BUILD_TYPE STREQUAL "Release")
     add_custom_command(TARGET Klawiatura POST_BUILD
         COMMAND ${CMAKE_STRIP} $<TARGET_FILE:Klawiatura>
