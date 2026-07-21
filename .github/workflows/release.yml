@@ -23,35 +23,15 @@ env:
     libdecor-0-dev liburing-dev
 
 jobs:
-  release-desktop:
-    name: Publish ${{ matrix.name }} binaries
-    runs-on: ubuntu-24.04
+  release-linux:
+    name: Publish Linux binaries
+    runs-on: ubuntu-latest
     permissions:
       contents: write
 
-    strategy:
-      matrix:
-        include:
-          - { name: Linux }
-          - { name: Win32, mingw: 32 }
-          - { name: Win64, mingw: 64 }
-
     env:
       CACHE_BUST: 1
-      OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
-      MINGW_ARCH: ${{ matrix.mingw == 32 && 'i686' || 'x86_64' }}
-      MINGW_PACKAGES: >-
-        g++-mingw-w64-${{ matrix.mingw == 32 && 'i686' || 'x86-64' }}-win32
-        gcc-mingw-w64-${{ matrix.mingw == 32 && 'i686' || 'x86-64' }}-win32
-      MINGW_SHEBANG: >-
-        -D CMAKE_C_COMPILER=${MINGW_ARCH}-w64-mingw32-gcc
-        -D CMAKE_CXX_COMPILER=${MINGW_ARCH}-w64-mingw32-g++
-        -D CMAKE_RC_COMPILER=${MINGW_ARCH}-w64-mingw32-windres
-        -D CMAKE_SYSTEM_NAME=Windows
-        -D CMAKE_FIND_ROOT_PATH=/usr/${MINGW_ARCH}-w64-mingw32
-        -D CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER
-        -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY
-        -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
+      OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-Linux
 
     steps:
       - name: Silence `git init` warning
@@ -73,29 +53,22 @@ jobs:
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           version: 1.4
-          packages: >-
-            ${{ env.CRAZY_AHH_DEPS }}
-            ${{ matrix.mingw && env.MINGW_PACKAGES || '' }}
-      - name: Symlink MinGW compiler binaries
-        if: matrix.mingw
-        run: |
-          sudo ln -sf /usr/bin/${MINGW_ARCH}-w64-mingw32-gcc{-win32,}
-          sudo ln -sf /usr/bin/${MINGW_ARCH}-w64-mingw32-g++{-win32,}
+          packages: ${{ env.CRAZY_AHH_DEPS }}
 
       - name: Cache build dir
         id: cache-build
         uses: actions/cache@v6
         with:
           path: build
-          key: ${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
+          key: ${{ env.CACHE_BUST }}-Linux-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            ${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-
-            ${{ env.CACHE_BUST }}-${{ matrix.name }}-
+            ${{ env.CACHE_BUST }}-Linux-${{ github.ref_name }}-
+            ${{ env.CACHE_BUST }}-Linux-
 
       - name: Configure
-        run: |
-          cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release \
-            ${{ matrix.mingw && env.MINGW_SHEBANG || '' }} \
+        run: >-
+          cmake -G Ninja -S . -B build
+            -D CMAKE_BUILD_TYPE=Release
             -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
 
       - name: Build
@@ -103,6 +76,70 @@ jobs:
 
       - name: Package
         run: cmake --build build --target package
+
+      - name: Release
+        uses: softprops/action-gh-release@v3
+        with:
+          draft: ${{ github.ref_name != 'master' }}
+          tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
+          prerelease: ${{ github.ref_name == 'master' }}
+          files: build/${{ env.OUTNAME }}.zip
+
+  release-windose:
+    name: Publish Win${{ matrix.bits }} binaries
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        bits: [32, 64]
+
+    env:
+      CACHE_BUST: 1
+      OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-Win${{ matrix.bits }}
+
+    steps:
+      - name: Silence `git init` warning
+        run: git config --global init.defaultBranch master
+
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Source Discord Social SDK
+        shell: bash
+        run: |
+          cd external/discord
+          git init
+          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/discord.git
+          git pull origin master
+
+      - name: Restore source timestamps for crazy CMake caching benefits
+        uses: chetan/git-restore-mtime-action@v2
+
+      - name: Install dependencies
+        run: py -m pip install jinja2
+
+      - name: Cache build dir
+        id: cache-build
+        uses: actions/cache@v6
+        with:
+          path: build
+          key: ${{ env.CACHE_BUST }}-Win${{ matrix.bits }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: |
+            ${{ env.CACHE_BUST }}-Win${{ matrix.bits }}-${{ github.ref_name }}-
+            ${{ env.CACHE_BUST }}-Win${{ matrix.bits }}-
+
+      - name: Configure
+        run: >-
+          cmake -G "Visual Studio 18 2026" -A Win${{ matrix.bits }}
+            -S . -B build -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
+
+      - name: Build
+        run: cmake --build build --target all --config Release
+
+      - name: Package
+        run: cmake --build build --target package --config Release
 
       - name: Release
         uses: softprops/action-gh-release@v3
@@ -122,8 +159,10 @@ jobs:
       contents: read
       pages: write
       id-token: write
+
     env:
       CACHE_BUST: 3
+
     steps:
       - name: Checkout
         uses: actions/checkout@v7
