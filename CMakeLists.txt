@@ -203,6 +203,12 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/generated)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})
 
+if(NOT MSVC AND NOT EMSCRIPTEN AND CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_custom_command(TARGET Klawiatura POST_BUILD
+        COMMAND ${CMAKE_STRIP} $<TARGET_FILE:Klawiatura>
+        COMMENT "Stripping release binary")
+endif()
+
 if(KLAW_DISCORD)
     target_compile_definitions(${PROJECT_NAME} PRIVATE K_DISCORD=1)
 endif()
