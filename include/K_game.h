@@ -9,7 +9,7 @@ typedef Sint8 PlayerID;
 #define MAX_PLAYERS 8
 #define NULL_PLAYER ((PlayerID)(-1))
 
-#define DEFAULT_LIVES 4
+#define DEFAULT_LIVES 5
 #define MAX_PROJECTILES 2
 #define MAX_SINKING_PROJECTILES 6
 
@@ -86,7 +86,13 @@ enum {
     ACT_PLAYER,
     ACT_PLAYER_EFFECT,
     ACT_PLAYER_DEAD,
+    ACT_POINTS,
     ACT_CHECKPOINT,
+    ACT_CHECKPOINT_EFFECT,
+    ACT_CHECKPOINT_TRAIL,
+    ACT_GOAL_BAR,
+    ACT_GOAL_BAR_FLY,
+    ACT_GOAL_MARK,
     ACT_WATER,
     ACT_WATER_TRIGGER,
 
@@ -122,8 +128,7 @@ enum {
     PF_JUMP,
     PF_FALL,
     PF_DUCK,
-    PF_FIRE1,
-    PF_FIRE2,
+    PF_FIRE,
     PF_SWIM1,
     PF_SWIM2,
     PF_SWIM3,
@@ -250,6 +255,11 @@ enum {
 #define FOR_EACH_ACTOR(AAA)                                                                                            \
     for ((AAA) = get_actor(gamestate()->live_actors); (AAA) != NULL; (AAA) = get_actor((AAA)->previous))
 
+#define POS_SPEED(actor)                                                                                               \
+    (FVec2) {                                                                                                          \
+        (actor)->pos.x + VAL(actor, X_SPEED), (actor)->pos.y + VAL(actor, Y_SPEED)                                     \
+    }
+
 typedef Uint32 ActorFlags;
 enum {
     FLG_VISIBLE = 1 << 0,
@@ -307,7 +317,7 @@ typedef struct {
     void (*on_left)(GameActor*, GameActor*), (*on_right)(GameActor*, GameActor*);
     void (*on_top)(GameActor*, GameActor*), (*on_bottom)(GameActor*, GameActor*);
     PlayerID (*owner)(const GameActor*);
-} GameActorTable;
+} ActorTable;
 
 typedef Uint8 GameWarpID;
 #define MAX_GAME_WARPS 4
@@ -370,8 +380,10 @@ GameState* gamestate();
 
 PlayerID localplayer(), viewplayer();
 void set_view_player(const GamePlayer*);
+
 GamePlayer *get_player(PlayerID), *get_owner(const GameActor*);
 GameActor *respawn_player(GamePlayer*), *nearest_player_actor(const FVec2);
+void set_player_track(GamePlayer*, Uint8);
 
 void load_actor(ActorType);
 GameActor *create_actor(ActorType, const FVec2), *get_actor(ActorID);
@@ -395,6 +407,6 @@ void quake_at_actor(const GameActor*, float);
 
 Sint32 rng(Sint32);
 
-const InterpActor* get_interp(const GameActor*);
+const FVec2 get_interp(const GameActor*);
 void skip_interp(const GameActor*);
 void align_interp(const GameActor*, const GameActor*);

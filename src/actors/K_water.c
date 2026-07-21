@@ -54,8 +54,7 @@ static void draw_water(const GameActor* actor) {
     batch_reset();
 
     const VideoState* video_state = videostate();
-    const Sint32 ay = Fx2Int(get_interp(actor)->pos.y),
-                 cbottom = Fx2Int(video_state->camera.pos.y) + HALF_SCREEN_HEIGHT;
+    const Sint32 ay = Fx2Int(get_interp(actor).y), cbottom = Fx2Int(video_state->camera.pos.y) + HALF_SCREEN_HEIGHT;
     if (ay >= cbottom)
         return;
 
@@ -73,7 +72,7 @@ static void draw_water(const GameActor* actor) {
     batch_rectangle(NULL, B_WH(SCREEN_WIDTH, cbottom - ay2));
 }
 
-const GameActorTable TAB_WATER = {
+const ActorTable TAB_WATER = {
     .load = load_water,
     .create = create_water,
     .cleanup = cleanup_water,
@@ -109,7 +108,7 @@ static void collide_water_trigger(GameActor* actor, GameActor* other) {
     play_state_sound("water", 0, NULL);
 }
 
-const GameActorTable TAB_WATER_TRIGGER = {
+const ActorTable TAB_WATER_TRIGGER = {
     .load = load_water_trigger,
     .create = create_water_trigger,
     .collide = collide_water_trigger,

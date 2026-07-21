@@ -12,6 +12,9 @@
 #include "K_tick.h"
 #include "K_video.h"
 
+#include "actors/K_checkpoint.h"
+#include "actors/K_player.h"
+
 #define ACTOR_CALL_STATIC(type, fn, ...)                                                                               \
     do {                                                                                                               \
         if (ACTORS[(type)] != NULL && ACTORS[(type)]->fn != NULL)                                                      \
@@ -35,7 +38,7 @@ typedef struct {
 } SaveState;
 
 // `extern` in K_actors.c
-const GameActorTable* ACTORS[ACT_SIZE] = {0};
+const ActorTable* ACTORS[ACT_SIZE] = {0};
 
 static const GameCharacter CHARACTERS[CHR_SIZE] = {
     [CHR_MARIO] = {
@@ -90,8 +93,7 @@ static const GameCharacter CHARACTERS[CHR_SIZE] = {
                 [PF_JUMP] = "characters/mario/fire/jump",
                 [PF_FALL] = "characters/mario/fire/fall",
                 [PF_DUCK] = "characters/mario/fire/duck",
-                [PF_FIRE1] = "characters/mario/fire/fire0",
-                [PF_FIRE2] = "characters/mario/fire/fire1",
+                [PF_FIRE] = "characters/mario/fire/fire",
                 [PF_SWIM1] = "characters/mario/fire/swim0",
                 [PF_SWIM2] = "characters/mario/fire/swim1",
                 [PF_SWIM3] = "characters/mario/fire/swim2",
@@ -113,8 +115,7 @@ static const GameCharacter CHARACTERS[CHR_SIZE] = {
                 [PF_JUMP] = "characters/mario/beetroot/jump",
                 [PF_FALL] = "characters/mario/beetroot/fall",
                 [PF_DUCK] = "characters/mario/beetroot/duck",
-                [PF_FIRE1] = "characters/mario/beetroot/fire0",
-                [PF_FIRE2] = "characters/mario/beetroot/fire1",
+                [PF_FIRE] = "characters/mario/beetroot/fire",
                 [PF_SWIM1] = "characters/mario/beetroot/swim0",
                 [PF_SWIM2] = "characters/mario/beetroot/swim1",
                 [PF_SWIM3] = "characters/mario/beetroot/swim2",
@@ -334,6 +335,7 @@ static void start_game_state() {
             game_state->players[i].sinking_projectiles[j] = NULL_ACTOR;
 
         game_state->players[i].lives = DEFAULT_LIVES;
+        game_state->players[i].track = 255;
     }
 
     game_state->live_actors = NULL_ACTOR;
@@ -514,7 +516,7 @@ void start_game(const GameContext* ctx) {
         cfg.max_spectators = get_game_spectator_count();
 
     gekko_start(game_session, &cfg);
-    local_player = view_player = populate_game(game_session, game_context.num_players);
+    local_player = populate_game(game_session, game_context.num_players);
 
     // Surface
     game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
@@ -628,6 +630,7 @@ void nuke_game() {
     game_surface = NULL;
     SDL_free(interp_actors);
     interp_actors = NULL;
+    local_player = view_player = NULL_PLAYER;
 }
 
 void tick_game() {
@@ -835,9 +838,13 @@ static void draw_game_state() {
     const GamePlayer* player = get_player(view_player);
 
     VideoCamera* camera = &videostate()->camera;
-    camera->pos = (player == NULL) ? Vadd(level_info->bounds.start, F_HALF_SCREEN)
-                                   : Vclamp(player->pos, Vadd(player->bounds.start, F_HALF_SCREEN),
-                                         Vsub(player->bounds.end, F_HALF_SCREEN));
+    if (player == NULL) {
+        camera->pos = Vadd(level_info->bounds.start, F_HALF_SCREEN);
+    } else {
+        const GameActor* pawn = get_actor(player->actor);
+        camera->pos = Vclamp((pawn == NULL) ? player->pos : get_interp(pawn), Vadd(player->bounds.start, F_HALF_SCREEN),
+            Vsub(player->bounds.end, F_HALF_SCREEN));
+    }
 
     const Sint32 cx = Fx2Int(camera->pos.x), cy = Fx2Int(camera->pos.y);
     glm_look((vec3){(float)(cx - HALF_SCREEN_WIDTH), (float)(cy - HALF_SCREEN_HEIGHT), 0.f}, GLM_ZUP, GLM_YUP, view);
@@ -859,7 +866,7 @@ static void draw_game_state() {
     batch_reset();
     batch_pos(B_XY(32.f, 16.f));
     const char* cname = get_character_name(game_context.players[player->id].character);
-    batch_string("hud", 16.f, fmt("%s × %i", cname, player->lives));
+    batch_string("hud", 16.f, fmt("%s × %i", cname, SDL_max(player->lives, 0)));
     batch_pos(B_XY(32.f + string_width("hud", 16.f, fmt("%s × 0", cname)), 34.f));
     batch_align(B_TOP_RIGHT);
     batch_string("hud", 16.f, fmt("%u", player->score));
@@ -905,10 +912,6 @@ static void draw_game_state() {
         batch_string("hud", 16.f, fmt("%i", game_state->clock));
     }
 
-    batch_pos(B_XY(32.f, 64.f));
-    batch_align(B_TOP_LEFT);
-    batch_string("hud", 32.f, fmt("%u", player->input));
-
     batch_test_depth(TRUE);
     batch_write_depth(TRUE);
 
@@ -953,6 +956,22 @@ PlayerID viewplayer() {
     return view_player;
 }
 
+/// !!! CLIENT-SIDE !!!
+void set_view_player(const GamePlayer* player) {
+    if (player == NULL || view_player == player->id)
+        return;
+
+    const GamePlayer* old_player = get_player(view_player);
+    view_player = player->id;
+
+    if (old_player == NULL || player->track != old_player->track) {
+        if (player->track < 0 || player->track > (GSTR_TRACK_END - GSTR_TRACK_START))
+            stop_state_track(STS_MAIN);
+        else
+            play_state_track(STS_MAIN, level_info->strings[GSTR_TRACK_START + player->track], PLAY_LOOPING);
+    }
+}
+
 GamePlayer* get_player(PlayerID pid) {
     return (pid < 0 || pid >= MAX_PLAYERS || game_state->players[pid].id != pid) ? NULL : &game_state->players[pid];
 }
@@ -961,9 +980,55 @@ GameActor* respawn_player(GamePlayer* player) {
     if (player == NULL || player->lives < 0)
         return NULL;
 
-    player->bounds = level_info->bounds;
+    if (--player->lives < 0)
+        return NULL;
 
-    return NULL;
+    const GameActor* spawn = get_actor(game_state->checkpoint);
+    if (spawn == NULL)
+        spawn = get_actor(game_state->spawn);
+    if (spawn == NULL)
+        return NULL;
+
+    if (player->id == local_player)
+        set_view_player(player);
+
+    if (spawn->type == ACT_CHECKPOINT) {
+        const Fixed bx1 = VAL(spawn, CHECKPOINT_BOUNDS_X1), by1 = VAL(spawn, CHECKPOINT_BOUNDS_Y1),
+                    bx2 = VAL(spawn, CHECKPOINT_BOUNDS_X2), by2 = VAL(spawn, CHECKPOINT_BOUNDS_Y2);
+        player->bounds = (bx1 == bx2 && by1 == by2) ? level_info->bounds
+                                                    : (FRect){
+                                                          {bx1, by1},
+                                                          {bx2, by2}
+        };
+        set_player_track(player, VAL(spawn, CHECKPOINT_TRACK));
+    } else {
+        player->bounds = level_info->bounds;
+        set_player_track(player, 0);
+    }
+
+    GameActor* pawn = create_actor(ACT_PLAYER, spawn->pos);
+    if (pawn == NULL)
+        return NULL;
+
+    VAL(pawn, PLAYER) = (ActorValue)player->id;
+    FLAG_ON(pawn, spawn->flags & FLG_X_FLIP);
+
+    player->actor = pawn->id;
+
+    return pawn;
+}
+
+void set_player_track(GamePlayer* player, Uint8 track) {
+    if (player == NULL || player->track == track)
+        return;
+
+    player->track = track;
+    if (player->id == view_player) {
+        if (track < 0 || track > (GSTR_TRACK_END - GSTR_TRACK_START))
+            stop_state_track(STS_MAIN);
+        else
+            play_state_track(STS_MAIN, level_info->strings[GSTR_TRACK_START + track], PLAY_LOOPING);
+    }
 }
 
 // ======
@@ -1134,8 +1199,8 @@ void move_actor(GameActor* actor, const FVec2 pos) {
 
 #define BAD_ACTOR(actor) ((actor) == NULL || (actor)->id < 0 || (actor)->id >= MAX_ACTORS)
 
-const InterpActor* get_interp(const GameActor* actor) {
-    return (BAD_ACTOR(actor)) ? NULL : &interp_actors[actor->id];
+const FVec2 get_interp(const GameActor* actor) {
+    return (BAD_ACTOR(actor)) ? (FVec2){0} : interp_actors[actor->id].pos;
 }
 
 void skip_interp(const GameActor* actor) {

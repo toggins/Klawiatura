@@ -22,21 +22,19 @@ static void tick(GameActor* actor) {
         VAL(actor, Y_SPEED) = -VAL(actor, Y_SPEED);
     }
 
-    move_actor(actor, (FVec2){actor->pos.x + VAL(actor, X_SPEED), actor->pos.y + VAL(actor, Y_SPEED)});
+    move_actor(actor, POS_SPEED(actor));
 }
 
 static void draw(const GameActor* actor) {
     batch_reset();
-
-    const InterpActor* iactor = get_interp(actor);
-    const Sint32 ax = Fx2Int(iactor->pos.x), ay = Fx2Int(iactor->pos.y), az = Fx2Int(actor->depth);
-
-    batch_pos(B_XYZ(ax, ay, az));
+    const FVec2 ipos = get_interp(actor);
+    const Sint32 ax = Fx2Int(ipos.x), ay = Fx2Int(ipos.y);
+    batch_pos(B_XYZ(ax, ay, Fx2Float(actor->depth)));
     batch_color(ANY_FLAG(actor, FLG_GLOW) ? B_YELLOW : B_WHITE);
     batch_string("hud", 16.f, fmt("%i", VAL(actor, VALUE)));
 }
 
-const GameActorTable TAB_DUMMY = {
+const ActorTable TAB_DUMMY = {
     .create = create,
     .tick = tick,
     .draw = draw,
