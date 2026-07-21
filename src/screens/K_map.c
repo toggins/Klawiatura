@@ -355,7 +355,8 @@ static void tick() {
         }
 
         if ((player->pos[0] - 8.f) < (float)map_state->water[2] && (player->pos[0] + 8.f) > (float)map_state->water[0]
-            && (player->pos[1] - 30.f) < (float)map_state->water[3] && player->pos[1] > (float)map_state->water[1])
+            && (player->pos[1] - 29.f) < (float)map_state->water[3]
+            && (player->pos[1] + 1.f) > (float)map_state->water[1])
         {
             if (!player->swimming) {
                 player->frame = 0.f;

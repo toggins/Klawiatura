@@ -1,6 +1,6 @@
 {
     "texture": "characters/mario/small",
     "size": [29, 31],
-    "offset": [15, 31],
+    "offset": [15, 30],
     "uvs": [26, 1, 55, 32]
 }
