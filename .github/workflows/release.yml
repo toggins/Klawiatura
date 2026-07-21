@@ -66,9 +66,9 @@ jobs:
             ${{ env.CACHE_BUST }}-Linux-
 
       - name: Configure
-        run: >-
-          cmake -G Ninja -S . -B build
-            -D CMAKE_BUILD_TYPE=Release
+        run: |
+          cmake -G Ninja -S . -B build \
+            -D CMAKE_BUILD_TYPE=Release \
             -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
 
       - name: Build
