@@ -1,8 +1,5 @@
-
-#include "K_audio.h"
+#include "K_game.h"
 #include "K_video.h"
-
-#include "actors/K_player.h"
 
 /* ============
    PLAYER SPAWN
@@ -52,18 +49,16 @@ static void create(GameActor* actor) {
     actor->box.start.y = Int2Fx(-25);
     actor->box.end.x = Int2Fx(10);
     actor->box.end.y = Fx1;
-
-    VAL(actor, PLAYER) = (ActorValue)NULL_PLAYER;
 }
 
 static void cleanup(GameActor* actor) {
-    GamePlayer* player = get_player(VAL(actor, PLAYER));
+    GamePlayer* player = get_player(actor->player);
     if (player != NULL && player->actor == actor->id)
         player->actor = NULL_ACTOR;
 }
 
 static void tick(GameActor* actor) {
-    GamePlayer* player = get_player(VAL(actor, PLAYER));
+    GamePlayer* player = get_player(actor->player);
     if (player == NULL) {
         FLAG_ON(actor, FLG_DESTROY);
         return;
@@ -88,7 +83,7 @@ static void tick(GameActor* actor) {
 }
 
 static void draw(const GameActor* actor) {
-    const GamePlayer* player = get_player(VAL(actor, PLAYER));
+    const GamePlayer* player = get_player(actor->player);
     if (player == NULL)
         return;
 
@@ -100,15 +95,10 @@ static void draw(const GameActor* actor) {
     batch_rectangle(NULL, B_WH(19.f, (player->powerup == POW_NONE) ? 26.f : 52.f));
 }
 
-static PlayerID owner(const GameActor* actor) {
-    return VAL(actor, PLAYER);
-}
-
 const ActorTable TAB_PLAYER = {
     .load = load,
     .create = create,
     .cleanup = cleanup,
     .tick = tick,
     .draw = draw,
-    .owner = owner,
 };

@@ -271,8 +271,10 @@ enum {
 };
 
 typedef struct {
-    ActorID id;
+    PlayerID player;
+
     ActorType type;
+    ActorID id;
     ActorID previous, next;
 
     ActorID previous_cell, next_cell;
@@ -308,15 +310,20 @@ SolidType always_solid(const GameActor*), always_top(const GameActor*), always_b
 
 typedef struct {
     SolidType (*is_solid)(const GameActor*);
+
     void (*load)(), (*load_special)(const GameActor*);
+
     void (*create)(GameActor*);
+
     void (*pre_tick)(GameActor*), (*tick)(GameActor*), (*post_tick)(GameActor*);
+
     void (*draw)(const GameActor*), (*draw_dead)(const GameActor*), (*draw_hud)(const GameActor*);
+
     void (*cleanup)(GameActor*);
+
     void (*collide)(GameActor*, GameActor*);
-    void (*on_left)(GameActor*, GameActor*), (*on_right)(GameActor*, GameActor*);
-    void (*on_top)(GameActor*, GameActor*), (*on_bottom)(GameActor*, GameActor*);
-    PlayerID (*owner)(const GameActor*);
+    void (*on_left)(GameActor*, GameActor*), (*on_top)(GameActor*, GameActor*), (*on_right)(GameActor*, GameActor*),
+        (*on_bottom)(GameActor*, GameActor*);
 } ActorTable;
 
 typedef Uint8 GameWarpID;
@@ -381,7 +388,7 @@ GameState* gamestate();
 PlayerID localplayer(), viewplayer();
 void set_view_player(const GamePlayer*);
 
-GamePlayer *get_player(PlayerID), *get_owner(const GameActor*);
+GamePlayer* get_player(PlayerID);
 GameActor *respawn_player(GamePlayer*), *nearest_player_actor(const FVec2);
 void set_player_track(GamePlayer*, Uint8);
 
@@ -397,8 +404,7 @@ Bool in_player_view(const GameActor*, const GamePlayer*, Fixed, Bool);
 
 void collide_actor(GameActor*);
 Bool touching_solid(const FRect, SolidType);
-void displace_actor(GameActor*, Fixed, Bool);
-void displace_actor_soft(GameActor*);
+void displace_actor(GameActor*, Fixed, Bool), displace_actor_soft(GameActor*);
 
 void draw_actor(const GameActor*, const char*, float, const Uint8[4], Bool);
 void draw_actor_offset(const GameActor*, const char*, const float[3], float, const Uint8[4], Bool);

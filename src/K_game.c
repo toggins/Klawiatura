@@ -13,7 +13,6 @@
 #include "K_video.h"
 
 #include "actors/K_checkpoint.h"
-#include "actors/K_player.h"
 
 #define ACTOR_CALL_STATIC(type, fn, ...)                                                                               \
     do {                                                                                                               \
@@ -342,6 +341,7 @@ static void start_game_state() {
     for (ActorID i = 0; i < MAX_ACTORS; i++) {
         game_state->actors[i].id = game_state->actors[i].previous = game_state->actors[i].next
             = game_state->actors[i].previous_cell = game_state->actors[i].next_cell = NULL_ACTOR;
+        game_state->actors[i].player = NULL_PLAYER;
     }
     for (Sint32 i = 0; i < GRID_SIZE; i++)
         game_state->grid[i] = NULL_ACTOR;
@@ -1010,7 +1010,7 @@ GameActor* respawn_player(GamePlayer* player) {
     if (pawn == NULL)
         return NULL;
 
-    VAL(pawn, PLAYER) = (ActorValue)player->id;
+    pawn->player = player->id;
     FLAG_ON(pawn, spawn->flags & FLG_X_FLIP);
 
     player->actor = pawn->id;
@@ -1147,6 +1147,7 @@ static void destroy_actor(GameActor* actor) {
 
     actor->id = NULL_ACTOR;
     actor->type = ACT_NULL;
+    actor->player = NULL_PLAYER;
 }
 
 GameActor* get_actor(ActorID id) {
