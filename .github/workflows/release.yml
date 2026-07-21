@@ -131,9 +131,11 @@ jobs:
             ${{ env.CACHE_BUST }}-Win${{ matrix.bits }}-
 
       - name: Configure
-        run: >-
-          cmake -G "Visual Studio 18 2026" -A Win${{ matrix.bits }}
-            -S . -B build -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
+        shell: bash
+        run: |
+          cmake -G "Visual Studio 18 2026" -A Win${{ matrix.bits }} \
+            -S . -B build \
+            -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
 
       - name: Build
         run: cmake --build build --target all --config Release
