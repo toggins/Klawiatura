@@ -93,8 +93,13 @@ enum {
     ACT_GOAL_BAR,
     ACT_GOAL_BAR_FLY,
     ACT_GOAL_MARK,
+    ACT_PLATFORM,
+    ACT_PLATFORM_TURN,
     ACT_WATER,
     ACT_WATER_TRIGGER,
+    ACT_BUSH,
+    ACT_CLOUD,
+    ACT_CLOUDS,
 
     ACT_DUMMY = 254,
 
@@ -406,8 +411,7 @@ void collide_actor(GameActor*);
 Bool touching_solid(const FRect, SolidType);
 void displace_actor(GameActor*, Fixed, Bool), displace_actor_soft(GameActor*);
 
-void draw_actor(const GameActor*, const char*, float, const Uint8[4], Bool);
-void draw_actor_offset(const GameActor*, const char*, const float[3], float, const Uint8[4], Bool);
+void draw_actor(const GameActor*, const char*);
 void draw_dead(const GameActor*);
 void quake_at_actor(const GameActor*, float);
 

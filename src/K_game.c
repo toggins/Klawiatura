@@ -870,7 +870,7 @@ static void draw_game_state() {
     batch_string("hud", 16.f, fmt("%u", player->score));
 
     batch_pos(B_XY(224.f, 34.f));
-    batch_sprite(fmt("ui/coins/%i", (int)((float)(game_state->time) / 6.25f) % 3));
+    batch_sprite(fmt("ui/coins/%i", ((game_state->time * 4) / 25) % 3));
     batch_pos(B_XY(234.f, 34.f));
     batch_align(B_TOP_LEFT);
     batch_string("hud", 16.f, fmt(" × %u", player->coins));
@@ -954,6 +954,7 @@ PlayerID viewplayer() {
     return view_player;
 }
 
+/// !!! CLIENT-SIDE !!!
 static void try_play_track(Uint8 track) {
     if (track < 0 || track > (GSTR_TRACK_END - GSTR_TRACK_START))
         stop_state_track(STS_MAIN);
@@ -961,7 +962,6 @@ static void try_play_track(Uint8 track) {
         play_state_track(STS_MAIN, level_info->strings[GSTR_TRACK_START + track], PLAY_LOOPING);
 }
 
-/// !!! CLIENT-SIDE !!!
 void set_view_player(const GamePlayer* player) {
     if (player == NULL || view_player == player->id)
         return;
@@ -972,7 +972,9 @@ void set_view_player(const GamePlayer* player) {
     if (old_player == NULL || player->track != old_player->track)
         try_play_track(player->track);
 }
+/// !!! CLIENT-SIDE !!!
 
+//
 GamePlayer* get_player(PlayerID pid) {
     return (pid < 0 || pid >= MAX_PLAYERS || game_state->players[pid].id != pid) ? NULL : &game_state->players[pid];
 }
@@ -990,8 +992,10 @@ GameActor* respawn_player(GamePlayer* player) {
     if (spawn == NULL)
         return NULL;
 
+    /// !!! CLIENT-SIDE !!!
     if (player->id == local_player)
         set_view_player(player);
+    /// !!! CLIENT-SIDE !!!
 
     if (spawn->type == ACT_CHECKPOINT) {
         const Fixed bx1 = VAL(spawn, CHECKPOINT_BOUNDS_X1), by1 = VAL(spawn, CHECKPOINT_BOUNDS_Y1),
@@ -1024,8 +1028,11 @@ void set_player_track(GamePlayer* player, Uint8 track) {
         return;
 
     player->track = track;
+
+    /// !!! CLIENT-SIDE !!!
     if (player->id == view_player)
         try_play_track(track);
+    /// !!! CLIENT-SIDE !!!
 }
 
 // ======
@@ -1189,6 +1196,17 @@ void move_actor(GameActor* actor, const FVec2 pos) {
     if (first != NULL)
         first->next_cell = actor->id;
     game_state->grid[cell] = actor->id;
+}
+
+void draw_actor(const GameActor* actor, const char* sprite) {
+    if (actor == NULL || !ANY_FLAG(actor, FLG_VISIBLE))
+        return;
+
+    const FVec2 ipos = get_interp(actor);
+    const Sint32 ax = Fx2Int(ipos.x), ay = Fx2Int(ipos.y);
+    batch_pos(B_XYZ(ax, ay, Fx2Float(actor->depth)));
+    batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
+    batch_sprite(sprite);
 }
 
 // ======

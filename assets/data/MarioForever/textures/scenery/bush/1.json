@@ -1,0 +1,5 @@
+{
+    "texture": "scenery/bush",
+    "size": [64, 28],
+    "uvs": [1, 33, 65, 61]
+}

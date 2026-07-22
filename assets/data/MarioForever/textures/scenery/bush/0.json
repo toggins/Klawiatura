@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/bush",
+    "size": [62, 30],
+    "offset": [0, 2],
+    "uvs": [1, 1, 63, 31]
+}

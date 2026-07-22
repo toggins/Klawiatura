@@ -11,6 +11,9 @@ void POPULATE_ACTORS_TABLE() {
     ACTOR(PLAYER);
     ACTOR(WATER);
     ACTOR(WATER_TRIGGER);
+    ACTOR(BUSH);
+    ACTOR(CLOUD);
+    ACTOR(CLOUDS);
     ACTOR(DUMMY);
 
     static const ActorTable TAB_NULL = {NULL};

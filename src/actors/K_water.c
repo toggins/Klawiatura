@@ -21,7 +21,7 @@ static void load_water() {
 }
 
 static void create_water(GameActor* actor) {
-    actor->depth = Int2Fx(-1000);
+    actor->depth = Int2Fx(-100);
 
     VAL(actor, WATER_TO) = actor->pos.y;
 
