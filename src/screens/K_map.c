@@ -164,7 +164,7 @@ static void start(const void* secret, size_t secret_size) {
 
     map_state->level = StHashStr(yyjson_get_str(yyjson_arr_get(yyjson_obj_get(root, "levels"), wctx->level)));
 
-    const char* track = (map_state->path == NULL) ? "yi_score" : yyjson_get_str(yyjson_obj_get(jmap, "track"));
+    const char* track = (map_state->path == NULL) ? "yi/score" : yyjson_get_str(yyjson_obj_get(jmap, "track"));
     if (track != NULL) {
         map_state->track = SDL_strdup(track);
         EXPECT(map_state->track, "Failed to allocate map track name");

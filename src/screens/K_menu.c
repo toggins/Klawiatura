@@ -612,9 +612,7 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite("logos/mario_forever", AKL_NEVER);
     load_sound("ui/connect", AKL_NEVER);
     load_sound("ui/disconnect", AKL_NEVER);
-    load_track("title", AKL_NEVER);
-
-    play_generic_track(GTS_MAIN, "title", PLAY_LOOPING, 0);
+    load_track("super_mario_brothers", AKL_NEVER);
 
     // Handle invite JSON
     Bool got_invite = FALSE;
@@ -652,6 +650,8 @@ s_no_secret:
         for (MenuType i = 0; i < (MenuType)MEN_SIZE; i++)
             CATALOG.menus[i].from = MEN_NULL;
     }
+
+    play_generic_track(GTS_MAIN, "super_mario_brothers", PLAY_LOOPING, 0);
 }
 
 static void end() {

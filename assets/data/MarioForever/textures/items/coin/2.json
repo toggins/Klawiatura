@@ -1,0 +1,6 @@
+{
+    "texture": "items/coin",
+    "size": [19, 28],
+    "offset": [-6, -2],
+    "uvs": [43, 1, 62, 29]
+}
