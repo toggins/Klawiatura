@@ -1,0 +1,6 @@
+{
+    "texture": "characters/mario/fire",
+    "size": [27, 59],
+    "offset": [11, 58],
+    "uvs": [1, 1, 28, 60]
+}

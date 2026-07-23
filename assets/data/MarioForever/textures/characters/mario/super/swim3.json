@@ -1,0 +1,6 @@
+{
+    "texture": "characters/mario/super",
+    "size": [39, 54],
+    "offset": [22, 53],
+    "uvs": [34, 62, 73, 116]
+}

@@ -1,0 +1,6 @@
+{
+    "texture": "characters/mario/lui",
+    "size": [39, 52],
+    "offset": [22, 53],
+    "uvs": [1, 118, 40, 170]
+}

@@ -1,0 +1,6 @@
+{
+    "texture": "characters/mario/beetroot",
+    "size": [39, 55],
+    "offset": [21, 54],
+    "uvs": [38, 129, 77, 184]
+}

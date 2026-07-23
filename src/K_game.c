@@ -92,7 +92,8 @@ static const GameCharacter CHARACTERS[CHR_SIZE] = {
                 [PF_JUMP] = "characters/mario/fire/jump",
                 [PF_FALL] = "characters/mario/fire/fall",
                 [PF_DUCK] = "characters/mario/fire/duck",
-                [PF_FIRE] = "characters/mario/fire/fire",
+                [PF_FIRE1] = "characters/mario/fire/fire0",
+                [PF_FIRE2] = "characters/mario/fire/fire1",
                 [PF_SWIM1] = "characters/mario/fire/swim0",
                 [PF_SWIM2] = "characters/mario/fire/swim1",
                 [PF_SWIM3] = "characters/mario/fire/swim2",
@@ -114,7 +115,8 @@ static const GameCharacter CHARACTERS[CHR_SIZE] = {
                 [PF_JUMP] = "characters/mario/beetroot/jump",
                 [PF_FALL] = "characters/mario/beetroot/fall",
                 [PF_DUCK] = "characters/mario/beetroot/duck",
-                [PF_FIRE] = "characters/mario/beetroot/fire",
+                [PF_FIRE1] = "characters/mario/beetroot/fire0",
+                [PF_FIRE2] = "characters/mario/beetroot/fire1",
                 [PF_SWIM1] = "characters/mario/beetroot/swim0",
                 [PF_SWIM2] = "characters/mario/beetroot/swim1",
                 [PF_SWIM3] = "characters/mario/beetroot/swim2",
@@ -871,7 +873,7 @@ static void draw_game_state() {
 
     batch_pos(B_XY(224.f, 34.f));
     batch_sprite(fmt("ui/coins/%i", ((game_state->time * 4) / 25) % 3));
-    batch_pos(B_XY(234.f, 34.f));
+    batch_pos(B_XY(235.f, 34.f));
     batch_align(B_TOP_LEFT);
     batch_string("hud", 16.f, fmt(" × %u", player->coins));
 
