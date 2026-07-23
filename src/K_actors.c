@@ -14,6 +14,7 @@ void POPULATE_ACTORS_TABLE() {
     ACTOR(BUSH);
     ACTOR(CLOUD);
     ACTOR(CLOUDS);
+    ACTOR(COIN);
     ACTOR(DUMMY);
 
     static const ActorTable TAB_NULL = {NULL};

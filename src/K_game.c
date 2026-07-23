@@ -1201,6 +1201,33 @@ void move_actor(GameActor* actor, const FVec2 pos) {
     game_state->grid[cell] = actor->id;
 }
 
+void collide_actor(GameActor* actor) {
+    if (actor == NULL)
+        return;
+
+    const FRect abox = Radd(actor->box, actor->pos);
+    Sint32 cx1 = (abox.start.x - CELL_SIZE) / CELL_SIZE, cy1 = (abox.start.y - CELL_SIZE) / CELL_SIZE;
+    Sint32 cx2 = (abox.end.x + CELL_SIZE) / CELL_SIZE, cy2 = (abox.end.y + CELL_SIZE) / CELL_SIZE;
+    cx1 = SDL_clamp(cx1, 0, MAX_CELLS - 1), cy1 = SDL_clamp(cy1, 0, MAX_CELLS - 1);
+    cx2 = SDL_clamp(cx2, 0, MAX_CELLS - 1), cy2 = SDL_clamp(cy2, 0, MAX_CELLS - 1);
+
+    for (Sint32 cx = cx1; cx <= cx2; cx++) {
+        for (Sint32 cy = cy1; cy <= cy2; cy++) {
+            for (GameActor* other = get_actor(game_state->grid[cx + (cy * MAX_CELLS)]); other != NULL;
+                other = get_actor(other->previous_cell))
+            {
+                if (actor == other || ANY_FLAG(other, FLG_DESTROY) || !Rcollide(abox, Radd(other->box, other->pos)))
+                    continue;
+
+                ACTOR_CALL(other, collide, actor);
+
+                if (ANY_FLAG(actor, FLG_DESTROY))
+                    return;
+            }
+        }
+    }
+}
+
 void draw_actor(const GameActor* actor, const char* sprite) {
     if (actor == NULL || !ANY_FLAG(actor, FLG_VISIBLE))
         return;

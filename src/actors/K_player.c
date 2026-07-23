@@ -79,6 +79,7 @@ static void tick(GameActor* actor) {
         VAL(actor, Y_SPEED) += Fx1;
 
     move_actor(actor, POS_SPEED(actor));
+    collide_actor(actor);
     player->pos = actor->pos;
 }
 
