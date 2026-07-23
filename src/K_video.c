@@ -1990,6 +1990,7 @@ void start_video_state() {
     video_state = SDL_calloc(1, sizeof(*video_state));
     EXPECT(video_state, "Failed to allocate video state");
 
+    video_state->camera.pos = F_HALF_SCREEN;
     video_state->tilemap = create_tilemap();
 }
 

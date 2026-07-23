@@ -838,9 +838,7 @@ static void draw_game_state() {
     const GamePlayer* player = get_player(view_player);
 
     VideoCamera* camera = &videostate()->camera;
-    if (player == NULL) {
-        camera->pos = Vadd(level_info->bounds.start, F_HALF_SCREEN);
-    } else {
+    if (player != NULL) {
         const GameActor* pawn = get_actor(player->actor);
         camera->pos = Vclamp((pawn == NULL) ? player->pos : get_interp(pawn), Vadd(player->bounds.start, F_HALF_SCREEN),
             Vsub(player->bounds.end, F_HALF_SCREEN));
@@ -875,7 +873,10 @@ static void draw_game_state() {
     batch_sprite(fmt("ui/coins/%i", ((game_state->time * 4) / 25) % 3));
     batch_pos(B_XY(235.f, 34.f));
     batch_align(B_TOP_LEFT);
-    batch_string("hud", 16.f, fmt(" × %u", player->coins));
+    batch_string("hud", 16.f, " ×");
+    batch_pos(B_XY(285.f, 34.f));
+    batch_align(B_TOP_RIGHT);
+    batch_string("hud", 16.f, fmt("%u", player->coins));
 
     const char* label = level_info->strings[GSTR_LABEL];
     if (label != NULL) {
