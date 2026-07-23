@@ -166,6 +166,7 @@ static Uint32 game_hash = 0;
 
 static PlayerID local_player = NULL_PLAYER, view_player = NULL_PLAYER;
 
+static TinyPq depth_sorter = {0};
 static Surface* game_surface = NULL;
 static GekkoSession* game_session = NULL;
 
@@ -631,6 +632,7 @@ void nuke_game() {
     SDL_free(interp_actors);
     interp_actors = NULL;
     local_player = view_player = NULL_PLAYER;
+    FreeTinyPq(&depth_sorter);
 }
 
 void tick_game() {
@@ -806,27 +808,6 @@ void interp_game() {
     }
 }
 
-// NOLINTBEGIN(misc-no-recursion)
-static void iterate_and_draw_actor(const GameActor* actor) {
-    if (actor == NULL)
-        return;
-
-    const GameActor* next = get_actor(actor->previous);
-    if (!ANY_FLAG(actor, FLG_VISIBLE)) {
-        iterate_and_draw_actor(next);
-        return;
-    }
-
-    if (next != NULL && next->depth >= actor->depth) {
-        iterate_and_draw_actor(next);
-        ACTOR_CALL(actor, draw);
-    } else {
-        ACTOR_CALL(actor, draw);
-        iterate_and_draw_actor(next);
-    }
-}
-// NOLINTEND(misc-no-recursion)
-
 static void draw_game_state() {
     static mat4 oview = GLM_MAT4_IDENTITY_INIT, view = GLM_MAT4_IDENTITY_INIT;
 
@@ -850,7 +831,18 @@ static void draw_game_state() {
     apply_matrices();
 
     draw_tilemap(videostate()->tilemap);
-    iterate_and_draw_actor(get_actor(game_state->live_actors));
+
+    for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
+        if (ANY_FLAG(actor, FLG_VISIBLE))
+            TinyPqInsert(&depth_sorter, actor->depth, (const void*)&actor, sizeof(const GameActor**));
+
+    TinyPqIterator iter = TinyPqIter(&depth_sorter);
+    while (TinyPqNext(&iter)) {
+        const GameActor* actor = *(const GameActor**)iter.data;
+        ACTOR_CALL(actor, draw);
+    }
+
+    FreeTinyPq(&depth_sorter);
 
     set_view_matrix(oview);
     apply_matrices();
