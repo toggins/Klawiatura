@@ -307,7 +307,7 @@ void load_track(const char* name, AssetKeepLevel keep) {
     track.base.name = SDL_strdup(name);
     EXPECT(track.base.name, "Failed to allocate name for track \"%s\"", name);
     track.base.keep = keep;
-    track.length = MIX_AudioFramesToMS(track.internal, MIX_GetAudioDuration(track.internal));
+    track.length = track.loop[1] = MIX_AudioFramesToMS(track.internal, MIX_GetAudioDuration(track.internal));
 
     yyjson_doc* json = load_data_json(fmt("tracks/%s.json", name));
     if (json != NULL) {
@@ -464,14 +464,27 @@ void start_audio_state() {
 
 static void pan_state_sound(size_t idx) {
     const float pan = desired_audio_state->sounds[idx].pos[0];
-    const float left = 1.f - SDL_max(pan, 0.f);
-    const float right = 1.f + SDL_min(pan, 0.f);
-
+    const float left = 1.f - SDL_max(pan, 0.f), right = 1.f + SDL_min(pan, 0.f);
     MIX_SetTrackStereo(
         state_sound_channels[idx], &(MIX_StereoGains){SDL_clamp(left, 0.f, 1.f), SDL_clamp(right, 0.f, 1.f)});
 }
 
-static void move_state_sound(size_t idx) {}
+static void move_state_sound(size_t idx) {
+    const float* pos = desired_audio_state->sounds[idx].pos;
+
+    const VideoCamera* camera = &videostate()->camera;
+    const float cx = Fx2Float(camera->pos.x), cy = Fx2Float(camera->pos.y);
+
+    const float dx = pos[0] - cx, dy = pos[1] - cy;
+    const float pan = dx / (float)SCREEN_WIDTH;
+
+    float att = SDL_sqrtf((dx * dx) + (dy * dy)) / (float)SCREEN_WIDTH;
+    att = 1.f - SDL_min(att, 1.f);
+
+    const float left = (1.f - SDL_max(pan, 0.f)) * att, right = (1.f + SDL_min(pan, 0.f)) * att;
+    MIX_SetTrackStereo(
+        state_sound_channels[idx], &(MIX_StereoGains){SDL_clamp(left, 0.f, 1.f), SDL_clamp(right, 0.f, 1.f)});
+}
 
 static void update_state_sound(size_t idx) {
     if (desired_audio_state->sounds[idx].flags & PLAY_POS)
