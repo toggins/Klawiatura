@@ -519,6 +519,7 @@ void start_game(const GameContext* ctx) {
         cfg.max_spectators = get_game_spectator_count();
 
     gekko_start(game_session, &cfg);
+    gekko_set_disconnect_timeout(game_session, 0);
     local_player = populate_game(game_session, game_context.num_players);
 
     // Surface
