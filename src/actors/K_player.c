@@ -78,7 +78,7 @@ static void tick(GameActor* actor) {
     if (ANY_INPUT(player, GI_DOWN))
         VAL(actor, Y_SPEED) += Fx1;
 
-    move_actor(actor, POS_SPEED(actor));
+    displace_actor(actor, Int2Fx(10), TRUE);
     collide_actor(actor);
     player->pos = actor->pos;
 }
@@ -92,7 +92,7 @@ static void draw(const GameActor* actor) {
     const FVec2 ipos = get_interp(actor);
     const Sint32 ax = Fx2Int(ipos.x), ay = Fx2Int(ipos.y);
     batch_pos(B_XYZ(ax - 9.f, ay - ((player->powerup == POW_NONE) ? 25.f : 51.f), Fx2Float(actor->depth)));
-    batch_color(B_BLACK);
+    batch_color((VAL(actor, Y_TOUCH) > 0) ? B_RED : B_BLACK);
     batch_rectangle(NULL, B_WH(19.f, (player->powerup == POW_NONE) ? 26.f : 52.f));
 }
 

@@ -270,6 +270,17 @@ enum {
         (actor)->pos.x + VAL(actor, X_SPEED), (actor)->pos.y + VAL(actor, Y_SPEED)                                     \
     }
 
+#define BOX_OUTLINE_LEFT(actor)                                                                                        \
+    ((FRect){                                                                                                          \
+        {(actor)->pos.x + (actor)->box.start.x,       (actor)->pos.y + (actor)->box.start.y},                                \
+        {(actor)->pos.x + (actor)->box.start.x + Fx1, (actor)->pos.y + (actor)->box.end.y  },                            \
+    })
+#define BOX_OUTLINE_RIGHT(actor)                                                                                       \
+    ((FRect){                                                                                                          \
+        {(actor)->pos.x + (actor)->box.end.x - Fx1, (actor)->pos.y + (actor)->box.start.y},                            \
+        {(actor)->pos.x + (actor)->box.end.x,       (actor)->pos.y + (actor)->box.end.y  },                                    \
+    })
+
 typedef Uint32 ActorFlags;
 enum {
     FLG_VISIBLE = 1 << 0,

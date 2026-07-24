@@ -7,6 +7,9 @@
 void POPULATE_ACTORS_TABLE() {
     extern const ActorTable* ACTORS[ACT_SIZE];
 
+    ACTOR(SOLID);
+    ACTOR(SOLID_TOP);
+    ACTOR(SOLID_SLOPE);
     ACTOR(PLAYER_SPAWN);
     ACTOR(PLAYER);
     ACTOR(WATER);
