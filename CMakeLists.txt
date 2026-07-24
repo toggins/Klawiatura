@@ -87,7 +87,7 @@ list(APPEND LIBS SDL3_mixer::SDL3_mixer-static)
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG 513c72e34569e0f471dde7aa26eecb23946c3ef7
+    GIT_TAG 03d390c37b1342fcb7d8d294cd9621ab9d640bb3
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
 
@@ -152,7 +152,7 @@ list(APPEND LIBS S_tructures)
 
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG 11a895387fa648ef6cf14e158e812685f546513b
+	GIT_TAG 86ea7d3dfc1503460a49fb0fd64ecf9582b1f545
 	EXCLUDE_FROM_ALL)
 
 FetchContent_MakeAvailable(NutBlast)
