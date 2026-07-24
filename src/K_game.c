@@ -821,8 +821,10 @@ static void draw_game_state() {
     VideoCamera* camera = &videostate()->camera;
     if (player != NULL) {
         const GameActor* pawn = get_actor(player->actor);
-        camera->pos = Vclamp((pawn == NULL) ? player->pos : get_interp(pawn), Vadd(player->bounds.start, F_HALF_SCREEN),
-            Vsub(player->bounds.end, F_HALF_SCREEN));
+        if (pawn != NULL) {
+            camera->pos = Vclamp(
+                get_interp(pawn), Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
+        }
     }
 
     const Sint32 cx = Fx2Int(camera->pos.x), cy = Fx2Int(camera->pos.y);
