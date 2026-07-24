@@ -583,7 +583,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 
         // Apply input
         player->last_input = player->input;
-        player->input = inputs[i];
+        player->input = (game_state->sequence.type == GS_WIN) ? 0 : inputs[i];
     }
 
     GameActor* actor = get_actor(game_state->live_actors);

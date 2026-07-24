@@ -1,0 +1,11 @@
+#include "K_game.h"
+
+enum {
+    VAL_PLAYER_GROUND = VAL_CUSTOM,
+};
+
+enum {
+    FLG_PLAYER_JUMP = CUSTOM_FLAG(0),
+    FLG_PLAYER_DUCK = CUSTOM_FLAG(1),
+    FLG_PLAYER_SWIM = CUSTOM_FLAG(2),
+};
