@@ -574,7 +574,7 @@ tas_tick_desired:
             continue;
 
         dschan->offset += 1000 / TICKRATE;
-        if (dschan->offset >= sound->length)
+        if (dschan->offset > (sound->length + (1000 / TICKRATE)))
             dschan->sound_key = 0;
     }
 
