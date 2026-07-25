@@ -27,7 +27,7 @@ static void draw(const GameActor* actor) {
 }
 
 static void collide(GameActor* actor, GameActor* other) {
-    if (other->type != ACT_PLAYER)
+    if (other->type != ACT_PLAYER && other->type != ACT_PLAYER_EFFECT)
         return;
 
     GamePlayer* player = get_player(other->player);
