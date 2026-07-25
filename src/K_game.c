@@ -805,7 +805,7 @@ void interp_game() {
     const GameActor* actor = NULL;
     FOR_EACH_ACTOR(actor) {
         InterpActor* iactor = &interp_actors[actor->id];
-        iactor->pos = Vlerp(iactor->from, actor->pos, t);
+        iactor->pos = Vlerp(iactor->from, iactor->to, t);
     }
 }
 
@@ -1467,7 +1467,9 @@ void align_interp(const GameActor* actor, const GameActor* from) {
         return;
 
     InterpActor *iactor = &interp_actors[actor->id], *ifrom = &interp_actors[from->id];
-    iactor->from = ifrom->pos;
+    iactor->from = ifrom->from;
+    iactor->to = ifrom->to;
+    iactor->pos = ifrom->pos;
 }
 
 #undef BAD_ACTOR
