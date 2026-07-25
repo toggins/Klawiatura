@@ -1,0 +1,6 @@
+{
+    "texture": "effects/water_splash",
+    "size": [31, 26],
+    "offset": [15, 25],
+    "uvs": [34, 34, 65, 60]
+}

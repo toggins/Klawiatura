@@ -104,6 +104,8 @@ enum {
     ACT_CLOUDS,
     ACT_COIN,
     ACT_COIN_POP,
+    ACT_WATER_SPLASH,
+    ACT_BUBBLE,
 
     ACT_DUMMY = 254,
 
@@ -131,15 +133,18 @@ enum {
 typedef Uint8 PlayerFrame;
 enum {
     PF_IDLE,
-    PF_WALK1,
+    PF_WALK,
+    PF_WALK1 = PF_WALK,
     PF_WALK2,
     PF_WALK3,
     PF_JUMP,
     PF_FALL,
     PF_DUCK,
-    PF_FIRE1,
+    PF_FIRE,
+    PF_FIRE1 = PF_FIRE,
     PF_FIRE2,
-    PF_SWIM1,
+    PF_SWIM,
+    PF_SWIM1 = PF_SWIM,
     PF_SWIM2,
     PF_SWIM3,
     PF_SWIM4,
@@ -147,7 +152,8 @@ enum {
     PF_SWIM6,
     PF_SWIM7,
     PF_SWIM8,
-    PF_GROW1,
+    PF_GROW,
+    PF_GROW1 = PF_GROW,
     PF_GROW2,
     PF_GROW3,
     PF_GROW4,
@@ -420,8 +426,8 @@ void replace_actors(ActorType, ActorType);
 void move_actor(GameActor*, const FVec2);
 
 Bool below_level(const GameActor*);
-Bool in_any_view(const GameActor*, Fixed, Bool);
-Bool in_player_view(const GameActor*, const GamePlayer*, Fixed, Bool);
+Bool in_any_view(const FVec2, Fixed, Bool);
+Bool in_player_view(const GamePlayer*, const FVec2, Fixed, Bool);
 
 void collide_actor(GameActor*);
 Bool touching_solid(const FRect, SolidType);

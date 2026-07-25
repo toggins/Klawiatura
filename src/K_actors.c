@@ -7,19 +7,23 @@
 void POPULATE_ACTORS_TABLE() {
     extern const ActorTable* ACTORS[ACT_SIZE];
 
+    static const ActorTable TAB_NULL = {NULL};
+    ACTORS[ACT_NULL] = &TAB_NULL;
+
     ACTOR(SOLID);
     ACTOR(SOLID_TOP);
     ACTOR(SOLID_SLOPE);
     ACTOR(PLAYER_SPAWN);
     ACTOR(PLAYER);
+    ACTOR(PLAYER_EFFECT);
     ACTOR(WATER);
     ACTOR(WATER_TRIGGER);
     ACTOR(BUSH);
     ACTOR(CLOUD);
     ACTOR(CLOUDS);
     ACTOR(COIN);
-    ACTOR(DUMMY);
+    ACTOR(WATER_SPLASH);
+    ACTOR(BUBBLE);
 
-    static const ActorTable TAB_NULL = {NULL};
-    ACTORS[ACT_NULL] = &TAB_NULL;
+    ACTOR(DUMMY);
 }

@@ -1199,6 +1199,27 @@ void move_actor(GameActor* actor, const FVec2 pos) {
     game_state->grid[cell] = actor->id;
 }
 
+Bool in_any_view(const FVec2 pos, Fixed edge, Bool ignore_top) {
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const Fixed cx = Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+                        player->bounds.end.x - F_HALF_SCREEN_WIDTH),
+                    cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
+                        player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
+        const FRect cbox = {
+            {cx - F_HALF_SCREEN_WIDTH + edge, cy - F_HALF_SCREEN_HEIGHT + edge},
+            {cx + F_HALF_SCREEN_WIDTH - edge, cy + F_HALF_SCREEN_HEIGHT - edge}
+        };
+        if (pos.x < cbox.end.x && pos.x > cbox.start.x && pos.y < cbox.end.y && (ignore_top || pos.y > cbox.start.y))
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
 void collide_actor(GameActor* actor) {
     if (actor == NULL)
         return;
@@ -1441,6 +1462,19 @@ void draw_actor(const GameActor* actor, const char* sprite) {
     batch_pos(B_XYZ(ax, ay, Fx2Float(actor->depth)));
     batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
     batch_sprite(sprite);
+}
+
+/// Produces an exclusive random number.
+///
+/// Based on https://github.com/libsdl-org/SDL/blob/fe1918a47fb8b13a76a96fd1f07e1f3ff941a4e1/src/stdlib/SDL_random.c#L91
+Sint32 rng(Sint32 n) {
+    if (n <= 0)
+        return 0;
+
+    game_state->seed = (game_state->seed * 4280078389ULL) + 5ULL;
+
+    const Uint64 val = (Uint64)((Uint32)(game_state->seed >> 16)) * (Uint32)n;
+    return (Sint32)(val >> 32);
 }
 
 // ======

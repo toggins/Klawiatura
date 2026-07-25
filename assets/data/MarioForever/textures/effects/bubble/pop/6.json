@@ -1,0 +1,6 @@
+{
+    "texture": "effects/bubble",
+    "size": [16, 16],
+    "offset": [7, 8],
+    "uvs": [101, 1, 117, 17]
+}
