@@ -111,22 +111,22 @@ void interface_update() {
     from_scratch();
 
 iu_dont_change:
-    if (kb_pressed(KB_RECORD_REPLAY)) {
-        CLIENT.record_replay = !CLIENT.record_replay;
-        if (CLIENT.record_replay) {
-            chat_message(LFMT("chat_recording_on"), B_GREEN);
-        } else {
-            if (get_replay_state() == RPS_RECORDING)
-                end_replay();
-            chat_message(LFMT("chat_recording_off"), B_RED);
-        }
-    }
-
     poll_game();
 
     new_frame();
     if (got_ticks()) {
         for (; got_ticks(); next_tick()) {
+            if (kb_pressed(KB_RECORD_REPLAY)) {
+                CLIENT.record_replay = !CLIENT.record_replay;
+                if (CLIENT.record_replay) {
+                    chat_message(LFMT("chat_recording_on"), B_GREEN);
+                } else {
+                    if (get_replay_state() == RPS_RECORDING)
+                        end_replay();
+                    chat_message(LFMT("chat_recording_off"), B_RED);
+                }
+            }
+
             // Booter
             if (!boot_state && boot_reason != NULL) {
                 UI* message = create_ui(UI_MESSAGE, NULL);
