@@ -103,6 +103,12 @@ static void tick(GameActor* actor) {
         return;
     }
 
+    const GameCharacter* character = get_character(gamecontext()->players[player->id].character);
+    if (character == NULL) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
     // EVENTS FROM "Level 1-1"
 
     // 179
@@ -159,14 +165,14 @@ static void tick(GameActor* actor) {
     if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_TOUCH) <= 0 && !ANY_FLAG(actor, FLG_PLAYER_DUCK)
         && VAL(actor, X_SPEED) < Fx0)
     {
-        VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 24576, Fx0);
+        VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + Fmul(24576, character->steer), Fx0);
     }
 
     // 188
     if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_TOUCH) >= 0 && !ANY_FLAG(actor, FLG_PLAYER_DUCK)
         && VAL(actor, X_SPEED) > Fx0)
     {
-        VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 24576, Fx0);
+        VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - Fmul(24576, character->steer), Fx0);
     }
 
     // 191
@@ -251,7 +257,7 @@ static void tick(GameActor* actor) {
         && actor->pos.y >= water->pos.y && VAL(actor, Y_TOUCH) >= 0 && !ANY_INPUT(player, GI_DOWN))
     {
         VAL(actor, PLAYER_GROUND) = 0;
-        VAL(actor, Y_SPEED) = Int2Fx(-3);
+        VAL(actor, Y_SPEED) = Fmul(Int2Fx(-3), character->jump);
         if (VAL(actor, PLAYER_ANIMATION) == PF_SWIM)
             VAL(actor, PLAYER_FRAME) = Fx0;
         play_state_sound("swim", PLAY_POS, A_ACTOR(actor));
@@ -263,7 +269,7 @@ static void tick(GameActor* actor) {
         && VAL(actor, Y_TOUCH) >= 0 && !ANY_INPUT(player, GI_DOWN))
     {
         VAL(actor, PLAYER_GROUND) = 0;
-        VAL(actor, Y_SPEED) = Int2Fx(-9);
+        VAL(actor, Y_SPEED) = Fmul(Int2Fx(-9), character->jump);
         if (VAL(actor, PLAYER_ANIMATION) == PF_SWIM)
             VAL(actor, PLAYER_FRAME) = Fx0;
         play_state_sound("swim", PLAY_POS, A_ACTOR(actor));
@@ -307,7 +313,7 @@ static void tick(GameActor* actor) {
         && VAL(actor, PLAYER_GROUND) > 0 && !ANY_FLAG(actor, FLG_PLAYER_JUMP))
     {
         VAL(actor, PLAYER_GROUND) = 0;
-        VAL(actor, Y_SPEED) = Int2Fx(-13);
+        VAL(actor, Y_SPEED) = Fmul(Int2Fx(-13), character->jump);
         play_state_sound("jump", PLAY_POS, A_ACTOR(actor));
     }
 
@@ -316,7 +322,7 @@ static void tick(GameActor* actor) {
         && VAL(actor, PLAYER_GROUND) > 0 && ANY_FLAG(actor, FLG_PLAYER_JUMP))
     {
         VAL(actor, PLAYER_GROUND) = 0;
-        VAL(actor, Y_SPEED) = Int2Fx(-13);
+        VAL(actor, Y_SPEED) = Fmul(Int2Fx(-13), character->jump);
         FLAG_OFF(actor, FLG_PLAYER_JUMP);
         play_state_sound("jump", PLAY_POS, A_ACTOR(actor));
     }

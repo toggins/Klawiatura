@@ -1,0 +1,6 @@
+{
+    "texture": "characters/luigi/beetroot",
+    "size": [37, 61],
+    "offset": [18, 60],
+    "uvs": [1, 131, 38, 192]
+}

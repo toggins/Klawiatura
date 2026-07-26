@@ -1,0 +1,6 @@
+{
+    "texture": "characters/luigi/fire",
+    "size": [39, 55],
+    "offset": [19, 57],
+    "uvs": [81, 127, 120, 182]
+}

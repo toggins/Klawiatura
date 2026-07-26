@@ -1,0 +1,6 @@
+{
+    "texture": "characters/luigi/cursor",
+    "size": [30, 31],
+    "offset": [17, 17],
+    "uvs": [33, 34, 63, 65]
+}

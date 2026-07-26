@@ -115,6 +115,7 @@ enum {
 typedef Uint8 PlayerCharacter;
 enum {
     CHR_MARIO,
+    CHR_LUIGI,
     CHR_SIZE,
 };
 
@@ -191,6 +192,7 @@ enum {
 };
 
 typedef struct {
+    const Fixed steer, jump;
     const char *name, *cursor, *sprites[POW_SIZE][PF_SIZE], *voices[PV_SIZE];
 } GameCharacter;
 

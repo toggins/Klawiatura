@@ -1,0 +1,6 @@
+{
+    "texture": "characters/luigi/lui",
+    "size": [39, 56],
+    "offset": [19, 57],
+    "uvs": [1, 124, 40, 180]
+}
