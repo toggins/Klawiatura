@@ -9,7 +9,7 @@ typedef Sint8 PlayerID;
 #define MAX_PLAYERS 8
 #define NULL_PLAYER ((PlayerID)(-1))
 
-#define DEFAULT_LIVES 5
+#define DEFAULT_LIVES 4
 #define MAX_PROJECTILES 2
 #define MAX_SINKING_PROJECTILES 6
 
@@ -420,6 +420,7 @@ void set_view_player(const GamePlayer*);
 GamePlayer* get_player(PlayerID);
 GameActor *respawn_player(GamePlayer*), *nearest_player_actor(const FVec2);
 void set_player_track(GamePlayer*, Uint8);
+Bool all_players_dead();
 
 void load_actor(ActorType);
 GameActor *create_actor(ActorType, const FVec2), *get_actor(ActorID);
@@ -427,7 +428,6 @@ void replace_actors(ActorType, ActorType);
 
 void move_actor(GameActor*, const FVec2);
 
-Bool below_level(const GameActor*);
 Bool in_any_view(const FVec2, Fixed, Bool);
 Bool in_player_view(const GamePlayer*, const FVec2, Fixed, Bool);
 
@@ -436,7 +436,7 @@ Bool touching_solid(const FRect, SolidType);
 void displace_actor(GameActor*, Fixed, Bool), displace_actor_soft(GameActor*);
 
 void draw_actor(const GameActor*, const char*);
-void draw_dead(const GameActor*);
+void draw_dead_actor(const GameActor*);
 void quake_at_actor(const GameActor*, float);
 
 Sint32 rng(Sint32);

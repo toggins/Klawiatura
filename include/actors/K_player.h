@@ -9,6 +9,8 @@ enum {
     VAL_PLAYER_EFFECT_POWERUP,
     VAL_PLAYER_EFFECT_FRAME,
     VAL_PLAYER_EFFECT_ALPHA,
+
+    VAL_PLAYER_DEAD_STATE = VAL_CUSTOM,
 };
 
 enum {
@@ -16,3 +18,5 @@ enum {
     FLG_PLAYER_DUCK = CUSTOM_FLAG(1),
     FLG_PLAYER_TOUCHED_WATER = CUSTOM_FLAG(2),
 };
+
+void kill_player(GameActor*);

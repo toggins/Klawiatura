@@ -744,6 +744,35 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 
 #undef TICK_LOOP
 
+    GameSequence* sequence = &game_state->sequence;
+    switch (sequence->type) {
+    default:
+        break;
+
+    case GS_LOSE: {
+        if (sequence->time <= 0)
+            break;
+
+        switch (sequence->time++) {
+        default:
+            break;
+
+        case 1: {
+            stop_state_track(MAX_STATE_TRACKS);
+            play_state_track(STS_FANFARE, "smb/game_over", 0);
+            break;
+        }
+
+        case 301: {
+            game_state->flags |= GF_END;
+            break;
+        }
+        }
+
+        break;
+    }
+    }
+
     ++game_state->time;
 }
 
@@ -762,7 +791,7 @@ void nuke_game() {
 }
 
 void tick_game() {
-    if (game_session == NULL || (game_state->flags & GF_END))
+    if (game_session == NULL)
         return;
 
     if (get_replay_state() == RPS_PLAYING) {
@@ -775,6 +804,24 @@ void tick_game() {
         for (PlayerID i = 0; i < game_context.num_players; i++)
             gekko_add_local_input(game_session, i, (void*)&input[i]);
     } else {
+        // Since this isn't a replay, we can freely change levels/worlds.
+        if (game_state->flags & GF_END) {
+            if (!is_leader())
+                return;
+
+            GameContext ctx = game_context;
+            ctx.flags |= GF_RESTARTED;
+            for (PlayerID i = 0; i < ctx.num_players; i++) {
+                ctx.players[i].lives = game_state->players[i].lives;
+                ctx.players[i].coins = game_state->players[i].coins;
+                ctx.players[i].score = game_state->players[i].score;
+                ctx.players[i].powerup = game_state->players[i].powerup;
+            }
+
+            jump_to_game(&ctx, FALSE);
+            return;
+        }
+
         // LOCAL PLAYER GLOSSARY:
         // 0 .. (MAX_PLAYERS - 1) = Solo/online.
         // MAX_PLAYERS or higher = Spectator.
@@ -1033,6 +1080,13 @@ static void draw_game_state() {
         batch_string("hud", 16.f, fmt("%i", game_state->clock));
     }
 
+    const GameSequence* sequence = &game_state->sequence;
+    if (sequence->type == GS_LOSE && sequence->time > 0) {
+        batch_pos(B_HALF_SCREEN);
+        batch_align(B_CENTER);
+        batch_string("hud", 16.f, "GAME OVER");
+    }
+
     batch_test_depth(TRUE);
     batch_write_depth(TRUE);
 
@@ -1106,19 +1160,11 @@ GameActor* respawn_player(GamePlayer* player) {
     if (player == NULL || player->lives < 0)
         return NULL;
 
-    if (--player->lives < 0)
-        return NULL;
-
     const GameActor* spawn = get_actor(game_state->checkpoint);
     if (spawn == NULL)
         spawn = get_actor(game_state->spawn);
     if (spawn == NULL)
         return NULL;
-
-    /// !!! CLIENT-SIDE !!!
-    if (player->id == local_player)
-        set_view_player(player);
-    /// !!! CLIENT-SIDE !!!
 
     if (spawn->type == ACT_CHECKPOINT) {
         const Fixed bx1 = VAL(spawn, CHECKPOINT_BOUNDS_X1), by1 = VAL(spawn, CHECKPOINT_BOUNDS_Y1),
@@ -1143,6 +1189,11 @@ GameActor* respawn_player(GamePlayer* player) {
 
     player->actor = pawn->id;
 
+    /// !!! CLIENT-SIDE !!!
+    if (player->id == local_player || local_player >= MAX_PLAYERS)
+        set_view_player(player);
+    /// !!! CLIENT-SIDE !!!
+
     return pawn;
 }
 
@@ -1156,6 +1207,16 @@ void set_player_track(GamePlayer* player, Uint8 track) {
     if (player->id == view_player)
         try_play_track(track);
     /// !!! CLIENT-SIDE !!!
+}
+
+Bool all_players_dead() {
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player != NULL && (player->lives >= 0 || get_actor(player->actor) != NULL))
+            return FALSE;
+    }
+
+    return TRUE;
 }
 
 // ======
