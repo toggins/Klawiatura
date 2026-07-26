@@ -112,91 +112,73 @@ static void tick(GameActor* actor) {
 
     // EVENTS FROM "Level 1-1"
 
-    // 179
-    if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_SPEED) == Fx0 && VAL(actor, X_TOUCH) == 0
-        && !ANY_FLAG(actor, FLG_PLAYER_DUCK))
-    {
-        FLAG_OFF(actor, FLG_X_FLIP);
+    // 179, 180, 181, 182
+    if (!ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
+        if (VAL(actor, X_SPEED) == Fx0 && VAL(actor, X_TOUCH) == 0) {
+            if (ANY_INPUT(player, GI_RIGHT))
+                FLAG_OFF(actor, FLG_X_FLIP);
+            else if (ANY_INPUT(player, GI_LEFT))
+                FLAG_ON(actor, FLG_X_FLIP);
+        }
+
+        // 181, 182, 183 (modified), 184 (modified)
+        if (!ANY_INPUT(player, GI_RUN)) {
+            if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_TOUCH) <= 0 && VAL(actor, X_SPEED) >= Fx0
+                && VAL(actor, X_SPEED) < 286720)
+            {
+                VAL(actor, X_SPEED) += 8192;
+            }
+            if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_TOUCH) >= 0 && VAL(actor, X_SPEED) <= Fx0
+                && VAL(actor, X_SPEED) > -286720)
+            {
+                VAL(actor, X_SPEED) -= 8192;
+            }
+        } else {
+            if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_TOUCH) <= 0 && VAL(actor, X_SPEED) >= Fx0
+                && VAL(actor, X_SPEED) < 491520)
+            {
+                VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 8192, 491520);
+            }
+            if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_TOUCH) >= 0 && VAL(actor, X_SPEED) <= Fx0
+                && VAL(actor, X_SPEED) > -491520)
+            {
+                VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 8192, -491520);
+            }
+        }
     }
 
-    // 180
-    if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_SPEED) == Fx0 && VAL(actor, X_TOUCH) == 0
-        && !ANY_FLAG(actor, FLG_PLAYER_DUCK))
-    {
-        FLAG_ON(actor, FLG_X_FLIP);
-    }
-
-    // 181
-    if (ANY_INPUT(player, GI_RIGHT) && !ANY_INPUT(player, GI_RUN) && VAL(actor, X_TOUCH) <= 0
-        && !ANY_FLAG(actor, FLG_PLAYER_DUCK) && VAL(actor, X_SPEED) >= Fx0 && VAL(actor, X_SPEED) < 286720)
-    {
-        VAL(actor, X_SPEED) += 8192;
-    }
-
-    // 182
-    if (ANY_INPUT(player, GI_LEFT) && !ANY_INPUT(player, GI_RUN) && VAL(actor, X_TOUCH) >= 0
-        && !ANY_FLAG(actor, FLG_PLAYER_DUCK) && VAL(actor, X_SPEED) <= Fx0 && VAL(actor, X_SPEED) > -286720)
-    {
-        VAL(actor, X_SPEED) -= 8192;
-    }
-
-    // 183 (modified)
-    if (ANY_INPUT(player, GI_RIGHT) && ANY_INPUT(player, GI_RUN) && VAL(actor, X_TOUCH) <= 0
-        && !ANY_FLAG(actor, FLG_PLAYER_DUCK) && VAL(actor, X_SPEED) >= Fx0 && VAL(actor, X_SPEED) < 491520)
-    {
-        VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 8192, 491520);
-    }
-
-    // 184 (modified)
-    if (ANY_INPUT(player, GI_LEFT) && ANY_INPUT(player, GI_RUN) && VAL(actor, X_TOUCH) >= 0
-        && !ANY_FLAG(actor, FLG_PLAYER_DUCK) && VAL(actor, X_SPEED) <= Fx0 && VAL(actor, X_SPEED) > -491520)
-    {
-        VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 8192, -491520);
-    }
-
-    // 185
+    // 185, 186
     if (!ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_SPEED) > Fx0)
         VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 8192, Fx0);
-
-    // 186
     if (!ANY_INPUT(player, GI_LEFT) && VAL(actor, X_SPEED) < Fx0)
         VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 8192, Fx0);
 
-    // 187
-    if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_TOUCH) <= 0 && !ANY_FLAG(actor, FLG_PLAYER_DUCK)
-        && VAL(actor, X_SPEED) < Fx0)
-    {
-        VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + Fmul(24576, character->steer), Fx0);
+    // 187, 188, 191, 192
+    if (!ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
+        if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_TOUCH) <= 0 && VAL(actor, X_SPEED) < Fx0)
+            VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + Fmul(24576, character->steer), Fx0);
+        if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_TOUCH) >= 0 && VAL(actor, X_SPEED) > Fx0)
+            VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - Fmul(24576, character->steer), Fx0);
+
+        if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_TOUCH) <= 0 && VAL(actor, X_SPEED) < Fx1
+            && VAL(actor, X_SPEED) >= Fx0)
+        {
+            VAL(actor, X_SPEED) += Fx1;
+        }
+        if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_TOUCH) >= 0 && VAL(actor, X_SPEED) > -Fx1
+            && VAL(actor, X_SPEED) <= Fx0)
+        {
+            VAL(actor, X_SPEED) -= Fx1;
+        }
     }
 
-    // 188
-    if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_TOUCH) >= 0 && !ANY_FLAG(actor, FLG_PLAYER_DUCK)
-        && VAL(actor, X_SPEED) > Fx0)
-    {
-        VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - Fmul(24576, character->steer), Fx0);
+    // 193, 194
+    if (!ANY_INPUT(player, GI_RUN)) {
+        if (VAL(actor, X_SPEED) < -286720)
+            VAL(actor, X_SPEED) += 8192;
+        if (VAL(actor, X_SPEED) > 286720)
+            VAL(actor, X_SPEED) -= 8192;
     }
-
-    // 191
-    if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_TOUCH) <= 0 && !ANY_FLAG(actor, FLG_PLAYER_DUCK)
-        && VAL(actor, X_SPEED) < Fx1 && VAL(actor, X_SPEED) >= Fx0)
-    {
-        VAL(actor, X_SPEED) += Fx1;
-    }
-
-    // 192
-    if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_TOUCH) >= 0 && !ANY_FLAG(actor, FLG_PLAYER_DUCK)
-        && VAL(actor, X_SPEED) > -Fx1 && VAL(actor, X_SPEED) <= Fx0)
-    {
-        VAL(actor, X_SPEED) -= Fx1;
-    }
-
-    // 193
-    if (!ANY_INPUT(player, GI_RUN) && VAL(actor, X_SPEED) < -286720)
-        VAL(actor, X_SPEED) += 8192;
-
-    // 194
-    if (!ANY_INPUT(player, GI_RUN) && VAL(actor, X_SPEED) > 286720)
-        VAL(actor, X_SPEED) -= 8192;
 
     // 209, 210, 211, 212
     if (ANY_INPUT(player, GI_DOWN) && !ANY_INPUT(player, GI_LEFT | GI_RIGHT) && VAL(actor, PLAYER_GROUND) > 0
@@ -212,65 +194,45 @@ static void tick(GameActor* actor) {
         FLAG_OFF(actor, FLG_PLAYER_DUCK);
     }
 
-    // 214 (modified)
-    if (ANY_FLAG(actor, FLG_PLAYER_DUCK) && !ANY_FLAG(actor, FLG_X_FLIP) && VAL(actor, X_SPEED) > Fx0)
-        VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 8192, Fx0);
+    // 214 (modified), 215 (modified)
+    if (ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
+        if (!ANY_FLAG(actor, FLG_X_FLIP) && VAL(actor, X_SPEED) > Fx0)
+            VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 8192, Fx0);
+        if (ANY_FLAG(actor, FLG_X_FLIP) && VAL(actor, X_SPEED) < Fx0)
+            VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 8192, Fx0);
+    }
 
-    // 215 (modified)
-    if (ANY_FLAG(actor, FLG_PLAYER_DUCK) && ANY_FLAG(actor, FLG_X_FLIP) && VAL(actor, X_SPEED) < Fx0)
-        VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 8192, Fx0);
-
-    // 189
+    // 189, 190
     if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_SPEED) > Fx0)
         FLAG_OFF(actor, FLG_X_FLIP);
-
-    // 190
     if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_SPEED) < Fx0)
         FLAG_ON(actor, FLG_X_FLIP);
 
-    // 218 (modified)
+    // 218 (modified), 219 (modified), 220 (modified)
     const GameState* game_state = gamestate();
     const GameActor* water = get_actor(game_state->water);
     if (ANY_INPUT(player, GI_JUMP) && VAL(actor, Y_SPEED) < Fx0 && (water == NULL || actor->pos.y < water->pos.y)
-        && !ANY_INPUT(player, GI_DOWN) && Fabs(VAL(actor, X_SPEED)) < 40960)
+        && !ANY_INPUT(player, GI_DOWN))
     {
-        VAL(actor, Y_SPEED) -= 26214;
+        if (Fabs(VAL(actor, X_SPEED)) < 40960)
+            VAL(actor, Y_SPEED) -= 26214;
+        else
+            VAL(actor, Y_SPEED) -= FxHalf;
+
+        if (player->powerup == POW_GREEN_LUI)
+            VAL(actor, Y_SPEED) -= 6554;
     }
 
-    // 219 (modified)
-    if (ANY_INPUT(player, GI_JUMP) && VAL(actor, Y_SPEED) < Fx0 && (water == NULL || actor->pos.y < water->pos.y)
-        && !ANY_INPUT(player, GI_DOWN) && Fabs(VAL(actor, X_SPEED)) >= 40960)
-    {
-        VAL(actor, Y_SPEED) -= FxHalf;
-    }
-
-    // 220 (modified)
-    if (ANY_INPUT(player, GI_JUMP) && VAL(actor, Y_SPEED) < Fx0 && (water == NULL || actor->pos.y < water->pos.y)
-        && !ANY_INPUT(player, GI_DOWN) && player->powerup == POW_GREEN_LUI)
-    {
-        VAL(actor, Y_SPEED) -= 6554;
-    }
-
-    // 221 (modified)
-    if (ANY_PRESSED(player, GI_JUMP) && water != NULL
-        && ((actor->pos.y + actor->box.end.y) <= water->pos.y
-            || (actor->pos.y + actor->box.start.y) >= (water->pos.y + Int2Fx(16)))
-        && actor->pos.y >= water->pos.y && VAL(actor, Y_TOUCH) >= 0 && !ANY_INPUT(player, GI_DOWN))
+    // 221 (modified), 222 (modified)
+    if (ANY_PRESSED(player, GI_JUMP) && water != NULL && actor->pos.y >= water->pos.y && VAL(actor, Y_TOUCH) >= 0
+        && !ANY_INPUT(player, GI_DOWN))
     {
         VAL(actor, PLAYER_GROUND) = 0;
-        VAL(actor, Y_SPEED) = Fmul(Int2Fx(-3), character->jump);
-        if (VAL(actor, PLAYER_ANIMATION) == PF_SWIM)
-            VAL(actor, PLAYER_FRAME) = Fx0;
-        play_state_sound("swim", PLAY_POS, A_ACTOR(actor));
-    }
-
-    // 222 (modified)
-    if (ANY_PRESSED(player, GI_JUMP) && water != NULL && (actor->pos.y + actor->box.end.y) > water->pos.y
-        && (actor->pos.y + actor->box.start.y) < (water->pos.y + Int2Fx(16)) && actor->pos.y >= water->pos.y
-        && VAL(actor, Y_TOUCH) >= 0 && !ANY_INPUT(player, GI_DOWN))
-    {
-        VAL(actor, PLAYER_GROUND) = 0;
-        VAL(actor, Y_SPEED) = Fmul(Int2Fx(-9), character->jump);
+        VAL(actor, Y_SPEED) = Fmul(((actor->pos.y + actor->box.end.y) <= water->pos.y
+                                       || (actor->pos.y + actor->box.start.y) >= (water->pos.y + Int2Fx(16)))
+                                       ? Int2Fx(-3)
+                                       : Int2Fx(-9),
+            character->jump);
         if (VAL(actor, PLAYER_ANIMATION) == PF_SWIM)
             VAL(actor, PLAYER_FRAME) = Fx0;
         play_state_sound("swim", PLAY_POS, A_ACTOR(actor));
@@ -297,30 +259,20 @@ static void tick(GameActor* actor) {
         FLAG_ON(actor, FLG_PLAYER_TOUCHED_WATER);
     }
 
-    // 225 (modified)
+    // 225 (modified), 229
     if (water != NULL && actor->pos.y >= water->pos.y)
         VAL(actor, Y_SPEED) += 6554;
-
-    // 229
-    if (water == NULL || actor->pos.y < water->pos.y)
+    else
         VAL(actor, Y_SPEED) += Fx1;
 
     // 230
     if (VAL(actor, Y_SPEED) > Int2Fx(10))
         VAL(actor, Y_SPEED) = Int2Fx(10);
 
-    // 240
-    if (ANY_PRESSED(player, GI_JUMP) && (water == NULL || actor->pos.y < water->pos.y) && !ANY_INPUT(player, GI_DOWN)
-        && VAL(actor, PLAYER_GROUND) > 0 && !ANY_FLAG(actor, FLG_PLAYER_JUMP))
-    {
-        VAL(actor, PLAYER_GROUND) = 0;
-        VAL(actor, Y_SPEED) = Fmul(Int2Fx(-13), character->jump);
-        play_state_sound("jump", PLAY_POS, A_ACTOR(actor));
-    }
-
-    // 241
-    if (ANY_INPUT(player, GI_JUMP) && (water == NULL || actor->pos.y < water->pos.y) && !ANY_INPUT(player, GI_DOWN)
-        && VAL(actor, PLAYER_GROUND) > 0 && ANY_FLAG(actor, FLG_PLAYER_JUMP))
+    // 240, 241
+    if ((water == NULL || actor->pos.y < water->pos.y) && !ANY_INPUT(player, GI_DOWN) && VAL(actor, PLAYER_GROUND) > 0
+        && ((ANY_PRESSED(player, GI_JUMP) && !ANY_FLAG(actor, FLG_PLAYER_JUMP))
+            || (ANY_INPUT(player, GI_JUMP) && ANY_FLAG(actor, FLG_PLAYER_JUMP))))
     {
         VAL(actor, PLAYER_GROUND) = 0;
         VAL(actor, Y_SPEED) = Fmul(Int2Fx(-13), character->jump);
@@ -328,14 +280,12 @@ static void tick(GameActor* actor) {
         play_state_sound("jump", PLAY_POS, A_ACTOR(actor));
     }
 
-    // 242
+    // 242, 243
     if (!ANY_INPUT(player, GI_JUMP) && (water == NULL || actor->pos.y < water->pos.y) && !ANY_INPUT(player, GI_DOWN)
         && VAL(actor, PLAYER_GROUND) > 0 && ANY_FLAG(actor, FLG_PLAYER_JUMP))
     {
         FLAG_OFF(actor, FLG_PLAYER_JUMP);
     }
-
-    // 243
     if (ANY_PRESSED(player, GI_JUMP) && VAL(actor, PLAYER_GROUND) <= 0 && VAL(actor, Y_SPEED) > Fx0)
         FLAG_ON(actor, FLG_PLAYER_JUMP);
 
@@ -345,13 +295,13 @@ static void tick(GameActor* actor) {
     if (water != NULL && actor->pos.y > water->pos.y && VAL(actor, Y_SPEED) > Int2Fx(3))
         VAL(actor, Y_SPEED) -= Fx1;
 
-    // 472
-    if (VAL(actor, X_SPEED) > 245760 && water != NULL && actor->pos.y > water->pos.y)
-        VAL(actor, X_SPEED) -= 24576;
-
-    // 473
-    if (VAL(actor, X_SPEED) < -245760 && water != NULL && actor->pos.y > water->pos.y)
-        VAL(actor, X_SPEED) += 24576;
+    // 472, 473
+    if (water != NULL && actor->pos.y > water->pos.y) {
+        if (VAL(actor, X_SPEED) > 245760)
+            VAL(actor, X_SPEED) -= 24576;
+        if (VAL(actor, X_SPEED) < -245760)
+            VAL(actor, X_SPEED) += 24576;
+    }
 
     // Przejscie Etapu i Rury: TODO
 
