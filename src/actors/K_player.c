@@ -1,4 +1,5 @@
 #include "K_audio.h"
+#include "K_net.h"
 #include "K_video.h"
 
 #include "actors/K_player.h"
@@ -390,6 +391,7 @@ static void tick(GameActor* actor) {
         if (player->powerup == POW_GREEN_LUI) {
             GameActor* effect = create_actor(ACT_PLAYER_EFFECT, actor->pos);
             if (effect != NULL) {
+                effect->player = player->id;
                 VAL(effect, PLAYER_EFFECT_CHARACTER) = gamecontext()->players[player->id].character;
                 VAL(effect, PLAYER_EFFECT_POWERUP) = player->powerup;
                 VAL(effect, PLAYER_EFFECT_FRAME) = get_player_frame(actor);
@@ -421,8 +423,25 @@ static void draw(const GameActor* actor) {
         return;
 
     batch_reset();
+    batch_color(B_ALPHA((player->id == localplayer()) ? 255 : 192));
     draw_actor(actor,
         get_character_sprite(gamecontext()->players[player->id].character, player->powerup, get_player_frame(actor)));
+
+    if (player->id == viewplayer())
+        return;
+
+    const char* name = get_peer_name(player_to_peer(player->id));
+    if (name == NULL)
+        return;
+
+    const FVec2 ipos = get_interp(actor);
+    const Sint32 nx = Fx2Int(ipos.x), ny = Fx2Int(ipos.y + actor->box.start.y) - 16;
+    batch_pos(B_XYZ(nx, ny, Fx2Float(actor->depth)));
+    batch_color(B_ALPHA(192));
+    batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+    batch_filter(TRUE);
+    batch_string("main", 16.f, name);
+    batch_filter(FALSE);
 }
 
 const ActorTable TAB_PLAYER = {
@@ -461,7 +480,8 @@ static void tick_effect(GameActor* actor) {
 
 static void draw_effect(const GameActor* actor) {
     batch_reset();
-    batch_color(B_ALPHA(Fx2Float(VAL(actor, PLAYER_EFFECT_ALPHA)) * 255.f));
+    batch_color(
+        B_ALPHA(Fx2Float(VAL(actor, PLAYER_EFFECT_ALPHA)) * ((actor->player == localplayer()) ? 255.f : 192.f)));
     draw_actor(actor, get_character_sprite(VAL(actor, PLAYER_EFFECT_CHARACTER), VAL(actor, PLAYER_EFFECT_POWERUP),
                           VAL(actor, PLAYER_EFFECT_FRAME)));
 }
