@@ -109,6 +109,7 @@ static void create(GameActor* actor) {
     actor->box.end.y = Fx1;
 
     VAL(actor, PLAYER_GROUND) = 2;
+    VAL(actor, PLAYER_WARP) = NULL_ACTOR;
 }
 
 static void cleanup(GameActor* actor) {
@@ -398,7 +399,8 @@ static void draw(const GameActor* actor) {
     batch_reset();
     batch_color(B_ALPHA((player->id == localplayer()) ? 255 : 192));
     draw_actor(actor,
-        get_character_sprite(gamecontext()->players[player->id].character, player->powerup, get_player_frame(actor)));
+        get_character_sprite(gamecontext()->players[player->id].character, player->powerup, get_player_frame(actor)),
+        FALSE);
 
     if (player->id == viewplayer())
         return;
@@ -455,8 +457,10 @@ static void draw_effect(const GameActor* actor) {
     batch_reset();
     batch_color(
         B_ALPHA(Fx2Float(VAL(actor, PLAYER_EFFECT_ALPHA)) * ((actor->player == localplayer()) ? 255.f : 192.f)));
-    draw_actor(actor, get_character_sprite(VAL(actor, PLAYER_EFFECT_CHARACTER), VAL(actor, PLAYER_EFFECT_POWERUP),
-                          VAL(actor, PLAYER_EFFECT_FRAME)));
+    draw_actor(actor,
+        get_character_sprite(
+            VAL(actor, PLAYER_EFFECT_CHARACTER), VAL(actor, PLAYER_EFFECT_POWERUP), VAL(actor, PLAYER_EFFECT_FRAME)),
+        FALSE);
 }
 
 const ActorTable TAB_PLAYER_EFFECT = {
@@ -553,7 +557,7 @@ static void draw_dead(const GameActor* actor) {
         return;
 
     batch_reset();
-    draw_actor(actor, get_character_sprite(gamecontext()->players[player->id].character, POW_NONE, PF_DEAD));
+    draw_actor(actor, get_character_sprite(gamecontext()->players[player->id].character, POW_NONE, PF_DEAD), FALSE);
 }
 
 const ActorTable TAB_PLAYER_DEAD = {

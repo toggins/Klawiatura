@@ -30,7 +30,7 @@ static void tick_water_splash(GameActor* actor) {
 
 static void draw_water_splash(const GameActor* actor) {
     batch_reset();
-    draw_actor(actor, fmt("effects/water_splash/%i", VAL(actor, EFFECT_FRAME) / 10));
+    draw_actor(actor, fmt("effects/water_splash/%i", VAL(actor, EFFECT_FRAME) / 10), FALSE);
 }
 
 const ActorTable TAB_WATER_SPLASH = {
@@ -78,8 +78,10 @@ static void tick_bubble(GameActor* actor) {
 
 static void draw_bubble(const GameActor* actor) {
     batch_reset();
-    draw_actor(actor, ANY_FLAG(actor, FLG_EFFECT_END) ? fmt("effects/bubble/pop/%i", VAL(actor, EFFECT_FRAME))
-                                                      : fmt("effects/bubble/%i", (VAL(actor, EFFECT_FRAME) / 2) % 5));
+    draw_actor(actor,
+        ANY_FLAG(actor, FLG_EFFECT_END) ? fmt("effects/bubble/pop/%i", VAL(actor, EFFECT_FRAME))
+                                        : fmt("effects/bubble/%i", (VAL(actor, EFFECT_FRAME) / 2) % 5),
+        FALSE);
 }
 
 const ActorTable TAB_BUBBLE = {

@@ -1,0 +1,5 @@
+{
+    "texture": "markers/platform",
+    "size": [64, 32],
+    "uvs": [1, 155, 65, 187]
+}

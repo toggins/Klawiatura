@@ -181,16 +181,6 @@ enum {
     SOL_ALL = SOL_SOLID | SOL_TOP | SOL_BOTTOM,
 };
 
-typedef Uint8 PlatformType;
-enum {
-    PLAT_NORMAL,
-    PLAT_SMALL,
-    PLAT_CLOUD,
-    PLAT_CASTLE,
-    PLAT_CASTLE_BIG,
-    PLAT_CASTLE_BUTTON,
-};
-
 typedef struct {
     const Fixed steer, jump;
     const char *name, *cursor, *sprites[POW_SIZE][PF_SIZE], *voices[PV_SIZE];
@@ -223,8 +213,7 @@ typedef struct {
     PlayerPowerup powerup;
 
     Uint8 track;
-    ActorID actor;
-    ActorID projectiles[MAX_PROJECTILES], sinking_projectiles[MAX_SINKING_PROJECTILES];
+    ActorID actor, projectiles[MAX_PROJECTILES], sinking_projectiles[MAX_SINKING_PROJECTILES];
     FVec2 pos;
     FRect bounds;
 
@@ -251,6 +240,7 @@ enum {
     VAL_Y_SPEED,
     VAL_X_TOUCH,
     VAL_Y_TOUCH,
+    VAL_PLATFORM,
     VAL_SPROUT,
     VAL_CUSTOM
 };
@@ -300,16 +290,16 @@ enum {
 };
 
 typedef struct {
+    ActorType type;
     PlayerID player;
 
-    ActorType type;
     ActorID id;
     ActorID previous, next;
 
     ActorID previous_cell, next_cell;
     Sint32 cell;
 
-    FVec2 pos;
+    FVec2 pos, last_pos;
     FRect box;
     Fixed depth;
 
@@ -319,20 +309,18 @@ typedef struct {
 
 typedef struct {
     GameFlags flags;
-    GameSequence sequence;
-
-    GamePlayer players[MAX_PLAYERS];
 
     ActorID spawn, checkpoint, water;
+    ActorID live_actors, next_actor;
+    ActorID grid[GRID_SIZE];
 
     Sint32 clock;
-
     Uint64 seed;
     Uint64 time;
 
-    ActorID live_actors, next_actor;
+    GameSequence sequence;
+    GamePlayer players[MAX_PLAYERS];
     GameActor actors[MAX_ACTORS];
-    ActorID grid[GRID_SIZE];
 } GameState;
 
 SolidType always_solid(const GameActor*), always_top(const GameActor*), always_bottom(const GameActor*);
@@ -435,7 +423,7 @@ void collide_actor(GameActor*);
 Bool touching_solid(const FRect, SolidType);
 void displace_actor(GameActor*, Fixed, Bool), displace_actor_soft(GameActor*);
 
-void draw_actor(const GameActor*, const char*);
+void draw_actor(const GameActor*, const char*, Bool);
 void draw_dead_actor(const GameActor*);
 void quake_at_actor(const GameActor*, float);
 

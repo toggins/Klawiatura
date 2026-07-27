@@ -23,7 +23,7 @@ static void create(GameActor* actor) {
 
 static void draw(const GameActor* actor) {
     batch_reset();
-    draw_actor(actor, fmt("items/coin/%i", (gamestate()->time / 5) % 3));
+    draw_actor(actor, fmt("items/coin/%i", (gamestate()->time / 5) % 3), FALSE);
 }
 
 static void collide(GameActor* actor, GameActor* other) {

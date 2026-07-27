@@ -17,7 +17,7 @@ static void create_bush(GameActor* actor) {
 
 static void draw_bush(const GameActor* actor) {
     batch_reset();
-    draw_actor(actor, fmt("scenery/bush/%i", ((gamestate()->time * 7) / 50) % 3));
+    draw_actor(actor, fmt("scenery/bush/%i", ((gamestate()->time * 7) / 50) % 3), FALSE);
 }
 
 const ActorTable TAB_BUSH = {
@@ -40,7 +40,7 @@ static void create_cloud(GameActor* actor) {
 
 static void draw_cloud(const GameActor* actor) {
     batch_reset();
-    draw_actor(actor, fmt("scenery/cloud/%i", ((gamestate()->time * 2) / 25) % 3));
+    draw_actor(actor, fmt("scenery/cloud/%i", ((gamestate()->time * 2) / 25) % 3), FALSE);
 }
 
 const ActorTable TAB_CLOUD = {

@@ -714,6 +714,8 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 
     GameActor* actor = get_actor(game_state->live_actors);
     while (actor != NULL) {
+        actor->last_pos = actor->pos;
+
         if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE)) {
             if (VAL(actor, SPROUT) > 0)
                 --VAL(actor, SPROUT);
@@ -1283,8 +1285,11 @@ found:
     actor->cell = NULL_CELL;
     actor->previous_cell = actor->next_cell = NULL_ACTOR;
     move_actor(actor, pos);
+    actor->last_pos = pos;
 
+    VAL(actor, PLATFORM) = NULL_ACTOR;
     FLAG_ON(actor, FLG_VISIBLE);
+
     ACTOR_CALL(actor, create);
     skip_interp(actor);
 
@@ -1460,6 +1465,7 @@ Bool touching_solid(const FRect rect, SolidType types) {
     return FALSE;
 }
 
+// NOLINTBEGIN(misc-no-recursion)
 void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
     if (actor == NULL)
         return;
@@ -1484,6 +1490,28 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
         VAL(actor, Y_TOUCH) = 1;
 
         return;
+    }
+
+    const GameActor* platform = get_actor(VAL(actor, PLATFORM));
+    if (platform != NULL) {
+        VAL(actor, PLATFORM) = NULL_ACTOR;
+
+        const FVec2 avel = (FVec2){VAL(actor, X_SPEED), VAL(actor, Y_SPEED)};
+        const FVec2 pvel = Vsub(platform->pos, platform->last_pos);
+
+        VAL(actor, X_SPEED) = pvel.x;
+        VAL(actor, Y_SPEED) = pvel.y;
+        displace_actor(actor, Fx0, FALSE);
+        VAL(actor, X_SPEED) = avel.x;
+        VAL(actor, Y_SPEED) = avel.y;
+
+        if (VAL(actor, PLATFORM) == platform->id) {
+            if (!Rcollide(Radd(Radd(actor->box, actor->pos), (FVec2){pvel.x, pvel.y + Fx1}),
+                    Radd(platform->box, platform->pos)))
+            {
+                VAL(actor, PLATFORM) = NULL_ACTOR;
+            }
+        }
     }
 
     VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = 0;
@@ -1638,14 +1666,21 @@ da_climbed:
 
     move_actor(actor, npos);
 }
+// NOLINTEND(misc-no-recursion)
 
-void draw_actor(const GameActor* actor, const char* sprite) {
+void draw_actor(const GameActor* actor, const char* sprite, Bool antijitter) {
     if (actor == NULL || !ANY_FLAG(actor, FLG_VISIBLE))
         return;
 
     const FVec2 ipos = get_interp(actor);
-    const Sint32 ax = Fx2Int(ipos.x), ay = Fx2Int(ipos.y);
-    batch_pos(B_XYZ(ax, ay, Fx2Float(actor->depth)));
+    if (antijitter) {
+        const FVec2 cpos = videostate()->camera.pos;
+        const Sint32 ax = Fx2Int(ipos.x - Ffrac(cpos.x)), ay = Fx2Int(ipos.y - Ffrac(cpos.y));
+        batch_pos(B_XYZ(ax, ay, Fx2Float(actor->depth)));
+    } else {
+        const Sint32 ax = Fx2Int(ipos.x), ay = Fx2Int(ipos.y);
+        batch_pos(B_XYZ(ax, ay, Fx2Float(actor->depth)));
+    }
     batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
     batch_sprite(sprite);
 }

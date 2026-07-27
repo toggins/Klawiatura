@@ -1,0 +1,6 @@
+{
+    "texture": "markers/platform/grass",
+    "size": [192, 192],
+    "offset": [94, 190],
+    "uvs": [1, 1, 193, 193]
+}
