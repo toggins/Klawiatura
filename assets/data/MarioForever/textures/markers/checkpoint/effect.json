@@ -1,0 +1,6 @@
+{
+    "texture": "markers/checkpoint",
+    "size": [60, 34],
+    "offset": [30, 16],
+    "uvs": [110, 114, 170, 148]
+}

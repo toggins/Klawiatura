@@ -1,6 +1,7 @@
 #include "K_string.h"
 #include "K_video.h"
 
+#include "actors/K_checkpoint.h"
 #include "actors/K_platform.h"
 
 /* ========
@@ -128,8 +129,10 @@ static void pre_tick(GameActor* actor) {
 
         if (ANY_FLAG(actor, FLG_PLATFORM_RUN)) {
             const GameActor* checkpoint = get_actor(gamestate()->checkpoint);
-            if (checkpoint != NULL) {
-                // TODO: Set start position next to checkpoint
+            if (checkpoint != NULL && ANY_FLAG(checkpoint, FLG_CHECKPOINT_SET_PLATFORM)) {
+                move_actor(
+                    actor, (FVec2){VAL(checkpoint, CHECKPOINT_PLATFORM_X), VAL(checkpoint, CHECKPOINT_PLATFORM_Y)});
+                actor->last_pos = actor->pos;
             }
         }
 

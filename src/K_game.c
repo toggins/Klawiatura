@@ -652,6 +652,13 @@ void start_game(const GameContext* ctx) {
 
     // Initial game state
     for (PlayerID i = 0; i < game_context.num_players; i++) {
+        if (game_context.players[i].lives >= 0) {
+            game_state->checkpoint = game_context.checkpoint;
+            break;
+        }
+    }
+
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
         GamePlayer* player = &game_state->players[i];
         player->id = i;
 
@@ -813,6 +820,7 @@ void tick_game() {
 
             GameContext ctx = game_context;
             ctx.flags |= GF_RESTARTED;
+            ctx.checkpoint = game_state->checkpoint;
             for (PlayerID i = 0; i < ctx.num_players; i++) {
                 ctx.players[i].lives = game_state->players[i].lives;
                 ctx.players[i].coins = game_state->players[i].coins;
@@ -1168,7 +1176,10 @@ GameActor* respawn_player(GamePlayer* player) {
     if (spawn == NULL)
         return NULL;
 
+    FVec2 spos = spawn->pos;
     if (spawn->type == ACT_CHECKPOINT) {
+        spos = Vadd(spos, (FVec2){Int2Fx(53), Int2Fx(117)});
+
         const Fixed bx1 = VAL(spawn, CHECKPOINT_BOUNDS_X1), by1 = VAL(spawn, CHECKPOINT_BOUNDS_Y1),
                     bx2 = VAL(spawn, CHECKPOINT_BOUNDS_X2), by2 = VAL(spawn, CHECKPOINT_BOUNDS_Y2);
         player->bounds = (bx1 == bx2 && by1 == by2) ? level_info->bounds
@@ -1176,13 +1187,14 @@ GameActor* respawn_player(GamePlayer* player) {
                                                           {bx1, by1},
                                                           {bx2, by2}
         };
+
         set_player_track(player, VAL(spawn, CHECKPOINT_TRACK));
     } else {
         player->bounds = level_info->bounds;
         set_player_track(player, 0);
     }
 
-    GameActor* pawn = create_actor(ACT_PLAYER, spawn->pos);
+    GameActor* pawn = create_actor(ACT_PLAYER, spos);
     if (pawn == NULL)
         return NULL;
 
