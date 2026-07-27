@@ -454,22 +454,26 @@ static void start_game_state() {
 
     // Nullify entire state
     for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
-        game_state->players[i].id = NULL_PLAYER;
-        game_state->players[i].actor = NULL_ACTOR;
-        for (ActorID j = 0; j < MAX_PROJECTILES; j++)
-            game_state->players[i].projectiles[j] = NULL_ACTOR;
-        for (ActorID j = 0; j < MAX_SINKING_PROJECTILES; j++)
-            game_state->players[i].sinking_projectiles[j] = NULL_ACTOR;
+        GamePlayer* player = &game_state->players[i];
 
-        game_state->players[i].lives = DEFAULT_LIVES;
-        game_state->players[i].track = 255;
+        player->id = NULL_PLAYER;
+        player->actor = NULL_ACTOR;
+        for (ActorID j = 0; j < MAX_PROJECTILES; j++)
+            player->projectiles[j] = NULL_ACTOR;
+        for (ActorID j = 0; j < MAX_SINKING_PROJECTILES; j++)
+            player->sinking_projectiles[j] = NULL_ACTOR;
+
+        player->lives = DEFAULT_LIVES;
+        player->track = 255;
     }
 
     game_state->live_actors = NULL_ACTOR;
     for (ActorID i = 0; i < MAX_ACTORS; i++) {
-        game_state->actors[i].id = game_state->actors[i].previous = game_state->actors[i].next
-            = game_state->actors[i].previous_cell = game_state->actors[i].next_cell = NULL_ACTOR;
-        game_state->actors[i].player = NULL_PLAYER;
+        GameActor* actor = &game_state->actors[i];
+
+        actor->id = actor->previous = actor->next = actor->previous_cell = actor->next_cell = NULL_ACTOR;
+        actor->player = NULL_PLAYER;
+        VAL(actor, PLATFORM) = NULL_ACTOR;
     }
     for (Sint32 i = 0; i < GRID_SIZE; i++)
         game_state->grid[i] = NULL_ACTOR;
@@ -1286,6 +1290,7 @@ found:
 
     actor->id = index;
     actor->type = type;
+    actor->player = NULL_PLAYER;
 
     actor->previous = game_state->live_actors;
     actor->next = NULL_ACTOR;
@@ -1352,7 +1357,6 @@ static void destroy_actor(GameActor* actor) {
 
     actor->id = NULL_ACTOR;
     actor->type = ACT_NULL;
-    actor->player = NULL_PLAYER;
 }
 
 GameActor* get_actor(ActorID id) {
