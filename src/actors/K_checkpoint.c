@@ -113,6 +113,7 @@ static void collide(GameActor* actor, GameActor* from) {
     if (game_state->checkpoint >= actor->id)
         return;
 
+    actor->player = from->player;
     VAL(actor, CHECKPOINT_ANIMATION) = 1;
     VAL(actor, CHECKPOINT_FRAME) = Fx0;
     ++VAL(actor, CHECKPOINT_STATE);
