@@ -1,3 +1,5 @@
+#pragma once
+
 #include "K_game.h"
 
 enum {
