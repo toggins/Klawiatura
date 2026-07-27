@@ -190,7 +190,7 @@ static void tick_effect(GameActor* actor) {
 
 static void draw_effect(const GameActor* actor) {
     batch_reset();
-    batch_angle(((float)SDL_min(VAL(actor, CHECKPOINT_EFFECT_FRAME), 21) / 21.f) * 2.f * SDL_PI_F);
+    batch_angle(((float)SDL_min(VAL(actor, CHECKPOINT_EFFECT_FRAME), 20) / 20.f) * 2.f * SDL_PI_F);
     batch_color(B_ALPHA(Fx2Float(VAL(actor, CHECKPOINT_EFFECT_ALPHA)) * 255.f));
     draw_actor(actor, "markers/checkpoint/effect", FALSE);
 }
