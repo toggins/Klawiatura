@@ -87,7 +87,7 @@ list(APPEND LIBS SDL3_mixer::SDL3_mixer-static)
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG 03d390c37b1342fcb7d8d294cd9621ab9d640bb3
+    GIT_TAG 58b39858157965a8fda9dd641ccad9dc8b25527a
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
 
@@ -164,7 +164,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG v20260719222133-b5c6528
+    GIT_TAG v20260726175547-675b31d
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(GekkoNet)
 
