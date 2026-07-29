@@ -359,7 +359,7 @@ static void tick(GameActor* actor) {
             VAL(actor, PLAYER_FRAME) = Fx0;
         }
 
-        if (player->powerup == POW_GREEN_LUI) {
+        if (player->powerup == POW_GREEN_LUI && (game_state->time % 3) == 0) {
             GameActor* effect = create_actor(ACT_PLAYER_EFFECT, actor->pos);
             if (effect != NULL) {
                 effect->player = player->id;
