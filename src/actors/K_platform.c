@@ -133,6 +133,7 @@ static void pre_tick(GameActor* actor) {
                 move_actor(
                     actor, (FVec2){VAL(checkpoint, CHECKPOINT_PLATFORM_X), VAL(checkpoint, CHECKPOINT_PLATFORM_Y)});
                 actor->last_pos = actor->pos;
+                skip_interp(actor);
             }
         }
 
@@ -151,21 +152,39 @@ static void pre_tick(GameActor* actor) {
     move_actor(actor, POS_SPEED(actor));
     collide_actor(actor);
 
+#define DO_RESPAWN()                                                                                                   \
+    do {                                                                                                               \
+        move_actor(actor, (FVec2){VAL(actor, PLATFORM_START_X), VAL(actor, PLATFORM_START_Y)});                        \
+        actor->last_pos = actor->pos;                                                                                  \
+        VAL(actor, X_SPEED) = VAL(actor, PLATFORM_START_X_SPEED);                                                      \
+        VAL(actor, Y_SPEED) = VAL(actor, PLATFORM_START_Y_SPEED);                                                      \
+        actor->flags = VAL(actor, PLATFORM_START_FLAGS);                                                               \
+                                                                                                                       \
+        VAL(actor, PLATFORM_RESPAWN) = 0;                                                                              \
+        skip_interp(actor);                                                                                            \
+    } while (FALSE);
+
     if (ANY_FLAG(actor, FLG_PLATFORM_FALLING)
         && (actor->pos.y + actor->box.start.y) > (levelinfo()->size.y + Int2Fx(64)))
     {
-        if (gamecontext()->num_players <= 1) {
+        if (gamecontext()->num_players <= 1)
             FLAG_ON(actor, FLG_DESTROY);
-        } else if (++VAL(actor, PLATFORM_RESPAWN) > 250) {
-            move_actor(actor, (FVec2){VAL(actor, PLATFORM_START_X), VAL(actor, PLATFORM_START_Y)});
-            actor->last_pos = actor->pos;
-            VAL(actor, X_SPEED) = VAL(actor, PLATFORM_START_X_SPEED);
-            VAL(actor, Y_SPEED) = VAL(actor, PLATFORM_START_Y_SPEED);
-            actor->flags = VAL(actor, PLATFORM_START_FLAGS);
-
-            VAL(actor, PLATFORM_RESPAWN) = 0;
-        }
+        else if (++VAL(actor, PLATFORM_RESPAWN) > 250)
+            DO_RESPAWN();
     }
+
+    if (ANY_FLAG(actor, FLG_PLATFORM_RUNNING) && gamecontext()->num_players > 1) {
+        GameActor* checkpoint = get_actor(gamestate()->checkpoint);
+        if (checkpoint != NULL && ANY_FLAG(checkpoint, FLG_CHECKPOINT_SET_PLATFORM)) {
+            VAL(actor, PLATFORM_START_X) = VAL(checkpoint, CHECKPOINT_PLATFORM_X);
+            VAL(actor, PLATFORM_START_Y) = VAL(checkpoint, CHECKPOINT_PLATFORM_Y);
+        }
+
+        if (++VAL(actor, PLATFORM_RESPAWN) > 650)
+            DO_RESPAWN();
+    }
+
+#undef DO_RESPAWN
 }
 
 static void draw(const GameActor* actor) {
@@ -208,7 +227,8 @@ static void draw(const GameActor* actor) {
         break;
     }
 
-    if (ANY_FLAG(actor, FLG_PLATFORM_FALLING) && VAL(actor, PLATFORM_RESPAWN) >= 200
+    if (((ANY_FLAG(actor, FLG_PLATFORM_FALLING) && VAL(actor, PLATFORM_RESPAWN) >= 200)
+            || (ANY_FLAG(actor, FLG_PLATFORM_RUNNING) && VAL(actor, PLATFORM_RESPAWN) >= 400))
         && (VAL(actor, PLATFORM_RESPAWN) % 2) == 0)
     {
         const Sint32 ax = Fx2Int(VAL(actor, PLATFORM_START_X)), ay = Fx2Int(VAL(actor, PLATFORM_START_Y));

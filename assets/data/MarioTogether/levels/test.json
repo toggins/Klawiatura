@@ -244,6 +244,398 @@
         {
             "sprite": "tiles/grass/5",
             "pos": [832, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/0",
+            "pos": [5952, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [5984, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6016, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6048, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6080, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6112, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6144, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6176, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6208, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6240, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6272, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6304, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6336, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6368, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6400, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6432, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6464, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6496, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6528, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6560, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6592, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6624, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6656, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6688, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6720, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6752, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6784, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6816, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6848, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6880, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6912, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6944, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [6976, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7008, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7040, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7072, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7104, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7136, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7168, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7200, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7232, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7264, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7296, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7328, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7360, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7392, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7424, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7456, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/1",
+            "pos": [7488, 416, 20]
+        },
+        {
+            "sprite": "tiles/grass/3",
+            "pos": [5952, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [5984, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6016, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6048, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6080, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6112, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6144, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6176, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6208, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6240, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6272, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6304, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6336, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6368, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6400, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6432, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6464, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6496, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6528, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6560, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6592, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6624, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6656, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6688, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6720, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6752, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6784, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6816, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6848, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6880, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6912, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6944, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [6976, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7008, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7040, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7072, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7104, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7136, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7168, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7200, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7232, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7264, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7296, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7328, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7360, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7392, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7424, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7456, 448, 20]
+        },
+        {
+            "sprite": "tiles/grass/4",
+            "pos": [7488, 448, 20]
         }
     ],
     "actors": [
@@ -420,8 +812,67 @@
             "flags": 32
         },
         {
+            "id": 13,
+            "pos": [1920, 480],
+            "values": [
+                [6, 5],
+                [7, 393216]
+            ],
+            "flags": 128
+        },
+        {
+            "id": 14,
+            "pos": [5696, 224],
+            "scale": [65536, 524288]
+        },
+        {
             "id": 9,
             "pos": [320, 137]
+        },
+        {
+            "id": 1,
+            "pos": [5952, 416],
+            "scale": [524288, 262144]
+        },
+        {
+            "id": 1,
+            "pos": [6208, 416],
+            "scale": [524288, 262144]
+        },
+        {
+            "id": 1,
+            "pos": [6464, 416],
+            "scale": [524288, 262144]
+        },
+        {
+            "id": 1,
+            "pos": [6720, 416],
+            "scale": [524288, 262144]
+        },
+        {
+            "id": 1,
+            "pos": [6976, 416],
+            "scale": [524288, 262144]
+        },
+        {
+            "id": 1,
+            "pos": [7232, 416],
+            "scale": [524288, 262144]
+        },
+        {
+            "id": 1,
+            "pos": [7488, 416],
+            "scale": [524288, 262144]
+        },
+        {
+            "id": 1,
+            "pos": [7543, 160],
+            "scale": [65536, 524288]
+        },
+        {
+            "id": 1,
+            "pos": [7543, -96],
+            "scale": [65536, 524288]
         }
     ]
 }
