@@ -3,6 +3,7 @@
 #include "K_video.h"
 
 #include "actors/K_player.h"
+#include "actors/K_warp.h"
 
 static PlayerFrame get_player_frame(const GameActor* actor) {
     if (actor == NULL)
@@ -61,14 +62,19 @@ static void load_spawn() {
     load_actor(ACT_PLAYER);
 }
 
+static void load_spawn_special(const GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
+        load_sound("warp", AKL_NEVER);
+}
+
 static void create_spawn(GameActor* actor) {
     GameState* game_state = gamestate();
-
     GameActor* spawn = get_actor(game_state->spawn);
     if (spawn != NULL)
         FLAG_ON(spawn, FLG_DESTROY);
-
     game_state->spawn = actor->id;
+
+    VAL(actor, PLAYER_WARP_OUT_ANGLE) = 1;
 }
 
 static void cleanup_spawn(GameActor* actor) {
@@ -79,6 +85,7 @@ static void cleanup_spawn(GameActor* actor) {
 
 const ActorTable TAB_PLAYER_SPAWN = {
     .load = load_spawn,
+    .load_special = load_spawn_special,
     .create = create_spawn,
     .cleanup = cleanup_spawn,
 };
@@ -131,11 +138,118 @@ static void tick(GameActor* actor) {
         return;
     }
 
+    const GameState* game_state = gamestate();
+    const GameActor* water = get_actor(game_state->water);
+
+    const GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
+    if (warp != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT)) {
+        actor->depth = Int2Fx(21);
+        VAL(actor, X_SPEED) = VAL(actor, Y_SPEED) = Fx0;
+        VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = TOUCH_NONE;
+        VAL(actor, PLAYER_GROUND) = 1;
+        FLAG_OFF(actor, FLG_PLAYER_DUCK);
+
+        if (ANY_FLAG(actor, FLG_PLAYER_WARP_OUT)) {
+            switch (VAL(actor, PLAYER_WARP_OUT_ANGLE)) {
+            default: {
+                move_actor(actor, Vadd(actor->pos, (FVec2){Fx1, Fx0}));
+                FLAG_OFF(actor, FLG_X_FLIP);
+                break;
+            }
+
+            case 1: {
+                move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, -Fx1}));
+                FLAG_ON(actor, FLG_PLAYER_DUCK);
+                break;
+            }
+
+            case 2: {
+                move_actor(actor, Vadd(actor->pos, (FVec2){-Fx1, Fx0}));
+                FLAG_ON(actor, FLG_X_FLIP);
+                break;
+            }
+
+            case 3: {
+                move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, Fx1}));
+                VAL(actor, PLAYER_GROUND) = 0;
+                break;
+            }
+            }
+
+            if (!touching_solid(Radd(actor->box, actor->pos), SOL_SOLID)) {
+                actor->depth = Fx0;
+                FLAG_OFF(actor, FLG_PLAYER_WARP_OUT);
+            }
+        } else if (warp != NULL) {
+            if (VAL(actor, PLAYER_WARP_STATE) < 60) {
+                switch (VAL(warp, WARP_ANGLE)) {
+                default: {
+                    move_actor(actor, Vadd(actor->pos, (FVec2){Fx1, Fx0}));
+                    FLAG_OFF(actor, FLG_X_FLIP);
+                    break;
+                }
+
+                case 1: {
+                    move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, -Fx1}));
+                    VAL(actor, PLAYER_GROUND) = 0;
+                    break;
+                }
+
+                case 2: {
+                    move_actor(actor, Vadd(actor->pos, (FVec2){-Fx1, Fx0}));
+                    FLAG_ON(actor, FLG_X_FLIP);
+                    break;
+                }
+
+                case 3: {
+                    move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, Fx1}));
+                    FLAG_ON(actor, FLG_PLAYER_DUCK);
+                    break;
+                }
+                }
+            }
+
+            if (++VAL(actor, PLAYER_WARP_STATE) >= 60) {
+                switch (VAL(warp, WARP_OUT_ANGLE)) {
+                default:
+                    move_actor(actor, (FVec2){VAL(warp, WARP_X) - Int2Fx(30), VAL(warp, WARP_Y)});
+                    break;
+                case 1:
+                    move_actor(actor, (FVec2){VAL(warp, WARP_X), VAL(warp, WARP_Y) + Int2Fx(49)});
+                    break;
+                case 2:
+                    move_actor(actor, (FVec2){VAL(warp, WARP_X) + Int2Fx(30), VAL(warp, WARP_Y)});
+                    break;
+                case 3:
+                    move_actor(actor, (FVec2){VAL(warp, WARP_X), VAL(warp, WARP_Y) - Int2Fx(49)});
+                    break;
+                }
+                actor->last_pos = actor->pos;
+                VAL(actor, PLAYER_WARP_OUT_ANGLE) = VAL(warp, WARP_OUT_ANGLE);
+                VAL(actor, PLAYER_WARP) = NULL_ACTOR;
+                FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
+
+                skip_interp(actor);
+                play_state_sound("warp", PLAY_POS, A_ACTOR(actor));
+            }
+        }
+
+        actor->box.start.y
+            = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
+
+        goto t_skip_physics;
+    }
+
+    if (game_state->sequence.type == GS_WIN) {
+        VAL(actor, X_SPEED) = 163840;
+        FLAG_OFF(actor, FLG_X_FLIP | FLG_PLAYER_JUMP | FLG_PLAYER_DUCK);
+    }
+
     // EVENTS FROM "Level 1-1"
 
     // 179, 180, 181, 182
     if (!ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
-        if (VAL(actor, X_SPEED) == Fx0 && VAL(actor, X_TOUCH) == 0) {
+        if (VAL(actor, X_SPEED) == Fx0 && VAL(actor, X_TOUCH) == TOUCH_NONE) {
             if (ANY_INPUT(player, GI_RIGHT))
                 FLAG_OFF(actor, FLG_X_FLIP);
             else if (ANY_INPUT(player, GI_LEFT))
@@ -144,24 +258,24 @@ static void tick(GameActor* actor) {
 
         // 181, 182, 183 (modified), 184 (modified)
         if (!ANY_INPUT(player, GI_RUN)) {
-            if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_TOUCH) <= 0 && VAL(actor, X_SPEED) >= Fx0
-                && VAL(actor, X_SPEED) < 286720)
+            if (ANY_INPUT(player, GI_RIGHT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_LEFT)
+                && VAL(actor, X_SPEED) >= Fx0 && VAL(actor, X_SPEED) < 286720)
             {
                 VAL(actor, X_SPEED) += 8192;
             }
-            if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_TOUCH) >= 0 && VAL(actor, X_SPEED) <= Fx0
-                && VAL(actor, X_SPEED) > -286720)
+            if (ANY_INPUT(player, GI_LEFT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_RIGHT)
+                && VAL(actor, X_SPEED) <= Fx0 && VAL(actor, X_SPEED) > -286720)
             {
                 VAL(actor, X_SPEED) -= 8192;
             }
         } else {
-            if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_TOUCH) <= 0 && VAL(actor, X_SPEED) >= Fx0
-                && VAL(actor, X_SPEED) < 491520)
+            if (ANY_INPUT(player, GI_RIGHT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_LEFT)
+                && VAL(actor, X_SPEED) >= Fx0 && VAL(actor, X_SPEED) < 491520)
             {
                 VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 8192, 491520);
             }
-            if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_TOUCH) >= 0 && VAL(actor, X_SPEED) <= Fx0
-                && VAL(actor, X_SPEED) > -491520)
+            if (ANY_INPUT(player, GI_LEFT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_RIGHT)
+                && VAL(actor, X_SPEED) <= Fx0 && VAL(actor, X_SPEED) > -491520)
             {
                 VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 8192, -491520);
             }
@@ -176,18 +290,24 @@ static void tick(GameActor* actor) {
 
     // 187, 188, 191, 192
     if (!ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
-        if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_TOUCH) <= 0 && VAL(actor, X_SPEED) < Fx0)
+        if (ANY_INPUT(player, GI_RIGHT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_LEFT)
+            && VAL(actor, X_SPEED) < Fx0)
+        {
             VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + Fmul(24576, character->steer), Fx0);
-        if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_TOUCH) >= 0 && VAL(actor, X_SPEED) > Fx0)
+        }
+        if (ANY_INPUT(player, GI_LEFT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_RIGHT)
+            && VAL(actor, X_SPEED) > Fx0)
+        {
             VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - Fmul(24576, character->steer), Fx0);
+        }
 
-        if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_TOUCH) <= 0 && VAL(actor, X_SPEED) < Fx1
-            && VAL(actor, X_SPEED) >= Fx0)
+        if (ANY_INPUT(player, GI_RIGHT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_LEFT)
+            && VAL(actor, X_SPEED) < Fx1 && VAL(actor, X_SPEED) >= Fx0)
         {
             VAL(actor, X_SPEED) += Fx1;
         }
-        if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_TOUCH) >= 0 && VAL(actor, X_SPEED) > -Fx1
-            && VAL(actor, X_SPEED) <= Fx0)
+        if (ANY_INPUT(player, GI_LEFT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_RIGHT)
+            && VAL(actor, X_SPEED) > -Fx1 && VAL(actor, X_SPEED) <= Fx0)
         {
             VAL(actor, X_SPEED) -= Fx1;
         }
@@ -230,8 +350,6 @@ static void tick(GameActor* actor) {
         FLAG_ON(actor, FLG_X_FLIP);
 
     // 218 (modified), 219 (modified), 220 (modified)
-    const GameState* game_state = gamestate();
-    const GameActor* water = get_actor(game_state->water);
     if (ANY_INPUT(player, GI_JUMP) && VAL(actor, Y_SPEED) < Fx0 && (water == NULL || actor->pos.y < water->pos.y)
         && !ANY_INPUT(player, GI_DOWN))
     {
@@ -245,8 +363,8 @@ static void tick(GameActor* actor) {
     }
 
     // 221 (modified), 222 (modified)
-    if (ANY_PRESSED(player, GI_JUMP) && water != NULL && actor->pos.y >= water->pos.y && VAL(actor, Y_TOUCH) >= 0
-        && !ANY_INPUT(player, GI_DOWN))
+    if (ANY_PRESSED(player, GI_JUMP) && water != NULL && actor->pos.y >= water->pos.y
+        && (VAL(actor, Y_TOUCH) == TOUCH_NONE || VAL(actor, Y_TOUCH) == TOUCH_BOTTOM) && !ANY_INPUT(player, GI_DOWN))
     {
         VAL(actor, PLAYER_GROUND) = 0;
         VAL(actor, Y_SPEED) = Fmul(((actor->pos.y + actor->box.end.y) <= water->pos.y
@@ -335,11 +453,12 @@ static void tick(GameActor* actor) {
     actor->box.start.y = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
 
     displace_actor(actor, Int2Fx(10), TRUE);
-    if (VAL(actor, Y_TOUCH) > 0)
+    if (VAL(actor, Y_TOUCH) == TOUCH_BOTTOM || VAL(actor, Y_TOUCH) == TOUCH_STUCK)
         VAL(actor, PLAYER_GROUND) = 2;
     else
         VAL_TICK(actor, PLAYER_GROUND);
 
+t_skip_physics:
     if (VAL(actor, PLAYER_ANIMATION) == PF_GROW
         && (((player->powerup == POW_NONE || player->powerup == POW_SUPER_MUSHROOM)
                 && VAL(actor, PLAYER_FRAME) < Int2Fx(30))
@@ -348,7 +467,8 @@ static void tick(GameActor* actor) {
     {
         VAL(actor, PLAYER_FRAME) += 59638;
     } else if (VAL(actor, PLAYER_GROUND) <= 0) {
-        if (water != NULL && actor->pos.y > water->pos.y) {
+        const Bool warping = get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
+        if (water != NULL && actor->pos.y > water->pos.y && !warping) {
             if (VAL(actor, PLAYER_ANIMATION) != PF_SWIM) {
                 VAL(actor, PLAYER_ANIMATION) = PF_SWIM;
                 VAL(actor, PLAYER_FRAME) = Fx0;
@@ -359,7 +479,7 @@ static void tick(GameActor* actor) {
             VAL(actor, PLAYER_FRAME) = Fx0;
         }
 
-        if (player->powerup == POW_GREEN_LUI && (game_state->time % 3) == 0) {
+        if (player->powerup == POW_GREEN_LUI && (game_state->time % 3) == 0 && !warping) {
             GameActor* effect = create_actor(ACT_PLAYER_EFFECT, actor->pos);
             if (effect != NULL) {
                 effect->player = player->id;
@@ -375,7 +495,9 @@ static void tick(GameActor* actor) {
     } else if (ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
         VAL(actor, PLAYER_ANIMATION) = PF_DUCK;
         VAL(actor, PLAYER_FRAME) = Fx0;
-    } else if (Fabs(VAL(actor, X_SPEED)) >= 8192) {
+    } else if (Fabs(VAL(actor, X_SPEED)) >= 8192 || get_actor(VAL(actor, PLAYER_WARP)) != NULL
+               || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
+    {
         VAL(actor, PLAYER_ANIMATION) = PF_WALK;
         VAL(actor, PLAYER_FRAME) += Fclamp(Fdiv(Fabs(VAL(actor, X_SPEED)), 819200), 7864, 31457);
     } else {
@@ -490,17 +612,9 @@ static void tick_dead(GameActor* actor) {
         // !!! CLIENT-SIDE !!!
 
         GameSequence* sequence = &gamestate()->sequence;
-        if (sequence->type != GS_NONE)
-            goto td_lose_sequence;
-
-        const GameContext* game_context = gamecontext();
-        if (game_context->num_players <= 1)
-            goto td_lose_sequence;
-
-        if (!all_players_dead())
+        if (sequence->type == GS_NONE && gamecontext()->num_players > 1 && !all_players_dead())
             break;
 
-    td_lose_sequence:
         stop_state_track(STS_MAIN);
         stop_state_track(STS_POWER);
 

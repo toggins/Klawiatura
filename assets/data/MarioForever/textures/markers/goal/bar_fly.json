@@ -1,0 +1,6 @@
+{
+    "texture": "markers/goal",
+    "size": [44, 16],
+    "offset": [21, 7],
+    "uvs": [47, 291, 91, 307]
+}

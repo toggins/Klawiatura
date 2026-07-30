@@ -1,7 +1,8 @@
 #include "K_audio.h"
-#include "K_game.h"
 #include "K_string.h"
 #include "K_video.h"
+
+#include "actors/K_points.h"
 
 /* ====
    COIN
@@ -18,6 +19,7 @@ static void create(GameActor* actor) {
     actor->box.start.y = Int2Fx(2);
     actor->box.end.x = Int2Fx(25);
     actor->box.end.y = Int2Fx(30);
+
     actor->depth = Int2Fx(2);
 }
 
@@ -34,6 +36,11 @@ static void collide(GameActor* actor, GameActor* other) {
     if (player != NULL) {
         ++player->coins;
         player->score += 200;
+
+        while (player->coins >= 100) {
+            give_points(NULL, player, -1);
+            player->coins -= 100;
+        }
     }
 
     FLAG_ON(actor, FLG_DESTROY);

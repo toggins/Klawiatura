@@ -87,6 +87,7 @@ enum {
     ACT_PLAYER_EFFECT,
     ACT_PLAYER_DEAD,
     ACT_POINTS,
+    ACT_WARP,
     ACT_CHECKPOINT,
     ACT_CHECKPOINT_EFFECT,
     ACT_GOAL_BAR,
@@ -177,6 +178,16 @@ enum {
     SOL_TOP = 1 << 1,
     SOL_BOTTOM = 1 << 2,
     SOL_ALL = SOL_SOLID | SOL_TOP | SOL_BOTTOM,
+};
+
+typedef Sint8 TouchValues;
+enum {
+    TOUCH_NONE,
+    TOUCH_LEFT = -1,
+    TOUCH_RIGHT = 1,
+    TOUCH_TOP = -1,
+    TOUCH_BOTTOM = 1,
+    TOUCH_STUCK = 2,
 };
 
 typedef struct {
@@ -403,10 +414,13 @@ GameState* gamestate();
 PlayerID localplayer(), viewplayer();
 void set_view_player(const GamePlayer*);
 
+Bool in_blocking_sequence();
+
 GamePlayer* get_player(PlayerID);
 GameActor *respawn_player(GamePlayer*), *nearest_player_actor(const FVec2);
 void set_player_track(GamePlayer*, Uint8);
 Bool all_players_dead();
+void win_player(GamePlayer*);
 
 void load_actor(ActorType);
 GameActor *create_actor(ActorType, const FVec2), *get_actor(ActorID);

@@ -1,0 +1,6 @@
+{
+    "texture": "effects/points",
+    "size": [27, 16],
+    "offset": [13, 15],
+    "uvs": [58, 1, 85, 17]
+}

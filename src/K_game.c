@@ -13,6 +13,7 @@
 #include "K_video.h"
 
 #include "actors/K_checkpoint.h"
+#include "actors/K_player.h"
 
 #define ACTOR_CALL_STATIC(type, fn, ...)                                                                               \
     do {                                                                                                               \
@@ -53,6 +54,7 @@ static const GameCharacter CHARACTERS[CHR_SIZE] = {
                 [PF_WALK3] = "characters/mario/small/walk2",
                 [PF_JUMP] = "characters/mario/small/jump",
                 [PF_FALL] = "characters/mario/small/fall",
+                [PF_DUCK] = "characters/mario/small/idle",
                 [PF_SWIM1] = "characters/mario/small/swim0",
                 [PF_SWIM2] = "characters/mario/small/swim1",
                 [PF_SWIM3] = "characters/mario/small/swim2",
@@ -176,6 +178,7 @@ static const GameCharacter CHARACTERS[CHR_SIZE] = {
                 [PF_WALK3] = "characters/luigi/small/walk2",
                 [PF_JUMP] = "characters/luigi/small/jump",
                 [PF_FALL] = "characters/luigi/small/fall",
+                [PF_DUCK] = "characters/luigi/small/idle",
                 [PF_SWIM1] = "characters/luigi/small/swim0",
                 [PF_SWIM2] = "characters/luigi/small/swim1",
                 [PF_SWIM3] = "characters/luigi/small/swim2",
@@ -630,6 +633,8 @@ void start_game(const GameContext* ctx) {
     load_sprite_num("ui/coins/%u", 3, AKL_NEVER);
     load_sprite("ui/bezel_l", AKL_NEVER);
     load_sprite("ui/bezel_r", AKL_NEVER);
+    load_sound("tick", AKL_NEVER);
+    load_track((game_context.flags & GF_LOST) ? "smw/bonus_clear" : "smw/castle_clear", AKL_NEVER);
     load_font("hud", AKL_NEVER);
 
     // Session
@@ -720,7 +725,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 
         // Apply input
         player->last_input = player->input;
-        player->input = (game_state->sequence.type == GS_WIN) ? 0 : inputs[i];
+        player->input = in_blocking_sequence() ? 0 : inputs[i];
     }
 
     GameActor* actor = get_actor(game_state->live_actors);
@@ -781,6 +786,33 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
             break;
         }
         }
+
+        break;
+    }
+
+    case GS_WIN: {
+        ++sequence->time;
+        if (sequence->time >= 400 && game_state->clock > 0) {
+            GamePlayer* player = get_player(sequence->activator);
+
+            --game_state->clock;
+            if (player != NULL)
+                player->score += 10;
+
+            if (game_state->clock >= 10) {
+                game_state->clock -= 10;
+                if (player != NULL)
+                    player->score += 100;
+            }
+
+            if ((game_state->time % 5) == 0)
+                play_state_sound("tick", 0, NULL);
+
+            --sequence->time;
+        }
+
+        if (sequence->time >= 450)
+            game_state->flags |= GF_END;
 
         break;
     }
@@ -1131,6 +1163,18 @@ GameState* gamestate() {
     return game_state;
 }
 
+Bool in_blocking_sequence() {
+    switch (game_state->sequence.type) {
+    default:
+        return FALSE;
+    case GS_LOSE:
+    case GS_WIN:
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
 // =======
 // PLAYERS
 // =======
@@ -1205,6 +1249,12 @@ GameActor* respawn_player(GamePlayer* player) {
     pawn->player = player->id;
     FLAG_ON(pawn, spawn->flags & FLG_X_FLIP);
 
+    if (spawn->type == ACT_PLAYER_SPAWN && ANY_FLAG(spawn, FLG_PLAYER_WARP_OUT)) {
+        VAL(pawn, PLAYER_WARP_OUT_ANGLE) = VAL(spawn, PLAYER_WARP_OUT_ANGLE);
+        FLAG_ON(pawn, FLG_PLAYER_WARP_OUT);
+        play_state_sound("warp", PLAY_POS, A_ACTOR(pawn));
+    }
+
     player->actor = pawn->id;
 
     /// !!! CLIENT-SIDE !!!
@@ -1235,6 +1285,32 @@ Bool all_players_dead() {
     }
 
     return TRUE;
+}
+
+void win_player(GamePlayer* player) {
+    if (player == NULL)
+        return;
+
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        if (i == player->id)
+            continue;
+
+        GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        GameActor* pawn = get_actor(player->actor);
+        if (pawn != NULL)
+            FLAG_ON(pawn, FLG_DESTROY);
+    }
+
+    game_state->sequence.type = GS_WIN;
+    game_state->sequence.time = 0;
+    game_state->sequence.activator = player->id;
+
+    set_view_player(player);
+    stop_state_track(MAX_STATE_TRACKS);
+    play_state_track(STS_FANFARE, (game_state->flags & GF_LOST) ? "smw/bonus_clear" : "smw/castle_clear", 0);
 }
 
 // ======
@@ -1277,7 +1353,7 @@ GameActor* create_actor(ActorType type, const FVec2 pos) {
     for (ActorID i = 0; i < MAX_ACTORS; i++) {
         actor = &game_state->actors[index];
         if (actor->id == NULL_ACTOR)
-            goto found;
+            goto ca_found;
 
         index = (ActorID)((index + 1) % MAX_ACTORS);
     }
@@ -1285,7 +1361,7 @@ GameActor* create_actor(ActorType type, const FVec2 pos) {
     WARN("Too many actors!!!");
     return NULL;
 
-found:
+ca_found:
     SDL_zerop(actor);
 
     actor->id = index;
@@ -1502,8 +1578,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 
         move_actor(actor, Vadd(actor->pos, (FVec2){shift, Fx0}));
         VAL(actor, X_SPEED) = VAL(actor, Y_SPEED) = Fx0;
-        VAL(actor, X_TOUCH) = (shift >= Fx0) ? -1 : 1;
-        VAL(actor, Y_TOUCH) = 1;
+        VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = TOUCH_STUCK;
 
         return;
     }
@@ -1530,7 +1605,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
         }
     }
 
-    VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = 0;
+    VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = TOUCH_NONE;
     FVec2 npos = actor->pos;
 
     // Horizontal collision
@@ -1567,7 +1642,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                         if (!touching_solid(solid, SOL_SOLID)) {
                             npos.y = step;
                             VAL(actor, Y_SPEED) = Fx0;
-                            VAL(actor, Y_TOUCH) = 1;
+                            VAL(actor, Y_TOUCH) = TOUCH_BOTTOM;
                             climbed = TRUE;
 
                             goto da_climbed;
@@ -1591,14 +1666,14 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
             }
         }
 
+    da_climbed:
         if (stop) {
             if (!climbed)
-                VAL(actor, X_TOUCH) = right ? 1 : -1;
+                VAL(actor, X_TOUCH) = right ? TOUCH_RIGHT : TOUCH_LEFT;
             VAL(actor, X_SPEED) = Fx0;
         }
     }
 
-da_climbed:
     // Vertical collision
     if (VAL(actor, Y_SPEED) != Fx0) {
         npos.y += VAL(actor, Y_SPEED);
@@ -1675,7 +1750,7 @@ da_climbed:
         }
 
         if (stop) {
-            VAL(actor, Y_TOUCH) = (VAL(actor, Y_SPEED) < Fx0) ? -1 : 1;
+            VAL(actor, Y_TOUCH) = (VAL(actor, Y_SPEED) < Fx0) ? TOUCH_TOP : TOUCH_BOTTOM;
             VAL(actor, Y_SPEED) = Fx0;
         }
     }
