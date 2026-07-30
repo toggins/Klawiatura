@@ -362,6 +362,16 @@ static void tick(GameActor* actor) {
             VAL(actor, Y_SPEED) -= 6554;
     }
 
+    // 242, 243
+    // Moved here to replicate jump buffer while sinking underwater, like in Clickteam.
+    if (!ANY_INPUT(player, GI_JUMP) && (water == NULL || actor->pos.y < water->pos.y) && !ANY_INPUT(player, GI_DOWN)
+        && VAL(actor, PLAYER_GROUND) > 0 && ANY_FLAG(actor, FLG_PLAYER_JUMP))
+    {
+        FLAG_OFF(actor, FLG_PLAYER_JUMP);
+    }
+    if (ANY_PRESSED(player, GI_JUMP) && VAL(actor, PLAYER_GROUND) <= 0 && VAL(actor, Y_SPEED) > Fx0)
+        FLAG_ON(actor, FLG_PLAYER_JUMP);
+
     // 221 (modified), 222 (modified)
     if (ANY_PRESSED(player, GI_JUMP) && water != NULL && actor->pos.y >= water->pos.y
         && (VAL(actor, Y_TOUCH) == TOUCH_NONE || VAL(actor, Y_TOUCH) == TOUCH_BOTTOM) && !ANY_INPUT(player, GI_DOWN))
@@ -418,15 +428,6 @@ static void tick(GameActor* actor) {
         FLAG_OFF(actor, FLG_PLAYER_JUMP);
         play_state_sound("jump", PLAY_POS, A_ACTOR(actor));
     }
-
-    // 242, 243
-    if (!ANY_INPUT(player, GI_JUMP) && (water == NULL || actor->pos.y < water->pos.y) && !ANY_INPUT(player, GI_DOWN)
-        && VAL(actor, PLAYER_GROUND) > 0 && ANY_FLAG(actor, FLG_PLAYER_JUMP))
-    {
-        FLAG_OFF(actor, FLG_PLAYER_JUMP);
-    }
-    if (ANY_PRESSED(player, GI_JUMP) && VAL(actor, PLAYER_GROUND) <= 0 && VAL(actor, Y_SPEED) > Fx0)
-        FLAG_ON(actor, FLG_PLAYER_JUMP);
 
     // 467, 468, 469: TODO
 
