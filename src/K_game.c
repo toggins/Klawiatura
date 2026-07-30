@@ -633,6 +633,7 @@ void start_game(const GameContext* ctx) {
     load_sprite_num("ui/coins/%u", 3, AKL_NEVER);
     load_sprite("ui/bezel_l", AKL_NEVER);
     load_sprite("ui/bezel_r", AKL_NEVER);
+    load_sound("hurry", AKL_NEVER);
     load_sound("tick", AKL_NEVER);
     load_track((game_context.flags & GF_LOST) ? "smw/bonus_clear" : "smw/castle_clear", AKL_NEVER);
     load_font("hud", AKL_NEVER);
@@ -766,6 +767,51 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
     switch (sequence->type) {
     default:
         break;
+
+    case GS_NONE: {
+        if (game_state->clock <= 0 || game_state->time <= 0 || (game_state->time % 25) > 0)
+            break;
+
+        Bool all_inactive = TRUE;
+        for (PlayerID i = 0; i < game_context.num_players; i++) {
+            const GamePlayer* player = get_player(i);
+            if (player == NULL)
+                continue;
+
+            const GameActor* pawn = get_actor(player->actor);
+            if (pawn != NULL && get_actor(VAL(pawn, PLAYER_WARP)) == NULL && !ANY_FLAG(pawn, FLG_PLAYER_WARP_OUT)) {
+                all_inactive = FALSE;
+                break;
+            }
+        }
+
+        if (all_inactive)
+            break;
+
+        --game_state->clock;
+
+        if (game_state->clock <= 100 && !(game_state->flags & GF_HURRY)) {
+            game_state->flags |= GF_HURRY;
+
+            // !!! CLIENT-SIDE !!!
+            videostate()->hurry = 1;
+            // !!! CLIENT-SIDE !!!
+
+            play_state_sound("hurry", 0, NULL);
+        }
+
+        if (game_state->clock <= 0) {
+            for (PlayerID i = 0; i < game_context.num_players; i++) {
+                GamePlayer* player = get_player(i);
+                if (player == NULL)
+                    continue;
+
+                kill_player(get_actor(player->actor));
+            }
+        }
+
+        break;
+    }
 
     case GS_LOSE: {
         if (sequence->time <= 0)
@@ -1037,7 +1083,8 @@ static void draw_game_state() {
 
     const GamePlayer* player = get_player(view_player);
 
-    VideoCamera* camera = &videostate()->camera;
+    VideoState* video_state = videostate();
+    VideoCamera* camera = &video_state->camera;
     if (player != NULL) {
         const GameActor* pawn = get_actor(player->actor);
         if (pawn != NULL) {
@@ -1119,18 +1166,20 @@ static void draw_game_state() {
     }
 
     if (game_state->clock >= 0) {
-        batch_pos(B_XY(SCREEN_WIDTH - 32.f, 16.f));
-        batch_align(B_TOP_RIGHT);
+        batch_pos(B_XY(SCREEN_WIDTH - 32.f, 24.f));
+
+        if (video_state->hurry > 0 && video_state->hurry <= 120) {
+            const float hurry = (float)((video_state->hurry - 1) % 12);
+            batch_scale(B_WH(
+                1.f, (hurry < 6.f) ? (1.f - ((hurry / 6.f) * 0.375f)) : (0.625f + (((hurry - 6.f) / 6.f) * 0.375f))));
+        }
+
+        batch_align(B_ALIGN(FA_RIGHT, FA_MIDDLE));
         batch_string("hud", 16.f, "TIME");
         batch_pos(B_XY(SCREEN_WIDTH - 32.f, 34.f));
+        batch_scale(B_SIZE(1.f));
+        batch_align(B_TOP_RIGHT);
         batch_string("hud", 16.f, fmt("%i", game_state->clock));
-    }
-
-    const GameActor* pawn = get_actor(player->actor);
-    if (pawn != NULL) {
-        batch_pos(B_XY(HALF_SCREEN_WIDTH, 52.f));
-        batch_align(B_ALIGN(FA_CENTER, FA_TOP));
-        batch_string("hud", 16.f, fmt("%.2f", Fx2Float(VAL(pawn, X_SPEED))));
     }
 
     const GameSequence* sequence = &game_state->sequence;

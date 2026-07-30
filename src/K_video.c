@@ -2003,7 +2003,10 @@ void nuke_video_state() {
     video_state = NULL;
 }
 
-void tick_video_state() {}
+void tick_video_state() {
+    if (video_state->hurry > 0 && video_state->hurry <= 120)
+        ++video_state->hurry;
+}
 
 VideoState* videostate() {
     return video_state;

@@ -242,6 +242,7 @@ typedef struct {
 } VideoCamera;
 
 typedef struct {
+    Uint8 hurry;
     VideoCamera camera;
     TileMap* tilemap;
 } VideoState;

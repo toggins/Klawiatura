@@ -612,9 +612,13 @@ static void tick_dead(GameActor* actor) {
             play_state_track(STS_FANFARE, "smw/lose", 0);
         // !!! CLIENT-SIDE !!!
 
-        GameSequence* sequence = &gamestate()->sequence;
-        if (sequence->type == GS_NONE && gamecontext()->num_players > 1 && !all_players_dead())
+        GameState* game_state = gamestate();
+        GameSequence* sequence = &game_state->sequence;
+        if (sequence->type == GS_NONE && gamecontext()->num_players > 1 && !all_players_dead()
+            && game_state->clock != 0)
+        {
             break;
+        }
 
         stop_state_track(STS_MAIN);
         stop_state_track(STS_POWER);
