@@ -1126,6 +1126,13 @@ static void draw_game_state() {
         batch_string("hud", 16.f, fmt("%i", game_state->clock));
     }
 
+    const GameActor* pawn = get_actor(player->actor);
+    if (pawn != NULL) {
+        batch_pos(B_XY(HALF_SCREEN_WIDTH, 52.f));
+        batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+        batch_string("hud", 16.f, fmt("%.2f", Fx2Float(VAL(pawn, X_SPEED))));
+    }
+
     const GameSequence* sequence = &game_state->sequence;
     if (sequence->type == GS_LOSE && sequence->time > 0) {
         batch_pos(B_HALF_SCREEN);

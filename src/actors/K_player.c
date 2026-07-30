@@ -146,7 +146,7 @@ static void tick(GameActor* actor) {
         actor->depth = Int2Fx(21);
         VAL(actor, X_SPEED) = VAL(actor, Y_SPEED) = Fx0;
         VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = TOUCH_NONE;
-        VAL(actor, PLAYER_GROUND) = 1;
+        VAL(actor, PLAYER_GROUND) = 2;
         FLAG_OFF(actor, FLG_PLAYER_DUCK);
 
         if (ANY_FLAG(actor, FLG_PLAYER_WARP_OUT)) {
@@ -241,7 +241,7 @@ static void tick(GameActor* actor) {
     }
 
     if (game_state->sequence.type == GS_WIN) {
-        VAL(actor, X_SPEED) = 163840;
+        VAL(actor, X_SPEED) = 155648;
         FLAG_OFF(actor, FLG_X_FLIP | FLG_PLAYER_JUMP | FLG_PLAYER_DUCK);
     }
 
@@ -259,25 +259,25 @@ static void tick(GameActor* actor) {
         // 181, 182, 183 (modified), 184 (modified)
         if (!ANY_INPUT(player, GI_RUN)) {
             if (ANY_INPUT(player, GI_RIGHT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_LEFT)
-                && VAL(actor, X_SPEED) >= Fx0 && VAL(actor, X_SPEED) < 286720)
+                && VAL(actor, X_SPEED) >= Fx0 && VAL(actor, X_SPEED) < 278528)
             {
                 VAL(actor, X_SPEED) += 8192;
             }
             if (ANY_INPUT(player, GI_LEFT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_RIGHT)
-                && VAL(actor, X_SPEED) <= Fx0 && VAL(actor, X_SPEED) > -286720)
+                && VAL(actor, X_SPEED) <= Fx0 && VAL(actor, X_SPEED) > -278528)
             {
                 VAL(actor, X_SPEED) -= 8192;
             }
         } else {
             if (ANY_INPUT(player, GI_RIGHT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_LEFT)
-                && VAL(actor, X_SPEED) >= Fx0 && VAL(actor, X_SPEED) < 491520)
+                && VAL(actor, X_SPEED) >= Fx0 && VAL(actor, X_SPEED) < Int2Fx(7))
             {
-                VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 8192, 491520);
+                VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 8192, Int2Fx(7));
             }
             if (ANY_INPUT(player, GI_LEFT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_RIGHT)
-                && VAL(actor, X_SPEED) <= Fx0 && VAL(actor, X_SPEED) > -491520)
+                && VAL(actor, X_SPEED) <= Fx0 && VAL(actor, X_SPEED) > Int2Fx(-7))
             {
-                VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 8192, -491520);
+                VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 8192, Int2Fx(-7));
             }
         }
     }
@@ -315,9 +315,9 @@ static void tick(GameActor* actor) {
 
     // 193, 194
     if (!ANY_INPUT(player, GI_RUN)) {
-        if (VAL(actor, X_SPEED) < -286720)
+        if (VAL(actor, X_SPEED) < -278528)
             VAL(actor, X_SPEED) += 8192;
-        if (VAL(actor, X_SPEED) > 286720)
+        if (VAL(actor, X_SPEED) > 278528)
             VAL(actor, X_SPEED) -= 8192;
     }
 
