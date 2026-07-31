@@ -21,6 +21,7 @@ enum {
     SCR_MENU,
     SCR_MAP,
     SCR_GAME,
+    SCR_EDITOR,
 
     SCR_SIZE,
 };

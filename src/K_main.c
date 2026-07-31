@@ -19,9 +19,6 @@
 #define FIX_IMPLEMENTATION
 #include <S_fixed.h>
 
-#define CLAY_IMPLEMENTATION
-#include <external/clay.h>
-
 #include "K_audio.h"
 #include "K_chat.h"
 #include "K_cmake.h"

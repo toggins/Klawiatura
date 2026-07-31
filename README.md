@@ -94,7 +94,6 @@ All of the assets belong to Nintendo. This is a free, open-source project not cr
 - [cglm](https://github.com/recp/cglm) © Recep Aslantas ([MIT License](https://github.com/recp/cglm/blob/master/LICENSE))
 - [yyjson](https://github.com/ibireme/yyjson) © Yaoyuan Guo ([MIT License](https://github.com/ibireme/yyjson/blob/master/LICENSE))
 - [GekkoNet](https://github.com/HeatXD/GekkoNet) © Jamie Meyer ([BSD-2-Clause License](https://github.com/HeatXD/GekkoNet/blob/main/LICENSE))
-- [Clay](https://github.com/nicbarker/clay) © Nic Barker ([Zlib License](https://github.com/nicbarker/clay/blob/main/LICENSE.md))
 - [Discord Social SDK](https://discord.com/developers/social-sdk) © Discord
 
 Module music provided by [modarchive.org](https://modarchive.org).

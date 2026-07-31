@@ -11,6 +11,7 @@ void POPULATE_SCREENS_TABLE() {
     SCREEN(MENU);
     SCREEN(MAP);
     SCREEN(GAME);
+    SCREEN(EDITOR);
 
     static const ScreenTable TAB_NULL = {NULL};
     SCREENS[SCR_NULL] = &TAB_NULL;

@@ -1,3 +1,5 @@
+#include <SDL3/SDL_platform_defines.h>
+
 #include "K_audio.h"
 #include "K_cmd.h"
 #include "K_config.h"
@@ -37,9 +39,9 @@ static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_menu(), kick_playe
 
 static const char *fmt_max_peers(size_t), *fmt_visibility(size_t), *fmt_lobby(), *fmt_character(size_t),
     *fmt_powerup(size_t), *fmt_enter_as(size_t), *fmt_world(size_t), *fmt_start(size_t), *fmt_kick_player(size_t);
-static void multiplayer_option(), options_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8), host_option(),
-    character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option(), world_cycle(Sint8),
-    start_option();
+static void multiplayer_option(), options_option(), editor_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8),
+    host_option(), character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option(),
+    world_cycle(Sint8), start_option();
 
 static Catalog CATALOG = {
 	.current = MEN_MAIN,
@@ -88,6 +90,9 @@ static Catalog CATALOG = {
 			{.name = "opt_singleplayer", .menu = MEN_SINGLEPLAYER},
 			{.name = "opt_multiplayer", .callback = multiplayer_option},
             {.name = "opt_replays", .menu = MEN_REPLAYS},
+#ifndef SDL_PLATFORM_EMSCRIPTEN
+            {.name = "opt_editor", .callback = editor_option},
+#endif
 			{.name = "opt_options", .callback = options_option},
 #ifndef SDL_PLATFORM_EMSCRIPTEN
 			{.name = "opt_exit", .callback = permadeath},
@@ -600,6 +605,10 @@ static void replay_option() {
 
 static void options_option() {
     create_ui(UI_OPTIONS, NULL);
+}
+
+static void editor_option() {
+    set_screen(SCR_EDITOR, NULL, 0);
 }
 
 // ======
