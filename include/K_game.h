@@ -172,7 +172,7 @@ enum {
     PV_SIZE,
 };
 
-typedef Uint8 SolidType;
+typedef Uint8 SolidFlags;
 enum {
     SOL_SOLID = 1 << 0,
     SOL_TOP = 1 << 1,
@@ -325,10 +325,10 @@ typedef struct {
     GameActor actors[MAX_ACTORS];
 } GameState;
 
-SolidType always_solid(const GameActor*), always_top(const GameActor*), always_bottom(const GameActor*);
+SolidFlags always_solid(const GameActor*), always_top(const GameActor*), always_bottom(const GameActor*);
 
 typedef struct {
-    SolidType (*is_solid)(const GameActor*);
+    SolidFlags (*is_solid)(const GameActor*);
 
     void (*load)(), (*load_special)(const GameActor*);
 
@@ -425,7 +425,7 @@ Bool in_any_view(const FVec2, Fixed, Bool);
 Bool in_player_view(const GamePlayer*, const FVec2, Fixed, Bool);
 
 void collide_actor(GameActor*);
-Bool touching_solid(const FRect, SolidType);
+Bool touching_solid(const FRect, SolidFlags);
 void displace_actor(GameActor*, Fixed, Bool), displace_actor_soft(GameActor*);
 
 void draw_actor(const GameActor*, const char*, Bool);

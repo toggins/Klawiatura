@@ -8,6 +8,21 @@
    PLATFORM
    ======== */
 
+static SolidFlags is_solid(const GameActor* actor) {
+    switch (VAL(actor, PLATFORM_TYPE)) {
+    default:
+        break;
+    case PLAT_GRASS:
+    case PLAT_GRASS_SMALL:
+    case PLAT_BRICK_BIG:
+    case PLAT_BRICK_TALL:
+    case PLAT_BRICK_SMALL:
+        return SOL_SOLID;
+    }
+
+    return SOL_TOP;
+}
+
 static void load_special(const GameActor* actor) {
     switch (VAL(actor, PLATFORM_TYPE)) {
     default:
@@ -270,7 +285,7 @@ static void on_top(GameActor* actor, GameActor* from) {
 }
 
 const ActorTable TAB_PLATFORM = {
-    .is_solid = always_top,
+    .is_solid = is_solid,
     .load_special = load_special,
     .create = create,
     .pre_tick = pre_tick,

@@ -1379,19 +1379,19 @@ void win_player(GamePlayer* player) {
 // ACTORS
 // ======
 
-SolidType always_solid(const GameActor* actor) {
+SolidFlags always_solid(const GameActor* actor) {
     (void)actor;
 
     return SOL_SOLID;
 }
 
-SolidType always_top(const GameActor* actor) {
+SolidFlags always_top(const GameActor* actor) {
     (void)actor;
 
     return SOL_TOP;
 }
 
-SolidType always_bottom(const GameActor* actor) {
+SolidFlags always_bottom(const GameActor* actor) {
     (void)actor;
 
     return SOL_BOTTOM;
@@ -1594,7 +1594,7 @@ void collide_actor(GameActor* actor) {
     }
 }
 
-Bool touching_solid(const FRect rect, SolidType types) {
+Bool touching_solid(const FRect rect, SolidFlags types) {
     Sint32 cx1 = (rect.start.x - CELL_SIZE) / CELL_SIZE, cy1 = (rect.start.y - CELL_SIZE) / CELL_SIZE;
     Sint32 cx2 = (rect.end.x + CELL_SIZE) / CELL_SIZE, cy2 = (rect.end.y + CELL_SIZE) / CELL_SIZE;
     cx1 = SDL_clamp(cx1, 0, MAX_CELLS - 1);
@@ -1624,25 +1624,29 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
     if (actor == NULL)
         return;
 
-    if (unstuck && touching_solid(Radd(actor->box, actor->pos), SOL_SOLID)) {
-        Fixed shift = ANY_FLAG(actor, FLG_X_FLIP) ? Fx1 : -Fx1;
-        if (ANY_FLAG(actor, FLG_X_FLIP)) {
-            if (touching_solid(BOX_OUTLINE_RIGHT(actor), SOL_SOLID)
-                && !touching_solid(BOX_OUTLINE_LEFT(actor), SOL_SOLID))
+    if (unstuck) {
+        FRect abox = Radd(actor->box, actor->pos);
+        abox.end.y -= climb;
+        if (touching_solid(abox, SOL_SOLID)) {
+            Fixed shift = ANY_FLAG(actor, FLG_X_FLIP) ? Fx1 : -Fx1;
+            if (ANY_FLAG(actor, FLG_X_FLIP)) {
+                if (touching_solid(BOX_OUTLINE_RIGHT(actor), SOL_SOLID)
+                    && !touching_solid(BOX_OUTLINE_LEFT(actor), SOL_SOLID))
+                {
+                    shift = -shift;
+                }
+            } else if (touching_solid(BOX_OUTLINE_LEFT(actor), SOL_SOLID)
+                       && !touching_solid(BOX_OUTLINE_RIGHT(actor), SOL_SOLID))
             {
                 shift = -shift;
             }
-        } else if (touching_solid(BOX_OUTLINE_LEFT(actor), SOL_SOLID)
-                   && !touching_solid(BOX_OUTLINE_RIGHT(actor), SOL_SOLID))
-        {
-            shift = -shift;
+
+            move_actor(actor, Vadd(actor->pos, (FVec2){shift, Fx0}));
+            actor->vel.x = actor->vel.y = Fx0;
+            TOUCH_ON(actor, TOUCH_STUCK);
+
+            return;
         }
-
-        move_actor(actor, Vadd(actor->pos, (FVec2){shift, Fx0}));
-        actor->vel.x = actor->vel.y = Fx0;
-        TOUCH_ON(actor, TOUCH_STUCK);
-
-        return;
     }
 
     const GameActor* platform = get_actor(actor->platform);
@@ -1792,7 +1796,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                         npos.y = Fmax(npos.y, displacer->pos.y + displacer->box.end.y - actor->box.start.y);
                         stop |= actor->vel.y <= Fx0;
                     } else {
-                        const SolidType solid = ACTOR_GET_SOLID(displacer);
+                        const SolidFlags solid = ACTOR_GET_SOLID(displacer);
                         if (!(solid & SOL_ALL)
                             || ((solid & SOL_TOP)
                                 && (npos.y + actor->box.end.y - actor->vel.y)
