@@ -400,17 +400,6 @@ static void tick(GameActor* actor) {
         play_state_sound("jump", PLAY_POS, A_ACTOR(actor));
     }
 
-    // 218 (modified), 219 (modified), 220 (modified)
-    // Moved below events 240, 241.
-    if (ANY_INPUT(player, GI_JUMP) && actor->vel.y < Fx0 && (water == NULL || actor->pos.y < water->pos.y)
-        && !ANY_INPUT(player, GI_DOWN))
-    {
-        if (player->powerup != POW_GREEN_LUI && Fabs(actor->vel.x) < 40960)
-            actor->vel.y -= 26214;
-        else
-            actor->vel.y -= FxHalf;
-    }
-
     // 467, 468, 469: TODO
 
     // 471
@@ -436,6 +425,17 @@ static void tick(GameActor* actor) {
     actor->box.start.y = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
 
     displace_actor(actor, Int2Fx(10), TRUE);
+
+    // 218 (modified), 219 (modified), 220 (modified)
+    // Moved below events 240, 241 to replicate Clickteam jump height and to prevent jump buffs against a wall.
+    if (ANY_INPUT(player, GI_JUMP) && actor->vel.y < Fx0 && (water == NULL || actor->pos.y < water->pos.y)
+        && !ANY_INPUT(player, GI_DOWN))
+    {
+        if (player->powerup != POW_GREEN_LUI && Fabs(actor->vel.x) < 40960)
+            actor->vel.y -= 26214;
+        else
+            actor->vel.y -= FxHalf;
+    }
 
 t_skip_physics:
     if (VAL(actor, PLAYER_ANIMATION) == PF_GROW

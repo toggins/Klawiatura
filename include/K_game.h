@@ -190,7 +190,7 @@ enum {
     TOUCH_STUCK = TOUCH_ALL,
 };
 
-#define TOUCHING(actor, yes) ((actor)->touch & (yes))
+#define TOUCHING(actor, yes) (((actor)->touch & (yes)) != 0)
 #define TOUCH_ON(actor, tuff) ((actor)->touch |= (tuff))
 #define TOUCH_OFF(actor, tuff) ((actor)->touch &= ~(tuff))
 
