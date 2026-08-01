@@ -182,14 +182,14 @@ vi_bypass:
 
     // Vertex batch
     glGenVertexArrays(1, &batch.vao);
-    glBindVertexArray(batch.vao);
+    glGenBuffers(1, &batch.vbo);
 
     batch.vertex_count = 0;
     batch.vertex_capacity = 3;
     batch.vertices = SDL_calloc(batch.vertex_capacity, sizeof(Vertex));
     EXPECT(batch.vertices, "Failed to allocate batch vertices");
 
-    glGenBuffers(1, &batch.vbo);
+    glBindVertexArray(batch.vao);
     glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
     glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_capacity), NULL, GL_DYNAMIC_DRAW);
 
@@ -1514,6 +1514,7 @@ void batch_vertex(const float pos[3], const Uint8 color[4], const float uv[2]) {
         EXPECT(batch.vertices, "Out of memory for vertex batch");
         batch.vertex_capacity = new_size;
 
+        glBindVertexArray(batch.vao);
         glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
         glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_capacity), NULL, GL_DYNAMIC_DRAW);
     }
@@ -1786,9 +1787,198 @@ static void nuke_tilemap_layer(void* ptr) {
     SDL_free(tmldata);
 }
 
-void add_tilemap(TileMap* tilemap, const char* name, const float pos[3], const float size[2], const Bool flip[2],
-    const Bool tile[2], const Uint8 colors[4][4]) {}
-void read_tilemap(TileMap* tilemap, yyjson_val* jtile) {}
+static void tile_batch_vertex(TileBatch* tile_batch, const float pos[3], const Uint8 color[4], const float uv[2]) {
+    tile_batch->vertices = TinyDPush(tile_batch->vertices, &(Vertex){
+                                                               .position = {pos[0], pos[1], pos[2]},
+                                                               .color = {color[0], color[1], color[2], color[3]},
+                                                               .uv = {uv[0], uv[1]},
+    });
+}
+
+static void tile_batch_sprite(TileBatch* tile_batch, const Sprite* sprite, const float pos[3], const float size[2],
+    const Bool flip[2], const Bool tile[2], const Uint8 colors[4][4]) {
+    tile_batch->tile[0] |= tile[0];
+    tile_batch->tile[1] |= tile[1];
+
+    const float x = pos[0] - ((sprite == NULL || tile[0]) ? 0.f : sprite->offset[0]),
+                y = pos[1] - ((sprite == NULL || tile[1]) ? 0.f : sprite->offset[1]);
+
+    float w = 1.f, h = 1.f;
+    if (size == NULL) {
+        if (sprite != NULL) {
+            w = sprite->size[0];
+            h = sprite->size[1];
+        }
+    } else {
+        w = size[0];
+        h = size[1];
+    }
+
+    float u1 = 0.f, v1 = 0.f, u2 = 1.f, v2 = 1.f;
+    if (sprite != NULL) {
+        if (tile[0]) {
+            *(flip[0] ? &u1 : &u2) = w / sprite->size[0];
+        } else {
+            u1 = sprite->uvs[flip[0] ? 2 : 0];
+            u2 = sprite->uvs[flip[0] ? 0 : 2];
+        }
+        if (tile[1]) {
+            *(flip[1] ? &v1 : &v2) = h / sprite->size[1];
+        } else {
+            v1 = sprite->uvs[flip[1] ? 3 : 1];
+            v2 = sprite->uvs[flip[1] ? 1 : 3];
+        }
+    }
+
+    const float x2 = x + w, y2 = y + h;
+    tile_batch_vertex(tile_batch, B_F3(x, y2, pos[2]), colors[2], B_F2(u1, v2));
+    tile_batch_vertex(tile_batch, B_F3(x, y, pos[2]), colors[0], B_F2(u1, v1));
+    tile_batch_vertex(tile_batch, B_F3(x2, y, pos[2]), colors[1], B_F2(u2, v1));
+    tile_batch_vertex(tile_batch, B_F3(x2, y, pos[2]), colors[1], B_F2(u2, v1));
+    tile_batch_vertex(tile_batch, B_F3(x2, y2, pos[2]), colors[3], B_F2(u2, v2));
+    tile_batch_vertex(tile_batch, B_F3(x, y2, pos[2]), colors[2], B_F2(u1, v2));
+}
+
+static void tilemap_layer_sprite(TileMapLayer* tilemap_layer, const Sprite* sprite, const float pos[3],
+    const float size[2], const Bool flip[2], const Bool tile[2], const Uint8 colors[4][4]) {
+    const TinyHash key = (sprite == NULL) ? 0 : sprite->texture_key;
+
+    TinyMap* batches = &((TileMapLayerInternal*)tilemap_layer->internal)->batches;
+    TileBatch* tile_batch = (TileBatch*)TinyMapGet(batches, key);
+    if (tile_batch != NULL) {
+        tile_batch_sprite(tile_batch, sprite, pos, size, flip, tile, colors);
+        return;
+    }
+
+    tile_batch = &(TileBatch){0};
+    tile_batch->texture_key = (sprite == NULL) ? key : sprite->texture_key;
+
+    tile_batch->vertices = MakeTinyDPro(6, sizeof(Vertex));
+    glGenVertexArrays(1, &tile_batch->vao);
+    glGenBuffers(1, &tile_batch->vbo);
+
+    glBindVertexArray(tile_batch->vao);
+    glBindBuffer(GL_ARRAY_BUFFER, tile_batch->vbo);
+
+    // NOLINTBEGIN(performance-no-int-to-ptr)
+    glEnableVertexAttribArray(VATT_POSITION);
+    glVertexAttribPointer(VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+    glEnableVertexAttribArray(VATT_COLOR);
+    glVertexAttribPointer(VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+    glEnableVertexAttribArray(VATT_UV);
+    glVertexAttribPointer(VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+    // NOLINTEND(performance-no-int-to-ptr)
+
+    tile_batch_sprite(tile_batch, sprite, pos, size, flip, tile, colors);
+    TinyMapPut(&((TileMapLayerInternal*)tilemap_layer->internal)->batches, key, tile_batch, sizeof(*tile_batch))
+        ->cleanup = nuke_tile_batch;
+}
+
+void tilemap_sprite(TileMap* tilemap, const char* name, const float pos[3], const float size[2], const Bool flip[2],
+    const Bool tile[2], const Uint8 colors[4][4]) {
+    if (tilemap == NULL)
+        return;
+
+    const TinyHash key = StHashStr(name);
+    const Sprite* sprite = get_sprite_key(key);
+    if (sprite == NULL && name != NULL) {
+        WARN("Unknown sprite \"%s\"", name);
+        return;
+    }
+
+    const TinyPriority depth = Float2Fx(pos[2]);
+    const TinyHash depth_hash = *(TinyHash*)&depth;
+
+    TileMapInternal* tmdata = tilemap->internal;
+    TileMapLayer* tilemap_layer = (TileMapLayer*)TinyMapGet(&tmdata->layers, depth_hash);
+    if (tilemap_layer != NULL) {
+        tilemap_layer_sprite(tilemap_layer, sprite, pos, size, flip, tile, colors);
+        return;
+    }
+
+    tilemap_layer = &(TileMapLayer){0};
+    tilemap_layer->depth = depth;
+
+    tilemap_layer->internal = SDL_calloc(1, sizeof(TileMapLayerInternal));
+    EXPECT(tilemap_layer->internal, "Failed to allocate tilemap layer internals");
+
+    tilemap_layer_sprite(tilemap_layer, sprite, pos, size, flip, tile, colors);
+    TinyMapPut(&tmdata->layers, depth_hash, tilemap_layer, sizeof(*tilemap_layer))->cleanup = nuke_tilemap_layer;
+}
+
+void read_tilemap(TileMap* tilemap, yyjson_val* jarray) {
+    const size_t n = yyjson_arr_size(jarray);
+    if (n <= 0)
+        return;
+
+    for (size_t i = 0; i < n; i++) {
+        yyjson_val* jtile = yyjson_arr_get(jarray, i);
+        if (!yyjson_is_obj(jtile))
+            continue;
+
+        const char* sprite = yyjson_get_str(yyjson_obj_get(jtile, "sprite"));
+        load_sprite(sprite, AKL_NEVER);
+
+        yyjson_val* jval = yyjson_obj_get(jtile, "pos");
+        const float pos[3] = {
+            (float)yyjson_get_num(yyjson_arr_get(jval, 0)),
+            (float)yyjson_get_num(yyjson_arr_get(jval, 1)),
+            (float)yyjson_get_num(yyjson_arr_get(jval, 2)),
+        };
+
+        jval = yyjson_obj_get(jtile, "size");
+        const Bool has_size = yyjson_is_arr(jval);
+        const float size[2] = {
+            (float)yyjson_get_num(yyjson_arr_get(jval, 0)),
+            (float)yyjson_get_num(yyjson_arr_get(jval, 1)),
+        };
+
+        jval = yyjson_obj_get(jtile, "flip");
+        const Bool flip[2] = {
+            yyjson_get_bool(yyjson_arr_get(jval, 0)),
+            yyjson_get_bool(yyjson_arr_get(jval, 1)),
+        };
+
+        jval = yyjson_obj_get(jtile, "tile");
+        const Bool tile[2] = {
+            yyjson_get_bool(yyjson_arr_get(jval, 0)),
+            yyjson_get_bool(yyjson_arr_get(jval, 1)),
+        };
+
+        jval = yyjson_obj_get(jtile, "colors");
+        Uint8 colors[4][4] = {
+            {255, 255, 255, 255},
+            {255, 255, 255, 255},
+            {255, 255, 255, 255},
+            {255, 255, 255, 255}
+        };
+        for (size_t j = 0, n = yyjson_arr_size(jval); j < n && j < 4; j++) {
+            yyjson_val* jcolor = yyjson_arr_get(jval, j);
+            for (size_t k = 0; k < 4; k++)
+                colors[j][k] = yyjson_get_uint(yyjson_arr_get(jcolor, k));
+        }
+
+        tilemap_sprite(tilemap, sprite, pos, has_size ? size : NULL, flip, tile, colors);
+    }
+
+    apply_tilemap(tilemap);
+}
+
+void apply_tilemap(TileMap* tilemap) {
+    if (tilemap == NULL)
+        return;
+
+    TINY_MAP_FOREACH (&((TileMapInternal*)tilemap->internal)->layers, iter) {
+        TINY_MAP_FOREACH (&((TileMapLayerInternal*)((TileMapLayer*)iter.data)->internal)->batches, iter2) {
+            TileBatch* tile_batch = iter2.data;
+
+            glBindVertexArray(tile_batch->vao);
+            glBindBuffer(GL_ARRAY_BUFFER, tile_batch->vbo);
+            glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * TinyDLength(tile_batch->vertices)),
+                tile_batch->vertices, GL_STATIC_DRAW);
+        }
+    }
+}
 
 void tilemap_iterate_start(TileMap* tilemap) {
     if (tilemap == NULL)
@@ -1816,14 +2006,10 @@ void draw_tilemap_layer(const TileMapLayer* tilemap_layer) {
 
     const Sint32 filter = (batch.filter && CLIENT.texture_filter) ? GL_LINEAR : GL_NEAREST;
 
-    TinyMapIterator iter = TinyMapIter(&((TileMapLayerInternal*)tilemap_layer->internal)->batches);
-    while (TinyMapNext(&iter)) {
+    TINY_MAP_FOREACH (&((TileMapLayerInternal*)tilemap_layer->internal)->batches, iter) {
         const TileBatch* tile_batch = iter.data;
 
         glBindVertexArray(tile_batch->vao);
-        glBindBuffer(GL_ARRAY_BUFFER, tile_batch->vbo);
-        const size_t vertex_count = TinyDLength(tile_batch->vertices);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(Vertex) * vertex_count), tile_batch->vertices);
 
         // Apply texture
         const Texture* texture = get_texture_key(tile_batch->texture_key);
@@ -1835,7 +2021,7 @@ void draw_tilemap_layer(const TileMapLayer* tilemap_layer) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 
-        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)vertex_count);
+        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)TinyDLength(tile_batch->vertices));
     }
 }
 
@@ -1846,15 +2032,11 @@ void draw_tilemap(TileMap* tilemap) {
     TinyPq sorter = {0};
 
     tilemap_iterate_start(tilemap);
-    for (const TileMapLayer* layer = tilemap_iterate_next(tilemap); layer != NULL;
-        layer = tilemap_iterate_next(tilemap))
-    {
+    const TileMapLayer* layer = NULL;
+    while ((layer = tilemap_iterate_next(tilemap)))
         TinyPqInsert(&sorter, layer->depth, layer, sizeof(*layer));
-    }
 
-    TinyPqIterator iter = TinyPqIter(&sorter);
-    while (TinyPqNext(&iter))
-        draw_tilemap_layer(iter.data);
+    TINY_PQ_FOREACH (&sorter, iter) { draw_tilemap_layer(iter.data); }
 
     FreeTinyPq(&sorter);
 }

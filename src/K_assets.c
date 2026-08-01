@@ -13,9 +13,8 @@ void clear_assets() {
 void clear_asset_map(TinyMap* target, void (*nuke)(void*)) {
     TinyMap new = {0};
 
-    TinyMapIterator it = TinyMapIter(target);
-    while (TinyMapNext(&it)) {
-        TinyBucket* bucket = it.bucket;
+    TINY_MAP_FOREACH (target, iter) {
+        TinyBucket* bucket = iter.bucket;
 
         AssetBase* asset = bucket->data;
         switch (asset->keep) {

@@ -1111,18 +1111,15 @@ static void draw_game_state() {
 
     TileMap* tilemap = video_state->tilemap;
     tilemap_iterate_start(tilemap);
-    for (const TileMapLayer* layer = tilemap_iterate_next(tilemap); layer != NULL;
-        layer = tilemap_iterate_next(tilemap))
-    {
+    const TileMapLayer* layer = NULL;
+    while ((layer = tilemap_iterate_next(tilemap)))
         TinyPqInsert(&sorter, layer->depth, (const void*)&(SortedItem){FALSE, layer}, sizeof(SortedItem));
-    }
 
     for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
         if (ANY_FLAG(actor, FLG_VISIBLE))
             TinyPqInsert(&sorter, actor->depth, (const void*)&(SortedItem){TRUE, actor}, sizeof(SortedItem));
 
-    TinyPqIterator iter = TinyPqIter(&sorter);
-    while (TinyPqNext(&iter)) {
+    TINY_PQ_FOREACH (&sorter, iter) {
         const SortedItem* sitem = iter.data;
         if (sitem->is_actor) {
             const GameActor* actor = sitem->ptr;

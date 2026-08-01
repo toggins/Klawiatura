@@ -177,7 +177,7 @@ enum {
 };
 
 typedef struct TileMapLayer {
-    Fixed depth;
+    TinyPriority depth;
 
     void* internal;
 } TileMapLayer;
@@ -274,8 +274,9 @@ TileMap* create_tilemap();
 void destroy_tilemap(TileMap*);
 
 void
-add_tilemap(TileMap*, const char*, const float[3], const float[2], const Bool[2], const Bool[2], const Uint8[4][4]);
+tilemap_sprite(TileMap*, const char*, const float[3], const float[2], const Bool[2], const Bool[2], const Uint8[4][4]);
 void read_tilemap(TileMap*, yyjson_val*);
+void apply_tilemap(TileMap*);
 
 void tilemap_iterate_start(TileMap*);
 const TileMapLayer* tilemap_iterate_next(TileMap*);
