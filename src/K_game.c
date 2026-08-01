@@ -37,6 +37,11 @@ typedef struct {
     AudioState audio;
 } SaveState;
 
+typedef struct {
+    Bool is_actor;
+    const void* ptr;
+} SortedItem;
+
 // `extern` in K_actors.c
 const ActorTable* ACTORS[ACT_SIZE] = {0};
 
@@ -1104,14 +1109,27 @@ static void draw_game_state() {
 
     TinyPq sorter = {0};
 
+    TileMap* tilemap = video_state->tilemap;
+    tilemap_iterate_start(tilemap);
+    for (const TileMapLayer* layer = tilemap_iterate_next(tilemap); layer != NULL;
+        layer = tilemap_iterate_next(tilemap))
+    {
+        TinyPqInsert(&sorter, layer->depth, (const void*)&(SortedItem){FALSE, layer}, sizeof(SortedItem));
+    }
+
     for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
         if (ANY_FLAG(actor, FLG_VISIBLE))
-            TinyPqInsert(&sorter, actor->depth, (const void*)&actor, sizeof(const GameActor**));
+            TinyPqInsert(&sorter, actor->depth, (const void*)&(SortedItem){TRUE, actor}, sizeof(SortedItem));
 
     TinyPqIterator iter = TinyPqIter(&sorter);
     while (TinyPqNext(&iter)) {
-        const GameActor* actor = *(const GameActor**)iter.data;
-        ACTOR_CALL(actor, draw);
+        const SortedItem* sitem = iter.data;
+        if (sitem->is_actor) {
+            const GameActor* actor = sitem->ptr;
+            ACTOR_CALL(actor, draw);
+        } else {
+            draw_tilemap_layer(sitem->ptr);
+        }
     }
 
     FreeTinyPq(&sorter);

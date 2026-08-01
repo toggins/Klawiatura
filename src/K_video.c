@@ -1790,16 +1790,74 @@ void add_tilemap(TileMap* tilemap, const char* name, const float pos[3], const f
     const Bool tile[2], const Uint8 colors[4][4]) {}
 void read_tilemap(TileMap* tilemap, yyjson_val* jtile) {}
 
-void tilemap_iterate_start(TileMap* tilemap) {}
+void tilemap_iterate_start(TileMap* tilemap) {
+    if (tilemap == NULL)
+        return;
+
+    TileMapInternal* tmdata = tilemap->internal;
+    tmdata->iterator = TinyMapIter(&tmdata->layers);
+}
 
 const TileMapLayer* tilemap_iterate_next(TileMap* tilemap) {
-    (void)tilemap;
-
-    return NULL;
+    TinyMapIterator* iterator = &((TileMapInternal*)tilemap->internal)->iterator;
+    return TinyMapNext(iterator) ? iterator->data : NULL;
 };
 
-void draw_tilemap_layer(const TileMapLayer* tilemap_layer) {}
-void draw_tilemap(TileMap* tilemap) {}
+void draw_tilemap_layer(const TileMapLayer* tilemap_layer) {
+    if (tilemap_layer == NULL)
+        return;
+
+    submit_batch();
+
+    set_float_uniform(UNI_ALPHA_TEST, batch.alpha_test);
+    set_vec4_uniform(UNI_STENCIL, batch.stencil);
+    set_mat4_uniform(UNI_MVP, *get_mvp_matrix());
+    apply_batch();
+
+    const Sint32 filter = (batch.filter && CLIENT.texture_filter) ? GL_LINEAR : GL_NEAREST;
+
+    TinyMapIterator iter = TinyMapIter(&((TileMapLayerInternal*)tilemap_layer->internal)->batches);
+    while (TinyMapNext(&iter)) {
+        const TileBatch* tile_batch = iter.data;
+
+        glBindVertexArray(tile_batch->vao);
+        glBindBuffer(GL_ARRAY_BUFFER, tile_batch->vbo);
+        const size_t vertex_count = TinyDLength(tile_batch->vertices);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(Vertex) * vertex_count), tile_batch->vertices);
+
+        // Apply texture
+        const Texture* texture = get_texture_key(tile_batch->texture_key);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, (texture == NULL) ? blank_texture : *(GLuint*)texture->internal);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tile_batch->tile[0] ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tile_batch->tile[1] ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+
+        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)vertex_count);
+    }
+}
+
+void draw_tilemap(TileMap* tilemap) {
+    if (tilemap == NULL)
+        return;
+
+    TinyPq sorter = {0};
+
+    tilemap_iterate_start(tilemap);
+    for (const TileMapLayer* layer = tilemap_iterate_next(tilemap); layer != NULL;
+        layer = tilemap_iterate_next(tilemap))
+    {
+        TinyPqInsert(&sorter, layer->depth, layer, sizeof(*layer));
+    }
+
+    TinyPqIterator iter = TinyPqIter(&sorter);
+    while (TinyPqNext(&iter))
+        draw_tilemap_layer(iter.data);
+
+    FreeTinyPq(&sorter);
+}
 
 // =====
 // STATE

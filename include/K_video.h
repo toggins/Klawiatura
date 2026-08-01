@@ -177,7 +177,7 @@ enum {
 };
 
 typedef struct TileMapLayer {
-    TinyPriority depth;
+    Fixed depth;
 
     void* internal;
 } TileMapLayer;
