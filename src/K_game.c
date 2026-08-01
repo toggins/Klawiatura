@@ -294,7 +294,6 @@ static Uint32 game_hash = 0;
 
 static PlayerID local_player = NULL_PLAYER, view_player = NULL_PLAYER;
 
-static TinyPq depth_sorter = {0};
 static Surface* game_surface = NULL;
 static GekkoSession* game_session = NULL;
 
@@ -884,7 +883,6 @@ void nuke_game() {
     SDL_free(interp_actors);
     interp_actors = NULL;
     local_player = view_player = NULL_PLAYER;
-    FreeTinyPq(&depth_sorter);
 }
 
 void tick_game() {
@@ -1104,19 +1102,19 @@ static void draw_game_state() {
     set_view_matrix(view);
     apply_matrices();
 
-    draw_tilemap(videostate()->tilemap);
+    TinyPq sorter = {0};
 
     for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
         if (ANY_FLAG(actor, FLG_VISIBLE))
-            TinyPqInsert(&depth_sorter, actor->depth, (const void*)&actor, sizeof(const GameActor**));
+            TinyPqInsert(&sorter, actor->depth, (const void*)&actor, sizeof(const GameActor**));
 
-    TinyPqIterator iter = TinyPqIter(&depth_sorter);
+    TinyPqIterator iter = TinyPqIter(&sorter);
     while (TinyPqNext(&iter)) {
         const GameActor* actor = *(const GameActor**)iter.data;
         ACTOR_CALL(actor, draw);
     }
 
-    FreeTinyPq(&depth_sorter);
+    FreeTinyPq(&sorter);
 
     set_view_matrix(oview);
     apply_matrices();
@@ -1128,43 +1126,43 @@ static void draw_game_state() {
     batch_test_depth(FALSE);
 
     batch_reset();
-    batch_pos(B_XY(32.f, 16.f));
+    batch_pos(B_F3_XY(32.f, 16.f));
     const char* cname = get_character_name(game_context.players[player->id].character);
     batch_string("hud", 16.f, fmt("%s × %i", cname, SDL_max(player->lives, 0)));
-    batch_pos(B_XY(32.f + string_width("hud", 16.f, fmt("%s × 0", cname)), 34.f));
-    batch_align(B_TOP_RIGHT);
+    batch_pos(B_F3_XY(32.f + string_width("hud", 16.f, fmt("%s × 0", cname)), 34.f));
+    batch_align(B_ALIGN_TOP_RIGHT);
     batch_string("hud", 16.f, fmt("%u", player->score));
 
-    batch_pos(B_XY(224.f, 34.f));
+    batch_pos(B_F3_XY(224.f, 34.f));
     batch_sprite(fmt("ui/coins/%i", ((game_state->time * 4) / 25) % 3));
-    batch_pos(B_XY(235.f, 34.f));
-    batch_align(B_TOP_LEFT);
+    batch_pos(B_F3_XY(235.f, 34.f));
+    batch_align(B_ALIGN_TOP_LEFT);
     batch_string("hud", 16.f, " ×");
-    batch_pos(B_XY(285.f, 34.f));
-    batch_align(B_TOP_RIGHT);
+    batch_pos(B_F3_XY(285.f, 34.f));
+    batch_align(B_ALIGN_TOP_RIGHT);
     batch_string("hud", 16.f, fmt("%u", player->coins));
 
     const char* label = level_info->strings[GSTR_LABEL];
     if (label != NULL) {
         switch (label[0]) {
         default: {
-            batch_pos(B_XY(432.f, 16.f));
+            batch_pos(B_F3_XY(432.f, 16.f));
             batch_sprite(label);
             break;
         }
 
         case '@': {
-            batch_pos(B_XY(432.f, 16.f));
+            batch_pos(B_F3_XY(432.f, 16.f));
             batch_align(B_ALIGN(FA_CENTER, FA_TOP));
             batch_string("hud", 16.f, "WORLD");
-            batch_pos(B_XY(432.f, 34.f));
+            batch_pos(B_F3_XY(432.f, 34.f));
             batch_string("hud", 16.f, LFMT(label + 1));
             break;
         }
 
         case '$': {
-            batch_pos(B_XY(432.f, 34.f));
-            batch_align(B_CENTER);
+            batch_pos(B_F3_XY(432.f, 34.f));
+            batch_align(B_ALIGN_CENTER);
             batch_string("hud", 16.f, LFMT(label + 1));
             break;
         }
@@ -1172,26 +1170,26 @@ static void draw_game_state() {
     }
 
     if (game_state->clock >= 0) {
-        batch_pos(B_XY(SCREEN_WIDTH - 32.f, 24.f));
+        batch_pos(B_F3_XY(SCREEN_WIDTH - 32.f, 24.f));
 
         if (video_state->hurry > 0 && video_state->hurry <= 120) {
             const float hurry = (float)((video_state->hurry - 1) % 12);
-            batch_scale(B_WH(
+            batch_scale(B_F2(
                 1.f, (hurry < 6.f) ? (1.f - ((hurry / 6.f) * 0.375f)) : (0.625f + (((hurry - 6.f) / 6.f) * 0.375f))));
         }
 
         batch_align(B_ALIGN(FA_RIGHT, FA_MIDDLE));
         batch_string("hud", 16.f, "TIME");
-        batch_pos(B_XY(SCREEN_WIDTH - 32.f, 34.f));
-        batch_scale(B_SIZE(1.f));
-        batch_align(B_TOP_RIGHT);
+        batch_pos(B_F3_XY(SCREEN_WIDTH - 32.f, 34.f));
+        batch_scale(B_F2_1);
+        batch_align(B_ALIGN_TOP_RIGHT);
         batch_string("hud", 16.f, fmt("%i", game_state->clock));
     }
 
     const GameSequence* sequence = &game_state->sequence;
     if (sequence->type == GS_LOSE && sequence->time > 0) {
-        batch_pos(B_HALF_SCREEN);
-        batch_align(B_CENTER);
+        batch_pos(B_F3_HALF_SCREEN);
+        batch_align(B_ALIGN_CENTER);
         batch_string("hud", 16.f, "GAME OVER");
     }
 
@@ -1831,12 +1829,12 @@ void draw_actor(const GameActor* actor, const char* sprite, Bool antijitter) {
     if (antijitter) {
         const FVec2 cpos = videostate()->camera.pos;
         const Sint32 ax = Fx2Int(ipos.x - Ffrac(cpos.x)), ay = Fx2Int(ipos.y - Ffrac(cpos.y));
-        batch_pos(B_XYZ(ax, ay, Fx2Float(actor->depth)));
+        batch_pos(B_F3(ax, ay, Fx2Float(actor->depth)));
     } else {
         const Sint32 ax = Fx2Int(ipos.x), ay = Fx2Int(ipos.y);
-        batch_pos(B_XYZ(ax, ay, Fx2Float(actor->depth)));
+        batch_pos(B_F3(ax, ay, Fx2Float(actor->depth)));
     }
-    batch_flip(B_FLIP(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
+    batch_flip(B_B2(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
     batch_sprite(sprite);
 }
 

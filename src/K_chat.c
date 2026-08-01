@@ -37,7 +37,7 @@ static void submit_chat_message(Bool confirmed) {
     write_buffer_string(&buffer, prompt, len);
     spread_reliable_packet(PCH_LOBBY, buffer.data, buffer_tell(buffer));
 
-    chat_message(fmt("%s: %s", CLIENT.name, prompt), B_WHITE);
+    chat_message(fmt("%s: %s", CLIENT.name, prompt), B_U4_WHITE);
 }
 
 void chat_update() {
@@ -55,7 +55,7 @@ void chat_update() {
             prompt[0] = '\0';
             start_typing(prompt, sizeof(prompt), submit_chat_message);
         } else {
-            chat_message(LFMT("chat_hidden"), B_GRAY);
+            chat_message(LFMT("chat_hidden"), B_U4_GRAY);
         }
     }
 }
@@ -80,7 +80,7 @@ void chat_message(const char* str, const Uint8 color[4]) {
     lines[0].time = 6 * TICKRATE;
     lines[0].str = SDL_strdup(str);
 
-    if (SDL_memcmp(color, B_WHITE, 4) == 0)
+    if (SDL_memcmp(color, B_U4_WHITE, 4) == 0)
         play_generic_sound("ui/chat", PLAY_SYSTEM);
 
     INFO("%s", lines[0].str);
@@ -97,7 +97,7 @@ void draw_chat() {
     const Bool typing = typing_what() == prompt;
 
     batch_reset();
-    batch_align(B_BOTTOM_LEFT);
+    batch_align(B_ALIGN_BOTTOM_LEFT);
 
     float y = SCREEN_HEIGHT - 24.f - CHAT_SIZE;
     for (size_t i = 0; i < MAX_LINES; i++) {
@@ -113,8 +113,8 @@ void draw_chat() {
         const float a
             = (typing ? 1.f : (0.75f * (SDL_min(lines[i].time, (float)TICKRATE) / (float)TICKRATE))) * (float)color[3];
 
-        batch_pos(B_XY(16.f, y));
-        batch_color(B_RGBA(color[0], color[1], color[2], a));
+        batch_pos(B_F3_XY(16.f, y));
+        batch_color(B_U4(color[0], color[1], color[2], a));
         batch_string_wrap("main", CHAT_SIZE, lstr, SCREEN_WIDTH - 32.f);
 
         y -= lh;
@@ -125,8 +125,8 @@ void draw_chat() {
         const float xmax = SCREEN_WIDTH - 32.f - string_width("main", CHAT_SIZE, prompt);
         const float x = SDL_min(16.f, xmax);
 
-        batch_pos(B_XY(x, SCREEN_HEIGHT - 16.f));
-        batch_color(B_WHITE);
+        batch_pos(B_F3_XY(x, SCREEN_HEIGHT - 16.f));
+        batch_color(B_U4_WHITE);
         batch_string("main", CHAT_SIZE, lstr);
     }
 

@@ -14,7 +14,7 @@ static void start(const void* secret, size_t secret_size) {
 static void end() {}
 
 static void draw() {
-    clear_color(0.5f, 0.5f, 0.5f, 1.f);
+    clear_color(B_F4_VALUE(0.5f));
 
     int width = 0, height = 0;
     get_resolution(&width, &height);

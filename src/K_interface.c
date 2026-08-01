@@ -119,11 +119,11 @@ iu_dont_change:
             if (kb_pressed(KB_RECORD_REPLAY)) {
                 CLIENT.record_replay = !CLIENT.record_replay;
                 if (CLIENT.record_replay) {
-                    chat_message(LFMT("chat_recording_on"), B_GREEN);
+                    chat_message(LFMT("chat_recording_on"), B_U4_GREEN);
                 } else {
                     if (get_replay_state() == RPS_RECORDING)
                         end_replay();
-                    chat_message(LFMT("chat_recording_off"), B_RED);
+                    chat_message(LFMT("chat_recording_off"), B_U4_RED);
                 }
             }
 
@@ -206,8 +206,8 @@ iu_dont_change:
 
     if (to_screen != SCR_NULL) {
         batch_reset();
-        batch_pos(B_HALF_SCREEN);
-        batch_align(B_CENTER);
+        batch_pos(B_F3_HALF_SCREEN);
+        batch_align(B_ALIGN_CENTER);
         batch_string("main", 24.f, "LOADING");
     }
 
@@ -460,16 +460,16 @@ void draw_options(const Option* options, size_t curopt, float y) {
         const char* ostr = (option->fmt == NULL) ? LFMT(option->name) : option->fmt(i);
         const Bool disabled = option->disabled != NULL && option->disabled();
 
-        batch_pos(B_XY(HALF_SCREEN_WIDTH, oy));
-        batch_colors(disabled ? B_MF_GRAY : ((i == curopt) ? B_MF_PINK : B_MF_WHITE));
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, oy));
+        batch_colors(disabled ? B_U4X4_GRAY : ((i == curopt) ? B_U4X4_PINK : B_U4X4_WHITE));
         batch_string_wrap("header", 32.f, ostr, OPTION_WRAP);
 
         const float oh = string_height_wrap("header", 32.f, ostr, OPTION_WRAP);
         if (i == curopt && !disabled) {
-            batch_pos(B_XY(
+            batch_pos(B_F3_XY(
                 HALF_SCREEN_WIDTH - (float)((int)(string_width_wrap("header", 32.f, ostr, OPTION_WRAP) * 0.5f)) - 16.f,
                 oy + (oh * 0.5f)));
-            batch_color(B_WHITE);
+            batch_color(B_U4_WHITE);
             batch_sprite(fmt(get_character_cursor(CLIENT.character), cursor_frame / 10));
         }
 
@@ -486,8 +486,8 @@ void draw_catalog(const Catalog* catalog) {
         const char* mstr = (menu->fmt == NULL) ? LFMT(menu->name) : menu->fmt();
 
         batch_reset();
-        batch_pos(B_XY(HALF_SCREEN_WIDTH, 16.f));
-        batch_colors(B_MF_YELLOW);
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 16.f));
+        batch_colors(B_U4X4_YELLOW);
         batch_align(B_ALIGN(FA_CENTER, FA_TOP));
         batch_string("header", 32.f, mstr);
     }
@@ -496,8 +496,8 @@ void draw_catalog(const Catalog* catalog) {
 
     if (menu->from > 0 || topui() != NULL) {
         batch_reset();
-        batch_pos(B_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 16.f));
-        batch_colors(B_MF_BLUE);
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 16.f));
+        batch_colors(B_U4X4_BLUE);
         batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
         batch_string("header", 32.f,
             (typing_what() == NULL || typing_in_chat())

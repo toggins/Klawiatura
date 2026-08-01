@@ -140,23 +140,24 @@ static Bool draw_main_menu() {
     draw_options(CATALOG.options[MEN_MAIN], CATALOG.menus[MEN_MAIN].option, HALF_SCREEN_HEIGHT);
 
     batch_reset();
-    batch_pos(B_XY(64.f, SCREEN_HEIGHT - 24.f));
-    batch_color(B_ALPHA(160));
-    batch_align(B_BOTTOM_LEFT);
+    batch_pos(B_F3_XY(64.f, SCREEN_HEIGHT - 24.f));
+    batch_color(B_U4_ALPHA(160));
+    batch_align(B_ALIGN_BOTTOM_LEFT);
     batch_string("main", 24.f, GAME_NAME " " GAME_VERSION);
-    batch_pos(B_XY(SCREEN_WIDTH - 64.f, SCREEN_HEIGHT - 24.f));
-    batch_align(B_BOTTOM_RIGHT);
+    batch_pos(B_F3_XY(SCREEN_WIDTH - 64.f, SCREEN_HEIGHT - 24.f));
+    batch_align(B_ALIGN_BOTTOM_RIGHT);
     batch_string("main", 24.f, fmt("Checksum: %u", get_game_hash()));
 
     const char* credits = LFMT("credits");
     const float wrap = string_width("main", 16.f, credits) + SCREEN_WIDTH;
     const float scroll = SDL_fmodf(totalticks(), wrap);
 
-    batch_pos(B_XY(SCREEN_WIDTH - scroll, SCREEN_HEIGHT - 24.f));
-    batch_color(B_ALPHA(((scroll < 64.f) ? (scroll / 64.f)
-                                         : ((scroll > (wrap - 64.f)) ? (1.f - ((scroll - (wrap - 64.f)) / 64.f)) : 1.f))
-                        * 160.f));
-    batch_align(B_TOP_LEFT);
+    batch_pos(B_F3_XY(SCREEN_WIDTH - scroll, SCREEN_HEIGHT - 24.f));
+    batch_color(
+        B_U4_ALPHA(((scroll < 64.f) ? (scroll / 64.f)
+                                    : ((scroll > (wrap - 64.f)) ? (1.f - ((scroll - (wrap - 64.f)) / 64.f)) : 1.f))
+                   * 160.f));
+    batch_align(B_ALIGN_TOP_LEFT);
     batch_string("main", 16.f, credits);
 
     return FALSE;
@@ -230,8 +231,8 @@ static Bool draw_replays_menu() {
         return TRUE;
 
     batch_reset();
-    batch_pos(B_HALF_SCREEN);
-    batch_colors(B_MF_WHITE);
+    batch_pos(B_F3_HALF_SCREEN);
+    batch_colors(B_U4X4_WHITE);
     batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
     batch_string("header", 32.f, LFMT("opt_no_replays"));
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
@@ -283,13 +284,13 @@ static Bool draw_lobby_menu() {
     float py = HALF_SCREEN_HEIGHT + 40.f;
     static const float PEER_SIZE = 16.f;
 
-    batch_pos(B_XY(16.f, py));
+    batch_pos(B_F3_XY(16.f, py));
     batch_string("main", PEER_SIZE, LFMT("opt_peer"));
-    batch_pos(B_XY(168.f, py));
+    batch_pos(B_F3_XY(168.f, py));
     batch_string("main", PEER_SIZE, LFMT("opt_character"));
-    batch_pos(B_XY(320.f, py));
+    batch_pos(B_F3_XY(320.f, py));
     batch_string("main", PEER_SIZE, LFMT("opt_powerup"));
-    batch_pos(B_XY(472.f, py));
+    batch_pos(B_F3_XY(472.f, py));
     batch_string("main", PEER_SIZE, LFMT("opt_ping"));
 
     py += PEER_SIZE;
@@ -298,36 +299,36 @@ static Bool draw_lobby_menu() {
     for (const NetID* pids = get_peers(); *pids > 0; pids++) {
         const NetID pid = *pids;
         const Bool is_master = get_master_peer() == pid;
-        batch_color((get_local_peer() == pid) ? (is_master ? B_RGB(255, 144, 80) : B_YELLOW)
-                                              : (is_master ? B_RGB(255, 160, 160) : B_WHITE));
+        batch_color((get_local_peer() == pid) ? (is_master ? B_U4_RGB(255, 144, 80) : B_U4_YELLOW)
+                                              : (is_master ? B_U4_RGB(255, 160, 160) : B_U4_WHITE));
 
-        batch_pos(B_XY(16.f, py));
+        batch_pos(B_F3_XY(16.f, py));
         batch_string("main", PEER_SIZE, get_peer_name(pid));
 
-        batch_pos(B_XY(168.f, py));
+        batch_pos(B_F3_XY(168.f, py));
         batch_string("main", PEER_SIZE,
             (get_peer_bool(pid, "spectator")) ? LFMT("val_spectator")
                                               : get_character_name(get_peer_number(pid, "character")));
 
-        batch_pos(B_XY(320.f, py));
+        batch_pos(B_F3_XY(320.f, py));
         batch_string("main", PEER_SIZE, get_powerup_name(get_peer_number(pid, "powerup")));
 
-        batch_pos(B_XY(472.f, py));
+        batch_pos(B_F3_XY(472.f, py));
         batch_string("main", PEER_SIZE, fmt("%i ms", get_peer_ping(pid)));
 
         py += PEER_SIZE;
         ++line;
     }
 
-    batch_color(B_WHITE);
+    batch_color(B_U4_WHITE);
     for (const Uint8 n = get_peer_limit(); line < n; line++) {
-        batch_pos(B_XY(16.f, py));
+        batch_pos(B_F3_XY(16.f, py));
         batch_string("main", PEER_SIZE, "-");
-        batch_pos(B_XY(168.f, py));
+        batch_pos(B_F3_XY(168.f, py));
         batch_string("main", PEER_SIZE, "-");
-        batch_pos(B_XY(320.f, py));
+        batch_pos(B_F3_XY(320.f, py));
         batch_string("main", PEER_SIZE, "-");
-        batch_pos(B_XY(472.f, py));
+        batch_pos(B_F3_XY(472.f, py));
         batch_string("main", PEER_SIZE, "-");
 
         py += PEER_SIZE;
@@ -677,7 +678,7 @@ static void draw_ui() {
     const UI* ui = topui();
     if (CATALOG.current == MEN_MAIN && ui == NULL) {
         batch_sprite("ui/backgrounds/main");
-        batch_pos(B_XY(HALF_SCREEN_WIDTH, 116.f));
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 116.f));
         batch_sprite("logos/mario_forever");
     } else {
         batch_sprite("ui/backgrounds/options");

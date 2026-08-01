@@ -33,8 +33,21 @@ typedef struct {
 } SurfaceInternal;
 
 typedef struct {
+    Bool tile[2];
+    TinyHash texture_key;
+
     GLuint vao, vbo;
-} TileBatchInternal;
+    Vertex* vertices;
+} TileBatch;
+
+typedef struct {
+    TinyMap batches;
+} TileMapLayerInternal;
+
+typedef struct {
+    TinyMap layers;
+    TinyMapIterator iterator;
+} TileMapInternal;
 
 typedef struct {
     const char* name;
@@ -165,7 +178,7 @@ vi_bypass:
     // Blank texture
     glGenTextures(1, &blank_texture);
     glBindTexture(GL_TEXTURE_2D, blank_texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, B_WHITE);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, B_U4_WHITE);
 
     // Vertex batch
     glGenVertexArrays(1, &batch.vao);
@@ -341,12 +354,12 @@ Bool window_maximized() {
     return get_fullscreen() || (SDL_GetWindowFlags(WINDOW) & SDL_WINDOW_MAXIMIZED);
 }
 
-#define FOCUS_IMPOSSIBLE (SDL_WINDOW_OCCLUDED | SDL_WINDOW_MINIMIZED | SDL_WINDOW_NOT_FOCUSABLE)
-#define HAS_FOCUS                                                                                                      \
-    (SDL_WINDOW_MOUSE_GRABBED | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_CAPTURE | SDL_WINDOW_KEYBOARD_GRABBED)
 Bool window_focused() {
     const SDL_WindowFlags flags = SDL_GetWindowFlags(WINDOW);
-    return !(flags & FOCUS_IMPOSSIBLE) && (flags & HAS_FOCUS);
+    return !(flags & (SDL_WINDOW_OCCLUDED | SDL_WINDOW_MINIMIZED | SDL_WINDOW_NOT_FOCUSABLE))
+           && (flags
+               & (SDL_WINDOW_MOUSE_GRABBED | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_CAPTURE
+                   | SDL_WINDOW_KEYBOARD_GRABBED));
 }
 
 // =======
@@ -376,8 +389,10 @@ Bool get_fullscreen() {
 void set_fullscreen(Bool fullscreen) {
     SDL_SetWindowFullscreen(WINDOW, fullscreen);
     SDL_SyncWindow(WINDOW);
+
     SDL_RestoreWindow(WINDOW);
     SDL_SyncWindow(WINDOW);
+
     get_resolution(&window_width, &window_height);
 }
 
@@ -396,6 +411,7 @@ Bool get_vsync() {
 void set_vsync(Bool vs) {
     if (!vs || !SDL_GL_SetSwapInterval(-1))
         SDL_GL_SetSwapInterval(vs);
+
     vsync = vs;
 }
 
@@ -403,8 +419,8 @@ void set_vsync(Bool vs) {
 // BASIC
 // =====
 
-void clear_color(float r, float g, float b, float a) {
-    glClearColor(r, g, b, a);
+void clear_color(const float color[4]) {
+    glClearColor(color[0], color[1], color[2], color[3]);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -485,7 +501,7 @@ void load_texture(const char* name, AssetKeepLevel keep) {
     texture.size[1] = surface->h;
 
     texture.internal = SDL_calloc(1, sizeof(GLuint));
-    EXPECT(texture.internal, "Failed to allocate texture handle");
+    EXPECT(texture.internal, "Failed to allocate texture internals");
 
     glGenTextures(1, texture.internal);
     glBindTexture(GL_TEXTURE_2D, *(GLuint*)texture.internal);
@@ -888,23 +904,23 @@ void batch_stencil_op(StencilOperation stencil_fail, StencilOperation depth_fail
 
 /// Resets the batch.
 void batch_reset() {
-    batch_pos(B_ORIGIN);
-    batch_offset(B_ORIGIN);
-    batch_scale(B_SIZE(1.f));
+    batch_pos(B_F3_0);
+    batch_offset(B_F3_0);
+    batch_scale(B_F2_1);
     batch_angle(0.f);
-    batch_color(B_WHITE);
-    batch_flip(B_NO_FLIP);
-    batch_align(B_TOP_LEFT);
+    batch_color(B_U4_WHITE);
+    batch_flip(B_B2_FALSE);
+    batch_align(B_ALIGN_TOP_LEFT);
 }
 
 /// Fully resets the batch, slower since it can break batches.
 void batch_reset_hard() {
     batch_reset();
     batch_texture(blank_texture);
-    batch_tile(B_NO_TILE);
+    batch_tile(B_B2_FALSE);
     batch_filter(TRUE);
     batch_alpha_test(0.f);
-    batch_stencil(B_NO_STENCIL);
+    batch_stencil(B_F4_0);
     batch_blend(BM_NORMAL);
     batch_write_color(TRUE, TRUE, TRUE, TRUE);
     batch_test_depth(TRUE);
@@ -951,12 +967,12 @@ void batch_sprite(const char* name) {
     const float u2 = sprite->uvs[batch.flip[0] ? 0 : 2], v2 = sprite->uvs[batch.flip[1] ? 1 : 3];
 
     // Vertices
-    batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
-    batch_vertex(B_XYZ(p1[0], p1[1], p1[2]), batch.color[0], B_UV(u1, v1));
-    batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
-    batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
-    batch_vertex(B_XYZ(p4[0], p4[1], p4[2]), batch.color[3], B_UV(u2, v2));
-    batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
+    batch_vertex(B_F3(p3[0], p3[1], p3[2]), batch.color[2], B_F2(u1, v2));
+    batch_vertex(B_F3(p1[0], p1[1], p1[2]), batch.color[0], B_F2(u1, v1));
+    batch_vertex(B_F3(p2[0], p2[1], p2[2]), batch.color[1], B_F2(u2, v1));
+    batch_vertex(B_F3(p2[0], p2[1], p2[2]), batch.color[1], B_F2(u2, v1));
+    batch_vertex(B_F3(p4[0], p4[1], p4[2]), batch.color[3], B_F2(u2, v2));
+    batch_vertex(B_F3(p3[0], p3[1], p3[2]), batch.color[2], B_F2(u1, v2));
 }
 
 /// Adds a surface to the vertex batch.
@@ -994,12 +1010,12 @@ void batch_surface(const Surface* surface) {
     const float u2 = (float)(!batch.flip[0]), v2 = (float)(!batch.flip[1]);
 
     // Vertices
-    batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
-    batch_vertex(B_XYZ(p1[0], p1[1], p1[2]), batch.color[0], B_UV(u1, v1));
-    batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
-    batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
-    batch_vertex(B_XYZ(p4[0], p4[1], p4[2]), batch.color[3], B_UV(u2, v2));
-    batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
+    batch_vertex(B_F3(p3[0], p3[1], p3[2]), batch.color[2], B_F2(u1, v2));
+    batch_vertex(B_F3(p1[0], p1[1], p1[2]), batch.color[0], B_F2(u1, v1));
+    batch_vertex(B_F3(p2[0], p2[1], p2[2]), batch.color[1], B_F2(u2, v1));
+    batch_vertex(B_F3(p2[0], p2[1], p2[2]), batch.color[1], B_F2(u2, v1));
+    batch_vertex(B_F3(p4[0], p4[1], p4[2]), batch.color[3], B_F2(u2, v2));
+    batch_vertex(B_F3(p3[0], p3[1], p3[2]), batch.color[2], B_F2(u1, v2));
 }
 
 /// Adds a rectangle to the batch.
@@ -1042,12 +1058,12 @@ void batch_rectangle(const char* name, const float size[2]) {
         v1 = batch.flip[1], v2 = (float)(!batch.flip[1]);
 
     // Vertices
-    batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
-    batch_vertex(B_XYZ(p1[0], p1[1], p1[2]), batch.color[0], B_UV(u1, v1));
-    batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
-    batch_vertex(B_XYZ(p2[0], p2[1], p2[2]), batch.color[1], B_UV(u2, v1));
-    batch_vertex(B_XYZ(p4[0], p4[1], p4[2]), batch.color[3], B_UV(u2, v2));
-    batch_vertex(B_XYZ(p3[0], p3[1], p3[2]), batch.color[2], B_UV(u1, v2));
+    batch_vertex(B_F3(p3[0], p3[1], p3[2]), batch.color[2], B_F2(u1, v2));
+    batch_vertex(B_F3(p1[0], p1[1], p1[2]), batch.color[0], B_F2(u1, v1));
+    batch_vertex(B_F3(p2[0], p2[1], p2[2]), batch.color[1], B_F2(u2, v1));
+    batch_vertex(B_F3(p2[0], p2[1], p2[2]), batch.color[1], B_F2(u2, v1));
+    batch_vertex(B_F3(p4[0], p4[1], p4[2]), batch.color[3], B_F2(u2, v2));
+    batch_vertex(B_F3(p3[0], p3[1], p3[2]), batch.color[2], B_F2(u1, v2));
 }
 
 /// Adds a circle to the batch.
@@ -1066,11 +1082,11 @@ void batch_circle(const char* name, float radius) {
         const float nx1 = SDL_cosf(forward), ny1 = SDL_sinf(forward);
         const float nx2 = SDL_cosf(up), ny2 = SDL_sinf(up);
 
-        batch_vertex(B_XYZ(x, y, z), batch.color[0], B_UV(0.5f, 0.5f));
-        batch_vertex(B_XYZ(x + (nx1 * xrad), y + (ny1 * yrad), z), batch.color[1],
-            B_UV(0.5f + (nx1 * 0.5f), 0.5f + (ny1 * 0.5f)));
-        batch_vertex(B_XYZ(x + (nx2 * xrad), y + (ny2 * yrad), z), batch.color[1],
-            B_UV(0.5f + (nx2 * 0.5f), 0.5f + (ny2 * 0.5f)));
+        batch_vertex(B_F3(x, y, z), batch.color[0], B_F2(0.5f, 0.5f));
+        batch_vertex(B_F3(x + (nx1 * xrad), y + (ny1 * yrad), z), batch.color[1],
+            B_F2(0.5f + (nx1 * 0.5f), 0.5f + (ny1 * 0.5f)));
+        batch_vertex(B_F3(x + (nx2 * xrad), y + (ny2 * yrad), z), batch.color[1],
+            B_F2(0.5f + (nx2 * 0.5f), 0.5f + (ny2 * 0.5f)));
     }
 }
 
@@ -1199,12 +1215,12 @@ void batch_string(const char* name, float size, const char* str) {
 
         const float x1 = cx + (glyph->bounds[0] * xscale), y1 = cy + (glyph->bounds[1] * yscale);
         const float x2 = cx + (glyph->bounds[2] * xscale), y2 = cy + (glyph->bounds[3] * yscale);
-        batch_vertex(B_XYZ(x1, y2, oz), batch.color[2], B_UV(glyph->uvs[0], glyph->uvs[3]));
-        batch_vertex(B_XYZ(x1, y1, oz), batch.color[0], B_UV(glyph->uvs[0], glyph->uvs[1]));
-        batch_vertex(B_XYZ(x2, y1, oz), batch.color[1], B_UV(glyph->uvs[2], glyph->uvs[1]));
-        batch_vertex(B_XYZ(x2, y1, oz), batch.color[1], B_UV(glyph->uvs[2], glyph->uvs[1]));
-        batch_vertex(B_XYZ(x2, y2, oz), batch.color[3], B_UV(glyph->uvs[2], glyph->uvs[3]));
-        batch_vertex(B_XYZ(x1, y2, oz), batch.color[2], B_UV(glyph->uvs[0], glyph->uvs[3]));
+        batch_vertex(B_F3(x1, y2, oz), batch.color[2], B_F2(glyph->uvs[0], glyph->uvs[3]));
+        batch_vertex(B_F3(x1, y1, oz), batch.color[0], B_F2(glyph->uvs[0], glyph->uvs[1]));
+        batch_vertex(B_F3(x2, y1, oz), batch.color[1], B_F2(glyph->uvs[2], glyph->uvs[1]));
+        batch_vertex(B_F3(x2, y1, oz), batch.color[1], B_F2(glyph->uvs[2], glyph->uvs[1]));
+        batch_vertex(B_F3(x2, y2, oz), batch.color[3], B_F2(glyph->uvs[2], glyph->uvs[3]));
+        batch_vertex(B_F3(x1, y2, oz), batch.color[2], B_F2(glyph->uvs[0], glyph->uvs[3]));
 
         if (bytes > 0)
             cx += glyph->advance * xscale;
@@ -1360,8 +1376,8 @@ void batch_string_wrap(const char* name, float size, const char* str, float wrap
         return;
 
     // Origin
-    float ox = batch.pos[0] - (batch.offset[0] * batch.scale[0]);
-    float oy = batch.pos[1] - (batch.offset[1] * batch.scale[1]);
+    float ox = batch.pos[0] - (batch.offset[0] * batch.scale[0]),
+          oy = batch.pos[1] - (batch.offset[1] * batch.scale[1]);
     const float oz = batch.pos[2] - batch.offset[2];
 
     // Horizontal alignment
@@ -1442,12 +1458,12 @@ void batch_string_wrap(const char* name, float size, const char* str, float wrap
                 const float acx = ox + cx, acy = oy + cy;
                 const float x1 = acx + (glyph->bounds[0] * xscale), y1 = acy + (glyph->bounds[1] * yscale);
                 const float x2 = acx + (glyph->bounds[2] * xscale), y2 = acy + (glyph->bounds[3] * yscale);
-                batch_vertex(B_XYZ(x1, y2, oz), batch.color[2], B_UV(glyph->uvs[0], glyph->uvs[3]));
-                batch_vertex(B_XYZ(x1, y1, oz), batch.color[0], B_UV(glyph->uvs[0], glyph->uvs[1]));
-                batch_vertex(B_XYZ(x2, y1, oz), batch.color[1], B_UV(glyph->uvs[2], glyph->uvs[1]));
-                batch_vertex(B_XYZ(x2, y1, oz), batch.color[1], B_UV(glyph->uvs[2], glyph->uvs[1]));
-                batch_vertex(B_XYZ(x2, y2, oz), batch.color[3], B_UV(glyph->uvs[2], glyph->uvs[3]));
-                batch_vertex(B_XYZ(x1, y2, oz), batch.color[2], B_UV(glyph->uvs[0], glyph->uvs[3]));
+                batch_vertex(B_F3(x1, y2, oz), batch.color[2], B_F2(glyph->uvs[0], glyph->uvs[3]));
+                batch_vertex(B_F3(x1, y1, oz), batch.color[0], B_F2(glyph->uvs[0], glyph->uvs[1]));
+                batch_vertex(B_F3(x2, y1, oz), batch.color[1], B_F2(glyph->uvs[2], glyph->uvs[1]));
+                batch_vertex(B_F3(x2, y1, oz), batch.color[1], B_F2(glyph->uvs[2], glyph->uvs[1]));
+                batch_vertex(B_F3(x2, y2, oz), batch.color[3], B_F2(glyph->uvs[2], glyph->uvs[3]));
+                batch_vertex(B_F3(x1, y2, oz), batch.color[2], B_F2(glyph->uvs[0], glyph->uvs[3]));
             }
 
             if (i == end_pos) {
@@ -1608,9 +1624,8 @@ Surface* create_surface(Uint16 width, Uint16 height, Bool color, Bool depth) {
     surface->size[0] = SDL_clamp(width, 1, SDL_MAX_UINT16);
     surface->size[1] = SDL_clamp(height, 1, SDL_MAX_UINT16);
 
-    SurfaceInternal* sdata = SDL_calloc(1, sizeof(*sdata));
-    EXPECT(sdata, "Failed to allocate surface data");
-    surface->internal = sdata;
+    surface->internal = SDL_calloc(1, sizeof(SurfaceInternal));
+    EXPECT(surface->internal, "Failed to allocate surface internals");
 
     return surface;
 }
@@ -1651,8 +1666,6 @@ static void check_surface_buffer(
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, sdata->texture[idx], 0);
 }
 
@@ -1695,22 +1708,16 @@ void resize_surface(Surface* surface, Uint16 width, Uint16 height) {
 void push_surface(Surface* surface) {
     EXPECT(surface, "Pushing a null surface?");
     EXPECT(current_surface != surface, "Pushing the current surface?");
+    EXPECT(!surface->active, "Pushing an active surface?");
     submit_batch();
 
-    if (surface == NULL) {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        glCullFace(GL_FRONT);
-    } else {
-        EXPECT(!surface->active, "Pushing an active surface?");
-        surface->active = TRUE;
-        surface->previous = current_surface;
+    surface->active = TRUE;
+    surface->previous = current_surface;
 
-        check_surface(surface);
-        glBindFramebuffer(GL_FRAMEBUFFER, ((SurfaceInternal*)surface->internal)->fbo);
-        glViewport(0, 0, surface->size[0], surface->size[1]);
-        glCullFace(GL_BACK);
-    }
+    check_surface(surface);
+    glBindFramebuffer(GL_FRAMEBUFFER, ((SurfaceInternal*)surface->internal)->fbo);
+    glViewport(0, 0, surface->size[0], surface->size[1]);
+    glCullFace(GL_BACK);
 
     current_surface = surface;
 }
@@ -1745,242 +1752,54 @@ void pop_surface() {
 TileMap* create_tilemap() {
     TileMap* tilemap = SDL_calloc(1, sizeof(*tilemap));
     EXPECT(tilemap, "Failed to allocate tilemap");
+
+    tilemap->internal = SDL_calloc(1, sizeof(TileMapInternal));
+    EXPECT(tilemap->internal, "Failed to allocate tilemap internals");
+
     return tilemap;
 }
 
 void destroy_tilemap(TileMap* tilemap) {
-    if (tilemap != NULL) {
-        FreeTinyMap(&tilemap->batches);
-        SDL_free(tilemap);
-    }
+    if (tilemap == NULL)
+        return;
+
+    TileMapInternal* tmdata = tilemap->internal;
+    FreeTinyMap(&tmdata->layers);
+    SDL_free(tmdata);
+
+    SDL_free(tilemap);
 }
 
 static void nuke_tile_batch(void* ptr) {
     TileBatch* tile_batch = ptr;
 
-    TileBatchInternal* tbdata = tile_batch->internal;
-    glDeleteVertexArrays(1, &tbdata->vao);
-    glDeleteBuffers(1, &tbdata->vbo);
-    SDL_free(tbdata);
-
-    SDL_free(tile_batch->vertices);
+    glDeleteVertexArrays(1, &tile_batch->vao);
+    glDeleteBuffers(1, &tile_batch->vbo);
+    FreeTinyD(tile_batch->vertices);
 }
 
-static void tile_batch_vertex(TileBatch* tile_batch, const float pos[3], const Uint8 color[4], const float uv[2]) {
-    if (tile_batch->vertex_count >= tile_batch->vertex_capacity) {
-        const size_t new_size = tile_batch->vertex_capacity * 2;
-        EXPECT(new_size >= tile_batch->vertex_capacity, "Capacity overflow in tile batch");
-        tile_batch->vertices = SDL_realloc(tile_batch->vertices, new_size * sizeof(Vertex));
-        EXPECT(tile_batch->vertices, "Out of memory for tile batch");
-        tile_batch->vertex_capacity = new_size;
+static void nuke_tilemap_layer(void* ptr) {
+    TileMapLayer* tilemap_layer = ptr;
 
-        glBindBuffer(GL_ARRAY_BUFFER, ((TileBatchInternal*)tile_batch->internal)->vbo);
-        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * tile_batch->vertex_capacity), NULL, GL_STATIC_DRAW);
-    }
-
-    tile_batch->vertices[tile_batch->vertex_count++] = (Vertex){
-        .position = {pos[0], pos[1], pos[2]},
-        .color = {color[0], color[1], color[2], color[3]},
-        .uv = {uv[0], uv[1]},
-    };
-    tile_batch->transparent |= color[3] < 255;
-}
-
-static void tile_batch_sprite(TileBatch* tile_batch, const Sprite* sprite, const float pos[3], const float size[2],
-    const Bool flip[2], const Bool tile[2], const Uint8 colors[4][4]) {
-    tile_batch->tile[0] |= tile[0];
-    tile_batch->tile[1] |= tile[1];
-
-    const float x = pos[0] - ((sprite == NULL || tile[0]) ? 0.f : sprite->offset[0]),
-                y = pos[1] - ((sprite == NULL || tile[1]) ? 0.f : sprite->offset[1]);
-
-    float w = 1.f, h = 1.f;
-    if (size == NULL) {
-        if (sprite != NULL) {
-            w = sprite->size[0];
-            h = sprite->size[1];
-        }
-    } else {
-        w = size[0];
-        h = size[1];
-    }
-
-    float u1 = 0.f, v1 = 0.f, u2 = 1.f, v2 = 1.f;
-    if (sprite != NULL) {
-        if (tile[0]) {
-            *(flip[0] ? &u1 : &u2) = w / sprite->size[0];
-        } else {
-            u1 = sprite->uvs[flip[0] ? 2 : 0];
-            u2 = sprite->uvs[flip[0] ? 0 : 2];
-        }
-        if (tile[1]) {
-            *(flip[1] ? &v1 : &v2) = h / sprite->size[1];
-        } else {
-            v1 = sprite->uvs[flip[1] ? 3 : 1];
-            v2 = sprite->uvs[flip[1] ? 1 : 3];
-        }
-    }
-
-    const float x2 = x + w, y2 = y + h;
-    tile_batch_vertex(tile_batch, B_XYZ(x, y2, pos[2]), colors[2], B_UV(u1, v2));
-    tile_batch_vertex(tile_batch, B_XYZ(x, y, pos[2]), colors[0], B_UV(u1, v1));
-    tile_batch_vertex(tile_batch, B_XYZ(x2, y, pos[2]), colors[1], B_UV(u2, v1));
-    tile_batch_vertex(tile_batch, B_XYZ(x2, y, pos[2]), colors[1], B_UV(u2, v1));
-    tile_batch_vertex(tile_batch, B_XYZ(x2, y2, pos[2]), colors[3], B_UV(u2, v2));
-    tile_batch_vertex(tile_batch, B_XYZ(x, y2, pos[2]), colors[2], B_UV(u1, v2));
+    TileMapLayerInternal* tmldata = tilemap_layer->internal;
+    FreeTinyMap(&tmldata->batches);
+    SDL_free(tmldata);
 }
 
 void add_tilemap(TileMap* tilemap, const char* name, const float pos[3], const float size[2], const Bool flip[2],
-    const Bool tile[2], const Uint8 colors[4][4]) {
-    if (tilemap == NULL)
-        return;
+    const Bool tile[2], const Uint8 colors[4][4]) {}
+void read_tilemap(TileMap* tilemap, yyjson_val* jtile) {}
 
-    const TinyHash key = StHashStr(name);
-    const Sprite* sprite = get_sprite_key(key);
-    if (sprite == NULL && name != NULL) {
-        WARN("Unknown sprite \"%s\"", name);
-        return;
-    }
+void tilemap_iterate_start(TileMap* tilemap) {}
 
-    TileBatch* tile_batch = (TileBatch*)TinyMapGet(&tilemap->batches, key);
-    if (tile_batch != NULL) {
-        tile_batch_sprite(tile_batch, sprite, pos, size, flip, tile, colors);
-        return;
-    }
+const TileMapLayer* tilemap_iterate_next(TileMap* tilemap) {
+    (void)tilemap;
 
-    tile_batch = &(TileBatch){0};
-    tile_batch->texture_key = (sprite == NULL) ? key : sprite->texture_key;
+    return NULL;
+};
 
-    tile_batch->vertex_capacity = 6;
-    tile_batch->vertices = SDL_calloc(tile_batch->vertex_capacity, sizeof(*tile_batch->vertices));
-    EXPECT(tile_batch->vertices, "Failed to allocate tile batch vertices");
-
-    TileBatchInternal* tbdata = SDL_calloc(1, sizeof(*tbdata));
-    EXPECT(tbdata, "Failed to allocate tile batch data");
-
-    glGenVertexArrays(1, &tbdata->vao);
-    glBindVertexArray(tbdata->vao);
-
-    glGenBuffers(1, &tbdata->vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, tbdata->vbo);
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * tile_batch->vertex_capacity), NULL, GL_STATIC_DRAW);
-
-    // NOLINTBEGIN(performance-no-int-to-ptr)
-    glEnableVertexAttribArray(VATT_POSITION);
-    glVertexAttribPointer(VATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-    glEnableVertexAttribArray(VATT_COLOR);
-    glVertexAttribPointer(VATT_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-    glEnableVertexAttribArray(VATT_UV);
-    glVertexAttribPointer(VATT_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
-    // NOLINTEND(performance-no-int-to-ptr)
-
-    tile_batch->internal = tbdata;
-
-    tile_batch_sprite(tile_batch, sprite, pos, size, flip, tile, colors);
-    TinyBucket* bucket = TinyMapPut(&tilemap->batches, key, tile_batch, sizeof(*tile_batch));
-    bucket->cleanup = nuke_tile_batch;
-
-    if (tilemap->first_batch == NULL) {
-        tilemap->first_batch = bucket->data;
-    } else {
-        TileBatch* tb = tilemap->first_batch;
-        while (tb != NULL) {
-            if (tb->next == NULL) {
-                tb->next = bucket->data;
-                break;
-            }
-
-            tb = tb->next;
-        }
-    }
-}
-
-void read_tilemap(TileMap* tilemap, yyjson_val* jarray) {
-    for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
-        yyjson_val* jtile = yyjson_arr_get(jarray, i);
-        if (!yyjson_is_obj(jtile))
-            continue;
-
-        const char* sprite = yyjson_get_str(yyjson_obj_get(jtile, "sprite"));
-        load_sprite(sprite, AKL_NEVER);
-
-        yyjson_val* jval = yyjson_obj_get(jtile, "pos");
-        const float pos[3] = {
-            (float)yyjson_get_num(yyjson_arr_get(jval, 0)),
-            (float)yyjson_get_num(yyjson_arr_get(jval, 1)),
-            (float)yyjson_get_num(yyjson_arr_get(jval, 2)),
-        };
-
-        jval = yyjson_obj_get(jtile, "size");
-        const Bool has_size = yyjson_is_arr(jval);
-        const float size[2] = {
-            (float)yyjson_get_num(yyjson_arr_get(jval, 0)),
-            (float)yyjson_get_num(yyjson_arr_get(jval, 1)),
-        };
-
-        jval = yyjson_obj_get(jtile, "flip");
-        const Bool flip[2] = {
-            yyjson_get_bool(yyjson_arr_get(jval, 0)),
-            yyjson_get_bool(yyjson_arr_get(jval, 1)),
-        };
-
-        jval = yyjson_obj_get(jtile, "tile");
-        const Bool tile[2] = {
-            yyjson_get_bool(yyjson_arr_get(jval, 0)),
-            yyjson_get_bool(yyjson_arr_get(jval, 1)),
-        };
-
-        jval = yyjson_obj_get(jtile, "colors");
-        Uint8 colors[4][4] = {
-            {255, 255, 255, 255},
-            {255, 255, 255, 255},
-            {255, 255, 255, 255},
-            {255, 255, 255, 255}
-        };
-        for (size_t j = 0, n = yyjson_arr_size(jval); j < n && j < 4; j++) {
-            yyjson_val* const jcolor = yyjson_arr_get(jval, j);
-            for (size_t k = 0; k < 4; k++)
-                colors[j][k] = yyjson_get_uint(yyjson_arr_get(jcolor, k));
-        }
-
-        add_tilemap(tilemap, sprite, pos, has_size ? size : NULL, flip, tile, colors);
-    }
-}
-
-void draw_tilemap(const TileMap* tilemap) {
-    if (tilemap == NULL)
-        return;
-
-    submit_batch();
-
-    set_float_uniform(UNI_ALPHA_TEST, batch.alpha_test);
-    set_vec4_uniform(UNI_STENCIL, batch.stencil);
-    set_mat4_uniform(UNI_MVP, *get_mvp_matrix());
-    apply_batch();
-
-    const Sint32 filter = (batch.filter && CLIENT.texture_filter) ? GL_LINEAR : GL_NEAREST;
-
-    for (const TileBatch* tile_batch = tilemap->first_batch; tile_batch != NULL; tile_batch = tile_batch->next) {
-        const TileBatchInternal* tbdata = tile_batch->internal;
-
-        glBindVertexArray(tbdata->vao);
-        glBindBuffer(GL_ARRAY_BUFFER, tbdata->vbo);
-        glBufferSubData(
-            GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(Vertex) * tile_batch->vertex_count), tile_batch->vertices);
-
-        // Apply texture
-        const Texture* texture = get_texture_key(tile_batch->texture_key);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, (texture == NULL) ? blank_texture : *(GLuint*)texture->internal);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tile_batch->tile[0] ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tile_batch->tile[1] ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-
-        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)tile_batch->vertex_count);
-    }
-}
+void draw_tilemap_layer(const TileMapLayer* tilemap_layer) {}
+void draw_tilemap(TileMap* tilemap) {}
 
 // =====
 // STATE

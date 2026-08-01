@@ -57,17 +57,17 @@ static void draw_water(const GameActor* actor) {
         return;
 
     const Sint32 cx = Fx2Int(video_state->camera.pos.x) - HALF_SCREEN_WIDTH, az = Fx2Int(actor->depth);
-    batch_pos(B_XYZ(cx, ay, az));
-    batch_color(B_ALPHA(135));
+    batch_pos(B_F3(cx, ay, az));
+    batch_color(B_U4_ALPHA(135));
     batch_sprite(fmt("markers/water/%i", (gamestate()->time / 5) % 5));
 
     const Sint32 ay2 = ay + 16;
     if (ay2 >= cbottom)
         return;
 
-    batch_pos(B_XYZ(cx, ay2, az));
-    batch_color(B_RGBA(88, 136, 224, 135));
-    batch_rectangle(NULL, B_WH(SCREEN_WIDTH, cbottom - ay2));
+    batch_pos(B_F3(cx, ay2, az));
+    batch_color(B_U4(88, 136, 224, 135));
+    batch_rectangle(NULL, B_F2(SCREEN_WIDTH, cbottom - ay2));
 }
 
 const ActorTable TAB_WATER = {

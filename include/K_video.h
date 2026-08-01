@@ -1,5 +1,4 @@
-#ifndef K_VIDEO_H
-#define K_VIDEO_H
+#pragma once
 
 #include "K_assets.h"
 #include "K_file.h" // IWYU pragma: export
@@ -8,102 +7,60 @@
 #include "K_vmath.h" // IWYU pragma: export
 
 // Shortcut macros for graphic functions
-#define B_XYZ(x, y, z) ((float[3]){(x), (y), (z)})
-#define B_XY(x, y) B_XYZ(x, y, 0.f)
-#define B_ORIGIN B_XY(0.f, 0.f)
-#define B_SCREEN B_XY(SCREEN_WIDTH, SCREEN_HEIGHT)
-#define B_HALF_SCREEN B_XY(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT)
+#define B_F2(x, y) ((float[2]){(x), (y)})
+#define B_F3(x, y, z) ((float[3]){(x), (y), (z)})
+#define B_F4(x, y, z, w) ((float[4]){(x), (y), (z), (w)})
 
-#define B_RGBA(r, g, b, a) ((Uint8[4]){(r), (g), (b), (a)})
-#define B_RGB(r, g, b) B_RGBA(r, g, b, 255)
-#define B_VALUE(v) B_RGB(v, v, v)
-#define B_ALPHA(a) B_RGBA(255, 255, 255, a)
+#define B_B2(x, y) ((Bool[2]){(x), (y)})
 
-#define B_WHITE B_VALUE(255)
-#define B_GRAY B_VALUE(128)
-#define B_BLACK B_VALUE(0)
-#define B_RED B_RGB(255, 0, 0)
-#define B_YELLOW B_RGB(255, 255, 0)
-#define B_GREEN B_RGB(0, 255, 0)
-#define B_BLUE B_RGB(0, 0, 255)
+#define B_U4(x, y, z, w) ((Uint8[4]){(x), (y), (z), (w)})
+#define B_U4X4(...) ((Uint8[4][4]){__VA_ARGS__})
 
-#define B_MF_WHITE                                                                                                     \
-    ((Uint8[4][4]){                                                                                                    \
-        {255, 247, 247, 255}, \
-        {239, 239, 239, 255}, \
-        {222, 214, 206, 255}, \
-        {189, 189, 189, 255} \
-    })
+#define B_F2_0 B_F2(0.f, 0.f)
+#define B_F2_1 B_F2(1.f, 1.f)
+#define B_F2_S(x) B_F2((x), (x))
+#define B_F2_SCREEN B_F2(SCREEN_WIDTH, SCREEN_HEIGHT)
 
-#define B_MF_GRAY                                                                                                      \
-    ((Uint8[4][4]){                                                                                                    \
-        {160, 160, 160, 255}, \
-        {120, 120, 120, 255}, \
-        {111, 107, 103, 255}, \
-        {95,  95,  95,  255} \
-    })
+#define B_F3_0 B_F3(0.f, 0.f, 0.f)
+#define B_F3_1 B_F3(1.f, 1.f, 1.f)
+#define B_F3_XY(x, y) B_F3(x, y, 0.f)
+#define B_F3_SCREEN B_F3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.f)
+#define B_F3_HALF_SCREEN B_F3(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, 0.f)
 
-#define B_MF_RED                                                                                                       \
-    ((Uint8[4][4]){                                                                                                    \
-        {255, 189, 165, 255}, \
-        {255, 173, 148, 255}, \
-        {231, 90,  66,  255}, \
-        {181, 41,  16,  255} \
-    })
+#define B_F4_0 B_F4(0.f, 0.f, 0.f, 0.f)
+#define B_F4_1 B_F4(1.f, 1.f, 1.f, 1.f)
+#define B_F4_RGB(r, g, b) B_F4(r, g, b, 1.f)
+#define B_F4_VALUE(v) B_F4_RGB(v, v, v)
+#define B_F4_ALPHA(a) B_F4(1.f, 1.f, 1.f, a)
 
-#define B_MF_YELLOW                                                                                                    \
-    ((Uint8[4][4]){                                                                                                    \
-        {255, 247, 57, 255}, \
-        {239, 247, 16, 255}, \
-        {198, 222, 0,  255}, \
-        {132, 140, 0,  255} \
-    })
+#define B_B2_FALSE B_B2(FALSE, FALSE)
+#define B_B2_TRUE B_B2(TRUE, TRUE)
 
-#define B_MF_GREEN                                                                                                     \
-    ((Uint8[4][4]){                                                                                                    \
-        {255, 255, 255, 255}, \
-        {181, 247, 181, 255}, \
-        {156, 206, 156, 255}, \
-        {33,  90,  33,  255} \
-    })
+#define B_U4_RGB(r, g, b) B_U4(r, g, b, 255)
+#define B_U4_VALUE(v) B_U4_RGB(v, v, v)
+#define B_U4_ALPHA(a) B_U4(255, 255, 255, a)
+#define B_U4_WHITE B_U4_VALUE(255)
+#define B_U4_GRAY B_U4_VALUE(128)
+#define B_U4_BLACK B_U4_VALUE(0)
+#define B_U4_RED B_U4_RGB(255, 0, 0)
+#define B_U4_YELLOW B_U4_RGB(255, 255, 0)
+#define B_U4_GREEN B_U4_RGB(0, 255, 0)
+#define B_U4_BLUE B_U4_RGB(0, 0, 255)
 
-#define B_MF_BLUE                                                                                                      \
-    ((Uint8[4][4]){                                                                                                    \
-        {231, 247, 247, 255}, \
-        {206, 222, 247, 255}, \
-        {132, 148, 206, 255}, \
-        {82,  115, 165, 255} \
-    })
-
-#define B_MF_PINK                                                                                                      \
-    ((Uint8[4][4]){                                                                                                    \
-        {255, 247, 247, 255}, \
-        {255, 222, 239, 255}, \
-        {222, 165, 181, 255}, \
-        {181, 115, 132, 255} \
-    })
-
-#define B_STENCIL(r, g, b, v) ((float[4]){r, g, b, v})
-#define B_NO_STENCIL B_STENCIL(0.f, 0.f, 0.f, 0.f)
-
-#define B_UV(u, v) ((float[2]){(u), (v)})
-
-#define B_FLIP(x, y) ((Bool[2]){(x), (y)})
-#define B_NO_FLIP B_FLIP(FALSE, FALSE)
-
-#define B_TILE(x, y) ((Bool[2]){(x), (y)})
-#define B_NO_TILE B_TILE(FALSE, FALSE)
+#define B_U4X4_WHITE B_U4X4({255, 247, 247, 255}, {239, 239, 239, 255}, {222, 214, 206, 255}, {189, 189, 189, 255})
+#define B_U4X4_GRAY B_U4X4({160, 160, 160, 255}, {120, 120, 120, 255}, {111, 107, 103, 255}, {95, 95, 95, 255})
+#define B_U4X4_RED B_U4X4({255, 189, 165, 255}, {255, 173, 148, 255}, {231, 90, 66, 255}, {181, 41, 16, 255})
+#define B_U4X4_YELLOW B_U4X4({255, 247, 57, 255}, {239, 247, 16, 255}, {198, 222, 0, 255}, {132, 140, 0, 255})
+#define B_U4X4_GREEN B_U4X4({255, 255, 255, 255}, {181, 247, 181, 255}, {156, 206, 156, 255}, {33, 90, 33, 255})
+#define B_U4X4_BLUE B_U4X4({231, 247, 247, 255}, {206, 222, 247, 255}, {132, 148, 206, 255}, {82, 115, 165, 255})
+#define B_U4X4_PINK B_U4X4({255, 247, 247, 255}, {255, 222, 239, 255}, {222, 165, 181, 255}, {181, 115, 132, 255})
 
 #define B_ALIGN(h, v) ((FontAlignment[2]){h, v})
-#define B_TOP_LEFT B_ALIGN(FA_LEFT, FA_TOP)
-#define B_TOP_RIGHT B_ALIGN(FA_RIGHT, FA_TOP)
-#define B_BOTTOM_LEFT B_ALIGN(FA_LEFT, FA_BOTTOM)
-#define B_BOTTOM_RIGHT B_ALIGN(FA_RIGHT, FA_BOTTOM)
-#define B_CENTER B_ALIGN(FA_CENTER, FA_MIDDLE)
-
-#define B_WH(w, h) ((float[2]){(w), (h)})
-#define B_SIZE(x) B_WH(x, x)
-#define B_SCREEN_SIZE B_WH(SCREEN_WIDTH, SCREEN_HEIGHT)
+#define B_ALIGN_TOP_LEFT B_ALIGN(FA_LEFT, FA_TOP)
+#define B_ALIGN_TOP_RIGHT B_ALIGN(FA_RIGHT, FA_TOP)
+#define B_ALIGN_CENTER B_ALIGN(FA_CENTER, FA_MIDDLE)
+#define B_ALIGN_BOTTOM_LEFT B_ALIGN(FA_LEFT, FA_BOTTOM)
+#define B_ALIGN_BOTTOM_RIGHT B_ALIGN(FA_RIGHT, FA_BOTTOM)
 
 typedef Uint8 VertexAttribute;
 enum {
@@ -219,21 +176,14 @@ enum {
     STO_INVERT,
 };
 
-typedef struct TileBatch {
-    Bool transparent, tile[2];
-    TinyHash texture_key;
-
-    size_t vertex_count, vertex_capacity;
-    Vertex* vertices;
-
-    struct TileBatch* next;
+typedef struct TileMapLayer {
+    TinyPriority depth;
 
     void* internal;
-} TileBatch;
+} TileMapLayer;
 
 typedef struct {
-    TinyMap batches;
-    TileBatch* first_batch;
+    void* internal;
 } TileMap;
 
 typedef struct {
@@ -263,7 +213,7 @@ void set_vsync(Bool);
 Bool window_maximized(), window_focused();
 
 // Basic
-void clear_color(float, float, float, float), clear_depth(float), clear_stencil(Uint8);
+void clear_color(const float[4]), clear_depth(float), clear_stencil(Uint8);
 
 // Shaders
 void set_shader(ShaderType);
@@ -322,13 +272,15 @@ void push_surface(Surface*), pop_surface();
 // Tilemaps
 TileMap* create_tilemap();
 void destroy_tilemap(TileMap*);
+
 void
 add_tilemap(TileMap*, const char*, const float[3], const float[2], const Bool[2], const Bool[2], const Uint8[4][4]);
 void read_tilemap(TileMap*, yyjson_val*);
-void draw_tilemap(const TileMap*);
+
+void tilemap_iterate_start(TileMap*);
+const TileMapLayer* tilemap_iterate_next(TileMap*);
+void draw_tilemap_layer(const TileMapLayer*), draw_tilemap(TileMap*);
 
 // State
 void start_video_state(), tick_video_state(), nuke_video_state();
 VideoState* videostate();
-
-#endif

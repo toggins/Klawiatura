@@ -169,7 +169,7 @@ void start_replay() {
     }
 
     replay_state = RPS_RECORDING;
-    chat_message(LFMT("chat_recording"), B_GREEN);
+    chat_message(LFMT("chat_recording"), B_U4_GREEN);
 }
 
 void end_replay() {
@@ -187,7 +187,7 @@ void end_replay() {
 
         case RPS_RECORDING: {
             if (!save_user_folder("replays")) {
-                chat_message(LFMT("chat_replay_save_failed"), B_RED);
+                chat_message(LFMT("chat_replay_save_failed"), B_U4_RED);
                 break;
             }
 
@@ -200,9 +200,9 @@ void end_replay() {
                 = fmt("%i-%i-%i %i.%02i.%02i.rpl", dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second);
 
             if (save_user_file(fmt("replays/%s", filename), replay_buffer, replay_cursor))
-                chat_message(LFMT("chat_replay_saved", 's', filename), B_GREEN);
+                chat_message(LFMT("chat_replay_saved", 's', filename), B_U4_GREEN);
             else
-                chat_message(LFMT("chat_replay_save_failed"), B_RED);
+                chat_message(LFMT("chat_replay_save_failed"), B_U4_RED);
 
             break;
         }

@@ -247,7 +247,7 @@ static void draw(const GameActor* actor) {
         && (VAL(actor, PLATFORM_RESPAWN) % 2) == 0)
     {
         const Sint32 ax = Fx2Int(VAL(actor, PLATFORM_START_X)), ay = Fx2Int(VAL(actor, PLATFORM_START_Y));
-        batch_pos(B_XYZ(ax, ay, Fx2Float(actor->depth)));
+        batch_pos(B_F3(ax, ay, Fx2Float(actor->depth)));
         batch_sprite(sprite);
         return;
     }

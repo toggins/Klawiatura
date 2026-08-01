@@ -60,13 +60,13 @@ static void draw(const UI* ui) {
     batch_reset();
 
     if (get_screen() != SCR_MENU) {
-        batch_pos(B_XY(-1000.f, -1000.f));
-        batch_color(B_RGBA(0, 0, 0, 128));
-        batch_rectangle(NULL, B_SIZE(3000.f));
+        batch_pos(B_F3_XY(-1000.f, -1000.f));
+        batch_color(B_U4(0, 0, 0, 128));
+        batch_rectangle(NULL, B_F2_S(3000.f));
     }
 
-    batch_pos(B_XY(HALF_SCREEN_WIDTH, 16.f));
-    batch_colors(B_MF_YELLOW);
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 16.f));
+    batch_colors(B_U4X4_YELLOW);
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
     batch_string("header", 32.f, LFMT("opt_kick_player"));
 
@@ -74,8 +74,8 @@ static void draw(const UI* ui) {
     draw_options(userdata->options, userdata->option, 64.f);
 
     batch_reset();
-    batch_pos(B_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 16.f));
-    batch_colors(B_MF_BLUE);
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 16.f));
+    batch_colors(B_U4X4_BLUE);
     batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
     batch_string("header", 32.f, fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("back")));
 }

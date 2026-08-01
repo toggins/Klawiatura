@@ -24,17 +24,17 @@ void tick() {
 }
 
 void draw() {
-    clear_color(1.f, 1.f, 1.f, 1.f);
+    clear_color(B_F4_1);
 }
 
 void draw_ui() {
     batch_reset();
-    batch_pos(B_HALF_SCREEN);
+    batch_pos(B_F3_HALF_SCREEN);
 
     const float t = totalticks();
-    batch_color(
-        B_ALPHA(((t < 33.5f) ? (t / 33.5f) : ((t > 150.f) ? ((t < 278.f) ? (1.f - ((t - 150.f) / 128.f)) : 0.f) : 1.f))
-                * 255.f));
+    batch_color(B_U4_ALPHA(
+        ((t < 33.5f) ? (t / 33.5f) : ((t > 150.f) ? ((t < 278.f) ? (1.f - ((t - 150.f) / 128.f)) : 0.f) : 1.f))
+        * 255.f));
 
     batch_alpha_test(0.9f);
     batch_sprite("logos/buziol");

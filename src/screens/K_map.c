@@ -550,7 +550,7 @@ static void draw_ui() {
             if (point->appear <= 20)
                 continue;
 
-            batch_pos(B_XYZ(point->pos[0], point->pos[1], 10.f));
+            batch_pos(B_F3(point->pos[0], point->pos[1], 10.f));
             batch_sprite(point->cross ? fmt("ui/map/cross/%u", t % 11) : fmt("ui/map/point/%u", t % 6));
         }
 
@@ -558,15 +558,15 @@ static void draw_ui() {
         for (size_t i = 0; i < TinyDLength(player->bubbles); i++) {
             const MapBubble* bubble = &player->bubbles[i];
 
-            batch_pos(B_XYZ((int)bubble->interp.pos[0], (int)bubble->interp.pos[1], 1.f));
+            batch_pos(B_F3((int)bubble->interp.pos[0], (int)bubble->interp.pos[1], 1.f));
             const float scale = 1.f - ((float)bubble->frame / 11.f);
-            batch_scale(B_SIZE(scale));
+            batch_scale(B_F2_S(scale));
             batch_sprite("ui/map/bubble");
         }
 
         const float px = (float)(int)player->interp.pos[0], py = (float)(int)player->interp.pos[1];
-        batch_pos(B_XY(px, py));
-        batch_scale(B_SIZE(0.5f));
+        batch_pos(B_F3_XY(px, py));
+        batch_scale(B_F2_S(0.5f));
 
         const WorldPlayerContext* pctx = &wctx->players[wctx->winner];
         batch_sprite(get_character_sprite(pctx->character, pctx->powerup,
@@ -574,10 +574,10 @@ static void draw_ui() {
                                                       : (PF_SWIM7 + (int)SDL_fmodf(player->frame, 2.f)))
                              : (PF_WALK1 + (int)SDL_fmodf(player->frame, 3.f))));
 
-        batch_scale(B_SIZE(1.f));
+        batch_scale(B_F2_1);
 
         if (map_state->ambush > 1 && map_state->current_node >= TinyDLength(map_state->path)) {
-            batch_pos(B_XY(px + 24.f, py - SDL_fabsf(SDL_sinf(totalticks() * 12.f * (SDL_PI_F / 180.f)) * 10.f)));
+            batch_pos(B_F3_XY(px + 24.f, py - SDL_fabsf(SDL_sinf(totalticks() * 12.f * (SDL_PI_F / 180.f)) * 10.f)));
             batch_sprite("ui/map/bro");
         }
     }
@@ -591,17 +591,17 @@ static void draw_ui() {
     apply_matrices();
 
     batch_reset();
-    batch_pos(B_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y));
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y));
 
     batch_sprite(map_state->title);
     if (map_state->path == NULL) {
         const Sprite* tspr = get_sprite(map_state->title);
         const float tb = (tspr == NULL) ? 0.f : (tspr->size[1] - tspr->offset[1]);
-        batch_pos(B_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y + tb));
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y + tb));
         batch_sprite(fmt("ui/map/world/completed/%u", (Uint32)(totalticks() * 0.5f) % 16));
     }
 
-    batch_pos(B_SCREEN);
+    batch_pos(B_F3_SCREEN);
     batch_sprite("ui/map/logo");
 
     // Transition
@@ -610,25 +610,25 @@ static void draw_ui() {
         if (map_state->path != NULL && map_state->current_node >= TinyDLength(map_state->path)
             && SDL_fmodf(totalticks(), 25.f) < 12.5f)
         {
-            batch_pos(B_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 24.f));
+            batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 24.f));
             batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
             if (is_leader()) {
-                batch_colors(B_MF_GREEN);
+                batch_colors(B_U4X4_GREEN);
                 batch_string("header", 32.f, LFMT("opt_press", 's', kb_label(KB_JUMP)));
             } else {
-                batch_colors(B_MF_WHITE);
+                batch_colors(B_U4X4_WHITE);
                 batch_string("header", 32.f, LFMT("opt_waiting_for_leader"));
             }
         }
     } else if (map_state->path == NULL) {
-        batch_pos(B_ORIGIN);
-        batch_color(B_RGBA(0, 0, 0, (transition > 101.f) ? 255 : ((transition / 101.f) * 255.f)));
-        batch_rectangle(NULL, B_SCREEN_SIZE);
+        batch_pos(B_F3_0);
+        batch_color(B_U4(0, 0, 0, (transition > 101.f) ? 255 : ((transition / 101.f) * 255.f)));
+        batch_rectangle(NULL, B_F2_SCREEN);
     } else if (transition > 25.f) {
         if (transition >= 70.f) {
-            batch_pos(B_ORIGIN);
-            batch_color(B_BLACK);
-            batch_rectangle(NULL, B_SCREEN_SIZE);
+            batch_pos(B_F3_0);
+            batch_color(B_U4_BLACK);
+            batch_rectangle(NULL, B_F2_SCREEN);
         } else {
             clear_stencil(0);
 
@@ -636,16 +636,16 @@ static void draw_ui() {
             batch_test_stencil(TRUE);
             batch_stencil_func(STF_ALWAYS, 1, 1);
             batch_stencil_op(STO_REPLACE, STO_REPLACE, STO_REPLACE);
-            batch_pos(B_HALF_SCREEN);
-            batch_color(B_WHITE);
+            batch_pos(B_F3_HALF_SCREEN);
+            batch_color(B_U4_WHITE);
             batch_circle(NULL, (1.f - ((transition - 25.f) / 45.f)) * 400.f);
             batch_write_color(TRUE, TRUE, TRUE, TRUE);
 
             batch_stencil_func(STF_GREATER, 1, 1);
             batch_stencil_op(STO_KEEP, STO_KEEP, STO_KEEP);
-            batch_pos(B_ORIGIN);
-            batch_color(B_BLACK);
-            batch_rectangle(NULL, B_SCREEN_SIZE);
+            batch_pos(B_F3_0);
+            batch_color(B_U4_BLACK);
+            batch_rectangle(NULL, B_F2_SCREEN);
             batch_test_stencil(FALSE);
         }
     }

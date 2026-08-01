@@ -34,7 +34,7 @@ static void on_ready() {
     connect_state = CONN_CONNECTED;
 
     clear_chat();
-    chat_message(LFMT("chat_connected"), B_YELLOW);
+    chat_message(LFMT("chat_connected"), B_U4_YELLOW);
     update_discord_status();
 }
 
@@ -52,7 +52,7 @@ static void on_disconnected(NutBlast_Reason reason) {
 }
 
 static void on_peer_joined(NetID pid) {
-    chat_message(LFMT("chat_joined", 's', get_peer_name(pid)), B_YELLOW);
+    chat_message(LFMT("chat_joined", 's', get_peer_name(pid)), B_U4_YELLOW);
     play_generic_sound("ui/join", PLAY_SYSTEM);
 }
 
@@ -75,7 +75,7 @@ static void on_peer_left(NetID pid, NutBlast_Reason reason) {
     }
 
     const char* lstr = LFMT("chat_left", 's', get_peer_name(pid));
-    chat_message(has_reason ? fmt("%s (%s)", lstr, reason.code) : lstr, B_YELLOW);
+    chat_message(has_reason ? fmt("%s (%s)", lstr, reason.code) : lstr, B_U4_YELLOW);
     play_generic_sound("ui/leave", PLAY_SYSTEM);
 }
 
@@ -119,7 +119,7 @@ static void on_lobbies_found(const NutBlast_Lobby* lobbies, size_t count) {
 
 static void on_master_changed(NetID pid) {
     if (pid > 0)
-        chat_message(LFMT("chat_hosting", 's', get_peer_name(get_master_peer())), B_YELLOW);
+        chat_message(LFMT("chat_hosting", 's', get_peer_name(get_master_peer())), B_U4_YELLOW);
 }
 
 static void on_peer_data_changed(NetID pid, NutBlast_FieldDiff diff) {
@@ -127,14 +127,14 @@ static void on_peer_data_changed(NetID pid, NutBlast_FieldDiff diff) {
         return;
 
     if (SDL_strcmp(diff.name, NUTBLAST_FIELD_PLAYER_NAME) == 0) {
-        chat_message(LFMT("chat_changed_name", 's', diff.old_value, 's', diff.new_value), B_YELLOW);
+        chat_message(LFMT("chat_changed_name", 's', diff.old_value, 's', diff.new_value), B_U4_YELLOW);
         return;
     }
 
     if (SDL_strcmp(diff.name, "spectator") == 0) {
         chat_message(
             LFMT((SDL_atoi(diff.new_value) > 0) ? "chat_spectator_on" : "chat_spectator_off", 's', get_peer_name(pid)),
-            B_YELLOW);
+            B_U4_YELLOW);
         return;
     }
 }
@@ -208,7 +208,7 @@ void net_update() {
 
         case PT_CHAT: {
             if (mbuf.size > 0 && CLIENT.show_user_messages)
-                chat_message(fmt("%s: %.*s", get_peer_name(msg.from), mbuf.size, mbuf.data), B_WHITE);
+                chat_message(fmt("%s: %.*s", get_peer_name(msg.from), mbuf.size, mbuf.data), B_U4_WHITE);
             break;
         }
 
@@ -477,7 +477,7 @@ Bool nuke_spectator_peer(NetID pid) {
 
     for (size_t i = 0; i < SDL_arraysize(spectator_peers); i++) {
         if (spectator_peers[i] == pid) {
-            chat_message(LFMT("chat_stopped_spectating", 's', get_peer_name(pid)), B_YELLOW);
+            chat_message(LFMT("chat_stopped_spectating", 's', get_peer_name(pid)), B_U4_YELLOW);
             spectator_peers[i] = 0;
             return TRUE;
         }

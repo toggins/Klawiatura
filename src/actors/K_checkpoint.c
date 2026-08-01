@@ -88,7 +88,7 @@ static void tick(GameActor* actor) {
 
 static void draw(const GameActor* actor) {
     batch_reset();
-    batch_color(B_ALPHA((gamestate()->checkpoint <= actor->id) ? 255 : 128));
+    batch_color(B_U4_ALPHA((gamestate()->checkpoint <= actor->id) ? 255 : 128));
 
     const char* sprite = "markers/checkpoint/0";
     switch (VAL(actor, CHECKPOINT_ANIMATION)) {
@@ -192,7 +192,7 @@ static void tick_effect(GameActor* actor) {
 static void draw_effect(const GameActor* actor) {
     batch_reset();
     batch_angle(((float)SDL_min(VAL(actor, CHECKPOINT_EFFECT_FRAME), 20) / 20.f) * 2.f * SDL_PI_F);
-    batch_color(B_ALPHA(Fx2Float(VAL(actor, CHECKPOINT_EFFECT_ALPHA)) * 255.f));
+    batch_color(B_U4_ALPHA(Fx2Float(VAL(actor, CHECKPOINT_EFFECT_ALPHA)) * 255.f));
     draw_actor(actor, "markers/checkpoint/effect", FALSE);
 }
 
