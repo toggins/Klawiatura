@@ -4,11 +4,9 @@
 #include "K_video.h"
 
 enum {
-    VAL_WATER_TO = VAL_CUSTOM,
+    VAL_WATER_TO,
     VAL_WATER_SPEED,
-};
 
-enum {
     FLG_WATER_UNSWIMMABLE = CUSTOM_FLAG(0),
 };
 

@@ -3,10 +3,8 @@
 #include "K_video.h"
 
 enum {
-    VAL_EFFECT_FRAME = VAL_CUSTOM,
-};
+    VAL_EFFECT_FRAME,
 
-enum {
     FLG_EFFECT_END = CUSTOM_FLAG(0),
 };
 

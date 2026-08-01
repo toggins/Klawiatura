@@ -180,15 +180,19 @@ enum {
     SOL_ALL = SOL_SOLID | SOL_TOP | SOL_BOTTOM,
 };
 
-typedef Sint8 TouchValues;
+typedef Uint8 TouchFlags;
 enum {
-    TOUCH_NONE,
-    TOUCH_LEFT = -1,
-    TOUCH_RIGHT = 1,
-    TOUCH_TOP = -1,
-    TOUCH_BOTTOM = 1,
-    TOUCH_STUCK = 2,
+    TOUCH_LEFT = 1 << 0,
+    TOUCH_RIGHT = 1 << 1,
+    TOUCH_TOP = 1 << 2,
+    TOUCH_BOTTOM = 1 << 3,
+    TOUCH_ALL = TOUCH_LEFT | TOUCH_RIGHT | TOUCH_TOP | TOUCH_BOTTOM,
+    TOUCH_STUCK = TOUCH_ALL,
 };
+
+#define TOUCHING(actor, yes) ((actor)->touch & (yes))
+#define TOUCH_ON(actor, tuff) ((actor)->touch |= (tuff))
+#define TOUCH_OFF(actor, tuff) ((actor)->touch &= ~(tuff))
 
 typedef struct {
     const Fixed steer, jump;
@@ -244,16 +248,6 @@ typedef struct {
     Uint16 time;
 } GameSequence;
 
-enum {
-    VAL_X_SPEED,
-    VAL_Y_SPEED,
-    VAL_X_TOUCH,
-    VAL_Y_TOUCH,
-    VAL_PLATFORM,
-    VAL_SPROUT,
-    VAL_CUSTOM
-};
-
 #define VAL(actor, val) ((actor)->values[VAL_##val])
 #define VAL_TICK(actor, val)                                                                                           \
     do {                                                                                                               \
@@ -271,11 +265,6 @@ enum {
 
 #define FOR_EACH_ACTOR(AAA)                                                                                            \
     for ((AAA) = get_actor(gamestate()->live_actors); (AAA) != NULL; (AAA) = get_actor((AAA)->previous))
-
-#define POS_SPEED(actor)                                                                                               \
-    (FVec2) {                                                                                                          \
-        (actor)->pos.x + VAL(actor, X_SPEED), (actor)->pos.y + VAL(actor, Y_SPEED)                                     \
-    }
 
 #define BOX_OUTLINE_LEFT(actor)                                                                                        \
     ((FRect){                                                                                                          \
@@ -302,13 +291,17 @@ typedef struct {
     ActorType type;
     PlayerID player;
 
+    TouchFlags touch;
+    Uint8 sprout;
+
     ActorID id;
     ActorID previous, next;
+    ActorID platform;
 
     ActorID previous_cell, next_cell;
     Sint32 cell;
 
-    FVec2 pos, last_pos;
+    FVec2 pos, last_pos, vel;
     FRect box;
     Fixed depth;
 

@@ -139,25 +139,25 @@ static void pre_tick(GameActor* actor) {
 
         VAL(actor, PLATFORM_START_X) = actor->pos.x;
         VAL(actor, PLATFORM_START_Y) = actor->pos.y;
-        VAL(actor, PLATFORM_START_X_SPEED) = VAL(actor, X_SPEED);
-        VAL(actor, PLATFORM_START_Y_SPEED) = VAL(actor, Y_SPEED);
+        VAL(actor, PLATFORM_START_X_SPEED) = actor->vel.x;
+        VAL(actor, PLATFORM_START_Y_SPEED) = actor->vel.y;
         VAL(actor, PLATFORM_START_FLAGS) = (ActorValue)actor->flags;
 
         FLAG_ON(actor, FLG_PLATFORM_START);
     }
 
-    if (ANY_FLAG(actor, FLG_PLATFORM_FALLING) && VAL(actor, Y_SPEED) < Int2Fx(10))
-        VAL(actor, Y_SPEED) = Fmin(VAL(actor, Y_SPEED) + 13107, Int2Fx(10));
+    if (ANY_FLAG(actor, FLG_PLATFORM_FALLING) && actor->vel.y < Int2Fx(10))
+        actor->vel.y = Fmin(actor->vel.y + 13107, Int2Fx(10));
 
-    move_actor(actor, POS_SPEED(actor));
+    move_actor(actor, Vadd(actor->pos, actor->vel));
     collide_actor(actor);
 
 #define DO_RESPAWN()                                                                                                   \
     do {                                                                                                               \
         move_actor(actor, (FVec2){VAL(actor, PLATFORM_START_X), VAL(actor, PLATFORM_START_Y)});                        \
         actor->last_pos = actor->pos;                                                                                  \
-        VAL(actor, X_SPEED) = VAL(actor, PLATFORM_START_X_SPEED);                                                      \
-        VAL(actor, Y_SPEED) = VAL(actor, PLATFORM_START_Y_SPEED);                                                      \
+        actor->vel.x = VAL(actor, PLATFORM_START_X_SPEED);                                                             \
+        actor->vel.y = VAL(actor, PLATFORM_START_Y_SPEED);                                                             \
         actor->flags = VAL(actor, PLATFORM_START_FLAGS);                                                               \
                                                                                                                        \
         VAL(actor, PLATFORM_RESPAWN) = 0;                                                                              \
@@ -241,7 +241,7 @@ static void draw(const GameActor* actor) {
     const GamePlayer* player = get_player(viewplayer());
     if (player != NULL) {
         const GameActor* pawn = get_actor(player->actor);
-        if (pawn != NULL && VAL(pawn, PLATFORM) == actor->id)
+        if (pawn != NULL && pawn->platform == actor->id)
             antijitter = TRUE;
     }
 
@@ -249,7 +249,7 @@ static void draw(const GameActor* actor) {
 }
 
 static void on_top(GameActor* actor, GameActor* from) {
-    VAL(from, PLATFORM) = actor->id;
+    from->platform = actor->id;
 
     if (from->type != ACT_PLAYER)
         return;
@@ -260,8 +260,8 @@ static void on_top(GameActor* actor, GameActor* from) {
     }
 
     if (ANY_FLAG(actor, FLG_PLATFORM_RUN) && !ANY_FLAG(actor, FLG_PLATFORM_RUNNING)) {
-        VAL(actor, X_SPEED) = VAL(actor, PLATFORM_RUN_X_SPEED);
-        VAL(actor, Y_SPEED) = VAL(actor, PLATFORM_RUN_Y_SPEED);
+        actor->vel.x = VAL(actor, PLATFORM_RUN_X_SPEED);
+        actor->vel.y = VAL(actor, PLATFORM_RUN_Y_SPEED);
         FLAG_ON(actor, FLG_PLATFORM_RUNNING);
     }
 
@@ -293,11 +293,11 @@ static void collide_turn(GameActor* actor, GameActor* from) {
         return;
 
     if (ANY_FLAG(actor, FLG_PLATFORM_TURN_ADD)) {
-        VAL(from, X_SPEED) += VAL(actor, X_SPEED);
-        VAL(from, Y_SPEED) += VAL(actor, Y_SPEED);
+        from->vel.x += actor->vel.x;
+        from->vel.y += actor->vel.y;
     } else {
-        VAL(from, X_SPEED) = VAL(actor, X_SPEED);
-        VAL(from, Y_SPEED) = VAL(actor, Y_SPEED);
+        from->vel.x = actor->vel.x;
+        from->vel.y = actor->vel.y;
     }
 
     FLAG_OFF(from, VAL(actor, PLATFORM_TURN_FLAGS_OFF));

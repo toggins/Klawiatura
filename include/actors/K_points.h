@@ -3,7 +3,7 @@
 #include "K_game.h"
 
 enum {
-    VAL_POINTS = VAL_CUSTOM,
+    VAL_POINTS,
     VAL_POINTS_TIME,
 };
 

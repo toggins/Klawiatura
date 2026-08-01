@@ -120,7 +120,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
     GameActor* effect = create_actor(ACT_CHECKPOINT_EFFECT, Vadd(actor->pos, (FVec2){Int2Fx(54), Int2Fx(33)}));
     if (effect != NULL)
-        VAL(effect, Y_SPEED) = Int2Fx(-10);
+        effect->vel.y = Int2Fx(-10);
 
     game_state->checkpoint = actor->id;
 }
@@ -159,7 +159,7 @@ static void tick_effect(GameActor* actor) {
         return;
     }
 
-    if (VAL(actor, Y_SPEED) < Fx0) {
+    if (actor->vel.y < Fx0) {
         GameActor* effect = create_actor(ACT_CHECKPOINT_EFFECT, actor->pos);
         if (effect != NULL) {
             VAL(effect, CHECKPOINT_EFFECT_FRAME) = VAL(actor, CHECKPOINT_EFFECT_FRAME);
@@ -174,7 +174,7 @@ static void tick_effect(GameActor* actor) {
         return;
     }
 
-    move_actor(actor, POS_SPEED(actor));
+    move_actor(actor, Vadd(actor->pos, actor->vel));
 
     ++VAL(actor, CHECKPOINT_EFFECT_FRAME);
     if (VAL(actor, CHECKPOINT_EFFECT_FRAME) > 100) {
@@ -185,8 +185,8 @@ static void tick_effect(GameActor* actor) {
         }
     }
 
-    if (VAL(actor, Y_SPEED) < Fx0)
-        VAL(actor, Y_SPEED) = Fmin(VAL(actor, Y_SPEED) + 26214, Fx0);
+    if (actor->vel.y < Fx0)
+        actor->vel.y = Fmin(actor->vel.y + 26214, Fx0);
 }
 
 static void draw_effect(const GameActor* actor) {

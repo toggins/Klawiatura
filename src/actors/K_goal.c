@@ -1,16 +1,12 @@
-#include "K_audio.h"
 #include "K_game.h"
 #include "K_video.h"
 
-#include "actors/K_player.h"
 #include "actors/K_points.h"
 
 enum {
-    VAL_BAR_Y = VAL_CUSTOM,
+    VAL_BAR_Y,
     VAL_BAR_ANGLE,
-};
 
-enum {
     FLG_BAR_JACKPOT = CUSTOM_FLAG(0),
     FLG_BAR_FLY = CUSTOM_FLAG(1),
 };
@@ -32,7 +28,7 @@ static void create(GameActor* actor) {
 
     actor->depth = Int2Fx(19);
 
-    VAL(actor, Y_SPEED) = 196608;
+    actor->vel.y = 196608;
     VAL(actor, BAR_Y) = actor->pos.y;
 }
 
@@ -40,8 +36,8 @@ static void tick(GameActor* actor) {
     if (ANY_FLAG(actor, FLG_BAR_FLY)) {
         VAL(actor, BAR_ANGLE) += 25736;
 
-        move_actor(actor, POS_SPEED(actor));
-        VAL(actor, Y_SPEED) += 13107;
+        move_actor(actor, Vadd(actor->pos, actor->vel));
+        actor->vel.y += 13107;
 
         if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32)))
             FLAG_ON(actor, FLG_DESTROY);
@@ -53,16 +49,16 @@ static void tick(GameActor* actor) {
     if (game_state->sequence.type == GS_WIN)
         return;
 
-    move_actor(actor, POS_SPEED(actor));
-    if (VAL(actor, Y_SPEED) > Fx0) {
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    if (actor->vel.y > Fx0) {
         const Fixed bottom = VAL(actor, BAR_Y) + Int2Fx(221);
         if (actor->pos.y >= bottom) {
             move_actor(actor, (FVec2){actor->pos.x, bottom});
-            VAL(actor, Y_SPEED) = -VAL(actor, Y_SPEED);
+            actor->vel.y = -actor->vel.y;
         }
-    } else if (VAL(actor, Y_SPEED) < Fx0 && actor->pos.y <= VAL(actor, BAR_Y)) {
+    } else if (actor->vel.y < Fx0 && actor->pos.y <= VAL(actor, BAR_Y)) {
         move_actor(actor, (FVec2){actor->pos.x, VAL(actor, BAR_Y)});
-        VAL(actor, Y_SPEED) = -VAL(actor, Y_SPEED);
+        actor->vel.y = -actor->vel.y;
     }
 }
 
@@ -103,8 +99,8 @@ static void collide(GameActor* actor, GameActor* from) {
     win_player(player);
 
     const Fixed dir = Fmul(Fdiv(19 + rng(3), 32), Fx2Pi);
-    VAL(actor, X_SPEED) = Fmul(327680, Fcos(dir));
-    VAL(actor, Y_SPEED) = Fmul(327680, Fsin(dir));
+    actor->vel.x = Fmul(327680, Fcos(dir));
+    actor->vel.y = Fmul(327680, Fsin(dir));
 
     FLAG_ON(actor, FLG_BAR_FLY);
 }
@@ -130,7 +126,7 @@ static void create_mark(GameActor* actor) {
 static void collide_mark(GameActor* actor, GameActor* from) {
     (void)actor;
 
-    if (from->type != ACT_PLAYER || VAL(from, PLAYER_GROUND) <= 0 || gamestate()->sequence.type == GS_WIN)
+    if (from->type != ACT_PLAYER || !TOUCHING(from, TOUCH_BOTTOM) || gamestate()->sequence.type == GS_WIN)
         return;
 
     GamePlayer* player = get_player(from->player);

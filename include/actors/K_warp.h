@@ -3,14 +3,12 @@
 #include "K_game.h"
 
 enum {
-    VAL_WARP_X = VAL_CUSTOM,
+    VAL_WARP_X,
     VAL_WARP_Y,
     VAL_WARP_ANGLE,
     VAL_WARP_OUT_ANGLE,
     VAL_WARP_SECRET,
-};
 
-enum {
     FLG_WARP_CALAMITY = CUSTOM_FLAG(0),
     FLG_WARP_SECRET = CUSTOM_FLAG(1),
     FLG_WARP_WORLD = CUSTOM_FLAG(2),

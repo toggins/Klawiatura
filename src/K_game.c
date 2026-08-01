@@ -476,7 +476,7 @@ static void start_game_state() {
 
         actor->id = actor->previous = actor->next = actor->previous_cell = actor->next_cell = NULL_ACTOR;
         actor->player = NULL_PLAYER;
-        VAL(actor, PLATFORM) = NULL_ACTOR;
+        actor->platform = NULL_ACTOR;
     }
     for (Sint32 i = 0; i < GRID_SIZE; i++)
         game_state->grid[i] = NULL_ACTOR;
@@ -587,6 +587,12 @@ static void load_level(TinyHash key) {
                                               (Fixed)yyjson_get_sint(yyjson_arr_get(jscale, 0)),
                                               (Fixed)yyjson_get_sint(yyjson_arr_get(jscale, 1)),
                                           });
+        }
+
+        yyjson_val* jvel = yyjson_obj_get(jval2, "vel");
+        if (yyjson_is_arr(jvel)) {
+            actor->vel.x = (Fixed)yyjson_get_sint(yyjson_arr_get(jvel, 0));
+            actor->vel.y = (Fixed)yyjson_get_sint(yyjson_arr_get(jvel, 1));
         }
 
         yyjson_val* jvalues = yyjson_obj_get(jval2, "values");
@@ -734,8 +740,8 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         actor->last_pos = actor->pos;
 
         if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE)) {
-            if (VAL(actor, SPROUT) > 0)
-                --VAL(actor, SPROUT);
+            if (actor->sprout > 0)
+                --actor->sprout;
             else
                 ACTOR_CALL(actor, pre_tick);
         }
@@ -749,7 +755,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 #define TICK_LOOP(ticker)                                                                                              \
     actor = get_actor(game_state->live_actors);                                                                        \
     while (actor != NULL) {                                                                                            \
-        if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE) && VAL(actor, SPROUT) <= 0)                                     \
+        if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE) && actor->sprout <= 0)                                          \
             ACTOR_CALL(actor, ticker);                                                                                 \
                                                                                                                        \
         GameActor* next = get_actor(actor->previous);                                                                  \
@@ -1282,7 +1288,7 @@ GameActor* respawn_player(GamePlayer* player) {
 
     FVec2 spos = spawn->pos;
     if (spawn->type == ACT_CHECKPOINT) {
-        spos = Vadd(spos, (FVec2){Int2Fx(53), Int2Fx(117)});
+        spos = Vadd(spos, (FVec2){Int2Fx(53), Int2Fx(118)});
 
         const Fixed bx1 = VAL(spawn, CHECKPOINT_BOUNDS_X1), by1 = VAL(spawn, CHECKPOINT_BOUNDS_Y1),
                     bx2 = VAL(spawn, CHECKPOINT_BOUNDS_X2), by2 = VAL(spawn, CHECKPOINT_BOUNDS_Y2);
@@ -1436,7 +1442,7 @@ ca_found:
     move_actor(actor, pos);
     actor->last_pos = pos;
 
-    VAL(actor, PLATFORM) = NULL_ACTOR;
+    actor->platform = NULL_ACTOR;
     FLAG_ON(actor, FLG_VISIBLE);
 
     ACTOR_CALL(actor, create);
@@ -1633,41 +1639,39 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
         }
 
         move_actor(actor, Vadd(actor->pos, (FVec2){shift, Fx0}));
-        VAL(actor, X_SPEED) = VAL(actor, Y_SPEED) = Fx0;
-        VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = TOUCH_STUCK;
+        actor->vel.x = actor->vel.y = Fx0;
+        TOUCH_ON(actor, TOUCH_STUCK);
 
         return;
     }
 
-    const GameActor* platform = get_actor(VAL(actor, PLATFORM));
+    const GameActor* platform = get_actor(actor->platform);
     if (platform != NULL) {
-        VAL(actor, PLATFORM) = NULL_ACTOR;
+        actor->platform = NULL_ACTOR;
 
-        const FVec2 avel = (FVec2){VAL(actor, X_SPEED), VAL(actor, Y_SPEED)};
+        const FVec2 avel = actor->vel;
         const FVec2 pvel = Vsub(platform->pos, platform->last_pos);
 
-        VAL(actor, X_SPEED) = pvel.x;
-        VAL(actor, Y_SPEED) = pvel.y;
+        actor->vel = pvel;
         displace_actor(actor, Fx0, FALSE);
-        VAL(actor, X_SPEED) = avel.x;
-        VAL(actor, Y_SPEED) = avel.y;
+        actor->vel = avel;
 
-        if (VAL(actor, PLATFORM) == platform->id) {
+        if (actor->platform == platform->id) {
             if (!Rcollide(Radd(Radd(actor->box, actor->pos), (FVec2){pvel.x, pvel.y + Fx1}),
                     Radd(platform->box, platform->pos)))
             {
-                VAL(actor, PLATFORM) = NULL_ACTOR;
+                actor->platform = NULL_ACTOR;
             }
         }
     }
 
-    VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = TOUCH_NONE;
     FVec2 npos = actor->pos;
+    TOUCH_OFF(actor, TOUCH_ALL);
 
     // Horizontal collision
-    if (VAL(actor, X_SPEED) != Fx0) {
-        npos.x += VAL(actor, X_SPEED);
-        const FRect abox = Radd(actor->box, npos);
+    if (actor->vel.x != Fx0) {
+        npos.x += actor->vel.x;
+        FRect abox = Radd(actor->box, npos);
         Bool climbed = FALSE, stop = FALSE;
 
         Sint32 cx1 = (abox.start.x - CELL_SIZE) / CELL_SIZE, cy1 = (abox.start.y - CELL_SIZE) / CELL_SIZE;
@@ -1677,7 +1681,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
         cx2 = SDL_clamp(cx2, 0, MAX_CELLS - 1);
         cy2 = SDL_clamp(cy2, 0, MAX_CELLS - 1);
 
-        const Bool right = VAL(actor, X_SPEED) > Fx0;
+        const Bool right = actor->vel.x > Fx0;
         for (Sint32 cx = cx1; cx <= cx2; cx++) {
             for (Sint32 cy = cy1; cy <= cy2; cy++) {
                 for (GameActor* displacer = get_actor(game_state->grid[cx + (cy * MAX_CELLS)]); displacer != NULL;
@@ -1689,7 +1693,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                         continue;
                     }
 
-                    if (VAL(actor, Y_SPEED) >= Fx0
+                    if (actor->vel.y >= Fx0
                         && (npos.y + actor->box.end.y - climb) < (displacer->pos.y + displacer->box.start.y))
                     {
                         const Fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
@@ -1697,8 +1701,8 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 
                         if (!touching_solid(solid, SOL_SOLID)) {
                             npos.y = step;
-                            VAL(actor, Y_SPEED) = Fx0;
-                            VAL(actor, Y_TOUCH) = TOUCH_BOTTOM;
+                            actor->vel.y = Fx0;
+                            TOUCH_ON(actor, TOUCH_BOTTOM);
                             climbed = TRUE;
 
                             goto da_climbed;
@@ -1710,11 +1714,11 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                     if (right) {
                         ACTOR_CALL(displacer, on_left, actor);
                         npos.x = Fmin(npos.x, displacer->pos.x + displacer->box.start.x - actor->box.end.x);
-                        stop |= VAL(actor, X_SPEED) >= Fx0;
+                        stop |= actor->vel.x >= Fx0;
                     } else {
                         ACTOR_CALL(displacer, on_right, actor);
                         npos.x = Fmax(npos.x, displacer->pos.x + displacer->box.end.x - actor->box.start.x);
-                        stop |= VAL(actor, X_SPEED) <= Fx0;
+                        stop |= actor->vel.x <= Fx0;
                     }
 
                     climbed = FALSE;
@@ -1725,15 +1729,15 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
     da_climbed:
         if (stop) {
             if (!climbed)
-                VAL(actor, X_TOUCH) = right ? TOUCH_RIGHT : TOUCH_LEFT;
-            VAL(actor, X_SPEED) = Fx0;
+                TOUCH_ON(actor, right ? TOUCH_RIGHT : TOUCH_LEFT);
+            actor->vel.x = Fx0;
         }
     }
 
     // Vertical collision
-    if (VAL(actor, Y_SPEED) != Fx0) {
-        npos.y += VAL(actor, Y_SPEED);
-        const FRect abox = Radd(actor->box, npos);
+    if (actor->vel.y != Fx0) {
+        npos.y += actor->vel.y;
+        FRect abox = Radd(actor->box, npos);
         Bool stop = FALSE;
 
         Sint32 cx1 = (abox.start.x - CELL_SIZE) / CELL_SIZE, cy1 = (abox.start.y - CELL_SIZE) / CELL_SIZE;
@@ -1752,13 +1756,13 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                         continue;
 
                     if (displacer->type == ACT_SOLID_SLOPE) {
-                        if (VAL(actor, Y_SPEED) < Fx0) {
+                        if (actor->vel.y < Fx0) {
                             if (ANY_FLAG(displacer, FLG_Y_FLIP) || npos.y < (displacer->pos.y + displacer->box.end.y))
                                 continue;
 
                             ACTOR_CALL(displacer, on_bottom, actor);
                             npos.y = Fmax(npos.y, displacer->pos.y + displacer->box.end.y - actor->box.start.y);
-                            stop |= VAL(actor, Y_SPEED) <= Fx0;
+                            stop |= actor->vel.y <= Fx0;
                         } else {
                             const Fixed width = Fabs(displacer->box.end.x - displacer->box.start.x);
                             if (width == Fx0)
@@ -1771,7 +1775,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                                         sx = displacer->pos.x + displacer->box.start.x;
 
                             const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - sx, width), Fx0, Fx1));
-                            if ((npos.y + actor->box.end.y + Fabs(VAL(actor, X_SPEED))) >= slope) {
+                            if ((npos.y + actor->box.end.y + Fabs(actor->vel.x)) >= slope) {
                                 npos.y = slope - actor->box.end.y;
                                 stop = TRUE;
                             }
@@ -1780,18 +1784,18 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                         continue;
                     }
 
-                    if (VAL(actor, Y_SPEED) < Fx0) {
+                    if (actor->vel.y < Fx0) {
                         if (!ACTOR_IS_SOLID(displacer, SOL_SOLID))
                             continue;
 
                         ACTOR_CALL(displacer, on_bottom, actor);
                         npos.y = Fmax(npos.y, displacer->pos.y + displacer->box.end.y - actor->box.start.y);
-                        stop |= VAL(actor, Y_SPEED) <= Fx0;
+                        stop |= actor->vel.y <= Fx0;
                     } else {
                         const SolidType solid = ACTOR_GET_SOLID(displacer);
                         if (!(solid & SOL_ALL)
                             || ((solid & SOL_TOP)
-                                && (npos.y + actor->box.end.y - VAL(actor, Y_SPEED))
+                                && (npos.y + actor->box.end.y - actor->vel.y)
                                        > (displacer->pos.y + displacer->box.start.y + climb)))
                         {
                             continue;
@@ -1799,15 +1803,15 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 
                         ACTOR_CALL(displacer, on_top, actor);
                         npos.y = Fmin(npos.y, displacer->pos.y + displacer->box.start.y - actor->box.end.y);
-                        stop |= VAL(actor, Y_SPEED) >= Fx0;
+                        stop |= actor->vel.y >= Fx0;
                     }
                 }
             }
         }
 
         if (stop) {
-            VAL(actor, Y_TOUCH) = (VAL(actor, Y_SPEED) < Fx0) ? TOUCH_TOP : TOUCH_BOTTOM;
-            VAL(actor, Y_SPEED) = Fx0;
+            TOUCH_ON(actor, (actor->vel.y < Fx0) ? TOUCH_TOP : TOUCH_BOTTOM);
+            actor->vel.y = Fx0;
         }
     }
 

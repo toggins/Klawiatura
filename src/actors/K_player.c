@@ -115,7 +115,6 @@ static void create(GameActor* actor) {
     actor->box.end.x = Int2Fx(10);
     actor->box.end.y = Fx1;
 
-    VAL(actor, PLAYER_GROUND) = 2;
     VAL(actor, PLAYER_WARP) = NULL_ACTOR;
 }
 
@@ -144,9 +143,8 @@ static void tick(GameActor* actor) {
     const GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
     if (warp != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT)) {
         actor->depth = Int2Fx(21);
-        VAL(actor, X_SPEED) = VAL(actor, Y_SPEED) = Fx0;
-        VAL(actor, X_TOUCH) = VAL(actor, Y_TOUCH) = TOUCH_NONE;
-        VAL(actor, PLAYER_GROUND) = 2;
+        actor->vel.x = actor->vel.y = Fx0;
+        actor->touch = TOUCH_BOTTOM;
         FLAG_OFF(actor, FLG_PLAYER_DUCK);
 
         if (ANY_FLAG(actor, FLG_PLAYER_WARP_OUT)) {
@@ -171,7 +169,7 @@ static void tick(GameActor* actor) {
 
             case 3: {
                 move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, Fx1}));
-                VAL(actor, PLAYER_GROUND) = 0;
+                actor->touch = 0;
                 break;
             }
             }
@@ -191,7 +189,7 @@ static void tick(GameActor* actor) {
 
                 case 1: {
                     move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, -Fx1}));
-                    VAL(actor, PLAYER_GROUND) = 0;
+                    actor->touch = 0;
                     break;
                 }
 
@@ -241,7 +239,7 @@ static void tick(GameActor* actor) {
     }
 
     if (game_state->sequence.type == GS_WIN) {
-        VAL(actor, X_SPEED) = 155648;
+        actor->vel.x = 155648;
         FLAG_OFF(actor, FLG_X_FLIP | FLG_PLAYER_JUMP | FLG_PLAYER_DUCK);
     }
 
@@ -249,7 +247,7 @@ static void tick(GameActor* actor) {
 
     // 179, 180, 181, 182
     if (!ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
-        if (VAL(actor, X_SPEED) == Fx0 && VAL(actor, X_TOUCH) == TOUCH_NONE) {
+        if (actor->vel.x == Fx0 && !TOUCHING(actor, TOUCH_LEFT | TOUCH_RIGHT)) {
             if (ANY_INPUT(player, GI_RIGHT))
                 FLAG_OFF(actor, FLG_X_FLIP);
             else if (ANY_INPUT(player, GI_LEFT))
@@ -258,71 +256,59 @@ static void tick(GameActor* actor) {
 
         // 181, 182, 183 (modified), 184 (modified)
         if (!ANY_INPUT(player, GI_RUN)) {
-            if (ANY_INPUT(player, GI_RIGHT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_LEFT)
-                && VAL(actor, X_SPEED) >= Fx0 && VAL(actor, X_SPEED) < 278528)
+            if (ANY_INPUT(player, GI_RIGHT) && !TOUCHING(actor, TOUCH_RIGHT) && actor->vel.x >= Fx0
+                && actor->vel.x < 278528)
             {
-                VAL(actor, X_SPEED) += 8192;
+                actor->vel.x += 8192;
             }
-            if (ANY_INPUT(player, GI_LEFT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_RIGHT)
-                && VAL(actor, X_SPEED) <= Fx0 && VAL(actor, X_SPEED) > -278528)
+            if (ANY_INPUT(player, GI_LEFT) && !TOUCHING(actor, TOUCH_LEFT) && actor->vel.x <= Fx0
+                && actor->vel.x > -278528)
             {
-                VAL(actor, X_SPEED) -= 8192;
+                actor->vel.x -= 8192;
             }
         } else {
-            if (ANY_INPUT(player, GI_RIGHT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_LEFT)
-                && VAL(actor, X_SPEED) >= Fx0 && VAL(actor, X_SPEED) < Int2Fx(7))
+            if (ANY_INPUT(player, GI_RIGHT) && !TOUCHING(actor, TOUCH_RIGHT) && actor->vel.x >= Fx0
+                && actor->vel.x < Int2Fx(7))
             {
-                VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 8192, Int2Fx(7));
+                actor->vel.x = Fmin(actor->vel.x + 8192, Int2Fx(7));
             }
-            if (ANY_INPUT(player, GI_LEFT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_RIGHT)
-                && VAL(actor, X_SPEED) <= Fx0 && VAL(actor, X_SPEED) > Int2Fx(-7))
+            if (ANY_INPUT(player, GI_LEFT) && !TOUCHING(actor, TOUCH_LEFT) && actor->vel.x <= Fx0
+                && actor->vel.x > Int2Fx(-7))
             {
-                VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 8192, Int2Fx(-7));
+                actor->vel.x = Fmax(actor->vel.x - 8192, Int2Fx(-7));
             }
         }
     }
 
     // 185, 186
-    if (!ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_SPEED) > Fx0)
-        VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 8192, Fx0);
-    if (!ANY_INPUT(player, GI_LEFT) && VAL(actor, X_SPEED) < Fx0)
-        VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 8192, Fx0);
+    if (!ANY_INPUT(player, GI_RIGHT) && actor->vel.x > Fx0)
+        actor->vel.x = Fmax(actor->vel.x - 8192, Fx0);
+    if (!ANY_INPUT(player, GI_LEFT) && actor->vel.x < Fx0)
+        actor->vel.x = Fmin(actor->vel.x + 8192, Fx0);
 
     // 187, 188, 191, 192
     if (!ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
-        if (ANY_INPUT(player, GI_RIGHT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_LEFT)
-            && VAL(actor, X_SPEED) < Fx0)
-        {
-            VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + Fmul(24576, character->steer), Fx0);
-        }
-        if (ANY_INPUT(player, GI_LEFT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_RIGHT)
-            && VAL(actor, X_SPEED) > Fx0)
-        {
-            VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - Fmul(24576, character->steer), Fx0);
-        }
+        if (ANY_INPUT(player, GI_RIGHT) && !TOUCHING(actor, TOUCH_RIGHT) && actor->vel.x < Fx0)
+            actor->vel.x = Fmin(actor->vel.x + Fmul(24576, character->steer), Fx0);
+        if (ANY_INPUT(player, GI_LEFT) && !TOUCHING(actor, TOUCH_LEFT) && actor->vel.x > Fx0)
+            actor->vel.x = Fmax(actor->vel.x - Fmul(24576, character->steer), Fx0);
 
-        if (ANY_INPUT(player, GI_RIGHT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_LEFT)
-            && VAL(actor, X_SPEED) < Fx1 && VAL(actor, X_SPEED) >= Fx0)
-        {
-            VAL(actor, X_SPEED) += Fx1;
-        }
-        if (ANY_INPUT(player, GI_LEFT) && (VAL(actor, X_TOUCH) == TOUCH_NONE || VAL(actor, X_TOUCH) == TOUCH_RIGHT)
-            && VAL(actor, X_SPEED) > -Fx1 && VAL(actor, X_SPEED) <= Fx0)
-        {
-            VAL(actor, X_SPEED) -= Fx1;
-        }
+        if (ANY_INPUT(player, GI_RIGHT) && !TOUCHING(actor, TOUCH_RIGHT) && actor->vel.x < Fx1 && actor->vel.x >= Fx0)
+            actor->vel.x += Fx1;
+        if (ANY_INPUT(player, GI_LEFT) && !TOUCHING(actor, TOUCH_LEFT) && actor->vel.x > -Fx1 && actor->vel.x <= Fx0)
+            actor->vel.x -= Fx1;
     }
 
     // 193, 194
     if (!ANY_INPUT(player, GI_RUN)) {
-        if (VAL(actor, X_SPEED) < -278528)
-            VAL(actor, X_SPEED) += 8192;
-        if (VAL(actor, X_SPEED) > 278528)
-            VAL(actor, X_SPEED) -= 8192;
+        if (actor->vel.x < -278528)
+            actor->vel.x += 8192;
+        if (actor->vel.x > 278528)
+            actor->vel.x -= 8192;
     }
 
     // 209, 210, 211, 212
-    if (ANY_INPUT(player, GI_DOWN) && !ANY_INPUT(player, GI_LEFT | GI_RIGHT) && VAL(actor, PLAYER_GROUND) > 0
+    if (ANY_INPUT(player, GI_DOWN) && !ANY_INPUT(player, GI_LEFT | GI_RIGHT) && TOUCHING(actor, TOUCH_BOTTOM)
         && player->powerup != POW_NONE)
     {
         FLAG_ON(actor, FLG_PLAYER_DUCK);
@@ -330,57 +316,43 @@ static void tick(GameActor* actor) {
 
     // 213 (modified)
     if (ANY_FLAG(actor, FLG_PLAYER_DUCK)
-        && (VAL(actor, PLAYER_GROUND) <= 0 || !ANY_INPUT(player, GI_DOWN) || player->powerup == POW_NONE))
+        && (!TOUCHING(actor, TOUCH_BOTTOM) || !ANY_INPUT(player, GI_DOWN) || player->powerup == POW_NONE))
     {
         FLAG_OFF(actor, FLG_PLAYER_DUCK);
     }
 
     // 214 (modified), 215 (modified)
     if (ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
-        if (!ANY_FLAG(actor, FLG_X_FLIP) && VAL(actor, X_SPEED) > Fx0)
-            VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - 8192, Fx0);
-        if (ANY_FLAG(actor, FLG_X_FLIP) && VAL(actor, X_SPEED) < Fx0)
-            VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + 8192, Fx0);
+        if (!ANY_FLAG(actor, FLG_X_FLIP) && actor->vel.x > Fx0)
+            actor->vel.x = Fmax(actor->vel.x - 8192, Fx0);
+        if (ANY_FLAG(actor, FLG_X_FLIP) && actor->vel.x < Fx0)
+            actor->vel.x = Fmin(actor->vel.x + 8192, Fx0);
     }
 
     // 189, 190
-    if (ANY_INPUT(player, GI_RIGHT) && VAL(actor, X_SPEED) > Fx0)
+    if (ANY_INPUT(player, GI_RIGHT) && actor->vel.x > Fx0)
         FLAG_OFF(actor, FLG_X_FLIP);
-    if (ANY_INPUT(player, GI_LEFT) && VAL(actor, X_SPEED) < Fx0)
+    if (ANY_INPUT(player, GI_LEFT) && actor->vel.x < Fx0)
         FLAG_ON(actor, FLG_X_FLIP);
-
-    // 218 (modified), 219 (modified), 220 (modified)
-    if (ANY_INPUT(player, GI_JUMP) && VAL(actor, Y_SPEED) < Fx0 && (water == NULL || actor->pos.y < water->pos.y)
-        && !ANY_INPUT(player, GI_DOWN))
-    {
-        if (Fabs(VAL(actor, X_SPEED)) < 40960)
-            VAL(actor, Y_SPEED) -= 26214;
-        else
-            VAL(actor, Y_SPEED) -= FxHalf;
-
-        if (player->powerup == POW_GREEN_LUI)
-            VAL(actor, Y_SPEED) -= 6554;
-    }
 
     // 242, 243
     // Moved here to replicate jump buffer while sinking underwater, like in Clickteam.
     if (!ANY_INPUT(player, GI_JUMP) && (water == NULL || actor->pos.y < water->pos.y) && !ANY_INPUT(player, GI_DOWN)
-        && VAL(actor, PLAYER_GROUND) > 0 && ANY_FLAG(actor, FLG_PLAYER_JUMP))
+        && TOUCHING(actor, TOUCH_BOTTOM) && ANY_FLAG(actor, FLG_PLAYER_JUMP))
     {
         FLAG_OFF(actor, FLG_PLAYER_JUMP);
     }
-    if (ANY_PRESSED(player, GI_JUMP) && VAL(actor, PLAYER_GROUND) <= 0 && VAL(actor, Y_SPEED) > Fx0)
+    if (ANY_PRESSED(player, GI_JUMP) && !TOUCHING(actor, TOUCH_BOTTOM) && actor->vel.y > Fx0)
         FLAG_ON(actor, FLG_PLAYER_JUMP);
 
     // 221 (modified), 222 (modified)
-    if (ANY_PRESSED(player, GI_JUMP) && water != NULL && actor->pos.y >= water->pos.y
-        && (VAL(actor, Y_TOUCH) == TOUCH_NONE || VAL(actor, Y_TOUCH) == TOUCH_BOTTOM) && !ANY_INPUT(player, GI_DOWN))
+    if (ANY_PRESSED(player, GI_JUMP) && water != NULL && actor->pos.y >= water->pos.y && !TOUCHING(actor, TOUCH_TOP)
+        && !ANY_INPUT(player, GI_DOWN))
     {
-        VAL(actor, PLAYER_GROUND) = 0;
-        VAL(actor, Y_SPEED) = Fmul(((actor->pos.y + actor->box.end.y) <= water->pos.y
-                                       || (actor->pos.y + actor->box.start.y) >= (water->pos.y + Int2Fx(16)))
-                                       ? Int2Fx(-3)
-                                       : Int2Fx(-9),
+        actor->vel.y = Fmul(((actor->pos.y + actor->box.end.y) <= water->pos.y
+                                || (actor->pos.y + actor->box.start.y) >= (water->pos.y + Int2Fx(16)))
+                                ? Int2Fx(-3)
+                                : Int2Fx(-9),
             character->jump);
         if (VAL(actor, PLAYER_ANIMATION) == PF_SWIM)
             VAL(actor, PLAYER_FRAME) = Fx0;
@@ -396,10 +368,10 @@ static void tick(GameActor* actor) {
                && (actor->pos.y + actor->box.start.y) < (water->pos.y + Int2Fx(16)))
     {
         if (!ANY_FLAG(actor, FLG_PLAYER_TOUCHED_WATER)) {
-            if (VAL(actor, X_SPEED) > 24576)
-                VAL(actor, X_SPEED) = Fmax(VAL(actor, X_SPEED) - FxHalf, Fx0);
-            else if (VAL(actor, X_SPEED) < -24576)
-                VAL(actor, X_SPEED) = Fmin(VAL(actor, X_SPEED) + FxHalf, Fx0);
+            if (actor->vel.x > 24576)
+                actor->vel.x = Fmax(actor->vel.x - FxHalf, Fx0);
+            else if (actor->vel.x < -24576)
+                actor->vel.x = Fmin(actor->vel.x + FxHalf, Fx0);
 
             if (actor->pos.y < (water->pos.y + Int2Fx(11)))
                 create_actor(ACT_WATER_SPLASH, actor->pos);
@@ -410,37 +382,47 @@ static void tick(GameActor* actor) {
 
     // 225 (modified), 229
     if (water != NULL && actor->pos.y >= water->pos.y)
-        VAL(actor, Y_SPEED) += 6554;
+        actor->vel.y += 6554;
     else
-        VAL(actor, Y_SPEED) += Fx1;
+        actor->vel.y += Fx1;
 
     // 230
-    if (VAL(actor, Y_SPEED) > Int2Fx(10))
-        VAL(actor, Y_SPEED) = Int2Fx(10);
+    if (actor->vel.y > Int2Fx(10))
+        actor->vel.y = Int2Fx(10);
 
     // 240, 241
-    if ((water == NULL || actor->pos.y < water->pos.y) && !ANY_INPUT(player, GI_DOWN) && VAL(actor, PLAYER_GROUND) > 0
+    if ((water == NULL || actor->pos.y < water->pos.y) && !ANY_INPUT(player, GI_DOWN) && TOUCHING(actor, TOUCH_BOTTOM)
         && ((ANY_PRESSED(player, GI_JUMP) && !ANY_FLAG(actor, FLG_PLAYER_JUMP))
             || (ANY_INPUT(player, GI_JUMP) && ANY_FLAG(actor, FLG_PLAYER_JUMP))))
     {
-        VAL(actor, PLAYER_GROUND) = 0;
-        VAL(actor, Y_SPEED) = Fmul(Int2Fx(-13), character->jump);
+        actor->vel.y = Fmul(Int2Fx(-13), character->jump);
         FLAG_OFF(actor, FLG_PLAYER_JUMP);
         play_state_sound("jump", PLAY_POS, A_ACTOR(actor));
+    }
+
+    // 218 (modified), 219 (modified), 220 (modified)
+    // Moved below events 240, 241.
+    if (ANY_INPUT(player, GI_JUMP) && actor->vel.y < Fx0 && (water == NULL || actor->pos.y < water->pos.y)
+        && !ANY_INPUT(player, GI_DOWN))
+    {
+        if (player->powerup != POW_GREEN_LUI && Fabs(actor->vel.x) < 40960)
+            actor->vel.y -= 26214;
+        else
+            actor->vel.y -= FxHalf;
     }
 
     // 467, 468, 469: TODO
 
     // 471
-    if (water != NULL && actor->pos.y > water->pos.y && VAL(actor, Y_SPEED) > Int2Fx(3))
-        VAL(actor, Y_SPEED) -= Fx1;
+    if (water != NULL && actor->pos.y > water->pos.y && actor->vel.y > Int2Fx(3))
+        actor->vel.y -= Fx1;
 
     // 472, 473
     if (water != NULL && actor->pos.y > water->pos.y) {
-        if (VAL(actor, X_SPEED) > 245760)
-            VAL(actor, X_SPEED) -= 24576;
-        if (VAL(actor, X_SPEED) < -245760)
-            VAL(actor, X_SPEED) += 24576;
+        if (actor->vel.x > 245760)
+            actor->vel.x -= 24576;
+        if (actor->vel.x < -245760)
+            actor->vel.x += 24576;
     }
 
     // Przejscie Etapu i Rury: TODO
@@ -454,10 +436,6 @@ static void tick(GameActor* actor) {
     actor->box.start.y = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
 
     displace_actor(actor, Int2Fx(10), TRUE);
-    if (VAL(actor, Y_TOUCH) == TOUCH_BOTTOM || VAL(actor, Y_TOUCH) == TOUCH_STUCK)
-        VAL(actor, PLAYER_GROUND) = 2;
-    else
-        VAL_TICK(actor, PLAYER_GROUND);
 
 t_skip_physics:
     if (VAL(actor, PLAYER_ANIMATION) == PF_GROW
@@ -467,16 +445,16 @@ t_skip_physics:
                 && VAL(actor, PLAYER_FRAME) < Int2Fx(40))))
     {
         VAL(actor, PLAYER_FRAME) += 59638;
-    } else if (VAL(actor, PLAYER_GROUND) <= 0) {
+    } else if (!TOUCHING(actor, TOUCH_BOTTOM)) {
         const Bool warping = get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
         if (water != NULL && actor->pos.y > water->pos.y && !warping) {
             if (VAL(actor, PLAYER_ANIMATION) != PF_SWIM) {
                 VAL(actor, PLAYER_ANIMATION) = PF_SWIM;
                 VAL(actor, PLAYER_FRAME) = Fx0;
             }
-            VAL(actor, PLAYER_FRAME) += Fclamp(Fdiv(Fabs(VAL(actor, X_SPEED)), 819200), 9175, 13763);
+            VAL(actor, PLAYER_FRAME) += Fclamp(Fdiv(Fabs(actor->vel.x), 819200), 9175, 13763);
         } else {
-            VAL(actor, PLAYER_ANIMATION) = (VAL(actor, Y_SPEED) < Fx0) ? PF_JUMP : PF_FALL;
+            VAL(actor, PLAYER_ANIMATION) = (actor->vel.y < Fx0) ? PF_JUMP : PF_FALL;
             VAL(actor, PLAYER_FRAME) = Fx0;
         }
 
@@ -496,11 +474,11 @@ t_skip_physics:
     } else if (ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
         VAL(actor, PLAYER_ANIMATION) = PF_DUCK;
         VAL(actor, PLAYER_FRAME) = Fx0;
-    } else if (Fabs(VAL(actor, X_SPEED)) >= 8192 || get_actor(VAL(actor, PLAYER_WARP)) != NULL
+    } else if (Fabs(actor->vel.x) >= 8192 || get_actor(VAL(actor, PLAYER_WARP)) != NULL
                || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
     {
         VAL(actor, PLAYER_ANIMATION) = PF_WALK;
-        VAL(actor, PLAYER_FRAME) += Fclamp(Fdiv(Fabs(VAL(actor, X_SPEED)), 819200), 7864, 31457);
+        VAL(actor, PLAYER_FRAME) += Fclamp(Fdiv(Fabs(actor->vel.x), 819200), 7864, 31457);
     } else {
         VAL(actor, PLAYER_ANIMATION) = PF_IDLE;
         VAL(actor, PLAYER_FRAME) = Fx0;
@@ -602,7 +580,7 @@ static void load_dead() {
 }
 
 static void tick_dead(GameActor* actor) {
-    switch (++VAL(actor, PLAYER_DEAD_STATE)) {
+    switch (++VAL(actor, PLAYER_DEAD)) {
     default:
         break;
 
@@ -630,8 +608,8 @@ static void tick_dead(GameActor* actor) {
         break;
     }
 
-    case 13: {
-        VAL(actor, Y_SPEED) = Int2Fx(-10);
+    case 25: {
+        actor->vel.y = Int2Fx(-10);
         break;
     }
 
@@ -664,9 +642,9 @@ static void tick_dead(GameActor* actor) {
     }
     }
 
-    if (VAL(actor, PLAYER_DEAD_STATE) > 12 && VAL(actor, PLAYER_DEAD_STATE) <= 200) {
-        move_actor(actor, POS_SPEED(actor));
-        VAL(actor, Y_SPEED) += 26214;
+    if (VAL(actor, PLAYER_DEAD) > 12 && VAL(actor, PLAYER_DEAD) <= 200) {
+        move_actor(actor, Vadd(actor->pos, actor->vel));
+        actor->vel.y += 26214;
     }
 }
 
