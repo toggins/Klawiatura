@@ -642,7 +642,7 @@ static void tick_dead(GameActor* actor) {
     }
     }
 
-    if (VAL(actor, PLAYER_DEAD) > 12 && VAL(actor, PLAYER_DEAD) <= 200) {
+    if (VAL(actor, PLAYER_DEAD) >= 25) {
         move_actor(actor, Vadd(actor->pos, actor->vel));
         actor->vel.y += 26214;
     }
