@@ -42,7 +42,7 @@ static void cmd_mod() {
         return;
 
     if (mods == NULL)
-        mods = (const char**)MakeTinyDPro(sizeof(mods), sizeof(*mods));
+        mods = (const char**)MakeTinyDPro(3, sizeof(*mods));
     mods = (const char**)TinyDPush((void*)mods, (void*)&path);
 }
 

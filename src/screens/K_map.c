@@ -125,7 +125,7 @@ static void start(const void* secret, size_t secret_size) {
                 continue;
 
             if (map_state->path == NULL)
-                map_state->path = MakeTinyDPro(sizeof(MapPathNode), sizeof(MapPathNode));
+                map_state->path = MakeTinyDPro(8, sizeof(MapPathNode));
 
             MapPathNode node = {0};
             node.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jnode, 0));
@@ -151,7 +151,7 @@ static void start(const void* secret, size_t secret_size) {
                 continue;
 
             if (map_state->points == NULL)
-                map_state->points = MakeTinyDPro(sizeof(MapPoint), sizeof(MapPoint));
+                map_state->points = MakeTinyDPro(16, sizeof(MapPoint));
 
             MapPoint point = {0};
             point.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jpoint, 0));
@@ -369,7 +369,7 @@ static void tick() {
 
         if (player->swimming) {
             if (player->bubbles == NULL)
-                player->bubbles = MakeTinyDPro(sizeof(MapBubble), sizeof(MapBubble));
+                player->bubbles = MakeTinyDPro(8, sizeof(MapBubble));
 
             MapBubble bubble = {0};
             bubble.pos[0] = bubble.interp.from[0] = bubble.interp.to[0] = bubble.interp.pos[0] = player->pos[0] - 1.f;
