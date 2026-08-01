@@ -47,7 +47,8 @@ void kill_player(GameActor* actor) {
 
     GamePlayer* player = get_player(actor->player);
     if (player != NULL) {
-        --player->lives;
+        if (gamecontext()->num_players > 1)
+            --player->lives;
         player->powerup = POW_NONE;
     }
 
