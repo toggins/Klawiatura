@@ -615,15 +615,20 @@ static void tick_dead(GameActor* actor) {
     }
 
     case 201: {
+        GamePlayer* player = get_player(actor->player);
+
         GameState* game_state = gamestate();
         if (game_state->sequence.type == GS_LOSE) {
+            if (gamecontext()->num_players <= 1 && player != NULL)
+                --player->lives;
+
             if (!all_players_dead())
                 game_state->flags |= GF_END;
 
             break;
         }
 
-        GameActor* pawn = respawn_player(get_player(actor->player));
+        GameActor* pawn = respawn_player(player);
         if (pawn != NULL)
             FLAG_ON(actor, FLG_DESTROY);
 

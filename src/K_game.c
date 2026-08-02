@@ -913,15 +913,10 @@ void tick_game() {
             ctx.flags |= GF_RESTARTED;
             ctx.checkpoint = game_state->checkpoint;
             for (PlayerID i = 0; i < ctx.num_players; i++) {
-                GamePlayerContext* pctx = &ctx.players[i];
-
-                pctx->lives = game_state->players[i].lives;
-                if (game_state->sequence.type == GS_LOSE)
-                    --pctx->lives;
-
-                pctx->coins = game_state->players[i].coins;
-                pctx->score = game_state->players[i].score;
-                pctx->powerup = game_state->players[i].powerup;
+                ctx.players[i].lives = game_state->players[i].lives;
+                ctx.players[i].coins = game_state->players[i].coins;
+                ctx.players[i].score = game_state->players[i].score;
+                ctx.players[i].powerup = game_state->players[i].powerup;
             }
 
             jump_to_game(&ctx, FALSE);
@@ -1358,11 +1353,6 @@ void set_player_track(GamePlayer* player, Uint8 track) {
 }
 
 Bool all_players_dead() {
-    if (game_context.num_players <= 1) {
-        const GamePlayer* player = get_player(0);
-        return player == NULL || player->lives <= 0;
-    }
-
     for (PlayerID i = 0; i < game_context.num_players; i++) {
         const GamePlayer* player = get_player(i);
         if (player != NULL && (player->lives >= 0 || get_actor(player->actor) != NULL))
