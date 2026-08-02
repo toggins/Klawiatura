@@ -570,6 +570,13 @@ static void load_level(TinyHash key) {
         if (!yyjson_is_obj(jval2))
             continue;
 
+        if (yyjson_get_bool(yyjson_obj_get(jval2, "once")) && (game_context.flags & GF_RESTARTED)
+            || (yyjson_get_bool(yyjson_obj_get(jval2, "singleplayer")) && game_context.num_players > 1)
+            || (yyjson_get_bool(yyjson_obj_get(jval2, "multiplayer")) && game_context.num_players <= 1))
+        {
+            continue;
+        }
+
         const ActorType type = yyjson_get_uint(yyjson_obj_get(jval2, "id"));
 
         yyjson_val* jpos = yyjson_obj_get(jval2, "pos");
@@ -671,6 +678,8 @@ void start_game(const GameContext* ctx) {
     game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
 
     // Initial game state
+    game_state->flags |= game_context.flags;
+
     for (PlayerID i = 0; i < game_context.num_players; i++) {
         if (game_context.players[i].lives >= 0) {
             game_state->checkpoint = game_context.checkpoint;
