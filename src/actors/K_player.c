@@ -426,6 +426,8 @@ static void tick(GameActor* actor) {
     actor->box.start.y = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
 
     displace_actor(actor, Int2Fx(10), TRUE);
+    if (get_actor(VAL(actor, PLAYER_WARP)) == NULL && !ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
+        collide_actor(actor);
 
     // 218 (modified), 219 (modified), 220 (modified)
     // Moved below events 240, 241 to replicate Clickteam jump height and to prevent jump buffs against a wall.
@@ -439,6 +441,7 @@ static void tick(GameActor* actor) {
     }
 
 t_skip_physics:
+    const Bool warping = get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
     if (VAL(actor, PLAYER_ANIMATION) == PF_GROW
         && (((player->powerup == POW_NONE || player->powerup == POW_SUPER_MUSHROOM)
                 && VAL(actor, PLAYER_FRAME) < Int2Fx(30))
@@ -447,7 +450,6 @@ t_skip_physics:
     {
         VAL(actor, PLAYER_FRAME) += 59638;
     } else if (!TOUCHING(actor, TOUCH_BOTTOM)) {
-        const Bool warping = get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
         if (water != NULL && actor->pos.y > water->pos.y && !warping) {
             if (VAL(actor, PLAYER_ANIMATION) != PF_SWIM) {
                 VAL(actor, PLAYER_ANIMATION) = PF_SWIM;
@@ -485,7 +487,8 @@ t_skip_physics:
         VAL(actor, PLAYER_FRAME) = Fx0;
     }
 
-    collide_actor(actor);
+    if (warping)
+        collide_actor(actor);
 
     player->pos = actor->pos;
 
