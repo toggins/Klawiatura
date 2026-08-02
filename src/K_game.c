@@ -38,6 +38,20 @@ typedef struct {
 } SaveState;
 
 typedef struct {
+    Fixed from, to, current;
+} InterpPlayer;
+
+typedef struct {
+    ActorType type;
+    FVec2 from, to, current;
+} InterpActor;
+
+typedef struct {
+    InterpPlayer players[MAX_PLAYERS];
+    InterpActor actors[MAX_ACTORS];
+} InterpState;
+
+typedef struct {
     Bool is_actor;
     const void* ptr;
 } SortedItem;
@@ -307,7 +321,7 @@ static GameContext game_context = {0};
 
 static LevelInfo* level_info = NULL;
 static GameState* game_state = NULL;
-static InterpActor* interp_actors = NULL;
+static InterpState* interp_state = NULL;
 
 static Uint8 boot_state = 0;
 static char boot_reason[256] = "";
@@ -643,8 +657,8 @@ void start_game(const GameContext* ctx) {
     start_audio_state();
     start_game_state();
 
-    interp_actors = SDL_calloc(MAX_ACTORS, sizeof(*interp_actors));
-    EXPECT(interp_actors, "Failed to allocate interpolation actors");
+    interp_state = SDL_calloc(1, sizeof(*interp_state));
+    EXPECT(interp_state, "Failed to allocate interpolation state");
 
     // Load assets
     load_sprite_num("ui/coins/%u", 3, AKL_NEVER);
@@ -894,8 +908,8 @@ void nuke_game() {
     game_session = NULL;
     destroy_surface(game_surface);
     game_surface = NULL;
-    SDL_free(interp_actors);
-    interp_actors = NULL;
+    SDL_free(interp_state);
+    interp_state = NULL;
     local_player = view_player = NULL_PLAYER;
 }
 
@@ -1057,23 +1071,34 @@ void pre_interp_game() {
 
     const int fps = get_framerate();
     if (fps > 0 && fps <= TICKRATE) {
+        for (PlayerID i = 0; i < game_context.num_players; i++) {
+            InterpPlayer* iplayer = &interp_state->players[i];
+            iplayer->from = iplayer->to = iplayer->current = game_state->players[i].xscroll;
+        }
+
         FOR_EACH_ACTOR(actor) {
-            InterpActor* iactor = &interp_actors[actor->id];
+            InterpActor* iactor = &interp_state->actors[actor->id];
             iactor->type = actor->type;
-            iactor->from = iactor->to = iactor->pos = actor->pos;
+            iactor->from = iactor->to = iactor->current = actor->pos;
         }
 
         return;
     }
 
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        InterpPlayer* iplayer = &interp_state->players[i];
+        iplayer->from = iplayer->to;
+        iplayer->to = game_state->players[i].xscroll;
+    }
+
     FOR_EACH_ACTOR(actor) {
-        InterpActor* iactor = &interp_actors[actor->id];
+        InterpActor* iactor = &interp_state->actors[actor->id];
         if (iactor->type == actor->type) {
             iactor->from = iactor->to;
             iactor->to = actor->pos;
         } else {
             iactor->type = actor->type;
-            iactor->from = iactor->to = iactor->pos = actor->pos;
+            iactor->from = iactor->to = iactor->current = actor->pos;
         }
     }
 }
@@ -1084,10 +1109,16 @@ void interp_game() {
         return;
 
     const Fixed t = Float2Fx(pendingticks());
+
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        InterpPlayer* iplayer = &interp_state->players[i];
+        iplayer->current = Flerp(iplayer->from, iplayer->to, t);
+    }
+
     const GameActor* actor = NULL;
     FOR_EACH_ACTOR(actor) {
-        InterpActor* iactor = &interp_actors[actor->id];
-        iactor->pos = Vlerp(iactor->from, iactor->to, t);
+        InterpActor* iactor = &interp_state->actors[actor->id];
+        iactor->current = Vlerp(iactor->from, iactor->to, t);
     }
 }
 
@@ -1106,8 +1137,8 @@ static void draw_game_state() {
     if (player != NULL) {
         const GameActor* pawn = get_actor(player->actor);
         if (pawn != NULL) {
-            camera->pos = Vclamp(
-                get_interp(pawn), Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
+            camera->pos = Vclamp(Vadd(get_interp(pawn), (FVec2){interp_state->players[player->id].current, Fx0}),
+                Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
         }
     }
 
@@ -1340,8 +1371,12 @@ GameActor* respawn_player(GamePlayer* player) {
     }
 
     player->actor = pawn->id;
+    player->xscroll = Fx0;
 
     /// !!! CLIENT-SIDE !!!
+    InterpPlayer* iplayer = &interp_state->players[player->id];
+    iplayer->from = iplayer->to = iplayer->current = player->xscroll;
+
     if (player->id == local_player || local_player >= MAX_PLAYERS)
         set_view_player(player);
     /// !!! CLIENT-SIDE !!!
@@ -1572,7 +1607,7 @@ Bool in_any_view(const FVec2 pos, Fixed edge, Bool ignore_top) {
         if (player == NULL)
             continue;
 
-        const Fixed cx = Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+        const Fixed cx = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
                         player->bounds.end.x - F_HALF_SCREEN_WIDTH),
                     cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
                         player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
@@ -1882,26 +1917,26 @@ Sint32 rng(Sint32 n) {
 #define BAD_ACTOR(actor) ((actor) == NULL || (actor)->id < 0 || (actor)->id >= MAX_ACTORS)
 
 const FVec2 get_interp(const GameActor* actor) {
-    return (BAD_ACTOR(actor)) ? (FVec2){0} : interp_actors[actor->id].pos;
+    return (BAD_ACTOR(actor)) ? (FVec2){0} : interp_state->actors[actor->id].current;
 }
 
 void skip_interp(const GameActor* actor) {
     if (BAD_ACTOR(actor))
         return;
 
-    InterpActor* iactor = &interp_actors[actor->id];
+    InterpActor* iactor = &interp_state->actors[actor->id];
     iactor->type = actor->type;
-    iactor->from = iactor->to = iactor->pos = actor->pos;
+    iactor->from = iactor->to = iactor->current = actor->pos;
 }
 
 void align_interp(const GameActor* actor, const GameActor* from) {
     if (BAD_ACTOR(actor) || BAD_ACTOR(from))
         return;
 
-    InterpActor *iactor = &interp_actors[actor->id], *ifrom = &interp_actors[from->id];
+    InterpActor *iactor = &interp_state->actors[actor->id], *ifrom = &interp_state->actors[from->id];
     iactor->from = ifrom->from;
     iactor->to = ifrom->to;
-    iactor->pos = ifrom->pos;
+    iactor->current = ifrom->current;
 }
 
 #undef BAD_ACTOR

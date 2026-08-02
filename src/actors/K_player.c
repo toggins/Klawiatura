@@ -496,6 +496,45 @@ t_skip_physics:
         kill_player(actor);
 }
 
+static void post_tick(GameActor* actor) {
+    GamePlayer* player = get_player(actor->player);
+    if (player == NULL || !gamecontext()->players[player->id].xscroll)
+        return;
+
+    // EVENTS FROM "Level 1-1"
+    // Modified to not jitter while slow walking (holding left+right).
+
+    if (!ALL_INPUT(player, GI_LEFT | GI_RIGHT)) {
+        // 532, 533
+        if (ANY_INPUT(player, GI_RIGHT) && actor->vel.x > Fx0 && !TOUCHING(actor, TOUCH_RIGHT)
+            && player->xscroll < Int2Fx(200))
+        {
+            player->xscroll = Fmin(player->xscroll + Fx1, Int2Fx(200));
+        }
+        if (ANY_INPUT(player, GI_LEFT) && actor->vel.x < Fx0 && !TOUCHING(actor, TOUCH_LEFT)
+            && player->xscroll > Int2Fx(-200))
+        {
+            player->xscroll = Fmax(player->xscroll - Fx1, Int2Fx(-200));
+        }
+    }
+
+    // 534 (modified), 535 (modified)
+    if (!ANY_INPUT(player, GI_LEFT | GI_RIGHT) || ALL_INPUT(player, GI_LEFT | GI_RIGHT)) {
+        if (player->xscroll > Fx0)
+            player->xscroll = Fmax(player->xscroll - Int2Fx(2), Fx0);
+        if (player->xscroll < Fx0)
+            player->xscroll = Fmin(player->xscroll + Int2Fx(2), Fx0);
+    }
+
+    if (!ALL_INPUT(player, GI_LEFT | GI_RIGHT)) {
+        // 536, 537
+        if (ANY_INPUT(player, GI_RIGHT) && player->xscroll < Fx0)
+            player->xscroll += Int2Fx(4);
+        if (ANY_INPUT(player, GI_LEFT) && player->xscroll > Fx0)
+            player->xscroll -= Int2Fx(4);
+    }
+}
+
 static void draw(const GameActor* actor) {
     const GamePlayer* player = get_player(actor->player);
     if (player == NULL)
@@ -529,6 +568,7 @@ const ActorTable TAB_PLAYER = {
     .create = create,
     .cleanup = cleanup,
     .tick = tick,
+    .post_tick = post_tick,
     .draw = draw,
 };
 

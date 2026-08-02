@@ -105,6 +105,10 @@ enum {
     ACT_COIN_POP,
     ACT_WATER_SPLASH,
     ACT_BUBBLE,
+    ACT_ITEM_BLOCK,
+    ACT_BRICK_BLOCK,
+    ACT_COIN_BLOCK,
+    ACT_BLOCK_BUMP,
 
     ACT_DUMMY = 254,
 
@@ -227,6 +231,7 @@ typedef struct {
 
     Uint8 track;
     ActorID actor, projectiles[MAX_PROJECTILES], sinking_projectiles[MAX_SINKING_PROJECTILES];
+    Fixed xscroll;
     FVec2 pos;
     FRect bounds;
 
@@ -373,11 +378,6 @@ typedef struct {
     TinyHash warps[MAX_GAME_WARPS];
     const char* strings[GSTR_SIZE];
 } LevelInfo;
-
-typedef struct {
-    ActorType type;
-    FVec2 from, to, pos;
-} InterpActor;
 
 void game_init();
 
