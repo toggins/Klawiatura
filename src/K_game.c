@@ -569,11 +569,16 @@ static void load_level(TinyHash key) {
 
     jval = yyjson_obj_get(root, "time");
     if (yyjson_is_int(jval))
-        game_state->clock = (Sint32)yyjson_get_sint(jval);
+        game_state->clock = (Sint16)yyjson_get_sint(jval);
 
-    jval = yyjson_obj_get(root, "water");
-    if (yyjson_is_int(jval))
-        game_state->water = Int2Fx(yyjson_get_sint(jval));
+    if (yyjson_get_bool(yyjson_obj_get(root, "hardcore")))
+        game_state->flags |= GF_HARDCORE;
+    if (yyjson_get_bool(yyjson_obj_get(root, "lost_map")))
+        game_state->flags |= GF_LOST_MAP;
+    if (yyjson_get_bool(yyjson_obj_get(root, "funny_tanks")))
+        game_state->flags |= GF_FUNNY_TANKS;
+    if (yyjson_get_bool(yyjson_obj_get(root, "ambush")))
+        set_sequence(GS_AMBUSH, NULL, 0);
 
     read_tilemap(videostate()->tilemap, yyjson_obj_get(root, "backdrops"));
 
@@ -661,13 +666,8 @@ void start_game(const GameContext* ctx) {
     EXPECT(interp_state, "Failed to allocate interpolation state");
 
     // Load assets
-    load_sprite_num("ui/coins/%u", 3, AKL_NEVER);
     load_sprite("ui/bezel_l", AKL_NEVER);
     load_sprite("ui/bezel_r", AKL_NEVER);
-    load_sound("hurry", AKL_NEVER);
-    load_sound("tick", AKL_NEVER);
-    load_track((game_context.flags & GF_LOST) ? "smw/bonus_clear" : "smw/castle_clear", AKL_NEVER);
-    load_font("hud", AKL_NEVER);
 
     // Session
     const Bool spectating = i_am_spectating();
@@ -796,7 +796,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 
 #undef TICK_LOOP
 
-    GameSequence* sequence = &game_state->sequence;
+    GameSequence* sequence = get_sequence();
     switch (sequence->type) {
     default:
         break;
@@ -812,7 +812,9 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
                 continue;
 
             const GameActor* pawn = get_actor(player->actor);
-            if (pawn != NULL && get_actor(VAL(pawn, PLAYER_WARP)) == NULL && !ANY_FLAG(pawn, FLG_PLAYER_WARP_OUT)) {
+            if (pawn != NULL && pawn->type == ACT_PLAYER && get_actor(VAL(pawn, PLAYER_WARP)) == NULL
+                && !ANY_FLAG(pawn, FLG_PLAYER_WARP_OUT))
+            {
                 all_inactive = FALSE;
                 break;
             }
@@ -847,20 +849,56 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
     }
 
     case GS_LOSE: {
-        if (sequence->time <= 0)
-            break;
-
         switch (sequence->time++) {
         default:
             break;
 
-        case 1: {
+        case 0: {
+            for (PlayerID i = 0; i < game_context.num_players; i++) {
+                GamePlayer* player = get_player(i);
+                if (player == NULL)
+                    continue;
+
+                if (player->id == sequence->activator) {
+                    set_view_player(player);
+                    continue;
+                }
+
+                GameActor* actor = get_actor(player->actor);
+                if (actor != NULL)
+                    FLAG_ON(actor, FLG_DESTROY);
+            }
+
             stop_state_track(MAX_STATE_TRACKS);
+            if (game_state->flags & GF_LOST_MAP)
+                play_state_track(STS_FANFARE, "smw/lose2", 0);
+            else if (game_state->flags & GF_HARDCORE)
+                play_state_track(STS_FANFARE, "smw/lose_hardcore", 0);
+            else
+                play_state_track(STS_FANFARE, "smw/lose", 0);
+
+            break;
+        }
+
+        case 201: {
+            if (game_context.num_players <= 1) {
+                GamePlayer* player = get_player(sequence->activator);
+                if (player != NULL)
+                    --player->lives;
+            }
+
+            if (!all_players_dead())
+                game_state->flags |= GF_END;
+
+            break;
+        }
+
+        case 211: {
             play_state_track(STS_FANFARE, "smb/game_over", 0);
             break;
         }
 
-        case 301: {
+        case 511: {
             game_state->flags |= GF_END;
             break;
         }
@@ -870,27 +908,38 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
     }
 
     case GS_WIN: {
-        ++sequence->time;
-        if (sequence->time >= 400 && game_state->clock > 0) {
-            GamePlayer* player = get_player(sequence->activator);
+        if (sequence->time < 400)
+            ++sequence->time;
 
-            --game_state->clock;
-            if (player != NULL)
-                player->score += 10;
+        if (sequence->time >= 400 || (game_state->flags & GF_LOST_MAP)) {
+            if (game_state->clock > 0) {
+                GamePlayer* player = get_player(sequence->activator);
 
-            if (game_state->clock >= 10) {
-                game_state->clock -= 10;
+                --game_state->clock;
                 if (player != NULL)
-                    player->score += 100;
+                    player->score += 10;
+
+                if (game_state->clock >= 10) {
+                    game_state->clock -= 10;
+                    if (player != NULL)
+                        player->score += 100;
+                }
+
+                if ((game_state->time % 5) == 0) {
+                    if ((game_state->flags & GF_LOST_MAP) && game_state->clock > 0) {
+                        --game_state->clock;
+                        if (player != NULL)
+                            ++player->score;
+                    }
+
+                    play_state_sound("tick", 0, NULL);
+                }
+            } else if (sequence->state < 50) {
+                ++sequence->state;
             }
-
-            if ((game_state->time % 5) == 0)
-                play_state_sound("tick", 0, NULL);
-
-            --sequence->time;
         }
 
-        if (sequence->time >= 450)
+        if (sequence->state >= 50 && (!(game_state->flags & GF_LOST_MAP) || sequence->time >= 139))
             game_state->flags |= GF_END;
 
         break;
@@ -1136,7 +1185,7 @@ static void draw_game_state() {
     VideoCamera* camera = &video_state->camera;
     if (player != NULL) {
         const GameActor* pawn = get_actor(player->actor);
-        if (pawn != NULL) {
+        if (pawn != NULL && pawn->type == ACT_PLAYER) {
             camera->pos = Vclamp(Vadd(get_interp(pawn), (FVec2){interp_state->players[player->id].current, Fx0}),
                 Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
         }
@@ -1241,8 +1290,8 @@ static void draw_game_state() {
         batch_string("hud", 16.f, fmt("%i", game_state->clock));
     }
 
-    const GameSequence* sequence = &game_state->sequence;
-    if (sequence->type == GS_LOSE && sequence->time > 0) {
+    const GameSequence* sequence = get_sequence();
+    if (sequence->type == GS_LOSE && sequence->time >= 211) {
         batch_pos(B_F3_HALF_SCREEN);
         batch_align(B_ALIGN_CENTER);
         batch_string("hud", 16.f, "GAME OVER");
@@ -1278,8 +1327,19 @@ GameState* gamestate() {
     return game_state;
 }
 
+GameSequence* get_sequence() {
+    return &game_state->sequence;
+}
+
+void set_sequence(GameSequenceType type, const GamePlayer* player, Sint16 state) {
+    game_state->sequence.type = type;
+    game_state->sequence.activator = (player == NULL) ? NULL_PLAYER : player->id;
+    game_state->sequence.state = state;
+    game_state->sequence.time = 0;
+}
+
 Bool in_blocking_sequence() {
-    switch (game_state->sequence.type) {
+    switch (get_sequence()->type) {
     default:
         return FALSE;
     case GS_LOSE:
@@ -1330,7 +1390,7 @@ GamePlayer* get_player(PlayerID pid) {
 }
 
 GameActor* respawn_player(GamePlayer* player) {
-    if (player == NULL || player->lives < 0)
+    if (player == NULL || player->lives < 0 || in_blocking_sequence())
         return NULL;
 
     const GameActor* spawn = get_actor(game_state->checkpoint);
@@ -1360,6 +1420,16 @@ GameActor* respawn_player(GamePlayer* player) {
     GameActor* pawn = create_actor(ACT_PLAYER, spos);
     if (pawn == NULL)
         return NULL;
+
+    GameActor* old_pawn = get_actor(player->actor);
+    if (old_pawn != NULL) {
+        if (old_pawn->type == ACT_PLAYER_DEAD) {
+            // TODO: flash
+            play_state_sound("respawn", PLAY_POS, A_ACTOR(pawn));
+        }
+
+        FLAG_ON(old_pawn, FLG_DESTROY);
+    }
 
     pawn->player = player->id;
     FLAG_ON(pawn, spawn->flags & FLG_X_FLIP);
@@ -1399,7 +1469,14 @@ void set_player_track(GamePlayer* player, Uint8 track) {
 Bool all_players_dead() {
     for (PlayerID i = 0; i < game_context.num_players; i++) {
         const GamePlayer* player = get_player(i);
-        if (player != NULL && (player->lives >= 0 || get_actor(player->actor) != NULL))
+        if (player == NULL)
+            continue;
+
+        if (player->lives >= 0)
+            return FALSE;
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn != NULL && pawn->type == ACT_PLAYER)
             return FALSE;
     }
 
@@ -1423,13 +1500,11 @@ void win_player(GamePlayer* player) {
             FLAG_ON(pawn, FLG_DESTROY);
     }
 
-    game_state->sequence.type = GS_WIN;
-    game_state->sequence.time = 0;
-    game_state->sequence.activator = player->id;
+    set_sequence(GS_WIN, player, 0);
 
     set_view_player(player);
     stop_state_track(MAX_STATE_TRACKS);
-    play_state_track(STS_FANFARE, (game_state->flags & GF_LOST) ? "smw/bonus_clear" : "smw/castle_clear", 0);
+    play_state_track(STS_FANFARE, (game_state->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", 0);
 }
 
 // ======

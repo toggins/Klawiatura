@@ -58,10 +58,9 @@ enum {
 
     GF_HURRY = 1 << 2, // Time <= 100
 
-    GF_HARDCORE = 1 << 3, // Hardcore World level
-    GF_FUNNY = 1 << 4,    // Funny Tanks? level
-    GF_LOST = 1 << 5,     // Lost Map level
-    GF_AMBUSH = 1 << 6,   // Ambush level
+    GF_HARDCORE = 1 << 3,    // Hardcore World level
+    GF_LOST_MAP = 1 << 4,    // Lost Map level
+    GF_FUNNY_TANKS = 1 << 5, // Funny Tanks? level
 };
 
 typedef Uint8 GameSequenceType;
@@ -222,6 +221,13 @@ typedef struct {
 } GameContext;
 
 typedef struct {
+    GameSequenceType type;
+    PlayerID activator;
+    Uint16 time;
+    Sint16 state;
+} GameSequence;
+
+typedef struct {
     PlayerID id;
     GameInput input, last_input;
 
@@ -246,12 +252,6 @@ typedef struct {
 #define ALL_PRESSED(player, inp) (ALL_INPUT(player, inp) && !ALL_LAST_INPUT(player, inp))
 #define ANY_RELEASED(player, inp) (!ANY_INPUT(player, inp) && ANY_LAST_INPUT(player, inp))
 #define ALL_RELEASED(player, inp) (!ALL_INPUT(player, inp) && ALL_LAST_INPUT(player, inp))
-
-typedef struct {
-    GameSequenceType type;
-    PlayerID activator;
-    Uint16 time;
-} GameSequence;
 
 #define VAL(actor, val) ((actor)->values[VAL_##val])
 #define VAL_TICK(actor, val)                                                                                           \
@@ -321,7 +321,7 @@ typedef struct {
     ActorID live_actors, next_actor;
     ActorID grid[GRID_SIZE];
 
-    Sint32 clock;
+    Sint16 clock;
     Uint64 seed;
     Uint64 time;
 
@@ -407,6 +407,8 @@ GameState* gamestate();
 PlayerID localplayer(), viewplayer();
 void set_view_player(const GamePlayer*);
 
+GameSequence* get_sequence();
+void set_sequence(GameSequenceType, const GamePlayer*, Sint16 state);
 Bool in_blocking_sequence();
 
 GamePlayer* get_player(PlayerID);

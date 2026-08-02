@@ -45,8 +45,7 @@ static void tick(GameActor* actor) {
         return;
     }
 
-    const GameState* game_state = gamestate();
-    if (game_state->sequence.type == GS_WIN)
+    if (get_sequence()->type == GS_WIN)
         return;
 
     move_actor(actor, Vadd(actor->pos, actor->vel));
@@ -126,7 +125,7 @@ static void create_mark(GameActor* actor) {
 static void collide_mark(GameActor* actor, GameActor* from) {
     (void)actor;
 
-    if (from->type != ACT_PLAYER || !TOUCHING(from, TOUCH_BOTTOM) || gamestate()->sequence.type == GS_WIN)
+    if (from->type != ACT_PLAYER || !TOUCHING(from, TOUCH_BOTTOM) || get_sequence()->type == GS_WIN)
         return;
 
     GamePlayer* player = get_player(from->player);

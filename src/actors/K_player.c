@@ -36,7 +36,7 @@ static PlayerFrame get_player_frame(const GameActor* actor) {
 }
 
 void kill_player(GameActor* actor) {
-    if (actor == NULL)
+    if (actor == NULL || actor->type != ACT_PLAYER)
         return;
 
     GameActor* dead = create_actor(ACT_PLAYER_DEAD, actor->pos);
@@ -50,9 +50,28 @@ void kill_player(GameActor* actor) {
         if (gamecontext()->num_players > 1)
             --player->lives;
         player->powerup = POW_NONE;
+        player->actor = dead->id;
     }
 
     FLAG_ON(actor, FLG_DESTROY);
+
+    const GameState* game_state = gamestate();
+    if (in_blocking_sequence() || gamecontext()->num_players <= 1 || all_players_dead() || game_state->clock == 0) {
+        set_sequence(GS_LOSE, player, 0);
+    } else {
+        // !!! CLIENT-SIDE !!!
+        if (dead->player == viewplayer()) {
+            if (game_state->flags & GF_LOST_MAP)
+                play_state_track(STS_FANFARE, "smw/lose2", 0);
+            else if (game_state->flags & GF_HARDCORE)
+                play_state_track(STS_FANFARE, "smw/lose_hardcore", 0);
+            else
+                play_state_track(STS_FANFARE, "smw/lose", 0);
+        } else {
+            play_state_sound((player == NULL || player->lives >= 0) ? "lose" : "dead", PLAY_POS, A_ACTOR(dead));
+        }
+        // !!! CLIENT-SIDE !!!
+    }
 }
 
 /* ============
@@ -103,8 +122,23 @@ static void load() {
                 load_sprite(get_character_sprite(game_context->players[i].character, j, k), AKL_NEVER);
     }
 
+    load_sprite_num("ui/coins/%u", 3, AKL_NEVER);
+    load_font("hud", AKL_NEVER);
     load_sound("jump", AKL_NEVER);
     load_sound("swim", AKL_NEVER);
+
+    if (gamestate()->clock >= 0) {
+        load_sound("hurry", AKL_NEVER);
+        load_sound("tick", AKL_NEVER);
+    }
+
+    if (game_context->num_players > 1) {
+        load_sound("lose", AKL_NEVER);
+        load_sound("dead", AKL_NEVER);
+        load_sound("respawn", AKL_NEVER);
+    }
+
+    load_track((gamestate()->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", AKL_NEVER);
     load_actor(ACT_PLAYER_DEAD);
     load_actor(ACT_WATER_SPLASH);
     load_actor(ACT_BUBBLE);
@@ -239,7 +273,7 @@ static void tick(GameActor* actor) {
         goto t_skip_physics;
     }
 
-    if (game_state->sequence.type == GS_WIN) {
+    if (get_sequence()->type == GS_WIN) {
         actor->vel.x = 155648;
         FLAG_OFF(actor, FLG_X_FLIP | FLG_PLAYER_JUMP | FLG_PLAYER_DUCK);
     }
@@ -619,7 +653,14 @@ const ActorTable TAB_PLAYER_EFFECT = {
    =========== */
 
 static void load_dead() {
-    load_track("smw/lose", AKL_NEVER);
+    const GameFlags flags = gamestate()->flags;
+    if (flags & GF_LOST_MAP)
+        load_track("smw/lose2", AKL_NEVER);
+    else if (flags & GF_HARDCORE)
+        load_track("smw/lose_hardcore", AKL_NEVER);
+    else
+        load_track("smw/lose", AKL_NEVER);
+
     load_track("smb/game_over", AKL_NEVER);
 }
 
@@ -628,66 +669,21 @@ static void tick_dead(GameActor* actor) {
     default:
         break;
 
-    case 1: {
-        // !!! CLIENT-SIDE !!!
-        if (actor->player == viewplayer())
-            play_state_track(STS_FANFARE, "smw/lose", 0);
-        // !!! CLIENT-SIDE !!!
-
-        GameState* game_state = gamestate();
-        GameSequence* sequence = &game_state->sequence;
-        if (sequence->type == GS_NONE && gamecontext()->num_players > 1 && !all_players_dead()
-            && game_state->clock != 0)
-        {
-            break;
-        }
-
-        stop_state_track(STS_MAIN);
-        stop_state_track(STS_POWER);
-
-        sequence->type = GS_LOSE;
-        sequence->time = 0;
-        sequence->activator = actor->player;
-
-        break;
-    }
-
     case 25: {
         actor->vel.y = Int2Fx(-10);
         break;
     }
 
     case 201: {
-        GamePlayer* player = get_player(actor->player);
-
-        GameState* game_state = gamestate();
-        if (game_state->sequence.type == GS_LOSE) {
-            if (gamecontext()->num_players <= 1 && player != NULL)
-                --player->lives;
-
-            if (!all_players_dead())
-                game_state->flags |= GF_END;
-
-            break;
-        }
-
-        GameActor* pawn = respawn_player(player);
-        if (pawn != NULL)
-            FLAG_ON(actor, FLG_DESTROY);
+        if (!in_blocking_sequence() && gamecontext()->num_players > 1 && !all_players_dead() && gamestate()->clock != 0)
+            respawn_player(get_player(actor->player));
 
         break;
     }
 
-    case 210: {
-        if (all_players_dead()) {
-            GameSequence* sequence = &gamestate()->sequence;
-            sequence->type = GS_LOSE;
-            sequence->time = 1;
-            sequence->activator = actor->player;
-        }
-
+    case 211: {
         FLAG_ON(actor, FLG_DESTROY);
-        break;
+        return;
     }
     }
 
@@ -708,6 +704,7 @@ static void draw_dead(const GameActor* actor) {
 
 const ActorTable TAB_PLAYER_DEAD = {
     .load = load_dead,
+    .cleanup = cleanup,
     .tick = tick_dead,
     .draw = draw_dead,
 };

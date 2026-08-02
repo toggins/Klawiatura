@@ -5,7 +5,8 @@
     },
     "size": [7500, 1440],
     "bounds": [0, 0, 7500, 480],
-    "time": 101,
+    "time": 360,
+    "lost_map": false,
     "backdrops": [
         {
             "pos": [0, 0, 200],
