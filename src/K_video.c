@@ -73,7 +73,6 @@ typedef struct {
     float stencil[4], alpha_test;
 
     GLuint vao, vbo;
-    size_t vertex_count, vertex_capacity;
     Vertex* vertices;
 } VertexBatch;
 
@@ -184,14 +183,12 @@ vi_bypass:
     glGenVertexArrays(1, &batch.vao);
     glGenBuffers(1, &batch.vbo);
 
-    batch.vertex_count = 0;
-    batch.vertex_capacity = 3;
-    batch.vertices = SDL_calloc(batch.vertex_capacity, sizeof(Vertex));
+    batch.vertices = MakeTinyDPro(3, sizeof(Vertex));
     EXPECT(batch.vertices, "Failed to allocate batch vertices");
 
     glBindVertexArray(batch.vao);
     glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_capacity), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * TinyDCapacity(batch.vertices)), NULL, GL_DYNAMIC_DRAW);
 
     // NOLINTBEGIN(performance-no-int-to-ptr)
     glEnableVertexAttribArray(VATT_POSITION);
@@ -289,7 +286,7 @@ vi_bypass:
 void video_teardown() {
     glDeleteVertexArrays(1, &batch.vao);
     glDeleteBuffers(1, &batch.vbo);
-    SDL_free(batch.vertices);
+    FreeTinyD(batch.vertices);
 
     glDeleteTextures(1, &blank_texture);
     FreeTinyMap(&textures);
@@ -1505,35 +1502,33 @@ void batch_primitive_surface(Surface* surface) {
 
 /// Adds a vertex to the batch.
 void batch_vertex(const float pos[3], const Uint8 color[4], const float uv[2]) {
-    if (batch.vertex_count >= batch.vertex_capacity) {
+    if (TinyDLength(batch.vertices) >= TinyDCapacity(batch.vertices)) {
         submit_batch();
 
-        const size_t new_size = batch.vertex_capacity * 2;
-        EXPECT(new_size >= batch.vertex_capacity, "Capacity overflow in vertex batch");
-        batch.vertices = SDL_realloc(batch.vertices, new_size * sizeof(Vertex));
-        EXPECT(batch.vertices, "Out of memory for vertex batch");
-        batch.vertex_capacity = new_size;
+        batch.vertices = TinyDGrow(batch.vertices);
 
         glBindVertexArray(batch.vao);
         glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
-        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_capacity), NULL, GL_DYNAMIC_DRAW);
+        glBufferData(
+            GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Vertex) * TinyDCapacity(batch.vertices)), NULL, GL_DYNAMIC_DRAW);
     }
 
-    batch.vertices[batch.vertex_count++] = (Vertex){
-        .position = {pos[0], pos[1], pos[2]},
-        .color = {color[0], color[1], color[2], color[3]},
-        .uv = {uv[0], uv[1]},
-    };
+    batch.vertices = TinyDPush(batch.vertices, &(Vertex){
+                                                   .position = {pos[0], pos[1], pos[2]},
+                                                   .color = {color[0], color[1], color[2], color[3]},
+                                                   .uv = {uv[0], uv[1]},
+    });
 }
 
 /// Dumps the vertex batch on your screen.
 void submit_batch() {
-    if (batch.vertex_count <= 0)
+    const size_t vertex_count = TinyDLength(batch.vertices);
+    if (vertex_count <= 0)
         return;
 
     glBindVertexArray(batch.vao);
     glBindBuffer(GL_ARRAY_BUFFER, batch.vbo);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(Vertex) * batch.vertex_count), batch.vertices);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)(sizeof(Vertex) * vertex_count), batch.vertices);
 
     // Apply texture
     glActiveTexture(GL_TEXTURE0);
@@ -1549,8 +1544,8 @@ void submit_batch() {
 
     apply_batch();
 
-    glDrawArrays(GL_TRIANGLES, 0, (GLsizei)batch.vertex_count);
-    batch.vertex_count = 0;
+    glDrawArrays(GL_TRIANGLES, 0, (GLsizei)vertex_count);
+    batch.vertices = TinyDShrink(batch.vertices, 0);
 }
 
 // ========
