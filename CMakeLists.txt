@@ -27,7 +27,7 @@ set(FETCHCONTENT_QUIET FALSE)
 include(CheckIPOSupported)
 check_ipo_supported(RESULT IS_IPO_SUPPORTED)
 
-# SDL3 (3.4.10)
+# SDL3 (3.4.12)
 set(SDL_EMSCRIPTEN_PERSISTENT_PATH /storage CACHE INTERNAL "")
 set(SDL_SHARED OFF CACHE INTERNAL "")
 set(SDL_STATIC ON CACHE INTERNAL "")
@@ -87,7 +87,7 @@ list(APPEND LIBS SDL3_mixer::SDL3_mixer-static)
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG 58b39858157965a8fda9dd641ccad9dc8b25527a
+    GIT_TAG 92580540a27913da37a34cfcc006f973d471c081
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
 
@@ -144,7 +144,7 @@ set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
 
 FetchContent_Declare(S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
-    GIT_TAG c1a32dca1eba169dbfce8cfa62c63daaeec8b289
+    GIT_TAG 3a364e100c68211ddab6691a04689eea2aa268fd
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(S_tructures)
 
