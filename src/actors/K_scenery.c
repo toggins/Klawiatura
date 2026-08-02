@@ -12,7 +12,7 @@ static void load_bush() {
 }
 
 static void create_bush(GameActor* actor) {
-    actor->depth = Int2Fx(25);
+    actor->depth = Int2Fx(31);
 }
 
 static void draw_bush(const GameActor* actor) {
@@ -35,7 +35,7 @@ static void load_cloud() {
 }
 
 static void create_cloud(GameActor* actor) {
-    actor->depth = Int2Fx(26);
+    actor->depth = Int2Fx(33);
 }
 
 static void draw_cloud(const GameActor* actor) {

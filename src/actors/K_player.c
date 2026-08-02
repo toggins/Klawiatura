@@ -143,7 +143,7 @@ static void tick(GameActor* actor) {
 
     const GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
     if (warp != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT)) {
-        actor->depth = Int2Fx(21);
+        actor->depth = Int2Fx(22);
         actor->vel.x = actor->vel.y = Fx0;
         actor->touch = TOUCH_BOTTOM;
         FLAG_OFF(actor, FLG_PLAYER_DUCK);

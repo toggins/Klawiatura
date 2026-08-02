@@ -227,7 +227,7 @@
         },
         {
             "sprite": "tiles/pipe/green/v0",
-            "pos": [800, 352, 20]
+            "pos": [800, 352, 21]
         },
         {
             "sprite": "tiles/grass/0",
@@ -639,19 +639,19 @@
         },
         {
             "sprite": "tiles/pipe/green/v0",
-            "pos": [6528, 320, 20]
+            "pos": [6528, 320, 21]
         },
         {
             "sprite": "tiles/pipe/green/v1",
-            "pos": [6528, 384, 20]
+            "pos": [6528, 384, 21]
         },
         {
             "sprite": "markers/goal/mark",
-            "pos": [7040, 384, 22]
+            "pos": [7040, 384, 23]
         },
         {
             "sprite": "markers/goal",
-            "pos": [7200, 128, 22]
+            "pos": [7200, 128, 23]
         }
     ],
     "actors": [
