@@ -1290,6 +1290,15 @@ static void draw_game_state() {
         batch_string("hud", 16.f, fmt("%i", game_state->clock));
     }
 
+    if (view_player != local_player) {
+        const char* name = get_peer_name(player_to_peer(view_player));
+        if (name != NULL) {
+            batch_pos(B_F3_XY(32.f, 64.f));
+            batch_align(B_ALIGN_TOP_LEFT);
+            batch_string("main", 24.f, fmt("%s: %s", LFMT("spectating"), name));
+        }
+    }
+
     const GameSequence* sequence = get_sequence();
     if (sequence->type == GS_LOSE && sequence->time >= 211) {
         batch_pos(B_F3_HALF_SCREEN);

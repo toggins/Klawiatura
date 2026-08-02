@@ -191,6 +191,7 @@
     "cancel": "Cancel",
     "continue": "Continue",
     "paused": "Paused",
+    "spectating": "Spectating",
 
     "chat_connected": "Connected!",
     "chat_joined": "{0} joined",
