@@ -443,7 +443,7 @@ void set_shader(ShaderType idx) {
     submit_batch();
     current_shader = new_shader;
     glUseProgram(current_shader->shader);
-    set_int_uniform(UNI_TEXTURE, GL_TEXTURE0);
+    set_int_uniform(UNI_TEXTURE, 0);
 }
 
 void set_int_uniform(UniformType idx, int x) {
