@@ -190,6 +190,8 @@ void jump_to_world(const WorldContext* wctx, Bool as_host) {
         return;
     }
 
+    start_world(wctx);
+
     const char* error = NULL;
     yyjson_doc* json = load_world_json(world->name, &error);
     ASSUME(json, "Failed to load world \"%s\": %s", world->name, error);
