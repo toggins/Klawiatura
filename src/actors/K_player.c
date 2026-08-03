@@ -476,6 +476,8 @@ static void tick(GameActor* actor) {
     }
 
 t_skip_physics:
+    (void)0;
+
     const Bool warping = get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
     if (VAL(actor, PLAYER_ANIMATION) == PF_GROW
         && (((player->powerup == POW_NONE || player->powerup == POW_SUPER_MUSHROOM)
