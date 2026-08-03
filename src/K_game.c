@@ -1249,7 +1249,7 @@ static void draw_game_state() {
     batch_pos(B_F3_XY(235.f, 34.f));
     batch_align(B_ALIGN_TOP_LEFT);
     batch_string("hud", 16.f, " ×");
-    batch_pos(B_F3_XY(285.f, 34.f));
+    batch_pos(B_F3_XY(293.f, 34.f));
     batch_align(B_ALIGN_TOP_RIGHT);
     batch_string("hud", 16.f, fmt("%u", player->coins));
 
@@ -1712,6 +1712,30 @@ Bool in_any_view(const FVec2 pos, Fixed edge, Bool ignore_top) {
     }
 
     return FALSE;
+}
+
+Bool below_nearest_bounds(const FVec2 pos, Fixed edge) {
+    FRect bounds = {0};
+    Fixed score = 0x7FFFFFFF;
+    Bool found = FALSE;
+
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const Fixed dist = Vdist(pos, (FVec2){
+                                          Fclamp(pos.x, player->bounds.start.x, player->bounds.end.x),
+                                          Fclamp(pos.y, player->bounds.start.y, player->bounds.end.y),
+                                      });
+        if (dist < score) {
+            bounds = player->bounds;
+            score = dist;
+            found = TRUE;
+        }
+    }
+
+    return found && pos.y > (bounds.end.y + edge);
 }
 
 void collide_actor(GameActor* actor) {

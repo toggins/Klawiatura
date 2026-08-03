@@ -104,10 +104,9 @@ enum {
     ACT_COIN_POP,
     ACT_WATER_SPLASH,
     ACT_BUBBLE,
-    ACT_ITEM_BLOCK,
-    ACT_BRICK_BLOCK,
-    ACT_COIN_BLOCK,
+    ACT_BLOCK,
     ACT_BLOCK_BUMP,
+    ACT_BRICK_SHARD,
 
     ACT_DUMMY = 254,
 
@@ -423,8 +422,8 @@ void replace_actors(ActorType, ActorType);
 
 void move_actor(GameActor*, const FVec2);
 
-Bool in_any_view(const FVec2, Fixed, Bool);
-Bool in_player_view(const GamePlayer*, const FVec2, Fixed, Bool);
+Bool in_any_view(const FVec2, Fixed, Bool), in_player_view(const GamePlayer*, const FVec2, Fixed, Bool);
+Bool below_nearest_bounds(const FVec2, Fixed);
 
 void collide_actor(GameActor*);
 Bool touching_solid(const FRect, SolidFlags);

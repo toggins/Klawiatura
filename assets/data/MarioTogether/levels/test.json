@@ -1,13 +1,12 @@
 {
     "strings": {
         "label": "$Test",
-        "track1": "nsmb_overworld",
-        "track2": "mkds_waluigi_pinball"
+        "track1": "yi/overworld",
+        "track2": "yi/athletic"
     },
     "size": [7500, 1440],
     "bounds": [0, 0, 7500, 480],
     "time": 360,
-    "lost_map": true,
     "backdrops": [
         {
             "pos": [0, 0, 200],
@@ -202,10 +201,6 @@
         {
             "sprite": "tiles/block",
             "pos": [608, 320, 20]
-        },
-        {
-            "sprite": "tiles/block",
-            "pos": [224, 256, 20]
         },
         {
             "sprite": "tiles/block",
@@ -745,8 +740,8 @@
         },
         {
             "id": 1,
-            "pos": [224, 256],
-            "scale": [393216, 65536]
+            "pos": [256, 256],
+            "scale": [327680, 65536]
         },
         {
             "id": 1,
@@ -907,6 +902,37 @@
             "id": 13,
             "pos": [7329, 384],
             "scale": [524288, 65536]
+        },
+        {
+            "id": 27,
+            "pos": [0, 256],
+            "values": [[0, 1]]
+        },
+        {
+            "id": 27,
+            "pos": [32, 256],
+            "values": [[0, 1]]
+        },
+        {
+            "id": 27,
+            "pos": [64, 256],
+            "values": [
+                [0, 1],
+                [1, 24]
+            ],
+            "flags": 32
+        },
+        {
+            "id": 27,
+            "pos": [224, 256],
+            "values": [[1, 24]]
+        },
+        {
+            "id": 27,
+            "pos": [64, 96],
+            "values": [[1, 24]],
+            "flags": 64,
+            "once": true
         }
     ]
 }

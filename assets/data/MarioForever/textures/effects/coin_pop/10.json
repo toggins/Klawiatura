@@ -1,0 +1,6 @@
+{
+    "texture": "effects/coin_pop",
+    "size": [21, 28],
+    "offset": [10, 27],
+    "uvs": [31, 1, 52, 29]
+}

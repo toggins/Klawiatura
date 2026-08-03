@@ -1,0 +1,6 @@
+{
+    "texture": "effects/brick_shard",
+    "size": [16, 16],
+    "offset": [8, 8],
+    "uvs": [1, 17, 17, 1]
+}

@@ -1,12 +1,7 @@
-#include "K_game.h"
 #include "K_string.h"
 #include "K_video.h"
 
-enum {
-    VAL_EFFECT_FRAME,
-
-    FLG_EFFECT_END = CUSTOM_FLAG(0),
-};
+#include "actors/K_effects.h"
 
 /* ============
    WATER SPLASH
@@ -86,4 +81,37 @@ const ActorTable TAB_BUBBLE = {
     .load = load_bubble,
     .tick = tick_bubble,
     .draw = draw_bubble,
+};
+
+/* ===========
+   BRICK SHARD
+   =========== */
+
+static void load_brick_shard() {
+    load_sprite_num("effects/brick_shard/%u", 4, AKL_NEVER);
+    load_sprite_num("effects/brick_shard/gray/%u", 4, AKL_NEVER);
+}
+
+static void tick_brick_shard(GameActor* actor) {
+    VAL(actor, EFFECT_FRAME) += 7;
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    actor->vel.y += 26214;
+
+    if (below_nearest_bounds(actor->pos, Int2Fx(32)))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_brick_shard(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor,
+        fmt(ANY_FLAG(actor, FLG_EFFECT_ALT) ? "effects/brick_shard/gray/%i" : "effects/brick_shard/%i",
+            (VAL(actor, EFFECT_FRAME) / 25) % 4),
+        AKL_NEVER);
+}
+
+const ActorTable TAB_BRICK_SHARD = {
+    .load = load_brick_shard,
+    .tick = tick_brick_shard,
+    .draw = draw_brick_shard,
 };

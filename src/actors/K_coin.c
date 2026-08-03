@@ -4,6 +4,26 @@
 
 #include "actors/K_points.h"
 
+enum {
+    VAL_COIN_POP_Y,
+    VAL_COIN_POP_FRAME,
+
+    FLG_COIN_POP_START = CUSTOM_FLAG(0),
+};
+
+static void give_coin(GamePlayer* player) {
+    if (player == NULL)
+        return;
+
+    ++player->coins;
+    player->score += 200;
+
+    while (player->coins >= 100) {
+        give_points(NULL, player, -1);
+        player->coins -= 100;
+    }
+}
+
 /* ====
    COIN
    ==== */
@@ -29,22 +49,31 @@ static void draw(const GameActor* actor) {
 }
 
 static void collide(GameActor* actor, GameActor* other) {
-    if (other->type != ACT_PLAYER && other->type != ACT_PLAYER_EFFECT)
-        return;
+    switch (other->type) {
+    default:
+        break;
 
-    GamePlayer* player = get_player(other->player);
-    if (player != NULL) {
-        ++player->coins;
-        player->score += 200;
+    case ACT_PLAYER:
+    case ACT_PLAYER_EFFECT: {
+        give_coin(get_player(other->player));
+        FLAG_ON(actor, FLG_DESTROY);
 
-        while (player->coins >= 100) {
-            give_points(NULL, player, -1);
-            player->coins -= 100;
-        }
+        play_state_sound("coin", PLAY_POS, A_ACTOR(actor));
+
+        break;
     }
 
-    FLAG_ON(actor, FLG_DESTROY);
-    play_state_sound("coin", PLAY_POS, A_ACTOR(actor));
+    case ACT_BLOCK_BUMP: {
+        GameActor* pop = create_actor(ACT_COIN_POP, Vadd(actor->pos, (FVec2){Int2Fx(15), Int2Fx(29)}));
+        if (pop == NULL)
+            break;
+
+        pop->player = other->player;
+        FLAG_ON(actor, FLG_DESTROY);
+
+        break;
+    }
+    }
 }
 
 const ActorTable TAB_COIN = {
@@ -52,4 +81,61 @@ const ActorTable TAB_COIN = {
     .create = create,
     .draw = draw,
     .collide = collide,
+};
+
+/* ===========
+   POPPED COIN
+   =========== */
+
+static void load_pop() {
+    load_sprite_num("effects/coin_pop/%u", 21, AKL_NEVER);
+    load_sound("coin", AKL_NEVER);
+    load_actor(ACT_POINTS);
+}
+
+static void create_pop(GameActor* actor) {
+    VAL(actor, COIN_POP_Y) = actor->pos.y;
+
+    play_state_sound("coin", PLAY_POS, A_ACTOR(actor));
+}
+
+static void tick_pop(GameActor* actor) {
+    if (!ANY_FLAG(actor, FLG_COIN_POP_START)) {
+        give_coin(get_player(actor->player));
+        FLAG_ON(actor, FLG_COIN_POP_START);
+    }
+
+    if (actor->pos.y > (VAL(actor, COIN_POP_Y) - Int2Fx(30)))
+        actor->vel.y = -278528;
+    else if (actor->pos.y > (VAL(actor, COIN_POP_Y) - Int2Fx(41)))
+        actor->vel.y = -212992;
+    else if (actor->pos.y > (VAL(actor, COIN_POP_Y) - Int2Fx(52)))
+        actor->vel.y = -106496;
+    else
+        actor->vel.y = Fx0;
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+
+    VAL(actor, COIN_POP_FRAME) += 70;
+    if (VAL(actor, COIN_POP_FRAME) >= 2100) {
+        GameActor* points = create_actor(ACT_POINTS, Vadd(actor->pos, (FVec2){Fx0, Int2Fx(22)}));
+        if (points != NULL) {
+            points->player = actor->player;
+            VAL(points, POINTS) = 200;
+        }
+
+        FLAG_ON(actor, FLG_DESTROY);
+    }
+}
+
+static void draw_pop(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("effects/coin_pop/%i", VAL(actor, COIN_POP_FRAME) / 100), AKL_NEVER);
+}
+
+const ActorTable TAB_COIN_POP = {
+    .load = load_pop,
+    .create = create_pop,
+    .tick = tick_pop,
+    .draw = draw_pop,
 };
