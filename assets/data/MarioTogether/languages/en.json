@@ -184,14 +184,18 @@
     "msg_to_bowser_the_devastator": "Get ready to face Bowser the Devastator!",
     "msg_to_8": "You found a secret warp to World 8!",
 
-    "credits": "DISCLAIMER:  This is a free, open-source project not created for any sort of profit. We do not condone any commercial use of this project. Mario and related characters (c) Nintendo.      CREDITS:  [MARIO FOREVER] Michal Gdaniec, Maurycy Zarzycki, Lukham    [PROGRAMMING] toggins, nonk    [BETA TESTING] Collin, CST1229, Jaydex, LooPeR231, Mightcer, miyameon, Nerton17, ReflexGURU, SerafimGWS, Usered    [SPECIAL THANKS] HeatXD, Xykijun      For an even better experience, play Mario Forever: Community Edition at mfce.rnx.su!",
+    "hud_world": "World",
+    "hud_time": "Time",
+    "hud_game_over": "Game Over",
+    "hud_spectating": "Spectating",
+
+    "credits": "DISCLAIMER:  This is a free, open-source project not created for any sort of profit. We do not condone any commercial use of this project. Mario and related characters (c) Nintendo.      CREDITS:  [MARIO FOREVER] Michal Gdaniec, Maurycy Zarzycki, Lukham    [PROGRAMMING] toggins, nonk    [BETA TESTING] Collin, CST1229, Jaydex, LooPeR231, Mightcer, miyameon, Nerton17, ReflexGURU, SerafimGWS, Usered    [SPECIAL THANKS] HeatXD, Xykijun      Also check out Mario Forever: Community Edition at mfce.rnx.su!",
     "back": "Back",
     "submit": "Submit",
     "close": "Close",
     "cancel": "Cancel",
     "continue": "Continue",
     "paused": "Paused",
-    "spectating": "Spectating",
 
     "chat_connected": "Connected!",
     "chat_joined": "{0} joined",

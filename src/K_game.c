@@ -1258,7 +1258,7 @@ static void draw_game_state() {
         case '@': {
             batch_pos(B_F3_XY(432.f, 16.f));
             batch_align(B_ALIGN(FA_CENTER, FA_TOP));
-            batch_string("hud", 16.f, "WORLD");
+            batch_string("hud", 16.f, LFMT("hud_world"));
             batch_pos(B_F3_XY(432.f, 34.f));
             batch_string("hud", 16.f, LFMT(label + 1));
             break;
@@ -1283,7 +1283,7 @@ static void draw_game_state() {
         }
 
         batch_align(B_ALIGN(FA_RIGHT, FA_MIDDLE));
-        batch_string("hud", 16.f, "TIME");
+        batch_string("hud", 16.f, LFMT("hud_time"));
         batch_pos(B_F3_XY(SCREEN_WIDTH - 32.f, 34.f));
         batch_scale(B_F2_1);
         batch_align(B_ALIGN_TOP_RIGHT);
@@ -1295,7 +1295,7 @@ static void draw_game_state() {
         if (name != NULL) {
             batch_pos(B_F3_XY(32.f, 64.f));
             batch_align(B_ALIGN_TOP_LEFT);
-            batch_string("main", 24.f, fmt("%s: %s", LFMT("spectating"), name));
+            batch_string("main", 24.f, fmt("%s: %s", LFMT("hud_spectating"), name));
         }
     }
 
@@ -1303,7 +1303,7 @@ static void draw_game_state() {
     if (sequence->type == GS_LOSE && sequence->time >= 211) {
         batch_pos(B_F3_HALF_SCREEN);
         batch_align(B_ALIGN_CENTER);
-        batch_string("hud", 16.f, "GAME OVER");
+        batch_string("hud", 16.f, LFMT("hud_game_over"));
     }
 
     batch_test_depth(TRUE);
