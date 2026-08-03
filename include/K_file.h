@@ -16,7 +16,7 @@ void open_user_folder();
 
 yyjson_doc* read_json(const char*, size_t, const char**);
 
-SDL_IOStream* stream_base_file(const char*);
+const char* get_base_path();
 
 void* load_data_file(const char*, size_t*);
 SDL_IOStream* stream_data_file(const char*, const char*);
