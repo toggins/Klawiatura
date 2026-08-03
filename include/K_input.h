@@ -22,8 +22,10 @@ enum {
     KB_RUN,
     KB_FIRE,
 
+    KB_INTERFACE,
+
     // Utility
-    KB_CHAT,
+    KB_CHAT = KB_INTERFACE,
     KB_RECORD_REPLAY,
 
     // Internal

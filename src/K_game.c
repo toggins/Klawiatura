@@ -1592,6 +1592,7 @@ ca_found:
 
     actor->platform = NULL_ACTOR;
     FLAG_ON(actor, FLG_VISIBLE);
+    TOUCH_ON(actor, TOUCH_BOTTOM);
 
     ACTOR_CALL(actor, create);
     skip_interp(actor);

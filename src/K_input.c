@@ -6,7 +6,6 @@
 #include "K_input.h"
 #include "K_locale.h"
 #include "K_log.h"
-#include "K_string.h"
 #include "K_video.h"
 
 #define KEY(x) .key = SDL_SCANCODE_##x
@@ -255,7 +254,15 @@ void input_axis(SDL_GamepadAxisEvent event) {
 }
 
 void input_wipeout() {
-    input_state.then = input_state.now = input_state.incoming = input_state.repeating = 0;
+    KeybindState mask = 0;
+    for (Keybind i = KB_INTERFACE; i < (Keybind)KB_SIZE; i++)
+        mask |= 1 << i;
+    mask = ~mask;
+
+    input_state.then &= mask;
+    input_state.now &= mask;
+    input_state.incoming &= mask;
+    input_state.repeating &= mask;
 
     if (!typing_in_chat())
         stop_typing();
