@@ -155,8 +155,8 @@ yyjson_doc* read_json(const char* str, size_t len, const char** err) {
     return json;
 }
 
-const char* get_base_path() {
-    return base_path;
+SDL_IOStream* stream_base_file(const char* filename) {
+    return stream_file(base_path, filename, FALSE, NULL);
 }
 
 void* load_data_file(const char* filename, size_t* size) {

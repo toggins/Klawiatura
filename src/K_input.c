@@ -68,7 +68,7 @@ static struct {
 };
 
 void input_init() {
-    if (SDL_AddGamepadMappingsFromFile(fmt("%sgamecontrollerdb.txt", get_base_path())) < 0)
+    if (SDL_AddGamepadMappingsFromIO(stream_base_file("gamecontrollerdb.txt"), TRUE) < 0)
         WARN("Failed to load gamecontrollerdb.txt: %s", SDL_GetError());
 }
 

@@ -36,10 +36,6 @@ static MIX_Mixer* speaker = NULL;
 static MIX_Group *sound_group = NULL, *system_group = NULL, *music_group = NULL;
 static SDL_PropertiesID loop_properties = 0;
 
-#ifndef SDL_PLATFORM_EMSCRIPTEN
-static SDL_PropertiesID soundfont_properties = 0;
-#endif
-
 static float master_volume = 0.5f, sound_volume = 1.f, music_volume = 1.f;
 static float mixer_volume = 1.0f;
 
@@ -118,16 +114,6 @@ void audio_init() {
     loop_properties = SDL_CreateProperties();
     EXPECT(loop_properties, "Failed to create loop properties: %s", SDL_GetError());
     SDL_SetNumberProperty(loop_properties, MIX_PROP_PLAY_LOOPS_NUMBER, -1);
-
-#ifdef SDL_PLATFORM_EMSCRIPTEN
-    SDL_setenv_unsafe("TIMIDITY_SOUNDFONT", fmt("%ssoundfont.sf2", get_base_path()), 1);
-#else
-    soundfont_properties = SDL_CreateProperties();
-    EXPECT(soundfont_properties, "Failed to create soundfont properties: %s", SDL_GetError());
-    SDL_SetFloatProperty(soundfont_properties, "synth.gain", 0.5f);
-    SDL_SetNumberProperty(soundfont_properties, "synth.reverb.active", 0);
-    SDL_SetNumberProperty(soundfont_properties, "synth.chorus.active", 0);
-#endif
 
     for (size_t i = 0; i < MAX_GENERIC_SOUNDS; i++) {
         generic_sounds[i].channel = MIX_CreateTrack(speaker);
@@ -230,11 +216,6 @@ void audio_teardown() {
         MIX_DestroyTrack(generic_sounds[i].channel);
     for (size_t i = 0; i < MAX_GENERIC_TRACKS; i++)
         MIX_DestroyTrack(generic_tracks[i].channel);
-
-#ifndef SDL_PLATFORM_EMSCRIPTEN
-    SDL_DestroyProperties(soundfont_properties);
-#endif
-
     MIX_DestroyGroup(sound_group);
     MIX_DestroyGroup(system_group);
     MIX_DestroyGroup(music_group);
@@ -322,29 +303,8 @@ void load_track(const char* name, AssetKeepLevel keep) {
 
     Track track = {0};
 
-    SDL_PropertiesID props = SDL_CreateProperties();
-    EXPECT(props, "Failed to prepare loading track \"%s\": %s", name, SDL_GetError());
-
-    SDL_SetPointerProperty(props, MIX_PROP_AUDIO_LOAD_PREFERRED_MIXER_POINTER, speaker);
-    SDL_SetPointerProperty(
-        props, MIX_PROP_AUDIO_LOAD_IOSTREAM_POINTER, stream_data_file(fmt("tracks/%s.*", name), ".json"));
-    SDL_SetBooleanProperty(props, MIX_PROP_AUDIO_LOAD_CLOSEIO_BOOLEAN, TRUE);
-
-#ifndef SDL_PLATFORM_EMSCRIPTEN
-    SDL_SetStringProperty(
-        props, "SDL_mixer.decoder.fluidsynth.soundfont_path", fmt("%ssoundfont.sf2", get_base_path()));
-    SDL_SetNumberProperty(props, "SDL_mixer.decoder.fluidsynth.props", soundfont_properties);
-#endif
-
-    track.internal = MIX_LoadAudioWithProperties(props);
-    if (track.internal == NULL) {
-        WTF("Failed to load track \"%s\": %s", name, SDL_GetError());
-        SDL_DestroyProperties(props);
-
-        return;
-    }
-
-    SDL_DestroyProperties(props);
+    track.internal = MIX_LoadAudio_IO(speaker, stream_data_file(fmt("tracks/%s.*", name), ".json"), FALSE, TRUE);
+    ASSUME(track.internal, "Failed to load track \"%s\": %s", name, SDL_GetError());
 
     track.base.name = SDL_strdup(name);
     EXPECT(track.base.name, "Failed to allocate name for track \"%s\"", name);
