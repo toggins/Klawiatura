@@ -752,7 +752,7 @@ static void load_game_state(const GameState* gs) {
 static Uint32 check_game_state() {
     Uint32 checksum = 0;
     const Uint8* data = (Uint8*)game_state;
-    for (Uint32 i = 0; i < sizeof(*game_state); i++)
+    for (Uint64 i = 0; i < sizeof(*game_state); i++)
         checksum += data[i];
     return checksum;
 }
