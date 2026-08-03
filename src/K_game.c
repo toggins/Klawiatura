@@ -552,6 +552,13 @@ static void load_level(TinyHash key) {
 
 #undef PARSE_STRING
 
+    const char* label = level_info->strings[GSTR_LABEL];
+    if (label != NULL && label[0] != '@' && label[1] != '$') {
+        // FIXME: This only loads the sprite for the current language.
+        //        The label sprite will "disappear" when changing to another language.
+        load_sprite(LFMT(label), AKL_NEVER);
+    }
+
     jval = yyjson_obj_get(root, "warps");
     size_t narr = yyjson_arr_size(jval);
     for (GameWarpID i = 0, n = SDL_min(narr, MAX_GAME_WARPS); i < n; i++)
@@ -1251,7 +1258,7 @@ static void draw_game_state() {
         switch (label[0]) {
         default: {
             batch_pos(B_F3_XY(432.f, 16.f));
-            batch_sprite(label);
+            batch_sprite(LFMT(label));
             break;
         }
 
