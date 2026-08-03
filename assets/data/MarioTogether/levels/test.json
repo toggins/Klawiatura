@@ -1,12 +1,13 @@
 {
     "strings": {
         "label": "$Test",
-        "track1": "yi/overworld"
+        "track1": "nsmb_overworld",
+        "track2": "mkds_waluigi_pinball"
     },
     "size": [7500, 1440],
     "bounds": [0, 0, 7500, 480],
     "time": 360,
-    "lost_map": false,
+    "lost_map": true,
     "backdrops": [
         {
             "pos": [0, 0, 200],
@@ -888,7 +889,8 @@
             "pos": [832, 351],
             "values": [
                 [0, 429916160],
-                [1, 20971520]
+                [1, 20971520],
+                [5, 1]
             ]
         },
         {

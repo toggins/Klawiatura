@@ -258,9 +258,10 @@ static void tick(GameActor* actor) {
                     break;
                 }
                 actor->last_pos = actor->pos;
-                VAL(actor, PLAYER_WARP_OUT_ANGLE) = VAL(warp, WARP_OUT_ANGLE);
                 VAL(actor, PLAYER_WARP) = NULL_ACTOR;
+                VAL(actor, PLAYER_WARP_OUT_ANGLE) = VAL(warp, WARP_OUT_ANGLE);
                 FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
+                set_player_track(player, VAL(warp, WARP_TRACK));
 
                 skip_interp(actor);
                 play_state_sound("warp", PLAY_POS, A_ACTOR(actor));
