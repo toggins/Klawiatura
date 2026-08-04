@@ -782,12 +782,11 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
     while (actor != NULL) {
         actor->last_pos = actor->pos;
 
-        if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE)) {
-            if (actor->sprout > 0)
-                --actor->sprout;
-            else
-                ACTOR_CALL(actor, pre_tick);
-        }
+        if (actor->sprout > 0)
+            --actor->sprout;
+
+        if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE))
+            ACTOR_CALL(actor, pre_tick);
 
         GameActor* next = get_actor(actor->previous);
         if (ANY_FLAG(actor, FLG_DESTROY))
@@ -798,7 +797,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 #define TICK_LOOP(ticker)                                                                                              \
     actor = get_actor(game_state->live_actors);                                                                        \
     while (actor != NULL) {                                                                                            \
-        if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE) && actor->sprout <= 0)                                          \
+        if (!ANY_FLAG(actor, FLG_DESTROY | FLG_FREEZE))                                                                \
             ACTOR_CALL(actor, ticker);                                                                                 \
                                                                                                                        \
         GameActor* next = get_actor(actor->previous);                                                                  \
@@ -1763,7 +1762,7 @@ Bool below_nearest_bounds(const FVec2 pos, Fixed edge) {
 }
 
 void collide_actor(GameActor* actor) {
-    if (actor == NULL)
+    if (actor == NULL || actor->sprout > 0)
         return;
 
     const FRect abox = Radd(actor->box, actor->pos);
@@ -1779,8 +1778,11 @@ void collide_actor(GameActor* actor) {
             for (GameActor* other = get_actor(game_state->grid[cx + (cy * MAX_CELLS)]); other != NULL;
                 other = get_actor(other->previous_cell))
             {
-                if (actor == other || ANY_FLAG(other, FLG_DESTROY) || !Rcollide(abox, Radd(other->box, other->pos)))
+                if (actor == other || ANY_FLAG(other, FLG_DESTROY)
+                    || !Rcollide(abox, Radd(other->box, Vadd(other->pos, (FVec2){Fx0, Int2Fx(other->sprout)}))))
+                {
                     continue;
+                }
 
                 ACTOR_CALL(other, collide, actor);
 
@@ -1820,6 +1822,12 @@ Bool touching_solid(const FRect rect, SolidFlags types) {
 void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
     if (actor == NULL)
         return;
+
+    if (actor->sprout > 0) {
+        actor->vel.x = actor->vel.y = Fx0;
+        TOUCH_OFF(actor, TOUCH_ALL);
+        return;
+    }
 
     if (unstuck) {
         FRect abox = Radd(actor->box, actor->pos);
@@ -1888,7 +1896,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                 for (GameActor* displacer = get_actor(game_state->grid[cx + (cy * MAX_CELLS)]); displacer != NULL;
                     displacer = get_actor(displacer->previous_cell))
                 {
-                    if (actor == displacer || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
+                    if (actor == displacer || ANY_FLAG(displacer, FLG_DESTROY) || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
                         || displacer->type == ACT_SOLID_SLOPE || !Rcollide(abox, Radd(displacer->box, displacer->pos)))
                     {
                         continue;
@@ -1953,8 +1961,11 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                 for (GameActor* displacer = get_actor(game_state->grid[cx + (cy * MAX_CELLS)]); displacer != NULL;
                     displacer = get_actor(displacer->previous_cell))
                 {
-                    if (actor == displacer || !Rcollide(abox, Radd(displacer->box, displacer->pos)))
+                    if (actor == displacer || ANY_FLAG(displacer, FLG_DESTROY)
+                        || !Rcollide(abox, Radd(displacer->box, displacer->pos)))
+                    {
                         continue;
+                    }
 
                     if (displacer->type == ACT_SOLID_SLOPE) {
                         if (actor->vel.y < Fx0) {
@@ -2024,14 +2035,20 @@ void draw_actor(const GameActor* actor, const char* sprite, Bool antijitter) {
     if (actor == NULL || !ANY_FLAG(actor, FLG_VISIBLE))
         return;
 
-    const FVec2 ipos = get_interp(actor);
+    FVec2 ipos = get_interp(actor);
+    Fixed depth = actor->depth;
+    if (actor->sprout > 0) {
+        ipos.y += Int2Fx(actor->sprout);
+        depth = Fmax(depth, Int2Fx(21));
+    }
+
     if (antijitter) {
         const FVec2 cpos = videostate()->camera.pos;
         const Sint32 ax = Fx2Int(ipos.x - Ffrac(cpos.x)), ay = Fx2Int(ipos.y - Ffrac(cpos.y));
-        batch_pos(B_F3(ax, ay, Fx2Float(actor->depth)));
+        batch_pos(B_F3(ax, ay, Fx2Float(depth)));
     } else {
         const Sint32 ax = Fx2Int(ipos.x), ay = Fx2Int(ipos.y);
-        batch_pos(B_F3(ax, ay, Fx2Float(actor->depth)));
+        batch_pos(B_F3(ax, ay, Fx2Float(depth)));
     }
     batch_flip(B_B2(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
     batch_sprite(sprite);
