@@ -27,7 +27,7 @@ set(FETCHCONTENT_QUIET FALSE)
 include(CheckIPOSupported)
 check_ipo_supported(RESULT IS_IPO_SUPPORTED)
 
-# SDL3 (3.4.12)
+# SDL3 (3.4.14)
 set(SDL_EMSCRIPTEN_PERSISTENT_PATH /storage CACHE INTERNAL "")
 set(SDL_SHARED OFF CACHE INTERNAL "")
 set(SDL_STATIC ON CACHE INTERNAL "")
@@ -39,7 +39,7 @@ set(SDL_CAMERA OFF CACHE INTERNAL "")
 
 FetchContent_Declare(SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG release-3.4.12
+    GIT_TAG release-3.4.14
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(SDL3)
 
@@ -152,7 +152,7 @@ list(APPEND LIBS S_tructures)
 
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG ab6fa10c489a270e1ed13ed461aa621c4287cee5
+	GIT_TAG 5482c4990845a2e4aa6bbfcdbd47a433da4008a5
 	EXCLUDE_FROM_ALL)
 
 FetchContent_MakeAvailable(NutBlast)
@@ -164,7 +164,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG v20260726175547-675b31d
+    GIT_TAG v20260804094329-5924b5c
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(GekkoNet)
 
