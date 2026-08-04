@@ -188,9 +188,18 @@ void write_replay(Sint64 frame, const GameInput* inputs, Uint32 checksum) {
 
     const PlayerID num_players = gamecontext()->num_players;
 
-    SDL_SeekIO(replay_io,
-        replay_frames_offset + (frame * (((Sint64)num_players * (Sint64)sizeof(GameInput)) + (Sint64)sizeof(Uint32))),
-        SDL_IO_SEEK_CUR);
+    const Sint64 stride = ((Sint64)num_players * (Sint64)sizeof(GameInput)) + (Sint64)sizeof(Uint32),
+                 from_frame = SDL_TellIO(replay_io), to_frame = replay_frames_offset + (frame * stride);
+    if (from_frame < to_frame) {
+        while (SDL_TellIO(replay_io) < to_frame) {
+            // Write dummy frames
+            for (PlayerID i = 0; i < num_players; i++)
+                SDL_WriteU8(replay_io, 0);
+            SDL_WriteU32LE(replay_io, 0);
+        }
+    } else if (from_frame > to_frame) {
+        SDL_SeekIO(replay_io, replay_frames_offset + (frame * stride), SDL_IO_SEEK_SET);
+    }
 
     for (PlayerID i = 0; i < num_players; i++)
         SDL_WriteU8(replay_io, inputs[i]);
