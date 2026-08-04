@@ -159,7 +159,7 @@ static void create(GameActor* actor) {
     actor->depth = Int2Fx(20);
 }
 
-static void tick(GameActor* actor) {
+static void pre_tick(GameActor* actor) {
     if (VAL(actor, BLOCK_BUMP) > 0) {
         ++VAL(actor, BLOCK_BUMP);
         if (VAL(actor, BLOCK_BUMP)
@@ -311,7 +311,7 @@ const ActorTable TAB_BLOCK = {
     .load = load,
     .load_special = load_special,
     .create = create,
-    .tick = tick,
+    .pre_tick = pre_tick,
     .draw = draw,
     .collide = collide,
     .on_bottom = on_bottom,
