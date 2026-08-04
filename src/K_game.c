@@ -1728,8 +1728,6 @@ void push_actors(GameActor* actor) {
     }
 
     const FRect abox = Radd(actor->box, actor->pos);
-    const FVec2 acenter = Rcenter(abox);
-
     Sint32 cx1 = (abox.start.x - CELL_SIZE) / CELL_SIZE, cy1 = (abox.start.y - CELL_SIZE) / CELL_SIZE;
     Sint32 cx2 = (abox.end.x + CELL_SIZE) / CELL_SIZE, cy2 = (abox.end.y + CELL_SIZE) / CELL_SIZE;
     cx1 = SDL_clamp(cx1, 0, MAX_CELLS - 1);
@@ -1747,22 +1745,21 @@ void push_actors(GameActor* actor) {
                 if (actor == other || !TOUCHING(other, TOUCH_DISPLACEABLE) || ANY_FLAG(other, FLG_DESTROY))
                     continue;
 
-                const FRect obox = Radd(other->box, other->pos);
+                FRect obox = Radd(other->box, other->pos);
                 if (!Rcollide(abox, obox))
                     continue;
 
-                const FVec2 ocenter = Rcenter(obox);
                 FVec2 push = other->pos;
-                if (actor->pos.x != actor->last_pos.x) {
-                    if (ocenter.x < acenter.x)
-                        push.x = actor->pos.x + actor->box.start.x - other->box.end.x;
-                    else if (ocenter.x > acenter.x)
-                        push.x = actor->pos.x + actor->box.end.x - other->box.start.x;
-                }
-                if (actor->pos.y != actor->last_pos.y) {
-                    if (ocenter.y < acenter.y)
+                if (obox.start.x < abox.start.x && obox.end.x > abox.start.x)
+                    push.x = actor->pos.x + actor->box.start.x - other->box.end.x;
+                else if (obox.end.x > abox.end.x && obox.start.x < abox.end.x)
+                    push.x = actor->pos.x + actor->box.end.x - other->box.start.x;
+
+                obox = Radd(other->box, push);
+                if (Rcollide(abox, obox)) {
+                    if (obox.start.y < abox.start.y && obox.end.y > abox.start.y)
                         push.y = actor->pos.y + actor->box.start.y - other->box.end.y;
-                    else if (ocenter.y > acenter.y)
+                    else if (obox.end.y > abox.end.y && obox.start.y < abox.end.y)
                         push.y = actor->pos.y + actor->box.end.y - other->box.start.y;
                 }
 
