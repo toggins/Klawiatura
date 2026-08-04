@@ -204,7 +204,7 @@ static void tick(GameActor* actor) {
 
             case 3: {
                 move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, Fx1}));
-                TOUCH_OFF(actor, TOUCH_ALL);
+                TOUCH_OFF(actor, TOUCH_SIDES);
                 break;
             }
             }
@@ -224,7 +224,7 @@ static void tick(GameActor* actor) {
 
                 case 1: {
                     move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, -Fx1}));
-                    TOUCH_OFF(actor, TOUCH_ALL);
+                    TOUCH_OFF(actor, TOUCH_SIDES);
                     break;
                 }
 

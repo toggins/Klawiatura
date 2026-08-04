@@ -188,8 +188,10 @@ enum {
     TOUCH_RIGHT = 1 << 1,
     TOUCH_TOP = 1 << 2,
     TOUCH_BOTTOM = 1 << 3,
-    TOUCH_ALL = TOUCH_LEFT | TOUCH_RIGHT | TOUCH_TOP | TOUCH_BOTTOM,
-    TOUCH_STUCK = TOUCH_ALL,
+    TOUCH_DISPLACEABLE = 1 << 4,
+
+    TOUCH_SIDES = TOUCH_LEFT | TOUCH_RIGHT | TOUCH_TOP | TOUCH_BOTTOM,
+    TOUCH_STUCK = TOUCH_SIDES,
 };
 
 #define TOUCHING(actor, yes) (((actor)->touch & (yes)) != 0)
@@ -421,7 +423,7 @@ void load_actor(ActorType);
 GameActor *create_actor(ActorType, const FVec2), *get_actor(ActorID);
 void replace_actors(ActorType, ActorType);
 
-void move_actor(GameActor*, const FVec2);
+void move_actor(GameActor*, const FVec2), push_actors(GameActor*);
 
 Bool in_any_view(const FVec2, Fixed, Bool), in_player_view(const GamePlayer*, const FVec2, Fixed, Bool);
 Bool below_nearest_bounds(const FVec2, Fixed);

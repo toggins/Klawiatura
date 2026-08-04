@@ -166,6 +166,7 @@ static void pre_tick(GameActor* actor) {
 
     move_actor(actor, Vadd(actor->pos, actor->vel));
     collide_actor(actor);
+    push_actors(actor);
 
 #define DO_RESPAWN()                                                                                                   \
     do {                                                                                                               \
