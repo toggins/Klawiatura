@@ -1235,8 +1235,12 @@ static void draw_game_state() {
         TinyPqInsert(&sorter, layer->depth, (const void*)&(SortedItem){FALSE, layer}, sizeof(SortedItem));
 
     for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
-        if (ANY_FLAG(actor, FLG_VISIBLE))
-            TinyPqInsert(&sorter, actor->depth, (const void*)&(SortedItem){TRUE, actor}, sizeof(SortedItem));
+    {
+        if (ANY_FLAG(actor, FLG_VISIBLE)) {
+            TinyPqInsert(&sorter, (actor->sprout > 0) ? Fmax(actor->depth, Int2Fx(21)) : actor->depth,
+                (const void*)&(SortedItem){TRUE, actor}, sizeof(SortedItem));
+        }
+    }
 
     TINY_PQ_FOREACH (&sorter, iter) {
         const SortedItem* sitem = iter.data;
