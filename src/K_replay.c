@@ -12,103 +12,52 @@
 #define REPLAY_HEADER "krpl0"
 
 static ReplayState replay_state = RPS_NONE;
-static Uint8* replay_buffer = NULL;
-static size_t replay_cursor = 0, replay_size = 0;
 
-static size_t last_frame = 0;
+static SDL_IOStream* replay_io = NULL;
+static Sint64 replay_frames_offset = 0;
+
 static GameInput last_input[MAX_PLAYERS] = {0};
 static Uint32 last_checksum = 0;
-
-static void rbuffer_read8(Uint8* dest) {
-    if ((replay_cursor + sizeof(Uint8)) <= replay_size) {
-        *dest = replay_buffer[replay_cursor];
-        replay_cursor += sizeof(Uint8);
-    }
-}
-
-#define RBUFFER_READX(bits, swap)                                                                                      \
-    static void rbuffer_read##bits(Uint##bits* dest) {                                                                 \
-        if ((replay_cursor + sizeof(Uint##bits)) <= replay_size) {                                                     \
-            *dest = swap(*(Uint##bits*)(replay_buffer + replay_cursor));                                               \
-            replay_cursor += sizeof(Uint##bits);                                                                       \
-        }                                                                                                              \
-    }
-
-RBUFFER_READX(16, SDL_Swap16BE);
-RBUFFER_READX(32, SDL_Swap32BE);
-RBUFFER_READX(64, SDL_Swap64BE);
-
-#undef RBUFFER_READX
-
-static void rbuffer_read_string(char* dest, size_t maxlen) {
-    char c = ' ';
-    size_t len = 0;
-    while (replay_cursor < replay_size && c != '\0') {
-        c = *(char*)(replay_buffer + replay_cursor);
-        replay_cursor += sizeof(char);
-
-        if (len < maxlen)
-            dest[len++] = c;
-    }
-}
-
-static void grow_rbuffer(size_t inc) {
-    while ((replay_cursor + inc) >= replay_size) {
-        replay_size *= 2;
-        replay_buffer = SDL_realloc(replay_buffer, replay_size);
-        EXPECT(replay_buffer, "Failed to reallocate replay buffer");
-    }
-}
-
-static void rbuffer_write8(const Uint8* src) {
-    grow_rbuffer(sizeof(Uint8));
-    replay_buffer[replay_cursor] = *src;
-    replay_cursor += sizeof(Uint8);
-}
-
-#define RBUFFER_WRITEX(bits, swap)                                                                                     \
-    static void rbuffer_write##bits(const Uint##bits* src) {                                                           \
-        grow_rbuffer(sizeof(Uint##bits));                                                                              \
-        *(Uint##bits*)(replay_buffer + replay_cursor) = swap(*src);                                                    \
-        replay_cursor += sizeof(Uint##bits);                                                                           \
-    }
-
-RBUFFER_WRITEX(16, SDL_Swap16BE);
-RBUFFER_WRITEX(32, SDL_Swap32BE);
-RBUFFER_WRITEX(64, SDL_Swap64BE);
-
-#undef RBUFFER_WRITEX
-
-static void rbuffer_write_string(const char* src) {
-    const size_t len = SDL_strlen(src) + 1;
-    grow_rbuffer(len);
-    SDL_memcpy(replay_buffer + replay_cursor, src, len);
-    replay_cursor += len;
-}
 
 const char* load_replay(const char* file) {
     end_replay();
 
-    replay_buffer = load_user_file(file, &replay_size);
-    if (replay_buffer == NULL)
+    size_t bsize = 0;
+    void* buffer = load_user_file(file, &bsize);
+    if (buffer == NULL)
         return "msg_replay_missing";
 
+    replay_io = SDL_IOFromConstMem(buffer, bsize);
+    if (replay_io == NULL) {
+        SDL_free(buffer);
+        return "msg_replay_missing";
+    }
+
+    SDL_PropertiesID props = SDL_GetIOProperties(replay_io);
+    if (props <= 0) {
+        SDL_CloseIO(replay_io);
+        SDL_free(buffer);
+        return "msg_replay_missing";
+    }
+
+    SDL_SetPointerProperty(props, SDL_PROP_IOSTREAM_MEMORY_FREE_FUNC_POINTER, SDL_free);
+
     char header[sizeof(REPLAY_HEADER)] = "";
-    rbuffer_read_string(header, sizeof(header));
+    SDL_ReadIO(replay_io, header, sizeof(header));
     if (SDL_strncmp(header, REPLAY_HEADER, sizeof(header)) != 0) {
         end_replay();
         return "msg_replay_invalid";
     }
 
     char version[sizeof(GAME_VERSION)] = "";
-    rbuffer_read_string(version, sizeof(version));
+    SDL_ReadIO(replay_io, version, sizeof(version));
     if (SDL_strncmp(version, GAME_VERSION, sizeof(version)) != 0) {
         end_replay();
         return "msg_replay_version_mismatch";
     }
 
     Uint32 hash = 0;
-    rbuffer_read32(&hash);
+    SDL_ReadU32LE(replay_io, &hash);
     if (hash != get_game_hash()) {
         end_replay();
         return "msg_replay_hash_mismatch";
@@ -116,20 +65,21 @@ const char* load_replay(const char* file) {
 
     // TODO: Assign view player
     PlayerID view_player = NULL_PLAYER;
-    rbuffer_read8((Uint8*)&view_player);
+    SDL_ReadS8(replay_io, &view_player);
 
     GameContext ctx = empty_game_context();
-    rbuffer_read16(&ctx.flags);
-    rbuffer_read64(&ctx.level);
-    rbuffer_read16((Uint16*)&ctx.checkpoint);
-    rbuffer_read8((Uint8*)&ctx.num_players);
+    SDL_ReadU64LE(replay_io, &ctx.level);
+    SDL_ReadU64LE(replay_io, &ctx.seed);
+    SDL_ReadU16LE(replay_io, &ctx.flags);
+    SDL_ReadS16LE(replay_io, &ctx.checkpoint);
+    SDL_ReadS8(replay_io, &ctx.num_players);
     for (PlayerID i = 0; i < ctx.num_players; i++) {
-        rbuffer_read8(&ctx.players[i].xscroll);
-        rbuffer_read8(&ctx.players[i].character);
-        rbuffer_read8(&ctx.players[i].powerup);
-        rbuffer_read8((Uint8*)&ctx.players[i].lives);
-        rbuffer_read8(&ctx.players[i].coins);
-        rbuffer_read32(&ctx.players[i].score);
+        SDL_ReadU8(replay_io, &ctx.players[i].xscroll);
+        SDL_ReadU8(replay_io, &ctx.players[i].character);
+        SDL_ReadU8(replay_io, &ctx.players[i].powerup);
+        SDL_ReadS8(replay_io, &ctx.players[i].lives);
+        SDL_ReadU8(replay_io, &ctx.players[i].coins);
+        SDL_ReadU32LE(replay_io, &ctx.players[i].score);
     }
 
     INFO("Starting replay: %s", file);
@@ -144,36 +94,39 @@ void start_replay() {
 
     end_replay();
 
-    replay_size = 16;
-    replay_buffer = SDL_malloc(replay_size);
-    ASSUME(replay_buffer, "Failed to allocate replay buffer");
+    replay_io = SDL_IOFromDynamicMem();
+    ASSUME(replay_io, "Failed to allocate replay buffer");
 
-    rbuffer_write_string(REPLAY_HEADER);
-    rbuffer_write_string(GAME_VERSION);
-    rbuffer_write32(&(Uint32){get_game_hash()});
+    SDL_WriteIO(replay_io, REPLAY_HEADER, sizeof(REPLAY_HEADER));
+    SDL_WriteIO(replay_io, GAME_VERSION, sizeof(GAME_VERSION));
+    SDL_WriteU32LE(replay_io, get_game_hash());
 
-    rbuffer_write8((Uint8*)&(PlayerID){viewplayer()});
+    SDL_WriteS8(replay_io, viewplayer());
 
     const GameContext* ctx = gamecontext();
-    rbuffer_write16(&ctx->flags);
-    rbuffer_write64(&ctx->level);
-    rbuffer_write16((Uint16*)&ctx->checkpoint);
-    rbuffer_write8((Uint8*)&ctx->num_players);
+    SDL_WriteU64LE(replay_io, ctx->level);
+    SDL_WriteU64LE(replay_io, ctx->seed);
+    SDL_WriteU16LE(replay_io, ctx->flags);
+    SDL_WriteS16LE(replay_io, ctx->checkpoint);
+    SDL_WriteS8(replay_io, ctx->num_players);
     for (PlayerID i = 0; i < ctx->num_players; i++) {
-        rbuffer_write8(&ctx->players[i].xscroll);
-        rbuffer_write8(&ctx->players[i].character);
-        rbuffer_write8(&ctx->players[i].powerup);
-        rbuffer_write8((Uint8*)&ctx->players[i].lives);
-        rbuffer_write8(&ctx->players[i].coins);
-        rbuffer_write32(&ctx->players[i].score);
+        SDL_WriteU8(replay_io, ctx->players[i].xscroll);
+        SDL_WriteU8(replay_io, ctx->players[i].character);
+        SDL_WriteU8(replay_io, ctx->players[i].powerup);
+        SDL_WriteS8(replay_io, ctx->players[i].lives);
+        SDL_WriteU8(replay_io, ctx->players[i].coins);
+        SDL_WriteU32LE(replay_io, ctx->players[i].score);
     }
+
+    replay_frames_offset = SDL_TellIO(replay_io);
+    INFO("Replay frames start at %" SDL_PRIs64, replay_frames_offset);
 
     replay_state = RPS_RECORDING;
     chat_message(LFMT("chat_recording"), B_U4_GREEN);
 }
 
 void end_replay() {
-    if (replay_buffer != NULL) {
+    if (replay_io != NULL) {
         switch (replay_state) {
         default: {
             INFO("Freeing invalid buffer");
@@ -199,7 +152,7 @@ void end_replay() {
             const char* filename
                 = fmt("%i-%i-%i %i.%02i.%02i.rpl", dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second);
 
-            if (save_user_file(fmt("replays/%s", filename), replay_buffer, replay_cursor))
+            if (save_user_stream(fmt("replays/%s", filename), replay_io, SDL_TellIO(replay_io)))
                 chat_message(LFMT("chat_replay_saved", 's', filename), B_U4_GREEN);
             else
                 chat_message(LFMT("chat_replay_save_failed"), B_U4_RED);
@@ -209,38 +162,39 @@ void end_replay() {
         }
     }
 
-    SDL_free(replay_buffer);
-    replay_buffer = NULL;
-    replay_cursor = replay_size = 0;
+    SDL_CloseIO(replay_io);
+    replay_io = NULL;
     replay_state = RPS_NONE;
 
-    last_frame = 0;
     SDL_zeroa(last_input);
     last_checksum = 0;
 }
 
 const GameInput* read_replay() {
-    if (replay_cursor >= replay_size)
+    if (SDL_TellIO(replay_io) >= SDL_GetIOSize(replay_io))
         return NULL;
 
     const PlayerID num_players = gamecontext()->num_players;
     for (PlayerID i = 0; i < num_players; i++)
-        rbuffer_read8(&last_input[i]);
-    rbuffer_read32(&last_checksum);
+        SDL_ReadU8(replay_io, &last_input[i]);
+    SDL_ReadU32LE(replay_io, &last_checksum);
 
     return last_input;
 }
 
-void write_replay(int frame, const GameInput* inputs, Uint32 checksum) {
+void write_replay(Sint64 frame, const GameInput* inputs, Uint32 checksum) {
+    if (frame < 0)
+        return;
+
     const PlayerID num_players = gamecontext()->num_players;
-    if (last_frame > frame)
-        replay_cursor -= (last_frame - frame) * ((num_players * sizeof(GameInput)) + sizeof(Uint32));
+
+    SDL_SeekIO(replay_io,
+        replay_frames_offset + (frame * (((Sint64)num_players * (Sint64)sizeof(GameInput)) + (Sint64)sizeof(Uint32))),
+        SDL_IO_SEEK_CUR);
 
     for (PlayerID i = 0; i < num_players; i++)
-        rbuffer_write8(&inputs[i]);
-    rbuffer_write32(&checksum);
-
-    last_frame = frame;
+        SDL_WriteU8(replay_io, inputs[i]);
+    SDL_WriteU32LE(replay_io, checksum);
 }
 
 ReplayState get_replay_state() {

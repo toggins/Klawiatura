@@ -242,6 +242,23 @@ Bool save_user_file(const char* filename, void* buffer, size_t size) {
     return TRUE;
 }
 
+Bool save_user_stream(const char* filename, SDL_IOStream* io, size_t size) {
+    void* buffer = SDL_calloc(1, size);
+    if (buffer == NULL) {
+        WTF("Failed to allocate memory for user file \"%s\"", filename);
+        return FALSE;
+    }
+
+    const Sint64 tell = SDL_TellIO(io);
+    SDL_SeekIO(io, 0, SDL_IO_SEEK_SET);
+    SDL_ReadIO(io, buffer, size);
+    SDL_SeekIO(io, tell, SDL_IO_SEEK_SET);
+
+    const Bool success = save_user_file(filename, buffer, size);
+    SDL_free(buffer);
+    return success;
+}
+
 Bool save_user_folder(const char* foldername) {
     if (!SDL_CreateDirectory(fmt("%s%s", user_path, foldername))) {
         WTF("Failed to save user folder \"%s\": %s", foldername, SDL_GetError());
@@ -269,30 +286,6 @@ const char* filename_no_ext(const char* path) {
         *s = '\0';
 
     return buf;
-}
-
-void read_float_le(SDL_IOStream* io, float* ptr) {
-    SDL_ReadIO(io, ptr, sizeof(float));
-    *ptr = SDL_SwapFloatLE(*ptr);
-}
-
-void read_string(SDL_IOStream* io, char* ptr, size_t size) {
-    char c = '\0';
-    size_t i = 0;
-    do {
-        if (SDL_ReadIO(io, &c, sizeof(char)) <= 0) {
-            if (i < size)
-                ptr[i] = '\0';
-            WTF("Reached EOF");
-            break;
-        }
-
-        if (i < size)
-            ptr[i++] = c;
-    } while (c != '\0');
-
-    if (i >= size && size > 0)
-        ptr[size - 1] = '\0';
 }
 
 /// Calculates the "game" hash for mod parity.

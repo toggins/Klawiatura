@@ -1,3 +1,5 @@
+#include <SDL3/SDL_timer.h>
+
 #include "K_audio.h"
 #include "K_cmd.h"
 #include "K_game.h"
@@ -429,6 +431,7 @@ GameContext empty_game_context() {
 GameContext init_game_context(const WorldContext* wctx, TinyHash level) {
     GameContext gctx = empty_game_context();
     gctx.level = level;
+    gctx.seed = SDL_GetTicksNS();
 
     if (wctx != NULL) {
         gctx.num_players = wctx->num_players;
@@ -458,7 +461,15 @@ void jump_to_game(const GameContext* ctx, Bool as_host) {
         return;
 
     const Level* level = get_level_key(ctx->level);
-    ASSUME(level, "Invalid level key %" SDL_PRIu64, ctx->level);
+    if (level == NULL) {
+        if (get_screen() != SCR_MENU) {
+            bail_from_game();
+            set_screen(SCR_MENU, NULL, 0);
+        }
+
+        WTF("Invalid level key %" SDL_PRIu64, ctx->level);
+        return;
+    }
 
     spread_game_packet(ctx);
     set_screen(SCR_GAME, ctx, sizeof(*ctx));
@@ -504,11 +515,6 @@ static void start_game_state() {
     game_state->clock = -1;
 
     game_state->sequence.activator = NULL_PLAYER;
-
-    // RNG seed is determined by game context
-    for (Uint64 i = 0; i < sizeof(game_context); i++)
-        game_state->seed += ((Uint8*)&game_context)[i];
-    INFO("Level seed is %" SDL_PRIu64, game_state->seed);
 
     // Level info
     level_info = SDL_calloc(1, sizeof(*level_info));
@@ -699,6 +705,9 @@ void start_game(const GameContext* ctx) {
     game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
 
     // Initial game state
+    game_state->seed = game_context.seed;
+    INFO("Game seed is %" SDL_PRIu64, game_state->seed);
+
     game_state->flags |= game_context.flags;
 
     for (PlayerID i = 0; i < game_context.num_players; i++) {
@@ -988,9 +997,24 @@ void tick_game() {
             if (!is_leader())
                 return;
 
-            GameContext ctx = game_context;
-            ctx.flags |= GF_RESTARTED;
-            ctx.checkpoint = game_state->checkpoint;
+            if (get_sequence()->type == GS_LOSE) {
+                GameContext ctx = game_context;
+                ctx.seed = SDL_GetTicksNS();
+                ctx.flags |= GF_RESTARTED;
+                ctx.checkpoint = game_state->checkpoint;
+                for (PlayerID i = 0; i < ctx.num_players; i++) {
+                    ctx.players[i].lives = game_state->players[i].lives;
+                    ctx.players[i].coins = game_state->players[i].coins;
+                    ctx.players[i].score = game_state->players[i].score;
+                    ctx.players[i].powerup = game_state->players[i].powerup;
+                }
+
+                jump_to_game(&ctx, FALSE);
+                return;
+            }
+
+            WorldContext ctx = *worldcontext();
+            ++ctx.level;
             for (PlayerID i = 0; i < ctx.num_players; i++) {
                 ctx.players[i].lives = game_state->players[i].lives;
                 ctx.players[i].coins = game_state->players[i].coins;
@@ -998,7 +1022,7 @@ void tick_game() {
                 ctx.players[i].powerup = game_state->players[i].powerup;
             }
 
-            jump_to_game(&ctx, FALSE);
+            jump_to_world(&ctx, FALSE);
             return;
         }
 

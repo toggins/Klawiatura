@@ -285,8 +285,6 @@ void net_update() {
 
             GameContext ctx = empty_game_context();
 
-            read_buffer16(&mbuf, &ctx.flags);
-
             read_buffer64(&mbuf, &ctx.level);
             const Level* level = get_level_key(ctx.level);
             if (level == NULL) {
@@ -294,6 +292,8 @@ void net_update() {
                 break;
             }
 
+            read_buffer64(&mbuf, &ctx.seed);
+            read_buffer16(&mbuf, &ctx.flags);
             read_buffer16(&mbuf, (Uint16*)&ctx.checkpoint);
 
             read_buffer8(&mbuf, (Uint8*)&ctx.num_players);
@@ -865,8 +865,9 @@ void spread_game_packet(const GameContext* ctx) {
     Buffer buffer = net_buffer();
     write_buffer8(&buffer, &(PacketType){PT_GAME});
 
-    write_buffer16(&buffer, &ctx->flags);
     write_buffer64(&buffer, &ctx->level);
+    write_buffer64(&buffer, &ctx->seed);
+    write_buffer16(&buffer, &ctx->flags);
     write_buffer16(&buffer, (Uint16*)&ctx->checkpoint);
 
     write_buffer8(&buffer, (Uint8*)&ctx->num_players);

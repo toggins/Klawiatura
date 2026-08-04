@@ -14,7 +14,7 @@ const char* load_replay(const char*);
 void start_replay(), end_replay();
 
 const GameInput* read_replay();
-void write_replay(int, const GameInput*, Uint32);
+void write_replay(Sint64, const GameInput*, Uint32);
 
 ReplayState get_replay_state();
 Uint32 get_replay_checksum();

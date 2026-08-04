@@ -215,6 +215,7 @@ typedef struct {
     GameFlags flags;
     ActorID checkpoint;
     TinyHash level;
+    Uint64 seed;
 
     GamePlayerContext players[MAX_PLAYERS];
 } GameContext;
