@@ -10,5 +10,7 @@ typedef struct {
 
 void levels_init(), levels_teardown();
 
+void rediscover_levels();
+
 const Level *get_level(const char*), *get_level_key(TinyHash);
 yyjson_doc* load_level_json(const char*, const char**);

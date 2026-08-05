@@ -39,11 +39,16 @@ static void iterate_level_file(const char* filename, const void* buffer, size_t 
 }
 
 void levels_init() {
-    iterate_data_files("levels/*", TRUE, iterate_level_file, NULL);
+    rediscover_levels();
 }
 
 void levels_teardown() {
     FreeTinyMap(&levels);
+}
+
+void rediscover_levels() {
+    FreeTinyMap(&levels);
+    iterate_data_files("levels/*", TRUE, iterate_level_file, NULL);
 }
 
 const Level* get_level(const char* name) {

@@ -53,6 +53,8 @@ typedef struct {
 void net_init(), net_update(), net_teardown();
 void net_flush();
 
+void update_net_game_id();
+
 void set_hostname(const char*);
 Bool is_connected(), is_host(), is_client(), is_leader();
 ConnectState get_connect_state();

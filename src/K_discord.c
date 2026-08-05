@@ -147,6 +147,11 @@ void update_discord_status() {
         Discord_Activity_SetDetails(&activity, &DYNAMIC_STRING(name));
         break;
     }
+
+    case SCR_EDITOR: {
+        Discord_Activity_SetDetails(&activity, &STATIC_STRING("Level Editor"));
+        break;
+    }
     }
 
     Discord_Client_UpdateRichPresence(&discord, &activity, rpc_callback, NULL, NULL);

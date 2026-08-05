@@ -384,6 +384,7 @@ typedef struct {
 void game_init();
 
 Uint32 get_game_hash();
+void recalculate_game_hash();
 
 const GameCharacter* get_character(PlayerCharacter);
 const char *get_character_name(PlayerCharacter), *get_character_cursor(PlayerCharacter),

@@ -2,6 +2,7 @@
 #include "K_chat.h"
 #include "K_cmd.h"
 #include "K_input.h"
+#include "K_interface.h"
 #include "K_locale.h"
 #include "K_log.h"
 #include "K_string.h"
@@ -45,12 +46,12 @@ void chat_update() {
         if (lines[i].time > 0)
             --lines[i].time;
 
-    if (!CLIENT.show_user_messages) {
+    if (!CLIENT.show_user_messages || get_screen() == SCR_EDITOR) {
         if (typing_what() == prompt)
             stop_typing();
     }
 
-    if (kb_pressed(KB_CHAT)) {
+    if (kb_pressed(KB_CHAT) && get_screen() != SCR_EDITOR) {
         if (CLIENT.show_user_messages) {
             prompt[0] = '\0';
             start_typing(prompt, sizeof(prompt), submit_chat_message);

@@ -332,6 +332,12 @@ void game_init() {
     extern void POPULATE_ACTORS_TABLE();
     POPULATE_ACTORS_TABLE();
 
+    recalculate_game_hash();
+}
+
+void recalculate_game_hash() {
+    game_hash = 0;
+
     extern void CALCULATE_GAME_HASH(Uint32*);
     CALCULATE_GAME_HASH(&game_hash);
 }

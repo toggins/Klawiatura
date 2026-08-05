@@ -157,7 +157,7 @@ static void net_logger(NutBlast_LogLevel level, const char* message) {
 
 void net_init() {
     NutBlast_SetLogger(net_logger);
-    NutBlast_SetGameID(fmt(GAME_NAME " " GAME_VERSION " %X", get_game_hash()));
+    update_net_game_id();
     NutBlast_SetMaxChannels(PCH_SIZE);
 
     NutBlast_OnReady(on_ready);
@@ -375,6 +375,10 @@ void net_teardown() {
 
 void net_flush() {
     NutBlast_Flush();
+}
+
+void update_net_game_id() {
+    NutBlast_SetGameID(fmt(GAME_NAME " " GAME_VERSION " %X", get_game_hash()));
 }
 
 void set_hostname(const char* hn) {
