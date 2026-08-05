@@ -7,7 +7,4 @@ add_library(imgui STATIC
 )
 
 target_include_directories(imgui PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
-
-if (NOT EMSCRIPTEN)
-    target_link_libraries(imgui PRIVATE SDL3::SDL3-static)
-endif()
+target_link_libraries(imgui PRIVATE SDL3::SDL3-static)
