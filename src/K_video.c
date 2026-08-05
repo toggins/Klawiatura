@@ -77,7 +77,7 @@ typedef struct {
 } VertexBatch;
 
 SDL_Window* WINDOW = NULL;
-static SDL_GLContext gpu = NULL;
+SDL_GLContext GPU = NULL;
 
 static int window_width = SCREEN_WIDTH, window_height = SCREEN_HEIGHT;
 static int framerate = TICKRATE;
@@ -133,8 +133,8 @@ void video_init(Bool force_shader) {
     EXPECT(WINDOW, "Failed to create window: %s", SDL_GetError());
 
     // OpenGL
-    gpu = SDL_GL_CreateContext(WINDOW);
-    EXPECT(gpu && SDL_GL_MakeCurrent(WINDOW, gpu), "Failed to create graphics context: %s", SDL_GetError());
+    GPU = SDL_GL_CreateContext(WINDOW);
+    EXPECT(GPU && SDL_GL_MakeCurrent(WINDOW, GPU), "Failed to create graphics context: %s", SDL_GetError());
 
 #ifdef SDL_PLATFORM_EMSCRIPTEN
     set_vsync(TRUE);
@@ -296,7 +296,7 @@ void video_teardown() {
     for (size_t i = 0; i < SH_SIZE; i++)
         glDeleteProgram(SHADERS[i].shader);
 
-    SDL_GL_DestroyContext(gpu);
+    SDL_GL_DestroyContext(GPU);
     SDL_DestroyWindow(WINDOW);
 }
 

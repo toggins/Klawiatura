@@ -66,6 +66,10 @@ void interface_init() {
     set_screen(SCR_LOGO, NULL, 0);
 }
 
+void interface_event(SDL_Event* event) {
+    SCREEN_CALL(current_screen, event, event);
+}
+
 static const char* fmt_boot() {
     return boot_reason;
 }

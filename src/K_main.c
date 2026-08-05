@@ -139,6 +139,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
         break;
     }
 
+    interface_event(event);
     return SDL_APP_CONTINUE;
 }
 

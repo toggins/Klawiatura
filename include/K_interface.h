@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SDL3/SDL_events.h>
+
 #include "K_log.h"
 
 #define MAX_MENUS 16
@@ -28,6 +30,7 @@ enum {
 
 typedef struct {
     void (*start)(const void*, size_t);
+    void (*event)(const SDL_Event*);
     void (*tick)();
     void (*pre_interp)(), (*interp)();
     void (*draw)(), (*draw_ui)();
@@ -102,7 +105,7 @@ typedef struct {
     Option options[MAX_MENUS][MAX_OPTIONS];
 } Catalog;
 
-void interface_init(), interface_update(), interface_teardown();
+void interface_init(), interface_event(SDL_Event*), interface_update(), interface_teardown();
 void permadeath();
 
 ScreenType get_screen();
