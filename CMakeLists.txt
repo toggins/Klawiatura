@@ -152,7 +152,7 @@ list(APPEND LIBS S_tructures)
 
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG 5482c4990845a2e4aa6bbfcdbd47a433da4008a5
+	GIT_TAG 587187e8b3a5fb62cc8cfa8c2128c7bbec9bc0ec
 	EXCLUDE_FROM_ALL)
 
 FetchContent_MakeAvailable(NutBlast)
@@ -176,6 +176,10 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/discord)
 if(KLAW_DISCORD)
     list(APPEND LIBS discord)
 endif()
+
+# Dear Bindings/Dear ImGui (v1.92.9)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/imgui)
+list(APPEND LIBS imgui)
 
 # Build
 
