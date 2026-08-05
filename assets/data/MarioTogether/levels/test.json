@@ -1,9 +1,6 @@
 {
-    "strings": {
-        "label": "$Test",
-        "track1": "yi/overworld",
-        "track2": "yi/athletic"
-    },
+    "label": "$Test",
+    "tracks": ["yi/overworld", "yi/athletic"],
     "size": [7500, 1440],
     "bounds": [0, 0, 7500, 480],
     "time": 360,

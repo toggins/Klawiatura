@@ -534,41 +534,46 @@ static void load_level(TinyHash key) {
 
     yyjson_val* root = yyjson_doc_get_root(json);
 
-    yyjson_val *jval = yyjson_obj_get(root, "strings"), *jval2 = NULL;
+    yyjson_val* jval = yyjson_obj_get(root, "label");
+    if (yyjson_is_str(jval)) {
+        const char* label = SDL_strdup(yyjson_get_str(jval));
+        EXPECT(label, "Failed to allocate level \"%s\" label", level->name);
+        if (label[0] != '@' && label[0] != '$') {
+            // FIXME: This only loads the sprite for the current language.
+            //        The label sprite will "disappear" when changing to another language.
+            load_sprite(LFMT(label + 1), AKL_NEVER);
+        }
 
-#define PARSE_STRING(I, N)                                                                                             \
-    jval2 = yyjson_obj_get(jval, N);                                                                                   \
-    if (yyjson_is_str(jval2)) {                                                                                        \
-        level_info->strings[I] = SDL_strdup(yyjson_get_str(jval2));                                                    \
-        EXPECT(level_info->strings[I], "Failed to allocate level \"%s\" string \"" #N "\"", level->name);              \
-                                                                                                                       \
-        if ((I) >= GSTR_TRACK_START && (I) <= GSTR_TRACK_END)                                                          \
-            load_track(level_info->strings[I], AKL_NEVER);                                                             \
+        level_info->strings[GSTR_LABEL] = label;
     }
 
-    PARSE_STRING(GSTR_LABEL, "label");
-    PARSE_STRING(GSTR_TRACK1, "track1");
-    PARSE_STRING(GSTR_TRACK2, "track2");
-    PARSE_STRING(GSTR_TRACK3, "track3");
-    PARSE_STRING(GSTR_TRACK4, "track4");
-    PARSE_STRING(GSTR_SECRET1, "secret1");
-    PARSE_STRING(GSTR_SECRET2, "secret2");
-    PARSE_STRING(GSTR_SECRET3, "secret3");
-    PARSE_STRING(GSTR_SECRET4, "secret4");
+    jval = yyjson_obj_get(root, "tracks");
+    for (size_t i = 0, n = yyjson_arr_size(jval); i < n && i <= (GSTR_TRACK_END - GSTR_TRACK_START); i++) {
+        yyjson_val* jval2 = yyjson_arr_get(jval, i);
+        if (!yyjson_is_str(jval2))
+            continue;
 
-#undef PARSE_STRING
-
-    const char* label = level_info->strings[GSTR_LABEL];
-    if (label != NULL && label[0] != '@' && label[0] != '$') {
-        // FIXME: This only loads the sprite for the current language.
-        //        The label sprite will "disappear" when changing to another language.
-        load_sprite(LFMT(label + 1), AKL_NEVER);
+        const char* track = SDL_strdup(yyjson_get_str(jval2));
+        EXPECT(track, "Failed to allocate level \"%s\" track %zu", level->name, i + 1);
+        load_track(track, AKL_NEVER);
+        level_info->strings[GSTR_TRACK_START + i] = track;
     }
 
     jval = yyjson_obj_get(root, "warps");
-    size_t narr = yyjson_arr_size(jval);
-    for (GameWarpID i = 0, n = SDL_min(narr, MAX_GAME_WARPS); i < n; i++)
+    for (size_t i = 0, n = yyjson_arr_size(jval); i < n && i < MAX_GAME_WARPS; i++)
         level_info->warps[i] = StHashStr(yyjson_get_str(yyjson_arr_get(jval, i)));
+
+    jval = yyjson_obj_get(root, "secrets");
+    for (size_t i = 0, n = yyjson_arr_size(jval); i < n && i <= (GSTR_SECRET_END - GSTR_SECRET_START); i++) {
+        yyjson_val* jval2 = yyjson_arr_get(jval, i);
+        if (!yyjson_is_str(jval2))
+            continue;
+
+        const char* track = SDL_strdup(yyjson_get_str(jval2));
+        EXPECT(track, "Failed to allocate level \"%s\" secret %zu", level->name, i + 1);
+        // TODO: Do something with secret strings
+        level_info->strings[GSTR_SECRET_START + i] = track;
+    }
 
     jval = yyjson_obj_get(root, "size");
     level_info->size.x = Int2Fx(yyjson_get_uint(yyjson_arr_get(jval, 0)));
@@ -596,9 +601,8 @@ static void load_level(TinyHash key) {
     read_tilemap(videostate()->tilemap, yyjson_obj_get(root, "backdrops"));
 
     jval = yyjson_obj_get(root, "actors");
-    narr = yyjson_arr_size(jval);
-    for (ActorID i = 0, n = SDL_min(narr, MAX_ACTORS); i < n; i++) {
-        jval2 = yyjson_arr_get(jval, i);
+    for (size_t i = 0, n = yyjson_arr_size(jval); i < n && i < MAX_ACTORS; i++) {
+        yyjson_val* jval2 = yyjson_arr_get(jval, i);
         if (!yyjson_is_obj(jval2))
             continue;
 
@@ -639,13 +643,12 @@ static void load_level(TinyHash key) {
         }
 
         yyjson_val* jvalues = yyjson_obj_get(jval2, "values");
-        const size_t nvarr = yyjson_arr_size(jvalues);
-        for (ActorValue j = 0, n = SDL_min(nvarr, MAX_VALUES); j < n; j++) {
+        for (size_t j = 0, n = yyjson_arr_size(jvalues); j < n && j < MAX_VALUES; j++) {
             yyjson_val* jvalue = yyjson_arr_get(jvalues, j);
 
             const ActorValue idx = (ActorValue)yyjson_get_uint(yyjson_arr_get(jvalue, 0));
             if (idx < 0 || idx >= MAX_VALUES) {
-                WTF("Invalid index %i for actor %i type %u", idx, i, type);
+                WTF("Invalid value index %i for actor %zu type %u", idx, i, type);
                 continue;
             }
 
