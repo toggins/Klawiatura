@@ -13,7 +13,6 @@
 #include <dcimgui.h>
 #include <dcimgui_impl_opengl3.h>
 #include <dcimgui_impl_sdl3.h>
-#include <dcimgui_internal.h>
 
 #include "K_game.h"
 #include "K_levels.h"
@@ -21,6 +20,18 @@
 #include "K_net.h"
 #include "K_string.h"
 #include "K_video.h"
+
+typedef Uint8 AsyncID;
+enum {
+    ASYNC_OPEN,
+    ASYNC_BLUEPRINT,
+    ASYNC_SIZE,
+};
+
+typedef struct {
+    Bool available;
+    const char* ptr;
+} EditorAsync;
 
 typedef struct {
     Uint16 grid_size;
@@ -51,14 +62,38 @@ typedef struct {
     EditorCamera camera;
     EditorLevel level;
 
+    EditorAsync async[ASYNC_SIZE];
     const char* error;
+    Surface* blueprint;
 } Editor;
 
 extern SDL_Window* WINDOW;
 
 static Editor* editor = NULL;
 
-static void move_cursor(const Sint32 pos[2]) {
+static Bool has_async(AsyncID id) {
+    return editor->async[id].available;
+}
+
+static const char* get_async(AsyncID id) {
+    return editor->async[id].ptr;
+}
+
+static void set_async(AsyncID id, const char* string) {
+    EditorAsync* async = &editor->async[id];
+    SDL_free((void*)async->ptr);
+    async->ptr = (string == NULL) ? NULL : SDL_strdup(string);
+    async->available = TRUE;
+}
+
+static void clear_async(AsyncID id) {
+    EditorAsync* async = &editor->async[id];
+    SDL_free((void*)async->ptr);
+    async->ptr = NULL;
+    async->available = FALSE;
+}
+
+static void move_cursor(const Sint32 pos[2], Bool snap) {
     if (ImGui_GetIO()->WantCaptureMouse || (pos[0] == SDL_MIN_SINT32 || pos[1] == SDL_MIN_SINT32))
         return;
 
@@ -69,9 +104,14 @@ static void move_cursor(const Sint32 pos[2]) {
         ecursor->highlighted = NULL;
     }
 
-    const float gsize = ecursor->grid_size;
-    ecursor->pos[0] = (Sint32)(SDL_roundf((float)pos[0] / gsize) * gsize);
-    ecursor->pos[1] = (Sint32)(SDL_roundf((float)pos[1] / gsize) * gsize);
+    if (snap) {
+        const float gsize = ecursor->grid_size;
+        ecursor->pos[0] = (Sint32)(SDL_roundf((float)pos[0] / gsize) * gsize);
+        ecursor->pos[1] = (Sint32)(SDL_roundf((float)pos[1] / gsize) * gsize);
+    } else {
+        ecursor->pos[0] = pos[0];
+        ecursor->pos[1] = pos[1];
+    }
 }
 
 static void clear_level() {
@@ -87,15 +127,10 @@ static void clear_level() {
     level->time = -1;
 }
 
-static void open_level(void* userdata, const char* const* files, int filter) {
-    (void)userdata;
-    (void)filter;
-
-    ASSUME(files && *files, "No file to open");
-
+static void open_level(const char* filename) {
     yyjson_read_err error = {0};
     yyjson_doc* json
-        = yyjson_read_file(*files, YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS, NULL, &error);
+        = yyjson_read_file(filename, YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS, NULL, &error);
     if (json == NULL) {
         editor->error = error.msg;
         return;
@@ -155,18 +190,24 @@ static void open_level(void* userdata, const char* const* files, int filter) {
     yyjson_doc_free(json);
 }
 
+static void open_level_async(void* userdata, const char* const* files, int filter) {
+    (void)userdata;
+    (void)filter;
+
+    ASSUME(files && *files, "No file to open");
+    set_async(ASYNC_OPEN, *files);
+}
+
 static void open_level_dialog() {
     SDL_DialogFileFilter filter = {0};
     filter.name = "JSON file";
     filter.pattern = "json";
-    SDL_ShowOpenFileDialog(open_level, NULL, WINDOW, &filter, 1, NULL, FALSE);
+    SDL_ShowOpenFileDialog(open_level_async, NULL, WINDOW, &filter, 1, NULL, FALSE);
 }
 
-static void save_level(void* userdata, const char* const* files, int filter) {
-    (void)userdata;
-    (void)filter;
-
-    ASSUME(files && *files, "No file to save");
+static void save_level(const char* filename) {
+    if (filename == NULL)
+        return;
 
     yyjson_mut_doc* json = yyjson_mut_doc_new(NULL);
 
@@ -246,7 +287,6 @@ static void save_level(void* userdata, const char* const* files, int filter) {
     if (elevel->time != 0)
         yyjson_mut_obj_add_sint(json, root, "time", elevel->time);
 
-    const char* filename = *files;
     const size_t len = SDL_strlen(filename);
     if (len < 5 || SDL_strcmp(filename + len - 5, ".json") != 0)
         filename = fmt("%s.json", filename);
@@ -258,24 +298,34 @@ static void save_level(void* userdata, const char* const* files, int filter) {
     yyjson_mut_doc_free(json);
 }
 
+static void save_level_async(void* userdata, const char* const* files, int filter) {
+    (void)userdata;
+    (void)filter;
+
+    ASSUME(files && *files, "No file to save");
+    save_level(*files);
+}
+
 static void save_level_dialog() {
     SDL_DialogFileFilter filter = {0};
     filter.name = "JSON file";
     filter.pattern = "json";
-    SDL_ShowSaveFileDialog(save_level, NULL, WINDOW, &filter, 1, NULL);
+    SDL_ShowSaveFileDialog(save_level_async, NULL, WINDOW, &filter, 1, NULL);
 }
 
-static void open_blueprint(void* userdata, const char* const* files, int filter) {
+static void open_blueprint_async(void* userdata, const char* const* files, int filter) {
     (void)userdata;
     (void)files;
     (void)filter;
+
+    set_async(ASYNC_BLUEPRINT, (files == NULL || *files == NULL) ? NULL : *files);
 }
 
 static void open_blueprint_dialog() {
     SDL_DialogFileFilter filter = {0};
     filter.name = "PNG file";
     filter.pattern = "png";
-    SDL_ShowOpenFileDialog(open_blueprint, NULL, WINDOW, &filter, 1, NULL, FALSE);
+    SDL_ShowOpenFileDialog(open_blueprint_async, NULL, WINDOW, &filter, 1, NULL, FALSE);
 }
 
 static void start(const void* secret, size_t secret_size) {
@@ -303,7 +353,10 @@ static void end() {
     cImGui_ImplSDL3_Shutdown();
     ImGui_DestroyContext(NULL);
 
+    for (AsyncID i = 0; i < (AsyncID)ASYNC_SIZE; i++)
+        clear_async(i);
     clear_level();
+    destroy_surface(editor->blueprint);
     SDL_free(editor);
 
     rediscover_levels();
@@ -316,6 +369,19 @@ static void event(const SDL_Event* event) {
 }
 
 static void draw() {
+    // GROSS HACK: drawing is done in main thread, so poll async events here.
+    if (has_async(ASYNC_OPEN)) {
+        open_level(get_async(ASYNC_OPEN));
+        clear_async(ASYNC_OPEN);
+    }
+
+    if (has_async(ASYNC_BLUEPRINT)) {
+        destroy_surface(editor->blueprint);
+        editor->blueprint = create_surface_from_file(get_async(ASYNC_BLUEPRINT));
+        clear_async(ASYNC_BLUEPRINT);
+    }
+
+    // Actual drawing
     clear_color(B_F4_VALUE(0.5f));
 
     int width = 0, height = 0;
@@ -328,8 +394,14 @@ static void draw() {
     set_projection_matrix(proj);
     apply_matrices();
 
+    batch_filter(FALSE);
+
     batch_reset();
-    // TODO: Draw blueprint and markers
+    batch_color(B_U4_ALPHA(128));
+    batch_surface(editor->blueprint);
+    // TODO: Draw markers
+
+    batch_filter(TRUE);
 
     const EditorCursor* ecursor = &editor->cursor;
     if (ecamera->show_grid && ecursor->grid_size >= 2) {
@@ -373,13 +445,6 @@ static void draw() {
     batch_rectangle(NULL, B_F2(ecamera->zoom, bh));
     batch_pos(B_F3_XY(0.f, elevel->bounds[3]));
     batch_rectangle(NULL, B_F2(bw, ecamera->zoom));
-
-    if (ecursor->highlighted == NULL) {
-        const float size = 5.f * ((ecamera->zoom / 2.f) + 0.5f);
-        batch_pos(B_F3_XY(ecursor->pos[0] - size, ecursor->pos[1] - size));
-        batch_color(B_U4(255, 255, 0, 128));
-        batch_rectangle(NULL, B_F2_S(size * 2.f));
-    }
 }
 
 static void draw_ui() {
@@ -391,6 +456,9 @@ static void draw_ui() {
 
     const ImGuiIO* io = ImGui_GetIO();
     if (!io->WantCaptureKeyboard) {
+        if (ImGui_IsKeyPressed(ImGuiKey_F1))
+            open_blueprint_dialog();
+
         if (ImGui_IsKeyPressed(ImGuiKey_G))
             ecamera->show_grid = !ecamera->show_grid;
 
@@ -417,16 +485,18 @@ static void draw_ui() {
         const float omx = ecamera->pos[0] + (mpos.x * ecamera->zoom), omy = ecamera->pos[1] + (mpos.y * ecamera->zoom);
 
         ecamera->zoom -= wheel / ((ecamera->zoom > 1.f || (ecamera->zoom == 1.f && wheel < 0.f)) ? 4.f : 10.f);
-        ecamera->zoom = SDL_clamp(ecamera->zoom, 0.1f, 4.f);
+        ecamera->zoom = SDL_clamp(ecamera->zoom, 0.1f, 5.f);
 
         ecamera->pos[0] -= (ecamera->pos[0] + (mpos.x * ecamera->zoom)) - omx;
         ecamera->pos[1] -= (ecamera->pos[1] + (mpos.y * ecamera->zoom)) - omy;
     }
 
-    move_cursor((Sint32[2]){
-        (Sint32)ecamera->pos[0] + (Sint32)(mpos.x * ecamera->zoom),
-        (Sint32)ecamera->pos[1] + (Sint32)(mpos.y * ecamera->zoom),
-    });
+    move_cursor(
+        (Sint32[2]){
+            (Sint32)ecamera->pos[0] + (Sint32)(mpos.x * ecamera->zoom),
+            (Sint32)ecamera->pos[1] + (Sint32)(mpos.y * ecamera->zoom),
+        },
+        !ImGui_IsKeyDown(ImGuiKey_LeftShift));
 
     if (ImGui_BeginMainMenuBar()) {
         if (ImGui_BeginMenu(LFMT("edit_file"))) {
