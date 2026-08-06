@@ -1630,6 +1630,7 @@ Surface* create_surface(Uint16 width, Uint16 height, Bool color, Bool depth) {
 void destroy_surface(Surface* surface) {
     if (surface == NULL)
         return;
+
     dispose_surface(surface);
     SDL_free(surface->internal);
     SDL_free(surface);
@@ -1644,8 +1645,8 @@ static void dispose_surface_buffer(Surface* surface, SurfaceAttribute idx) {
     sdata->texture[idx] = 0;
 }
 
-static void check_surface_buffer(
-    Surface* surface, SurfaceAttribute idx, Sint32 internal_format, Uint32 format, Uint32 type, Uint32 attachment) {
+static void
+check_surface_buffer(Surface* surface, SurfaceAttribute idx, Sint32 internal_format, Uint32 format, Uint32 type) {
     if (surface->enabled[idx]) {
         if (((SurfaceInternal*)surface->internal)->texture[idx] != 0)
             return;
@@ -1656,13 +1657,13 @@ static void check_surface_buffer(
 
     SurfaceInternal* sdata = surface->internal;
     glGenTextures(1, &sdata->texture[idx]);
-    glBindFramebuffer(GL_FRAMEBUFFER, sdata->fbo);
     glBindTexture(GL_TEXTURE_2D, sdata->texture[idx]);
-    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, surface->size[0], surface->size[1], 0, format, type, NULL);
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, sdata->texture[idx], 0);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, surface->size[0], surface->size[1], 0, format, type, NULL);
 }
 
 /// Checks the surface for a valid framebuffer.
@@ -1670,9 +1671,19 @@ void check_surface(Surface* surface) {
     SurfaceInternal* sdata = surface->internal;
     if (sdata->fbo == 0)
         glGenFramebuffers(1, &sdata->fbo);
-    check_surface_buffer(surface, SURF_COLOR, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_COLOR_ATTACHMENT0);
-    check_surface_buffer(
-        surface, SURF_DEPTH, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_DEPTH_STENCIL_ATTACHMENT);
+
+    check_surface_buffer(surface, SURF_COLOR, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+    check_surface_buffer(surface, SURF_DEPTH, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8);
+
+    const GLuint last_fbo = (current_surface == NULL) ? 0 : ((SurfaceInternal*)current_surface->internal)->fbo;
+    glBindFramebuffer(GL_FRAMEBUFFER, sdata->fbo);
+    if (surface->enabled[SURF_COLOR])
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sdata->texture[SURF_COLOR], 0);
+    if (surface->enabled[SURF_DEPTH]) {
+        glFramebufferTexture2D(
+            GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, sdata->texture[SURF_DEPTH], 0);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, last_fbo);
 }
 
 /// Nukes the surface's framebuffer.
