@@ -13,6 +13,7 @@
 #include <dcimgui.h>
 #include <dcimgui_impl_opengl3.h>
 #include <dcimgui_impl_sdl3.h>
+#include <dcimgui_internal.h>
 
 #include "K_game.h"
 #include "K_levels.h"
@@ -20,6 +21,17 @@
 #include "K_net.h"
 #include "K_string.h"
 #include "K_video.h"
+
+typedef struct {
+    Uint16 grid_size;
+    Sint32 pos[2];
+    void* highlighted;
+} EditorCursor;
+
+typedef struct {
+    Bool show_grid;
+    float pos[2], hold[2], zoom;
+} EditorCamera;
 
 typedef struct {
     char label[256];
@@ -32,25 +44,42 @@ typedef struct {
 
     int size[2], bounds[4];
     int time;
-} EditorLevelState;
+} EditorLevel;
 
 typedef struct {
+    EditorCursor cursor;
+    EditorCamera camera;
+    EditorLevel level;
+
     const char* error;
-    EditorLevelState level;
-} EditorState;
+} Editor;
 
 extern SDL_Window* WINDOW;
 
-static EditorState* editor = NULL;
+static Editor* editor = NULL;
 
-static void clear_editor_state() {
-    // Clean up current state
+static void move_cursor(const Sint32 pos[2]) {
+    if (ImGui_GetIO()->WantCaptureMouse || (pos[0] == SDL_MIN_SINT32 || pos[1] == SDL_MIN_SINT32))
+        return;
 
-    // Nullify entire state
-    SDL_zerop(editor);
+    EditorCursor* ecursor = &editor->cursor;
+    Sint32 ox = ecursor->pos[0], oy = ecursor->pos[1];
+    if (pos[0] != ox || pos[1] != oy) {
+        // TODO: Highlight markers
+        ecursor->highlighted = NULL;
+    }
 
-    // Level
-    EditorLevelState* level = &editor->level;
+    const float gsize = ecursor->grid_size;
+    ecursor->pos[0] = (Sint32)(SDL_roundf((float)pos[0] / gsize) * gsize);
+    ecursor->pos[1] = (Sint32)(SDL_roundf((float)pos[1] / gsize) * gsize);
+}
+
+static void clear_level() {
+    // Cleanup
+
+    // Nullify
+    EditorLevel* level = &editor->level;
+    SDL_zerop(level);
     level->size[0] = SCREEN_WIDTH;
     level->size[1] = SCREEN_HEIGHT;
     level->bounds[2] = SCREEN_WIDTH;
@@ -79,7 +108,7 @@ static void open_level(void* userdata, const char* const* files, int filter) {
         return;
     }
 
-    EditorLevelState* elevel = &editor->level;
+    EditorLevel* elevel = &editor->level;
 
     yyjson_val* jval = yyjson_obj_get(root, "label");
     if (yyjson_is_str(jval))
@@ -144,7 +173,7 @@ static void save_level(void* userdata, const char* const* files, int filter) {
     yyjson_mut_val* root = yyjson_mut_obj(json);
     yyjson_mut_doc_set_root(json, root);
 
-    const EditorLevelState* elevel = &editor->level;
+    const EditorLevel* elevel = &editor->level;
 
     if (elevel->label[0] != '\0')
         yyjson_mut_obj_add_strcpy(json, root, "label", elevel->label);
@@ -236,6 +265,19 @@ static void save_level_dialog() {
     SDL_ShowSaveFileDialog(save_level, NULL, WINDOW, &filter, 1, NULL);
 }
 
+static void open_blueprint(void* userdata, const char* const* files, int filter) {
+    (void)userdata;
+    (void)files;
+    (void)filter;
+}
+
+static void open_blueprint_dialog() {
+    SDL_DialogFileFilter filter = {0};
+    filter.name = "PNG file";
+    filter.pattern = "png";
+    SDL_ShowOpenFileDialog(open_blueprint, NULL, WINDOW, &filter, 1, NULL, FALSE);
+}
+
 static void start(const void* secret, size_t secret_size) {
     (void)secret;
     (void)secret_size;
@@ -249,7 +291,11 @@ static void start(const void* secret, size_t secret_size) {
 
     editor = SDL_calloc(1, sizeof(*editor));
     EXPECT(editor, "Failed to allocate editor state");
-    clear_editor_state();
+
+    clear_level();
+    editor->cursor.grid_size = 32;
+    editor->camera.show_grid = TRUE;
+    editor->camera.zoom = 1.f;
 }
 
 static void end() {
@@ -257,6 +303,7 @@ static void end() {
     cImGui_ImplSDL3_Shutdown();
     ImGui_DestroyContext(NULL);
 
+    clear_level();
     SDL_free(editor);
 
     rediscover_levels();
@@ -275,12 +322,64 @@ static void draw() {
     get_resolution(&width, &height);
 
     mat4 proj = GLM_MAT4_IDENTITY_INIT;
-    glm_ortho(0.f, (float)width, (float)height, 0.f, -16000.f, 16000.f, proj);
+    const EditorCamera* ecamera = &editor->camera;
+    glm_ortho(ecamera->pos[0], ecamera->pos[0] + (ecamera->zoom * (float)width),
+        ecamera->pos[1] + (ecamera->zoom * (float)height), ecamera->pos[1], -16000.f, 16000.f, proj);
     set_projection_matrix(proj);
     apply_matrices();
 
     batch_reset();
-    // DRAW MARKERS HERE
+    // TODO: Draw blueprint and markers
+
+    const EditorCursor* ecursor = &editor->cursor;
+    if (ecamera->show_grid && ecursor->grid_size >= 2) {
+        const float gsize = ecursor->grid_size;
+        if ((gsize * ecamera->zoom) >= 2.f) {
+            const float cw = (float)width * ecamera->zoom, ch = (float)height * ecamera->zoom;
+            const float cx1 = ecamera->pos[0], cy1 = ecamera->pos[1], cx2 = cx1 + cw, cy2 = cy1 + ch;
+
+            batch_color(B_U4(0, 0, 0, 64));
+            for (float i = SDL_floorf(cx1 / gsize) * gsize; i <= cx2; i += gsize) {
+                batch_pos(B_F3_XY(i, cy1 - gsize));
+                batch_rectangle(NULL, B_F2(ecamera->zoom, ch + gsize));
+            }
+            for (float i = SDL_floorf(cy1 / gsize) * gsize; i <= cy2; i += gsize) {
+                batch_pos(B_F3_XY(cx1 - gsize, i));
+                batch_rectangle(NULL, B_F2(cw + gsize, ecamera->zoom));
+            }
+        }
+    }
+
+    batch_pos(B_F3_XY(0.f, -32.f));
+    batch_color(B_U4_ALPHA(128));
+    batch_rectangle(NULL, B_F2(ecamera->zoom, 64.f));
+    batch_pos(B_F3_XY(-32.f, 0.f));
+    batch_rectangle(NULL, B_F2(64.f, ecamera->zoom));
+
+    const EditorLevel* elevel = &editor->level;
+    batch_pos(B_F3_0);
+    batch_rectangle(NULL, B_F2(elevel->size[0], ecamera->zoom));
+    batch_rectangle(NULL, B_F2(ecamera->zoom, elevel->size[1]));
+    batch_pos(B_F3_XY(elevel->size[0], 0.f));
+    batch_rectangle(NULL, B_F2(ecamera->zoom, elevel->size[1]));
+    batch_pos(B_F3_XY(0.f, elevel->size[1]));
+    batch_rectangle(NULL, B_F2(elevel->size[0], ecamera->zoom));
+
+    batch_pos(B_F3_XY(elevel->bounds[0], elevel->bounds[1]));
+    const int bw = elevel->bounds[2] - elevel->bounds[0], bh = elevel->bounds[3] - elevel->bounds[1];
+    batch_rectangle(NULL, B_F2(bw, ecamera->zoom));
+    batch_rectangle(NULL, B_F2(ecamera->zoom, bh));
+    batch_pos(B_F3_XY(elevel->bounds[2], 0.f));
+    batch_rectangle(NULL, B_F2(ecamera->zoom, bh));
+    batch_pos(B_F3_XY(0.f, elevel->bounds[3]));
+    batch_rectangle(NULL, B_F2(bw, ecamera->zoom));
+
+    if (ecursor->highlighted == NULL) {
+        const float size = 5.f * ((ecamera->zoom / 2.f) + 0.5f);
+        batch_pos(B_F3_XY(ecursor->pos[0] - size, ecursor->pos[1] - size));
+        batch_color(B_U4(255, 255, 0, 128));
+        batch_rectangle(NULL, B_F2_S(size * 2.f));
+    }
 }
 
 static void draw_ui() {
@@ -288,10 +387,51 @@ static void draw_ui() {
     cImGui_ImplOpenGL3_NewFrame();
     ImGui_NewFrame();
 
+    EditorCamera* ecamera = &editor->camera;
+
+    const ImGuiIO* io = ImGui_GetIO();
+    if (!io->WantCaptureKeyboard) {
+        if (ImGui_IsKeyPressed(ImGuiKey_G))
+            ecamera->show_grid = !ecamera->show_grid;
+
+        if (ImGui_IsKeyPressed(ImGuiKey_R)) {
+            ecamera->pos[0] = ecamera->pos[1] = ecamera->hold[0] = ecamera->hold[1] = 0.f;
+            ecamera->zoom = 1.f;
+        }
+    }
+
+    ImVec2 mpos = ImGui_GetMousePos();
+
+    if (ImGui_IsMouseClicked(ImGuiMouseButton_Middle)) {
+        ecamera->hold[0] = ecamera->pos[0] + (mpos.x * ecamera->zoom);
+        ecamera->hold[1] = ecamera->pos[1] + (mpos.y * ecamera->zoom);
+    }
+    if (ImGui_IsMouseDown(ImGuiMouseButton_Middle)) {
+        const float tx = ecamera->pos[0] + (mpos.x * ecamera->zoom), ty = ecamera->pos[1] + (mpos.y * ecamera->zoom);
+        ecamera->pos[0] += ecamera->hold[0] - tx;
+        ecamera->pos[1] += ecamera->hold[1] - ty;
+    }
+
+    const float wheel = io->MouseWheel;
+    if (wheel != 0.f) {
+        const float omx = ecamera->pos[0] + (mpos.x * ecamera->zoom), omy = ecamera->pos[1] + (mpos.y * ecamera->zoom);
+
+        ecamera->zoom -= wheel / ((ecamera->zoom > 1.f || (ecamera->zoom == 1.f && wheel < 0.f)) ? 4.f : 10.f);
+        ecamera->zoom = SDL_clamp(ecamera->zoom, 0.1f, 4.f);
+
+        ecamera->pos[0] -= (ecamera->pos[0] + (mpos.x * ecamera->zoom)) - omx;
+        ecamera->pos[1] -= (ecamera->pos[1] + (mpos.y * ecamera->zoom)) - omy;
+    }
+
+    move_cursor((Sint32[2]){
+        (Sint32)ecamera->pos[0] + (Sint32)(mpos.x * ecamera->zoom),
+        (Sint32)ecamera->pos[1] + (Sint32)(mpos.y * ecamera->zoom),
+    });
+
     if (ImGui_BeginMainMenuBar()) {
         if (ImGui_BeginMenu(LFMT("edit_file"))) {
             if (ImGui_MenuItem(LFMT("edit_new")))
-                clear_editor_state();
+                clear_level();
 
             if (ImGui_MenuItem(LFMT("edit_open")))
                 open_level_dialog();
@@ -308,7 +448,7 @@ static void draw_ui() {
         }
 
         if (ImGui_BeginMenu(LFMT("edit_level"))) {
-            EditorLevelState* elevel = &editor->level;
+            EditorLevel* elevel = &editor->level;
 
             if (ImGui_CollapsingHeader(LFMT("edit_strings"), 0)) {
                 ImGui_InputText(LFMT("edit_label"), elevel->label, sizeof(elevel->label), 0);
@@ -362,6 +502,16 @@ static void draw_ui() {
         }
 
         ImGui_MenuItem(LFMT("edit_markers"));
+
+        ImGui_Separator();
+        const EditorCursor* ecursor = &editor->cursor;
+        ImGui_Text("X: %i Y: %i", ecursor->pos[0], ecursor->pos[1]);
+        ImGui_Separator();
+        ImGui_Text("%s: %.0f%%", LFMT("edit_zoom"), 100.f / ecamera->zoom);
+        ImGui_Separator();
+        ImGui_Text("%s: %s, %ux%u", LFMT("edit_grid"), LFMT(ecamera->show_grid ? "edit_on" : "edit_off"),
+            ecursor->grid_size, ecursor->grid_size);
+        ImGui_Separator();
 
         ImGui_EndMainMenuBar();
     }
