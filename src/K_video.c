@@ -508,13 +508,14 @@ void load_texture(const char* name, AssetKeepLevel keep) {
 
     if (surface->format != SDL_PIXELFORMAT_RGBA32) {
         SDL_Surface* temp = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
-        SDL_DestroySurface(surface);
         if (temp == NULL) {
             WTF("Failed to convert texture \"%s\": %s", name, SDL_GetError());
+            SDL_DestroySurface(surface);
             SDL_free((void*)texture.base.name);
             return;
         }
 
+        SDL_DestroySurface(surface);
         surface = temp;
     }
 
@@ -1645,8 +1646,8 @@ static void dispose_surface_buffer(Surface* surface, SurfaceAttribute idx) {
     sdata->texture[idx] = 0;
 }
 
-static void
-check_surface_buffer(Surface* surface, SurfaceAttribute idx, Sint32 internal_format, Uint32 format, Uint32 type) {
+static void check_surface_buffer(
+    Surface* surface, SurfaceAttribute idx, Sint32 internal_format, Uint32 format, Uint32 type, const void* pixels) {
     if (surface->enabled[idx]) {
         if (((SurfaceInternal*)surface->internal)->texture[idx] != 0)
             return;
@@ -1663,17 +1664,16 @@ check_surface_buffer(Surface* surface, SurfaceAttribute idx, Sint32 internal_for
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, surface->size[0], surface->size[1], 0, format, type, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, surface->size[0], surface->size[1], 0, format, type, pixels);
 }
 
-/// Checks the surface for a valid framebuffer.
-void check_surface(Surface* surface) {
+static void check_surface_pro(Surface* surface, const void* pixels) {
     SurfaceInternal* sdata = surface->internal;
     if (sdata->fbo == 0)
         glGenFramebuffers(1, &sdata->fbo);
 
-    check_surface_buffer(surface, SURF_COLOR, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
-    check_surface_buffer(surface, SURF_DEPTH, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8);
+    check_surface_buffer(surface, SURF_COLOR, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    check_surface_buffer(surface, SURF_DEPTH, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
 
     const GLuint last_fbo = (current_surface == NULL) ? 0 : ((SurfaceInternal*)current_surface->internal)->fbo;
     glBindFramebuffer(GL_FRAMEBUFFER, sdata->fbo);
@@ -1684,6 +1684,11 @@ void check_surface(Surface* surface) {
             GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, sdata->texture[SURF_DEPTH], 0);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, last_fbo);
+}
+
+/// Checks the surface for a valid framebuffer.
+void check_surface(Surface* surface) {
+    check_surface_pro(surface, NULL);
 }
 
 /// Nukes the surface's framebuffer.
@@ -1750,6 +1755,35 @@ void pop_surface() {
     }
 
     current_surface = surface;
+}
+
+Surface* create_surface_from_file(const char* filename) {
+    if (filename == NULL)
+        return NULL;
+
+    SDL_Surface* isurf = SDL_LoadPNG(filename);
+    if (isurf == NULL) {
+        WTF("Failed to load image file \"%s\": %s", filename, SDL_GetError());
+        return NULL;
+    }
+
+    if (isurf->format != SDL_PIXELFORMAT_RGBA32) {
+        SDL_Surface* temp = SDL_ConvertSurface(isurf, SDL_PIXELFORMAT_RGBA32);
+        if (temp == NULL) {
+            WTF("Failed to convert image file \"%s\": %s", filename, SDL_GetError());
+            SDL_DestroySurface(isurf);
+            return NULL;
+        }
+
+        SDL_DestroySurface(isurf);
+        isurf = temp;
+    }
+
+    Surface* surface = create_surface(isurf->w, isurf->h, TRUE, FALSE);
+    check_surface_pro(surface, isurf->pixels);
+    SDL_DestroySurface(isurf);
+
+    return surface;
 }
 
 // ========

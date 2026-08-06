@@ -263,7 +263,7 @@ void set_model_matrix(mat4), set_view_matrix(mat4), set_projection_matrix(mat4);
 void apply_matrices();
 
 // Surfaces
-Surface* create_surface(Uint16, Uint16, Bool, Bool);
+Surface *create_surface(Uint16, Uint16, Bool, Bool), *create_surface_from_file(const char*);
 void destroy_surface(Surface*);
 void check_surface(Surface*), dispose_surface(Surface*);
 void resize_surface(Surface*, Uint16, Uint16);
