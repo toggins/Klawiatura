@@ -468,35 +468,39 @@ static void draw_ui() {
         }
     }
 
-    ImVec2 mpos = ImGui_GetMousePos();
+    if (!io->WantCaptureMouse) {
+        ImVec2 mpos = ImGui_GetMousePos();
 
-    if (ImGui_IsMouseClicked(ImGuiMouseButton_Middle)) {
-        ecamera->hold[0] = ecamera->pos[0] + (mpos.x * ecamera->zoom);
-        ecamera->hold[1] = ecamera->pos[1] + (mpos.y * ecamera->zoom);
+        if (ImGui_IsMouseClicked(ImGuiMouseButton_Middle)) {
+            ecamera->hold[0] = ecamera->pos[0] + (mpos.x * ecamera->zoom);
+            ecamera->hold[1] = ecamera->pos[1] + (mpos.y * ecamera->zoom);
+        }
+        if (ImGui_IsMouseDown(ImGuiMouseButton_Middle)) {
+            const float tx = ecamera->pos[0] + (mpos.x * ecamera->zoom),
+                        ty = ecamera->pos[1] + (mpos.y * ecamera->zoom);
+            ecamera->pos[0] += ecamera->hold[0] - tx;
+            ecamera->pos[1] += ecamera->hold[1] - ty;
+        }
+
+        const float wheel = io->MouseWheel;
+        if (wheel != 0.f) {
+            const float omx = ecamera->pos[0] + (mpos.x * ecamera->zoom),
+                        omy = ecamera->pos[1] + (mpos.y * ecamera->zoom);
+
+            ecamera->zoom -= wheel / ((ecamera->zoom > 1.f || (ecamera->zoom == 1.f && wheel < 0.f)) ? 4.f : 10.f);
+            ecamera->zoom = SDL_clamp(ecamera->zoom, 0.1f, 5.f);
+
+            ecamera->pos[0] -= (ecamera->pos[0] + (mpos.x * ecamera->zoom)) - omx;
+            ecamera->pos[1] -= (ecamera->pos[1] + (mpos.y * ecamera->zoom)) - omy;
+        }
+
+        move_cursor(
+            (Sint32[2]){
+                (Sint32)ecamera->pos[0] + (Sint32)(mpos.x * ecamera->zoom),
+                (Sint32)ecamera->pos[1] + (Sint32)(mpos.y * ecamera->zoom),
+            },
+            !ImGui_IsKeyDown(ImGuiKey_LeftShift));
     }
-    if (ImGui_IsMouseDown(ImGuiMouseButton_Middle)) {
-        const float tx = ecamera->pos[0] + (mpos.x * ecamera->zoom), ty = ecamera->pos[1] + (mpos.y * ecamera->zoom);
-        ecamera->pos[0] += ecamera->hold[0] - tx;
-        ecamera->pos[1] += ecamera->hold[1] - ty;
-    }
-
-    const float wheel = io->MouseWheel;
-    if (wheel != 0.f) {
-        const float omx = ecamera->pos[0] + (mpos.x * ecamera->zoom), omy = ecamera->pos[1] + (mpos.y * ecamera->zoom);
-
-        ecamera->zoom -= wheel / ((ecamera->zoom > 1.f || (ecamera->zoom == 1.f && wheel < 0.f)) ? 4.f : 10.f);
-        ecamera->zoom = SDL_clamp(ecamera->zoom, 0.1f, 5.f);
-
-        ecamera->pos[0] -= (ecamera->pos[0] + (mpos.x * ecamera->zoom)) - omx;
-        ecamera->pos[1] -= (ecamera->pos[1] + (mpos.y * ecamera->zoom)) - omy;
-    }
-
-    move_cursor(
-        (Sint32[2]){
-            (Sint32)ecamera->pos[0] + (Sint32)(mpos.x * ecamera->zoom),
-            (Sint32)ecamera->pos[1] + (Sint32)(mpos.y * ecamera->zoom),
-        },
-        !ImGui_IsKeyDown(ImGuiKey_LeftShift));
 
     if (ImGui_BeginMainMenuBar()) {
         if (ImGui_BeginMenu(LFMT("edit_file"))) {
