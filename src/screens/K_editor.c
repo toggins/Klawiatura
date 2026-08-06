@@ -33,6 +33,12 @@ typedef struct {
     const char* ptr;
 } EditorAsync;
 
+typedef struct EditorFolder {
+    const char* name;
+    struct EditorFolder* folders;
+    const char** defs;
+} EditorFolder;
+
 typedef struct {
     Uint16 grid_size;
     Sint32 pos[2];
@@ -65,6 +71,8 @@ typedef struct {
     EditorAsync async[ASYNC_SIZE];
     const char* error;
     Surface* blueprint;
+
+    EditorFolder* folders;
 } Editor;
 
 extern SDL_Window* WINDOW;
@@ -328,6 +336,89 @@ static void open_blueprint_dialog() {
     SDL_ShowOpenFileDialog(open_blueprint_async, NULL, WINDOW, &filter, 1, NULL, FALSE);
 }
 
+// @NOLINTBEGIN(misc-no-recursion)
+static void create_folder(EditorFolder* parent, yyjson_val* jval) {
+    Bool append = FALSE;
+    size_t append_idx = 0;
+
+    EditorFolder folder = {0};
+    if (parent == NULL) {
+        if (editor->folders != NULL)
+            folder = *editor->folders;
+    } else {
+        const char* name = yyjson_get_str(yyjson_obj_get(jval, "name"));
+        if (name != NULL) {
+            for (size_t i = 0, n = TinyDLength(parent->folders); i < n; i++) {
+                EditorFolder* ofolder = &parent->folders[i];
+                if (ofolder->name == NULL || SDL_strcmp(name, ofolder->name) != 0)
+                    continue;
+
+                append = TRUE;
+                append_idx = i;
+                folder = *ofolder;
+                break;
+            }
+        }
+    }
+
+    yyjson_val* jarr = jval;
+    if (yyjson_is_obj(jval)) {
+        if (folder.name == NULL) {
+            const char* name = yyjson_get_str(yyjson_obj_get(jval, "name"));
+            if (name != NULL) {
+                folder.name = SDL_strdup(name);
+                if (folder.name == NULL)
+                    WARN("Failed to allocate editor folder \"%s\" name", name);
+            }
+        }
+
+        jarr = yyjson_obj_get(jval, "items");
+    }
+
+    for (size_t i = 0, n = yyjson_arr_size(jarr); i < n; i++) {
+        yyjson_val* jval2 = yyjson_arr_get(jarr, i);
+        if (yyjson_is_obj(jval2)) {
+            create_folder(&folder, jval2);
+        } else if (yyjson_is_str(jval2)) {
+            const char *odef = yyjson_get_str(jval2), *def = SDL_strdup(odef);
+            if (def == NULL) {
+                WARN("Failed to allocate editor folder \"%s\" def \"%s\"", folder.name, odef);
+                continue;
+            }
+
+            if (folder.defs == NULL)
+                folder.defs = (const char**)MakeTinyDPro(1, sizeof(*folder.defs));
+            folder.defs = (const char**)TinyDPush((void*)folder.defs, (void*)&def);
+        }
+    }
+
+    if (parent == NULL) {
+        if (editor->folders == NULL) {
+            editor->folders = SDL_malloc(sizeof(folder));
+            EXPECT(editor->folders, "Failed to allocate editor folder \"%s\"", folder.name);
+        }
+        *editor->folders = folder;
+    } else if (append && parent->folders != NULL) {
+        parent->folders[append_idx] = folder;
+    } else {
+        if (parent->folders == NULL)
+            parent->folders = MakeTinyDPro(1, sizeof(*parent->folders));
+        parent->folders = TinyDPush(parent->folders, &folder);
+    }
+}
+// @NOLINTEND(misc-no-recursion)
+
+static void iterate_editor_file(const char* filename, const void* buffer, size_t size, void* userdata) {
+    (void)filename;
+    (void)userdata;
+
+    yyjson_doc* json = read_json(buffer, size, NULL);
+    if (json != NULL) {
+        create_folder(NULL, yyjson_obj_get(yyjson_doc_get_root(json), "items"));
+        yyjson_doc_free(json);
+    }
+}
+
 static void start(const void* secret, size_t secret_size) {
     (void)secret;
     (void)secret_size;
@@ -346,7 +437,26 @@ static void start(const void* secret, size_t secret_size) {
     editor->cursor.grid_size = 32;
     editor->camera.show_grid = TRUE;
     editor->camera.zoom = 1.f;
+
+    iterate_data_files("editor.json", TRUE, iterate_editor_file, NULL);
 }
+
+// @NOLINTBEGIN(misc-no-recursion)
+static void destroy_folder(EditorFolder* folder) {
+    SDL_free((void*)folder->name);
+
+    for (size_t i = 0, n = TinyDLength(folder->folders); i < n; i++)
+        destroy_folder(&folder->folders[i]);
+    FreeTinyD(folder->folders);
+
+    for (size_t i = 0, n = TinyDLength((void*)folder->defs); i < n; i++)
+        SDL_free((void*)folder->defs[i]);
+    FreeTinyD((void*)folder->defs);
+
+    if (folder == editor->folders)
+        SDL_free(folder);
+}
+// @NOLINTEND(misc-no-recursion)
 
 static void end() {
     cImGui_ImplOpenGL3_Shutdown();
@@ -357,6 +467,7 @@ static void end() {
         clear_async(i);
     clear_level();
     destroy_surface(editor->blueprint);
+    destroy_folder(editor->folders);
     SDL_free(editor);
 
     rediscover_levels();
@@ -446,6 +557,24 @@ static void draw() {
     batch_pos(B_F3_XY(0.f, elevel->bounds[3]));
     batch_rectangle(NULL, B_F2(bw, ecamera->zoom));
 }
+
+// @NOLINTBEGIN(misc-no-recursion)
+static void show_folder(EditorFolder* folder) {
+    if (folder == NULL)
+        return;
+
+    for (size_t i = 0, n = TinyDLength(folder->folders); i < n; i++) {
+        EditorFolder* fold = &folder->folders[i];
+        if (ImGui_BeginMenu(fold->name)) {
+            show_folder(fold);
+            ImGui_EndMenu();
+        }
+    }
+
+    for (size_t i = 0, n = TinyDLength((void*)folder->defs); i < n; i++)
+        ImGui_MenuItem(folder->defs[i]);
+}
+// @NOLINTEND(misc-no-recursion)
 
 static void draw_ui() {
     cImGui_ImplSDL3_NewFrame();
@@ -575,7 +704,10 @@ static void draw_ui() {
             ImGui_EndMenu();
         }
 
-        ImGui_MenuItem(LFMT("edit_markers"));
+        if (ImGui_BeginMenu(LFMT("edit_markers"))) {
+            show_folder(editor->folders);
+            ImGui_EndMenu();
+        }
 
         ImGui_Separator();
         const EditorCursor* ecursor = &editor->cursor;

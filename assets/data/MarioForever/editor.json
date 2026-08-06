@@ -1,0 +1,85 @@
+{
+    "defs": {
+        "Gradient Background": {
+            "type": "backdrop",
+            "scalable": true,
+            "depth": 200
+        },
+        "Grass Top Left": {
+            "type": "backdrop",
+            "sprite": "tile/grass/0",
+            "depth": 20
+        },
+        "Grass Top": {
+            "type": "backdrop",
+            "sprite": "tile/grass/1",
+            "depth": 20
+        },
+        "Grass Top Right": {
+            "type": "backdrop",
+            "sprite": "tile/grass/2",
+            "depth": 20
+        },
+        "Grass Left": {
+            "type": "backdrop",
+            "sprite": "tile/grass/3",
+            "depth": 20
+        },
+        "Grass Middle": {
+            "type": "backdrop",
+            "sprite": "tile/grass/4",
+            "depth": 20
+        },
+        "Grass Right": {
+            "type": "backdrop",
+            "sprite": "tile/grass/5",
+            "depth": 20
+        },
+        "Grass Bottom Left": {
+            "type": "backdrop",
+            "sprite": "tile/grass/6",
+            "depth": 20
+        },
+        "Grass Bottom": {
+            "type": "backdrop",
+            "sprite": "tile/grass/7",
+            "depth": 20
+        },
+        "Grass Bottom Right": {
+            "type": "backdrop",
+            "sprite": "tile/grass/8",
+            "depth": 20
+        },
+        "Block": {
+            "type": "backdrop",
+            "sprite": "tile/grass/8",
+            "depth": 20
+        }
+    },
+
+    "items": [
+        {
+            "name": "Backgrounds",
+            "items": ["Gradient Background"]
+        },
+        {
+            "name": "Tiles",
+            "items": [
+                {
+                    "name": "Grass",
+                    "items": [
+                        "Grass Top Left",
+                        "Grass Top",
+                        "Grass Top Right",
+                        "Grass Left",
+                        "Grass Middle",
+                        "Grass Right",
+                        "Grass Bottom Left",
+                        "Grass Bottom",
+                        "Grass Bottom Right"
+                    ]
+                }
+            ]
+        }
+    ]
+}
