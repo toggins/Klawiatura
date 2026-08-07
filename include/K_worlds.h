@@ -30,6 +30,7 @@ typedef struct WorldContext {
 
 void worlds_init(), worlds_teardown();
 
+void rediscover_worlds();
 const World *get_world(const char*), *get_world_key(TinyHash);
 const char *next_world_from(const char*), *last_world_from(const char*);
 yyjson_doc* load_world_json(const char*, const char**);

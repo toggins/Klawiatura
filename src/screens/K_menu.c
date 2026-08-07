@@ -6,6 +6,7 @@
 #include "K_file.h"
 #include "K_input.h"
 #include "K_interface.h"
+#include "K_levels.h"
 #include "K_locale.h"
 #include "K_net.h"
 #include "K_replay.h"
@@ -26,6 +27,7 @@ enum {
     MEN_HOST_LOBBY,
     MEN_LOBBY_LIST,
     MEN_LOBBY,
+    MEN_EDITOR,
 
     MEN_SIZE,
 };
@@ -38,10 +40,11 @@ static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_menu(), kick_playe
     character_disabled();
 
 static const char *fmt_max_peers(size_t), *fmt_visibility(size_t), *fmt_lobby(), *fmt_character(size_t),
-    *fmt_powerup(size_t), *fmt_enter_as(size_t), *fmt_world(size_t), *fmt_start(size_t), *fmt_kick_player(size_t);
-static void multiplayer_option(), options_option(), editor_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8),
-    host_option(), character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option(),
-    world_cycle(Sint8), start_option();
+    *fmt_powerup(size_t), *fmt_enter_as(size_t), *fmt_world(size_t), *fmt_start(size_t), *fmt_kick_player(size_t),
+    *fmt_test_level(size_t);
+static void multiplayer_option(), options_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8), host_option(),
+    character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option(), world_cycle(Sint8),
+    start_option(), go_to_editor_option(), test_level_cycle(Sint8), test_level_option();
 
 static Catalog CATALOG = {
 	.current = MEN_MAIN,
@@ -74,15 +77,19 @@ static Catalog CATALOG = {
 		[MEN_LOBBY_LIST] = {
 			.name = "opt_find_lobby",
 			.enter = enter_lobby_list_menu,
-			.tick = tick_lobby_list_menu
+			.tick = tick_lobby_list_menu,
 		},
 
         [MEN_LOBBY] = {
 			.fmt = fmt_lobby,
 			.leave = leave_lobby_menu,
 			.tick = tick_lobby_menu,
-			.draw = draw_lobby_menu
+			.draw = draw_lobby_menu,
 		},
+
+        [MEN_EDITOR] = {
+			.name = "opt_editor",
+        }
 	},
 
 	.options = {
@@ -91,7 +98,7 @@ static Catalog CATALOG = {
 			{.name = "opt_multiplayer", .callback = multiplayer_option},
             {.name = "opt_replays", .menu = MEN_REPLAYS},
 #ifndef SDL_PLATFORM_EMSCRIPTEN
-            {.name = "opt_editor", .callback = editor_option},
+            {.name = "opt_editor", .menu = MEN_EDITOR},
 #endif
 			{.name = "opt_options", .callback = options_option},
 #ifndef SDL_PLATFORM_EMSCRIPTEN
@@ -128,7 +135,14 @@ static Catalog CATALOG = {
             {.name = "opt_options", .callback = options_option},
             {.fmt = fmt_kick_player, .disabled = kick_player_disabled, .callback = kick_player_option},
             {.fmt = fmt_start, .disabled = start_disabled, .callback = start_option},
-        }
+        },
+
+        [MEN_EDITOR] = {
+            {.name = "opt_go_to_editor", .callback = go_to_editor_option},
+            {.fmt = fmt_test_level, .cycle = test_level_cycle, .callback = test_level_option},
+            {},
+            {.name = "opt_open_data_folder", .callback = open_data_folder},
+        },
 	}
 };
 
@@ -608,7 +622,31 @@ static void options_option() {
     create_ui(UI_OPTIONS, NULL);
 }
 
-static void editor_option() {
+static const char* fmt_test_level(size_t idx) {
+    (void)idx;
+
+    const Level* level = get_level(CLIENT.level);
+    return fmt("%s: %s", LFMT("opt_test_level"), (level == NULL) ? NULL : LFMT(fmt("lvl_%s", level->name)));
+}
+
+static void test_level_cycle(Sint8 cycle) {
+    const char* lstr
+        = (cycle > 0) ? next_level_from(CLIENT.level) : ((cycle < 0) ? last_level_from(CLIENT.level) : NULL);
+    if (lstr == NULL)
+        CLIENT.level[0] = '\0';
+    else
+        SDL_strlcpy(CLIENT.level, lstr, sizeof(CLIENT.level));
+}
+
+static void test_level_option() {
+    WorldContext wctx = init_world_context(0);
+    start_world(&wctx);
+
+    GameContext gctx = init_game_context(worldcontext(), StHashStr(CLIENT.level));
+    jump_to_game(&gctx, TRUE);
+}
+
+static void go_to_editor_option() {
     set_screen(SCR_EDITOR, NULL, 0);
 }
 

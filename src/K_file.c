@@ -4,74 +4,110 @@
 
 #include "K_cmake.h"
 #include "K_file.h"
+#include "K_game.h"
+#include "K_levels.h"
 #include "K_log.h"
 #include "K_memory.h" // IWYU pragma: export
+#include "K_net.h"
 #include "K_string.h"
+#include "K_worlds.h"
 
 typedef struct Mod {
-    const char* path;
-    struct Mod *previous, *next;
+    const char *name, *path;
 } Mod;
 
-static const char *base_path = NULL, *user_path = NULL;
+static const char *base_path = NULL, *data_path = NULL, *user_path = NULL;
 
-static Mod *mods = NULL, *last_mod = NULL;
+static Mod* mods = NULL;
 
-static void load_mod(const char* path) {
-    const size_t plen = SDL_strlen(path);
-    if (plen > 0 && path[plen - 1] != '/')
-        path = fmt("%s/", path);
+static void clear_mods() {
+    for (size_t i = 0, n = TinyDLength(mods); i < n; i++) {
+        Mod* mod = &mods[i];
+        SDL_free((void*)mod->name);
+        SDL_free((void*)mod->path);
+    }
 
-    if (path[0] == '$')
-        path = fmt("%sdata/%s", base_path, path + 1);
-
-    SDL_PathInfo pinfo = {0};
-    SDL_GetPathInfo(path, &pinfo);
-    ASSUME(pinfo.type == SDL_PATHTYPE_DIRECTORY, "Invalid mod \"%s\"", path);
-
-    Mod* mod = SDL_calloc(1, sizeof(*mod));
-    EXPECT(mod, "Failed to allocate mod \"%s\"", path);
-
-    mod->path = SDL_strdup(path);
-    EXPECT(mod->path, "Failed to allocate path for mod \"%s\": %s", path, SDL_GetError());
-
-    if (mods == NULL)
-        mods = mod;
-    if (last_mod != NULL)
-        last_mod->next = mod;
-    mod->previous = last_mod;
-    last_mod = mod;
-
-    INFO("Added mod \"%s\"", path);
+    FreeTinyD(mods);
+    mods = NULL;
 }
 
-void file_init(const char** load_mods) {
+static int qsort_callback(const void* a, const void* b) {
+    return SDL_strcmp(*(char**)a, *(char**)b);
+}
+
+static void rediscover_mods_pro() {
+    clear_mods();
+
+    INFO("Discovering mods");
+
+    int count = 0;
+    char** files = SDL_GlobDirectory(data_path, "*", 0, &count);
+    if (files != NULL) {
+        SDL_qsort((void*)files, count, sizeof(*files), qsort_callback);
+        for (int i = 0; i < count; i++) {
+            const char* file = files[i];
+            const char* path = fmt("%s%s/", data_path, file);
+
+            SDL_PathInfo pinfo = {0};
+            SDL_GetPathInfo(path, &pinfo);
+            if (pinfo.type != SDL_PATHTYPE_DIRECTORY)
+                continue;
+
+            Mod mod = {0};
+
+            mod.name = SDL_strdup(file);
+            EXPECT(mod.name, "Failed to allocate mod \"%s\" name", file);
+
+            mod.path = SDL_strdup(path);
+            EXPECT(mod.path, "Failed to allocate mod \"%s\" path", file);
+
+            if (mods == NULL)
+                mods = MakeTinyDPro(1, sizeof(Mod));
+            mods = TinyDPush(mods, &mod);
+
+            INFO("%i. %s", i + 1, file);
+        }
+
+        SDL_free((void*)files);
+    }
+}
+
+void file_init(const char* dpath) {
     base_path = SDL_GetBasePath();
     EXPECT(base_path, "Failed to get base path: %s", SDL_GetError());
+
+    if (dpath == NULL)
+        dpath = fmt("%sdata/", base_path);
+    data_path = SDL_strdup((dpath[SDL_strlen(dpath) - 1] == '/') ? dpath : fmt("%s/", dpath));
+    EXPECT(data_path, "Failed to allocate data path");
 
     user_path = SDL_GetPrefPath("toggins", GAME_NAME);
     EXPECT(user_path, "Failed to get user path: %s", SDL_GetError());
 
-    // Load mods
-    if (load_mods == NULL) {
-        load_mod("$MarioForever");
-        load_mod("$MarioTogether");
-    } else {
-        for (size_t i = 0, n = TinyDLength((void*)load_mods); i < n; i++)
-            load_mod(load_mods[i]);
-        FreeTinyD((void*)load_mods);
-    }
+    rediscover_mods();
 }
 
 void file_teardown() {
-    while (mods != NULL) {
-        Mod* mod = mods;
-        SDL_free((void*)mod->path);
-        mods = mod->next;
-        SDL_free(mod);
-    }
+    clear_mods();
 
+    SDL_free((void*)data_path);
     SDL_free((void*)user_path);
+}
+
+void rediscover_mods() {
+    rediscover_mods_pro();
+    rediscover_levels();
+    rediscover_worlds();
+    recalculate_game_hash();
+    update_net_game_id();
+}
+
+void open_data_folder() {
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    WARN("Not implemented for Emscripten");
+#else
+    SDL_OpenURL(fmt("file:///%s", data_path));
+#endif
 }
 
 void open_user_folder() {
@@ -160,8 +196,9 @@ SDL_IOStream* stream_base_file(const char* filename) {
 }
 
 void* load_data_file(const char* filename, size_t* size) {
-    for (const Mod* mod = last_mod; mod != NULL; mod = mod->previous) {
-        void* buffer = load_file(mod->path, filename, size);
+    size_t i = TinyDLength(mods);
+    while (i-- > 0) {
+        void* buffer = load_file(mods[i].path, filename, size);
         if (buffer != NULL)
             return buffer;
     }
@@ -170,8 +207,9 @@ void* load_data_file(const char* filename, size_t* size) {
 }
 
 SDL_IOStream* stream_data_file(const char* filename, const char* ignore_ext) {
-    for (const Mod* mod = last_mod; mod != NULL; mod = mod->previous) {
-        SDL_IOStream* io = stream_file(mod->path, filename, FALSE, ignore_ext);
+    size_t i = TinyDLength(mods);
+    while (i-- > 0) {
+        SDL_IOStream* io = stream_file(mods[i].path, filename, FALSE, ignore_ext);
         if (io != NULL)
             return io;
     }
@@ -180,8 +218,9 @@ SDL_IOStream* stream_data_file(const char* filename, const char* ignore_ext) {
 }
 
 yyjson_doc* load_data_json(const char* filename) {
-    for (const Mod* mod = last_mod; mod != NULL; mod = mod->previous) {
-        yyjson_doc* json = load_json(mod->path, filename);
+    size_t i = TinyDLength(mods);
+    while (i-- > 0) {
+        yyjson_doc* json = load_json(mods[i].path, filename);
         if (json != NULL)
             return json;
     }
@@ -192,7 +231,9 @@ yyjson_doc* load_data_json(const char* filename) {
 void iterate_data_files(const char* pattern, Bool load_files,
     void (*callback)(const char* filename, const void* buffer, size_t size, void* userdata), void* userdata) {
     int count = 0;
-    for (const Mod* mod = mods; mod != NULL; mod = mod->next) {
+    for (size_t i = 0, n = TinyDLength(mods); i < n; i++) {
+        const Mod* mod = &mods[i];
+
         char** files = SDL_GlobDirectory(mod->path, pattern, 0, &count);
         if (files == NULL)
             continue;
@@ -295,17 +336,18 @@ const char* filename_no_ext(const char* path) {
 void CALCULATE_GAME_HASH(Uint32* ptr) {
     Uint32 mid = 1;
     int count = 0;
-    for (const Mod* mod = mods; mod != NULL; mod = mod->next) {
+    for (size_t i = 0, n = TinyDLength(mods); i < n; i++) {
+        const Mod* mod = &mods[i];
         Uint32 subhash = 0;
 
         char** files = SDL_GlobDirectory(mod->path, "worlds/*", 0, &count);
         if (files != NULL) {
             if (count > 0) {
-                for (int i = 0; i < count; i++) {
+                for (int j = 0; j < count; j++) {
                     size_t len = 0;
-                    Uint8* data = SDL_LoadFile(fmt("%s%s", mod->path, files[i]), &len);
-                    for (size_t j = 0; j < len; j++)
-                        subhash += data[j];
+                    Uint8* data = SDL_LoadFile(fmt("%s%s", mod->path, files[j]), &len);
+                    for (size_t k = 0; k < len; k++)
+                        subhash += data[k];
                     SDL_free(data);
                 }
 
@@ -318,11 +360,11 @@ void CALCULATE_GAME_HASH(Uint32* ptr) {
         files = SDL_GlobDirectory(mod->path, "levels/*", 0, &count);
         if (files != NULL) {
             if (count > 0) {
-                for (int i = 0; i < count; i++) {
+                for (int j = 0; j < count; j++) {
                     size_t len = 0;
-                    Uint8* data = SDL_LoadFile(fmt("%s%s", mod->path, files[i]), &len);
-                    for (size_t j = 0; j < len; j++)
-                        subhash += data[j];
+                    Uint8* data = SDL_LoadFile(fmt("%s%s", mod->path, files[j]), &len);
+                    for (size_t k = 0; k < len; k++)
+                        subhash += data[k];
                     SDL_free(data);
                 }
 

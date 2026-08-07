@@ -41,10 +41,10 @@ Multiplayer is the main kicker of this project. You can host and find lobbies th
 
 You can adjust Klawiatura with these launch options:
 
-| Command               | Arguments | Description                                                                                                                                                                                              |
-| --------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-m`, `-mod`          | `<path>`  | Adds a mod folder to load assets from. Prefix with `$` to get a path relative to the game's base folder.<br>If no mods are specified, the game will add `$MarioForever` and `$MarioTogether` by default. |
-| `-s`, `-force_shader` |           | Skip checking supported OpenGL extensions. Useful if running under RenderDoc or WSL, where the checks fail even if the game runs fine otherwise.                                                         |
+| Command               | Arguments | Description                                                                                                                                         |
+| --------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-d`, `-data`         | `<path>`  | Sets the data folder path to load mods from. Note that every folder in this path will be considered a mod and will be loaded in alphabetical order. |
+| `-s`, `-force_shader` |           | Skip checking supported OpenGL extensions. Useful if running under RenderDoc or WSL, where the checks fail even if the game runs fine otherwise.    |
 
 ## Building This Yourself
 

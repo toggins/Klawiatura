@@ -2,6 +2,7 @@
 #include "K_file.h"
 #include "K_interface.h"
 #include "K_log.h"
+#include "K_net.h"
 #include "K_string.h"
 #include "K_worlds.h"
 
@@ -44,25 +45,33 @@ static void iterate_world_file(const char* filename, const void* buffer, size_t 
     yyjson_doc_free(json);
 
     const TinyHash key = StHashStr(name);
-    if (TinyMapGet(&worlds, key) == NULL)
+    if (TinyMapGet(&worlds, key) == NULL) {
+        if (world_array == NULL)
+            world_array = MakeTinyDPro(1, sizeof(*world_array));
         world_array = TinyDPush(world_array, &key);
+    }
     TinyMapPut(&worlds, key, &world, sizeof(world))->cleanup = nuke_world;
 }
 
 void worlds_init() {
-    world_array = MakeTinyD(TinyHash);
-
-    iterate_data_files("worlds/*", TRUE, iterate_world_file, NULL);
-
-    TinyMapIterator iter = TinyMapIter(&worlds);
-
-    if (TinyDLength(world_array) > 0)
-        SDL_strlcpy(CLIENT.world, get_world_key(world_array[0])->name, sizeof(CLIENT.world));
+    rediscover_worlds();
 }
 
 void worlds_teardown() {
     FreeTinyMap(&worlds);
     FreeTinyD(world_array);
+}
+
+void rediscover_worlds() {
+    FreeTinyMap(&worlds);
+    FreeTinyD(world_array);
+    world_array = NULL;
+
+    iterate_data_files("worlds/*", TRUE, iterate_world_file, NULL);
+    if (TinyDLength(world_array) > 0)
+        SDL_strlcpy(CLIENT.world, get_world_key(world_array[0])->name, sizeof(CLIENT.world));
+    else
+        CLIENT.world[0] = '\0';
 }
 
 const World* get_world(const char* name) {
@@ -182,7 +191,15 @@ void jump_to_world(const WorldContext* wctx, Bool as_host) {
         return;
 
     const World* world = get_world_key(wctx->world);
-    ASSUME(world, "Invalid world key %" SDL_PRIu64, wctx->world);
+    if (world == NULL) {
+        if (get_screen() != SCR_MENU) {
+            bail_from_game();
+            set_screen(SCR_MENU, NULL, 0);
+        }
+
+        WTF("Invalid world key %" SDL_PRIu64, wctx->world);
+        return;
+    }
 
     spread_world_packet(wctx);
     if (world->has_map) {

@@ -1,8 +1,10 @@
+#include "K_cmd.h"
 #include "K_levels.h"
 #include "K_log.h"
 #include "K_string.h"
 
 static TinyMap levels = {0};
+static TinyHash* level_array = NULL;
 
 static void nuke_level(void* ptr) {
     Level* level = ptr;
@@ -35,7 +37,13 @@ static void iterate_level_file(const char* filename, const void* buffer, size_t 
 
     yyjson_doc_free(json);
 
-    TinyDictPut(&levels, name, &level, sizeof(level))->cleanup = nuke_level;
+    const TinyHash key = StHashStr(name);
+    if (TinyMapGet(&levels, key) == NULL) {
+        if (level_array == NULL)
+            level_array = MakeTinyDPro(1, sizeof(*level_array));
+        level_array = TinyDPush(level_array, &key);
+    }
+    TinyMapPut(&levels, key, &level, sizeof(level))->cleanup = nuke_level;
 }
 
 void levels_init() {
@@ -44,11 +52,19 @@ void levels_init() {
 
 void levels_teardown() {
     FreeTinyMap(&levels);
+    FreeTinyD(level_array);
 }
 
 void rediscover_levels() {
     FreeTinyMap(&levels);
+    FreeTinyD(level_array);
+    level_array = NULL;
+
     iterate_data_files("levels/*", TRUE, iterate_level_file, NULL);
+    if (TinyDLength(level_array) > 0)
+        SDL_strlcpy(CLIENT.level, get_level_key(level_array[0])->name, sizeof(CLIENT.level));
+    else
+        CLIENT.level[0] = '\0';
 }
 
 const Level* get_level(const char* name) {
@@ -57,6 +73,40 @@ const Level* get_level(const char* name) {
 
 const Level* get_level_key(TinyHash key) {
     return (Level*)TinyMapGet(&levels, key);
+}
+
+const char* next_level_from(const char* name) {
+    const TinyHash key = StHashStr(name);
+
+    const Level* level = NULL;
+    const size_t n = TinyDLength(level_array);
+    for (size_t i = 0; i < n; i++) {
+        if (key == level_array[i]) {
+            level = get_level_key(level_array[(i + 1) % n]);
+            break;
+        }
+    }
+
+    if (level == NULL && n > 0)
+        level = get_level_key(level_array[0]);
+    return (level == NULL) ? NULL : level->name;
+}
+
+const char* last_level_from(const char* name) {
+    const TinyHash key = StHashStr(name);
+
+    const Level* level = NULL;
+    const size_t n = TinyDLength(level_array);
+    for (size_t i = 0; i < n; i++) {
+        if (key == level_array[i]) {
+            level = get_level_key(level_array[(i > 0) ? (i - 1) : (n - 1)]);
+            break;
+        }
+    }
+
+    if (level == NULL && n > 0)
+        level = get_level_key(level_array[0]);
+    return (level == NULL) ? NULL : level->name;
 }
 
 yyjson_doc* load_level_json(const char* name, const char** err) {

@@ -30,26 +30,21 @@
 #include "K_interface.h"
 #include "K_levels.h"
 #include "K_locale.h"
+#include "K_net.h"
 #include "K_os.h"
 #include "K_video.h"
 #include "K_worlds.h"
 
-static const char** mods = NULL;
+static const char* data_path = NULL;
 
-static void cmd_mod() {
-    const char* path = next_arg();
-    if (path == NULL)
-        return;
-
-    if (mods == NULL)
-        mods = (const char**)MakeTinyDPro(3, sizeof(*mods));
-    mods = (const char**)TinyDPush((void*)mods, (void*)&path);
+static void cmd_data() {
+    data_path = next_arg();
 }
 
 MAKE_FLAG(force_shader);
 
 CmdArg CMDLINE[] = {
-    {"-m", "-mod",          cmd_mod              },
+    {"-d", "-data",         cmd_data             },
     {"-s", "-force_shader", CMD_OPT(force_shader)},
     {NULL, NULL,            NULL                 },
 };
@@ -85,7 +80,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     log_init();
     EXPECT(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS),
         "Failed to initialize SDL: %s", SDL_GetError());
-    file_init(mods);
+    file_init(data_path);
     video_init(force_shader);
     audio_init();
     locale_init();

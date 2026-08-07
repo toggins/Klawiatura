@@ -1,6 +1,6 @@
 #pragma once
 
-#include "K_net.h"
+#include "K_game.h"
 
 #define DEFAULT_NAME "Player"
 #define DEFAULT_LANGUAGE "en"
@@ -21,16 +21,18 @@ typedef struct {
 } CmdArg;
 
 typedef struct {
-    char name[CLIENT_STRING_MAX];
-    char language[CLIENT_STRING_MAX];
+    char name[32];
+    char language[256];
 
-    char world[64];
+    char world[256];
+    char level[256];
     PlayerCharacter character;
     PlayerPowerup powerup;
-    Bool xscroll, seen_xscroll_notice, record_replay;
+    Bool xscroll, seen_xscroll_notice;
+    Bool record_replay;
 
     Bool seen_online_notice;
-    char server[64];
+    char server[256];
     Uint8 lobby_limit;
     Bool private_lobby;
     Bool show_user_messages;

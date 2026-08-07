@@ -5,6 +5,7 @@
 #include "K_input.h"
 #include "K_locale.h"
 #include "K_log.h"
+#include "K_net.h"
 #include "K_video.h"
 
 typedef struct {

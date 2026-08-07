@@ -5,8 +5,6 @@
 #include "K_misc.h"
 #include "K_worlds.h"
 
-#define CLIENT_STRING_MAX 32
-
 typedef Uint64 NetID;
 
 typedef Uint8 PacketType;

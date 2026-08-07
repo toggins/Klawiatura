@@ -17,7 +17,6 @@
 #include "K_game.h"
 #include "K_levels.h"
 #include "K_locale.h"
-#include "K_net.h"
 #include "K_string.h"
 #include "K_video.h"
 
@@ -539,9 +538,7 @@ static void end() {
     destroy_folder(editor->folders);
     SDL_free(editor);
 
-    rediscover_levels();
-    recalculate_game_hash();
-    update_net_game_id();
+    rediscover_mods();
 }
 
 static void event(const SDL_Event* event) {

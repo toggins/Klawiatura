@@ -10,9 +10,11 @@
 #define JSON_READ_FLAGS (YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS)
 #define JSON_WRITE_FLAGS (YYJSON_WRITE_PRETTY | YYJSON_WRITE_NEWLINE_AT_END)
 
-void file_init(const char**), file_teardown();
+void file_init(const char*), file_teardown();
 
-void open_user_folder();
+void rediscover_mods();
+
+void open_data_folder(), open_user_folder();
 
 yyjson_doc* read_json(const char*, size_t, const char**);
 
