@@ -2,57 +2,68 @@
     "defs": {
         "Gradient Background": {
             "type": "backdrop",
+            "depth": 200,
             "scalable": true,
-            "depth": 200
+            "colors": [
+                [59, 123, 163, 255],
+                [59, 123, 163, 255],
+                [242, 253, 252, 255],
+                [242, 253, 252, 255]
+            ]
         },
         "Grass Top Left": {
             "type": "backdrop",
-            "sprite": "tile/grass/0",
+            "sprite": "tiles/grass/0",
             "depth": 20
         },
         "Grass Top": {
             "type": "backdrop",
-            "sprite": "tile/grass/1",
+            "sprite": "tiles/grass/1",
             "depth": 20
         },
         "Grass Top Right": {
             "type": "backdrop",
-            "sprite": "tile/grass/2",
+            "sprite": "tiles/grass/2",
             "depth": 20
         },
         "Grass Left": {
             "type": "backdrop",
-            "sprite": "tile/grass/3",
+            "sprite": "tiles/grass/3",
             "depth": 20
         },
         "Grass Middle": {
             "type": "backdrop",
-            "sprite": "tile/grass/4",
+            "sprite": "tiles/grass/4",
             "depth": 20
         },
         "Grass Right": {
             "type": "backdrop",
-            "sprite": "tile/grass/5",
+            "sprite": "tiles/grass/5",
             "depth": 20
         },
         "Grass Bottom Left": {
             "type": "backdrop",
-            "sprite": "tile/grass/6",
+            "sprite": "tiles/grass/6",
             "depth": 20
         },
         "Grass Bottom": {
             "type": "backdrop",
-            "sprite": "tile/grass/7",
+            "sprite": "tiles/grass/7",
             "depth": 20
         },
         "Grass Bottom Right": {
             "type": "backdrop",
-            "sprite": "tile/grass/8",
+            "sprite": "tiles/grass/8",
             "depth": 20
         },
-        "Block": {
+        "Brown Block": {
             "type": "backdrop",
-            "sprite": "tile/grass/8",
+            "sprite": "tiles/block/brown",
+            "depth": 20
+        },
+        "Blue Block": {
+            "type": "backdrop",
+            "sprite": "tiles/block/blue",
             "depth": 20
         }
     },
@@ -78,6 +89,10 @@
                         "Grass Bottom",
                         "Grass Bottom Right"
                     ]
+                },
+                {
+                    "name": "Blocks",
+                    "items": ["Brown Block", "Blue Block"]
                 }
             ]
         }

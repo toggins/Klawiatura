@@ -33,10 +33,16 @@ typedef struct {
     const char* ptr;
 } EditorAsync;
 
+typedef struct {
+    Uint8 colors[4][4];
+    TinyHash previous, next;
+    const char *name, *sprite;
+} EditorDef;
+
 typedef struct EditorFolder {
     const char* name;
     struct EditorFolder* folders;
-    const char** defs;
+    TinyHash* defs;
 } EditorFolder;
 
 typedef struct {
@@ -71,6 +77,9 @@ typedef struct {
     EditorAsync async[ASYNC_SIZE];
     const char* error;
     Surface* blueprint;
+
+    TinyMap defs;
+    const EditorDef* current_def;
 
     EditorFolder* folders;
 } Editor;
@@ -114,8 +123,8 @@ static void move_cursor(const Sint32 pos[2], Bool snap) {
 
     if (snap) {
         const float gsize = ecursor->grid_size;
-        ecursor->pos[0] = (Sint32)(SDL_roundf((float)pos[0] / gsize) * gsize);
-        ecursor->pos[1] = (Sint32)(SDL_roundf((float)pos[1] / gsize) * gsize);
+        ecursor->pos[0] = (Sint32)(SDL_floorf((float)pos[0] / gsize) * gsize);
+        ecursor->pos[1] = (Sint32)(SDL_floorf((float)pos[1] / gsize) * gsize);
     } else {
         ecursor->pos[0] = pos[0];
         ecursor->pos[1] = pos[1];
@@ -336,6 +345,12 @@ static void open_blueprint_dialog() {
     SDL_ShowOpenFileDialog(open_blueprint_async, NULL, WINDOW, &filter, 1, NULL, FALSE);
 }
 
+static void nuke_def(void* ptr) {
+    EditorDef* def = ptr;
+    SDL_free((void*)def->name);
+    SDL_free((void*)def->sprite);
+}
+
 // @NOLINTBEGIN(misc-no-recursion)
 static void create_folder(EditorFolder* parent, yyjson_val* jval) {
     Bool append = FALSE;
@@ -380,15 +395,10 @@ static void create_folder(EditorFolder* parent, yyjson_val* jval) {
         if (yyjson_is_obj(jval2)) {
             create_folder(&folder, jval2);
         } else if (yyjson_is_str(jval2)) {
-            const char *odef = yyjson_get_str(jval2), *def = SDL_strdup(odef);
-            if (def == NULL) {
-                WARN("Failed to allocate editor folder \"%s\" def \"%s\"", folder.name, odef);
-                continue;
-            }
-
+            const char* def = yyjson_get_str(jval2);
             if (folder.defs == NULL)
-                folder.defs = (const char**)MakeTinyDPro(1, sizeof(*folder.defs));
-            folder.defs = (const char**)TinyDPush((void*)folder.defs, (void*)&def);
+                folder.defs = MakeTinyDPro(1, sizeof(*folder.defs));
+            folder.defs = TinyDPush(folder.defs, &(TinyHash){StHashStr(def)});
         }
     }
 
@@ -413,10 +423,70 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
     (void)userdata;
 
     yyjson_doc* json = read_json(buffer, size, NULL);
-    if (json != NULL) {
-        create_folder(NULL, yyjson_obj_get(yyjson_doc_get_root(json), "items"));
+    if (json == NULL)
+        return;
+
+    yyjson_val* root = yyjson_doc_get_root(json);
+    if (!yyjson_is_obj(root)) {
+        WTF("Expected editor.json root as object, got %s", yyjson_get_type_desc(root));
         yyjson_doc_free(json);
+        return;
     }
+
+    yyjson_val* jval = yyjson_obj_get(root, "defs");
+    EditorDef* last_def = NULL;
+    TinyHash last_key = 0;
+    size_t i = 0, n = 0;
+    yyjson_val *jkey = NULL, *jval2 = NULL;
+    yyjson_obj_foreach(jval, i, n, jkey, jval2) {
+        if (!yyjson_is_obj(jval2))
+            continue;
+
+        const char* name = yyjson_get_str(jkey);
+        if (name == NULL) {
+            WTF("Def %zu has no name", i);
+            continue;
+        }
+
+        const TinyHash key = StHashStr(name);
+        EditorDef* def = (EditorDef*)TinyMapGet(&editor->defs, key);
+        if (def == NULL) {
+            TinyBucket* bucket = TinyMapPut(&editor->defs, key, &(EditorDef){0}, sizeof(EditorDef));
+            bucket->cleanup = nuke_def;
+            def = bucket->data;
+
+            SDL_memset(def->colors, 255, sizeof(def->colors));
+            def->previous = last_key;
+        }
+
+        def->name = SDL_strdup(name);
+        EXPECT(def->name, "Failed to allocate def \"%s\" name", name);
+
+        const char* sprite = yyjson_get_str(yyjson_obj_get(jval2, "sprite"));
+        if (sprite != NULL) {
+            def->sprite = SDL_strdup(sprite);
+            EXPECT(def->sprite, "Failed to allocate def \"%s\" sprite \"%s\"", name, sprite);
+            load_sprite(sprite, AKL_NEVER);
+        }
+
+        yyjson_val* jval3 = yyjson_obj_get(jval2, "colors");
+        for (size_t j = 0, n2 = yyjson_arr_size(jval3); j < n2 && j < 4; j++) {
+            yyjson_val* jval4 = yyjson_arr_get(jval3, j);
+            for (size_t k = 0, n3 = yyjson_arr_size(jval4); k < n3 && k < 4; k++)
+                def->colors[j][k] = yyjson_get_uint(yyjson_arr_get(jval4, k));
+        }
+
+        if (last_def != NULL)
+            last_def->next = key;
+        last_def = def;
+        last_key = key;
+    }
+
+    jval = yyjson_obj_get(root, "items");
+    if (yyjson_is_arr(jval))
+        create_folder(NULL, jval);
+
+    yyjson_doc_free(json);
 }
 
 static void start(const void* secret, size_t secret_size) {
@@ -449,9 +519,7 @@ static void destroy_folder(EditorFolder* folder) {
         destroy_folder(&folder->folders[i]);
     FreeTinyD(folder->folders);
 
-    for (size_t i = 0, n = TinyDLength((void*)folder->defs); i < n; i++)
-        SDL_free((void*)folder->defs[i]);
-    FreeTinyD((void*)folder->defs);
+    FreeTinyD(folder->defs);
 
     if (folder == editor->folders)
         SDL_free(folder);
@@ -467,6 +535,7 @@ static void end() {
         clear_async(i);
     clear_level();
     destroy_surface(editor->blueprint);
+    FreeTinyMap(&editor->defs);
     destroy_folder(editor->folders);
     SDL_free(editor);
 
@@ -512,8 +581,6 @@ static void draw() {
     batch_surface(editor->blueprint);
     // TODO: Draw markers
 
-    batch_filter(TRUE);
-
     const EditorCursor* ecursor = &editor->cursor;
     if (ecamera->show_grid && ecursor->grid_size >= 2) {
         const float gsize = ecursor->grid_size;
@@ -556,6 +623,46 @@ static void draw() {
     batch_rectangle(NULL, B_F2(ecamera->zoom, bh));
     batch_pos(B_F3_XY(0.f, elevel->bounds[3]));
     batch_rectangle(NULL, B_F2(bw, ecamera->zoom));
+
+    if (editor->current_def == NULL)
+        return;
+
+    batch_pos(B_F3_XY(ecursor->pos[0], ecursor->pos[1]));
+
+    Uint8 colors[4][4] = {0};
+    SDL_memcpy(colors, editor->current_def->colors, sizeof(colors));
+    colors[0][3] /= 2;
+    colors[1][3] /= 2;
+    colors[2][3] /= 2;
+    colors[3][3] /= 2;
+    batch_colors(colors);
+
+    const Sprite* sprite = get_sprite(editor->current_def->sprite);
+    if (sprite == NULL)
+        batch_rectangle(NULL, B_F2_S(32.f));
+    else
+        batch_sprite(sprite->base.name);
+
+    glm_ortho(0.f, (float)width, (float)height, 0.f, -16000.f, 16000.f, proj);
+    set_projection_matrix(proj);
+    apply_matrices();
+
+    batch_colors(editor->current_def->colors);
+
+    if (sprite == NULL) {
+        batch_pos(B_F3_XY(width - 80.f, height - 80.f));
+        batch_rectangle(NULL, B_F2_S(64.f));
+
+        return;
+    }
+
+    const float scale = 64.f / sprite->size[1];
+    batch_pos(B_F3_XY(width - 16.f - ((sprite->size[0] + sprite->offset[0]) * scale),
+        height - 16.f - ((sprite->size[1] + sprite->offset[1]) * scale)));
+    batch_scale(B_F2_S(scale));
+    batch_sprite(sprite->base.name);
+
+    batch_filter(TRUE);
 }
 
 // @NOLINTBEGIN(misc-no-recursion)
@@ -571,8 +678,11 @@ static void show_folder(EditorFolder* folder) {
         }
     }
 
-    for (size_t i = 0, n = TinyDLength((void*)folder->defs); i < n; i++)
-        ImGui_MenuItem(folder->defs[i]);
+    for (size_t i = 0, n = TinyDLength((void*)folder->defs); i < n; i++) {
+        const EditorDef* def = (EditorDef*)TinyMapGet(&editor->defs, folder->defs[i]);
+        if (def != NULL && ImGui_MenuItem(def->name))
+            editor->current_def = def;
+    }
 }
 // @NOLINTEND(misc-no-recursion)
 
@@ -595,6 +705,14 @@ static void draw_ui() {
             ecamera->pos[0] = ecamera->pos[1] = ecamera->hold[0] = ecamera->hold[1] = 0.f;
             ecamera->zoom = 1.f;
         }
+
+        const EditorDef* next = NULL;
+        if (ImGui_IsKeyPressed(ImGuiKey_Q) && editor->current_def != NULL)
+            next = (EditorDef*)TinyMapGet(&editor->defs, editor->current_def->previous);
+        if (ImGui_IsKeyPressed(ImGuiKey_E) && editor->current_def != NULL)
+            next = (EditorDef*)TinyMapGet(&editor->defs, editor->current_def->next);
+        if (next != NULL)
+            editor->current_def = next;
     }
 
     if (!io->WantCaptureMouse) {
