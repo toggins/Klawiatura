@@ -182,7 +182,7 @@ jobs:
         uses: emscripten-core/setup-emsdk@main
         with:
           version: latest
-          actions-cache-folder: ${{ github.workspace }}/emsdk-cache
+          actions-cache-folder: emsdk-cache
 
       - name: Cache build dir
         id: cache-build
