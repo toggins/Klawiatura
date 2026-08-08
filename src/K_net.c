@@ -65,7 +65,7 @@ static void on_peer_left(NetID pid, NutBlast_Reason reason) {
                 continue;
 
             if (get_screen() != SCR_MENU) {
-                const char* lstr = LFMT("msg.player_left", 's', get_peer_name(pid));
+                const char* lstr = LFMT("message.player_left", 's', get_peer_name(pid));
                 boot_to_menu(has_reason ? fmt("%s\n%s", lstr, reason.code) : lstr);
             }
 
@@ -219,7 +219,7 @@ void net_update() {
             for (size_t i = 0; i < SDL_arraysize(player_peers); i++) {
                 if (player_peers[i] == msg.from) {
                     if (get_screen() != SCR_MENU)
-                        boot_to_menu(LFMT("msg.player_bailed", 's', get_peer_name(player_peers[i])));
+                        boot_to_menu(LFMT("message.player_bailed", 's', get_peer_name(player_peers[i])));
 
                     player_peers[i] = 0;
                     break;
@@ -357,7 +357,7 @@ void net_update() {
                 read_buffer64(&mbuf, &spectator_peers[i]);
 
             if (was_player && get_screen() != SCR_MENU)
-                boot_to_menu(LFMT("msg.kicked_from_game"));
+                boot_to_menu(LFMT("message.kicked_from_game"));
 
             break;
         }
@@ -576,11 +576,11 @@ void disconnect() {
 
     if (last_error == NULL) {
         if (get_screen() != SCR_MENU)
-            boot_to_menu(LFMT("msg.disconnected"));
+            boot_to_menu(LFMT("message.disconnected"));
     } else {
         WARN("Disconnected with error: %s", last_error);
         if (get_screen() != SCR_MENU)
-            boot_to_menu(fmt("%s\n%s", LFMT("msg.disconnected"), last_error));
+            boot_to_menu(fmt("%s\n%s", LFMT("message.disconnected"), last_error));
     }
 
     NutBlast_PurgeMetadata();
