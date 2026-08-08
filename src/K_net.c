@@ -52,7 +52,7 @@ static void on_disconnected(NutBlast_Reason reason) {
 }
 
 static void on_peer_joined(NetID pid) {
-    chat_message(LFMT("chat.joined", 's', get_peer_name(pid)), B_U4_YELLOW);
+    chat_message(LFMT("chat.peer_joined", 's', get_peer_name(pid)), B_U4_YELLOW);
     play_generic_sound("ui/join", PLAY_SYSTEM);
 }
 
@@ -481,7 +481,7 @@ Bool nuke_spectator_peer(NetID pid) {
 
     for (size_t i = 0; i < SDL_arraysize(spectator_peers); i++) {
         if (spectator_peers[i] == pid) {
-            chat_message(LFMT("chat.stopped_spectating", 's', get_peer_name(pid)), B_U4_YELLOW);
+            chat_message(LFMT("chat.peer_stopped_spectating", 's', get_peer_name(pid)), B_U4_YELLOW);
             spectator_peers[i] = 0;
             return TRUE;
         }
