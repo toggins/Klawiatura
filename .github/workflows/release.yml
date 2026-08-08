@@ -14,7 +14,7 @@ concurrency:
 
 env:
   CRAZY_AHH_DEPS: >-
-    python3-jinja2 nodejs
+    python3-jinja2
     libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev
     libsndio-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev
     libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev libdrm-dev
@@ -74,7 +74,7 @@ jobs:
         uses: awalsh128/cache-apt-pkgs-action@latest
         if: matrix.os == 'ubuntu-latest'
         with:
-          version: 2.0
+          version: 2.1
           packages: ${{ env.CRAZY_AHH_DEPS }}
 
       - name: Install dependencies (Windows)
