@@ -14,7 +14,7 @@ concurrency:
 
 env:
   CRAZY_AHH_DEPS: >-
-    python3-jinja2
+    python3-jinja2 nodejs
     libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev
     libsndio-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev
     libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev libdrm-dev
@@ -23,24 +23,48 @@ env:
     libdecor-0-dev liburing-dev
 
 jobs:
-  release-linux:
-    name: Publish Linux binaries
-    runs-on: ubuntu-latest
+  release:
+    name: Publish ${{ matrix.name }} binaries
+
+    runs-on: ${{ matrix.os }}
+
     permissions:
       contents: write
+      pages: write
+      id-token: write
+
+    environment:
+      name: ${{ matrix.name == 'HTML5' && 'github-pages' || null }}
+      url: ${{ steps.publish.outputs.page_url }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: Linux
+          - os: windows-latest
+            name: Win32
+          - os: windows-latest
+            name: Win64
+          - os: ubuntu-latest
+            name: HTML5
 
     env:
-      CACHE_BUST: 1
-      OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-Linux
+      CACHE_BUST: 5
+      SCCACHE_GHA_ENABLED: true
+      OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
 
     steps:
-      - name: Silence `git init` warning
-        run: git config --global init.defaultBranch master
-
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Silence `git init` warning
+        run: git config --global init.defaultBranch master
+
       - name: Source Discord Social SDK
+        if: matrix.name != 'HTML5'
+        shell: bash
         run: |
           cd external/discord; git init
           git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/discord.git
@@ -49,165 +73,79 @@ jobs:
       - name: Restore source timestamps for crazy CMake caching benefits
         uses: chetan/git-restore-mtime-action@v2
 
-      - name: Install dependencies
+      - name: Install dependencies (Linux)
         uses: awalsh128/cache-apt-pkgs-action@latest
+        if: matrix.os == 'ubuntu-latest'
         with:
-          version: 1.4
+          version: 2.0
           packages: ${{ env.CRAZY_AHH_DEPS }}
 
-      - name: Cache build dir
-        id: cache-build
-        uses: actions/cache@v6
-        with:
-          path: build
-          key: ${{ env.CACHE_BUST }}-Linux-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
-          restore-keys: |
-            ${{ env.CACHE_BUST }}-Linux-${{ github.ref_name }}-
-            ${{ env.CACHE_BUST }}-Linux-
-
-      - name: Configure
-        run: |
-          cmake -G Ninja -S . -B build \
-            -D CMAKE_BUILD_TYPE=Release \
-            -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
-
-      - name: Build
-        run: cmake --build build --target all
-
-      - name: Package
-        run: cmake --build build --target package
-
-      - name: Release
-        uses: softprops/action-gh-release@v3
-        with:
-          draft: ${{ github.ref_name != 'master' }}
-          tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
-          prerelease: ${{ github.ref_name == 'master' }}
-          files: build/${{ env.OUTNAME }}.zip
-
-  release-windose:
-    name: Publish Win${{ matrix.bits }} binaries
-    runs-on: windows-latest
-    permissions:
-      contents: write
-
-    strategy:
-      matrix:
-        bits: [32, 64]
-
-    env:
-      CACHE_BUST: 1
-      OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-Win${{ matrix.bits }}
-
-    steps:
-      - name: Silence `git init` warning
-        run: git config --global init.defaultBranch master
-
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Source Discord Social SDK
-        shell: bash
-        run: |
-          cd external/discord
-          git init
-          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/discord.git
-          git pull origin master
-
-      - name: Restore source timestamps for crazy CMake caching benefits
-        uses: chetan/git-restore-mtime-action@v2
-
-      - name: Install dependencies
+      - name: Install dependencies (Windows)
+        if: matrix.os == 'windows-latest'
         run: py -m pip install jinja2
-
-      - name: Cache build dir
-        id: cache-build
-        uses: actions/cache@v6
-        with:
-          path: build
-          key: ${{ env.CACHE_BUST }}-Win${{ matrix.bits }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
-          restore-keys: |
-            ${{ env.CACHE_BUST }}-Win${{ matrix.bits }}-${{ github.ref_name }}-
-            ${{ env.CACHE_BUST }}-Win${{ matrix.bits }}-
-
-      - name: Configure
-        shell: bash
-        run: |
-          cmake -G "Visual Studio 18 2026" -A ${{ matrix.bits == 32 && 'Win32' || 'x64' }} \
-            -S . -B build \
-            -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
-
-      - name: Build
-        run: cmake --build build --target ALL_BUILD --config Release
-
-      - name: Package
-        run: cmake --build build --target PACKAGE --config Release
-
-      - name: Release
-        uses: softprops/action-gh-release@v3
-        with:
-          draft: ${{ github.ref_name != 'master' }}
-          tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
-          prerelease: ${{ github.ref_name == 'master' }}
-          files: build/${{ env.OUTNAME }}.zip
-
-  release-html5:
-    name: Publish the HTML5 build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.publish.outputs.page_url }}
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-
-    env:
-      CACHE_BUST: 4
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Restore source timestamps for crazy CMake caching benefits
-        uses: chetan/git-restore-mtime-action@v2
-
-      - name: Install dependencies
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          version: 1.1
-          packages: ${{ env.CRAZY_AHH_DEPS }} nodejs
 
       - name: Source pasture-raised gluten-free emsdk
         uses: emscripten-core/setup-emsdk@main
+        if: matrix.name == 'HTML5'
         with:
           version: latest
           actions-cache-folder: emsdk-cache
 
-      - name: Cache build dir
-        id: cache-build
+      - name: Set up MSVC (${{ matrix.name }})
+        if: matrix.os == 'windows-latest'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.name == 'Win32' && 'x86' || 'x64' }}
+
+      - name: Cache build artifacts
+        uses: mozilla-actions/sccache-action@v0.0.11
+
+      - name: Cache deps
         uses: actions/cache@v6
         with:
           path: build
-          key: ${{ env.CACHE_BUST }}-Web-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
+          key: ${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            ${{ env.CACHE_BUST }}-Web-${{ github.ref_name }}-
-            ${{ env.CACHE_BUST }}-Web-
+            ${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-
+            ${{ env.CACHE_BUST }}-${{ matrix.name }}-
 
       - name: Configure
+        shell: bash
         run: |
-          source "${{ github.workspace }}/emsdk-cache/emsdk-main/emsdk_env.sh"
-          emcmake cmake -G Ninja -S . -B build -D CMAKE_BUILD_TYPE=Release
+          [[ "${{ matrix.name == 'HTML5' && '1' || '0' }}" == "1" ]] && \
+            source "${{ github.workspace }}/emsdk-cache/emsdk-main/emsdk_env.sh"
+
+          ${{ matrix.name == 'HTML5' && 'emcmake ' || '' }} cmake \
+            -G Ninja -S . -B build \
+            -D CMAKE_BUILD_TYPE=Release \
+            -D CMAKE_C_COMPILER_LAUNCHER=sccache \
+            -D CMAKE_CXX_COMPILER_LAUNCHER=sccache \
+            -D CPACK_PACKAGE_FILE_NAME=${{ env.OUTNAME }}
 
       - name: Build
         run: |
-          cmake --build build --target Klawiatura
+          cmake --build build --target ${{ matrix.name == 'HTML5' && 'Klawiatura' || 'all' }}
 
-      - name: Prepare for distibution
+      - name: Package
+        if: matrix.name != 'HTML5'
+        run: cmake --build build --target package
+
+      - name: Release
+        uses: softprops/action-gh-release@v3
+        if: matrix.name != 'HTML5'
+        with:
+          draft: ${{ github.ref_name != 'master' }}
+          tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
+          prerelease: ${{ github.ref_name == 'master' }}
+          files: build/${{ env.OUTNAME }}.zip
+
+      - name: Prepare for HTML5 distibution
+        if: matrix.name == 'HTML5'
         run: cp -vr build/Klawiatura.{js,wasm,data} www
 
       - name: Publish
         id: publish
         uses: nonk123/sanity-action@master
+        if: matrix.name == 'HTML5'
         with:
           push_to_github_pages: true
