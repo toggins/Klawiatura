@@ -25,19 +25,19 @@ const char* load_replay(const char* file) {
     size_t bsize = 0;
     void* buffer = load_user_file(file, &bsize);
     if (buffer == NULL)
-        return "msg_replay_missing";
+        return "message.replay_missing";
 
     replay_io = SDL_IOFromConstMem(buffer, bsize);
     if (replay_io == NULL) {
         SDL_free(buffer);
-        return "msg_replay_missing";
+        return "message.replay_missing";
     }
 
     SDL_PropertiesID props = SDL_GetIOProperties(replay_io);
     if (props <= 0) {
         SDL_CloseIO(replay_io);
         SDL_free(buffer);
-        return "msg_replay_missing";
+        return "message.replay_missing";
     }
 
     SDL_SetPointerProperty(props, SDL_PROP_IOSTREAM_MEMORY_FREE_FUNC_POINTER, SDL_free);
@@ -46,21 +46,21 @@ const char* load_replay(const char* file) {
     SDL_ReadIO(replay_io, header, sizeof(header));
     if (SDL_strncmp(header, REPLAY_HEADER, sizeof(header)) != 0) {
         end_replay();
-        return "msg_replay_invalid";
+        return "message.replay_invalid";
     }
 
     char version[sizeof(GAME_VERSION)] = "";
     SDL_ReadIO(replay_io, version, sizeof(version));
     if (SDL_strncmp(version, GAME_VERSION, sizeof(version)) != 0) {
         end_replay();
-        return "msg_replay_version_mismatch";
+        return "message.replay_version_mismatch";
     }
 
     Uint32 hash = 0;
     SDL_ReadU32LE(replay_io, &hash);
     if (hash != get_game_hash()) {
         end_replay();
-        return "msg_replay_hash_mismatch";
+        return "message.replay_hash_mismatch";
     }
 
     // TODO: Assign view player
