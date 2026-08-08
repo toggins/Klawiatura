@@ -1,4 +1,4 @@
-name: Build and release distributions
+name: Build and release binary distributions
 
 on:
   push:
@@ -25,7 +25,6 @@ env:
 jobs:
   release:
     name: Publish ${{ matrix.name }} binaries
-
     runs-on: ${{ matrix.os }}
 
     permissions:
@@ -59,16 +58,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Silence `git init` warning
-        run: git config --global init.defaultBranch master
-
-      - name: Source Discord Social SDK
+      - name: Ethically source Discord Social SDK
         if: matrix.name != 'HTML5'
         shell: bash
         run: |
-          cd external/discord; git init
-          git remote add origin https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/discord.git
-          git pull origin master
+          git config --global init.defaultBranch master
+          git -C external/discord init
+          git -C external/discord pull https://${{ secrets.EXTERNAL_TOKEN }}@github.com/${{ secrets.EXTERNAL_USER }}/discord.git master
 
       - name: Install dependencies (Linux)
         uses: awalsh128/cache-apt-pkgs-action@latest
@@ -89,8 +85,8 @@ jobs:
           actions-cache-folder: emsdk-cache
 
       - name: Set up MSVC (${{ matrix.name }})
-        if: matrix.os == 'windows-latest'
         uses: ilammy/msvc-dev-cmd@v1
+        if: matrix.os == 'windows-latest'
         with:
           arch: ${{ matrix.name == 'Win32' && 'x86' || 'x64' }}
 
@@ -112,7 +108,7 @@ jobs:
           [[ "${{ matrix.name == 'HTML5' && '1' || '0' }}" == "1" ]] && \
             source "${{ github.workspace }}/emsdk-cache/emsdk-main/emsdk_env.sh"
 
-          ${{ matrix.name == 'HTML5' && 'emcmake ' || '' }} cmake \
+          ${{ matrix.name == 'HTML5' && 'emcmake ' || '' }}cmake \
             -G Ninja -S . -B build \
             -D CMAKE_BUILD_TYPE=Release \
             -D CMAKE_C_COMPILER_LAUNCHER=sccache \
@@ -144,5 +140,4 @@ jobs:
         id: publish
         uses: nonk123/sanity-action@master
         if: matrix.name == 'HTML5'
-        with:
-          push_to_github_pages: true
+        with: { push_to_github_pages: true }
