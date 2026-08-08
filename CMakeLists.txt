@@ -18,6 +18,10 @@ set(BUILD_SHARED_LIBS OFF)
 if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 elseif(EMSCRIPTEN)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sUSE_PTHREADS=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_PTHREADS=1")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -sUSE_PTHREADS=1")
+
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 endif()
 
@@ -52,7 +56,6 @@ set(SDLMIXER_VOC OFF CACHE INTERNAL "")
 set(SDLMIXER_AU OFF CACHE INTERNAL "")
 set(SDLMIXER_WAVPACK OFF CACHE INTERNAL "")
 set(SDLMIXER_OPUS OFF CACHE INTERNAL "")
-set(SDLMIXER_MIDI OFF CACHE INTERNAL "")
 set(SDLMIXER_GME OFF CACHE INTERNAL "")
 
 set(SDLMIXER_OGG ON CACHE INTERNAL "")
@@ -74,11 +77,16 @@ set(SDLMIXER_MP3 ON CACHE INTERNAL "")
 set(SDLMIXER_MP3_DRMP3 ON CACHE INTERNAL "")
 set(SDLMIXER_MP3_MPG123 OFF CACHE INTERNAL "")
 
+set(SDLMIXER_MIDI ON CACHE INTERNAL "")
+set(SDLMIXER_MIDI_FLUIDSYNTH ON CACHE INTERNAL "")
+set(SDLMIXER_MIDI_FLUIDSYNTH_SHARED OFF CACHE INTERNAL "")
+set(SDLMIXER_MIDI_TIMIDITY OFF CACHE INTERNAL "")
+
 set(SDLMIXER_VENDORED ON CACHE INTERNAL "")
 
 FetchContent_Declare(SDL3_mixer
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
-    GIT_TAG release-3.2.4
+    GIT_TAG 9c12eb245ebbf568b6eb7b838cf350aa9f729497
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(SDL3_mixer)
 
@@ -195,14 +203,6 @@ set(CONTROLLER_DB ${sdl_gamecontrollerdb_SOURCE_DIR}/gamecontrollerdb.txt)
 set(RESFILE ${CMAKE_SOURCE_DIR}/res/Klawiatura.rc)
 add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${HEADERS} ${RESFILE})
 
-if(EMSCRIPTEN)
-    target_link_options(${PROJECT_NAME} PRIVATE
-        "SHELL:-sASYNCIFY"
-        "SHELL:-sEXPORTED_RUNTIME_METHODS=HEAPF32,HEAPU32,HEAPU8"
-        "SHELL:-sMIN_WEBGL_VERSION=2"
-        "SHELL:-sMAX_WEBGL_VERSION=2")
-endif()
-
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/generated)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})
@@ -214,9 +214,6 @@ endif()
 if(CMAKE_BUILD_TYPE STREQUAL Release AND NOT MSVC AND NOT EMSCRIPTEN)
     target_compile_options(Klawiatura PRIVATE -ffunction-sections -fdata-sections)
     target_link_options(Klawiatura PRIVATE -Wl,--gc-sections) # -Wl,--icf=all
-endif()
-
-if(NOT MSVC AND NOT EMSCRIPTEN AND CMAKE_BUILD_TYPE STREQUAL "Release")
     add_custom_command(TARGET Klawiatura POST_BUILD
         COMMAND ${CMAKE_STRIP} $<TARGET_FILE:Klawiatura>
         COMMENT "Stripping release binary")
@@ -248,6 +245,9 @@ endif()
 
 if(EMSCRIPTEN)
     target_link_options(${PROJECT_NAME} PRIVATE
+        "SHELL:-sEXPORTED_RUNTIME_METHODS=HEAPF32,HEAPU32,HEAPU8"
+        "SHELL:-sMIN_WEBGL_VERSION=2"
+        "SHELL:-sMAX_WEBGL_VERSION=2"
         "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/assets@"
         "SHELL:--preload-file ${CONTROLLER_DB}@gamecontrollerdb.txt")
 else()
