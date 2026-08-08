@@ -747,52 +747,52 @@ static void draw_ui() {
     }
 
     if (ImGui_BeginMainMenuBar()) {
-        if (ImGui_BeginMenu(LFMT("edit_file"))) {
-            if (ImGui_MenuItem(LFMT("edit_new")))
+        if (ImGui_BeginMenu(LFMT("editor.file"))) {
+            if (ImGui_MenuItem(LFMT("editor.new")))
                 clear_level();
 
-            if (ImGui_MenuItem(LFMT("edit_open")))
+            if (ImGui_MenuItem(LFMT("editor.open")))
                 open_level_dialog();
 
-            if (ImGui_MenuItem(LFMT("edit_save_as")))
+            if (ImGui_MenuItem(LFMT("editor.save_as")))
                 save_level_dialog();
 
             ImGui_Separator();
 
-            if (ImGui_MenuItem(LFMT("edit_exit")))
+            if (ImGui_MenuItem(LFMT("editor.exit")))
                 set_screen(SCR_MENU, NULL, 0);
 
             ImGui_EndMenu();
         }
 
-        if (ImGui_BeginMenu(LFMT("edit_level"))) {
+        if (ImGui_BeginMenu(LFMT("editor.level"))) {
             EditorLevel* elevel = &editor->level;
 
-            if (ImGui_CollapsingHeader(LFMT("edit_strings"), 0)) {
-                ImGui_InputText(LFMT("edit_label"), elevel->label, sizeof(elevel->label), 0);
+            if (ImGui_CollapsingHeader(LFMT("editor.strings"), 0)) {
+                ImGui_InputText(LFMT("editor.label"), elevel->label, sizeof(elevel->label), 0);
 
-                if (ImGui_TreeNode(LFMT("edit_tracks"))) {
+                if (ImGui_TreeNode(LFMT("editor.tracks"))) {
                     for (size_t i = 0; i < SDL_arraysize(elevel->tracks); i++) {
                         ImGui_InputText(
-                            LFMT("edit_track", 'd', i + 1), elevel->tracks[i], sizeof(elevel->tracks[i]), 0);
+                            LFMT("editor.track", 'd', i + 1), elevel->tracks[i], sizeof(elevel->tracks[i]), 0);
                     }
 
                     ImGui_TreePop();
                     ImGui_Spacing();
                 }
 
-                if (ImGui_TreeNode(LFMT("edit_warps"))) {
+                if (ImGui_TreeNode(LFMT("editor.warps"))) {
                     for (size_t i = 0; i < SDL_arraysize(elevel->warps); i++)
-                        ImGui_InputText(LFMT("edit_warp", 'd', i + 1), elevel->warps[i], sizeof(elevel->warps[i]), 0);
+                        ImGui_InputText(LFMT("editor.warp", 'd', i + 1), elevel->warps[i], sizeof(elevel->warps[i]), 0);
 
                     ImGui_TreePop();
                     ImGui_Spacing();
                 }
 
-                if (ImGui_TreeNode(LFMT("edit_secrets"))) {
+                if (ImGui_TreeNode(LFMT("editor.secrets"))) {
                     for (size_t i = 0; i < SDL_arraysize(elevel->secrets); i++) {
                         ImGui_InputText(
-                            LFMT("edit_secret", 'd', i + 1), elevel->secrets[i], sizeof(elevel->secrets[i]), 0);
+                            LFMT("editor.secret", 'd', i + 1), elevel->secrets[i], sizeof(elevel->secrets[i]), 0);
                     }
 
                     ImGui_TreePop();
@@ -800,26 +800,26 @@ static void draw_ui() {
                 }
             }
 
-            if (ImGui_CollapsingHeader(LFMT("edit_constants"), 0)) {}
+            if (ImGui_CollapsingHeader(LFMT("editor.constants"), 0)) {}
 
-            if (ImGui_CollapsingHeader(LFMT("edit_flags"), 0)) {
-                ImGui_CheckboxFlagsUintPtr(LFMT("edit_hardcore"), &elevel->flags, GF_HARDCORE);
-                ImGui_CheckboxFlagsUintPtr(LFMT("edit_lost_map"), &elevel->flags, GF_LOST_MAP);
-                ImGui_CheckboxFlagsUintPtr(LFMT("edit_funny_tanks"), &elevel->flags, GF_FUNNY_TANKS);
-                ImGui_Checkbox(LFMT("edit_ambush"), (bool*)&elevel->ambush);
+            if (ImGui_CollapsingHeader(LFMT("editor.flags"), 0)) {
+                ImGui_CheckboxFlagsUintPtr(LFMT("editor.hardcore"), &elevel->flags, GF_HARDCORE);
+                ImGui_CheckboxFlagsUintPtr(LFMT("editor.lost_map"), &elevel->flags, GF_LOST_MAP);
+                ImGui_CheckboxFlagsUintPtr(LFMT("editor.funny_tanks"), &elevel->flags, GF_FUNNY_TANKS);
+                ImGui_Checkbox(LFMT("editor.ambush"), (bool*)&elevel->ambush);
             }
 
             ImGui_Separator();
 
-            ImGui_InputInt2(LFMT("edit_size"), elevel->size, 0);
-            ImGui_InputInt4(LFMT("edit_bounds"), elevel->bounds, 0);
+            ImGui_InputInt2(LFMT("editor.size"), elevel->size, 0);
+            ImGui_InputInt4(LFMT("editor.bounds"), elevel->bounds, 0);
             ImGui_Separator();
-            ImGui_InputInt(LFMT("edit_time"), &elevel->time);
+            ImGui_InputInt(LFMT("editor.time"), &elevel->time);
 
             ImGui_EndMenu();
         }
 
-        if (ImGui_BeginMenu(LFMT("edit_markers"))) {
+        if (ImGui_BeginMenu(LFMT("editor.markers"))) {
             show_folder(editor->folders);
             ImGui_EndMenu();
         }
@@ -828,9 +828,9 @@ static void draw_ui() {
         const EditorCursor* ecursor = &editor->cursor;
         ImGui_Text("X: %i Y: %i", ecursor->pos[0], ecursor->pos[1]);
         ImGui_Separator();
-        ImGui_Text("%s: %.0f%%", LFMT("edit_zoom"), 100.f / ecamera->zoom);
+        ImGui_Text("%s: %.0f%%", LFMT("editor.zoom"), 100.f / ecamera->zoom);
         ImGui_Separator();
-        ImGui_Text("%s: %s, %ux%u", LFMT("edit_grid"), LFMT(ecamera->show_grid ? "edit_on" : "edit_off"),
+        ImGui_Text("%s: %s, %ux%u", LFMT("editor.grid"), LFMT(ecamera->show_grid ? "editor.on" : "editor.off"),
             ecursor->grid_size, ecursor->grid_size);
         ImGui_Separator();
 
@@ -838,12 +838,12 @@ static void draw_ui() {
     }
 
     if (editor->error != NULL)
-        ImGui_OpenPopup(LFMT("edit_error"), 0);
-    if (ImGui_BeginPopupModal(LFMT("edit_error"), NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui_OpenPopup(LFMT("editor.error"), 0);
+    if (ImGui_BeginPopupModal(LFMT("editor.error"), NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui_Text("%s", LFMT(editor->error));
         ImGui_Spacing();
 
-        if (ImGui_Button(LFMT("edit_ok"))) {
+        if (ImGui_Button(LFMT("editor.ok"))) {
             editor->error = NULL;
             ImGui_CloseCurrentPopup();
         }

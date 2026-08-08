@@ -57,7 +57,7 @@ void chat_update() {
             prompt[0] = '\0';
             start_typing(prompt, sizeof(prompt), submit_chat_message);
         } else {
-            chat_message(LFMT("chat_hidden"), B_U4_GRAY);
+            chat_message(LFMT("chat.hidden"), B_U4_GRAY);
         }
     }
 }

@@ -18,24 +18,24 @@
 #define NOTHING NO_KEY, NO_GAMEPAD
 #define NEGATIVE .negative = TRUE
 Binding BINDS[KB_SIZE] = {
-    [KB_UP] = {"kb_up", KEY(UP), BUTTON(DPAD_UP), AXIS(LEFTY), NEGATIVE},
-    [KB_LEFT] = {"kb_left", KEY(LEFT), BUTTON(DPAD_LEFT), AXIS(LEFTX), NEGATIVE},
-    [KB_DOWN] = {"kb_down", KEY(DOWN), BUTTON(DPAD_DOWN), AXIS(LEFTY)},
-    [KB_RIGHT] = {"kb_right", KEY(RIGHT), BUTTON(DPAD_RIGHT), AXIS(LEFTX)},
+    [KB_UP] = {"bind.up", KEY(UP), BUTTON(DPAD_UP), AXIS(LEFTY), NEGATIVE},
+    [KB_LEFT] = {"bind.left", KEY(LEFT), BUTTON(DPAD_LEFT), AXIS(LEFTX), NEGATIVE},
+    [KB_DOWN] = {"bind.down", KEY(DOWN), BUTTON(DPAD_DOWN), AXIS(LEFTY)},
+    [KB_RIGHT] = {"bind.right", KEY(RIGHT), BUTTON(DPAD_RIGHT), AXIS(LEFTX)},
 
-    [KB_JUMP] = {"kb_jump", KEY(Z), BUTTON(SOUTH), NO_AXIS},
-    [KB_RUN] = {"kb_run", KEY(X), NO_BUTTON, AXIS(RIGHT_TRIGGER)},
-    [KB_FIRE] = {"kb_fire", KEY(X), NO_BUTTON, AXIS(RIGHT_TRIGGER)},
+    [KB_JUMP] = {"bind.jump", KEY(Z), BUTTON(SOUTH), NO_AXIS},
+    [KB_RUN] = {"bind.run", KEY(X), NO_BUTTON, AXIS(RIGHT_TRIGGER)},
+    [KB_FIRE] = {"bind.fire", KEY(X), NO_BUTTON, AXIS(RIGHT_TRIGGER)},
 
-    [KB_CHAT] = {"kb_chat", KEY(T), NO_GAMEPAD},
-    [KB_RECORD_REPLAY] = {"kb_record_replay", KEY(F9), NO_GAMEPAD},
+    [KB_CHAT] = {"bind.chat", KEY(T), NO_GAMEPAD},
+    [KB_RECORD_REPLAY] = {"bind.record_replay", KEY(F9), NO_GAMEPAD},
 
-    [KB_PAUSE] = {"kb_pause", KEY(ESCAPE), BUTTON(START), NO_AXIS},
-    [KB_UI_UP] = {"kb_ui_up", KEY(UP), BUTTON(DPAD_UP), AXIS(LEFTY), NEGATIVE},
-    [KB_UI_LEFT] = {"kb_ui_left", KEY(LEFT), BUTTON(DPAD_LEFT), AXIS(LEFTX), NEGATIVE},
-    [KB_UI_DOWN] = {"kb_ui_down", KEY(DOWN), BUTTON(DPAD_DOWN), AXIS(LEFTY)},
-    [KB_UI_RIGHT] = {"kb_ui_right", KEY(RIGHT), BUTTON(DPAD_RIGHT), AXIS(LEFTX)},
-    [KB_UI_ENTER] = {"kb_ui_enter", KEY(RETURN), BUTTON(SOUTH), NO_AXIS},
+    [KB_PAUSE] = {"bind.pause", KEY(ESCAPE), BUTTON(START), NO_AXIS},
+    [KB_UI_UP] = {"bind.ui_up", KEY(UP), BUTTON(DPAD_UP), AXIS(LEFTY), NEGATIVE},
+    [KB_UI_LEFT] = {"bind.ui_left", KEY(LEFT), BUTTON(DPAD_LEFT), AXIS(LEFTX), NEGATIVE},
+    [KB_UI_DOWN] = {"bind.ui_down", KEY(DOWN), BUTTON(DPAD_DOWN), AXIS(LEFTY)},
+    [KB_UI_RIGHT] = {"bind.ui_right", KEY(RIGHT), BUTTON(DPAD_RIGHT), AXIS(LEFTX)},
+    [KB_UI_ENTER] = {"bind.ui_enter", KEY(RETURN), BUTTON(SOUTH), NO_AXIS},
 };
 #undef KEY
 #undef BUTTON
@@ -273,7 +273,7 @@ void input_wipeout() {
 
 const char* input_device() {
     const char* dname = SDL_GetGamepadNameForID(input_state.device);
-    return (dname == NULL) ? LFMT("val_keyboard") : dname;
+    return (dname == NULL) ? LFMT("value.keyboard") : dname;
 }
 
 #define CHECK_KB(table, kb) (((table) & (1 << (kb))) != 0)
@@ -300,7 +300,7 @@ const char* kb_name(Keybind kb) {
 
 const char* kb_label(Keybind kb) {
     const SDL_Scancode key = BINDS[kb].key;
-    return (key == SDL_SCANCODE_UNKNOWN) ? LFMT("val_not_bound") : SDL_GetScancodeName(key);
+    return (key == SDL_SCANCODE_UNKNOWN) ? LFMT("value.not_bound") : SDL_GetScancodeName(key);
 }
 
 void start_typing(char* ptext, size_t size, void (*submit)(Bool)) {

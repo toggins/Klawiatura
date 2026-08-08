@@ -68,7 +68,7 @@ static void draw(const UI* ui) {
     batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 16.f));
     batch_colors(B_U4X4_YELLOW);
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
-    batch_string("header", 32.f, LFMT("opt_kick_player"));
+    batch_string("header", 32.f, LFMT("option.kick_player"));
 
     const UIKickData* userdata = ui->userdata;
     draw_options(userdata->options, userdata->option, 64.f);
@@ -77,7 +77,7 @@ static void draw(const UI* ui) {
     batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 16.f));
     batch_colors(B_U4X4_BLUE);
     batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-    batch_string("header", 32.f, fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("back")));
+    batch_string("header", 32.f, fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("menu.back")));
 }
 
 static void cleanup(UI* ui) {

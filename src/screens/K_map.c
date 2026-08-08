@@ -103,7 +103,7 @@ static void start(const void* secret, size_t secret_size) {
     map_state = SDL_calloc(1, sizeof(*map_state));
     EXPECT(map_state, "Failed to allocate map state");
 
-    map_state->title = SDL_strdup(fmt("ui/map/world/%s", world->name));
+    map_state->title = SDL_strdup(LFMT(fmt("map.world.%s", world->name)));
     EXPECT(map_state->title, "Failed to allocate map title");
 
     yyjson_val* jarray = yyjson_obj_get(jmap, "size");
@@ -181,7 +181,7 @@ static void start(const void* secret, size_t secret_size) {
 
     load_sprite(map_state->title, AKL_NEVER);
     if (map_state->path == NULL) {
-        load_sprite_num("ui/map/world/completed/%u", 16, AKL_NEVER);
+        load_sprite_num(LFMT("map.completed", 's', "%u"), 16, AKL_NEVER);
     } else {
         const WorldPlayerContext* pctx = &wctx->players[wctx->winner];
         for (PlayerFrame i = PF_WALK1; i <= (PlayerFrame)PF_WALK3; i++)
@@ -598,7 +598,7 @@ static void draw_ui() {
         const Sprite* tspr = get_sprite(map_state->title);
         const float tb = (tspr == NULL) ? 0.f : (tspr->size[1] - tspr->offset[1]);
         batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y + tb));
-        batch_sprite(fmt("ui/map/world/completed/%u", (Uint32)(totalticks() * 0.5f) % 16));
+        batch_sprite(LFMT("map.completed", 'd', (int)(totalticks() * 0.5f) % 16));
     }
 
     batch_pos(B_F3_SCREEN);
@@ -614,10 +614,10 @@ static void draw_ui() {
             batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
             if (is_leader()) {
                 batch_colors(B_U4X4_GREEN);
-                batch_string("header", 32.f, LFMT("opt_press", 's', kb_label(KB_JUMP)));
+                batch_string("header", 32.f, LFMT("map.press", 's', kb_label(KB_JUMP)));
             } else {
                 batch_colors(B_U4X4_WHITE);
-                batch_string("header", 32.f, LFMT("opt_waiting_for_leader"));
+                batch_string("header", 32.f, LFMT("map.waiting_for_leader"));
             }
         }
     } else if (map_state->path == NULL) {

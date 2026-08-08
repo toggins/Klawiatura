@@ -372,15 +372,15 @@ const char* get_character_voice(PlayerCharacter cid, PlayerVoice voice) {
 const char* get_powerup_name(PlayerPowerup powerup) {
     switch (powerup) {
     default:
-        return LFMT("val_none");
+        return LFMT("value.none");
     case POW_SUPER_MUSHROOM:
-        return LFMT("val_super_mushroom");
+        return LFMT("value.super_mushroom");
     case POW_FIRE_FLOWER:
-        return LFMT("val_fire_flower");
+        return LFMT("value.fire_flower");
     case POW_BEETROOT:
-        return LFMT("val_beetroot");
+        return LFMT("value.beetroot");
     case POW_GREEN_LUI:
-        return LFMT("val_green_lui");
+        return LFMT("value.green_lui");
     }
 }
 
@@ -993,7 +993,7 @@ void tick_game() {
     if (get_replay_state() == RPS_PLAYING) {
         const GameInput* input = read_replay();
         if (input == NULL) {
-            boot_to_menu(LFMT("msg_replay_ended"));
+            boot_to_menu(LFMT("message.replay_ended"));
             return;
         }
 
@@ -1064,7 +1064,7 @@ void tick_game() {
             struct GekkoDesynced desync = event->data.desynced;
 
             boot_to_menu(
-                LFMT("msg_player_desynced", 's', get_peer_name(player_to_peer((PlayerID)desync.remote_handle))));
+                LFMT("message.player_desynced", 's', get_peer_name(player_to_peer((PlayerID)desync.remote_handle))));
 
             WTF("Tick: %i", desync.frame);
             WTF("Local Checksum: %i", desync.local_checksum);
@@ -1087,7 +1087,7 @@ void tick_game() {
                 break;
             }
 
-            boot_to_menu(LFMT("msg_player_disconnected", 's', get_peer_name(player_to_peer((PlayerID)dc.handle))));
+            boot_to_menu(LFMT("message.player_disconnected", 's', get_peer_name(player_to_peer((PlayerID)dc.handle))));
             return;
         }
 
@@ -1141,7 +1141,7 @@ void tick_game() {
                 WTF("REPLAY DESYNC");
                 WTF("Game checksum: %u", game_checksum);
                 WTF("Replay checksum: %u", replay_checksum);
-                boot_to_menu(LFMT("msg_replay_desynced"));
+                boot_to_menu(LFMT("message.replay_desynced"));
                 return;
             }
             }
@@ -1301,7 +1301,7 @@ static void draw_game_state() {
         case '@': {
             batch_pos(B_F3_XY(432.f, 16.f));
             batch_align(B_ALIGN(FA_CENTER, FA_TOP));
-            batch_string("hud", 16.f, LFMT("hud_world"));
+            batch_string("hud", 16.f, LFMT("hud.world"));
             batch_pos(B_F3_XY(432.f, 34.f));
             batch_string("hud", 16.f, LFMT(label + 1));
             break;
@@ -1326,7 +1326,7 @@ static void draw_game_state() {
         }
 
         batch_align(B_ALIGN(FA_RIGHT, FA_MIDDLE));
-        batch_string("hud", 16.f, LFMT("hud_time"));
+        batch_string("hud", 16.f, LFMT("hud.time"));
         batch_pos(B_F3_XY(SCREEN_WIDTH - 32.f, 34.f));
         batch_scale(B_F2_1);
         batch_align(B_ALIGN_TOP_RIGHT);
@@ -1338,7 +1338,7 @@ static void draw_game_state() {
         if (name != NULL) {
             batch_pos(B_F3_XY(32.f, 64.f));
             batch_align(B_ALIGN_TOP_LEFT);
-            batch_string("main", 24.f, fmt("%s: %s", LFMT("hud_spectating"), name));
+            batch_string("main", 24.f, fmt("%s: %s", LFMT("hud.spectating"), name));
         }
     }
 
@@ -1346,7 +1346,7 @@ static void draw_game_state() {
     if (sequence->type == GS_LOSE && sequence->time >= 211) {
         batch_pos(B_F3_HALF_SCREEN);
         batch_align(B_ALIGN_CENTER);
-        batch_string("hud", 16.f, LFMT("hud_game_over"));
+        batch_string("hud", 16.f, LFMT("hud.game_over"));
     }
 
     batch_test_depth(TRUE);

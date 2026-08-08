@@ -56,26 +56,26 @@ static Catalog CATALOG = {
         },
 
 		[MEN_SINGLEPLAYER] = {
-			.name = "opt_singleplayer",
+			.name = "option.singleplayer",
 		},
 
 		[MEN_MULTIPLAYER] = {
-			.name = "opt_multiplayer",
+			.name = "option.multiplayer",
 		},
 
         [MEN_REPLAYS] = {
-            .name = "opt_replays",
+            .name = "option.replays",
             .enter = enter_replays_menu,
             .leave = leave_replays_menu,
             .draw = draw_replays_menu,
         },
 
 		[MEN_HOST_LOBBY] = {
-			.name = "opt_host_lobby",
+			.name = "option.host_lobby",
 		},
 
 		[MEN_LOBBY_LIST] = {
-			.name = "opt_find_lobby",
+			.name = "option.find_lobby",
 			.enter = enter_lobby_list_menu,
 			.tick = tick_lobby_list_menu,
 		},
@@ -88,21 +88,21 @@ static Catalog CATALOG = {
 		},
 
         [MEN_EDITOR] = {
-			.name = "opt_editor",
+			.name = "option.editor",
         }
 	},
 
 	.options = {
 		[MEN_MAIN] = {
-			{.name = "opt_singleplayer", .menu = MEN_SINGLEPLAYER},
-			{.name = "opt_multiplayer", .callback = multiplayer_option},
-            {.name = "opt_replays", .menu = MEN_REPLAYS},
+			{.name = "option.singleplayer", .menu = MEN_SINGLEPLAYER},
+			{.name = "option.multiplayer", .callback = multiplayer_option},
+            {.name = "option.replays", .menu = MEN_REPLAYS},
 #ifndef SDL_PLATFORM_EMSCRIPTEN
-            {.name = "opt_editor", .menu = MEN_EDITOR},
+            {.name = "option.editor", .menu = MEN_EDITOR},
 #endif
-			{.name = "opt_options", .callback = options_option},
+			{.name = "option.options", .callback = options_option},
 #ifndef SDL_PLATFORM_EMSCRIPTEN
-			{.name = "opt_exit", .callback = permadeath},
+			{.name = "option.exit", .callback = permadeath},
 #endif
 		},
 
@@ -116,15 +116,15 @@ static Catalog CATALOG = {
         },
 
 		[MEN_MULTIPLAYER] = {
-			{.name = "opt_host_lobby", .menu = MEN_HOST_LOBBY},
-			{.name = "opt_find_lobby", .menu = MEN_LOBBY_LIST},
+			{.name = "option.host_lobby", .menu = MEN_HOST_LOBBY},
+			{.name = "option.find_lobby", .menu = MEN_LOBBY_LIST},
 		},
 
 		[MEN_HOST_LOBBY] = {
 			{.fmt = fmt_max_peers, .cycle = max_peers_cycle},
 			{.fmt = fmt_visibility, .cycle = visibility_cycle},
 			{},
-			{.name = "opt_host", .callback = host_option},
+			{.name = "option.host", .callback = host_option},
 		},
 
         [MEN_LOBBY] = {
@@ -132,16 +132,16 @@ static Catalog CATALOG = {
             {.fmt = fmt_enter_as, .cycle = enter_as_cycle},
             {.fmt = fmt_character, .disabled = character_disabled, .cycle = character_cycle},
             {.fmt = fmt_powerup, .disabled = character_disabled, .cycle = powerup_cycle},
-            {.name = "opt_options", .callback = options_option},
+            {.name = "option.options", .callback = options_option},
             {.fmt = fmt_kick_player, .disabled = kick_player_disabled, .callback = kick_player_option},
             {.fmt = fmt_start, .disabled = start_disabled, .callback = start_option},
         },
 
         [MEN_EDITOR] = {
-            {.name = "opt_go_to_editor", .callback = go_to_editor_option},
+            {.name = "option.go_to_editor", .callback = go_to_editor_option},
             {.fmt = fmt_test_level, .cycle = test_level_cycle, .callback = test_level_option},
             {},
-            {.name = "opt_open_data_folder", .callback = open_data_folder},
+            {.name = "option.open_data_folder", .callback = open_data_folder},
         },
 	}
 };
@@ -162,7 +162,7 @@ static Bool draw_main_menu() {
     batch_align(B_ALIGN_BOTTOM_RIGHT);
     batch_string("main", 24.f, fmt("Checksum: %u", get_game_hash()));
 
-    const char* credits = LFMT("credits");
+    const char* credits = LFMT("menu.credits");
     const float wrap = string_width("main", 16.f, credits) + SCREEN_WIDTH;
     const float scroll = SDL_fmodf(totalticks(), wrap);
 
@@ -195,7 +195,7 @@ static const char* fmt_lobby_list(size_t idx) {
 static void lobby_option();
 static void tick_lobby_list_menu() {
     SDL_zeroa(CATALOG.options[MEN_LOBBY_LIST]);
-    CATALOG.options[MEN_LOBBY_LIST][0].name = "opt_no_lobbies";
+    CATALOG.options[MEN_LOBBY_LIST][0].name = "option.no_lobbies";
 
     for (Uint8 i = 0; i < MAX_OPTIONS; i++) {
         const LobbyInfo* lobby = get_lobby_list(i);
@@ -248,9 +248,9 @@ static Bool draw_replays_menu() {
     batch_pos(B_F3_HALF_SCREEN);
     batch_colors(B_U4X4_WHITE);
     batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-    batch_string("header", 32.f, LFMT("opt_no_replays"));
+    batch_string("header", 32.f, LFMT("option.no_replays"));
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
-    batch_string("header", 32.f, LFMT("opt_how_to_record", 's', kb_label(KB_RECORD_REPLAY)));
+    batch_string("header", 32.f, LFMT("option.how_to_record", 's', kb_label(KB_RECORD_REPLAY)));
 
     return TRUE;
 }
@@ -258,7 +258,7 @@ static Bool draw_replays_menu() {
 static const char* fmt_lobby() {
     const char* lname = get_lobby_name();
     return fmt("%s (%s)", (lname != NULL && SDL_strnlen(lname, 33) > 32) ? fmt("%.*s...", 32, lname) : lname,
-        LFMT(in_private_lobby() ? "val_private" : "val_public"));
+        LFMT(in_private_lobby() ? "value.private" : "value.public"));
 }
 
 static void leave_lobby_menu(MenuType to) {
@@ -270,7 +270,7 @@ static void leave_lobby_menu(MenuType to) {
 
 static const char* fmt_disconnected() {
     const char* error = net_error();
-    return (error == NULL) ? LFMT("msg_disconnected") : fmt("%s\n(%s)", LFMT("msg_disconnected"), error);
+    return (error == NULL) ? LFMT("message.disconnected") : fmt("%s\n(%s)", LFMT("message.disconnected"), error);
 }
 
 static void cancel_error() {
@@ -286,7 +286,7 @@ static void tick_lobby_menu() {
         cancel_error();
     } else {
         UIMessageData* userdata = message->userdata;
-        userdata->title = "msg_error";
+        userdata->title = "message.error";
         userdata->fmt = fmt_disconnected;
         userdata->cancel = cancel_error;
     }
@@ -299,13 +299,13 @@ static Bool draw_lobby_menu() {
     static const float PEER_SIZE = 16.f;
 
     batch_pos(B_F3_XY(16.f, py));
-    batch_string("main", PEER_SIZE, LFMT("opt_peer"));
+    batch_string("main", PEER_SIZE, LFMT("option.peer"));
     batch_pos(B_F3_XY(168.f, py));
-    batch_string("main", PEER_SIZE, LFMT("opt_character"));
+    batch_string("main", PEER_SIZE, LFMT("option.character"));
     batch_pos(B_F3_XY(320.f, py));
-    batch_string("main", PEER_SIZE, LFMT("opt_powerup"));
+    batch_string("main", PEER_SIZE, LFMT("option.powerup"));
     batch_pos(B_F3_XY(472.f, py));
-    batch_string("main", PEER_SIZE, LFMT("opt_ping"));
+    batch_string("main", PEER_SIZE, LFMT("option.ping"));
 
     py += PEER_SIZE;
 
@@ -321,7 +321,7 @@ static Bool draw_lobby_menu() {
 
         batch_pos(B_F3_XY(168.f, py));
         batch_string("main", PEER_SIZE,
-            (get_peer_bool(pid, "spectator")) ? LFMT("val_spectator")
+            (get_peer_bool(pid, "spectator")) ? LFMT("value.spectator")
                                               : get_character_name(get_peer_number(pid, "character")));
 
         batch_pos(B_F3_XY(320.f, py));
@@ -359,7 +359,7 @@ static const char* fmt_world(size_t idx) {
     (void)idx;
 
     const World* world = get_world(is_connected() ? get_lobby_string("world") : CLIENT.world);
-    return fmt("%s: %s", LFMT("opt_world"), (world == NULL) ? NULL : LFMT(fmt("wld_%s", world->name)));
+    return fmt("%s: %s", LFMT("option.world"), (world == NULL) ? NULL : LFMT(fmt("world.%s", world->name)));
 }
 
 static void world_cycle(Sint8 cycle) {
@@ -381,7 +381,7 @@ static void world_cycle(Sint8 cycle) {
 static const char* fmt_character(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s", LFMT("opt_character"), get_character_name(CLIENT.character));
+    return fmt("%s: %s", LFMT("option.character"), get_character_name(CLIENT.character));
 }
 
 static Bool character_disabled() {
@@ -409,7 +409,7 @@ static const char* fmt_powerup(size_t idx) {
 
     const Sint8 cost = get_powerup_cost(CLIENT.powerup);
     return fmt(
-        "%s: %s%s", LFMT("opt_powerup"), get_powerup_name(CLIENT.powerup), (cost > 0) ? fmt(" (-%i)", cost) : "");
+        "%s: %s%s", LFMT("option.powerup"), get_powerup_name(CLIENT.powerup), (cost > 0) ? fmt(" (-%i)", cost) : "");
 }
 
 static void powerup_cycle(Sint8 cycle) {
@@ -432,15 +432,15 @@ static const char* fmt_start(size_t idx) {
     (void)idx;
 
     if (get_world(CLIENT.world) == NULL)
-        return LFMT("opt_invalid_world");
+        return LFMT("option.invalid_world");
 
     if (get_lobby_player_count() < 1)
-        return LFMT("opt_not_enough_players");
+        return LFMT("option.not_enough_players");
 
     if (is_client())
-        return LFMT("opt_waiting_for_host");
+        return LFMT("option.waiting_for_host");
 
-    return LFMT("opt_start");
+    return LFMT("option.start");
 }
 
 static Bool start_disabled() {
@@ -481,8 +481,8 @@ static void multiplayer_option() {
     }
 
     UIMessageData* userdata = message->userdata;
-    userdata->title = "msg_notice";
-    userdata->text = "msg_online_notice";
+    userdata->title = "message.notice";
+    userdata->text = "message.online_notice";
     userdata->font = "main";
     userdata->size = 24.f;
     userdata->verb = "continue";
@@ -492,7 +492,7 @@ static void multiplayer_option() {
 static const char* fmt_max_peers(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %u", LFMT("opt_max_peers"), CLIENT.lobby_limit);
+    return fmt("%s: %u", LFMT("option.max_peers"), CLIENT.lobby_limit);
 }
 
 static void max_peers_cycle(Sint8 cycle) {
@@ -512,7 +512,7 @@ static void max_peers_cycle(Sint8 cycle) {
 static const char* fmt_visibility(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s", LFMT("opt_visibility"), LFMT(CLIENT.private_lobby ? "val_private" : "val_public"));
+    return fmt("%s: %s", LFMT("option.visibility"), LFMT(CLIENT.private_lobby ? "value.private" : "value.public"));
 }
 
 static void visibility_cycle(Sint8 cycle) {
@@ -532,7 +532,7 @@ static Bool wait_connecting() {
             return TRUE;
 
         UIMessageData* userdata = message->userdata;
-        userdata->text = "msg_connection_failed";
+        userdata->text = "message.connection_failed";
 
         return TRUE;
     }
@@ -555,7 +555,7 @@ static void prompt_connect() {
         return;
 
     UIMessageData* userdata = message->userdata;
-    userdata->text = "msg_connecting";
+    userdata->text = "message.connecting";
     userdata->verb = "cancel";
     userdata->wait = wait_connecting;
     userdata->finish = finish_connecting;
@@ -579,8 +579,8 @@ static void lobby_option() {
 static const char* fmt_enter_as(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s", LFMT("opt_enter_as"),
-        LFMT((get_peer_bool(get_local_peer(), "spectator")) ? "val_spectator" : "val_player"));
+    return fmt("%s: %s", LFMT("option.enter_as"),
+        LFMT((get_peer_bool(get_local_peer(), "spectator")) ? "value.spectator" : "value.player"));
 }
 
 static void enter_as_cycle(Sint8 cycle) {
@@ -592,7 +592,7 @@ static void enter_as_cycle(Sint8 cycle) {
 static const char* fmt_kick_player(size_t idx) {
     (void)idx;
 
-    return is_client() ? NULL : LFMT("opt_kick_player");
+    return is_client() ? NULL : LFMT("option.kick_player");
 }
 
 static Bool kick_player_disabled() {
@@ -604,7 +604,7 @@ static void kick_player_option() {
 }
 
 static const char* fmt_replay_error() {
-    return fmt("%s\n%s", LFMT("msg_replay_load_error"), LFMT(replay_error));
+    return fmt("%s\n%s", LFMT("message.replay_load_error"), LFMT(replay_error));
 }
 
 static void replay_option() {
@@ -626,7 +626,7 @@ static const char* fmt_test_level(size_t idx) {
     (void)idx;
 
     const Level* level = get_level(CLIENT.level);
-    return fmt("%s: %s", LFMT("opt_test_level"), (level == NULL) ? NULL : LFMT(fmt("lvl_%s", level->name)));
+    return fmt("%s: %s", LFMT("option.test_level"), (level == NULL) ? NULL : LFMT(fmt("level.%s", level->name)));
 }
 
 static void test_level_cycle(Sint8 cycle) {

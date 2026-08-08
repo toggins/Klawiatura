@@ -42,12 +42,12 @@ static Catalog CATALOG = {
 	.current = MEN_MAIN,
 
 	.menus = {
-		[MEN_MAIN] = {.name = "opt_options"},
-		[MEN_LANGUAGE] = {.name = "opt_language", .enter = enter_language_menu},
-		[MEN_CONTROLS] = {.name = "opt_controls"},
-		[MEN_VIDEO] = {.name = "opt_video"},
-		[MEN_AUDIO] = {.name = "opt_audio"},
-        [MEN_NETWORK] = {.name = "opt_network"},
+		[MEN_MAIN] = {.name = "option.options"},
+		[MEN_LANGUAGE] = {.name = "option.language", .enter = enter_language_menu},
+		[MEN_CONTROLS] = {.name = "option.controls"},
+		[MEN_VIDEO] = {.name = "option.video"},
+		[MEN_AUDIO] = {.name = "option.audio"},
+        [MEN_NETWORK] = {.name = "option.network"},
 	},
 
 	.options = {
@@ -56,13 +56,13 @@ static Catalog CATALOG = {
 			{.fmt = fmt_language, .menu = MEN_LANGUAGE},
             {.fmt = fmt_xscroll, .cycle = xscroll_cycle},
 			{},
-			{.name = "opt_controls", .menu = MEN_CONTROLS},
-			{.name = "opt_video", .menu = MEN_VIDEO},
-			{.name = "opt_audio", .menu = MEN_AUDIO},
-            {.name = "opt_network", .menu = MEN_NETWORK},
+			{.name = "option.controls", .menu = MEN_CONTROLS},
+			{.name = "option.video", .menu = MEN_VIDEO},
+			{.name = "option.audio", .menu = MEN_AUDIO},
+            {.name = "option.network", .menu = MEN_NETWORK},
 #ifndef SDL_PLATFORM_EMSCRIPTEN
             {},
-            {.name = "opt_open_user_folder", .callback = open_user_folder},
+            {.name = "option.open_user_folder", .callback = open_user_folder},
 #endif
 		},
 
@@ -137,7 +137,7 @@ static void enter_language_menu(MenuType from) {
 static const char* fmt_name(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s%s", LFMT("opt_name"), CLIENT.name, caret(typing_what() == CLIENT.name));
+    return fmt("%s: %s%s", LFMT("option.name"), CLIENT.name, caret(typing_what() == CLIENT.name));
 }
 
 static void submit_name(Bool confirmed) {
@@ -151,13 +151,13 @@ static void submit_name(Bool confirmed) {
 static const char* fmt_language(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s (%s)", LFMT("opt_language"), LFMT(CLIENT.language), CLIENT.language);
+    return fmt("%s: %s (%s)", LFMT("option.language"), LFMT(CLIENT.language), CLIENT.language);
 }
 
 static const char* fmt_xscroll(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s", LFMT("opt_xscroll"), LFMT(CLIENT.xscroll ? "val_on" : "val_off"));
+    return fmt("%s: %s", LFMT("option.xscroll"), LFMT(CLIENT.xscroll ? "value.on" : "value.off"));
 }
 
 static void saw_xscroll_notice() {
@@ -176,16 +176,16 @@ static void xscroll_cycle(Sint8 cycle) {
     if (message == NULL)
         return;
     UIMessageData* userdata = message->userdata;
-    userdata->title = "msg_notice";
-    userdata->text = "msg_xscroll_notice";
+    userdata->title = "message.notice";
+    userdata->text = "message.xscroll_notice";
     userdata->cancel = saw_xscroll_notice;
 }
 
 static const char* fmt_server(size_t idx) {
     (void)idx;
 
-    return (typing_what() == CLIENT.server) ? fmt("%s:\n%s%s", LFMT("opt_server"), CLIENT.server, caret(TRUE))
-                                            : LFMT("opt_change_server");
+    return (typing_what() == CLIENT.server) ? fmt("%s:\n%s%s", LFMT("option.server"), CLIENT.server, caret(TRUE))
+                                            : LFMT("option.change_server");
 }
 
 static void submit_server(Bool confirmed) {
@@ -197,7 +197,7 @@ static void submit_server(Bool confirmed) {
 static const char* fmt_show_user_messages(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s", LFMT("opt_show_user_messages"), LFMT(CLIENT.show_user_messages ? "val_yes" : "val_no"));
+    return fmt("%s: %s", LFMT("option.show_user_messages"), LFMT(CLIENT.show_user_messages ? "value.yes" : "value.no"));
 }
 
 static void show_user_messages_cycle(Sint8 cycle) {
@@ -220,14 +220,14 @@ static void language_option() {
 static const char* fmt_device(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s", LFMT("opt_device"), input_device());
+    return fmt("%s: %s", LFMT("option.device"), input_device());
 }
 
 #define KEYBIND_OPTION(name, kb)                                                                                       \
     static const char* fmt_##name(size_t idx) {                                                                        \
         (void)idx;                                                                                                     \
                                                                                                                        \
-        return fmt("%s: %s", LFMT("kb_" #name), (scanning_what() == (kb)) ? LFMT("val_scanning") : kb_label(kb));      \
+        return fmt("%s: %s", LFMT("bind." #name), (scanning_what() == (kb)) ? LFMT("value.scanning") : kb_label(kb));  \
     }                                                                                                                  \
                                                                                                                        \
     static void name##_option() {                                                                                      \
@@ -251,7 +251,7 @@ static const char* fmt_resolution(size_t idx) {
 
     int width = 0, height = 0;
     get_resolution(&width, &height);
-    return fmt("%s: %ix%i", LFMT("opt_resolution"), width, height);
+    return fmt("%s: %ix%i", LFMT("option.resolution"), width, height);
 }
 
 static void resolution_cycle(Sint8 cycle) {
@@ -281,7 +281,7 @@ static void resolution_cycle(Sint8 cycle) {
 
 static const char* fmt_fullscreen(size_t idx) {
     (void)idx;
-    return fmt("%s: %s", LFMT("opt_fullscreen"), LFMT(get_fullscreen() ? "val_on" : "val_off"));
+    return fmt("%s: %s", LFMT("option.fullscreen"), LFMT(get_fullscreen() ? "value.on" : "value.off"));
 }
 
 static void fullscreen_cycle(Sint8 cycle) {
@@ -293,7 +293,7 @@ static void fullscreen_cycle(Sint8 cycle) {
 static const char* fmt_vsync(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s", LFMT("opt_vsync"), LFMT(get_vsync() ? "val_on" : "val_off"));
+    return fmt("%s: %s", LFMT("option.vsync"), LFMT(get_vsync() ? "value.on" : "value.off"));
 }
 
 static void vsync_cycle(Sint8 cycle) {
@@ -305,7 +305,7 @@ static void vsync_cycle(Sint8 cycle) {
 static const char* fmt_master_volume(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %u%%", LFMT("opt_master_volume"), (Uint8)(get_volume() * 100.f));
+    return fmt("%s: %u%%", LFMT("option.master_volume"), (Uint8)(get_volume() * 100.f));
 }
 
 static void master_volume_cycle(Sint8 cycle) {
@@ -321,7 +321,7 @@ static void master_volume_cycle(Sint8 cycle) {
 static const char* fmt_sound_volume(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %u%%", LFMT("opt_sound_volume"), (Uint8)(get_sound_volume() * 100.f));
+    return fmt("%s: %u%%", LFMT("option.sound_volume"), (Uint8)(get_sound_volume() * 100.f));
 }
 
 static void sound_volume_cycle(Sint8 cycle) {
@@ -337,7 +337,7 @@ static void sound_volume_cycle(Sint8 cycle) {
 static const char* fmt_music_volume(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %u%%", LFMT("opt_music_volume"), (Uint8)(get_music_volume() * 100.f));
+    return fmt("%s: %u%%", LFMT("option.music_volume"), (Uint8)(get_music_volume() * 100.f));
 }
 
 static void music_volume_cycle(Sint8 cycle) {
@@ -353,7 +353,8 @@ static void music_volume_cycle(Sint8 cycle) {
 static const char* fmt_audio_in_background(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s", LFMT("opt_audio_in_background"), LFMT(CLIENT.audio_in_background ? "val_on" : "val_off"));
+    return fmt(
+        "%s: %s", LFMT("option.audio_in_background"), LFMT(CLIENT.audio_in_background ? "value.on" : "value.off"));
 }
 
 static void audio_in_background_cycle(Sint8 cycle) {
@@ -365,8 +366,8 @@ static void audio_in_background_cycle(Sint8 cycle) {
 static const char* fmt_input_delay(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s", LFMT("opt_input_delay"),
-        LFMT((CLIENT.input_delay == 1) ? "val_frame" : "val_frames", 'd', CLIENT.input_delay));
+    return fmt("%s: %s", LFMT("option.input_delay"),
+        LFMT((CLIENT.input_delay == 1) ? "value.frame" : "value.frames", 'd', CLIENT.input_delay));
 }
 
 static void input_delay_cycle(Sint8 cycle) {
@@ -383,8 +384,8 @@ static void input_delay_cycle(Sint8 cycle) {
 static const char* fmt_framerate(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s", LFMT("opt_framerate"),
-        (get_framerate() <= 0) ? LFMT("val_unlimited") : LFMT("val_fps", 'd', get_framerate()));
+    return fmt("%s: %s", LFMT("option.framerate"),
+        (get_framerate() <= 0) ? LFMT("value.unlimited") : LFMT("value.fps", 'd', get_framerate()));
 }
 
 static void framerate_cycle(Sint8 cycle) {
@@ -414,7 +415,7 @@ static void framerate_cycle(Sint8 cycle) {
 static const char* fmt_texture_filter(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s", LFMT("opt_texture_filter"), LFMT(CLIENT.texture_filter ? "val_linear" : "val_nearest"));
+    return fmt("%s: %s", LFMT("option.texture_filter"), LFMT(CLIENT.texture_filter ? "value.linear" : "value.nearest"));
 }
 
 static void texture_filter_cycle(Sint8 cycle) {

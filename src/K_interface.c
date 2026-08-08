@@ -124,11 +124,11 @@ iu_dont_change:
             if (kb_pressed(KB_RECORD_REPLAY)) {
                 CLIENT.record_replay = !CLIENT.record_replay;
                 if (CLIENT.record_replay) {
-                    chat_message(LFMT("chat_recording_on"), B_U4_GREEN);
+                    chat_message(LFMT("chat.recording_on"), B_U4_GREEN);
                 } else {
                     if (get_replay_state() == RPS_RECORDING)
                         end_replay();
-                    chat_message(LFMT("chat_recording_off"), B_U4_RED);
+                    chat_message(LFMT("chat.recording_off"), B_U4_RED);
                 }
             }
 
@@ -506,9 +506,10 @@ void draw_catalog(const Catalog* catalog) {
         batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
         batch_string("header", 32.f,
             (typing_what() == NULL || typing_in_chat())
-                ? fmt("[%s] %s", kb_label(KB_PAUSE), LFMT((scanning_what() == NULL_KEYBIND) ? "back" : "cancel"))
-                : fmt("[%s] %s\n[%s] %s", SDL_GetScancodeName(SDL_SCANCODE_RETURN), LFMT("submit"),
-                      SDL_GetScancodeName(SDL_SCANCODE_ESCAPE), LFMT("cancel")));
+                ? fmt("[%s] %s", kb_label(KB_PAUSE),
+                      LFMT((scanning_what() == NULL_KEYBIND) ? "menu.back" : "menu.cancel"))
+                : fmt("[%s] %s\n[%s] %s", SDL_GetScancodeName(SDL_SCANCODE_RETURN), LFMT("menu.submit"),
+                      SDL_GetScancodeName(SDL_SCANCODE_ESCAPE), LFMT("menu.cancel")));
     }
 }
 

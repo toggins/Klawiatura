@@ -4,7 +4,7 @@
         "track": "mk64_frappe_snowland",
         "backdrops": [
             {
-                "sprite": "maps/the_lost_map",
+                "sprite": "maps/lost_map",
                 "pos": [0, 0, 50]
             },
             {
@@ -161,12 +161,5 @@
             }
         ]
     },
-    "levels": [
-        "the_lost_map_1",
-        "the_lost_map_2",
-        "the_lost_map_3",
-        "the_lost_map_4",
-        "the_lost_map_5",
-        "the_lost_map_6"
-    ]
+    "levels": ["lost_map_1", "lost_map_2", "lost_map_3", "lost_map_4", "lost_map_5", "lost_map_6"]
 }

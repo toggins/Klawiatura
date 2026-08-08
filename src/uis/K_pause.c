@@ -23,7 +23,7 @@ static void kick_player_option() {
 static const char* fmt_return_to_title(size_t idx) {
     (void)idx;
 
-    return LFMT(is_connected() ? "opt_return_to_lobby" : "opt_return_to_title");
+    return LFMT(is_connected() ? "option.return_to_lobby" : "option.return_to_title");
 }
 
 static void return_to_title_option() {
@@ -40,9 +40,9 @@ static void create(UI* ui) {
 
     SDL_zeroa(OPTIONS);
     if (is_connected() && is_host()) {
-        OPTIONS[0].name = "opt_options";
+        OPTIONS[0].name = "option.options";
         OPTIONS[0].callback = options_option;
-        OPTIONS[1].name = "opt_kick_player";
+        OPTIONS[1].name = "option.kick_player";
         OPTIONS[1].disabled = kick_player_disabled;
         OPTIONS[1].callback = kick_player_option;
         OPTIONS[2].fmt = fmt_return_to_title;
@@ -50,7 +50,7 @@ static void create(UI* ui) {
 
         option = option % 3;
     } else {
-        OPTIONS[0].name = "opt_options";
+        OPTIONS[0].name = "option.options";
         OPTIONS[0].callback = options_option;
         OPTIONS[1].fmt = fmt_return_to_title;
         OPTIONS[1].callback = return_to_title_option;
@@ -80,7 +80,7 @@ static void draw(const UI* ui) {
     batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 16.f));
     batch_colors(B_U4X4_YELLOW);
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
-    batch_string("header", 32.f, LFMT("paused"));
+    batch_string("header", 32.f, LFMT("menu.paused"));
 
     draw_options(OPTIONS, option, 56.f);
 }

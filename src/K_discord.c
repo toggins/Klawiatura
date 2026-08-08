@@ -132,7 +132,7 @@ void update_discord_status() {
             break;
         }
 
-        const char* name = LFMT(fmt("wld_%s", world->name));
+        const char* name = LFMT(fmt("world.%s", world->name));
         Discord_Activity_SetDetails(&activity, &DYNAMIC_STRING(name));
         break;
     }
@@ -144,7 +144,7 @@ void update_discord_status() {
             break;
         }
 
-        const char* name = LFMT(fmt("lvl_%s", level->name));
+        const char* name = LFMT(fmt("level.%s", level->name));
         Discord_Activity_SetDetails(&activity, &DYNAMIC_STRING(name));
         break;
     }

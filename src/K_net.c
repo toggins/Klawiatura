@@ -34,7 +34,7 @@ static void on_ready() {
     connect_state = CONN_CONNECTED;
 
     clear_chat();
-    chat_message(LFMT("chat_connected"), B_U4_YELLOW);
+    chat_message(LFMT("chat.connected"), B_U4_YELLOW);
     update_discord_status();
 }
 
@@ -52,7 +52,7 @@ static void on_disconnected(NutBlast_Reason reason) {
 }
 
 static void on_peer_joined(NetID pid) {
-    chat_message(LFMT("chat_joined", 's', get_peer_name(pid)), B_U4_YELLOW);
+    chat_message(LFMT("chat.joined", 's', get_peer_name(pid)), B_U4_YELLOW);
     play_generic_sound("ui/join", PLAY_SYSTEM);
 }
 
@@ -65,7 +65,7 @@ static void on_peer_left(NetID pid, NutBlast_Reason reason) {
                 continue;
 
             if (get_screen() != SCR_MENU) {
-                const char* lstr = LFMT("msg_player_left", 's', get_peer_name(pid));
+                const char* lstr = LFMT("msg.player_left", 's', get_peer_name(pid));
                 boot_to_menu(has_reason ? fmt("%s\n%s", lstr, reason.code) : lstr);
             }
 
@@ -74,7 +74,7 @@ static void on_peer_left(NetID pid, NutBlast_Reason reason) {
         }
     }
 
-    const char* lstr = LFMT("chat_left", 's', get_peer_name(pid));
+    const char* lstr = LFMT("chat.peer_left", 's', get_peer_name(pid));
     chat_message(has_reason ? fmt("%s (%s)", lstr, reason.code) : lstr, B_U4_YELLOW);
     play_generic_sound("ui/leave", PLAY_SYSTEM);
 }
@@ -119,7 +119,7 @@ static void on_lobbies_found(const NutBlast_Lobby* lobbies, size_t count) {
 
 static void on_master_changed(NetID pid) {
     if (pid > 0)
-        chat_message(LFMT("chat_hosting", 's', get_peer_name(get_master_peer())), B_U4_YELLOW);
+        chat_message(LFMT("chat.peer_hosting", 's', get_peer_name(get_master_peer())), B_U4_YELLOW);
 }
 
 static void on_peer_data_changed(NetID pid, NutBlast_FieldDiff diff) {
@@ -127,13 +127,13 @@ static void on_peer_data_changed(NetID pid, NutBlast_FieldDiff diff) {
         return;
 
     if (SDL_strcmp(diff.name, NUTBLAST_FIELD_PLAYER_NAME) == 0) {
-        chat_message(LFMT("chat_changed_name", 's', diff.old_value, 's', diff.new_value), B_U4_YELLOW);
+        chat_message(LFMT("chat.peer_changed_name", 's', diff.old_value, 's', diff.new_value), B_U4_YELLOW);
         return;
     }
 
     if (SDL_strcmp(diff.name, "spectator") == 0) {
-        chat_message(
-            LFMT((SDL_atoi(diff.new_value) > 0) ? "chat_spectator_on" : "chat_spectator_off", 's', get_peer_name(pid)),
+        chat_message(LFMT((SDL_atoi(diff.new_value) > 0) ? "chat.peer_spectator_on" : "chat.peer_spectator_off", 's',
+                         get_peer_name(pid)),
             B_U4_YELLOW);
         return;
     }
@@ -219,7 +219,7 @@ void net_update() {
             for (size_t i = 0; i < SDL_arraysize(player_peers); i++) {
                 if (player_peers[i] == msg.from) {
                     if (get_screen() != SCR_MENU)
-                        boot_to_menu(LFMT("msg_player_bailed", 's', get_peer_name(player_peers[i])));
+                        boot_to_menu(LFMT("msg.player_bailed", 's', get_peer_name(player_peers[i])));
 
                     player_peers[i] = 0;
                     break;
@@ -357,7 +357,7 @@ void net_update() {
                 read_buffer64(&mbuf, &spectator_peers[i]);
 
             if (was_player && get_screen() != SCR_MENU)
-                boot_to_menu(LFMT("msg_kicked_from_game"));
+                boot_to_menu(LFMT("msg.kicked_from_game"));
 
             break;
         }
@@ -481,7 +481,7 @@ Bool nuke_spectator_peer(NetID pid) {
 
     for (size_t i = 0; i < SDL_arraysize(spectator_peers); i++) {
         if (spectator_peers[i] == pid) {
-            chat_message(LFMT("chat_stopped_spectating", 's', get_peer_name(pid)), B_U4_YELLOW);
+            chat_message(LFMT("chat.stopped_spectating", 's', get_peer_name(pid)), B_U4_YELLOW);
             spectator_peers[i] = 0;
             return TRUE;
         }
@@ -576,11 +576,11 @@ void disconnect() {
 
     if (last_error == NULL) {
         if (get_screen() != SCR_MENU)
-            boot_to_menu(LFMT("msg_disconnected"));
+            boot_to_menu(LFMT("msg.disconnected"));
     } else {
         WARN("Disconnected with error: %s", last_error);
         if (get_screen() != SCR_MENU)
-            boot_to_menu(fmt("%s\n%s", LFMT("msg_disconnected"), last_error));
+            boot_to_menu(fmt("%s\n%s", LFMT("msg.disconnected"), last_error));
     }
 
     NutBlast_PurgeMetadata();
