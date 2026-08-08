@@ -34,7 +34,8 @@ typedef struct {
 
 static MIX_Mixer* speaker = NULL;
 static MIX_Group *sound_group = NULL, *system_group = NULL, *music_group = NULL;
-static SDL_PropertiesID loop_properties = 0;
+
+static SDL_PropertiesID midi_properties = 0, loop_properties = 0;
 
 static float master_volume = 0.5f, sound_volume = 1.f, music_volume = 1.f;
 static float mixer_volume = 1.0f;
@@ -110,6 +111,12 @@ void audio_init() {
         WTF("Failed to create music group: %s", SDL_GetError());
     else
         MIX_SetGroupPostMixCallback(music_group, mix_music, NULL);
+
+    midi_properties = SDL_CreateProperties();
+    EXPECT(midi_properties, "Failed to create midi properties: %s", SDL_GetError());
+    SDL_SetFloatProperty(midi_properties, "synth.gain", 0.5f);
+    SDL_SetNumberProperty(midi_properties, "synth.reverb.active", 0);
+    SDL_SetNumberProperty(midi_properties, "synth.chorus.active", 0);
 
     loop_properties = SDL_CreateProperties();
     EXPECT(loop_properties, "Failed to create loop properties: %s", SDL_GetError());
@@ -211,11 +218,14 @@ void audio_teardown() {
     FreeTinyMap(&sounds);
     FreeTinyMap(&tracks);
 
+    SDL_DestroyProperties(midi_properties);
     SDL_DestroyProperties(loop_properties);
+
     for (size_t i = 0; i < MAX_GENERIC_SOUNDS; i++)
         MIX_DestroyTrack(generic_sounds[i].channel);
     for (size_t i = 0; i < MAX_GENERIC_TRACKS; i++)
         MIX_DestroyTrack(generic_tracks[i].channel);
+
     MIX_DestroyGroup(sound_group);
     MIX_DestroyGroup(system_group);
     MIX_DestroyGroup(music_group);
@@ -303,8 +313,24 @@ void load_track(const char* name, AssetKeepLevel keep) {
 
     Track track = {0};
 
-    track.internal = MIX_LoadAudio_IO(speaker, stream_data_file(fmt("tracks/%s.*", name), ".json"), FALSE, TRUE);
-    ASSUME(track.internal, "Failed to load track \"%s\": %s", name, SDL_GetError());
+    SDL_IOStream* io = stream_data_file(fmt("tracks/%s.*", name), ".json");
+    ASSUME(io, "Failed to load track \"%s\": %s", name, SDL_GetError());
+
+    SDL_PropertiesID props = SDL_CreateProperties();
+    EXPECT(props, "Failed to allocate track \"%s\" properties", name);
+    SDL_SetPointerProperty(props, MIX_PROP_AUDIO_LOAD_IOSTREAM_POINTER, io);
+    SDL_SetBooleanProperty(props, MIX_PROP_AUDIO_LOAD_CLOSEIO_BOOLEAN, TRUE);
+    SDL_SetStringProperty(
+        props, "SDL_mixer.decoder.fluidsynth.soundfont_path", fmt("%ssoundfont.sf2", get_base_path()));
+    SDL_SetNumberProperty(props, "SDL_mixer.decoder.fluidsynth.props", midi_properties);
+
+    track.internal = MIX_LoadAudioWithProperties(props);
+    if (track.internal == NULL) {
+        WTF("Failed to load track \"%s\":", SDL_GetError());
+        SDL_DestroyProperties(props);
+        return;
+    }
+    SDL_DestroyProperties(props);
 
     track.base.name = SDL_strdup(name);
     EXPECT(track.base.name, "Failed to allocate name for track \"%s\"", name);

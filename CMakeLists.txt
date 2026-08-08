@@ -83,6 +83,10 @@ set(SDLMIXER_MIDI_TIMIDITY OFF CACHE INTERNAL "")
 
 set(SDLMIXER_VENDORED ON CACHE INTERNAL "")
 
+if(EMSCRIPTEN)
+    set(osal "embedded" CACHE STRING "" FORCE)
+endif()
+
 FetchContent_Declare(SDL3_mixer
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
     GIT_TAG 9c12eb245ebbf568b6eb7b838cf350aa9f729497
@@ -245,6 +249,7 @@ endif()
 if(EMSCRIPTEN)
     target_link_options(${PROJECT_NAME} PRIVATE
         "SHELL:-sEXPORTED_RUNTIME_METHODS=HEAPF32,HEAPU32,HEAPU8"
+        "SHELL:-sALLOW_MEMORY_GROWTH=1"
         "SHELL:-sMIN_WEBGL_VERSION=2"
         "SHELL:-sMAX_WEBGL_VERSION=2"
         "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/assets@"

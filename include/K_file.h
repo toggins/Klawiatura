@@ -14,17 +14,17 @@ void file_init(const char*), file_teardown();
 
 void rediscover_mods();
 
-void open_data_folder(), open_user_folder();
-
 yyjson_doc* read_json(const char*, size_t, const char**);
 
-SDL_IOStream* stream_base_file(const char*);
+const char* get_base_path();
 
+void open_data_folder();
 void* load_data_file(const char*, size_t*);
 SDL_IOStream* stream_data_file(const char*, const char*);
 yyjson_doc* load_data_json(const char*);
 void iterate_data_files(const char*, Bool, void (*)(const char*, const void*, size_t, void*), void*);
 
+void open_user_folder();
 void* load_user_file(const char*, size_t*);
 yyjson_doc* load_user_json(const char*);
 void iterate_user_files(const char*, Bool, void (*)(const char*, const void*, size_t, void*), void*);
