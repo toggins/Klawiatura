@@ -9,7 +9,7 @@ on:
       - .*
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: release
   cancel-in-progress: true
 
 env:
@@ -119,11 +119,11 @@ jobs:
         run: |
           cmake --build build --target ${{ matrix.name == 'HTML5' && 'Klawiatura' || 'all' }}
 
-      - name: Package
+      - name: Package binaries
         if: matrix.name != 'HTML5'
         run: cmake --build build --target package
 
-      - name: Release
+      - name: Release binaries
         uses: softprops/action-gh-release@v3
         if: matrix.name != 'HTML5'
         with:
@@ -136,7 +136,7 @@ jobs:
         if: matrix.name == 'HTML5'
         run: cp -vr build/Klawiatura.{js,wasm,data} www
 
-      - name: Publish
+      - name: Publish HTML5
         id: publish
         uses: nonk123/sanity-action@master
         if: matrix.name == 'HTML5'
