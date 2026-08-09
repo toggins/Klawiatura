@@ -7,6 +7,7 @@ enum {
     PLAT_NORMAL,
     PLAT_SMALL,
     PLAT_CLOUD,
+    PLAT_PURPLE,
     PLAT_BRICK,
     PLAT_GRASS,
     PLAT_GRASS_SMALL,

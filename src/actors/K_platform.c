@@ -34,6 +34,9 @@ static void load_special(const GameActor* actor) {
     case PLAT_CLOUD:
         load_sprite_num("markers/platform/cloud/%u", 4, AKL_NEVER);
         break;
+    case PLAT_PURPLE:
+        load_sprite("markers/platform/purple", AKL_NEVER);
+        break;
     case PLAT_BRICK:
         load_sprite("markers/platform/brick/normal", AKL_NEVER);
         break;
@@ -87,6 +90,13 @@ static void pre_tick(GameActor* actor) {
             actor->box.start.x = actor->box.start.y = Fx0;
             actor->box.end.x = Int2Fx(127);
             actor->box.end.y = Int2Fx(32);
+            break;
+        }
+
+        case PLAT_PURPLE: {
+            actor->box.start.x = actor->box.start.y = Fx0;
+            actor->box.end.x = Int2Fx(96);
+            actor->box.end.y = Int2Fx(18);
             break;
         }
 
@@ -216,6 +226,9 @@ static void draw(const GameActor* actor) {
         break;
     case PLAT_CLOUD:
         sprite = fmt("markers/platform/cloud/%i", ((gamestate()->time * 2) / 25) % 4);
+        break;
+    case PLAT_PURPLE:
+        sprite = "markers/platform/purple";
         break;
     case PLAT_BRICK:
         sprite = "markers/platform/brick/normal";
