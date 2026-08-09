@@ -43,7 +43,8 @@ set(SDL_CAMERA OFF CACHE INTERNAL "")
 FetchContent_Declare(SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
     GIT_TAG release-3.4.14
-    EXCLUDE_FROM_ALL)
+    EXCLUDE_FROM_ALL
+    SYSTEM)
 FetchContent_MakeAvailable(SDL3)
 
 list(APPEND LIBS SDL3::SDL3-static)
@@ -90,7 +91,8 @@ endif()
 FetchContent_Declare(SDL3_mixer
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
     GIT_TAG 9c12eb245ebbf568b6eb7b838cf350aa9f729497
-    EXCLUDE_FROM_ALL)
+    EXCLUDE_FROM_ALL
+    SYSTEM)
 FetchContent_MakeAvailable(SDL3_mixer)
 
 list(APPEND LIBS SDL3_mixer::SDL3_mixer-static)
@@ -99,7 +101,8 @@ list(APPEND LIBS SDL3_mixer::SDL3_mixer-static)
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
     GIT_TAG 92580540a27913da37a34cfcc006f973d471c081
-    EXCLUDE_FROM_ALL)
+    EXCLUDE_FROM_ALL
+    SYSTEM)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
 
 # GLAD (2.0.8, OpenGL 3.3 Core OR OpenGL ES 3.0)
@@ -107,7 +110,8 @@ FetchContent_Declare(glad
     GIT_REPOSITORY https://github.com/Dav1dde/glad.git
     GIT_TAG v2.0.8
     SOURCE_SUBDIR cmake
-    EXCLUDE_FROM_ALL)
+    EXCLUDE_FROM_ALL
+    SYSTEM)
 FetchContent_MakeAvailable(glad)
 
 if(EMSCRIPTEN)
@@ -125,7 +129,8 @@ set(CGLM_STATIC ON CACHE INTERNAL "")
 FetchContent_Declare(cglm
     GIT_REPOSITORY https://github.com/recp/cglm.git
     GIT_TAG v0.9.6
-    EXCLUDE_FROM_ALL)
+    EXCLUDE_FROM_ALL
+    SYSTEM)
 FetchContent_MakeAvailable(cglm)
 
 list(APPEND LIBS cglm)
@@ -134,7 +139,8 @@ list(APPEND LIBS cglm)
 FetchContent_Declare(yyjson
     GIT_REPOSITORY https://github.com/ibireme/yyjson.git
     GIT_TAG 0.12.0
-    EXCLUDE_FROM_ALL)
+    EXCLUDE_FROM_ALL
+    SYSTEM)
 FetchContent_MakeAvailable(yyjson)
 
 list(APPEND LIBS yyjson)
@@ -145,7 +151,8 @@ set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
 FetchContent_Declare(S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
     GIT_TAG c80c5e96df051da9902bdd21afcc9aa09dbb0d40
-    EXCLUDE_FROM_ALL)
+    EXCLUDE_FROM_ALL
+    SYSTEM)
 FetchContent_MakeAvailable(S_fixed)
 
 list(APPEND LIBS S_fixed)
@@ -156,16 +163,18 @@ set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
 FetchContent_Declare(S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
     GIT_TAG 3a364e100c68211ddab6691a04689eea2aa268fd
-    EXCLUDE_FROM_ALL)
+    EXCLUDE_FROM_ALL
+    SYSTEM)
 FetchContent_MakeAvailable(S_tructures)
 
 list(APPEND LIBS S_tructures)
 
+# NutBlast
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG da943dde862a828c7eac965156893aed7eaf9022
-	EXCLUDE_FROM_ALL)
-
+	GIT_TAG 66c6c18dba1729f1e215849fc65a76c9f48bef5b
+	EXCLUDE_FROM_ALL
+    SYSTEM)
 FetchContent_MakeAvailable(NutBlast)
 
 list(APPEND LIBS NutBlast)
@@ -176,20 +185,21 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
     GIT_TAG v20260804094329-5924b5c
-    EXCLUDE_FROM_ALL)
+    EXCLUDE_FROM_ALL
+    SYSTEM)
 FetchContent_MakeAvailable(GekkoNet)
 
 list(APPEND LIBS GekkoNet)
 
 # Discord Social SDK (1.9.15332)
 set(KLAW_DISCORD OFF CACHE INTERNAL "Use Discord Social SDK")
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/discord)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/discord EXCLUDE_FROM_ALL SYSTEM)
 if(KLAW_DISCORD)
     list(APPEND LIBS discord)
 endif()
 
 # Dear Bindings/Dear ImGui (v1.92.9)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/imgui)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/imgui EXCLUDE_FROM_ALL SYSTEM)
 list(APPEND LIBS imgui)
 
 # Build
@@ -203,27 +213,29 @@ list(APPEND HEADERS ${CONFIGURE_FILE})
 
 set(CONTROLLER_DB ${sdl_gamecontrollerdb_SOURCE_DIR}/gamecontrollerdb.txt)
 
-set(RESFILE ${CMAKE_SOURCE_DIR}/res/Klawiatura.rc)
+set(RESFILE ${CMAKE_SOURCE_DIR}/res/${PROJECT_NAME}.rc)
 add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${HEADERS} ${RESFILE})
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/generated)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})
 
-if(NOT MSVC)
-    target_link_options(Klawiatura PRIVATE -static-libgcc -static-libstdc++)
+if(MSVC)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE _CRT_SECURE_NO_WARNINGS)
+else()
+    target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL Release AND NOT MSVC AND NOT EMSCRIPTEN)
-    target_compile_options(Klawiatura PRIVATE -ffunction-sections -fdata-sections)
-    target_link_options(Klawiatura PRIVATE -Wl,--gc-sections) # -Wl,--icf=all
-    add_custom_command(TARGET Klawiatura POST_BUILD
-        COMMAND ${CMAKE_STRIP} $<TARGET_FILE:Klawiatura>
+    target_compile_options(${PROJECT_NAME} PRIVATE -ffunction-sections -fdata-sections)
+    target_link_options(${PROJECT_NAME} PRIVATE -Wl,--gc-sections) # -Wl,--icf=all
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_STRIP} $<TARGET_FILE:${PROJECT_NAME}>
         COMMENT "Stripping release binary")
 endif()
 
 if(IS_IPO_SUPPORTED)
-    set_target_properties(Klawiatura PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+    set_target_properties(${PROJECT_NAME} PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
     message(STATUS "LTO enforced for Release builds!")
 else()
     message(STATUS "LTO is not supported :(")

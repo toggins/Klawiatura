@@ -10,6 +10,9 @@
     "cmake.debugConfig": {
         "args": ["-data", "../assets/data"]
     },
+    "cmake.configureSettings": {
+        "CMAKE_WARN_DEPRECATED": "OFF"
+    },
     "files.exclude": {
         ".cache": true,
         "__cmake*": true
