@@ -893,13 +893,12 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
                     FLAG_ON(actor, FLG_DESTROY);
             }
 
-            stop_state_track(MAX_STATE_TRACKS);
             if (game_state->flags & GF_LOST_MAP)
-                play_state_track(STS_FANFARE, "smw/lose2", 0);
+                play_state_track("smw/lose2", 0);
             else if (game_state->flags & GF_HARDCORE)
-                play_state_track(STS_FANFARE, "smw/lose_hardcore", 0);
+                play_state_track("smw/lose_hardcore", 0);
             else
-                play_state_track(STS_FANFARE, "smw/lose", 0);
+                play_state_track("smw/lose", 0);
 
             break;
         }
@@ -918,7 +917,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         }
 
         case 211: {
-            play_state_track(STS_FANFARE, "smb/game_over", 0);
+            play_state_track("smb/game_over", 0);
             break;
         }
 
@@ -1418,10 +1417,12 @@ PlayerID viewplayer() {
 
 /// !!! CLIENT-SIDE !!!
 static void try_play_track(Uint8 track) {
-    if (track < 0 || track > (GSTR_TRACK_END - GSTR_TRACK_START))
-        stop_state_track(STS_MAIN);
-    else
-        play_state_track(STS_MAIN, level_info->strings[GSTR_TRACK_START + track], PLAY_LOOPING);
+    if (!in_blocking_sequence()) {
+        if (track < 0 || track > (GSTR_TRACK_END - GSTR_TRACK_START))
+            stop_state_track();
+        else
+            play_state_track(level_info->strings[GSTR_TRACK_START + track], PLAY_LOOPING);
+    }
 }
 
 void set_view_player(const GamePlayer* player) {
@@ -1555,8 +1556,7 @@ void win_player(GamePlayer* player) {
     set_sequence(GS_WIN, player, 0);
 
     set_view_player(player);
-    stop_state_track(MAX_STATE_TRACKS);
-    play_state_track(STS_FANFARE, (game_state->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", 0);
+    play_state_track((game_state->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", 0);
 }
 
 // ======

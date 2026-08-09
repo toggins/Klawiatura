@@ -699,7 +699,7 @@ s_no_secret:
             CATALOG.menus[i].from = MEN_NULL;
     }
 
-    play_generic_track(GTS_MAIN, "super_mario_brothers", PLAY_LOOPING, 0);
+    play_generic_track("super_mario_brothers", PLAY_LOOPING, 0);
 }
 
 static void end() {

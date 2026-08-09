@@ -75,7 +75,7 @@ static void collide(GameActor* actor, GameActor* from) {
         play_state_sound("vo/clone/dead", 0, NULL);
     if (ANY_FLAG(actor, FLG_WARP_DEVASTATOR)) {
         play_state_sound("vo/thwomp", 0, NULL);
-        stop_state_track(MAX_STATE_TRACKS);
+        stop_state_track();
     } else {
         play_state_sound("warp", PLAY_POS, A_ACTOR(from));
     }

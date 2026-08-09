@@ -10,23 +10,14 @@
 #include "K_tick.h"
 #include "K_video.h"
 
-typedef Uint8 GenericTrackFlags;
-enum {
-    GTF_MELT = 1 << 0,
-    GTF_INTERRUPT = 1 << 1,
-};
-
 typedef struct {
     TinyHash key;
     MIX_Track* channel;
 } GenericSoundChannel;
 
 typedef struct {
-    GenericTrackFlags flags;
-
     Uint32 offset;
     float volume[3], time[2];
-    float melt_volume, interrupt_volume;
 
     TinyHash key;
     MIX_Track* channel;
@@ -45,17 +36,13 @@ static TinyMap sounds = {0}, tracks = {0};
 static GenericSoundChannel generic_sounds[MAX_GENERIC_SOUNDS] = {0};
 static size_t next_generic_sound = 0;
 
-static GenericTrackChannel generic_tracks[MAX_GENERIC_TRACKS] = {
-    {
-     .volume = {1.f},
-     .time = {0.f},
-     .melt_volume = 1.f,
-     .interrupt_volume = 1.f,
-     }
+static GenericTrackChannel generic_track = {
+    .volume = {0.f, 0.f, 1.f},
+    .time = {0.f},
 };
 
 static AudioState *desired_audio_state = NULL, *actual_audio_state = NULL;
-static void *state_sound_channels[MAX_STATE_SOUNDS] = {NULL}, *state_track_channels[MAX_STATE_TRACKS] = {NULL};
+static void *state_sound_channels[MAX_STATE_SOUNDS] = {NULL}, *state_track_channel = NULL;
 
 static void mix_sound(void* userdata, MIX_Group* group, const SDL_AudioSpec* spec, float* pcm, int samples) {
     (void)userdata;
@@ -132,83 +119,24 @@ void audio_init() {
         MIX_SetTrackGroup(generic_sounds[i].channel, sound_group);
     }
 
-    for (GenericTrackSlot i = 0; i < (GenericTrackSlot)MAX_GENERIC_TRACKS; i++) {
-        generic_tracks[i].channel = MIX_CreateTrack(speaker);
-        if (generic_tracks[i].channel == NULL) {
-            WTF("Failed to create generic track channels: %s", SDL_GetError());
-            break;
-        }
-
-        MIX_SetTrackGroup(generic_tracks[i].channel, music_group);
-    }
-}
-
-static void stop_generic_track_pro(GenericTrackSlot slot) {
-    GenericTrackChannel* gtchan = &generic_tracks[slot];
-    gtchan->key = 0;
-    MIX_StopTrack(gtchan->channel, 0);
-    gtchan->volume[0] = gtchan->volume[1] = 0.f;
-    gtchan->volume[2] = 1.f;
-    gtchan->time[0] = 0.f;
-    gtchan->time[1] = 1.f;
-    gtchan->flags = 0;
-    gtchan->melt_volume = gtchan->interrupt_volume = 1.f;
+    generic_track.channel = MIX_CreateTrack(speaker);
+    if (generic_track.channel == NULL)
+        WTF("Failed to create generic track channels: %s", SDL_GetError());
+    else
+        MIX_SetTrackGroup(generic_track.channel, music_group);
 }
 
 void audio_update() {
     mixer_volume = (CLIENT.audio_in_background || window_focused()) ? master_volume : 0.f;
 
-    GenericTrackSlot top_track = MAX_GENERIC_TRACKS;
-    while (top_track--) {
-        GenericTrackChannel* gtchan = &generic_tracks[top_track];
-        if (!MIX_TrackPlaying(gtchan->channel) || (gtchan->flags & GTF_MELT))
-            continue;
+    if (MIX_TrackPlaying(generic_track.channel) && generic_track.time[0] < generic_track.time[1]) {
+        generic_track.time[0] += deltaticks();
+        if (generic_track.time[0] > generic_track.time[1])
+            generic_track.time[0] = generic_track.time[1];
 
-        gtchan->flags &= ~GTF_INTERRUPT;
-        for (GenericTrackSlot i = 0; i < top_track; i++)
-            generic_tracks[i].flags |= GTF_INTERRUPT;
-
-        break;
-    }
-
-    for (GenericTrackSlot i = 0; i < (GenericTrackSlot)MAX_GENERIC_TRACKS; i++) {
-        GenericTrackChannel* gtchan = &generic_tracks[i];
-        if (!MIX_TrackPlaying(gtchan->channel))
-            continue;
-
-        if ((gtchan->flags & GTF_MELT) && gtchan->melt_volume <= 0.f) {
-            stop_generic_track_pro(i);
-            continue;
-        }
-
-        Bool update_volume = FALSE;
-        if (gtchan->time[0] < gtchan->time[1]) {
-            gtchan->time[0] += deltaticks();
-            if (gtchan->time[0] > gtchan->time[1])
-                gtchan->time[0] = gtchan->time[1];
-            gtchan->volume[0] = glm_lerp(gtchan->volume[1], gtchan->volume[2], gtchan->time[0] / gtchan->time[1]);
-            update_volume = TRUE;
-        }
-
-#define GTVOLUME(flg, vol)                                                                                             \
-    if (gtchan->flags & (flg)) {                                                                                       \
-        gtchan->vol -= 0.0390625f * deltaticks();                                                                      \
-        if (gtchan->vol < 0.f)                                                                                         \
-            gtchan->vol = 0.f;                                                                                         \
-        update_volume = TRUE;                                                                                          \
-    } else if (gtchan->vol < 1.f) {                                                                                    \
-        gtchan->vol += 0.0390625f * deltaticks();                                                                      \
-        if (gtchan->vol > 1.f)                                                                                         \
-            gtchan->vol = 1.f;                                                                                         \
-        update_volume = TRUE;                                                                                          \
-    }
-
-        GTVOLUME(GTF_INTERRUPT, interrupt_volume)
-        GTVOLUME(GTF_MELT, melt_volume)
-#undef GTVOLUME
-
-        if (update_volume)
-            MIX_SetTrackGain(gtchan->channel, gtchan->volume[0] * gtchan->melt_volume * gtchan->interrupt_volume);
+        generic_track.volume[0]
+            = glm_lerp(generic_track.volume[1], generic_track.volume[2], generic_track.time[0] / generic_track.time[1]);
+        MIX_SetTrackGain(generic_track.channel, generic_track.volume[0]);
     }
 }
 
@@ -223,8 +151,7 @@ void audio_teardown() {
 
     for (size_t i = 0; i < MAX_GENERIC_SOUNDS; i++)
         MIX_DestroyTrack(generic_sounds[i].channel);
-    for (size_t i = 0; i < MAX_GENERIC_TRACKS; i++)
-        MIX_DestroyTrack(generic_tracks[i].channel);
+    MIX_DestroyTrack(generic_track.channel);
 
     MIX_DestroyGroup(sound_group);
     MIX_DestroyGroup(system_group);
@@ -241,11 +168,9 @@ void audio_wipeout() {
     }
     next_generic_sound = 0;
 
-    for (size_t i = 0; i < MAX_GENERIC_TRACKS; i++) {
-        const Track* track = get_track_key(generic_tracks[i].key);
-        if (track == NULL || track->base.keep <= AKL_NEVER)
-            stop_generic_track(i);
-    }
+    const Track* track = get_track_key(generic_track.key);
+    if (track == NULL || track->base.keep <= AKL_NEVER)
+        stop_generic_track();
 }
 
 float get_volume() {
@@ -372,90 +297,48 @@ void play_generic_sound(const char* name, PlayFlags flags) {
     MIX_PlayTrack(channel->channel, 0);
 }
 
-void play_generic_track(GenericTrackSlot slot, const char* name, PlayFlags flags, Uint32 offset) {
-    if (slot < 0 || slot >= MAX_GENERIC_TRACKS)
-        return;
-
+void play_generic_track(const char* name, PlayFlags flags, Uint32 offset) {
     const TinyHash key = StHashStr(name);
     const Track* track = get_track_key(key);
     WHATEVER(track, "Unknown track \"%s\"", name);
 
-    GenericTrackChannel* gtchan = &generic_tracks[slot];
-    if (gtchan->key == key && gtchan->offset == offset) {
-        if (gtchan->flags & GTF_MELT)
-            gtchan->flags &= ~GTF_MELT;
-        return;
-    }
+    stop_generic_track();
 
-    stop_generic_track_pro(slot);
-
-    for (GenericTrackSlot i = MAX_GENERIC_TRACKS - 1; i > slot; i--) {
-        if (generic_tracks[i].channel == NULL || (generic_tracks[i].flags & GTF_MELT))
-            continue;
-
-        gtchan->flags |= GTF_INTERRUPT;
-        break;
-    }
-
-    MIX_SetTrackAudio(gtchan->channel, track->internal);
-    MIX_SetTrackGain(gtchan->channel, 0.f);
+    MIX_SetTrackAudio(generic_track.channel, track->internal);
+    MIX_SetTrackGain(generic_track.channel, 0.f);
     if (flags & PLAY_LOOPING) {
         SDL_SetNumberProperty(loop_properties, MIX_PROP_PLAY_LOOP_START_MILLISECOND_NUMBER, track->loop[0]);
         SDL_SetNumberProperty(loop_properties, MIX_PROP_PLAY_MAX_MILLISECONDS_NUMBER, track->loop[1] - 1);
-        MIX_PlayTrack(gtchan->channel, loop_properties);
+        MIX_PlayTrack(generic_track.channel, loop_properties);
     } else {
-        MIX_PlayTrack(gtchan->channel, 0);
+        MIX_PlayTrack(generic_track.channel, 0);
     }
-    MIX_SetTrackPlaybackPosition(gtchan->channel, MIX_TrackMSToFrames(gtchan->channel, (Sint64)offset));
+    MIX_SetTrackPlaybackPosition(generic_track.channel, MIX_TrackMSToFrames(generic_track.channel, (Sint64)offset));
 
-    gtchan->key = key;
-    gtchan->offset = offset;
+    generic_track.key = key;
+    generic_track.offset = offset;
 }
 
-void stop_generic_track(GenericTrackSlot slot) {
-    if (slot < 0 || slot >= MAX_GENERIC_TRACKS) {
-        for (GenericTrackSlot i = 0; i < (GenericTrackSlot)MAX_GENERIC_TRACKS; i++)
-            stop_generic_track_pro(i);
-        return;
-    }
-
-    stop_generic_track_pro(slot);
-}
-
-static void fade_generic_track_pro(GenericTrackSlot slot, float volume, float time) {
-    GenericTrackChannel* gtchan = &generic_tracks[slot];
-
+void fade_generic_track(float volume, float time) {
     if (time <= 0.f) {
-        gtchan->volume[0] = gtchan->volume[1] = gtchan->volume[2] = volume;
-        gtchan->time[0] = gtchan->time[1] = time;
-        MIX_SetTrackGain(gtchan->channel, volume * gtchan->interrupt_volume * gtchan->melt_volume);
+        generic_track.volume[0] = generic_track.volume[1] = generic_track.volume[2] = volume;
+        generic_track.time[0] = generic_track.time[1] = time;
         return;
     }
 
-    gtchan->volume[1] = gtchan->volume[0];
-    gtchan->volume[2] = volume;
-    gtchan->time[0] = 0.f;
-    gtchan->time[1] = time;
+    generic_track.volume[1] = generic_track.volume[0];
+    generic_track.volume[2] = volume;
+    generic_track.time[0] = 0.f;
+    generic_track.time[1] = time;
 }
 
-void fade_generic_track(GenericTrackSlot slot, float volume, float time) {
-    if (slot < 0 || slot >= MAX_GENERIC_TRACKS) {
-        for (GenericTrackSlot i = 0; i < (GenericTrackSlot)MAX_GENERIC_TRACKS; i++)
-            fade_generic_track_pro(i, volume, time);
-        return;
-    }
-
-    fade_generic_track_pro(slot, volume, time);
-}
-
-void melt_generic_track(GenericTrackSlot slot) {
-    if (slot < 0 || slot >= MAX_GENERIC_TRACKS) {
-        for (GenericTrackSlot i = 0; i < (GenericTrackSlot)MAX_GENERIC_TRACKS; i++)
-            generic_tracks[i].flags |= GTF_MELT;
-        return;
-    }
-
-    generic_tracks[slot].flags |= GTF_MELT;
+void stop_generic_track() {
+    generic_track.key = 0;
+    MIX_StopTrack(generic_track.channel, 0);
+    generic_track.volume[0] = generic_track.volume[1] = 0.f;
+    generic_track.volume[2] = 1.f;
+    generic_track.time[0] = 0.f;
+    generic_track.time[1] = 1.f;
 }
 
 // ============
@@ -479,15 +362,11 @@ void start_audio_state() {
         MIX_SetTrackGroup(state_sound_channels[i], sound_group);
     }
 
-    for (StateTrackSlot i = 0; i < (StateTrackSlot)MAX_STATE_TRACKS; i++) {
-        state_track_channels[i] = MIX_CreateTrack(speaker);
-        if (state_track_channels[i] == NULL) {
-            WTF("Failed to allocate state track channels: %s", SDL_GetError());
-            break;
-        }
-
-        MIX_SetTrackGroup(state_track_channels[i], music_group);
-    }
+    state_track_channel = MIX_CreateTrack(speaker);
+    if (state_track_channel == NULL)
+        WTF("Failed to allocate state track channels: %s", SDL_GetError());
+    else
+        MIX_SetTrackGroup(state_track_channel, music_group);
 }
 
 static void pan_state_sound(size_t idx) {
@@ -525,75 +404,57 @@ static void update_state_sound(size_t idx) {
 
 void tick_audio_state(Bool rollback) {
     // Don't update actual audio state during rollback frames.
-    if (rollback)
-        goto tas_tick_desired;
+    if (!rollback) {
+        for (size_t i = 0; i < MAX_STATE_SOUNDS; i++) {
+            const SoundChannel* dschan = &desired_audio_state->sounds[i];
+            SoundChannel* aschan = &actual_audio_state->sounds[i];
 
-    for (size_t i = 0; i < MAX_STATE_SOUNDS; i++) {
-        const SoundChannel* dschan = &desired_audio_state->sounds[i];
-        SoundChannel* aschan = &actual_audio_state->sounds[i];
+            if (aschan->sound_key == dschan->sound_key) {
+                update_state_sound(i);
+            } else {
+                MIX_StopTrack(state_sound_channels[i], 0);
 
-        if (aschan->sound_key == dschan->sound_key) {
-            update_state_sound(i);
-            goto ass_continue;
-        }
-
-        MIX_StopTrack(state_sound_channels[i], 0);
-
-        const Sound* sound = get_sound_key(dschan->sound_key);
-        if (sound == NULL)
-            goto ass_continue;
-
-        MIX_SetTrackAudio(state_sound_channels[i], sound->internal);
-        MIX_SetTrackPlaybackPosition(
-            state_sound_channels[i], MIX_TrackMSToFrames(state_sound_channels[i], (Sint64)dschan->offset));
-        update_state_sound(i);
-        MIX_PlayTrack(state_sound_channels[i], 0);
-
-    ass_continue:
-        *aschan = *dschan;
-    }
-
-    for (StateTrackSlot i = 0; i < (StateTrackSlot)MAX_STATE_TRACKS; i++) {
-        const TrackChannel* dtchan = &desired_audio_state->tracks[i];
-        TrackChannel* atchan = &actual_audio_state->tracks[i];
-
-        if (atchan->track_key == dtchan->track_key) {
-            if (get_track_key(atchan->track_key) != NULL) {
-                if (atchan->hash != dtchan->hash) {
+                const Sound* sound = get_sound_key(dschan->sound_key);
+                if (sound != NULL) {
+                    MIX_SetTrackAudio(state_sound_channels[i], sound->internal);
                     MIX_SetTrackPlaybackPosition(
-                        state_track_channels[i], MIX_TrackMSToFrames(state_track_channels[i], (Sint64)dtchan->offset));
+                        state_sound_channels[i], MIX_TrackMSToFrames(state_sound_channels[i], (Sint64)dschan->offset));
+                    update_state_sound(i);
+                    MIX_PlayTrack(state_sound_channels[i], 0);
                 }
-
-                if (atchan->volume[0] != dtchan->volume[0])
-                    MIX_SetTrackGain(state_track_channels[i], dtchan->volume[0]);
             }
 
-            goto ats_continue;
+            *aschan = *dschan;
         }
 
-        MIX_StopTrack(state_track_channels[i], 0);
+        const TrackChannel* dtchan = &desired_audio_state->track;
+        TrackChannel* atchan = &actual_audio_state->track;
 
-        const Track* track = get_track_key(dtchan->track_key);
-        if (track == NULL)
-            goto ats_continue;
-
-        MIX_SetTrackAudio(state_track_channels[i], track->internal);
-        MIX_SetTrackPlaybackPosition(
-            state_track_channels[i], MIX_TrackMSToFrames(state_track_channels[i], (Sint64)dtchan->offset));
-        MIX_SetTrackGain(state_track_channels[i], dtchan->volume[0]);
-        if (dtchan->flags & PLAY_LOOPING) {
-            SDL_SetNumberProperty(loop_properties, MIX_PROP_PLAY_LOOP_START_MILLISECOND_NUMBER, track->loop[0]);
-            SDL_SetNumberProperty(loop_properties, MIX_PROP_PLAY_MAX_MILLISECONDS_NUMBER, track->loop[1] - 1);
-            MIX_PlayTrack(state_track_channels[i], loop_properties);
+        if (atchan->track_key == dtchan->track_key) {
+            if (get_track_key(atchan->track_key) != NULL && atchan->volume[0] != dtchan->volume[0])
+                MIX_SetTrackGain(state_track_channel, dtchan->volume[0]);
         } else {
-            MIX_PlayTrack(state_track_channels[i], 0);
+            MIX_StopTrack(state_track_channel, 0);
+
+            const Track* track = get_track_key(dtchan->track_key);
+            if (track != NULL) {
+                MIX_SetTrackAudio(state_track_channel, track->internal);
+                MIX_SetTrackPlaybackPosition(
+                    state_track_channel, MIX_TrackMSToFrames(state_track_channel, (Sint64)dtchan->offset));
+                MIX_SetTrackGain(state_track_channel, dtchan->volume[0]);
+                if (dtchan->flags & PLAY_LOOPING) {
+                    SDL_SetNumberProperty(loop_properties, MIX_PROP_PLAY_LOOP_START_MILLISECOND_NUMBER, track->loop[0]);
+                    SDL_SetNumberProperty(loop_properties, MIX_PROP_PLAY_MAX_MILLISECONDS_NUMBER, track->loop[1] - 1);
+                    MIX_PlayTrack(state_track_channel, loop_properties);
+                } else {
+                    MIX_PlayTrack(state_track_channel, 0);
+                }
+            }
         }
 
-    ats_continue:
         *atchan = *dtchan;
     }
 
-tas_tick_desired:
     for (size_t i = 0; i < MAX_STATE_SOUNDS; i++) {
         SoundChannel* dschan = &desired_audio_state->sounds[i];
 
@@ -606,23 +467,16 @@ tas_tick_desired:
             dschan->sound_key = 0;
     }
 
-    for (StateTrackSlot i = 0; i < (StateTrackSlot)MAX_STATE_TRACKS; i++) {
-        TrackChannel* dtchan = &desired_audio_state->tracks[i];
-
-        const Track* track = get_track_key(dtchan->track_key);
-        if (track == NULL)
-            continue;
-
+    TrackChannel* dtchan = &desired_audio_state->track;
+    const Track* track = get_track_key(dtchan->track_key);
+    if (track != NULL) {
         dtchan->offset += 1000 / TICKRATE;
         if (dtchan->flags & PLAY_LOOPING) {
             while (dtchan->offset >= track->loop[1])
                 dtchan->offset = track->loop[0] + (dtchan->offset - track->loop[1]);
         } else if (dtchan->offset >= track->length) {
             dtchan->track_key = 0;
-            continue;
-        }
-
-        if (dtchan->time[0] < dtchan->time[1]) {
+        } else if (dtchan->time[0] < dtchan->time[1]) {
             dtchan->time[0] += 1.f;
             if (dtchan->time[0] > dtchan->time[1])
                 dtchan->time[0] = dtchan->time[1];
@@ -652,23 +506,19 @@ void nuke_audio_state() {
         state_sound_channels[i] = NULL;
     }
 
-    for (StateTrackSlot i = 0; i < (StateTrackSlot)MAX_STATE_TRACKS; i++) {
-        MIX_DestroyTrack(state_track_channels[i]);
-        state_track_channels[i] = NULL;
-    }
+    MIX_DestroyTrack(state_track_channel);
+    state_track_channel = NULL;
 }
 
 void pause_audio_state(Bool pause) {
     if (pause) {
         for (size_t i = 0; i < MAX_STATE_SOUNDS; i++)
             MIX_PauseTrack(state_sound_channels[i]);
-        for (StateTrackSlot i = 0; i < (StateTrackSlot)MAX_STATE_TRACKS; i++)
-            MIX_PauseTrack(state_track_channels[i]);
+        MIX_PauseTrack(state_track_channel);
     } else {
         for (size_t i = 0; i < MAX_STATE_SOUNDS; i++)
             MIX_ResumeTrack(state_sound_channels[i]);
-        for (StateTrackSlot i = 0; i < (StateTrackSlot)MAX_STATE_TRACKS; i++)
-            MIX_ResumeTrack(state_track_channels[i]);
+        MIX_ResumeTrack(state_track_channel);
     }
 }
 
@@ -692,17 +542,13 @@ void play_state_sound(const char* name, PlayFlags flags, const float pos[2]) {
     desired_audio_state->next_sound = (desired_audio_state->next_sound + 1) % MAX_STATE_SOUNDS;
 }
 
-void play_state_track(StateTrackSlot slot, const char* name, PlayFlags flags) {
-    if (slot < 0 || slot >= MAX_STATE_TRACKS)
-        return;
-
+void play_state_track(const char* name, PlayFlags flags) {
     const TinyHash key = StHashStr(name);
 
     const Track* track = get_track_key(key);
     WHATEVER(track, "Unknown track \"%s\"", name);
 
-    TrackChannel* dtchan = &desired_audio_state->tracks[slot];
-    ++dtchan->hash;
+    TrackChannel* dtchan = &desired_audio_state->track;
     dtchan->flags = flags;
     dtchan->volume[0] = dtchan->volume[1] = dtchan->volume[2] = 1.f;
     dtchan->time[0] = dtchan->time[1] = 0.f;
@@ -710,18 +556,8 @@ void play_state_track(StateTrackSlot slot, const char* name, PlayFlags flags) {
     dtchan->track_key = key;
 }
 
-void stop_state_track(StateTrackSlot slot) {
-    if (slot < 0 || slot >= MAX_STATE_TRACKS) {
-        for (StateTrackSlot i = 0; i < (StateTrackSlot)MAX_STATE_TRACKS; i++)
-            desired_audio_state->tracks[i].track_key = 0;
-        return;
-    }
-
-    desired_audio_state->tracks[slot].track_key = 0;
-}
-
-static void fade_state_track_pro(StateTrackSlot slot, float volume, float time) {
-    TrackChannel* dtchan = &desired_audio_state->tracks[slot];
+void fade_state_track(float volume, float time) {
+    TrackChannel* dtchan = &desired_audio_state->track;
 
     if (time <= 0.f) {
         dtchan->volume[0] = dtchan->volume[1] = dtchan->volume[2] = volume;
@@ -735,12 +571,6 @@ static void fade_state_track_pro(StateTrackSlot slot, float volume, float time) 
     dtchan->time[1] = time;
 }
 
-void fade_state_track(StateTrackSlot slot, float volume, float time) {
-    if (slot < 0 || slot >= MAX_STATE_TRACKS) {
-        for (StateTrackSlot i = 0; i < (StateTrackSlot)MAX_STATE_TRACKS; i++)
-            fade_state_track_pro(i, volume, time);
-        return;
-    }
-
-    fade_state_track_pro(slot, volume, time);
+void stop_state_track() {
+    desired_audio_state->track.track_key = 0;
 }

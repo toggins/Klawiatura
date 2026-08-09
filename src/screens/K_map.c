@@ -245,7 +245,7 @@ static void start(const void* secret, size_t secret_size) {
         camera->pos[1] = camera->interp.from[1] = camera->interp.to[1] = camera->interp.pos[1] = HALF_SCREEN_HEIGHT;
     }
 
-    play_generic_track(GTS_MAIN, map_state->track, PLAY_LOOPING, offset);
+    play_generic_track(map_state->track, PLAY_LOOPING, offset);
 }
 
 static void end() {
@@ -329,7 +329,7 @@ static void tick() {
                 can_move = TRUE;
 
                 if (kb_pressed(KB_JUMP) && is_leader()) {
-                    melt_generic_track(GTS_MAIN);
+                    fade_generic_track(0.f, 25.f);
                     transition->frame += 1.f;
                 }
             } else {

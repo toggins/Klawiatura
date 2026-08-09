@@ -35,21 +35,6 @@ enum {
     PLAY_SYSTEM = 1 << 3,
 };
 
-typedef Uint8 GenericTrackSlot;
-enum {
-    GTS_MAIN,
-    GTS_EVENT,
-    MAX_GENERIC_TRACKS,
-};
-
-typedef Uint8 StateTrackSlot;
-enum {
-    STS_MAIN,
-    STS_POWER,
-    STS_FANFARE,
-    MAX_STATE_TRACKS,
-};
-
 typedef struct {
     PlayFlags flags;
     Uint32 offset;
@@ -59,7 +44,6 @@ typedef struct {
 } SoundChannel;
 
 typedef struct {
-    Uint8 hash;
     PlayFlags flags;
     Uint32 offset;
     float volume[3], time[2];
@@ -70,7 +54,7 @@ typedef struct {
 typedef struct {
     Uint8 next_sound;
     SoundChannel sounds[MAX_STATE_SOUNDS];
-    TrackChannel tracks[MAX_STATE_TRACKS];
+    TrackChannel track;
 } AudioState;
 
 void audio_init(), audio_update(), audio_teardown();
@@ -90,10 +74,9 @@ ASSET_HEAD(tracks, Track, track);
 // Generic Sounds
 void play_generic_sound(const char*, PlayFlags);
 
-void play_generic_track(GenericTrackSlot, const char*, PlayFlags, Uint32);
-void stop_generic_track(GenericTrackSlot);
-void fade_generic_track(GenericTrackSlot, float, float);
-void melt_generic_track(GenericTrackSlot);
+void play_generic_track(const char*, PlayFlags, Uint32);
+void fade_generic_track(float, float);
+void stop_generic_track();
 
 // State Sounds
 void start_audio_state(), tick_audio_state(Bool), nuke_audio_state();
@@ -102,6 +85,6 @@ void pause_audio_state(Bool);
 
 void play_state_sound(const char*, PlayFlags, const float[2]);
 
-void play_state_track(StateTrackSlot, const char*, PlayFlags);
-void stop_state_track(StateTrackSlot);
-void fade_state_track(StateTrackSlot, float, float);
+void play_state_track(const char*, PlayFlags);
+void fade_state_track(float, float);
+void stop_state_track();
