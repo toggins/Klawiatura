@@ -156,7 +156,7 @@ static void load_special(const GameActor* actor) {
 static void create(GameActor* actor) {
     actor->box.end.x = actor->box.end.y = Int2Fx(32);
 
-    actor->depth = Int2Fx(20);
+    actor->depth = Int2Fx(19);
 }
 
 static void pre_tick(GameActor* actor) {
