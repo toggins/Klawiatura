@@ -65,6 +65,18 @@
             "type": "tile",
             "sprite": "tiles/block/blue",
             "depth": 20
+        },
+        "Solid": {
+            "type": "actor",
+            "id": 1,
+            "sprite": "editor/solid",
+            "depth": 10,
+            "scalable": true
+        },
+        "Player Spawn": {
+            "type": "actor",
+            "id": 4,
+            "sprite": "editor/player_spawn"
         }
     },
 
@@ -94,6 +106,16 @@
                     "name": "Blocks",
                     "items": ["Brown Block", "Blue Block"]
                 }
+            ]
+        },
+        {
+            "name": "Markers",
+            "items": [
+                {
+                    "name": "Solid",
+                    "items": ["Solid"]
+                },
+                "Player Spawn"
             ]
         }
     ]

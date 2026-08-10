@@ -1,4 +1,10 @@
 {
+    "tracks": [
+        "one_fine_day",
+        null,
+        null,
+        null
+    ],
     "backdrops": [
         {
             "def": "Grass Top Left",
@@ -95,60 +101,6 @@
             "sprite": "tiles/grass/1",
             "pos": [
                 320,
-                416,
-                20
-            ]
-        },
-        {
-            "def": "Grass Top",
-            "sprite": "tiles/grass/1",
-            "pos": [
-                352,
-                416,
-                20
-            ]
-        },
-        {
-            "def": "Grass Top",
-            "sprite": "tiles/grass/1",
-            "pos": [
-                384,
-                416,
-                20
-            ]
-        },
-        {
-            "def": "Grass Top",
-            "sprite": "tiles/grass/1",
-            "pos": [
-                416,
-                416,
-                20
-            ]
-        },
-        {
-            "def": "Grass Top",
-            "sprite": "tiles/grass/1",
-            "pos": [
-                448,
-                416,
-                20
-            ]
-        },
-        {
-            "def": "Grass Top",
-            "sprite": "tiles/grass/1",
-            "pos": [
-                480,
-                416,
-                20
-            ]
-        },
-        {
-            "def": "Grass Top",
-            "sprite": "tiles/grass/1",
-            "pos": [
-                512,
                 416,
                 20
             ]
@@ -275,60 +227,6 @@
             "sprite": "tiles/grass/4",
             "pos": [
                 320,
-                448,
-                20
-            ]
-        },
-        {
-            "def": "Grass Middle",
-            "sprite": "tiles/grass/4",
-            "pos": [
-                352,
-                448,
-                20
-            ]
-        },
-        {
-            "def": "Grass Middle",
-            "sprite": "tiles/grass/4",
-            "pos": [
-                384,
-                448,
-                20
-            ]
-        },
-        {
-            "def": "Grass Middle",
-            "sprite": "tiles/grass/4",
-            "pos": [
-                416,
-                448,
-                20
-            ]
-        },
-        {
-            "def": "Grass Middle",
-            "sprite": "tiles/grass/4",
-            "pos": [
-                448,
-                448,
-                20
-            ]
-        },
-        {
-            "def": "Grass Middle",
-            "sprite": "tiles/grass/4",
-            "pos": [
-                480,
-                448,
-                20
-            ]
-        },
-        {
-            "def": "Grass Middle",
-            "sprite": "tiles/grass/4",
-            "pos": [
-                512,
                 448,
                 20
             ]
@@ -633,7 +531,213 @@
                     120
                 ]
             ]
+        },
+        {
+            "def": "Grass Top Right",
+            "sprite": "tiles/grass/2",
+            "pos": [
+                352,
+                416,
+                20
+            ]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [
+                352,
+                448,
+                20
+            ]
+        },
+        {
+            "def": "Grass Left",
+            "sprite": "tiles/grass/3",
+            "pos": [
+                512,
+                448,
+                20
+            ]
+        },
+        {
+            "def": "Grass Top Left",
+            "sprite": "tiles/grass/0",
+            "pos": [
+                512,
+                416,
+                20
+            ]
         }
     ],
-    "actors": []
+    "actors": [
+        {
+            "def": "Player Spawn",
+            "id": 4,
+            "pos": [
+                96,
+                415
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                0,
+                416,
+                10
+            ],
+            "scale": [
+                524288,
+                262144
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                512,
+                416,
+                10
+            ],
+            "scale": [
+                262144,
+                262144
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                576,
+                352,
+                10
+            ],
+            "scale": [
+                131072,
+                131072
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                608,
+                320,
+                10
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                544,
+                384,
+                10
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                640,
+                160,
+                10
+            ],
+            "scale": [
+                65536,
+                524288
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                640,
+                -96,
+                10
+            ],
+            "scale": [
+                65536,
+                524288
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                -32,
+                -96,
+                10
+            ],
+            "scale": [
+                65536,
+                524288
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                -32,
+                160,
+                10
+            ],
+            "scale": [
+                65536,
+                524288
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                288,
+                128,
+                10
+            ],
+            "scale": [
+                65536,
+                262144
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                192,
+                256,
+                10
+            ],
+            "scale": [
+                524288,
+                65536
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                352,
+                288,
+                10
+            ],
+            "scale": [
+                65536,
+                262144
+            ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                256,
+                416,
+                10
+            ],
+            "scale": [
+                262144,
+                262144
+            ]
+        }
+    ]
 }

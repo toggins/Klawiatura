@@ -270,6 +270,10 @@
     "editor.top_right": "Top Right",
     "editor.bottom_left": "Bottom Left",
     "editor.bottom_right": "Bottom Right",
+    "editor.velocity": "Velocity",
+    "editor.spawn_once": "Appear Once",
+    "editor.spawn_singleplayer": "Singleplayer Only",
+    "editor.spawn_multiplayer": "Multiplayer Only",
     "editor.error": "Error",
     "editor.ok": "OK"
 }

@@ -53,7 +53,7 @@ typedef struct {
 } EditorDef;
 
 typedef struct {
-    Bool flip[2], tile[2];
+    Bool spawn_once, spawn_singleplayer, spawn_multiplayer, flip[2], tile[2];
     int pos[3];
     float scale[2], colors[4][4], vel[2];
 
@@ -136,8 +136,8 @@ static void clear_async(AsyncID id) {
 
 static void move_cursor(const Sint32 pos[2], Bool snap, Bool highlight) {
     EditorCursor* ecursor = &editor->cursor;
-    if (ImGui_GetIO()->WantCaptureMouse || pos[0] <= SDL_MIN_SINT32 || pos[1] <= SDL_MIN_SINT32
-        || pos[0] >= SDL_MAX_SINT32 || pos[1] >= SDL_MAX_SINT32)
+    if (ImGui_GetIO()->WantCaptureMouse || pos[0] < SDL_MIN_SINT16 || pos[1] < SDL_MIN_SINT16 || pos[0] > SDL_MAX_SINT16
+        || pos[1] > SDL_MAX_SINT16)
     {
         ecursor->has_highlighted = FALSE;
         return;
@@ -210,6 +210,17 @@ static void clear_level() {
     level->time = -1;
 
     editor->cursor.has_scalable = editor->cursor.has_highlighted = editor->cursor.has_selected = FALSE;
+}
+
+static EditorMarker init_marker() {
+    EditorMarker marker = {0};
+
+    marker.scale[0] = marker.scale[1] = 1.f;
+    for (size_t i = 0; i < SDL_arraysize(marker.colors); i++)
+        for (size_t j = 0; j < SDL_arraysize(*marker.colors); j++)
+            marker.colors[i][j] = 1.f;
+
+    return marker;
 }
 
 static void open_level(const char* filename) {
@@ -294,7 +305,7 @@ static void open_level(const char* filename) {
             continue;
         }
 
-        EditorMarker marker = {0};
+        EditorMarker marker = init_marker();
         marker.def_key = def_key;
 
         yyjson_val* jmval = yyjson_obj_get(jmarker, "pos");
@@ -315,17 +326,11 @@ static void open_level(const char* filename) {
                 marker.scale[0] /= sprite->size[0];
                 marker.scale[1] /= sprite->size[1];
             }
-        } else {
-            marker.scale[0] = marker.scale[1] = 1.f;
         }
 
         jmval = yyjson_obj_get(jmarker, "flip");
         marker.flip[0] = yyjson_get_bool(yyjson_arr_get(jmval, 0));
         marker.flip[1] = yyjson_get_bool(yyjson_arr_get(jmval, 1));
-
-        for (size_t j = 0; j < SDL_arraysize(marker.colors); j++)
-            for (size_t k = 0; k < SDL_arraysize(*marker.colors); k++)
-                marker.colors[j][k] = 1.f;
 
         jmval = yyjson_obj_get(jmarker, "colors");
         if (yyjson_is_arr(jmval)) {
@@ -334,6 +339,43 @@ static void open_level(const char* filename) {
                 for (size_t k = 0, n3 = yyjson_arr_size(jmval2); k < n3 && k < SDL_arraysize(*marker.colors); k++)
                     marker.colors[j][k] = (float)yyjson_get_uint(yyjson_arr_get(jmval2, k)) / 255.f;
             }
+        }
+
+        if (elevel->markers == NULL)
+            elevel->markers = MakeTinyDPro(1, sizeof(*elevel->markers));
+        elevel->markers = TinyDPush(elevel->markers, &marker);
+    }
+
+    jval = yyjson_obj_get(root, "actors");
+    for (size_t i = 0, n = yyjson_arr_size(jval); i < n; i++) {
+        yyjson_val* jmarker = yyjson_arr_get(jval, i);
+        if (!yyjson_is_obj(jmarker))
+            continue;
+
+        const char* def_name = yyjson_get_str(yyjson_obj_get(jmarker, "def"));
+        const TinyHash def_key = StHashStr(def_name);
+        const EditorDef* def = (EditorDef*)TinyMapGet(&editor->defs, def_key);
+        if (def == NULL || def->type != DEFT_ACTOR) {
+            WARN("Actor marker %zu has invalid def \"%s\" and will be removed", i, def_name);
+            continue;
+        }
+
+        EditorMarker marker = init_marker();
+        marker.def_key = def_key;
+
+        marker.spawn_once = yyjson_get_bool(yyjson_obj_get(jmarker, "once"));
+        marker.spawn_singleplayer = yyjson_get_bool(yyjson_obj_get(jmarker, "singleplayer"));
+        marker.spawn_multiplayer = yyjson_get_bool(yyjson_obj_get(jmarker, "multiplayer"));
+
+        yyjson_val* jmval = yyjson_obj_get(jmarker, "pos");
+        marker.pos[0] = (int)yyjson_get_sint(yyjson_arr_get(jmval, 0));
+        marker.pos[1] = (int)yyjson_get_sint(yyjson_arr_get(jmval, 1));
+        marker.pos[2] = (int)yyjson_get_sint(yyjson_arr_get(jmval, 2));
+
+        jmval = yyjson_obj_get(jmarker, "scale");
+        if (yyjson_is_arr(jmval)) {
+            marker.scale[0] = Fx2Float(yyjson_get_sint(yyjson_arr_get(jmval, 0)));
+            marker.scale[1] = Fx2Float(yyjson_get_sint(yyjson_arr_get(jmval, 1)));
         }
 
         if (elevel->markers == NULL)
@@ -474,7 +516,7 @@ static void save_level(const char* filename) {
                     yyjson_mut_arr_add_sint(json, jpos, marker->pos[2]);
             }
 
-            if (marker->scale[0] != 1.f && marker->scale[1] != 1.f) {
+            if (marker->scale[0] != 1.f || marker->scale[1] != 1.f) {
                 yyjson_mut_val* jsize = yyjson_mut_obj_add_arr(json, jmarker, "size");
                 const Sprite* sprite = (marker->tile[0] || marker->tile[1]) ? NULL : get_sprite(def->sprite);
                 if (sprite == NULL) {
@@ -514,6 +556,41 @@ static void save_level(const char* filename) {
                 }
             }
         sl_jcolors_done:
+
+            break;
+        }
+
+        case DEFT_ACTOR: {
+            yyjson_mut_val* jmarker = yyjson_mut_arr_add_obj(json, jactors);
+            yyjson_mut_obj_add_strcpy(json, jmarker, "def", def->name);
+            yyjson_mut_obj_add_uint(json, jmarker, "id", def->actor);
+
+            if (marker->spawn_once)
+                yyjson_mut_obj_add_bool(json, jmarker, "once", TRUE);
+            if (marker->spawn_singleplayer)
+                yyjson_mut_obj_add_bool(json, jmarker, "singleplayer", TRUE);
+            if (marker->spawn_multiplayer)
+                yyjson_mut_obj_add_bool(json, jmarker, "multiplayer", TRUE);
+
+            if (marker->pos[0] != 0 || marker->pos[1] != 0 || marker->pos[2] != 0) {
+                yyjson_mut_val* jpos = yyjson_mut_obj_add_arr(json, jmarker, "pos");
+                yyjson_mut_arr_add_sint(json, jpos, marker->pos[0]);
+                yyjson_mut_arr_add_sint(json, jpos, marker->pos[1]);
+                if (marker->pos[2] != 0)
+                    yyjson_mut_arr_add_sint(json, jpos, marker->pos[2]);
+            }
+
+            if (marker->scale[0] != 1.f || marker->scale[1] != 1.f) {
+                yyjson_mut_val* jscale = yyjson_mut_obj_add_arr(json, jmarker, "scale");
+                yyjson_mut_arr_add_sint(json, jscale, Float2Fx(marker->scale[0]));
+                yyjson_mut_arr_add_sint(json, jscale, Float2Fx(marker->scale[1]));
+            }
+
+            if (marker->vel[0] != 0.f || marker->vel[1] != 0.f) {
+                yyjson_mut_val* jvel = yyjson_mut_obj_add_arr(json, jmarker, "vel");
+                yyjson_mut_arr_add_sint(json, jvel, Float2Fx(marker->vel[0]));
+                yyjson_mut_arr_add_sint(json, jvel, Float2Fx(marker->vel[1]));
+            }
 
             break;
         }
@@ -634,6 +711,11 @@ static void create_folder(EditorFolder* parent, yyjson_val* jval) {
 }
 // @NOLINTEND(misc-no-recursion)
 
+typedef struct {
+    TinyHash key;
+    EditorDef* def;
+} LastDefData;
+
 static void iterate_editor_file(const char* filename, const void* buffer, size_t size, void* userdata) {
     (void)filename;
     (void)userdata;
@@ -650,8 +732,7 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
     }
 
     yyjson_val* jval = yyjson_obj_get(root, "defs");
-    EditorDef* last_def = NULL;
-    TinyHash last_key = 0;
+    LastDefData* last = userdata;
     size_t i = 0, n = 0;
     yyjson_val *jkey = NULL, *jval2 = NULL;
     yyjson_obj_foreach(jval, i, n, jkey, jval2) {
@@ -676,7 +757,7 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
                 for (size_t j = 0; j < SDL_arraysize(*def->colors); j++)
                     def->colors[i][j] = 1.f;
 
-            def->previous = last_key;
+            def->previous = last->key;
         }
 
         def->name = SDL_strdup(name);
@@ -691,16 +772,19 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
 
         const char* type = yyjson_get_str(yyjson_obj_get(jval2, "type"));
         if (type != NULL) {
-            if (SDL_strcmp(type, "background") == 0)
+            if (SDL_strcmp(type, "background") == 0) {
                 def->type = DEFT_BACKGROUND;
-            else if (SDL_strcmp(type, "tile") == 0)
+            } else if (SDL_strcmp(type, "tile") == 0) {
                 def->type = DEFT_TILE;
-            else if (SDL_strcmp(type, "actor") == 0)
+            } else if (SDL_strcmp(type, "actor") == 0) {
                 def->type = DEFT_ACTOR;
-            else
+                def->actor = yyjson_get_uint(yyjson_obj_get(jval2, "id"));
+                if (def->actor == ACT_NULL)
+                    WARN("Actor def \"%s\" has null type", name);
+            } else {
                 WARN("Def \"%s\" has invalid type \"%s\"", name, type);
+            }
         }
-        def->actor = yyjson_get_uint(yyjson_obj_get(jval2, "actor"));
 
         yyjson_val* jval3 = yyjson_obj_get(jval2, "flip");
         def->flip[0] = yyjson_get_bool(yyjson_arr_get(jval3, 0));
@@ -713,6 +797,13 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
         jval3 = yyjson_obj_get(jval2, "scalable");
         if (yyjson_is_bool(jval3)) {
             def->scalable = yyjson_get_bool(jval3);
+            if (def->scalable && def->type == DEFT_ACTOR) {
+                const Sprite* spr = get_sprite(def->sprite);
+                if (spr != NULL) {
+                    def->max_scale[0] = 256.f / spr->size[0];
+                    def->max_scale[1] = 256.f / spr->size[1];
+                }
+            }
         } else {
             jval3 = yyjson_obj_get(jval2, "max_scale");
             if (yyjson_is_arr(jval3) && yyjson_arr_size(jval3) >= 2) {
@@ -731,10 +822,10 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
                 def->colors[j][k] = (float)yyjson_get_uint(yyjson_arr_get(jval4, k)) / 255.f;
         }
 
-        if (last_def != NULL)
-            last_def->next = key;
-        last_def = def;
-        last_key = key;
+        if (last->def != NULL)
+            last->def->next = key;
+        last->def = def;
+        last->key = key;
     }
 
     jval = yyjson_obj_get(root, "items");
@@ -763,7 +854,7 @@ static void start(const void* secret, size_t secret_size) {
     editor->camera.show_grid = TRUE;
     editor->camera.zoom = 1.f;
 
-    iterate_data_files("editor.json", TRUE, iterate_editor_file, NULL);
+    iterate_data_files("editor.json", TRUE, iterate_editor_file, &(LastDefData){0});
 }
 
 // @NOLINTBEGIN(misc-no-recursion)
@@ -864,9 +955,6 @@ static void draw() {
     }
 
     TINY_PQ_FOREACH (&sorter, iter) {
-        if (iter.data == NULL)
-            continue;
-
         const EditorMarker* marker = *(EditorMarker**)iter.data;
 
         batch_pos(B_F3(marker->pos[0], marker->pos[1], marker->pos[2]));
@@ -973,8 +1061,8 @@ static void draw() {
             batch_rectangle(NULL, B_F2_S(64.f));
         } else {
             const float scale = 64.f / sprite->size[1];
-            batch_pos(B_F3_XY(width - 16.f - ((sprite->size[0] + sprite->offset[0]) * scale),
-                height - 16.f - ((sprite->size[1] + sprite->offset[1]) * scale)));
+            batch_pos(B_F3_XY(width - 16.f - ((sprite->size[0] - sprite->offset[0]) * scale),
+                height - 16.f - ((sprite->size[1] - sprite->offset[1]) * scale)));
             batch_scale(B_F2_S(scale));
             batch_sprite(sprite->base.name);
         }
@@ -1072,24 +1160,24 @@ static void draw_ui() {
             EditorMarker* marker = &editor->level.markers[ecursor->scalable];
 
             const EditorDef* def = (EditorDef*)TinyMapGet(&editor->defs, marker->def_key);
-            const Sprite* sprite = (def == NULL) ? NULL : get_sprite(def->sprite);
+            const Sprite* sprite = (def == NULL || marker->tile[0] || marker->tile[1]) ? NULL : get_sprite(def->sprite);
 
-            float sprite_xscale = 1.f, sprite_yscale = 1.f;
+            float sprite_width = 1.f, sprite_height = 1.f;
             if (sprite != NULL) {
-                sprite_xscale = sprite->size[0];
-                sprite_yscale = sprite->size[1];
+                sprite_width = sprite->size[0];
+                sprite_height = sprite->size[1];
             }
 
-            float max_xscale = 1000000.f, max_yscale = 1000000.f;
+            float max_width = 1000000.f, max_height = 1000000.f;
             if (def != NULL) {
-                max_xscale = def->max_scale[0];
-                max_yscale = def->max_scale[1];
+                max_width = def->max_scale[0] * sprite_width;
+                max_height = def->max_scale[1] * sprite_height;
             }
 
             float sx = (float)ecursor->pos[0] - (float)marker->pos[0],
                   sy = (float)ecursor->pos[1] - (float)marker->pos[1];
-            marker->scale[0] = SDL_clamp(sx, 16.f, 1000000.f) / sprite_xscale;
-            marker->scale[1] = SDL_clamp(sy, 16.f, 1000000.f) / sprite_yscale;
+            marker->scale[0] = SDL_clamp(sx, 16.f, max_width) / sprite_width;
+            marker->scale[1] = SDL_clamp(sy, 16.f, max_height) / sprite_height;
 
             if (!ImGui_IsMouseDown(ImGuiMouseButton_Left))
                 ecursor->has_scalable = FALSE;
@@ -1106,12 +1194,12 @@ static void draw_ui() {
                 } else {
                     const EditorDef* cdef = (EditorDef*)TinyMapGet(&editor->defs, editor->def_key);
                     if (cdef != NULL) {
-                        EditorMarker marker = {0};
+                        EditorMarker marker = init_marker();
+
                         marker.def_key = editor->def_key;
                         marker.pos[0] = ecursor->pos[0];
                         marker.pos[1] = ecursor->pos[1];
                         marker.pos[2] = cdef->depth;
-                        marker.scale[0] = marker.scale[1] = 1.f;
                         marker.flip[0] = cdef->flip[0];
                         marker.flip[1] = cdef->flip[1];
                         marker.tile[0] = cdef->tile[0];
@@ -1253,7 +1341,13 @@ static void draw_ui() {
                                                                                                  : "editor.scale"),
                     marker->scale);
                 ImGui_Spacing();
-                if (def->type != DEFT_ACTOR) {
+                if (def->type == DEFT_ACTOR) {
+                    ImGui_InputFloat2(LFMT("editor.velocity"), marker->vel);
+                    ImGui_Checkbox(LFMT("editor.spawn_once"), (bool*)&marker->spawn_once);
+                    ImGui_Checkbox(LFMT("editor.spawn_singleplayer"), (bool*)&marker->spawn_singleplayer);
+                    ImGui_SameLine();
+                    ImGui_Checkbox(LFMT("editor.spawn_multiplayer"), (bool*)&marker->spawn_multiplayer);
+                } else {
                     ImGui_Checkbox(LFMT("editor.flip_x"), (bool*)&marker->flip[0]);
                     ImGui_SameLine();
                     ImGui_Checkbox(LFMT("editor.flip_y"), (bool*)&marker->flip[1]);
