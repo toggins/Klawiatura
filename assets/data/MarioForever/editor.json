@@ -76,7 +76,110 @@
         "Player Spawn": {
             "type": "actor",
             "id": 4,
-            "sprite": "editor/player_spawn"
+            "sprite": "editor/player_spawn",
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2
+                }
+            ]
+        },
+        "Item Block": {
+            "type": "actor",
+            "id": 27,
+            "sprite": "items/block/0",
+            "values": [
+                {
+                    "name": "Item",
+                    "index": 1,
+                    "type": "actor",
+                    "default": 24
+                }
+            ]
+        },
+        "Brick Block": {
+            "type": "actor",
+            "id": 27,
+            "sprite": "items/block/brick",
+            "values": [
+                {
+                    "index": 0,
+                    "default": 1,
+                    "hidden": true
+                },
+                {
+                    "name": "Item",
+                    "index": 1,
+                    "type": "actor"
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Gray",
+                    "index": 7
+                }
+            ]
+        },
+        "Coin Block": {
+            "type": "actor",
+            "id": 27,
+            "sprite": "editor/coin_block",
+            "values": [
+                {
+                    "name": "Type",
+                    "index": 0,
+                    "default": 1
+                },
+                {
+                    "name": "Item",
+                    "index": 1,
+                    "type": "actor",
+                    "default": 24
+                }
+            ],
+            "flags": [
+                {
+                    "index": 5,
+                    "default": true,
+                    "hidden": true
+                },
+                {
+                    "name": "Gray",
+                    "index": 7
+                }
+            ]
+        },
+        "Hidden Block": {
+            "type": "actor",
+            "id": 27,
+            "sprite": "editor/hidden_block",
+            "values": [
+                {
+                    "name": "Type",
+                    "index": 0
+                },
+                {
+                    "name": "Item",
+                    "index": 1,
+                    "type": "actor",
+                    "default": 24
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Repeat",
+                    "index": 5
+                },
+                {
+                    "index": 6,
+                    "default": true,
+                    "hidden": true
+                },
+                {
+                    "name": "Gray",
+                    "index": 7
+                }
+            ]
         }
     },
 
@@ -105,6 +208,15 @@
                 {
                     "name": "Blocks",
                     "items": ["Brown Block", "Blue Block"]
+                }
+            ]
+        },
+        {
+            "name": "Items",
+            "items": [
+                {
+                    "name": "Blocks",
+                    "items": ["Item Block", "Brick Block", "Coin Block", "Hidden Block"]
                 }
             ]
         },

@@ -361,33 +361,6 @@
             "def": "Brown Block",
             "sprite": "tiles/block/brown",
             "pos": [
-                256,
-                256,
-                20
-            ]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [
-                224,
-                256,
-                20
-            ]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [
-                192,
-                256,
-                20
-            ]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [
                 288,
                 224,
                 20
@@ -704,19 +677,6 @@
             "def": "Solid",
             "id": 1,
             "pos": [
-                192,
-                256,
-                10
-            ],
-            "scale": [
-                524288,
-                65536
-            ]
-        },
-        {
-            "def": "Solid",
-            "id": 1,
-            "pos": [
                 352,
                 288,
                 10
@@ -738,6 +698,89 @@
                 262144,
                 262144
             ]
+        },
+        {
+            "def": "Solid",
+            "id": 1,
+            "pos": [
+                288,
+                256,
+                10
+            ],
+            "scale": [
+                327680,
+                65536
+            ]
+        },
+        {
+            "def": "Item Block",
+            "id": 27,
+            "pos": [
+                192,
+                256
+            ],
+            "values": [
+                [
+                    1,
+                    24
+                ]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 27,
+            "pos": [
+                224,
+                256
+            ],
+            "values": [
+                [
+                    0,
+                    1
+                ],
+                [
+                    1,
+                    0
+                ]
+            ]
+        },
+        {
+            "def": "Coin Block",
+            "id": 27,
+            "pos": [
+                256,
+                256
+            ],
+            "values": [
+                [
+                    0,
+                    1
+                ],
+                [
+                    1,
+                    24
+                ]
+            ],
+            "flags": 32
+        },
+        {
+            "def": "Hidden Block",
+            "id": 27,
+            "pos": [
+                320,
+                128
+            ],
+            "values": [
+                [
+                    0,
+                    1
+                ],
+                [
+                    1,
+                    5
+                ]
+            ],
+            "flags": 224
         }
     ]
 }

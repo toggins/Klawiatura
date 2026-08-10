@@ -16,11 +16,11 @@
             "flags": [
                 {
                     "name": "Flip X",
-                    "bit": 2
+                    "index": 2
                 },
                 {
                     "name": "Flip Y",
-                    "bit": 3
+                    "index": 3
                 }
             ]
         }
