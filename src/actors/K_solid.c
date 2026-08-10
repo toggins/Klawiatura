@@ -8,4 +8,4 @@ static void create(GameActor* actor) {
 
 const ActorTable TAB_SOLID = {.is_solid = always_solid, .create = create},
                  TAB_SOLID_TOP = {.is_solid = always_top, .create = create},
-                 TAB_SOLID_SLOPE = {.is_solid = always_solid, .create = create};
+                 TAB_SOLID_SLOPE = {.is_solid = always_solid_slope, .create = create};

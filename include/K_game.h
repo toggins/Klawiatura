@@ -179,6 +179,7 @@ enum {
     SOL_SOLID = 1 << 0,
     SOL_TOP = 1 << 1,
     SOL_BOTTOM = 1 << 2,
+    SOL_SLOPE = 1 << 3,
     SOL_ALL = SOL_SOLID | SOL_TOP | SOL_BOTTOM,
 };
 
@@ -332,7 +333,8 @@ typedef struct {
     GameActor actors[MAX_ACTORS];
 } GameState;
 
-SolidFlags always_solid(const GameActor*), always_top(const GameActor*), always_bottom(const GameActor*);
+SolidFlags always_solid(const GameActor*), always_top(const GameActor*), always_bottom(const GameActor*),
+    always_solid_slope(const GameActor*);
 
 typedef struct {
     SolidFlags (*is_solid)(const GameActor*);

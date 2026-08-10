@@ -1585,6 +1585,12 @@ SolidFlags always_bottom(const GameActor* actor) {
     return SOL_BOTTOM;
 }
 
+SolidFlags always_solid_slope(const GameActor* actor) {
+    (void)actor;
+
+    return SOL_SOLID | SOL_SLOPE;
+}
+
 void load_actor(ActorType type) {
     if (type <= ACT_NULL || type >= ACT_SIZE)
         WARN("Loading invalid actor type %u", type);
@@ -1875,11 +1881,9 @@ Bool touching_solid(const FRect rect, SolidFlags types) {
             for (GameActor* actor = get_actor(game_state->grid[cx + (cy * MAX_CELLS)]); actor != NULL;
                 actor = get_actor(actor->previous_cell))
             {
-                if (ACTOR_IS_SOLID(actor, types) && actor->type != ACT_SOLID_SLOPE
-                    && Rcollide(rect, Radd(actor->box, actor->pos)))
-                {
+                const SolidFlags solid = ACTOR_GET_SOLID(actor);
+                if ((solid & types) && !(solid & SOL_SLOPE) && Rcollide(rect, Radd(actor->box, actor->pos)))
                     return TRUE;
-                }
             }
         }
     }
@@ -1965,8 +1969,12 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                     GameActor* displacer = next;
                     next = get_actor(next->previous_cell);
 
-                    if (actor == displacer || ANY_FLAG(displacer, FLG_DESTROY) || !ACTOR_IS_SOLID(displacer, SOL_SOLID)
-                        || displacer->type == ACT_SOLID_SLOPE || !Rcollide(abox, Radd(displacer->box, displacer->pos)))
+                    if (actor == displacer || ANY_FLAG(displacer, FLG_DESTROY))
+                        continue;
+
+                    const SolidFlags solid = ACTOR_GET_SOLID(displacer);
+                    if (!(solid & SOL_SOLID) || (solid & SOL_SLOPE)
+                        || !Rcollide(abox, Radd(displacer->box, displacer->pos)))
                     {
                         continue;
                     }
@@ -2040,7 +2048,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                         continue;
                     }
 
-                    if (displacer->type == ACT_SOLID_SLOPE) {
+                    if (ACTOR_IS_SOLID(displacer, SOL_SLOPE)) {
                         if (actor->vel.y < Fx0) {
                             if (ANY_FLAG(displacer, FLG_Y_FLIP) || npos.y < (displacer->pos.y + displacer->box.end.y))
                                 continue;
