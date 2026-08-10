@@ -1,7 +1,7 @@
 {
     "defs": {
         "Gradient Background": {
-            "type": "backdrop",
+            "type": "background",
             "depth": 200,
             "scalable": true,
             "colors": [
@@ -12,57 +12,57 @@
             ]
         },
         "Grass Top Left": {
-            "type": "backdrop",
+            "type": "tile",
             "sprite": "tiles/grass/0",
             "depth": 20
         },
         "Grass Top": {
-            "type": "backdrop",
+            "type": "tile",
             "sprite": "tiles/grass/1",
             "depth": 20
         },
         "Grass Top Right": {
-            "type": "backdrop",
+            "type": "tile",
             "sprite": "tiles/grass/2",
             "depth": 20
         },
         "Grass Left": {
-            "type": "backdrop",
+            "type": "tile",
             "sprite": "tiles/grass/3",
             "depth": 20
         },
         "Grass Middle": {
-            "type": "backdrop",
+            "type": "tile",
             "sprite": "tiles/grass/4",
             "depth": 20
         },
         "Grass Right": {
-            "type": "backdrop",
+            "type": "tile",
             "sprite": "tiles/grass/5",
             "depth": 20
         },
         "Grass Bottom Left": {
-            "type": "backdrop",
+            "type": "tile",
             "sprite": "tiles/grass/6",
             "depth": 20
         },
         "Grass Bottom": {
-            "type": "backdrop",
+            "type": "tile",
             "sprite": "tiles/grass/7",
             "depth": 20
         },
         "Grass Bottom Right": {
-            "type": "backdrop",
+            "type": "tile",
             "sprite": "tiles/grass/8",
             "depth": 20
         },
         "Brown Block": {
-            "type": "backdrop",
+            "type": "tile",
             "sprite": "tiles/block/brown",
             "depth": 20
         },
         "Blue Block": {
-            "type": "backdrop",
+            "type": "tile",
             "sprite": "tiles/block/blue",
             "depth": 20
         }

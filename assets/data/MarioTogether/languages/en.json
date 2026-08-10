@@ -259,6 +259,17 @@
     "editor.size": "Size",
     "editor.bounds": "Bounds",
     "editor.time": "Time",
+    "editor.position": "Position",
+    "editor.depth": "Depth",
+    "editor.scale": "Scale",
+    "editor.flip_x": "Flip X",
+    "editor.flip_y": "Flip Y",
+    "editor.tile_x": "Tile X",
+    "editor.tile_y": "Tile Y",
+    "editor.top_left": "Top Left",
+    "editor.top_right": "Top Right",
+    "editor.bottom_left": "Bottom Left",
+    "editor.bottom_right": "Bottom Right",
     "editor.error": "Error",
     "editor.ok": "OK"
 }
