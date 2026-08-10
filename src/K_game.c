@@ -582,14 +582,18 @@ static void load_level(TinyHash key) {
     }
 
     jval = yyjson_obj_get(root, "size");
-    level_info->size.x = Int2Fx(yyjson_get_uint(yyjson_arr_get(jval, 0)));
-    level_info->size.y = Int2Fx(yyjson_get_uint(yyjson_arr_get(jval, 1)));
+    if (yyjson_is_arr(jval)) {
+        level_info->size.x = Int2Fx(yyjson_get_uint(yyjson_arr_get(jval, 0)));
+        level_info->size.y = Int2Fx(yyjson_get_uint(yyjson_arr_get(jval, 1)));
+    }
 
     jval = yyjson_obj_get(root, "bounds");
-    level_info->bounds.start.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 0)));
-    level_info->bounds.start.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 1)));
-    level_info->bounds.end.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 2)));
-    level_info->bounds.end.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 3)));
+    if (yyjson_is_arr(jval)) {
+        level_info->bounds.start.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 0)));
+        level_info->bounds.start.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 1)));
+        level_info->bounds.end.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 2)));
+        level_info->bounds.end.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 3)));
+    }
 
     jval = yyjson_obj_get(root, "time");
     if (yyjson_is_int(jval))
