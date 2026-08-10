@@ -151,7 +151,7 @@ static void submit_name(Bool confirmed) {
 static const char* fmt_language(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s (%s)", LFMT("option.language"), LFMT(CLIENT.language), CLIENT.language);
+    return fmt("%s: %s (%s)", LFMT("option.language"), LFMT(fmt("language.%s", CLIENT.language)), CLIENT.language);
 }
 
 static const char* fmt_xscroll(size_t idx) {
@@ -208,7 +208,7 @@ static void show_user_messages_cycle(Sint8 cycle) {
 
 static const char* fmt_language_option(size_t idx) {
     const char* lname = CATALOG.options[MEN_LANGUAGE][idx].name;
-    return fmt("%s (%s)", LFMT(lname), lname);
+    return fmt("%s (%s)", LFMT(fmt("language.%s", lname)), lname);
 }
 
 static void language_option() {
