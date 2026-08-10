@@ -1857,17 +1857,25 @@ static void tile_batch_sprite(TileBatch* tile_batch, const Sprite* sprite, const
     float u1 = 0.f, v1 = 0.f, u2 = 1.f, v2 = 1.f;
     if (sprite != NULL) {
         const Texture* texture = get_texture_key(sprite->texture_key);
+
         if (tile[0]) {
             *(flip[0] ? &u2 : &u1) = 0.f;
             *(flip[0] ? &u1 : &u2) = (texture == NULL) ? w : (w / (float)texture->size[0]);
-        } else if (!tile[1]) {
+        } else if (tile[1]) {
+            u1 = flip[0];
+            u2 = (float)!flip[0];
+        } else {
             u1 = sprite->uvs[flip[0] ? 2 : 0];
             u2 = sprite->uvs[flip[0] ? 0 : 2];
         }
+
         if (tile[1]) {
             *(flip[0] ? &v2 : &v1) = 0.f;
             *(flip[0] ? &v1 : &v2) = (texture == NULL) ? h : (h / (float)texture->size[1]);
-        } else if (!tile[0]) {
+        } else if (tile[0]) {
+            v1 = flip[1];
+            v2 = (float)!flip[1];
+        } else {
             v1 = sprite->uvs[flip[1] ? 3 : 1];
             v2 = sprite->uvs[flip[1] ? 1 : 3];
         }
