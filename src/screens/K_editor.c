@@ -430,6 +430,17 @@ static void open_level_dialog() {
     SDL_ShowOpenFileDialog(open_level_async, NULL, WINDOW, &filter, 1, NULL, FALSE);
 }
 
+typedef struct {
+    SolidFlags flags;
+    int pos[2];
+} EditorCollisionCell;
+
+typedef struct {
+    int pos[2];
+    unsigned int size[2], cell_size[2];
+    EditorCollisionCell* cells;
+} EditorCollisionMap;
+
 static void save_level(const char* filename) {
     if (filename == NULL)
         return;
@@ -514,8 +525,10 @@ static void save_level(const char* filename) {
     if (elevel->time != -1)
         yyjson_mut_obj_add_sint(json, root, "time", elevel->time);
 
-    yyjson_mut_val* jbackdrops = yyjson_mut_obj_add_arr(json, root, "backdrops");
-    yyjson_mut_val* jactors = yyjson_mut_obj_add_arr(json, root, "actors");
+    yyjson_mut_val *jbackdrops = yyjson_mut_obj_add_arr(json, root, "backdrops"),
+                   *jcollisions = yyjson_mut_obj_add_arr(json, root, "collisions"),
+                   *jactors = yyjson_mut_obj_add_arr(json, root, "actors");
+    TinyMap collisions = {0};
     for (size_t i = 0, n = TinyDLength(elevel->markers); i < n; i++) {
         const EditorMarker* marker = &elevel->markers[i];
 
@@ -545,9 +558,9 @@ static void save_level(const char* filename) {
                     yyjson_mut_arr_add_sint(json, jpos, marker->pos[2]);
             }
 
+            const Sprite* sprite = (marker->tile[0] || marker->tile[1]) ? NULL : get_sprite(def->sprite);
             if (marker->scale[0] != 1.f || marker->scale[1] != 1.f) {
                 yyjson_mut_val* jsize = yyjson_mut_obj_add_arr(json, jmarker, "size");
-                const Sprite* sprite = (marker->tile[0] || marker->tile[1]) ? NULL : get_sprite(def->sprite);
                 if (sprite == NULL) {
                     yyjson_mut_arr_add_sint(json, jsize, (Sint64)marker->scale[0]);
                     yyjson_mut_arr_add_sint(json, jsize, (Sint64)marker->scale[1]);
@@ -585,6 +598,60 @@ static void save_level(const char* filename) {
                 }
             }
         sl_jcolors_done:
+
+            if (def->type != DEFT_TILE)
+                break;
+
+            float tile_width = marker->scale[0], tile_height = marker->scale[1];
+            if (sprite != NULL) {
+                tile_width *= sprite->size[0];
+                tile_height *= sprite->size[1];
+            }
+
+            float tile_xoffset = (float)marker->pos[0], tile_yoffset = (float)marker->pos[1];
+            if (sprite != NULL) {
+                tile_xoffset -= sprite->offset[0];
+                tile_yoffset -= sprite->offset[1];
+            }
+            while (tile_xoffset >= tile_width)
+                tile_xoffset -= tile_width;
+            while (tile_xoffset < 0.f)
+                tile_xoffset += tile_width;
+            while (tile_yoffset >= tile_height)
+                tile_yoffset -= tile_height;
+            while (tile_yoffset < 0.f)
+                tile_yoffset += tile_height;
+
+            const TinyHash key = StHashStr(
+                fmt("%ix%i %i,%i", (int)tile_width, (int)tile_height, (int)tile_xoffset, (int)tile_yoffset));
+            EditorCollisionMap* cmap = (EditorCollisionMap*)TinyMapGet(&collisions, key);
+            if (cmap == NULL) {
+                TinyBucket* bucket = TinyMapPut(&collisions, key, &(EditorCollisionMap){0}, sizeof(EditorCollisionMap));
+                cmap = bucket->data;
+
+                cmap->pos[0] = cmap->pos[1] = SDL_MAX_SINT16;
+                cmap->size[0] = cmap->size[1] = 1;
+                cmap->cell_size[0] = (unsigned int)tile_width;
+                cmap->cell_size[1] = (unsigned int)tile_height;
+            }
+
+            cmap->pos[0] = SDL_min(marker->pos[0], cmap->pos[0]);
+            cmap->pos[1] = SDL_min(marker->pos[1], cmap->pos[1]);
+
+            EditorCollisionCell ccell = {0};
+            ccell.pos[0] = marker->pos[0];
+            ccell.pos[1] = marker->pos[1];
+            ccell.flags = SOL_SOLID;
+
+            const unsigned int new_width = (unsigned int)((float)(ccell.pos[0] - cmap->pos[0]) / (float)tile_width) + 1,
+                               new_height
+                               = (unsigned int)((float)(ccell.pos[1] - cmap->pos[1]) / (float)tile_height) + 1;
+            cmap->size[0] = SDL_max(cmap->size[0], new_width);
+            cmap->size[1] = SDL_max(cmap->size[1], new_height);
+
+            if (cmap->cells == NULL)
+                cmap->cells = MakeTinyDPro(1, sizeof(*cmap->cells));
+            cmap->cells = TinyDPush(cmap->cells, &ccell);
 
             break;
         }
@@ -639,6 +706,39 @@ static void save_level(const char* filename) {
         }
         }
     }
+
+    TINY_MAP_FOREACH (&collisions, iter) {
+        const EditorCollisionMap* cmap = iter.data;
+
+        yyjson_mut_val* jcmap = yyjson_mut_arr_add_obj(json, jcollisions);
+
+        yyjson_mut_val* jcmval = yyjson_mut_obj_add_arr(json, jcmap, "pos");
+        yyjson_mut_arr_add_sint(json, jcmval, cmap->pos[0]);
+        yyjson_mut_arr_add_sint(json, jcmval, cmap->pos[1]);
+
+        jcmval = yyjson_mut_obj_add_arr(json, jcmap, "size");
+        yyjson_mut_arr_add_uint(json, jcmval, cmap->size[0]);
+        yyjson_mut_arr_add_uint(json, jcmval, cmap->size[1]);
+
+        jcmval = yyjson_mut_obj_add_arr(json, jcmap, "cell_size");
+        yyjson_mut_arr_add_uint(json, jcmval, cmap->cell_size[0]);
+        yyjson_mut_arr_add_uint(json, jcmval, cmap->cell_size[1]);
+
+        jcmval = yyjson_mut_obj_add_arr(json, jcmap, "cells");
+        for (size_t i = 0, n = TinyDLength(cmap->cells); i < n; i++) {
+            const EditorCollisionCell* ccell = &cmap->cells[i];
+            yyjson_mut_val* jccell = yyjson_mut_arr_add_arr(json, jcmval);
+            yyjson_mut_arr_add_uint(
+                json, jccell, (Uint64)((float)(ccell->pos[0] - cmap->pos[0]) / (float)cmap->cell_size[0]));
+            yyjson_mut_arr_add_uint(
+                json, jccell, (Uint64)((float)(ccell->pos[1] - cmap->pos[1]) / (float)cmap->cell_size[1]));
+            yyjson_mut_arr_add_uint(json, jccell, ccell->flags);
+        }
+
+        FreeTinyD(cmap->cells);
+    }
+
+    FreeTinyMap(&collisions);
 
     const size_t len = SDL_strlen(filename);
     if (len < 5 || SDL_strcmp(filename + len - 5, ".json") != 0)
