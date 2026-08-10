@@ -165,7 +165,7 @@ set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
 
 FetchContent_Declare(S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
-    GIT_TAG 3a364e100c68211ddab6691a04689eea2aa268fd
+    GIT_TAG 60d6adcf4e6a0fbf5cb66fee9a0f3776dc693d72
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(S_tructures)
