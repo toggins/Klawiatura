@@ -230,29 +230,45 @@ static void tick(GameActor* actor) {
                 }
             }
 
-            if (++VAL(actor, PLAYER_WARP_STATE) >= 60) {
-                switch (VAL(warp, WARP_OUT_ANGLE)) {
-                default:
-                    move_actor(actor, (FVec2){VAL(warp, WARP_X) - Int2Fx(30), VAL(warp, WARP_Y)});
-                    break;
-                case 1:
-                    move_actor(actor, (FVec2){VAL(warp, WARP_X), VAL(warp, WARP_Y) + Int2Fx(49)});
-                    break;
-                case 2:
-                    move_actor(actor, (FVec2){VAL(warp, WARP_X) + Int2Fx(30), VAL(warp, WARP_Y)});
-                    break;
-                case 3:
-                    move_actor(actor, (FVec2){VAL(warp, WARP_X), VAL(warp, WARP_Y) - Int2Fx(49)});
-                    break;
-                }
-                actor->last_pos = actor->pos;
-                VAL(actor, PLAYER_WARP) = NULL_ACTOR;
-                VAL(actor, PLAYER_WARP_OUT_ANGLE) = VAL(warp, WARP_OUT_ANGLE);
-                FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
-                set_player_track(player, VAL(warp, WARP_TRACK));
+            if (!ANY_FLAG(warp, FLG_WARP_WORLD | FLG_WARP_LEVEL)) {
+                if (++VAL(actor, PLAYER_WARP_STATE) == 60) {
+                    if (ANY_FLAG(actor, FLG_WARP_GOAL)) {
+                        win_player(player);
+                    } else {
+                        switch (VAL(warp, WARP_OUT_ANGLE)) {
+                        default:
+                            move_actor(actor, (FVec2){VAL(warp, WARP_X) - Int2Fx(30), VAL(warp, WARP_Y)});
+                            break;
+                        case 1:
+                            move_actor(actor, (FVec2){VAL(warp, WARP_X), VAL(warp, WARP_Y) + Int2Fx(49)});
+                            break;
+                        case 2:
+                            move_actor(actor, (FVec2){VAL(warp, WARP_X) + Int2Fx(30), VAL(warp, WARP_Y)});
+                            break;
+                        case 3:
+                            move_actor(actor, (FVec2){VAL(warp, WARP_X), VAL(warp, WARP_Y) - Int2Fx(49)});
+                            break;
+                        }
+                        actor->last_pos = actor->pos;
 
-                skip_interp(actor);
-                play_state_sound("warp", PLAY_POS, A_ACTOR(actor));
+                        if (VAL(warp, WARP_BOUNDS_X1) != VAL(warp, WARP_BOUNDS_X2)
+                            && VAL(warp, WARP_BOUNDS_Y1) != VAL(warp, WARP_BOUNDS_Y2))
+                        {
+                            player->bounds.start.x = VAL(warp, WARP_BOUNDS_X1);
+                            player->bounds.start.y = VAL(warp, WARP_BOUNDS_Y1);
+                            player->bounds.end.x = VAL(warp, WARP_BOUNDS_X2);
+                            player->bounds.end.y = VAL(warp, WARP_BOUNDS_Y2);
+                        }
+
+                        VAL(actor, PLAYER_WARP) = NULL_ACTOR;
+                        VAL(actor, PLAYER_WARP_OUT_ANGLE) = VAL(warp, WARP_OUT_ANGLE);
+                        FLAG_ON(actor, FLG_PLAYER_WARP_OUT);
+                        set_player_track(player, VAL(warp, WARP_TRACK));
+
+                        skip_interp(actor);
+                        play_state_sound("warp", PLAY_POS, A_ACTOR(actor));
+                    }
+                }
             }
         }
 

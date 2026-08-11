@@ -418,6 +418,8 @@ const GameContext* gamecontext();
 const LevelInfo* levelinfo();
 GameState* gamestate();
 
+const char* get_game_secret(Uint8);
+
 PlayerID localplayer(), viewplayer();
 void set_view_player(const GamePlayer*);
 

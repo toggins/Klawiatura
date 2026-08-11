@@ -1321,6 +1321,9 @@ static void draw_game_state() {
     batch_write_depth(FALSE);
     batch_test_depth(FALSE);
 
+    for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
+        ACTOR_CALL(actor, draw_hud);
+
     batch_reset();
     batch_pos(B_F3_XY(32.f, 16.f));
     const char* cname = get_character_name(game_context.players[player->id].character);
@@ -1426,6 +1429,11 @@ const LevelInfo* levelinfo() {
 
 GameState* gamestate() {
     return game_state;
+}
+
+const char* get_game_secret(Uint8 sid) {
+    const GameStringID strid = GSTR_SECRET_START + sid;
+    return (strid < GSTR_SECRET_START || strid > GSTR_SECRET_END) ? NULL : level_info->strings[strid];
 }
 
 GameSequence* get_sequence() {
