@@ -1655,12 +1655,6 @@ SolidFlags always_bottom(const GameActor* actor) {
     return SOL_BOTTOM;
 }
 
-SolidFlags always_solid_slope(const GameActor* actor) {
-    (void)actor;
-
-    return SOL_SOLID | SOL_SLOPE;
-}
-
 void load_actor(ActorType type) {
     if (type <= ACT_NULL || type >= ACT_SIZE)
         WARN("Loading invalid actor type %u", type);
@@ -2204,7 +2198,8 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                         continue;
                     }
 
-                    if (ACTOR_IS_SOLID(displacer, SOL_SLOPE)) {
+                    const SolidFlags solid = ACTOR_GET_SOLID(displacer);
+                    if (solid & SOL_SLOPE) {
                         if (actor->vel.y < Fx0) {
                             if (ANY_FLAG(displacer, FLG_Y_FLIP) || npos.y < (displacer->pos.y + displacer->box.end.y))
                                 continue;
@@ -2234,15 +2229,19 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                     }
 
                     if (actor->vel.y < Fx0) {
-                        if (!ACTOR_IS_SOLID(displacer, SOL_SOLID))
+                        if (!(solid & SOL_SOLID)
+                            && (!(solid & SOL_BOTTOM)
+                                || (npos.y + actor->box.start.y - actor->vel.y)
+                                       < (displacer->pos.y + displacer->box.end.y)))
+                        {
                             continue;
+                        }
 
                         ACTOR_CALL(displacer, on_bottom, actor);
                         npos.y = Fmax(npos.y, displacer->pos.y + displacer->box.end.y - actor->box.start.y);
                         stop |= actor->vel.y <= Fx0;
                     } else {
-                        const SolidFlags solid = ACTOR_GET_SOLID(displacer);
-                        if (!(solid & SOL_ALL)
+                        if (!(solid & SOL_SOLID)
                             || ((solid & SOL_TOP)
                                 && (npos.y + actor->box.end.y - actor->vel.y)
                                        > (displacer->pos.y + displacer->box.start.y + climb)))
@@ -2313,13 +2312,16 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                     }
 
                     if (actor->vel.y < Fx0) {
-                        if (!(solid & SOL_SOLID))
+                        if (!(solid & SOL_SOLID)
+                            && (!(solid & SOL_BOTTOM) || (npos.y + actor->box.start.y - actor->vel.y) < cbox.end.y))
+                        {
                             continue;
+                        }
 
                         npos.y = Fmax(npos.y, cbox.end.y - actor->box.start.y);
                         stop |= actor->vel.y <= Fx0;
                     } else {
-                        if (!(solid & SOL_ALL)
+                        if (!(solid & SOL_SOLID)
                             || ((solid & SOL_TOP)
                                 && (npos.y + actor->box.end.y - actor->vel.y) > (cbox.start.y + climb)))
                         {

@@ -332,8 +332,7 @@ typedef struct {
     GameActor actors[MAX_ACTORS];
 } GameState;
 
-SolidFlags always_solid(const GameActor*), always_top(const GameActor*), always_bottom(const GameActor*),
-    always_solid_slope(const GameActor*);
+SolidFlags always_solid(const GameActor*), always_top(const GameActor*), always_bottom(const GameActor*);
 
 typedef struct {
     SolidFlags (*is_solid)(const GameActor*);
