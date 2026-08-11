@@ -56,22 +56,10 @@ void kill_player(GameActor* actor) {
     FLAG_ON(actor, FLG_DESTROY);
 
     const GameState* game_state = gamestate();
-    if (in_blocking_sequence() || gamecontext()->num_players <= 1 || all_players_dead() || game_state->clock == 0) {
+    if (in_blocking_sequence() || gamecontext()->num_players <= 1 || all_players_dead() || game_state->clock == 0)
         set_sequence(GS_LOSE, player, 0);
-    } else {
-        // !!! CLIENT-SIDE !!!
-        if (dead->player == viewplayer()) {
-            if (game_state->flags & GF_LOST_MAP)
-                play_state_track("smw/lose2", 0);
-            else if (game_state->flags & GF_HARDCORE)
-                play_state_track("smw/lose_hardcore", 0);
-            else
-                play_state_track("smw/lose", 0);
-        } else {
-            play_state_sound((player == NULL || player->lives >= 0) ? "lose" : "dead", PLAY_POS, A_ACTOR(dead));
-        }
-        // !!! CLIENT-SIDE !!!
-    }
+    else
+        play_state_sound((player == NULL || player->lives >= 0) ? "lose" : "dead", PLAY_POS, A_ACTOR(dead));
 }
 
 /* ============
