@@ -1488,14 +1488,17 @@ GamePlayer* get_player(PlayerID pid) {
 }
 
 GameActor* respawn_player(GamePlayer* player) {
-    if (player == NULL || player->lives < 0 || in_blocking_sequence())
+    if (player == NULL || in_blocking_sequence())
         return NULL;
+
+    if (player->lives < 0)
+        goto rp_spectate;
 
     const GameActor* spawn = get_actor(game_state->checkpoint);
     if (spawn == NULL)
         spawn = get_actor(game_state->spawn);
     if (spawn == NULL)
-        return NULL;
+        goto rp_spectate;
 
     FVec2 spos = spawn->pos;
     if (spawn->type == ACT_CHECKPOINT) {
@@ -1517,7 +1520,7 @@ GameActor* respawn_player(GamePlayer* player) {
 
     GameActor* pawn = create_actor(ACT_PLAYER, spos);
     if (pawn == NULL)
-        return NULL;
+        goto rp_spectate;
 
     GameActor* old_pawn = get_actor(player->actor);
     if (old_pawn != NULL) {
@@ -1545,11 +1548,24 @@ GameActor* respawn_player(GamePlayer* player) {
     InterpPlayer* iplayer = &interp_state->players[player->id];
     iplayer->from = iplayer->to = iplayer->current = player->xscroll;
 
-    if (player->id == local_player || local_player >= MAX_PLAYERS)
+    if (player->id == local_player || view_player == NULL_PLAYER)
         set_view_player(player);
     /// !!! CLIENT-SIDE !!!
 
     return pawn;
+
+rp_spectate:
+    /// !!! CLIENT-SIDE !!!
+    if (player->id == view_player) {
+        for (PlayerID i = 0; i < game_context.num_players; i++) {
+            const GamePlayer* oplayer = get_player(i);
+            if (oplayer != NULL && oplayer->lives >= 0 && get_actor(oplayer->actor) != NULL)
+                set_view_player(oplayer);
+        }
+    }
+    /// !!! CLIENT-SIDE !!!
+
+    return NULL;
 }
 
 void set_player_track(GamePlayer* player, Uint8 track) {
