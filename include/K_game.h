@@ -355,7 +355,8 @@ typedef struct {
 
 typedef struct {
     Uint16 size[2];
-    FVec2 pos, cell_size;
+    FVec2 cell_size;
+    FRect bounds;
     SolidFlags* grid;
 } CollisionMap;
 

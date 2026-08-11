@@ -623,8 +623,8 @@ static void load_level(TinyHash key) {
         CollisionMap* cmap = &level_info->collisions[i];
 
         yyjson_val* jcmval = yyjson_obj_get(jcmap, "pos");
-        cmap->pos.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jcmval, 0)));
-        cmap->pos.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jcmval, 1)));
+        cmap->bounds.start.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jcmval, 0)));
+        cmap->bounds.start.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jcmval, 1)));
 
         jcmval = yyjson_obj_get(jcmap, "size");
         cmap->size[0] = yyjson_get_uint(yyjson_arr_get(jcmval, 0));
@@ -633,6 +633,9 @@ static void load_level(TinyHash key) {
         jcmval = yyjson_obj_get(jcmap, "cell_size");
         cmap->cell_size.x = Int2Fx(yyjson_get_uint(yyjson_arr_get(jcmval, 0)));
         cmap->cell_size.y = Int2Fx(yyjson_get_uint(yyjson_arr_get(jcmval, 1)));
+
+        cmap->bounds.end.x = cmap->bounds.start.x + (Fixed)cmap->size[0] * cmap->cell_size.x;
+        cmap->bounds.end.y = cmap->bounds.start.y + (Fixed)cmap->size[1] * cmap->cell_size.y;
 
         cmap->grid = SDL_calloc((Uint64)cmap->size[0] * (Uint64)cmap->size[1], sizeof(*cmap->grid));
         EXPECT(cmap->grid, "Failed to allocate %ux%u collision grid for level \"%s\"", cmap->size[0], cmap->size[1],
@@ -1928,13 +1931,10 @@ void collide_actor(GameActor* actor) {
 Bool touching_solid(const FRect rect, SolidFlags types) {
     for (Uint8 i = 0; i < level_info->num_collisions; i++) {
         const CollisionMap* cmap = &level_info->collisions[i];
-        if (!Rcollide(rect, (FRect){cmap->pos, Vadd(cmap->pos, (FVec2){cmap->size[0] * cmap->cell_size.x,
-                                                                   cmap->size[1] * cmap->cell_size.y})}))
-        {
+        if (!Rcollide(rect, cmap->bounds))
             continue;
-        }
 
-        const FRect orect = Rsub(rect, cmap->pos);
+        const FRect orect = Rsub(rect, cmap->bounds.start);
         Sint32 cx1 = (orect.start.x - cmap->cell_size.x) / cmap->cell_size.x,
                cy1 = (orect.start.y - cmap->cell_size.y) / cmap->cell_size.y;
         Sint32 cx2 = (orect.end.x + cmap->cell_size.x) / cmap->cell_size.x,
@@ -2106,13 +2106,10 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
         abox = Radd(actor->box, npos);
         for (Uint8 i = 0; i < level_info->num_collisions; i++) {
             const CollisionMap* cmap = &level_info->collisions[i];
-            if (!Rcollide(abox, (FRect){cmap->pos, Vadd(cmap->pos, (FVec2){cmap->size[0] * cmap->cell_size.x,
-                                                                       cmap->size[1] * cmap->cell_size.y})}))
-            {
+            if (!Rcollide(abox, cmap->bounds))
                 continue;
-            }
 
-            const FRect orect = Rsub(abox, cmap->pos);
+            const FRect orect = Rsub(abox, cmap->bounds.start);
             Sint32 cx1 = (orect.start.x - cmap->cell_size.x) / cmap->cell_size.x,
                    cy1 = (orect.start.y - cmap->cell_size.y) / cmap->cell_size.y;
             Sint32 cx2 = (orect.end.x + cmap->cell_size.x) / cmap->cell_size.x,
@@ -2128,7 +2125,8 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                     if (!(solid & SOL_SOLID) || (solid & SOL_SLOPE))
                         continue;
 
-                    const FVec2 cpos = Vadd(cmap->pos, (FVec2){cx * cmap->cell_size.x, cy * cmap->cell_size.y});
+                    const FVec2 cpos
+                        = Vadd(cmap->bounds.start, (FVec2){cx * cmap->cell_size.x, cy * cmap->cell_size.y});
                     const FRect cbox = (FRect){cpos, Vadd(cpos, cmap->cell_size)};
                     if (!Rcollide(abox, cbox))
                         continue;
@@ -2253,13 +2251,10 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
         abox = Radd(actor->box, npos);
         for (Uint8 i = 0; i < level_info->num_collisions; i++) {
             const CollisionMap* cmap = &level_info->collisions[i];
-            if (!Rcollide(abox, (FRect){cmap->pos, Vadd(cmap->pos, (FVec2){cmap->size[0] * cmap->cell_size.x,
-                                                                       cmap->size[1] * cmap->cell_size.y})}))
-            {
+            if (!Rcollide(abox, cmap->bounds))
                 continue;
-            }
 
-            const FRect orect = Rsub(abox, cmap->pos);
+            const FRect orect = Rsub(abox, cmap->bounds.start);
             cx1 = (orect.start.x - cmap->cell_size.x) / cmap->cell_size.x;
             cy1 = (orect.start.y - cmap->cell_size.y) / cmap->cell_size.y;
             cx2 = (orect.end.x + cmap->cell_size.x) / cmap->cell_size.x;
@@ -2275,7 +2270,8 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                     if (solid <= 0)
                         continue;
 
-                    const FVec2 cpos = Vadd(cmap->pos, (FVec2){cx * cmap->cell_size.x, cy * cmap->cell_size.y});
+                    const FVec2 cpos
+                        = Vadd(cmap->bounds.start, (FVec2){cx * cmap->cell_size.x, cy * cmap->cell_size.y});
                     const FRect cbox = (FRect){cpos, Vadd(cpos, cmap->cell_size)};
                     if (!Rcollide(abox, cbox))
                         continue;
