@@ -660,6 +660,8 @@ static void load_level(TinyHash key) {
             || (yyjson_get_bool(yyjson_obj_get(jval2, "singleplayer")) && game_context.num_players > 1)
             || (yyjson_get_bool(yyjson_obj_get(jval2, "multiplayer")) && game_context.num_players <= 1))
         {
+            // Keep actor ID order so that checkpoints are valid between restarts.
+            game_state->next_actor = (ActorID)((game_state->next_actor + 1) % MAX_ACTORS);
             continue;
         }
 
