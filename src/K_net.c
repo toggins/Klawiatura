@@ -746,7 +746,7 @@ PlayerID populate_game(GekkoSession* session, PlayerID num_players) {
         for (PlayerID i = 0; i < num_players; i++)
             gekko_add_actor(session, GekkoLocalPlayer, NULL);
 
-        return 0;
+        return (get_replay_state() == RPS_PLAYING) ? MAX_PLAYERS : 0;
     }
 
     gekko_net_adapter_set(session, &adapter);
