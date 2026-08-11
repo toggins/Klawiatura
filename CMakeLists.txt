@@ -248,7 +248,7 @@ else()
     message(STATUS "LTO is not supported :(")
 endif()
 
-if(KLAW_DISCORD)
+if(KLAW_DISCORD_FR)
     target_compile_definitions(${PROJECT_NAME} PRIVATE K_DISCORD=1)
 endif()
 
@@ -260,7 +260,7 @@ endfunction()
 
 if(LINUX)
     target_link_options(${PROJECT_NAME} PRIVATE -Wl,-rpath,./)
-    if(KLAW_DISCORD)
+    if(KLAW_DISCORD_FR)
         append_dll(discord)
     endif()
 endif()
