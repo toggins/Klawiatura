@@ -1560,13 +1560,13 @@ static void draw_ui() {
                     for (size_t i = 0, n = TinyDLength(def->values); i < n; i++) {
                         const EditorDefValue* dvalue = &def->values[i];
                         if (!dvalue->hidden)
-                            ImGui_InputInt(dvalue->name, &marker->values[dvalue->index]);
+                            ImGui_InputInt(fmt("%s##value", dvalue->name), &marker->values[dvalue->index]);
                     }
 
                     for (size_t i = 0, n = TinyDLength(def->flags); i < n; i++) {
                         const EditorDefFlag* dflag = &def->flags[i];
                         if (!dflag->hidden)
-                            ImGui_CheckboxFlagsUintPtr(dflag->name, &marker->flags, 1 << dflag->index);
+                            ImGui_CheckboxFlagsUintPtr(fmt("%s##flag", dflag->name), &marker->flags, 1 << dflag->index);
                     }
                 } else {
                     ImGui_Checkbox(LFMT("editor.flip_x"), (bool*)&marker->flip[0]);
