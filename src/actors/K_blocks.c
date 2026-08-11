@@ -121,7 +121,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
    ===== */
 
 static SolidFlags is_solid(const GameActor* actor) {
-    return ANY_FLAG(actor, FLG_BLOCK_HIDDEN) ? 0 : SOL_SOLID;
+    return ANY_FLAG(actor, FLG_BLOCK_HIDDEN) ? SOL_BOTTOM : SOL_SOLID;
 }
 
 static void load() {
@@ -160,8 +160,6 @@ static void create(GameActor* actor) {
 }
 
 static void pre_tick(GameActor* actor) {
-    actor->box.end.y = Int2Fx(32) + (Fixed)ANY_FLAG(actor, FLG_BLOCK_HIDDEN);
-
     if (VAL(actor, BLOCK_BUMP) > 0) {
         ++VAL(actor, BLOCK_BUMP);
         if (VAL(actor, BLOCK_BUMP)
@@ -284,24 +282,11 @@ static void draw(const GameActor* actor) {
     draw_actor(actor, sprite, FALSE);
 }
 
-static void collide(GameActor* actor, GameActor* from) {
-    if (from->type != ACT_PLAYER || !ANY_FLAG(actor, FLG_BLOCK_HIDDEN) || from->vel.y > Fx0
-        || (from->last_pos.y + from->box.start.y) < (actor->pos.y + actor->box.end.y))
-    {
-        return;
-    }
-
-    FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
-    actor->box.end.y = Int2Fx(32);
-    move_actor(from, (FVec2){from->pos.x, Fmax(from->pos.y, actor->pos.y + actor->box.end.y - from->box.start.y)});
-
-    GamePlayer* player = get_player(from->player);
-    bump_block(actor, from, player != NULL && player->powerup != POW_NONE);
-}
-
 static void on_bottom(GameActor* actor, GameActor* from) {
     if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_BLOCK_EMPTY))
         return;
+
+    FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
 
     GamePlayer* player = get_player(from->player);
     bump_block(actor, from, player != NULL && player->powerup != POW_NONE);
@@ -314,7 +299,6 @@ const ActorTable TAB_BLOCK = {
     .create = create,
     .pre_tick = pre_tick,
     .draw = draw,
-    .collide = collide,
     .on_bottom = on_bottom,
 };
 
