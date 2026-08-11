@@ -436,8 +436,8 @@ typedef struct {
 } EditorCollisionCell;
 
 typedef struct {
-    int pos[2];
-    unsigned int size[2], cell_size[2];
+    int min_pos[2], max_pos[2];
+    unsigned int cell_size[2];
     EditorCollisionCell* cells;
 } EditorCollisionMap;
 
@@ -629,25 +629,21 @@ static void save_level(const char* filename) {
                 TinyBucket* bucket = TinyMapPut(&collisions, key, &(EditorCollisionMap){0}, sizeof(EditorCollisionMap));
                 cmap = bucket->data;
 
-                cmap->pos[0] = cmap->pos[1] = SDL_MAX_SINT16;
-                cmap->size[0] = cmap->size[1] = 1;
+                cmap->min_pos[0] = cmap->min_pos[1] = SDL_MAX_SINT16;
+                cmap->max_pos[0] = cmap->max_pos[1] = SDL_MIN_SINT16;
                 cmap->cell_size[0] = (unsigned int)tile_width;
                 cmap->cell_size[1] = (unsigned int)tile_height;
             }
 
-            cmap->pos[0] = SDL_min(marker->pos[0], cmap->pos[0]);
-            cmap->pos[1] = SDL_min(marker->pos[1], cmap->pos[1]);
+            cmap->min_pos[0] = SDL_min(marker->pos[0], cmap->min_pos[0]);
+            cmap->min_pos[1] = SDL_min(marker->pos[1], cmap->min_pos[1]);
+            cmap->max_pos[0] = SDL_max(marker->pos[0], cmap->max_pos[0]);
+            cmap->max_pos[1] = SDL_max(marker->pos[1], cmap->max_pos[1]);
 
             EditorCollisionCell ccell = {0};
             ccell.pos[0] = marker->pos[0];
             ccell.pos[1] = marker->pos[1];
             ccell.flags = SOL_SOLID;
-
-            const unsigned int new_width = (unsigned int)((float)(ccell.pos[0] - cmap->pos[0]) / (float)tile_width) + 1,
-                               new_height
-                               = (unsigned int)((float)(ccell.pos[1] - cmap->pos[1]) / (float)tile_height) + 1;
-            cmap->size[0] = SDL_max(cmap->size[0], new_width);
-            cmap->size[1] = SDL_max(cmap->size[1], new_height);
 
             if (cmap->cells == NULL)
                 cmap->cells = MakeTinyDPro(1, sizeof(*cmap->cells));
@@ -712,15 +708,17 @@ static void save_level(const char* filename) {
 
         yyjson_mut_val* jcmap = yyjson_mut_arr_add_obj(json, jcollisions);
 
-        if (cmap->pos[0] != 0 || cmap->pos[1] != 0) {
+        if (cmap->min_pos[0] != 0 || cmap->min_pos[1] != 0) {
             yyjson_mut_val* jcmval = yyjson_mut_obj_add_arr(json, jcmap, "pos");
-            yyjson_mut_arr_add_sint(json, jcmval, cmap->pos[0]);
-            yyjson_mut_arr_add_sint(json, jcmval, cmap->pos[1]);
+            yyjson_mut_arr_add_sint(json, jcmval, cmap->min_pos[0]);
+            yyjson_mut_arr_add_sint(json, jcmval, cmap->min_pos[1]);
         }
 
         yyjson_mut_val* jcmval = yyjson_mut_obj_add_arr(json, jcmap, "size");
-        yyjson_mut_arr_add_uint(json, jcmval, cmap->size[0]);
-        yyjson_mut_arr_add_uint(json, jcmval, cmap->size[1]);
+        yyjson_mut_arr_add_uint(json, jcmval,
+            (Uint64)(((float)cmap->max_pos[0] - (float)cmap->min_pos[0]) / (float)cmap->cell_size[0]) + 1);
+        yyjson_mut_arr_add_uint(json, jcmval,
+            (Uint64)(((float)cmap->max_pos[1] - (float)cmap->min_pos[1]) / (float)cmap->cell_size[1]) + 1);
 
         jcmval = yyjson_mut_obj_add_arr(json, jcmap, "cell_size");
         yyjson_mut_arr_add_uint(json, jcmval, cmap->cell_size[0]);
@@ -731,9 +729,9 @@ static void save_level(const char* filename) {
             const EditorCollisionCell* ccell = &cmap->cells[i];
             yyjson_mut_val* jccell = yyjson_mut_arr_add_arr(json, jcmval);
             yyjson_mut_arr_add_uint(
-                json, jccell, (Uint64)((float)(ccell->pos[0] - cmap->pos[0]) / (float)cmap->cell_size[0]));
+                json, jccell, (Uint64)((float)(ccell->pos[0] - cmap->min_pos[0]) / (float)cmap->cell_size[0]));
             yyjson_mut_arr_add_uint(
-                json, jccell, (Uint64)((float)(ccell->pos[1] - cmap->pos[1]) / (float)cmap->cell_size[1]));
+                json, jccell, (Uint64)((float)(ccell->pos[1] - cmap->min_pos[1]) / (float)cmap->cell_size[1]));
             yyjson_mut_arr_add_uint(json, jccell, ccell->flags);
         }
 
