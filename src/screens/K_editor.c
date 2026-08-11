@@ -712,11 +712,13 @@ static void save_level(const char* filename) {
 
         yyjson_mut_val* jcmap = yyjson_mut_arr_add_obj(json, jcollisions);
 
-        yyjson_mut_val* jcmval = yyjson_mut_obj_add_arr(json, jcmap, "pos");
-        yyjson_mut_arr_add_sint(json, jcmval, cmap->pos[0]);
-        yyjson_mut_arr_add_sint(json, jcmval, cmap->pos[1]);
+        if (cmap->pos[0] != 0 || cmap->pos[1] != 0) {
+            yyjson_mut_val* jcmval = yyjson_mut_obj_add_arr(json, jcmap, "pos");
+            yyjson_mut_arr_add_sint(json, jcmval, cmap->pos[0]);
+            yyjson_mut_arr_add_sint(json, jcmval, cmap->pos[1]);
+        }
 
-        jcmval = yyjson_mut_obj_add_arr(json, jcmap, "size");
+        yyjson_mut_val* jcmval = yyjson_mut_obj_add_arr(json, jcmap, "size");
         yyjson_mut_arr_add_uint(json, jcmval, cmap->size[0]);
         yyjson_mut_arr_add_uint(json, jcmval, cmap->size[1]);
 
@@ -991,7 +993,6 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
                 value.index = yyjson_get_uint(yyjson_obj_get(jvalue, "index")) % MAX_VALUES;
                 value.default_value = yyjson_get_int(yyjson_obj_get(jvalue, "default"));
                 value.hidden = yyjson_get_bool(yyjson_obj_get(jvalue, "hidden"));
-                INFO("%s = %i", value.name, value.default_value);
 
                 if (def->values == NULL)
                     def->values = MakeTinyDPro(1, sizeof(value));
