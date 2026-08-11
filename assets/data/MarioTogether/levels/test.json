@@ -1,5 +1,5 @@
 {
-    "tracks": ["one_fine_day", null, null, null],
+    "tracks": ["one_fine_day"],
     "backdrops": [
         {
             "def": "Grass Top Left",
