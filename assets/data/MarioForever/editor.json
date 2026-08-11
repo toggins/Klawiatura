@@ -11,6 +11,13 @@
                 [242, 253, 252, 255]
             ]
         },
+        "Cave Background": {
+            "type": "background",
+            "sprite": "backgrounds/cave",
+            "depth": 190,
+            "max_scale": [32767, 480],
+            "tile": [true, true]
+        },
         "Grass Top Left": {
             "type": "tile",
             "sprite": "tiles/grass/0",
@@ -66,6 +73,67 @@
             "sprite": "tiles/block/blue",
             "depth": 20
         },
+        "Pipe Green Top": {
+            "type": "tile",
+            "sprite": "tiles/pipe/green/v0",
+            "depth": 20
+        },
+        "Pipe Green Middle": {
+            "type": "tile",
+            "sprite": "tiles/pipe/green/v1",
+            "depth": 20
+        },
+        "Pipe Green Bottom": {
+            "type": "tile",
+            "sprite": "tiles/pipe/green/v2",
+            "depth": 20
+        },
+        "Hill": {
+            "type": "background",
+            "sprite": "scenery/hill",
+            "depth": 61
+        },
+        "Tree Small": {
+            "type": "background",
+            "sprite": "scenery/tree/small",
+            "depth": 32
+        },
+        "Tree Big": {
+            "type": "background",
+            "sprite": "scenery/tree/big",
+            "depth": 32
+        },
+        "Bush": {
+            "type": "actor",
+            "id": 17,
+            "sprite": "scenery/bush/0"
+        },
+        "Fence Left": {
+            "type": "background",
+            "sprite": "scenery/fence/0",
+            "depth": 30
+        },
+        "Fence Middle": {
+            "type": "background",
+            "sprite": "scenery/fence/1",
+            "depth": 30
+        },
+        "Fence Right": {
+            "type": "background",
+            "sprite": "scenery/fence/2",
+            "depth": 30
+        },
+        "Cloud": {
+            "type": "actor",
+            "id": 18,
+            "sprite": "scenery/cloud/0"
+        },
+        "Clouds": {
+            "type": "actor",
+            "id": 19,
+            "sprite": "scenery/clouds",
+            "depth": 50
+        },
         "Player Spawn": {
             "type": "actor",
             "id": 1,
@@ -76,6 +144,160 @@
                     "index": 2
                 }
             ]
+        },
+        "Warp": {
+            "type": "actor",
+            "id": 6,
+            "sprite": "editor/warp",
+            "values": [
+                {
+                    "name": "Warp X",
+                    "index": 0,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Warp Y",
+                    "index": 1,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Warp In Angle",
+                    "index": 2,
+                    "default": 3
+                },
+                {
+                    "name": "Warp Out Angle",
+                    "index": 3,
+                    "default": 1
+                },
+                {
+                    "name": "Bounds Start X",
+                    "index": 4,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Bounds Start Y",
+                    "index": 5,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Bounds End X",
+                    "index": 6,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Bounds End Y",
+                    "index": 7,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Track",
+                    "index": 8
+                },
+                {
+                    "name": "Secret",
+                    "index": 9
+                },
+                {
+                    "name": "Warp",
+                    "index": 10
+                }
+            ],
+            "flags": [
+                {
+                    "name": "\"Green Mushroom Calamity\" Warp",
+                    "index": 5
+                },
+                {
+                    "name": "Secret",
+                    "index": 6
+                },
+                {
+                    "name": "Warp is World",
+                    "index": 7
+                },
+                {
+                    "name": "Warp is Level",
+                    "index": 8
+                },
+                {
+                    "name": "\"Koopa the Devastator\" Warp",
+                    "index": 9
+                },
+                {
+                    "name": "Goal",
+                    "index": 10
+                }
+            ]
+        },
+        "Checkpoint": {
+            "type": "actor",
+            "id": 7,
+            "sprite": "markers/checkpoint/0",
+            "values": [
+                {
+                    "name": "Bounds Start X",
+                    "index": 0,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Bounds Start Y",
+                    "index": 1,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Bounds End X",
+                    "index": 2,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Bounds End Y",
+                    "index": 3,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Track",
+                    "index": 4,
+                    "type": "fixed"
+                },
+                {
+                    "name": "5-2 Platform Start X",
+                    "index": 5,
+                    "type": "fixed"
+                },
+                {
+                    "name": "5-2 Platform Start Y",
+                    "index": 6,
+                    "type": "fixed"
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Respawn 5-2 Platform at Checkpoint",
+                    "index": 5
+                }
+            ]
+        },
+        "Goal": {
+            "type": "background",
+            "sprite": "markers/goal",
+            "depth": 23
+        },
+        "Goal Bar": {
+            "type": "actor",
+            "id": 9,
+            "sprite": "markers/goal/bar"
+        },
+        "Goal Mark": {
+            "type": "background",
+            "sprite": "markers/goal/mark",
+            "depth": 23
+        },
+        "Goal Line": {
+            "type": "actor",
+            "id": 10,
+            "sprite": "editor/goal_mark",
+            "scalable": true
         },
         "Item Block": {
             "type": "actor",
@@ -173,13 +395,18 @@
                     "index": 7
                 }
             ]
+        },
+        "Coin": {
+            "type": "actor",
+            "id": 20,
+            "sprite": "editor/coin"
         }
     },
 
     "items": [
         {
             "name": "Backgrounds",
-            "items": ["Gradient Background"]
+            "items": ["Gradient Background", "Cave Background"]
         },
         {
             "name": "Tiles",
@@ -201,7 +428,46 @@
                 {
                     "name": "Blocks",
                     "items": ["Brown Block", "Blue Block"]
+                },
+                {
+                    "name": "Pipes",
+                    "items": [
+                        {
+                            "name": "Green",
+                            "items": [
+                                "Pipe Green Top",
+                                "Pipe Green Middle",
+                                "Pipe Green Bottom",
+                                "Pipe Green Left",
+                                "Pipe Green Middle 2",
+                                "Pipe Green Right",
+                                "Pipe Green Connect Left"
+                            ]
+                        }
+                    ]
                 }
+            ]
+        },
+        {
+            "name": "Scenery",
+            "items": [
+                {
+                    "name": "Clouds",
+                    "items": ["Cloud", "Clouds", "Clouds Static"]
+                },
+                {
+                    "name": "Trees",
+                    "items": ["Tree Small", "Tree Big"]
+                },
+                {
+                    "name": "Fence",
+                    "items": ["Fence Left", "Fence Middle", "Fence Right"]
+                },
+                {
+                    "name": "Hills",
+                    "items": ["Hill"]
+                },
+                "Bush"
             ]
         },
         {
@@ -217,10 +483,12 @@
             "name": "Markers",
             "items": [
                 {
-                    "name": "Solid",
-                    "items": ["Solid"]
+                    "name": "Goal",
+                    "items": ["Goal", "Goal Bar", "Goal Mark", "Goal Line"]
                 },
-                "Player Spawn"
+                "Player Spawn",
+                "Warp",
+                "Checkpoint"
             ]
         }
     ]

@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/fence",
+    "size": [9, 24],
+    "offset": [0, -4],
+    "uvs": [41, 4, 50, 28]
+}

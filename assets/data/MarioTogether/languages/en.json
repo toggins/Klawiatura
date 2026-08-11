@@ -101,6 +101,7 @@
     "hud.world.funny_tanks": "ui/world/en/funny_tanks",
     "hud.time": "Time",
     "hud.game_over": "Game Over",
+    "hud.secret.green_mushroom_calamity": "ui/secret/en/green_mushroom_calamity",
     "hud.spectating": "Spectating",
 
     "bind.up": "Up",
