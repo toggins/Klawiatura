@@ -50,7 +50,7 @@ jobs:
             name: HTML5
 
     env:
-      CACHE_BUST: 5
+      CACHE_BUST: 6
       SCCACHE_GHA_ENABLED: true
       OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
 
