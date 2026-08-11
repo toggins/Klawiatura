@@ -397,6 +397,10 @@ static void open_level(const char* filename) {
             marker.scale[1] = Fx2Float(yyjson_get_sint(yyjson_arr_get(jmval, 1)));
         }
 
+        jmval = yyjson_obj_get(jmarker, "vel");
+        marker.vel[0] = Fx2Float(yyjson_get_sint(yyjson_arr_get(jmval, 0)));
+        marker.vel[1] = Fx2Float(yyjson_get_sint(yyjson_arr_get(jmval, 1)));
+
         jmval = yyjson_obj_get(jmarker, "values");
         for (size_t j = 0, n2 = yyjson_arr_size(jmval); j < n2; j++) {
             yyjson_val* jmval2 = yyjson_arr_get(jmval, j);
