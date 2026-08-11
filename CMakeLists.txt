@@ -200,9 +200,12 @@ option(KLAW_DISCORD "Use Discord Social SDK" ON)
 if(KLAW_DISCORD)
     message(NOTICE "Adding Discord integration")
     add_subdirectory(${CMAKE_SOURCE_DIR}/external/discord EXCLUDE_FROM_ALL SYSTEM)
-    list(APPEND LIBS discord)
 else()
     message(NOTICE "Skipping Discord integration (set KLAW_DISCORD to use it!)")
+endif()
+
+if(KLAW_DISCORD_FR)
+    list(APPEND LIBS discord)
 endif()
 
 # Dear Bindings/Dear ImGui (v1.92.9)
