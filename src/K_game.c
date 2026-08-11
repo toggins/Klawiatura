@@ -560,7 +560,7 @@ static void load_level(TinyHash key) {
             continue;
 
         const char* track = SDL_strdup(yyjson_get_str(jval2));
-        EXPECT(track, "Failed to allocate level \"%s\" track %zu", level->name, i + 1);
+        EXPECT(track, "Failed to allocate level \"%s\" track %" SDL_PRIu64, level->name, i + 1);
         load_track(track, AKL_NEVER);
         level_info->strings[GSTR_TRACK_START + i] = track;
     }
@@ -576,7 +576,7 @@ static void load_level(TinyHash key) {
             continue;
 
         const char* track = SDL_strdup(yyjson_get_str(jval2));
-        EXPECT(track, "Failed to allocate level \"%s\" secret %zu", level->name, i + 1);
+        EXPECT(track, "Failed to allocate level \"%s\" secret %" SDL_PRIu64, level->name, i + 1);
         // TODO: Do something with secret strings
         level_info->strings[GSTR_SECRET_START + i] = track;
     }
@@ -695,7 +695,7 @@ static void load_level(TinyHash key) {
 
             const ActorValue idx = (ActorValue)yyjson_get_uint(yyjson_arr_get(jvalue, 0));
             if (idx < 0 || idx >= MAX_VALUES) {
-                WTF("Invalid value index %i for actor %zu type %u", idx, i, type);
+                WTF("Invalid value index %i for actor %" SDL_PRIu64 " type %u", idx, i, type);
                 continue;
             }
 
