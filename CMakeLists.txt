@@ -195,7 +195,7 @@ FetchContent_MakeAvailable(GekkoNet)
 list(APPEND LIBS GekkoNet)
 
 # Discord Social SDK (1.9.15332)
-option(KLAW_DISCORD "Use Discord Social SDK")
+option(KLAW_DISCORD "Use Discord Social SDK" ON)
 
 if(KLAW_DISCORD)
     message(NOTICE "Adding Discord integration")
