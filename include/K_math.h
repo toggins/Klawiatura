@@ -18,7 +18,7 @@ FVec2 Vscale(FVec2, Fixed);
 Fixed Vdist(FVec2, FVec2), Vtheta(FVec2, FVec2);
 FVec2 Vlerp(FVec2, FVec2, Fixed), Vclamp(FVec2, FVec2, FVec2);
 
-FRect Radd(FRect, FVec2), Rmul(FRect, FVec2);
+FRect Radd(FRect, FVec2), Rsub(FRect, FVec2), Rmul(FRect, FVec2);
 FRect Rxflip(FRect), Ryflip(FRect);
 FVec2 Rcenter(FRect);
 Bool Rcollide(FRect, FRect);

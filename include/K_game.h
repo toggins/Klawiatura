@@ -78,9 +78,6 @@ typedef Uint8 ActorType;
 enum {
     ACT_NULL,
 
-    ACT_SOLID,
-    ACT_SOLID_TOP,
-    ACT_SOLID_SLOPE,
     ACT_PLAYER_SPAWN,
     ACT_PLAYER,
     ACT_PLAYER_EFFECT,
@@ -180,6 +177,8 @@ enum {
     SOL_TOP = 1 << 1,
     SOL_BOTTOM = 1 << 2,
     SOL_SLOPE = 1 << 3,
+    SOL_X_FLIP = 1 << 4,
+    SOL_Y_FLIP = 1 << 5,
     SOL_ALL = SOL_SOLID | SOL_TOP | SOL_BOTTOM,
 };
 
@@ -354,6 +353,12 @@ typedef struct {
         (*on_bottom)(GameActor*, GameActor*);
 } ActorTable;
 
+typedef struct {
+    Uint16 size[2];
+    FVec2 pos, cell_size;
+    SolidFlags* grid;
+} CollisionMap;
+
 typedef Uint8 GameWarpID;
 #define MAX_GAME_WARPS 4
 
@@ -381,6 +386,9 @@ typedef struct {
 
     TinyHash warps[MAX_GAME_WARPS];
     const char* strings[GSTR_SIZE];
+
+    Uint8 num_collisions;
+    CollisionMap* collisions;
 } LevelInfo;
 
 void game_init();

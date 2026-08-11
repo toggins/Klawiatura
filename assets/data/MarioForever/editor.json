@@ -66,16 +66,9 @@
             "sprite": "tiles/block/blue",
             "depth": 20
         },
-        "Solid": {
-            "type": "actor",
-            "id": 1,
-            "sprite": "editor/solid",
-            "depth": 10,
-            "scalable": true
-        },
         "Player Spawn": {
             "type": "actor",
-            "id": 4,
+            "id": 1,
             "sprite": "editor/player_spawn",
             "flags": [
                 {
@@ -86,20 +79,20 @@
         },
         "Item Block": {
             "type": "actor",
-            "id": 27,
+            "id": 24,
             "sprite": "items/block/0",
             "values": [
                 {
                     "name": "Item",
                     "index": 1,
                     "type": "actor",
-                    "default": 24
+                    "default": 21
                 }
             ]
         },
         "Brick Block": {
             "type": "actor",
-            "id": 27,
+            "id": 24,
             "sprite": "items/block/brick",
             "values": [
                 {
@@ -122,7 +115,7 @@
         },
         "Coin Block": {
             "type": "actor",
-            "id": 27,
+            "id": 24,
             "sprite": "editor/coin_block",
             "values": [
                 {
@@ -134,7 +127,7 @@
                     "name": "Item",
                     "index": 1,
                     "type": "actor",
-                    "default": 24
+                    "default": 21
                 }
             ],
             "flags": [
@@ -151,7 +144,7 @@
         },
         "Hidden Block": {
             "type": "actor",
-            "id": 27,
+            "id": 24,
             "sprite": "editor/hidden_block",
             "values": [
                 {
@@ -162,7 +155,7 @@
                     "name": "Item",
                     "index": 1,
                     "type": "actor",
-                    "default": 24
+                    "default": 21
                 }
             ],
             "flags": [

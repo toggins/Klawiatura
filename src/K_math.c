@@ -72,6 +72,15 @@ FRect Radd(FRect a, FVec2 b) {
     return a;
 }
 
+/// Subtract a rectangle by a vector.
+FRect Rsub(FRect a, FVec2 b) {
+    a.start.x -= b.x;
+    a.start.y -= b.y;
+    a.end.x -= b.x;
+    a.end.y -= b.y;
+    return a;
+}
+
 /// Multiply a rectangle by a vector.
 FRect Rmul(FRect a, FVec2 b) {
     const Fixed x1 = a.start.x, y1 = a.start.y, x2 = a.end.x, y2 = a.end.y;

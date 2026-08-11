@@ -1,13 +1,230 @@
 {
-    "label": "$Test",
-    "tracks": ["yi/overworld", "yi/athletic"],
-    "size": [7500, 1440],
-    "bounds": [0, 0, 7500, 480],
-    "time": 360,
+    "tracks": ["one_fine_day", null, null, null],
     "backdrops": [
         {
+            "def": "Grass Top Left",
+            "sprite": "tiles/grass/0",
+            "pos": [0, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [32, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [64, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [96, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [128, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [160, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [192, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [224, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [256, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [288, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [320, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [544, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [576, 416, 20]
+        },
+        {
+            "def": "Grass Top Right",
+            "sprite": "tiles/grass/2",
+            "pos": [608, 416, 20]
+        },
+        {
+            "def": "Grass Left",
+            "sprite": "tiles/grass/3",
+            "pos": [0, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [32, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [64, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [96, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [128, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [160, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [192, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [224, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [256, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [288, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [320, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [544, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [576, 448, 20]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [608, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [544, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [576, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [576, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [416, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [384, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [352, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [320, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [288, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [288, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [288, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [288, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [288, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [352, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [352, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [352, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [352, 384, 20]
+        },
+        {
+            "def": "Gradient Background",
             "pos": [0, 0, 200],
-            "size": [7629, 479],
+            "size": [640, 480],
             "colors": [
                 [59, 123, 163, 255],
                 [59, 123, 163, 255],
@@ -16,920 +233,388 @@
             ]
         },
         {
-            "sprite": "tiles/grass/0",
-            "pos": [0, 416, 20]
+            "def": "Gradient Background",
+            "pos": [0, 0, -100],
+            "size": [640, 480],
+            "colors": [
+                [59, 123, 163, 0],
+                [59, 123, 163, 0],
+                [242, 253, 252, 120],
+                [242, 253, 252, 120]
+            ]
         },
         {
-            "sprite": "tiles/grass/1",
-            "pos": [32, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [64, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [96, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [128, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [160, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [192, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [224, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [256, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [288, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [320, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
+            "def": "Grass Top Right",
+            "sprite": "tiles/grass/2",
             "pos": [352, 416, 20]
         },
         {
-            "sprite": "tiles/grass/1",
-            "pos": [384, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [416, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [448, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [480, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [512, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [544, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [576, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/2",
-            "pos": [608, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/3",
-            "pos": [0, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [32, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [64, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [96, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [128, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [160, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [192, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [224, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [256, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [288, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [320, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
             "pos": [352, 448, 20]
         },
         {
-            "sprite": "tiles/grass/4",
-            "pos": [384, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [416, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [448, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [480, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
+            "def": "Grass Left",
+            "sprite": "tiles/grass/3",
             "pos": [512, 448, 20]
         },
         {
-            "sprite": "tiles/grass/4",
-            "pos": [544, 448, 20]
+            "def": "Grass Top Left",
+            "sprite": "tiles/grass/0",
+            "pos": [512, 416, 20]
         },
         {
-            "sprite": "tiles/grass/4",
-            "pos": [576, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/5",
-            "pos": [608, 448, 20]
-        },
-        {
+            "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [544, 384, 20]
+            "pos": [-32, 0, 20]
         },
         {
+            "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [576, 384, 20]
+            "pos": [-32, 32, 20]
         },
         {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [640, 0, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [640, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [640, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [640, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [640, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [640, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [640, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [640, 224, 20]
+        },
+        {
+            "def": "Brown Block",
             "sprite": "tiles/block/brown",
             "pos": [608, 384, 20]
         },
         {
-            "sprite": "tiles/block/brown",
-            "pos": [576, 352, 20]
-        },
-        {
+            "def": "Brown Block",
             "sprite": "tiles/block/brown",
             "pos": [608, 352, 20]
         },
         {
+            "def": "Brown Block",
             "sprite": "tiles/block/brown",
             "pos": [608, 320, 20]
         },
         {
+            "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [256, 256, 20]
+            "pos": [640, 256, 20]
         },
         {
+            "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [288, 256, 20]
+            "pos": [640, 288, 20]
         },
         {
+            "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [320, 256, 20]
+            "pos": [640, 320, 20]
         },
         {
+            "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [352, 256, 20]
+            "pos": [640, 352, 20]
         },
         {
+            "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [384, 256, 20]
-        },
-        {
-            "sprite": "tiles/pipe/green/v0",
-            "pos": [800, 352, 21]
-        },
-        {
-            "sprite": "tiles/grass/0",
-            "pos": [800, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/2",
-            "pos": [832, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/3",
-            "pos": [800, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/5",
-            "pos": [832, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/0",
-            "pos": [5952, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [5984, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6016, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6048, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6080, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6112, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6144, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6176, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6208, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6240, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6272, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6304, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6336, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6368, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6400, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6432, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6464, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6496, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6528, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6560, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6592, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6624, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6656, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6688, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6720, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6752, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6784, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6816, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6848, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6880, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6912, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6944, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [6976, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7008, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7040, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7072, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7104, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7136, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7168, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7200, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7232, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7264, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7296, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7328, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7360, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7392, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7424, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7456, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/1",
-            "pos": [7488, 416, 20]
-        },
-        {
-            "sprite": "tiles/grass/3",
-            "pos": [5952, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [5984, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6016, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6048, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6080, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6112, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6144, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6176, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6208, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6240, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6272, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6304, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6336, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6368, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6400, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6432, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6464, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6496, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6528, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6560, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6592, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6624, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6656, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6688, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6720, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6752, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6784, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6816, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6848, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6880, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6912, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6944, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [6976, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7008, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7040, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7072, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7104, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7136, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7168, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7200, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7232, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7264, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7296, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7328, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7360, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7392, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7424, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7456, 448, 20]
-        },
-        {
-            "sprite": "tiles/grass/4",
-            "pos": [7488, 448, 20]
-        },
-        {
-            "sprite": "tiles/pipe/green/v0",
-            "pos": [6528, 320, 21]
-        },
-        {
-            "sprite": "tiles/pipe/green/v1",
-            "pos": [6528, 384, 21]
-        },
-        {
-            "sprite": "markers/goal/mark",
-            "pos": [7040, 384, 23]
-        },
-        {
-            "sprite": "markers/goal",
-            "pos": [7200, 128, 23]
+            "pos": [640, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [640, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [640, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [16, 16, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [48, 16, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [16, 48, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [48, 48, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [122, 121, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [154, 121, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [186, 121, 20]
+        }
+    ],
+    "collisions": [
+        {
+            "pos": [-32, 0],
+            "size": [22, 15],
+            "cell_size": [32, 32],
+            "cells": [
+                [1, 13, 1],
+                [2, 13, 1],
+                [3, 13, 1],
+                [4, 13, 1],
+                [5, 13, 1],
+                [6, 13, 1],
+                [7, 13, 1],
+                [8, 13, 1],
+                [9, 13, 1],
+                [10, 13, 1],
+                [11, 13, 1],
+                [18, 13, 1],
+                [19, 13, 1],
+                [20, 13, 1],
+                [1, 14, 1],
+                [2, 14, 1],
+                [3, 14, 1],
+                [4, 14, 1],
+                [5, 14, 1],
+                [6, 14, 1],
+                [7, 14, 1],
+                [8, 14, 1],
+                [9, 14, 1],
+                [10, 14, 1],
+                [11, 14, 1],
+                [18, 14, 1],
+                [19, 14, 1],
+                [20, 14, 1],
+                [18, 12, 1],
+                [19, 12, 1],
+                [19, 11, 1],
+                [14, 8, 1],
+                [13, 8, 1],
+                [12, 8, 1],
+                [11, 8, 1],
+                [10, 8, 1],
+                [10, 7, 1],
+                [10, 6, 1],
+                [10, 5, 1],
+                [10, 4, 1],
+                [12, 9, 1],
+                [12, 10, 1],
+                [12, 11, 1],
+                [12, 12, 1],
+                [12, 13, 1],
+                [12, 14, 1],
+                [17, 14, 1],
+                [17, 13, 1],
+                [0, 0, 1],
+                [0, 1, 1],
+                [0, 2, 1],
+                [0, 3, 1],
+                [0, 4, 1],
+                [0, 5, 1],
+                [0, 6, 1],
+                [0, 7, 1],
+                [0, 8, 1],
+                [0, 9, 1],
+                [0, 10, 1],
+                [0, 11, 1],
+                [0, 12, 1],
+                [21, 0, 1],
+                [21, 1, 1],
+                [21, 2, 1],
+                [21, 3, 1],
+                [21, 4, 1],
+                [21, 5, 1],
+                [21, 6, 1],
+                [21, 7, 1],
+                [20, 12, 1],
+                [20, 11, 1],
+                [20, 10, 1],
+                [21, 8, 1],
+                [21, 9, 1],
+                [21, 10, 1],
+                [21, 11, 1],
+                [21, 12, 1],
+                [0, 13, 1],
+                [0, 14, 1],
+                [21, 13, 1],
+                [21, 14, 1]
+            ]
+        },
+        {
+            "pos": [122, 121],
+            "size": [3, 1],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 0, 1],
+                [1, 0, 1],
+                [2, 0, 1]
+            ]
+        },
+        {
+            "pos": [16, 16],
+            "size": [2, 2],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 0, 1],
+                [1, 0, 1],
+                [0, 1, 1],
+                [1, 1, 1]
+            ]
         }
     ],
     "actors": [
         {
-            "id": 4,
-            "pos": [64, 415]
-        },
-        {
-            "id": 23,
-            "pos": [800, 192]
-        },
-        {
-            "id": 23,
-            "pos": [832, 192]
-        },
-        {
-            "id": 20,
-            "pos": [352, 388]
-        },
-        {
-            "id": 21,
-            "pos": [160, 96]
-        },
-        {
-            "id": 21,
-            "pos": [416, 224]
-        },
-        {
-            "id": 21,
-            "pos": [896, 128]
-        },
-        {
-            "id": 21,
-            "pos": [1686, 141]
-        },
-        {
-            "id": 21,
-            "pos": [1990, 121]
-        },
-        {
-            "id": 21,
-            "pos": [2592, 128]
-        },
-        {
-            "id": 21,
-            "pos": [3200, 128]
-        },
-        {
-            "id": 21,
-            "pos": [3776, 128]
-        },
-        {
-            "id": 21,
-            "pos": [4179, 70]
-        },
-        {
-            "id": 21,
-            "pos": [4738, 119]
-        },
-        {
-            "id": 21,
-            "pos": [5248, 96]
-        },
-        {
-            "id": 21,
-            "pos": [6144, 128]
-        },
-        {
-            "id": 21,
-            "pos": [6432, 96]
-        },
-        {
-            "id": 21,
-            "pos": [6848, 128]
-        },
-        {
-            "id": 22,
-            "pos": [-63, -33, -26],
-            "vel": [-131072]
-        },
-        {
-            "id": 22,
-            "pos": [-63, -16],
-            "vel": [-65536]
-        },
-        {
-            "id": 16,
-            "pos": [0, 432]
-        },
-        {
+            "def": "Player Spawn",
             "id": 1,
-            "pos": [256, 256],
-            "scale": [327680, 65536]
+            "pos": [96, 415]
         },
         {
-            "id": 1,
-            "pos": [0, 416],
-            "scale": [524288, 262144]
+            "def": "Item Block",
+            "id": 24,
+            "pos": [192, 256],
+            "values": [[1, 21]]
         },
         {
-            "id": 1,
-            "pos": [256, 416],
-            "scale": [524288, 262144]
-        },
-        {
-            "id": 1,
-            "pos": [512, 416],
-            "scale": [262144, 262144]
-        },
-        {
-            "id": 1,
-            "pos": [608, 320]
-        },
-        {
-            "id": 1,
-            "pos": [576, 352],
-            "scale": [131072, 65536]
-        },
-        {
-            "id": 1,
-            "pos": [544, 384],
-            "scale": [196608, 65536]
-        },
-        {
-            "id": 1,
-            "pos": [800, 352],
-            "scale": [131072, 524288]
-        },
-        {
-            "id": 1,
-            "pos": [-32, 160],
-            "scale": [65536, 524288]
-        },
-        {
-            "id": 1,
-            "pos": [-32, -96],
-            "scale": [65536, 524288]
-        },
-        {
-            "id": 14,
-            "pos": [864, 160],
-            "vel": [131072, 65536],
-            "values": [[0, 2]]
-        },
-        {
-            "id": 15,
-            "pos": [832, 160],
-            "scale": [65536, 524288],
-            "vel": [131072, 65536]
-        },
-        {
-            "id": 15,
-            "pos": [1280, 160],
-            "scale": [65536, 524288],
-            "vel": [-131072, -65536]
-        },
-        {
-            "id": 14,
-            "pos": [1600, 512],
-            "values": [[0, 5]],
-            "flags": 32
-        },
-        {
-            "id": 14,
-            "pos": [1920, 480],
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [224, 256],
             "values": [
-                [0, 6],
-                [1, 393216]
-            ],
-            "flags": 128
-        },
-        {
-            "id": 15,
-            "pos": [5696, 224],
-            "scale": [65536, 524288]
-        },
-        {
-            "id": 10,
-            "pos": [320, 137]
-        },
-        {
-            "id": 1,
-            "pos": [5952, 416],
-            "scale": [524288, 262144]
-        },
-        {
-            "id": 1,
-            "pos": [6208, 416],
-            "scale": [524288, 262144]
-        },
-        {
-            "id": 1,
-            "pos": [6464, 416],
-            "scale": [524288, 262144]
-        },
-        {
-            "id": 1,
-            "pos": [6720, 416],
-            "scale": [524288, 262144]
-        },
-        {
-            "id": 1,
-            "pos": [6976, 416],
-            "scale": [524288, 262144]
-        },
-        {
-            "id": 1,
-            "pos": [7232, 416],
-            "scale": [524288, 262144]
-        },
-        {
-            "id": 1,
-            "pos": [7488, 416],
-            "scale": [524288, 262144]
-        },
-        {
-            "id": 1,
-            "pos": [7543, 160],
-            "scale": [65536, 524288]
-        },
-        {
-            "id": 1,
-            "pos": [7543, -96],
-            "scale": [65536, 524288]
-        },
-        {
-            "id": 1,
-            "pos": [6528, 320],
-            "scale": [131072, 393216]
-        },
-        {
-            "id": 9,
-            "pos": [832, 351],
-            "values": [
-                [0, 429916160],
-                [1, 20971520],
-                [5, 1]
+                [0, 1],
+                [1, 0]
             ]
         },
         {
-            "id": 12,
-            "pos": [7243, 143],
-            "flags": 32
-        },
-        {
-            "id": 13,
-            "pos": [7073, 384],
-            "scale": [524288, 65536]
-        },
-        {
-            "id": 13,
-            "pos": [7329, 384],
-            "scale": [524288, 65536]
-        },
-        {
-            "id": 27,
-            "pos": [0, 256],
-            "values": [[0, 1]]
-        },
-        {
-            "id": 27,
-            "pos": [32, 256],
-            "values": [[0, 1]]
-        },
-        {
-            "id": 27,
-            "pos": [64, 256],
+            "def": "Coin Block",
+            "id": 24,
+            "pos": [256, 256],
             "values": [
                 [0, 1],
-                [1, 24]
+                [1, 21]
             ],
             "flags": 32
         },
         {
-            "id": 27,
-            "pos": [224, 256],
-            "values": [[1, 24]]
-        },
-        {
-            "id": 27,
-            "pos": [64, 96],
-            "values": [[1, 24]],
-            "flags": 64,
-            "once": true
+            "def": "Hidden Block",
+            "id": 24,
+            "pos": [320, 128],
+            "values": [
+                [0, 1],
+                [1, 2]
+            ],
+            "flags": 224
         }
     ]
 }

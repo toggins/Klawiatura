@@ -441,7 +441,7 @@ GameContext init_game_context(const WorldContext* wctx, TinyHash level) {
 
     if (wctx != NULL) {
         gctx.num_players = wctx->num_players;
-        for (size_t i = 0; i < SDL_arraysize(gctx.players); i++) {
+        for (PlayerID i = 0; i < (PlayerID)SDL_arraysize(gctx.players); i++) {
             GamePlayerContext* gpctx = &gctx.players[i];
             const WorldPlayerContext* wpctx = &wctx->players[i];
 
@@ -554,7 +554,7 @@ static void load_level(TinyHash key) {
     }
 
     jval = yyjson_obj_get(root, "tracks");
-    for (size_t i = 0, n = yyjson_arr_size(jval); i < n && i <= (GSTR_TRACK_END - GSTR_TRACK_START); i++) {
+    for (Uint64 i = 0, n = yyjson_arr_size(jval); i < n && i <= (GSTR_TRACK_END - GSTR_TRACK_START); i++) {
         yyjson_val* jval2 = yyjson_arr_get(jval, i);
         if (!yyjson_is_str(jval2))
             continue;
@@ -566,11 +566,11 @@ static void load_level(TinyHash key) {
     }
 
     jval = yyjson_obj_get(root, "warps");
-    for (size_t i = 0, n = yyjson_arr_size(jval); i < n && i < MAX_GAME_WARPS; i++)
+    for (Uint64 i = 0, n = yyjson_arr_size(jval); i < n && i < MAX_GAME_WARPS; i++)
         level_info->warps[i] = StHashStr(yyjson_get_str(yyjson_arr_get(jval, i)));
 
     jval = yyjson_obj_get(root, "secrets");
-    for (size_t i = 0, n = yyjson_arr_size(jval); i < n && i <= (GSTR_SECRET_END - GSTR_SECRET_START); i++) {
+    for (Uint64 i = 0, n = yyjson_arr_size(jval); i < n && i <= (GSTR_SECRET_END - GSTR_SECRET_START); i++) {
         yyjson_val* jval2 = yyjson_arr_get(jval, i);
         if (!yyjson_is_str(jval2))
             continue;
@@ -610,8 +610,45 @@ static void load_level(TinyHash key) {
 
     read_tilemap(videostate()->tilemap, yyjson_obj_get(root, "backdrops"));
 
+    jval = yyjson_obj_get(root, "collisions");
+    const Uint64 jnum = yyjson_arr_size(jval);
+    level_info->num_collisions = SDL_min(jnum, SDL_MAX_UINT8);
+    level_info->collisions = SDL_calloc(level_info->num_collisions, sizeof(*level_info->collisions));
+    EXPECT(level_info->collisions, "Failed to allocate level \"%s\" collisions", level->name);
+    for (Uint8 i = 0; i < level_info->num_collisions; i++) {
+        yyjson_val* jcmap = yyjson_arr_get(jval, i);
+        if (!yyjson_is_obj(jcmap))
+            continue;
+
+        CollisionMap* cmap = &level_info->collisions[i];
+
+        yyjson_val* jcmval = yyjson_obj_get(jcmap, "pos");
+        cmap->pos.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jcmval, 0)));
+        cmap->pos.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jcmval, 1)));
+
+        jcmval = yyjson_obj_get(jcmap, "size");
+        cmap->size[0] = yyjson_get_uint(yyjson_arr_get(jcmval, 0));
+        cmap->size[1] = yyjson_get_uint(yyjson_arr_get(jcmval, 1));
+
+        jcmval = yyjson_obj_get(jcmap, "cell_size");
+        cmap->cell_size.x = Int2Fx(yyjson_get_uint(yyjson_arr_get(jcmval, 0)));
+        cmap->cell_size.y = Int2Fx(yyjson_get_uint(yyjson_arr_get(jcmval, 1)));
+
+        cmap->grid = SDL_calloc((Uint64)cmap->size[0] * (Uint64)cmap->size[1], sizeof(*cmap->grid));
+        EXPECT(cmap->grid, "Failed to allocate %ux%u collision grid for level \"%s\"", cmap->size[0], cmap->size[1],
+            level->name);
+
+        jcmval = yyjson_obj_get(jcmap, "cells");
+        for (Uint64 j = 0, n = yyjson_arr_size(jcmval); j < n; j++) {
+            yyjson_val* jccell = yyjson_arr_get(jcmval, j);
+            const Uint64 cx = yyjson_get_uint(yyjson_arr_get(jccell, 0)) % cmap->size[0],
+                         cy = yyjson_get_uint(yyjson_arr_get(jccell, 1)) % cmap->size[1];
+            cmap->grid[cx + (cy * cmap->size[0])] = yyjson_get_uint(yyjson_arr_get(jccell, 2));
+        }
+    }
+
     jval = yyjson_obj_get(root, "actors");
-    for (size_t i = 0, n = yyjson_arr_size(jval); i < n && i < MAX_ACTORS; i++) {
+    for (Uint64 i = 0, n = yyjson_arr_size(jval); i < n && i < MAX_ACTORS; i++) {
         yyjson_val* jval2 = yyjson_arr_get(jval, i);
         if (!yyjson_is_obj(jval2))
             continue;
@@ -653,7 +690,7 @@ static void load_level(TinyHash key) {
         }
 
         yyjson_val* jvalues = yyjson_obj_get(jval2, "values");
-        for (size_t j = 0, n = yyjson_arr_size(jvalues); j < n && j < MAX_VALUES; j++) {
+        for (Uint64 j = 0, n = yyjson_arr_size(jvalues); j < n && j < MAX_VALUES; j++) {
             yyjson_val* jvalue = yyjson_arr_get(jvalues, j);
 
             const ActorValue idx = (ActorValue)yyjson_get_uint(yyjson_arr_get(jvalue, 0));
@@ -757,6 +794,10 @@ static void nuke_game_state() {
     if (level_info != NULL) {
         for (GameStringID i = 0; i < (GameStringID)GSTR_SIZE; i++)
             SDL_free((void*)level_info->strings[i]);
+
+        for (Uint8 i = 0; i < level_info->num_collisions; i++)
+            SDL_free(level_info->collisions[i].grid);
+        SDL_free(level_info->collisions);
 
         SDL_free(level_info);
         level_info = NULL;
@@ -1869,6 +1910,38 @@ void collide_actor(GameActor* actor) {
 }
 
 Bool touching_solid(const FRect rect, SolidFlags types) {
+    for (Uint8 i = 0; i < level_info->num_collisions; i++) {
+        const CollisionMap* cmap = &level_info->collisions[i];
+        if (!Rcollide(rect, (FRect){cmap->pos, Vadd(cmap->pos, (FVec2){cmap->size[0] * cmap->cell_size.x,
+                                                                   cmap->size[1] * cmap->cell_size.y})}))
+        {
+            continue;
+        }
+
+        const FRect orect = Rsub(rect, cmap->pos);
+        Sint32 cx1 = (orect.start.x - cmap->cell_size.x) / cmap->cell_size.x,
+               cy1 = (orect.start.y - cmap->cell_size.y) / cmap->cell_size.y;
+        Sint32 cx2 = (orect.end.x + cmap->cell_size.x) / cmap->cell_size.x,
+               cy2 = (orect.end.y + cmap->cell_size.y) / cmap->cell_size.y;
+        cx1 = SDL_clamp(cx1, 0, cmap->size[0] - 1);
+        cy1 = SDL_clamp(cy1, 0, cmap->size[1] - 1);
+        cx2 = SDL_clamp(cx2, 0, cmap->size[0] - 1);
+        cy2 = SDL_clamp(cy2, 0, cmap->size[1] - 1);
+
+        for (Sint32 cx = cx1; cx <= cx2; cx++) {
+            for (Sint32 cy = cy1; cy <= cy2; cy++) {
+                const SolidFlags solid = cmap->grid[cx + (cy * cmap->size[0])];
+                if (!(solid & types) || (solid & SOL_SLOPE))
+                    continue;
+
+                const FVec2 cpos = (FVec2){cx * cmap->cell_size.x, cy * cmap->cell_size.y};
+                const FRect crect = (FRect){cpos, Vadd(cpos, cmap->cell_size)};
+                if (Rcollide(orect, crect))
+                    return TRUE;
+            }
+        }
+    }
+
     Sint32 cx1 = (rect.start.x - CELL_SIZE) / CELL_SIZE, cy1 = (rect.start.y - CELL_SIZE) / CELL_SIZE;
     Sint32 cx2 = (rect.end.x + CELL_SIZE) / CELL_SIZE, cy2 = (rect.end.y + CELL_SIZE) / CELL_SIZE;
     cx1 = SDL_clamp(cx1, 0, MAX_CELLS - 1);
@@ -2014,6 +2087,65 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
             }
         }
 
+        abox = Radd(actor->box, npos);
+        for (Uint8 i = 0; i < level_info->num_collisions; i++) {
+            const CollisionMap* cmap = &level_info->collisions[i];
+            if (!Rcollide(abox, (FRect){cmap->pos, Vadd(cmap->pos, (FVec2){cmap->size[0] * cmap->cell_size.x,
+                                                                       cmap->size[1] * cmap->cell_size.y})}))
+            {
+                continue;
+            }
+
+            const FRect orect = Rsub(abox, cmap->pos);
+            Sint32 cx1 = (orect.start.x - cmap->cell_size.x) / cmap->cell_size.x,
+                   cy1 = (orect.start.y - cmap->cell_size.y) / cmap->cell_size.y;
+            Sint32 cx2 = (orect.end.x + cmap->cell_size.x) / cmap->cell_size.x,
+                   cy2 = (orect.end.y + cmap->cell_size.y) / cmap->cell_size.y;
+            cx1 = SDL_clamp(cx1, 0, cmap->size[0] - 1);
+            cy1 = SDL_clamp(cy1, 0, cmap->size[1] - 1);
+            cx2 = SDL_clamp(cx2, 0, cmap->size[0] - 1);
+            cy2 = SDL_clamp(cy2, 0, cmap->size[1] - 1);
+
+            for (Sint32 cx = cx1; cx <= cx2; cx++) {
+                for (Sint32 cy = cy1; cy <= cy2; cy++) {
+                    const SolidFlags solid = cmap->grid[cx + (cy * cmap->size[0])];
+                    if (!(solid & SOL_SOLID) || (solid & SOL_SLOPE))
+                        continue;
+
+                    const FVec2 cpos = Vadd(cmap->pos, (FVec2){cx * cmap->cell_size.x, cy * cmap->cell_size.y});
+                    const FRect cbox = (FRect){cpos, Vadd(cpos, cmap->cell_size)};
+                    if (!Rcollide(abox, cbox))
+                        continue;
+
+                    if (actor->vel.y >= Fx0 && (npos.y + actor->box.end.y - climb) < cbox.start.y) {
+                        const Fixed step = cbox.start.y - actor->box.end.y;
+                        const FRect solid = Radd(Radd(actor->box, npos), (FVec2){right ? Fx1 : -Fx1, Fx0});
+
+                        if (!touching_solid(solid, SOL_SOLID)) {
+                            npos.y = step;
+                            actor->vel.y = Fx0;
+                            TOUCH_ON(actor, TOUCH_BOTTOM);
+
+                            climbed = TRUE;
+                            goto da_climbed;
+                        }
+
+                        continue;
+                    }
+
+                    if (right) {
+                        npos.x = Fmin(npos.x, cbox.start.x - actor->box.end.x);
+                        stop |= actor->vel.x >= Fx0;
+                    } else {
+                        npos.x = Fmax(npos.x, cbox.end.x - actor->box.start.x);
+                        stop |= actor->vel.x <= Fx0;
+                    }
+
+                    climbed = FALSE;
+                }
+            }
+        }
+
     da_climbed:
         if (stop) {
             if (!climbed)
@@ -2096,6 +2228,83 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 
                         ACTOR_CALL(displacer, on_top, actor);
                         npos.y = Fmin(npos.y, displacer->pos.y + displacer->box.start.y - actor->box.end.y);
+                        stop |= actor->vel.y >= Fx0;
+                    }
+                }
+            }
+        }
+
+        abox = Radd(actor->box, npos);
+        for (Uint8 i = 0; i < level_info->num_collisions; i++) {
+            const CollisionMap* cmap = &level_info->collisions[i];
+            if (!Rcollide(abox, (FRect){cmap->pos, Vadd(cmap->pos, (FVec2){cmap->size[0] * cmap->cell_size.x,
+                                                                       cmap->size[1] * cmap->cell_size.y})}))
+            {
+                continue;
+            }
+
+            const FRect orect = Rsub(abox, cmap->pos);
+            cx1 = (orect.start.x - cmap->cell_size.x) / cmap->cell_size.x;
+            cy1 = (orect.start.y - cmap->cell_size.y) / cmap->cell_size.y;
+            cx2 = (orect.end.x + cmap->cell_size.x) / cmap->cell_size.x;
+            cy2 = (orect.end.y + cmap->cell_size.y) / cmap->cell_size.y;
+            cx1 = SDL_clamp(cx1, 0, cmap->size[0] - 1);
+            cy1 = SDL_clamp(cy1, 0, cmap->size[1] - 1);
+            cx2 = SDL_clamp(cx2, 0, cmap->size[0] - 1);
+            cy2 = SDL_clamp(cy2, 0, cmap->size[1] - 1);
+
+            for (Sint32 cx = cx1; cx <= cx2; cx++) {
+                for (Sint32 cy = cy1; cy <= cy2; cy++) {
+                    const SolidFlags solid = cmap->grid[cx + (cy * cmap->size[0])];
+                    if (solid <= 0)
+                        continue;
+
+                    const FVec2 cpos = Vadd(cmap->pos, (FVec2){cx * cmap->cell_size.x, cy * cmap->cell_size.y});
+                    const FRect cbox = (FRect){cpos, Vadd(cpos, cmap->cell_size)};
+                    if (!Rcollide(abox, cbox))
+                        continue;
+
+                    if (solid & SOL_SLOPE) {
+                        if (actor->vel.y < Fx0) {
+                            if ((solid & SOL_Y_FLIP) || npos.y < cbox.end.y)
+                                continue;
+
+                            npos.y = Fmax(npos.y, cbox.end.y - actor->box.start.y);
+                            stop |= actor->vel.y <= Fx0;
+                        } else {
+                            const Fixed width = Fabs(cbox.end.x - cbox.start.x);
+                            if (width == Fx0)
+                                continue;
+
+                            const Bool side = (solid & SOL_X_FLIP) == SOL_X_FLIP;
+                            const Fixed sa = side ? cbox.start.y : cbox.end.y, sb = side ? cbox.end.y : cbox.start.y,
+                                        ax = npos.x + (side ? actor->box.start.x : actor->box.end.x), sx = cbox.start.x;
+
+                            const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - sx, width), Fx0, Fx1));
+                            if ((npos.y + actor->box.end.y + Fabs(actor->vel.x)) >= slope) {
+                                npos.y = slope - actor->box.end.y;
+                                stop = TRUE;
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    if (actor->vel.y < Fx0) {
+                        if (!(solid & SOL_SOLID))
+                            continue;
+
+                        npos.y = Fmax(npos.y, cbox.end.y - actor->box.start.y);
+                        stop |= actor->vel.y <= Fx0;
+                    } else {
+                        if (!(solid & SOL_ALL)
+                            || ((solid & SOL_TOP)
+                                && (npos.y + actor->box.end.y - actor->vel.y) > (cbox.start.y + climb)))
+                        {
+                            continue;
+                        }
+
+                        npos.y = Fmin(npos.y, cbox.start.y - actor->box.end.y);
                         stop |= actor->vel.y >= Fx0;
                     }
                 }
