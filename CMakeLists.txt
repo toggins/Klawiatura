@@ -195,10 +195,14 @@ FetchContent_MakeAvailable(GekkoNet)
 list(APPEND LIBS GekkoNet)
 
 # Discord Social SDK (1.9.15332)
-set(KLAW_DISCORD OFF CACHE INTERNAL "Use Discord Social SDK")
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/discord EXCLUDE_FROM_ALL SYSTEM)
+option(KLAW_DISCORD "Use Discord Social SDK")
+
 if(KLAW_DISCORD)
+    message(NOTICE "Adding Discord integration")
+    add_subdirectory(${CMAKE_SOURCE_DIR}/external/discord EXCLUDE_FROM_ALL SYSTEM)
     list(APPEND LIBS discord)
+else()
+    message(NOTICE "Skipping Discord integration (set KLAW_DISCORD to use it!)")
 endif()
 
 # Dear Bindings/Dear ImGui (v1.92.9)
