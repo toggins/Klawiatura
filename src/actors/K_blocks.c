@@ -160,6 +160,8 @@ static void create(GameActor* actor) {
 }
 
 static void pre_tick(GameActor* actor) {
+    actor->box.end.y = Int2Fx(32) + (Fixed)ANY_FLAG(actor, FLG_BLOCK_HIDDEN);
+
     if (VAL(actor, BLOCK_BUMP) > 0) {
         ++VAL(actor, BLOCK_BUMP);
         if (VAL(actor, BLOCK_BUMP)
@@ -283,16 +285,15 @@ static void draw(const GameActor* actor) {
 }
 
 static void collide(GameActor* actor, GameActor* from) {
-    if (from->type != ACT_PLAYER || !ANY_FLAG(actor, FLG_BLOCK_HIDDEN) || from->vel.y >= Fx0
+    if (from->type != ACT_PLAYER || !ANY_FLAG(actor, FLG_BLOCK_HIDDEN) || from->vel.y > Fx0
         || (from->last_pos.y + from->box.start.y) < (actor->pos.y + actor->box.end.y))
     {
         return;
     }
 
     FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
-    move_actor(from, (FVec2){from->pos.x, actor->pos.y + actor->box.end.y - from->box.start.y});
-    from->vel.y = Fx0;
-    TOUCH_ON(from, TOUCH_TOP);
+    actor->box.end.y = Int2Fx(32);
+    move_actor(from, (FVec2){from->pos.x, Fmax(from->pos.y, actor->pos.y + actor->box.end.y - from->box.start.y)});
 
     GamePlayer* player = get_player(from->player);
     bump_block(actor, from, player != NULL && player->powerup != POW_NONE);
