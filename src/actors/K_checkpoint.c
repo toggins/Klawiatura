@@ -123,6 +123,12 @@ static void collide(GameActor* actor, GameActor* from) {
         effect->vel.y = Int2Fx(-10);
 
     game_state->checkpoint = actor->id;
+
+    // !!! CLIENT-SIDE !!!
+    const PlayerID local = localplayer();
+    if (local >= MAX_PLAYERS || viewplayer() != local)
+        set_view_player(get_player(actor->player));
+    // !!! CLIENT-SIDE !!!
 }
 
 const ActorTable TAB_CHECKPOINT = {
