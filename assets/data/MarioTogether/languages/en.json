@@ -88,7 +88,7 @@
     "map.press": "Press {0}",
     "map.waiting_for_leader": "Waiting for leader",
 
-    "hud_world": "World",
+    "hud.world": "World",
     "hud.world.koopa_the_devastator": "ui/world/en/koopa_the_devastator",
     "hud.world.hardcore_1_1": "ui/world/en/hardcore_1_1",
     "hud.world.hardcore_1_2": "ui/world/en/hardcore_1_2",
