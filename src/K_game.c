@@ -1054,7 +1054,8 @@ void tick_game() {
             if (!is_leader())
                 return;
 
-            if (get_sequence()->type == GS_LOSE) {
+            const GameSequence* sequence = get_sequence();
+            if (sequence->type == GS_LOSE) {
                 GameContext ctx = game_context;
                 ctx.seed = SDL_GetTicksNS();
                 ctx.flags |= GF_RESTARTED;
@@ -1072,6 +1073,8 @@ void tick_game() {
 
             WorldContext ctx = *worldcontext();
             ++ctx.level;
+            if (sequence->type == GS_WIN)
+                ctx.winner = sequence->activator;
             for (PlayerID i = 0; i < ctx.num_players; i++) {
                 ctx.players[i].lives = game_state->players[i].lives;
                 ctx.players[i].coins = game_state->players[i].coins;
