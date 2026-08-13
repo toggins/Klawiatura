@@ -166,6 +166,7 @@ enum {
     STF_EQUAL,
     STF_GREATER_OR_EQUAL,
     STF_GREATER,
+    STF_NOT_EQUAL,
     STF_ALWAYS,
 };
 

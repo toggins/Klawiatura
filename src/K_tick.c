@@ -2,6 +2,7 @@
 
 #include "K_game.h"
 #include "K_input.h"
+#include "K_interface.h"
 #include "K_tick.h"
 
 static Uint64 last_time = 0;
@@ -18,7 +19,9 @@ void new_frame() {
     delta_ticks = ((float)(current_time - last_time) * ((float)TICKRATE - SDL_clamp(ahead, 0.f, 1.f))) / 1000000000.f;
     last_time = current_time;
 
-    pending_ticks += delta_ticks, total_ticks += delta_ticks;
+    pending_ticks += delta_ticks;
+    if (!screen_is_transitioning())
+        total_ticks += delta_ticks;
 }
 
 Bool got_ticks() {

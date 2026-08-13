@@ -42,13 +42,6 @@ typedef struct {
 } MapCamera;
 
 typedef struct {
-    float frame;
-    struct {
-        float from, to, frame;
-    } interp;
-} MapTransition;
-
-typedef struct {
     Uint8 appear;
     Bool cross;
     Sint32 pos[2];
@@ -59,14 +52,13 @@ typedef struct {
 } MapPathNode;
 
 typedef struct {
-    Uint8 ambush;
+    Uint8 enter, ambush;
     Uint16 size[2];
     Sint32 water[4];
 
     MapLabel label;
     MapPlayer player;
     MapCamera camera;
-    MapTransition transition;
 
     TinyHash level;
     size_t current_node;
@@ -209,7 +201,7 @@ static void start(const void* secret, size_t secret_size) {
     // START OF MAP FRAME
     // ==================
 
-    map_state->surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
+    map_state->surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, FALSE);
 
     if (map_state->path != NULL) {
         MapLabel* label = &map_state->label;
@@ -260,7 +252,7 @@ static void end() {
 }
 
 static void tick() {
-    if (topui() == NULL && kb_pressed(KB_PAUSE)) {
+    if (topui() == NULL && kb_pressed(KB_PAUSE) && map_state->path != NULL) {
         create_ui(UI_PAUSE, NULL);
         if (!is_connected())
             return;
@@ -324,21 +316,19 @@ static void tick() {
                 }
             }
 
-            MapTransition* transition = &map_state->transition;
-            if (transition->frame <= 0.f) {
+            if (map_state->enter <= 0) {
                 can_move = TRUE;
 
                 if (kb_pressed(KB_JUMP) && is_leader()) {
                     fade_generic_track(0.f, 25.f);
-                    transition->frame += 1.f;
+                    ++map_state->enter;
                 }
             } else {
-                transition->frame += 1.f;
+                ++map_state->enter;
 
-                if (transition->frame == 25.f)
-                    play_generic_sound("ui/enter", 0);
+                if (map_state->enter >= 25) {
+                    play_generic_sound("ui/enter", PLAY_SYSTEM);
 
-                if (transition->frame >= 70.f) {
                     const Level* level = get_level_key(map_state->level);
                     if (level == NULL) {
                         WorldContext wctx = *worldcontext();
@@ -421,16 +411,8 @@ static void tick() {
                 point->appear += player->appear_speed;
             }
         }
-    } else {
-        MapTransition* transition = &map_state->transition;
-        if (transition->frame <= 0.f) {
-            if (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE))
-                transition->frame += 1.f;
-        } else {
-            transition->frame += 1.f;
-            if (transition->frame > 101.f)
-                set_screen(SCR_MENU, NULL, 0);
-        }
+    } else if (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE)) {
+        set_screen(SCR_MENU, TRANS_FADE, 101.5f, NULL, 0);
     }
 
     if (can_move) {
@@ -447,7 +429,6 @@ static void pre_interp() {
     MapLabel* label = &map_state->label;
     MapPlayer* player = &map_state->player;
     MapCamera* camera = &map_state->camera;
-    MapTransition* transition = &map_state->transition;
 
     const int fps = get_framerate();
     if (fps > 0 && fps <= TICKRATE) {
@@ -463,8 +444,6 @@ static void pre_interp() {
 
         camera->interp.from[0] = camera->interp.to[0] = camera->interp.pos[0] = camera->pos[0];
         camera->interp.from[1] = camera->interp.to[1] = camera->interp.pos[1] = camera->pos[1];
-
-        transition->interp.from = transition->interp.to = transition->interp.frame = transition->frame;
 
         return;
     }
@@ -488,9 +467,6 @@ static void pre_interp() {
     camera->interp.from[1] = camera->interp.to[1];
     camera->interp.to[0] = camera->pos[0];
     camera->interp.to[1] = camera->pos[1];
-
-    transition->interp.from = transition->interp.to;
-    transition->interp.to = transition->frame;
 }
 
 static void interp() {
@@ -501,7 +477,6 @@ static void interp() {
     MapLabel* label = &map_state->label;
     MapPlayer* player = &map_state->player;
     MapCamera* camera = &map_state->camera;
-    MapTransition* transition = &map_state->transition;
     const float t = pendingticks();
 
     label->interp.y = glm_lerp(label->interp.from, label->interp.to, t);
@@ -516,13 +491,10 @@ static void interp() {
 
     camera->interp.pos[0] = glm_lerp(camera->interp.from[0], camera->interp.to[0], t);
     camera->interp.pos[1] = glm_lerp(camera->interp.from[1], camera->interp.to[1], t);
-
-    transition->interp.frame = glm_lerp(transition->interp.from, transition->interp.to, t);
 }
 
 static void draw_ui() {
     push_surface(map_state->surface);
-    clear_depth(1.f);
 
     batch_filter(FALSE);
 
@@ -583,9 +555,6 @@ static void draw_ui() {
     }
 
     // HUD
-    batch_test_depth(FALSE);
-    batch_write_depth(FALSE);
-
     glm_ortho(0.f, SCREEN_WIDTH, 0.f, -SCREEN_HEIGHT, -16000.f, 16000.f, proj);
     set_projection_matrix(proj);
     apply_matrices();
@@ -604,54 +573,20 @@ static void draw_ui() {
     batch_pos(B_F3_SCREEN);
     batch_sprite("ui/map/logo");
 
-    // Transition
-    const float transition = map_state->transition.interp.frame;
-    if (transition <= 0.f) {
-        if (map_state->path != NULL && map_state->current_node >= TinyDLength(map_state->path)
-            && SDL_fmodf(totalticks(), 25.f) < 12.5f)
-        {
-            batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 24.f));
-            batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-            if (is_leader()) {
-                batch_colors(B_U4X4_GREEN);
-                batch_string("header", 32.f, LFMT("map.press", 's', kb_label(KB_JUMP)));
-            } else {
-                batch_colors(B_U4X4_WHITE);
-                batch_string("header", 32.f, LFMT("map.waiting_for_leader"));
-            }
-        }
-    } else if (map_state->path == NULL) {
-        batch_pos(B_F3_0);
-        batch_color(B_U4(0, 0, 0, (transition > 101.f) ? 255 : ((transition / 101.f) * 255.f)));
-        batch_rectangle(NULL, B_F2_SCREEN);
-    } else if (transition > 25.f) {
-        if (transition >= 70.f) {
-            batch_pos(B_F3_0);
-            batch_color(B_U4_BLACK);
-            batch_rectangle(NULL, B_F2_SCREEN);
+    if (map_state->enter <= 0 && map_state->path != NULL && map_state->current_node >= TinyDLength(map_state->path)
+        && SDL_fmodf(totalticks(), 25.f) < 12.5f)
+    {
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 24.f));
+        batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+        if (is_leader()) {
+            batch_colors(B_U4X4_GREEN);
+            batch_string("header", 32.f, LFMT("map.press", 's', kb_label(KB_JUMP)));
         } else {
-            clear_stencil(0);
-
-            batch_write_color(FALSE, FALSE, FALSE, FALSE);
-            batch_test_stencil(TRUE);
-            batch_stencil_func(STF_ALWAYS, 1, 1);
-            batch_stencil_op(STO_REPLACE, STO_REPLACE, STO_REPLACE);
-            batch_pos(B_F3_HALF_SCREEN);
-            batch_color(B_U4_WHITE);
-            batch_circle(NULL, (1.f - ((transition - 25.f) / 45.f)) * 400.f);
-            batch_write_color(TRUE, TRUE, TRUE, TRUE);
-
-            batch_stencil_func(STF_GREATER, 1, 1);
-            batch_stencil_op(STO_KEEP, STO_KEEP, STO_KEEP);
-            batch_pos(B_F3_0);
-            batch_color(B_U4_BLACK);
-            batch_rectangle(NULL, B_F2_SCREEN);
-            batch_test_stencil(FALSE);
+            batch_colors(B_U4X4_WHITE);
+            batch_string("header", 32.f, LFMT("map.waiting_for_leader"));
         }
     }
 
-    batch_write_depth(TRUE);
-    batch_test_depth(TRUE);
     batch_filter(TRUE);
 
     pop_surface();

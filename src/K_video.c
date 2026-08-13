@@ -120,6 +120,7 @@ void video_init(Bool force_shader) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 #endif
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
     // Window
     WINDOW = SDL_CreateWindow(
@@ -864,6 +865,9 @@ void batch_stencil_func(StencilFunction stencil_func, Uint8 stencil_func_ref, Ui
     case STF_GREATER:
         func = GL_GREATER;
         break;
+    case STF_NOT_EQUAL:
+        func = GL_NOTEQUAL;
+        break;
     }
     glStencilFunc(func, batch.stencil_func_ref, batch.stencil_func_mask);
 }
@@ -921,8 +925,8 @@ void batch_reset_hard() {
     batch_stencil(B_F4_0);
     batch_blend(BM_NORMAL);
     batch_write_color(TRUE, TRUE, TRUE, TRUE);
-    batch_test_depth(TRUE);
-    batch_write_depth(TRUE);
+    batch_test_depth(FALSE);
+    batch_write_depth(FALSE);
     batch_test_stencil(FALSE);
     batch_stencil_mask(255);
     batch_stencil_func(STF_ALWAYS, 0, 255);
@@ -1479,7 +1483,7 @@ void batch_string_wrap(const char* name, float size, const char* str, float wrap
 }
 
 static void apply_batch() {
-    if (current_surface != NULL && current_surface->enabled[SURF_DEPTH]) {
+    if (current_surface == NULL || current_surface->enabled[SURF_DEPTH]) {
         (batch.test_depth ? glEnable : glDisable)(GL_DEPTH_TEST);
         (batch.test_stencil ? glEnable : glDisable)(GL_STENCIL_TEST);
     } else {

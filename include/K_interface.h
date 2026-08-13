@@ -25,7 +25,16 @@ enum {
     SCR_GAME,
     SCR_EDITOR,
 
-    SCR_SIZE,
+    SCR_EXIT,
+    SCR_SIZE = SCR_EXIT,
+};
+
+typedef Uint8 TransitionType;
+enum {
+    TRANS_NONE,
+    TRANS_CIRCLE,
+    TRANS_FADE,
+    TRANS_SIZE,
 };
 
 typedef struct {
@@ -106,10 +115,10 @@ typedef struct {
 } Catalog;
 
 void interface_init(), interface_event(SDL_Event*), interface_update(), interface_teardown();
-void permadeath();
 
 ScreenType get_screen();
-void set_screen(ScreenType, const void*, size_t);
+void set_screen(ScreenType, TransitionType, float, const void*, size_t);
+Bool screen_is_transitioning();
 
 void boot_to_menu(const char*);
 

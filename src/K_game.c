@@ -470,7 +470,7 @@ void jump_to_game(const GameContext* ctx, Bool as_host) {
     if (level == NULL) {
         if (get_screen() != SCR_MENU) {
             bail_from_game();
-            set_screen(SCR_MENU, NULL, 0);
+            set_screen(SCR_MENU, TRANS_NONE, 0.f, NULL, 0);
         }
 
         WTF("Invalid level key %" SDL_PRIu64, ctx->level);
@@ -478,7 +478,20 @@ void jump_to_game(const GameContext* ctx, Bool as_host) {
     }
 
     spread_game_packet(ctx);
-    set_screen(SCR_GAME, ctx, sizeof(*ctx));
+
+    switch (get_screen()) {
+    default: {
+        set_screen(SCR_GAME, TRANS_NONE, 0.f, ctx, sizeof(*ctx));
+        break;
+    }
+
+    case SCR_MENU:
+    case SCR_MAP: {
+        fade_generic_track(0.f, 25.f);
+        set_screen(SCR_GAME, TRANS_CIRCLE, 45.f, ctx, sizeof(*ctx));
+        break;
+    }
+    }
 }
 
 // =====
@@ -757,7 +770,7 @@ void start_game(const GameContext* ctx) {
     local_player = populate_game(game_session, game_context.num_players);
 
     // Surface
-    game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, TRUE);
+    game_surface = create_surface(SCREEN_WIDTH, SCREEN_HEIGHT, TRUE, FALSE);
 
     // Initial game state
     game_state->seed = game_context.seed;
@@ -1267,7 +1280,6 @@ static void draw_game_state() {
 
     get_view_matrix(oview);
 
-    clear_depth(1.f);
     batch_filter(FALSE);
 
     const GamePlayer* player = get_player(view_player);
@@ -1320,9 +1332,6 @@ static void draw_game_state() {
 
     if (player == NULL)
         goto dgs_no_hud;
-
-    batch_write_depth(FALSE);
-    batch_test_depth(FALSE);
 
     for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
         ACTOR_CALL(actor, draw_hud);
@@ -1403,9 +1412,6 @@ static void draw_game_state() {
         batch_align(B_ALIGN_CENTER);
         batch_string("hud", 16.f, LFMT("hud.game_over"));
     }
-
-    batch_test_depth(TRUE);
-    batch_write_depth(TRUE);
 
 dgs_no_hud:
     batch_filter(TRUE);

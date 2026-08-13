@@ -42,9 +42,9 @@ static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_menu(), kick_playe
 static const char *fmt_max_peers(size_t), *fmt_visibility(size_t), *fmt_lobby(), *fmt_character(size_t),
     *fmt_powerup(size_t), *fmt_enter_as(size_t), *fmt_world(size_t), *fmt_start(size_t), *fmt_kick_player(size_t),
     *fmt_test_level(size_t);
-static void multiplayer_option(), options_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8), host_option(),
-    character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option(), world_cycle(Sint8),
-    start_option(), go_to_editor_option(), test_level_cycle(Sint8), test_level_option();
+static void multiplayer_option(), options_option(), exit_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8),
+    host_option(), character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option(),
+    world_cycle(Sint8), start_option(), go_to_editor_option(), test_level_cycle(Sint8), test_level_option();
 
 static Catalog CATALOG = {
 	.current = MEN_MAIN,
@@ -102,7 +102,7 @@ static Catalog CATALOG = {
 #endif
 			{.name = "option.options", .callback = options_option},
 #ifndef SDL_PLATFORM_EMSCRIPTEN
-			{.name = "option.exit", .callback = permadeath},
+			{.name = "option.exit", .callback = exit_option},
 #endif
 		},
 
@@ -621,6 +621,11 @@ static void options_option() {
     create_ui(UI_OPTIONS, NULL);
 }
 
+static void exit_option() {
+    fade_generic_track(0.f, 25.f);
+    set_screen(SCR_EXIT, TRANS_CIRCLE, 50.f, NULL, 0);
+}
+
 static const char* fmt_test_level(size_t idx) {
     (void)idx;
 
@@ -646,7 +651,7 @@ static void test_level_option() {
 }
 
 static void go_to_editor_option() {
-    set_screen(SCR_EDITOR, NULL, 0);
+    set_screen(SCR_EDITOR, TRANS_NONE, 0.f, NULL, 0);
 }
 
 // ======
@@ -657,6 +662,7 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite("ui/backgrounds/main", AKL_NEVER);
     load_sprite("ui/backgrounds/options", AKL_NEVER);
     load_sprite("logos/mario_forever", AKL_NEVER);
+    load_sound("ui/enter", AKL_ONCE);
     load_sound("ui/connect", AKL_NEVER);
     load_sound("ui/disconnect", AKL_NEVER);
     load_track("doxeh_remix", AKL_NEVER);
@@ -699,6 +705,7 @@ s_no_secret:
     }
 
     play_generic_track("doxeh_remix", PLAY_LOOPING, 0);
+    fade_generic_track(1.f, 100.f);
 }
 
 static void end() {
@@ -715,7 +722,7 @@ static void draw_ui() {
     const UI* ui = topui();
     if (CATALOG.current == MEN_MAIN && ui == NULL) {
         batch_sprite("ui/backgrounds/main");
-        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 116.f));
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 124.f + SDL_roundf(SDL_sinf(totalticks() * 0.03f) * 8.f)));
         batch_sprite("logos/mario_forever");
     } else {
         batch_sprite("ui/backgrounds/options");
