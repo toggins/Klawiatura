@@ -209,7 +209,9 @@
     "message.replay_version_mismatch": "Replay was recorded under a different version.",
     "message.replay_hash_mismatch": "Replay was recorded with different mods.",
 
-    "menu.credits": "DISCLAIMER:  This is a free, open-source project not created for any sort of profit. We do not condone any commercial use of this project. Mario and related characters (c) Nintendo.      CREDITS:  [MARIO FOREVER] Michal Gdaniec, Maurycy Zarzycki, Lukham    [PROGRAMMING] toggins, nonk    [BETA TESTING] Collin, CST1229, Jaydex, LooPeR231, Mightcer, miyameon, Nerton17, ReflexGURU, SerafimGWS, Usered    [SPECIAL THANKS] HeatXD, Xykijun      Also check out Mario Forever: Community Edition at mfce.rnx.su!",
+    "logo.disclaimer": "logos/disclaimer/en",
+
+    "menu.credits": "CREDITS   -   MARIO FOREVER: Michal Gdaniec, Maurycy Zarzycki, Lukham   -   PROGRAMMING: toggins, nonk   -   BETA TESTING: Collin, CST1229, Jaydex, LooPeR231, Mightcer, miyameon, Nerton17, ReflexGURU, SerafimGWS, Usered   -   SPECIAL THANKS: HeatXD, Xykijun   -   Also check out Mario Forever: Community Edition at mfce.rnx.su!",
     "menu.back": "Back",
     "menu.submit": "Submit",
     "menu.close": "Close",

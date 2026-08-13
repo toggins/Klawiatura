@@ -623,7 +623,7 @@ static void options_option() {
 
 static void exit_option() {
     fade_generic_track(0.f, 25.f);
-    set_screen(SCR_EXIT, TRANS_CIRCLE, 50.f, NULL, 0);
+    set_screen(SCR_EXIT, TRANS_CIRCLE, 50.5f, NULL, 0);
 }
 
 static const char* fmt_test_level(size_t idx) {
@@ -732,6 +732,16 @@ static void draw_ui() {
         return;
 
     draw_catalog(&CATALOG);
+
+    if (CATALOG.current == MEN_MAIN) {
+        const float t = totalticks();
+        if (t < 45.f) {
+            batch_reset();
+            batch_pos(B_F3_XY(-1000.f, -1000.f));
+            batch_color(B_U4_ALPHA((1.f - (t / 45.f)) * 255.f));
+            batch_rectangle(NULL, B_F2_S(3000.f));
+        }
+    }
 }
 
 const ScreenTable TAB_MENU = {

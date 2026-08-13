@@ -240,9 +240,6 @@ iu_dont_change:
             break;
 
         case TRANS_CIRCLE: {
-            int width = 1, height = 1;
-            get_resolution(&width, &height);
-
             batch_write_color(FALSE, FALSE, FALSE, FALSE);
             batch_test_stencil(TRUE);
 
@@ -252,17 +249,21 @@ iu_dont_change:
             batch_stencil_op(STO_REPLACE, STO_REPLACE, STO_REPLACE);
             batch_pos(B_F3_HALF_SCREEN);
             batch_color(B_U4_WHITE);
+
+            int width = 1, height = 1;
+            get_resolution(&width, &height);
             batch_circle(
                 NULL, (1.f - (to_transition_time[0] / to_transition_time[1]))
                           * ((((float)width / (float)height) / ((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT))
                               * (SDL_sqrtf((SCREEN_WIDTH * SCREEN_WIDTH) + (SCREEN_HEIGHT * SCREEN_HEIGHT)) * 0.5f)));
+
             batch_write_color(TRUE, TRUE, TRUE, TRUE);
 
             batch_stencil_func(STF_NOT_EQUAL, 1, 255);
             batch_stencil_op(STO_KEEP, STO_KEEP, STO_KEEP);
             batch_pos(B_F3_XY(-1000.f, -1000.f));
             batch_color(B_U4_BLACK);
-            batch_rectangle(NULL, B_F2(3000.f, 3000.f));
+            batch_rectangle(NULL, B_F2_S(3000.f));
             batch_test_stencil(FALSE);
             break;
         }
@@ -270,7 +271,7 @@ iu_dont_change:
         case TRANS_FADE: {
             batch_pos(B_F3_XY(-1000.f, -1000.f));
             batch_color(B_U4(0, 0, 0, (to_transition_time[0] / to_transition_time[1]) * 255.f));
-            batch_rectangle(NULL, B_F2(3000.f, 3000.f));
+            batch_rectangle(NULL, B_F2_S(3000.f));
             break;
         }
         }
