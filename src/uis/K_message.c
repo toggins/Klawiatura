@@ -14,7 +14,6 @@ static void create(UI* ui) {
     UI_ALLOC_DATA(ui, UIMessageData);
     UIMessageData* userdata = ui->userdata;
     userdata->verb = "close";
-    userdata->font = "header";
     userdata->size = 32.f;
 }
 
@@ -62,8 +61,8 @@ static void draw(const UI* ui) {
         batch_pos(B_F3_HALF_SCREEN);
         batch_colors(B_U4X4_WHITE);
         batch_align(B_ALIGN_CENTER);
-        batch_string_wrap(userdata->font, userdata->size,
-            (userdata->fmt == NULL) ? LFMT(userdata->text) : userdata->fmt(), SCREEN_WIDTH - 32.f);
+        batch_string_wrap("header", userdata->size, (userdata->fmt == NULL) ? LFMT(userdata->text) : userdata->fmt(),
+            SCREEN_WIDTH - 32.f);
     }
 
     if (userdata->verb != NULL && (userdata->wait == NULL || userdata->cancel != NULL)) {

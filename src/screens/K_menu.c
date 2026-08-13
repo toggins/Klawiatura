@@ -483,7 +483,6 @@ static void multiplayer_option() {
     UIMessageData* userdata = message->userdata;
     userdata->title = "message.notice";
     userdata->text = "message.online_notice";
-    userdata->font = "main";
     userdata->size = 24.f;
     userdata->verb = "continue";
     userdata->cancel = saw_online_notice;
@@ -660,7 +659,7 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite("logos/mario_forever", AKL_NEVER);
     load_sound("ui/connect", AKL_NEVER);
     load_sound("ui/disconnect", AKL_NEVER);
-    load_track("super_mario_brothers", AKL_NEVER);
+    load_track("doxeh_remix", AKL_NEVER);
 
     // Handle invite JSON
     Bool got_invite = FALSE;
@@ -699,7 +698,7 @@ s_no_secret:
             CATALOG.menus[i].from = MEN_NULL;
     }
 
-    play_generic_track("super_mario_brothers", PLAY_LOOPING, 0);
+    play_generic_track("doxeh_remix", PLAY_LOOPING, 0);
 }
 
 static void end() {

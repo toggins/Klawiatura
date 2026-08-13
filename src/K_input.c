@@ -288,7 +288,7 @@ Bool kb_down(Keybind kb) {
 }
 
 Bool kb_repeated(Keybind kb) {
-    return CHECK_KB(input_state.now, kb) && CHECK_KB(input_state.repeating, kb);
+    return !kb_pressed(kb) && CHECK_KB(input_state.repeating, kb);
 }
 
 Bool kb_released(Keybind kb) {

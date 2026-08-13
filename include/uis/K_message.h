@@ -4,7 +4,7 @@
 
 typedef struct {
     float size;
-    const char *title, *text, *(*fmt)(), *verb, *font;
+    const char *title, *text, *(*fmt)(), *verb;
     Bool (*wait)();
     void (*finish)(), (*cancel)();
 } UIMessageData;
