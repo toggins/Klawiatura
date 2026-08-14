@@ -400,6 +400,83 @@
             "type": "actor",
             "id": 20,
             "sprite": "editor/coin"
+        },
+        "Super Mushroom": {
+            "type": "actor",
+            "id": 27,
+            "sprite": "items/mushroom/super",
+            "flags": [
+                {
+                    "name": "Calamity",
+                    "index": 5
+                }
+            ]
+        },
+        "Fire Flower": {
+            "type": "actor",
+            "id": 28,
+            "sprite": "items/fire_flower/0",
+            "flags": [
+                {
+                    "name": "Calamity",
+                    "index": 5
+                }
+            ]
+        },
+        "Starman": {
+            "type": "actor",
+            "id": 29,
+            "sprite": "items/starman/0",
+            "flags": [
+                {
+                    "name": "Calamity",
+                    "index": 5
+                }
+            ]
+        },
+        "1UP Mushroom": {
+            "type": "actor",
+            "id": 30,
+            "sprite": "items/mushroom/1up",
+            "flags": [
+                {
+                    "name": "Calamity",
+                    "index": 5
+                }
+            ]
+        },
+        "Poison Mushroom": {
+            "type": "actor",
+            "id": 31,
+            "sprite": "items/mushroom/poison/0",
+            "flags": [
+                {
+                    "name": "Calamity",
+                    "index": 5
+                }
+            ]
+        },
+        "Green Lui": {
+            "type": "actor",
+            "id": 32,
+            "sprite": "items/green_lui/0",
+            "flags": [
+                {
+                    "name": "Calamity",
+                    "index": 5
+                }
+            ]
+        },
+        "Beetroot": {
+            "type": "actor",
+            "id": 33,
+            "sprite": "items/beetroot/0",
+            "flags": [
+                {
+                    "name": "Calamity",
+                    "index": 5
+                }
+            ]
         }
     },
 
@@ -476,7 +553,20 @@
                 {
                     "name": "Blocks",
                     "items": ["Item Block", "Brick Block", "Coin Block", "Hidden Block"]
-                }
+                },
+                {
+                    "name": "Power-ups",
+                    "items": [
+                        "Super Mushroom",
+                        "Fire Flower",
+                        "Starman",
+                        "1UP Mushroom",
+                        "Poison Mushroom",
+                        "Green Lui",
+                        "Beetroot"
+                    ]
+                },
+                "Coin"
             ]
         },
         {
