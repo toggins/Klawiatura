@@ -1,0 +1,6 @@
+{
+    "texture": "items/beetroot",
+    "size": [27, 32],
+    "offset": [13, 31],
+    "uvs": [30, 1, 57, 33]
+}

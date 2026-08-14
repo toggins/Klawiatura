@@ -1,0 +1,6 @@
+{
+    "texture": "items/mushroom/poison",
+    "size": [31, 32],
+    "offset": [15, 31],
+    "uvs": [34, 1, 65, 33]
+}

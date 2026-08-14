@@ -1,0 +1,6 @@
+{
+    "textures": "items/green_lui",
+    "size": [30, 27],
+    "offset": [15, 26],
+    "uvs": [65, 34, 95, 61]
+}

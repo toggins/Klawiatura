@@ -1,0 +1,6 @@
+{
+    "texture": "items/fire_flower",
+    "size": [33, 32],
+    "offset": [16, 31],
+    "uvs": [36, 1, 69, 33]
+}
