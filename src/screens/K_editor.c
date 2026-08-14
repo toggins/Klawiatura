@@ -1250,6 +1250,11 @@ static void draw() {
                 batch_rectangle(NULL, B_F2_S(32.f));
             else
                 batch_sprite(sprite->base.name);
+
+            if (ecamera->zoom < 1.f) {
+                batch_color(B_U4(255, 0, 0, 128));
+                batch_rectangle(NULL, B_F2_1);
+            }
         }
 
         glm_ortho(0.f, (float)width, (float)height, 0.f, -16000.f, 16000.f, proj);
