@@ -269,13 +269,9 @@ void net_update() {
             }
 
             if (world->has_map) {
-                if (get_screen() == SCR_MENU) {
+                if (get_screen() == SCR_MENU)
                     play_generic_sound("ui/enter", PLAY_SYSTEM);
-                    fade_generic_track(0.f, 25.f);
-                    set_screen(SCR_MAP, TRANS_CIRCLE, 45.f, &ctx, sizeof(ctx));
-                } else {
-                    set_screen(SCR_MAP, TRANS_NONE, 0.f, &ctx, sizeof(ctx));
-                }
+                set_screen(SCR_MAP, &ctx, sizeof(ctx));
             } else {
                 start_world(&ctx);
             }
@@ -318,21 +314,11 @@ void net_update() {
                 read_buffer32(&mbuf, (Uint32*)&ctx.players[i].score);
             }
 
-            switch (get_screen()) {
-            default: {
-                set_screen(SCR_GAME, TRANS_NONE, 0.f, &ctx, sizeof(ctx));
-                break;
-            }
-
-            case SCR_MENU:
-            case SCR_MAP: {
+            const ScreenType screen = get_screen();
+            if (screen == SCR_MENU || screen == SCR_MAP)
                 play_generic_sound("ui/enter", PLAY_SYSTEM);
-                fade_generic_track(0.f, 25.f);
-                set_screen(SCR_GAME, TRANS_CIRCLE, 45.f, &ctx, sizeof(ctx));
-                break;
-            }
-            }
 
+            set_screen(SCR_GAME, &ctx, sizeof(ctx));
             break;
         }
 

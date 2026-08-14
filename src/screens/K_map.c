@@ -188,12 +188,13 @@ static void start(const void* secret, size_t secret_size) {
             load_sound("ambush", AKL_NEVER);
             load_sound(get_character_voice(pctx->character, PV_PANIC), AKL_NEVER);
         }
+
+        load_sound("ui/enter", AKL_ONCE);
     }
 
     load_sprite("ui/map/logo", AKL_NEVER);
     load_sprite("ui/bezel_l", AKL_NEVER);
     load_sprite("ui/bezel_r", AKL_NEVER);
-    load_sound("ui/enter", AKL_ONCE);
     load_track(map_state->track, AKL_NEVER);
     load_ui(UI_PAUSE);
 
@@ -327,7 +328,7 @@ static void tick() {
                 ++map_state->enter;
 
                 if (map_state->enter >= 25) {
-                    play_generic_sound("ui/enter", PLAY_SYSTEM);
+                    play_generic_sound("ui/enter", 0);
 
                     const Level* level = get_level_key(map_state->level);
                     if (level == NULL) {
@@ -412,7 +413,7 @@ static void tick() {
             }
         }
     } else if (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE)) {
-        set_screen(SCR_MENU, TRANS_FADE, 101.5f, NULL, 0);
+        set_screen(SCR_MENU, NULL, 0);
     }
 
     if (can_move) {
@@ -597,6 +598,20 @@ static void draw_ui() {
     batch_sprite("ui/bezel_r");
 }
 
+static Transition transit() {
+    Transition transition = {0};
+    if (map_state->path == NULL) {
+        transition.type = TRANS_FADE;
+        transition.duration = 101.5f;
+    } else {
+        fade_generic_track(0.f, 25.f);
+        transition.type = TRANS_CIRCLE;
+        transition.duration = 45.f;
+    }
+
+    return transition;
+}
+
 const ScreenTable TAB_MAP = {
     .start = start,
     .end = end,
@@ -604,4 +619,5 @@ const ScreenTable TAB_MAP = {
     .pre_interp = pre_interp,
     .interp = interp,
     .draw_ui = draw_ui,
+    .transit = transit,
 };

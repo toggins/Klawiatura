@@ -622,8 +622,7 @@ static void options_option() {
 }
 
 static void exit_option() {
-    fade_generic_track(0.f, 25.f);
-    set_screen(SCR_EXIT, TRANS_CIRCLE, 50.5f, NULL, 0);
+    set_screen(SCR_EXIT, NULL, 0);
 }
 
 static const char* fmt_test_level(size_t idx) {
@@ -651,7 +650,7 @@ static void test_level_option() {
 }
 
 static void go_to_editor_option() {
-    set_screen(SCR_EDITOR, TRANS_NONE, 0.f, NULL, 0);
+    set_screen(SCR_EDITOR, NULL, 0);
 }
 
 // ======
@@ -744,9 +743,20 @@ static void draw_ui() {
     }
 }
 
+static Transition transit() {
+    Transition transition = {0};
+    transition.type = TRANS_CIRCLE;
+    transition.duration = 50.5f;
+
+    fade_generic_track(0.f, 25.f);
+
+    return transition;
+}
+
 const ScreenTable TAB_MENU = {
     .start = start,
     .end = end,
     .tick = tick,
     .draw_ui = draw_ui,
+    .transit = transit,
 };

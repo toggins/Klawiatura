@@ -1,4 +1,3 @@
-#include "K_audio.h"
 #include "K_cmd.h"
 #include "K_file.h"
 #include "K_interface.h"
@@ -195,7 +194,7 @@ void jump_to_world(const WorldContext* wctx, Bool as_host) {
     if (world == NULL) {
         if (get_screen() != SCR_MENU) {
             bail_from_game();
-            set_screen(SCR_MENU, TRANS_NONE, 0.f, NULL, 0);
+            set_screen(SCR_MENU, NULL, 0);
         }
 
         WTF("Invalid world key %" SDL_PRIu64, wctx->world);
@@ -204,20 +203,7 @@ void jump_to_world(const WorldContext* wctx, Bool as_host) {
 
     spread_world_packet(wctx);
     if (world->has_map) {
-        switch (get_screen()) {
-        default: {
-            set_screen(SCR_MAP, TRANS_NONE, 0.f, wctx, sizeof(*wctx));
-            break;
-        }
-
-        case SCR_MENU:
-        case SCR_MAP: {
-            fade_generic_track(0.f, 25.f);
-            set_screen(SCR_MAP, TRANS_CIRCLE, 45.f, wctx, sizeof(*wctx));
-            break;
-        }
-        }
-
+        set_screen(SCR_MAP, wctx, sizeof(*wctx));
         return;
     }
 

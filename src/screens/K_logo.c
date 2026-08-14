@@ -17,7 +17,7 @@ void start(const void* secret, size_t secret_size) {
 // 150 + 130
 void tick() {
     if (totalticks() > 280.f || kb_pressed(KB_JUMP) || kb_pressed(KB_UI_ENTER))
-        set_screen(SCR_MENU, TRANS_NONE, 0.f, NULL, 0);
+        set_screen(SCR_MENU, NULL, 0);
 }
 
 void draw() {

@@ -28,7 +28,7 @@ static const char* fmt_return_to_title(size_t idx) {
 
 static void return_to_title_option() {
     bail_from_game();
-    set_screen(SCR_MENU, TRANS_NONE, 0.f, NULL, 0);
+    set_screen(SCR_MENU, NULL, 0);
 }
 
 static void load() {

@@ -38,8 +38,8 @@ const ScreenTable* SCREENS[SCR_SIZE] = {NULL};
 
 static ScreenType current_screen = SCR_NULL, to_screen = SCR_NULL;
 
-static TransitionType to_transition = TRANS_NONE;
-static float to_transition_time[2] = {0.f};
+static Transition to_transition = {0};
+static float to_transition_time = 0.f;
 
 static void* to_secret = NULL;
 static size_t to_secret_size = 0;
@@ -68,7 +68,7 @@ void interface_init() {
     load_sound("ui/repeat", AKL_ALWAYS);
     load_sound("ui/error", AKL_ALWAYS);
 
-    set_screen(SCR_LOGO, TRANS_NONE, 0.f, NULL, 0);
+    set_screen(SCR_LOGO, NULL, 0);
 }
 
 void interface_event(SDL_Event* event) {
@@ -85,13 +85,13 @@ static void cancel_boot() {
         SDL_free((void*)boot_reason);
         boot_reason = NULL;
     } else {
-        set_screen(SCR_MENU, TRANS_NONE, 0.f, NULL, 0);
+        set_screen(SCR_MENU, NULL, 0);
     }
 }
 
 static void destroy_ui(UI*);
 void interface_update() {
-    if (to_screen == SCR_NULL || to_transition_time[0] < to_transition_time[1])
+    if (to_screen == SCR_NULL || to_transition_time < to_transition.duration)
         goto iu_dont_change;
 
     if (to_screen >= SCR_EXIT) {
@@ -115,8 +115,8 @@ void interface_update() {
     current_screen = to_screen;
     to_screen = SCR_NULL;
 
-    to_transition = TRANS_NONE;
-    to_transition_time[0] = to_transition_time[1] = 0.f;
+    to_transition = (Transition){0};
+    to_transition_time = 0.f;
 
     void* secret = to_secret;
     const size_t secret_size = to_secret_size;
@@ -134,10 +134,10 @@ iu_dont_change:
     poll_game();
 
     new_frame();
-    if (to_transition_time[0] < to_transition_time[1]) {
-        to_transition_time[0] += deltaticks();
-        if (to_transition_time[0] > to_transition_time[1])
-            to_transition_time[0] = to_transition_time[1];
+    if (to_transition_time < to_transition.duration) {
+        to_transition_time += deltaticks();
+        if (to_transition_time > to_transition.duration)
+            to_transition_time = to_transition.duration;
 
         if (got_ticks()) {
             while (got_ticks())
@@ -234,8 +234,8 @@ iu_dont_change:
     if (top_ui != NULL)
         UI_CALL(top_ui, draw);
 
-    if (to_transition_time[0] > 0.f) {
-        switch (to_transition) {
+    if (to_transition_time > 0.f) {
+        switch (to_transition.type) {
         default:
             break;
 
@@ -253,7 +253,7 @@ iu_dont_change:
             int width = 1, height = 1;
             get_resolution(&width, &height);
             batch_circle(
-                NULL, (1.f - (to_transition_time[0] / to_transition_time[1]))
+                NULL, (1.f - (to_transition_time / to_transition.duration))
                           * ((((float)width / (float)height) / ((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT))
                               * (SDL_sqrtf((SCREEN_WIDTH * SCREEN_WIDTH) + (SCREEN_HEIGHT * SCREEN_HEIGHT)) * 0.5f)));
 
@@ -270,7 +270,7 @@ iu_dont_change:
 
         case TRANS_FADE: {
             batch_pos(B_F3_XY(-1000.f, -1000.f));
-            batch_color(B_U4(0, 0, 0, (to_transition_time[0] / to_transition_time[1]) * 255.f));
+            batch_color(B_U4(0, 0, 0, (to_transition_time / to_transition.duration) * 255.f));
             batch_rectangle(NULL, B_F2_S(3000.f));
             break;
         }
@@ -279,7 +279,7 @@ iu_dont_change:
 
     draw_chat();
 
-    if (to_screen > SCR_NULL && to_screen < SCR_EXIT && to_transition_time[0] >= to_transition_time[1]) {
+    if (to_screen > SCR_NULL && to_screen < SCR_EXIT && to_transition_time >= to_transition.duration) {
         batch_reset();
         batch_pos(B_F3_HALF_SCREEN);
         batch_align(B_ALIGN_CENTER);
@@ -300,14 +300,14 @@ ScreenType get_screen() {
     return current_screen;
 }
 
-void
-set_screen(ScreenType type, TransitionType transition, float transition_time, const void* secret, size_t secret_size) {
+void set_screen(ScreenType type, const void* secret, size_t secret_size) {
     ASSUME(type > SCR_NULL, "Going to invalid screen %u?", type);
     to_screen = type;
 
-    to_transition = transition;
-    to_transition_time[0] = 0.f;
-    to_transition_time[1] = transition_time;
+    const ScreenTable* screen
+        = SCREENS[(current_screen > SCR_NULL && current_screen < SCR_SIZE) ? current_screen : SCR_NULL];
+    to_transition = (screen == NULL || screen->transit == NULL) ? (Transition){0} : screen->transit();
+    to_transition_time = 0.f;
 
     SDL_free((void*)to_secret);
     to_secret = NULL;
@@ -322,7 +322,7 @@ set_screen(ScreenType type, TransitionType transition, float transition_time, co
 }
 
 Bool screen_is_transitioning() {
-    return to_screen > SCR_NULL && to_transition_time[0] > 0.f;
+    return to_screen > SCR_NULL && to_transition_time > 0.f;
 }
 
 void boot_to_menu(const char* reason) {

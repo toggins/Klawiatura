@@ -38,12 +38,18 @@ enum {
 };
 
 typedef struct {
+    TransitionType type;
+    float duration;
+} Transition;
+
+typedef struct {
     void (*start)(const void*, size_t);
     void (*event)(const SDL_Event*);
     void (*tick)();
     void (*pre_interp)(), (*interp)();
     void (*draw)(), (*draw_ui)();
     void (*end)();
+    Transition (*transit)();
 } ScreenTable;
 
 typedef Uint8 UIType;
@@ -117,7 +123,7 @@ typedef struct {
 void interface_init(), interface_event(SDL_Event*), interface_update(), interface_teardown();
 
 ScreenType get_screen();
-void set_screen(ScreenType, TransitionType, float, const void*, size_t);
+void set_screen(ScreenType, const void*, size_t);
 Bool screen_is_transitioning();
 
 void boot_to_menu(const char*);

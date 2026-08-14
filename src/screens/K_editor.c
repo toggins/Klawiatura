@@ -1462,7 +1462,7 @@ static void draw_ui() {
             ImGui_Separator();
 
             if (ImGui_MenuItem(LFMT("editor.exit")))
-                set_screen(SCR_MENU, TRANS_NONE, 0.f, NULL, 0);
+                set_screen(SCR_MENU, NULL, 0);
 
             ImGui_EndMenu();
         }

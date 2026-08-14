@@ -470,7 +470,7 @@ void jump_to_game(const GameContext* ctx, Bool as_host) {
     if (level == NULL) {
         if (get_screen() != SCR_MENU) {
             bail_from_game();
-            set_screen(SCR_MENU, TRANS_NONE, 0.f, NULL, 0);
+            set_screen(SCR_MENU, NULL, 0);
         }
 
         WTF("Invalid level key %" SDL_PRIu64, ctx->level);
@@ -478,20 +478,7 @@ void jump_to_game(const GameContext* ctx, Bool as_host) {
     }
 
     spread_game_packet(ctx);
-
-    switch (get_screen()) {
-    default: {
-        set_screen(SCR_GAME, TRANS_NONE, 0.f, ctx, sizeof(*ctx));
-        break;
-    }
-
-    case SCR_MENU:
-    case SCR_MAP: {
-        fade_generic_track(0.f, 25.f);
-        set_screen(SCR_GAME, TRANS_CIRCLE, 45.f, ctx, sizeof(*ctx));
-        break;
-    }
-    }
+    set_screen(SCR_GAME, ctx, sizeof(*ctx));
 }
 
 // =====
