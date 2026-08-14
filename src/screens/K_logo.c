@@ -27,18 +27,18 @@ void draw() {
 void draw_ui() {
     batch_reset();
 
-    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT - 64.f));
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT - 40.f));
     const float t = totalticks();
     batch_color(B_U4_ALPHA(
         ((t < 33.5f) ? (t / 33.5f) : ((t > 150.f) ? ((t < 278.f) ? (1.f - ((t - 150.f) / 128.f)) : 0.f) : 1.f))
         * 255.f));
     batch_sprite(LFMT("logo.disclaimer"));
 
-    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH - 128.f, SCREEN_HEIGHT - 112.f));
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH - 128.f, SCREEN_HEIGHT - 120.f));
     batch_scale(B_F2_S(0.5f));
     batch_sprite("logos/sdl");
 
-    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH + 128.f, SCREEN_HEIGHT - 112.f));
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH + 128.f, SCREEN_HEIGHT - 120.f));
     batch_sprite("logos/gekkonet");
 }
 
