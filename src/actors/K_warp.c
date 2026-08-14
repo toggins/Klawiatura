@@ -3,6 +3,7 @@
 #include "K_video.h"
 
 #include "actors/K_player.h"
+#include "actors/K_powerups.h"
 #include "actors/K_warp.h"
 
 static void load() {
@@ -109,6 +110,28 @@ static void collide(GameActor* actor, GameActor* from) {
     VAL(from, PLAYER_WARP_STATE) = 0;
 
     if (ANY_FLAG(actor, FLG_WARP_CALAMITY)) {
+        for (GameActor* item = get_actor(gamestate()->live_actors); item != NULL; item = get_actor(item->previous)) {
+            switch (item->type) {
+            default:
+                break;
+
+            case ACT_SUPER_MUSHROOM:
+            case ACT_1UP_MUSHROOM:
+            case ACT_POISON_MUSHROOM:
+            case ACT_FIRE_FLOWER:
+            case ACT_BEETROOT:
+            case ACT_GREEN_LUI:
+            case ACT_STARMAN: {
+                if (ANY_FLAG(item, FLG_POWERUP_CALAMITY)) {
+                    item->sprout = 32;
+                    FLAG_OFF(item, FLG_POWERUP_CALAMITY);
+                }
+
+                break;
+            }
+            }
+        }
+
         ++VAL(actor, WARP_STATE);
         play_state_sound("vo/clone/dead", 0, NULL);
     } else if (ANY_FLAG(actor, FLG_WARP_DEVASTATOR)) {

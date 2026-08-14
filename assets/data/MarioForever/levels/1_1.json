@@ -4227,56 +4227,6 @@
             "pos": [6910, 384, 30]
         },
         {
-            "def": "Hill",
-            "sprite": "scenery/hill",
-            "pos": [192, 288, 61]
-        },
-        {
-            "def": "Hill",
-            "sprite": "scenery/hill",
-            "pos": [1344, 320, 61]
-        },
-        {
-            "def": "Hill",
-            "sprite": "scenery/hill",
-            "pos": [2464, 348, 61]
-        },
-        {
-            "def": "Hill",
-            "sprite": "scenery/hill",
-            "pos": [3136, 288, 61]
-        },
-        {
-            "def": "Hill",
-            "sprite": "scenery/hill",
-            "pos": [3968, 288, 61]
-        },
-        {
-            "def": "Hill",
-            "sprite": "scenery/hill",
-            "pos": [4704, 320, 61]
-        },
-        {
-            "def": "Hill",
-            "sprite": "scenery/hill",
-            "pos": [5216, 288, 61]
-        },
-        {
-            "def": "Hill",
-            "sprite": "scenery/hill",
-            "pos": [6240, 288, 61]
-        },
-        {
-            "def": "Hill",
-            "sprite": "scenery/hill",
-            "pos": [6656, 352, 61]
-        },
-        {
-            "def": "Hill",
-            "sprite": "scenery/hill",
-            "pos": [7136, 320, 61]
-        },
-        {
             "def": "Goal",
             "sprite": "markers/goal",
             "pos": [7200, 128, 23]
@@ -5992,7 +5942,7 @@
             "def": "Item Block",
             "id": 24,
             "pos": [544, 288],
-            "values": [[1, 21]]
+            "values": [[1, 28]]
         },
         {
             "def": "Hidden Block",
@@ -6001,7 +5951,7 @@
             "pos": [2720, 128],
             "values": [
                 [0, 0],
-                [1, 21]
+                [1, 30]
             ],
             "flags": 64
         },
@@ -6009,7 +5959,7 @@
             "def": "Item Block",
             "id": 24,
             "pos": [5056, 64],
-            "values": [[1, 21]]
+            "values": [[1, 28]]
         },
         {
             "def": "Checkpoint",
@@ -6234,6 +6184,90 @@
             "id": 10,
             "pos": [7329, 384],
             "scale": [524288, 65536]
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "pos": [1517, 411],
+            "vel": [131072, 0],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "pos": [1772, 407],
+            "vel": [131072, 0],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "pos": [3878, 412],
+            "vel": [131072, 0],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "pos": [4100, 410],
+            "vel": [131072, 0],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "pos": [4211, 411],
+            "vel": [131072, 0],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "pos": [4936, 410],
+            "vel": [131072, 0],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "pos": [5479, 408],
+            "vel": [131072, 0],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "pos": [5985, 410],
+            "vel": [131072, 0],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "pos": [6090, 413],
+            "vel": [131072, 0],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "pos": [6124, 283],
+            "vel": [131072, 0],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "pos": [6256, 286],
+            "vel": [131072, 0],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "pos": [6309, 412],
+            "vel": [131072, 0],
+            "flags": 32
         }
     ]
 }

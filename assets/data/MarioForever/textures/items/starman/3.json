@@ -2,5 +2,5 @@
     "texture": "items/starman",
     "size": [33, 32],
     "offset": [16, 31],
-    "uvs": [71, 1, 104, 33]
+    "uvs": [1, 35, 34, 67]
 }

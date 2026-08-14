@@ -3,6 +3,7 @@
 #include "K_video.h"
 
 #include "actors/K_effects.h"
+#include "actors/K_powerups.h"
 
 typedef Uint8 BlockTypes;
 enum {
@@ -94,7 +95,25 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
         return;
     }
 
-    GameActor* item = create_actor(VAL(actor, BLOCK_ITEM), actor->pos);
+    ActorType item_type = VAL(actor, BLOCK_ITEM);
+    switch (item_type) {
+    default:
+        break;
+
+    case ACT_FIRE_FLOWER:
+    case ACT_BEETROOT:
+    case ACT_GREEN_LUI: {
+        if (from != NULL) {
+            GamePlayer* player = get_player(from->player);
+            if (player != NULL && player->powerup == POW_NONE)
+                item_type = ACT_SUPER_MUSHROOM;
+        }
+
+        break;
+    }
+    }
+
+    GameActor* item = create_actor(item_type, actor->pos);
     if (item != NULL) {
         if (from != NULL)
             item->player = from->player;
@@ -106,9 +125,25 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
                          });
         skip_interp(item);
 
-        if (item->type != ACT_COIN_POP) {
+        switch (item->type) {
+        case ACT_SUPER_MUSHROOM:
+        case ACT_1UP_MUSHROOM:
+        case ACT_POISON_MUSHROOM: {
+            item->vel.x = Int2Fx(2);
+        }
+        case ACT_FIRE_FLOWER:
+        case ACT_BEETROOT:
+        case ACT_GREEN_LUI: {
+            FLAG_ON(item, FLG_POWERUP_SPROUTED);
+        }
+        default: {
             item->sprout = 32;
             play_state_sound("sprout", PLAY_POS, A_ACTOR(item));
+            break;
+        }
+
+        case ACT_COIN_POP:
+            break;
         }
     }
 
@@ -150,6 +185,15 @@ static void load_special(const GameActor* actor) {
             load_sound("sprout", AKL_NEVER);
 
         load_actor(VAL(actor, BLOCK_ITEM));
+        switch (VAL(actor, BLOCK_ITEM)) {
+        default:
+            break;
+        case ACT_FIRE_FLOWER:
+        case ACT_BEETROOT:
+        case ACT_GREEN_LUI:
+            load_actor(ACT_SUPER_MUSHROOM);
+            break;
+        }
     }
 }
 

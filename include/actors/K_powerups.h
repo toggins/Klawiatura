@@ -1,0 +1,11 @@
+#pragma once
+
+#include "K_game.h"
+
+enum {
+    VAL_POWERUP_FRAME,
+
+    FLG_POWERUP_CALAMITY = CUSTOM_FLAG(0),
+    FLG_POWERUP_SPROUTED = CUSTOM_FLAG(1),
+    FLG_POWERUP_BOUNCE = CUSTOM_FLAG(2),
+};

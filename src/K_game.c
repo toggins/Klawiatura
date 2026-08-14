@@ -1610,17 +1610,29 @@ void win_player(GamePlayer* player) {
     if (player == NULL)
         return;
 
-    for (PlayerID i = 0; i < game_context.num_players; i++) {
-        if (i == player->id)
-            continue;
+    for (GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous)) {
+        switch (actor->type) {
+        default:
+            break;
 
-        GamePlayer* player = get_player(i);
-        if (player == NULL)
-            continue;
+        case ACT_PLAYER:
+        case ACT_PLAYER_DEAD: {
+            if (actor->player != player->id)
+                FLAG_ON(actor, FLG_DESTROY);
+            break;
+        }
 
-        GameActor* pawn = get_actor(player->actor);
-        if (pawn != NULL)
-            FLAG_ON(pawn, FLG_DESTROY);
+        case ACT_SUPER_MUSHROOM:
+        case ACT_FIRE_FLOWER:
+        case ACT_STARMAN:
+        case ACT_1UP_MUSHROOM:
+        case ACT_POISON_MUSHROOM:
+        case ACT_GREEN_LUI:
+        case ACT_BEETROOT: {
+            FLAG_ON(actor, FLG_DESTROY);
+            break;
+        }
+        }
     }
 
     set_sequence(GS_WIN, player, 0);
@@ -1986,7 +1998,6 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
         return;
 
     if (actor->sprout > 0) {
-        actor->vel.x = actor->vel.y = Fx0;
         TOUCH_OFF(actor, TOUCH_SIDES);
         return;
     }
