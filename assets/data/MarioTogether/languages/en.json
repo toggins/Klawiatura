@@ -211,7 +211,17 @@
 
     "logo.disclaimer": "logos/disclaimer/en",
 
-    "menu.credits": "CREDITS   -   MARIO FOREVER: Michal Gdaniec, Maurycy Zarzycki, Lukham   -   PROGRAMMING: toggins, nonk   -   BETA TESTING: Collin, CST1229, Jaydex, LooPeR231, Mightcer, miyameon, Nerton17, ReflexGURU, SerafimGWS, Usered   -   SPECIAL THANKS: HeatXD, Xykijun   -   Also check out Mario Forever: Community Edition at mfce.rnx.su!",
+    "menu.credits.mario_forever": "Mario Forever",
+    "menu.credits.mario_forever.text": "Michal Gdaniec - Maurycy Zarzycki - Lukham",
+    "menu.credits.graphics": "Graphics",
+    "menu.credits.graphics.text": "CoreSHINOBI",
+    "menu.credits.programming": "Programming",
+    "menu.credits.programming.text": "toggins - nonk123",
+    "menu.credits.beta_testing": "Beta Testing",
+    "menu.credits.beta_testing.text": "Collin - CST1229 - Jaydex - LooPeR231 - Mightcer - miyameon - Nerton17 - ReflexGURU - SerafimGWS - Usered",
+    "menu.credits.special_thanks": "Special Thanks",
+    "menu.credits.special_thanks.text": "HeatXD - Xykijun",
+    "menu.credits.end": "Also check out Mario Forever: Community Edition at mfce.rnx.su!",
     "menu.back": "Back",
     "menu.submit": "Submit",
     "menu.close": "Close",

@@ -105,7 +105,7 @@ typedef struct {
 typedef struct {
     const char *name, *(*fmt)();
 
-    size_t option;
+    size_t width, option;
     MenuType from;
     Bool ghost;
 
@@ -133,7 +133,7 @@ UI* create_ui(UIType, UI*);
 UI *rootui(), *topui();
 
 Bool set_menu(Catalog*, MenuType), previous_menu(Catalog*);
-void tick_options(Catalog*, Option*, size_t*);
+void tick_options(Catalog*, Option*, size_t*, size_t);
 Bool tick_catalog(Catalog*, UI*);
 void draw_options(const Option*, size_t, float), draw_catalog(const Catalog*);
 

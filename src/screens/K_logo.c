@@ -16,7 +16,7 @@ void start(const void* secret, size_t secret_size) {
 
 // 150 + 130
 void tick() {
-    if (totalticks() > 280.f || kb_pressed(KB_JUMP) || kb_pressed(KB_UI_ENTER))
+    if (totalticks() > 250.f || kb_pressed(KB_JUMP) || kb_pressed(KB_UI_ENTER))
         set_screen(SCR_MENU, NULL, 0);
 }
 
@@ -30,7 +30,7 @@ void draw_ui() {
     batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT - 40.f));
     const float t = totalticks();
     batch_color(B_U4_ALPHA(
-        ((t < 33.5f) ? (t / 33.5f) : ((t > 150.f) ? ((t < 278.f) ? (1.f - ((t - 150.f) / 128.f)) : 0.f) : 1.f))
+        ((t < 33.5f) ? (t / 33.5f) : ((t > 180.f) ? ((t < 248.f) ? (1.f - ((t - 180.f) / 68.f)) : 0.f) : 1.f))
         * 255.f));
     batch_sprite(LFMT("logo.disclaimer"));
 

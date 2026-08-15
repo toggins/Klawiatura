@@ -1,0 +1,6 @@
+{
+    "texture": "ui/menu/icons",
+    "size": [44, 50],
+    "offset": [22, 25],
+    "uvs": [1, 1, 45, 51]
+}

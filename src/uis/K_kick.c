@@ -48,7 +48,7 @@ static void tick(UI* ui) {
         ui->flags |= UIF_DESTROY;
 
     UIKickData* userdata = ui->userdata;
-    tick_options(NULL, userdata->options, &userdata->option);
+    tick_options(NULL, userdata->options, &userdata->option, 0);
 
     if (kb_pressed(KB_PAUSE)) {
         play_generic_sound("ui/select", 0);

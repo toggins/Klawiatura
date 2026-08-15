@@ -433,7 +433,7 @@ Bool previous_menu(Catalog* catalog) {
     return set_menu(catalog, catalog->menus[catalog->current].from);
 }
 
-void tick_options(Catalog* catalog, Option* options, size_t* curopt) {
+void tick_options(Catalog* catalog, Option* options, size_t* curopt, size_t width) {
     const size_t oldopt = *curopt;
 
 #define CHECKOPT                                                                                                       \
@@ -443,8 +443,15 @@ void tick_options(Catalog* catalog, Option* options, size_t* curopt) {
         continue;                                                                                                      \
     }
 
-    const Sint8 change_repeat = (Sint8)((Sint8)kb_repeated(KB_UI_DOWN) - (Sint8)kb_repeated(KB_UI_UP));
-    Sint8 change = (Sint8)((Sint8)kb_pressed(KB_UI_DOWN) - (Sint8)kb_pressed(KB_UI_UP) + change_repeat);
+    Sint32 x_change_repeat = 0,
+           y_change_repeat = (Sint32)((Sint32)kb_repeated(KB_UI_DOWN) - (Sint32)kb_repeated(KB_UI_UP)),
+           change = (Sint32)((Sint32)kb_pressed(KB_UI_DOWN) - (Sint32)kb_pressed(KB_UI_UP) + y_change_repeat);
+    if (width > 1) {
+        change *= (Sint32)width;
+        x_change_repeat = (Sint32)((Sint32)kb_repeated(KB_UI_RIGHT) - (Sint32)kb_repeated(KB_UI_LEFT));
+        change += (Sint32)((Sint32)kb_pressed(KB_UI_RIGHT) - (Sint32)kb_pressed(KB_UI_LEFT) + x_change_repeat);
+    }
+
     Uint8 i = 0;
     while (change < 0 && i < MAX_OPTIONS) {
         if (*curopt <= 0)
@@ -466,15 +473,17 @@ void tick_options(Catalog* catalog, Option* options, size_t* curopt) {
 #undef CHECKOPT
 
     if (oldopt != *curopt)
-        play_generic_sound((change_repeat == 0) ? "ui/switch" : "ui/repeat", 0);
+        play_generic_sound((x_change_repeat == 0 && y_change_repeat == 0) ? "ui/switch" : "ui/repeat", 0);
 
-    const Sint8 cycle_repeat = (Sint8)((Sint8)kb_repeated(KB_UI_RIGHT) - (Sint8)kb_repeated(KB_UI_LEFT)),
-                cycle = (Sint8)((Sint8)kb_pressed(KB_UI_RIGHT) - (Sint8)kb_pressed(KB_UI_LEFT) + cycle_repeat);
-    if (cycle != 0) {
-        const Option* option = &options[*curopt];
-        if ((option->disabled == NULL || !option->disabled()) && option->cycle != NULL) {
-            option->cycle(cycle);
-            play_generic_sound((cycle_repeat == 0) ? "ui/toggle" : "ui/repeat", 0);
+    if (width <= 1) {
+        const Sint8 cycle_repeat = (Sint8)((Sint8)kb_repeated(KB_UI_RIGHT) - (Sint8)kb_repeated(KB_UI_LEFT)),
+                    cycle = (Sint8)((Sint8)kb_pressed(KB_UI_RIGHT) - (Sint8)kb_pressed(KB_UI_LEFT) + cycle_repeat);
+        if (cycle != 0) {
+            const Option* option = &options[*curopt];
+            if ((option->disabled == NULL || !option->disabled()) && option->cycle != NULL) {
+                option->cycle(cycle);
+                play_generic_sound((cycle_repeat == 0) ? "ui/toggle" : "ui/repeat", 0);
+            }
         }
     }
 
@@ -509,7 +518,7 @@ Bool tick_catalog(Catalog* catalog, UI* in) {
         return TRUE;
 
     Option* options = catalog->options[catalog->current];
-    tick_options(catalog, options, &menus[catalog->current].option);
+    tick_options(catalog, options, &menus[catalog->current].option, menus[catalog->current].width);
 
     if (kb_pressed(KB_PAUSE)) {
         if (set_menu(catalog, menus[catalog->current].from)) {

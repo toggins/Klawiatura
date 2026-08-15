@@ -32,6 +32,15 @@ enum {
     MEN_SIZE,
 };
 
+static const char* credits[6][2] = {
+    {"menu.credits.mario_forever",  "menu.credits.mario_forever.text" },
+    {"menu.credits.graphics",       "menu.credits.graphics.text"      },
+    {"menu.credits.programming",    "menu.credits.programming.text"   },
+    {"menu.credits.beta_testing",   "menu.credits.beta_testing.text"  },
+    {"menu.credits.special_thanks", "menu.credits.special_thanks.text"},
+    {NULL,                          "menu.credits.end"                },
+};
+
 static const char* replay_error = NULL;
 
 static void enter_replays_menu(MenuType), leave_replays_menu(MenuType), enter_lobby_list_menu(MenuType),
@@ -53,6 +62,12 @@ static Catalog CATALOG = {
         [MEN_MAIN] = {
             .name = "title",
             .draw = draw_main_menu,
+            .width =
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+            2,
+#else
+            3,
+#endif
         },
 
 		[MEN_SINGLEPLAYER] = {
@@ -96,12 +111,13 @@ static Catalog CATALOG = {
 		[MEN_MAIN] = {
 			{.name = "option.singleplayer", .menu = MEN_SINGLEPLAYER},
 			{.name = "option.multiplayer", .callback = multiplayer_option},
+#ifdef SDL_PLATFORM_EMSCRIPTEN
             {.name = "option.replays", .menu = MEN_REPLAYS},
-#ifndef SDL_PLATFORM_EMSCRIPTEN
+            {.name = "option.options", .callback = options_option},
+#else
+            {.name = "option.options", .callback = options_option},
+            {.name = "option.replays", .menu = MEN_REPLAYS},
             {.name = "option.editor", .menu = MEN_EDITOR},
-#endif
-			{.name = "option.options", .callback = options_option},
-#ifndef SDL_PLATFORM_EMSCRIPTEN
 			{.name = "option.exit", .callback = exit_option},
 #endif
 		},
@@ -150,29 +166,80 @@ static Catalog CATALOG = {
 // MENUS
 // =====
 
-static Bool draw_main_menu() {
-    draw_options(CATALOG.options[MEN_MAIN], CATALOG.menus[MEN_MAIN].option, HALF_SCREEN_HEIGHT);
-
+static void draw_main_button(size_t idx, const char* button, const char* icon, const char* name, const float pos[2]) {
     batch_reset();
-    batch_pos(B_F3_XY(64.f, SCREEN_HEIGHT - 24.f));
-    batch_color(B_U4_ALPHA(160));
-    batch_align(B_ALIGN_BOTTOM_LEFT);
-    batch_string("main", 24.f, GAME_NAME " " GAME_VERSION);
-    batch_pos(B_F3_XY(SCREEN_WIDTH - 64.f, SCREEN_HEIGHT - 24.f));
-    batch_align(B_ALIGN_BOTTOM_RIGHT);
-    batch_string("main", 24.f, fmt("Checksum: %u", get_game_hash()));
 
-    const char* credits = LFMT("menu.credits");
-    const float wrap = string_width("main", 16.f, credits) + SCREEN_WIDTH;
+    batch_pos(B_F3_XY(pos[0], pos[1]));
+    batch_sprite(button);
+    if (CATALOG.menus[MEN_MAIN].option == idx) {
+        batch_blend(BM_ADD);
+        batch_color(B_U4_VALUE(96.f + (SDL_sinf(totalticks() * 0.15f) * 32.f)));
+        batch_sprite(button);
+        batch_color(B_U4_WHITE);
+        batch_blend(BM_NORMAL);
+    }
+
+    batch_pos(B_F3_XY(pos[0] - 44.f, pos[1] - 40.f));
+    batch_sprite(icon);
+
+    batch_pos(B_F3_XY(pos[0], pos[1] + 57.f));
+    batch_align(B_ALIGN_CENTER);
+    batch_string("menu", 19.f, LFMT(name));
+    batch_align(B_ALIGN_TOP_LEFT);
+}
+
+static Bool draw_main_menu() {
+    batch_reset();
+    batch_pos(B_F3_XY(96.f, 130.f));
+    batch_string("footer", 16.f, GAME_NAME " " GAME_VERSION);
+    batch_pos(B_F3_XY(SCREEN_WIDTH - 96.f, 130.f));
+    batch_align(B_ALIGN_TOP_RIGHT);
+    batch_string("footer", 16.f, fmt("Checksum: %u", get_game_hash()));
+
+    float wrap = SCREEN_WIDTH;
+    for (size_t i = 0; i < SDL_arraysize(credits); i++) {
+        wrap += string_width("footer", 16.f, LFMT(credits[i][1]));
+        if (i < (SDL_arraysize(credits) - 1))
+            wrap += 32.f;
+    }
     const float scroll = SDL_fmodf(totalticks(), wrap);
 
-    batch_pos(B_F3_XY(SCREEN_WIDTH - scroll, SCREEN_HEIGHT - 24.f));
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    draw_main_button(0, "ui/menu/buttons/singleplayer", "ui/menu/icons/game", "option.singleplayer",
+        B_F2(HALF_SCREEN_WIDTH - 84.f, 222.f));
+    draw_main_button(1, "ui/menu/buttons/multiplayer", "ui/menu/icons/game", "option.multiplayer",
+        B_F2(HALF_SCREEN_WIDTH + 84.f, 222.f));
+    draw_main_button(
+        2, "ui/menu/buttons/replays", "ui/menu/icons/game", "option.replays", B_F2(HALF_SCREEN_WIDTH - 84.f, 356.f));
+    draw_main_button(3, "ui/menu/buttons/options", NULL, "option.options", B_F2(HALF_SCREEN_WIDTH + 84.f, 356.f));
+#else
+    draw_main_button(0, "ui/menu/buttons/singleplayer", "ui/menu/icons/game", "option.singleplayer",
+        B_F2(HALF_SCREEN_WIDTH - 168.f, 222.f));
+    draw_main_button(
+        1, "ui/menu/buttons/multiplayer", "ui/menu/icons/game", "option.multiplayer", B_F2(HALF_SCREEN_WIDTH, 222.f));
+    draw_main_button(2, "ui/menu/buttons/options", NULL, "option.options", B_F2(HALF_SCREEN_WIDTH + 168.f, 222.f));
+    draw_main_button(
+        3, "ui/menu/buttons/replays", "ui/menu/icons/game", "option.replays", B_F2(HALF_SCREEN_WIDTH - 168.f, 356.f));
+    draw_main_button(
+        4, "ui/menu/buttons/editor", "ui/menu/icons/editor", "option.editor", B_F2(HALF_SCREEN_WIDTH, 356.f));
+    draw_main_button(5, "ui/menu/buttons/exit", NULL, "option.exit", B_F2(HALF_SCREEN_WIDTH + 168.f, 356.f));
+#endif
+
     batch_color(
         B_U4_ALPHA(((scroll < 64.f) ? (scroll / 64.f)
                                     : ((scroll > (wrap - 64.f)) ? (1.f - ((scroll - (wrap - 64.f)) / 64.f)) : 1.f))
-                   * 160.f));
-    batch_align(B_ALIGN_TOP_LEFT);
-    batch_string("main", 16.f, credits);
+                   * 255.f));
+
+    float cx = SCREEN_WIDTH - scroll;
+    for (size_t i = 0; i < SDL_arraysize(credits); i++) {
+        batch_pos(B_F3_XY(cx, SCREEN_HEIGHT - 24.f));
+        batch_align(B_ALIGN_BOTTOM_LEFT);
+        batch_string("footer", 16.f, LFMT(credits[i][0]));
+        batch_align(B_ALIGN_TOP_LEFT);
+        const char* text = LFMT(credits[i][1]);
+        batch_string("footer", 16.f, text);
+        cx += string_width("footer", 16.f, text) + 32.f;
+    }
 
     return FALSE;
 }
@@ -660,7 +727,17 @@ static void go_to_editor_option() {
 static void start(const void* secret, size_t secret_size) {
     load_sprite("ui/backgrounds/main", AKL_NEVER);
     load_sprite("ui/backgrounds/options", AKL_NEVER);
-    load_sprite("logos/mario_forever", AKL_NEVER);
+    load_sprite("logos/mario_together", AKL_NEVER);
+    load_sprite("ui/menu/buttons/singleplayer", AKL_NEVER);
+    load_sprite("ui/menu/buttons/multiplayer", AKL_NEVER);
+    load_sprite("ui/menu/buttons/options", AKL_NEVER);
+    load_sprite("ui/menu/buttons/replays", AKL_NEVER);
+    load_sprite("ui/menu/buttons/editor", AKL_NEVER);
+    load_sprite("ui/menu/buttons/exit", AKL_NEVER);
+    load_sprite("ui/menu/icons/game", AKL_NEVER);
+    load_sprite("ui/menu/icons/editor", AKL_NEVER);
+    load_font("menu", AKL_NEVER);
+    load_font("footer", AKL_NEVER);
     load_sound("ui/enter", AKL_ONCE);
     load_sound("ui/connect", AKL_NEVER);
     load_sound("ui/disconnect", AKL_NEVER);
@@ -721,8 +798,8 @@ static void draw_ui() {
     const UI* ui = topui();
     if (CATALOG.current == MEN_MAIN && ui == NULL) {
         batch_sprite("ui/backgrounds/main");
-        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 124.f + SDL_roundf(SDL_sinf(totalticks() * 0.03f) * 8.f)));
-        batch_sprite("logos/mario_forever");
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 60.f + SDL_roundf(SDL_sinf(totalticks() * 0.03f) * 7.f)));
+        batch_sprite("logos/mario_together");
     } else {
         batch_sprite("ui/backgrounds/options");
     }

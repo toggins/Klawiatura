@@ -1,0 +1,6 @@
+{
+    "texture": "ui/menu/buttons",
+    "size": [123, 120],
+    "offset": [59, 58],
+    "uvs": [1, 123, 124, 243]
+}
