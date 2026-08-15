@@ -1547,9 +1547,9 @@ static void draw_ui() {
     }
 
     if (ImGui_IsKeyPressed(ImGuiKey_Space) && !ImGui_GetIO()->WantTextInput)
-        ImGui_OpenPopup("SHIDd", 0); // TODO for toggins: name SHIDd accordingly!!!
+        ImGui_OpenPopup("popup.markers", 0);
 
-    if (ImGui_BeginPopup("SHIDd", 0)) {
+    if (ImGui_BeginPopup("popup.markers", 0)) {
         show_folder(editor->folders);
         ImGui_EndPopup();
     }
