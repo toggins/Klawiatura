@@ -1546,6 +1546,14 @@ static void draw_ui() {
         ImGui_EndMainMenuBar();
     }
 
+    if (ImGui_IsKeyPressed(ImGuiKey_Space) && !ImGui_GetIO()->WantTextInput)
+        ImGui_OpenPopup("SHIDd", 0); // TODO for toggins: name SHIDd accordingly!!!
+
+    if (ImGui_BeginPopup("SHIDd", 0)) {
+        show_folder(editor->folders);
+        ImGui_EndPopup();
+    }
+
     if (ecursor->has_selected) {
         EditorMarker* marker = &editor->level.markers[ecursor->selected];
         const EditorDef* def = (EditorDef*)TinyMapGet(&editor->defs, marker->def_key);
@@ -1598,6 +1606,7 @@ static void draw_ui() {
 
     if (editor->error != NULL)
         ImGui_OpenPopup(LFMT("editor.error"), 0);
+
     if (ImGui_BeginPopupModal(LFMT("editor.error"), NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui_Text("%s", LFMT(editor->error));
         ImGui_Spacing();
