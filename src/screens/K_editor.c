@@ -2,8 +2,6 @@
 
 #include "K_interface.h"
 
-#include "screens/K_menu.h"
-
 #ifndef SDL_PLATFORM_EMSCRIPTEN
 //
 //
@@ -1469,7 +1467,7 @@ static void draw_ui() {
             ImGui_Separator();
 
             if (ImGui_MenuItem(LFMT("editor.exit")))
-                set_screen(SCR_MENU, NULL, MEN_EDITOR);
+                set_screen(SCR_MENU, NULL, 0);
 
             ImGui_EndMenu();
         }
@@ -1548,7 +1546,7 @@ static void draw_ui() {
         ImGui_EndMainMenuBar();
     }
 
-    if (ImGui_IsKeyPressed(ImGuiKey_Space) && !ImGui_GetIO()->WantTextInput)
+    if (ImGui_IsKeyPressed(ImGuiKey_Space) && !io->WantTextInput)
         ImGui_OpenPopup("popup.markers", 0);
 
     if (ImGui_BeginPopup("popup.markers", 0)) {
