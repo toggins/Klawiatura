@@ -125,7 +125,7 @@ jobs:
 
       - name: Release binaries
         uses: softprops/action-gh-release@v3
-        if: matrix.name != 'HTML5'
+        if: matrix.name != 'HTML5' && !github.event.repository.fork
         with:
           draft: ${{ github.ref_name != 'master' }}
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
@@ -133,11 +133,11 @@ jobs:
           files: build/${{ env.OUTNAME }}.zip
 
       - name: Prepare for HTML5 distibution
-        if: matrix.name == 'HTML5'
+        if: matrix.name == 'HTML5' && !github.event.repository.fork
         run: cp -vr build/Klawiatura.{js,wasm,data} www
 
       - name: Publish HTML5
         id: publish
         uses: nonk123/sanity-action@master
-        if: matrix.name == 'HTML5'
+        if: matrix.name == 'HTML5' && !github.event.repository.fork
         with: { push_to_github_pages: true }
