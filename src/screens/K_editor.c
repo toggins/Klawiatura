@@ -1038,8 +1038,9 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
     yyjson_doc_free(json);
 }
 
-static void start(Secret secret) {
+static void start(const void* secret, size_t secret_size) {
     (void)secret;
+    (void)secret_size;
 
     CIMGUI_CHECKVERSION();
 
@@ -1468,7 +1469,7 @@ static void draw_ui() {
             ImGui_Separator();
 
             if (ImGui_MenuItem(LFMT("editor.exit")))
-                set_screen_uint(SCR_MENU, MEN_EDITOR);
+                set_screen(SCR_MENU, NULL, MEN_EDITOR);
 
             ImGui_EndMenu();
         }
