@@ -1,16 +1,17 @@
-name: Build and release binary distributions
+name: Build binaries
 
 on:
-  push:
-    branches: [master]
-    tags: [v*]
-    paths-ignore:
+  workflow_dispatch:
+
+  pull_request:
+    paths-ignore: &ig
       - README.md
       - .*
 
-concurrency:
-  group: release
-  cancel-in-progress: true
+  push:
+    branches: [master]
+    tags: [v*]
+    paths-ignore: *ig
 
 env:
   CRAZY_AHH_DEPS: >-
@@ -23,19 +24,9 @@ env:
     libdecor-0-dev liburing-dev
 
 jobs:
-  release:
-    name: Publish ${{ matrix.name }} binaries
+  build:
+    name: Build ${{ matrix.name }} binaries
     runs-on: ${{ matrix.os }}
-
-    permissions:
-      contents: write
-      pages: write
-      id-token: write
-
-    environment:
-      name: ${{ matrix.name == 'HTML5' && 'github-pages' || null }}
-      url: ${{ steps.publish.outputs.page_url }}
-
     strategy:
       fail-fast: false
       matrix:
@@ -59,7 +50,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Ethically source Discord Social SDK
-        if: matrix.name != 'HTML5'
+        if: matrix.name != 'HTML5' && !github.event.repository.fork && github.event_name != 'pull_request'
         shell: bash
         run: |
           git config --global init.defaultBranch master
@@ -123,21 +114,54 @@ jobs:
         if: matrix.name != 'HTML5'
         run: cmake --build build --target package
 
+      - name: Nuke _deps entirely
+        shell: bash
+        run: rm -rf build/_deps
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-${{ matrix.name }}
+          path: build/**
+
+  release:
+    name: Release binaries
+    needs: build
+
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.repository.fork && github.event_name != 'pull_request' }}
+
+    environment:
+      name: github-pages
+      url: ${{ steps.publish.outputs.page_url }}
+
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Checkout HTML5 www/
+        uses: actions/checkout@v7
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: build-*
+          path: fuck
+
       - name: Release binaries
         uses: softprops/action-gh-release@v3
-        if: matrix.name != 'HTML5'
         with:
           draft: ${{ github.ref_name != 'master' }}
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
           prerelease: ${{ github.ref_name == 'master' }}
-          files: build/${{ env.OUTNAME }}.zip
+          files: fuck/build-*/Klawiatura-*.zip
 
       - name: Prepare for HTML5 distibution
-        if: matrix.name == 'HTML5'
-        run: cp -vr build/Klawiatura.{js,wasm,data} www
+        run: cp -vr fuck/build-HTML5/Klawiatura.{js,wasm,data} www
 
       - name: Publish HTML5
         id: publish
         uses: nonk123/sanity-action@master
-        if: matrix.name == 'HTML5'
         with: { push_to_github_pages: true }
