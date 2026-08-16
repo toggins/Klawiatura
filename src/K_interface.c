@@ -311,13 +311,12 @@ void set_screen(ScreenType type, const void* secret, size_t secret_size) {
 
     SDL_free((void*)to_secret);
     to_secret = NULL;
-    to_secret_size = 0;
+    to_secret_size = secret_size;
 
     if (secret != NULL && secret_size > 0) {
         to_secret = SDL_malloc(secret_size);
         EXPECT(to_secret, "Failed to allocate secret for screen %u", type);
         SDL_memcpy(to_secret, secret, secret_size);
-        to_secret_size = secret_size;
     }
 }
 

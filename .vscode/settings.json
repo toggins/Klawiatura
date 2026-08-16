@@ -4,15 +4,21 @@
     "C_Cpp.intelliSenseEngine": "disabled",
     "clangd.enable": true,
     "clangd.enableCodeCompletion": true,
-    "clangd.arguments": ["--header-insertion=never"],
+    "clangd.arguments": [
+        "--header-insertion=never"
+    ],
     "cmake.generator": "Ninja",
     "cmake.exportCompileCommandsFile": true,
     "cmake.debugConfig": {
-        "args": ["-data", "../assets/data"]
+        "args": [
+            "-data",
+            "../assets/data"
+        ]
     },
     "cmake.configureSettings": {
         "CMAKE_WARN_DEPRECATED": "OFF"
     },
+    "rewrap.wrappingColumn": 120,
     "files.exclude": {
         ".cache": true,
         "__cmake*": true

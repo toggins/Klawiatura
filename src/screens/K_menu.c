@@ -15,22 +15,8 @@
 #include "K_video.h"
 #include "K_worlds.h"
 
+#include "screens/K_menu.h"
 #include "uis/K_message.h"
-
-enum {
-    MEN_NULL,
-
-    MEN_MAIN,
-    MEN_SINGLEPLAYER,
-    MEN_MULTIPLAYER,
-    MEN_REPLAYS,
-    MEN_HOST_LOBBY,
-    MEN_LOBBY_LIST,
-    MEN_LOBBY,
-    MEN_EDITOR,
-
-    MEN_SIZE,
-};
 
 static const char* credits[6][2] = {
     {"menu.credits.mario_forever",  "menu.credits.mario_forever.text" },
@@ -775,7 +761,12 @@ static void start(const void* secret, size_t secret_size) {
 
 s_no_secret:
     if (got_invite || !is_connected()) {
-        set_menu(&CATALOG, MEN_MAIN);
+        // GROSS HACK: using `secret_size` as an extra uint parameter for `set_menu`.
+        if (!secret && secret_size)
+            set_menu(&CATALOG, secret_size);
+        else
+            set_menu(&CATALOG, MEN_MAIN);
+
         for (MenuType i = 0; i < (MenuType)MEN_SIZE; i++)
             CATALOG.menus[i].from = MEN_NULL;
     }
