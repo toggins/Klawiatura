@@ -3,14 +3,16 @@
 #include "K_game.h"
 #include "K_input.h"
 #include "K_interface.h"
+#include "K_net.h"
 #include "K_tick.h"
 
 static Uint64 last_time = 0;
-static float pending_ticks = 0.f, total_ticks = 0.f, delta_ticks = 0.f;
+static float delta_ticks = 0.f, pending_ticks = 0.f;
+static float screen_ticks = 0.f, ui_ticks = 0.f;
 
 void from_scratch() {
     last_time = SDL_GetTicksNS();
-    pending_ticks = total_ticks = delta_ticks = 0.f;
+    delta_ticks = pending_ticks = screen_ticks = ui_ticks = 0.f;
 }
 
 void new_frame() {
@@ -20,8 +22,13 @@ void new_frame() {
     last_time = current_time;
 
     pending_ticks += delta_ticks;
-    if (!screen_is_transitioning())
-        total_ticks += delta_ticks;
+    if (!screen_is_transitioning()) {
+        const UI* ui = topui();
+        if (ui == NULL || !(ui->flags & (is_connected() ? UIF_MEGABLOCK : (UIF_BLOCK | UIF_MEGABLOCK))))
+            screen_ticks += delta_ticks;
+
+        ui_ticks += delta_ticks;
+    }
 }
 
 Bool got_ticks() {
@@ -37,10 +44,14 @@ float deltaticks() {
     return delta_ticks;
 }
 
-float totalticks() {
-    return total_ticks;
-}
-
 float pendingticks() {
     return pending_ticks;
+}
+
+float screenticks() {
+    return screen_ticks;
+}
+
+float uiticks() {
+    return ui_ticks;
 }

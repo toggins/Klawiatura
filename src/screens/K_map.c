@@ -514,7 +514,7 @@ static void draw_ui() {
 
         const WorldContext* wctx = worldcontext();
 
-        const Uint32 t = (Uint32)(totalticks() * 0.5f);
+        const Uint32 t = (Uint32)(screenticks() * 0.5f);
         Uint8 cross = 0;
         for (size_t i = 0, n = TinyDLength(map_state->points); i < n; i++) {
             const MapPoint* point = &map_state->points[i];
@@ -550,7 +550,7 @@ static void draw_ui() {
         batch_scale(B_F2_1);
 
         if (map_state->ambush > 1 && map_state->current_node >= TinyDLength(map_state->path)) {
-            batch_pos(B_F3_XY(px + 24.f, py - SDL_fabsf(SDL_sinf(totalticks() * 12.f * (SDL_PI_F / 180.f)) * 10.f)));
+            batch_pos(B_F3_XY(px + 24.f, py - SDL_fabsf(SDL_sinf(screenticks() * 12.f * (SDL_PI_F / 180.f)) * 10.f)));
             batch_sprite("ui/map/bro");
         }
     }
@@ -568,14 +568,14 @@ static void draw_ui() {
         const Sprite* tspr = get_sprite(map_state->title);
         const float tb = (tspr == NULL) ? 0.f : (tspr->size[1] - tspr->offset[1]);
         batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y + tb));
-        batch_sprite(LFMT("map.completed", 'd', (int)(totalticks() * 0.5f) % 16));
+        batch_sprite(LFMT("map.completed", 'd', (int)(screenticks() * 0.5f) % 16));
     }
 
     batch_pos(B_F3_SCREEN);
     batch_sprite("ui/map/logo");
 
     if (map_state->enter <= 0 && map_state->path != NULL && map_state->current_node >= TinyDLength(map_state->path)
-        && SDL_fmodf(totalticks(), 25.f) < 12.5f)
+        && SDL_fmodf(screenticks(), 25.f) < 12.5f)
     {
         batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 24.f));
         batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));

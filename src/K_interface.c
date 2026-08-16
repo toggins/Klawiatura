@@ -185,7 +185,7 @@ iu_dont_change:
                 cursor_frame += 6;
                 if (cursor_frame >= 120)
                     cursor_frame = 0;
-            } else if (SDL_fmodf(totalticks(), 5.f) < 1.f && SDL_rand(20) == 10) {
+            } else if (SDL_fmodf(uiticks(), 5.f) < 1.f && SDL_rand(20) == 10) {
                 ++cursor_frame;
             }
 

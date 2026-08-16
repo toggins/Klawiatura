@@ -60,7 +60,7 @@ static void load_clouds() {
 static void draw_clouds(const GameActor* actor) {
     batch_reset();
     const FVec2 ipos = get_interp(actor);
-    const Sint32 ax = Fx2Int(ipos.x) + ((Sint32)(Fx2Float(actor->vel.x) * totalticks()) % 64), ay = Fx2Int(ipos.y);
+    const Sint32 ax = Fx2Int(ipos.x) + ((Sint32)(Fx2Float(actor->vel.x) * screenticks()) % 64), ay = Fx2Int(ipos.y);
     batch_pos(B_F3(ax, ay, Fx2Float(actor->depth)));
     batch_tile(B_B2(TRUE, FALSE));
     const Sint32 w = Fx2Int(levelinfo()->size.x) + 128;

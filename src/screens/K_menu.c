@@ -173,7 +173,7 @@ static void draw_main_button(size_t idx, const char* button, const char* icon, c
     batch_sprite(button);
     if (CATALOG.menus[MEN_MAIN].option == idx) {
         batch_blend(BM_ADD);
-        batch_color(B_U4_VALUE(96.f + (SDL_sinf(totalticks() * 0.15f) * 32.f)));
+        batch_color(B_U4_VALUE(96.f + (SDL_sinf(screenticks() * 0.15f) * 32.f)));
         batch_sprite(button);
         batch_color(B_U4_WHITE);
         batch_blend(BM_NORMAL);
@@ -202,7 +202,7 @@ static Bool draw_main_menu() {
         if (i < (SDL_arraysize(credits) - 1))
             wrap += 32.f;
     }
-    const float scroll = SDL_fmodf(totalticks(), wrap);
+    const float scroll = SDL_fmodf(screenticks(), wrap);
 
 #ifdef SDL_PLATFORM_EMSCRIPTEN
     draw_main_button(0, "ui/menu/buttons/singleplayer", "ui/menu/icons/game", "option.singleplayer",
@@ -802,7 +802,7 @@ static void draw_ui() {
     const UI* ui = topui();
     if (CATALOG.current == MEN_MAIN && ui == NULL) {
         batch_sprite("ui/backgrounds/main");
-        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 60.f + SDL_roundf(SDL_sinf(totalticks() * 0.03f) * 7.f)));
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 60.f + SDL_roundf(SDL_sinf(screenticks() * 0.03f) * 7.f)));
         batch_sprite("logos/mario_together");
     } else {
         batch_sprite("ui/backgrounds/options");
@@ -814,7 +814,7 @@ static void draw_ui() {
     draw_catalog(&CATALOG);
 
     if (CATALOG.current == MEN_MAIN) {
-        const float t = totalticks();
+        const float t = screenticks();
         if (t < 45.f) {
             batch_reset();
             batch_pos(B_F3_XY(-1000.f, -1000.f));

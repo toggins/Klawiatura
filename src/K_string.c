@@ -35,5 +35,5 @@ const char* fmt(const char* pattern, ...) {
 }
 
 const char* caret(Bool active) {
-    return active ? ((SDL_fmodf(totalticks(), TICKRATE) < ((float)TICKRATE * 0.5f)) ? "|" : " ") : "";
+    return active ? ((SDL_fmodf(uiticks(), TICKRATE) < ((float)TICKRATE * 0.5f)) ? "|" : " ") : "";
 }
