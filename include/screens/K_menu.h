@@ -1,6 +1,6 @@
 #pragma once
 
-typedef enum {
+enum {
     MEN_NULL,
 
     MEN_MAIN,
@@ -13,4 +13,4 @@ typedef enum {
     MEN_EDITOR,
 
     MEN_SIZE,
-} MenuOption;
+};
