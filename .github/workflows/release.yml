@@ -130,7 +130,7 @@ jobs:
     if: ${{ !github.event.repository.fork && github.event_name != 'pull_request' }}
 
     environment:
-      name: ${{ matrix.name == 'HTML5' && 'github-pages' || null }}
+      name: github-pages
       url: ${{ steps.publish.outputs.page_url }}
 
     permissions:
