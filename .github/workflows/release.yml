@@ -1,4 +1,4 @@
-name: Build and release binary distributions
+name: Build binaries
 
 on:
   workflow_dispatch:
