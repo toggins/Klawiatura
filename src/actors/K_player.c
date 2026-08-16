@@ -347,20 +347,6 @@ static void tick(GameActor* actor) {
             actor->vel.x -= 8192;
     }
 
-    // 209, 210, 211, 212
-    if (ANY_INPUT(player, GI_DOWN) && !ANY_INPUT(player, GI_LEFT | GI_RIGHT) && TOUCHING(actor, TOUCH_BOTTOM)
-        && player->powerup != POW_NONE)
-    {
-        FLAG_ON(actor, FLG_PLAYER_DUCK);
-    }
-
-    // 213 (modified)
-    if (ANY_FLAG(actor, FLG_PLAYER_DUCK)
-        && (!TOUCHING(actor, TOUCH_BOTTOM) || !ANY_INPUT(player, GI_DOWN) || player->powerup == POW_NONE))
-    {
-        FLAG_OFF(actor, FLG_PLAYER_DUCK);
-    }
-
     // 214 (modified), 215 (modified)
     if (ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
         if (!ANY_FLAG(actor, FLG_X_FLIP) && actor->vel.x > Fx0)
@@ -467,6 +453,19 @@ static void tick(GameActor* actor) {
     displace_actor(actor, Int2Fx(10), TRUE);
     if (get_actor(VAL(actor, PLAYER_WARP)) == NULL && !ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
         collide_actor(actor);
+
+    // 209, 210, 211, 212, 213 (modified)
+    // Moved below displacement/collision to fix a single frame of not being crouched.
+    if (ANY_INPUT(player, GI_DOWN) && !ANY_INPUT(player, GI_LEFT | GI_RIGHT) && TOUCHING(actor, TOUCH_BOTTOM)
+        && player->powerup != POW_NONE)
+    {
+        FLAG_ON(actor, FLG_PLAYER_DUCK);
+    }
+    if (ANY_FLAG(actor, FLG_PLAYER_DUCK)
+        && (!TOUCHING(actor, TOUCH_BOTTOM) || !ANY_INPUT(player, GI_DOWN) || player->powerup == POW_NONE))
+    {
+        FLAG_OFF(actor, FLG_PLAYER_DUCK);
+    }
 
     // 218 (modified), 219 (modified), 220 (modified)
     // Moved below events 240, 241 to replicate Clickteam jump height and to prevent jump buffs against a wall.
