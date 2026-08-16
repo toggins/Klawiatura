@@ -5,9 +5,8 @@
 #include "K_tick.h"
 #include "K_video.h"
 
-void start(const void* secret, size_t secret_size) {
+void start(Secret secret) {
     (void)secret;
-    (void)secret_size;
 
     load_sprite(LFMT("logo.disclaimer"), AKL_NEVER);
     load_sprite("logos/sdl", AKL_NEVER);
@@ -17,7 +16,7 @@ void start(const void* secret, size_t secret_size) {
 // 150 + 130
 void tick() {
     if (totalticks() > 250.f || kb_pressed(KB_JUMP) || kb_pressed(KB_UI_ENTER))
-        set_screen(SCR_MENU, NULL, 0);
+        set_screen(SCR_MENU);
 }
 
 void draw() {

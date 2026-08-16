@@ -22,13 +22,12 @@ static void kick_player_option() {
 
 static const char* fmt_return_to_title(size_t idx) {
     (void)idx;
-
     return LFMT(is_connected() ? "option.return_to_lobby" : "option.return_to_title");
 }
 
 static void return_to_title_option() {
     bail_from_game();
-    set_screen(SCR_MENU, NULL, 0);
+    set_screen(SCR_MENU);
 }
 
 static void load() {

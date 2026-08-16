@@ -3,6 +3,7 @@
 #include <SDL3/SDL_events.h>
 
 #include "K_log.h"
+#include "K_memory.h"
 
 #define MAX_MENUS 16
 #define MAX_OPTIONS 16
@@ -42,8 +43,25 @@ typedef struct {
     float duration;
 } Transition;
 
+typedef Uint8 SecretType;
+enum {
+    ST_NULL,
+    ST_UINT,
+    ST_BUFFER,
+};
+
 typedef struct {
-    void (*start)(const void*, size_t);
+    SecretType type;
+    union {
+        Uint64 uint;
+
+        /// Memory ownership of the buffer is transferred to `set_screen`.
+        FatPointer buffer;
+    };
+} Secret;
+
+typedef struct {
+    void (*start)(Secret);
     void (*event)(const SDL_Event*);
     void (*tick)();
     void (*pre_interp)(), (*interp)();
@@ -122,8 +140,11 @@ typedef struct {
 
 void interface_init(), interface_event(SDL_Event*), interface_update(), interface_teardown();
 
+void set_screen_pro(ScreenType, Secret);
+void set_screen_ex(ScreenType, const void* src, size_t size);
+void set_screen(ScreenType), set_screen_uint(ScreenType, Uint64);
+
 ScreenType get_screen();
-void set_screen(ScreenType, const void*, size_t);
 Bool screen_is_transitioning();
 
 void boot_to_menu(const char*);

@@ -3,12 +3,13 @@
 #include "K_net.h"
 #include "K_replay.h"
 
-static void start(const void* secret, size_t secret_size) {
-    EXPECT(secret_size == sizeof(GameContext), "Secret isn't GameContext?");
+static void start(Secret secret) {
+    EXPECT(secret.type == ST_BUFFER, "Secret isn't GameContext?");
+    EXPECT(secret.buffer.size == sizeof(GameContext), "Secret isn't GameContext?");
 
     load_ui(UI_PAUSE);
 
-    start_game((GameContext*)secret);
+    start_game((GameContext*)secret.buffer.data);
     start_replay();
 }
 

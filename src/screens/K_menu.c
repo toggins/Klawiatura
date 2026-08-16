@@ -675,7 +675,7 @@ static void options_option() {
 }
 
 static void exit_option() {
-    set_screen(SCR_EXIT, NULL, 0);
+    set_screen(SCR_EXIT);
 }
 
 static const char* fmt_test_level(size_t idx) {
@@ -703,14 +703,14 @@ static void test_level_option() {
 }
 
 static void go_to_editor_option() {
-    set_screen(SCR_EDITOR, NULL, 0);
+    set_screen(SCR_EDITOR);
 }
 
 // ======
 // SCREEN
 // ======
 
-static void start(const void* secret, size_t secret_size) {
+static void start(Secret secret) {
     load_sprite("ui/backgrounds/main", AKL_NEVER);
     load_sprite("ui/backgrounds/options", AKL_NEVER);
     load_sprite("logos/mario_together", AKL_NEVER);
@@ -732,24 +732,24 @@ static void start(const void* secret, size_t secret_size) {
     // Handle invite JSON
     Bool got_invite = FALSE;
 
-    if (secret == NULL)
-        goto s_no_secret;
+    if (secret.type != ST_BUFFER)
+        goto s_secret_nonbuf;
 
-    yyjson_doc* json = read_json(secret, secret_size, NULL);
+    yyjson_doc* json = read_json(secret.buffer.data, secret.buffer.size, NULL);
     if (json == NULL)
-        goto s_no_secret;
+        goto s_secret_nonbuf;
 
     yyjson_val* root = yyjson_doc_get_root(json);
     if (!yyjson_is_obj(root)) {
         yyjson_doc_free(json);
-        goto s_no_secret;
+        goto s_secret_nonbuf;
     }
 
     const char* server = yyjson_get_str(yyjson_obj_get(root, "server"));
     const NetID lid = yyjson_get_uint(yyjson_obj_get(root, "lobby"));
     if (server == NULL || lid <= 0) {
         yyjson_doc_free(json);
-        goto s_no_secret;
+        goto s_secret_nonbuf;
     }
 
     set_hostname(server);
@@ -759,12 +759,11 @@ static void start(const void* secret, size_t secret_size) {
 
     yyjson_doc_free(json);
 
-s_no_secret:
+s_secret_nonbuf:
     if (got_invite || !is_connected()) {
-        // GROSS HACK: using `secret_size` as an extra uint parameter for `set_menu`.
-        if (!secret && secret_size) {
-            set_menu(&CATALOG, secret_size);
-            CATALOG.menus[secret_size].from = MEN_MAIN;
+        if (secret.type == ST_UINT) {
+            set_menu(&CATALOG, secret.uint);
+            CATALOG.menus[secret.uint].from = MEN_MAIN;
         } else {
             set_menu(&CATALOG, MEN_MAIN);
 

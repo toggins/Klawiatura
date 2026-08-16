@@ -41,8 +41,7 @@ static void rpc_callback(Discord_ClientResult* result, void* userdata) {}
 
 static void invite_callback(Discord_String secret, void* userdata) {
     (void)userdata;
-
-    set_screen(SCR_MENU, secret.ptr, secret.size);
+    set_screen_ex(SCR_MENU, secret.ptr, secret.size);
 }
 
 #endif

@@ -40,9 +40,7 @@ static ScreenType current_screen = SCR_NULL, to_screen = SCR_NULL;
 
 static Transition to_transition = {0};
 static float to_transition_time = 0.f;
-
-static void* to_secret = NULL;
-static size_t to_secret_size = 0;
+static Secret to_secret = {0};
 
 // `extern` in K_uis.c
 const UITable* UIS[UI_SIZE] = {NULL};
@@ -52,6 +50,13 @@ static Uint8 cursor_frame = 0;
 
 static Bool boot_state = FALSE;
 static const char* boot_reason = NULL;
+
+static void cleanup_secret(Secret* secret) {
+    if (secret->type == ST_BUFFER)
+        SDL_free(secret->buffer.data);
+
+    *secret = (Secret){.type = ST_NULL};
+}
 
 void interface_init() {
     extern void POPULATE_SCREENS_TABLE(), POPULATE_UIS_TABLE();
@@ -68,7 +73,7 @@ void interface_init() {
     load_sound("ui/repeat", AKL_ALWAYS);
     load_sound("ui/error", AKL_ALWAYS);
 
-    set_screen(SCR_LOGO, NULL, 0);
+    set_screen(SCR_LOGO);
 }
 
 void interface_event(SDL_Event* event) {
@@ -85,7 +90,7 @@ static void cancel_boot() {
         SDL_free((void*)boot_reason);
         boot_reason = NULL;
     } else {
-        set_screen(SCR_MENU, NULL, 0);
+        set_screen(SCR_MENU);
     }
 }
 
@@ -118,13 +123,8 @@ void interface_update() {
     to_transition = (Transition){0};
     to_transition_time = 0.f;
 
-    void* secret = to_secret;
-    const size_t secret_size = to_secret_size;
-    to_secret = NULL;
-    to_secret_size = 0;
-
-    SCREEN_CALL(current_screen, start, secret, secret_size);
-    SDL_free(secret);
+    SCREEN_CALL(current_screen, start, to_secret);
+    cleanup_secret(&to_secret);
 
     update_discord_status();
     input_wipeout();
@@ -292,7 +292,7 @@ iu_dont_change:
 void interface_teardown() {
     destroy_ui(root_ui);
     SCREEN_CALL(current_screen, end);
-    SDL_free(to_secret);
+    cleanup_secret(&to_secret);
     SDL_free((void*)boot_reason);
 }
 
@@ -300,7 +300,20 @@ ScreenType get_screen() {
     return current_screen;
 }
 
-void set_screen(ScreenType type, const void* secret, size_t secret_size) {
+void set_screen(ScreenType type) {
+    set_screen_pro(type, (Secret){.type = ST_NULL});
+}
+
+void set_screen_uint(ScreenType type, Uint64 x) {
+    set_screen_pro(type, (Secret){.type = ST_UINT, .uint = x});
+}
+
+void set_screen_ex(ScreenType type, const void* src, size_t size) {
+    Secret secret = {.type = ST_BUFFER, .buffer = make_copy(src, size)};
+    set_screen_pro(type, secret);
+}
+
+void set_screen_pro(ScreenType type, Secret secret) {
     ASSUME(type > SCR_NULL, "Going to invalid screen %u?", type);
     to_screen = type;
 
@@ -309,15 +322,8 @@ void set_screen(ScreenType type, const void* secret, size_t secret_size) {
     to_transition = (screen == NULL || screen->transit == NULL) ? (Transition){0} : screen->transit();
     to_transition_time = 0.f;
 
-    SDL_free((void*)to_secret);
-    to_secret = NULL;
-    to_secret_size = secret_size;
-
-    if (secret != NULL && secret_size > 0) {
-        to_secret = SDL_malloc(secret_size);
-        EXPECT(to_secret, "Failed to allocate secret for screen %u", type);
-        SDL_memcpy(to_secret, secret, secret_size);
-    }
+    cleanup_secret(&to_secret);
+    to_secret = secret;
 }
 
 Bool screen_is_transitioning() {

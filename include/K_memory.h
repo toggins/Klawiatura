@@ -17,3 +17,10 @@ void read_buffer8(Buffer*, Uint8*), read_buffer16(Buffer*, Uint16*), read_buffer
 void write_buffer8(Buffer*, const Uint8*), write_buffer16(Buffer*, const Uint16*),
     write_buffer32(Buffer*, const Uint32*), write_buffer64(Buffer*, const Uint64*),
     write_buffer_string(Buffer*, const char*, size_t);
+
+typedef struct {
+    size_t size;
+    char* data;
+} FatPointer;
+
+FatPointer make_copy(const void*, size_t);

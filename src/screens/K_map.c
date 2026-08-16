@@ -72,9 +72,11 @@ typedef struct {
 
 static MapState* map_state = NULL;
 
-static void start(const void* secret, size_t secret_size) {
-    EXPECT(secret_size == sizeof(WorldContext), "Secret isn't WorldContext?");
-    start_world(secret);
+static void start(Secret secret) {
+    EXPECT(secret.type == ST_BUFFER, "Secret isn't WorldContext?");
+    EXPECT(secret.buffer.size == sizeof(WorldContext), "Secret isn't WorldContext?");
+
+    start_world((const WorldContext*)secret.buffer.data);
     const WorldContext* wctx = worldcontext();
 
     const World* world = get_world_key(wctx->world);
@@ -413,7 +415,7 @@ static void tick() {
             }
         }
     } else if (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE)) {
-        set_screen(SCR_MENU, NULL, 0);
+        set_screen(SCR_MENU);
     }
 
     if (can_move) {

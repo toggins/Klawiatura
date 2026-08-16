@@ -194,7 +194,7 @@ void jump_to_world(const WorldContext* wctx, Bool as_host) {
     if (world == NULL) {
         if (get_screen() != SCR_MENU) {
             bail_from_game();
-            set_screen(SCR_MENU, NULL, 0);
+            set_screen(SCR_MENU);
         }
 
         WTF("Invalid world key %" SDL_PRIu64, wctx->world);
@@ -203,7 +203,7 @@ void jump_to_world(const WorldContext* wctx, Bool as_host) {
 
     spread_world_packet(wctx);
     if (world->has_map) {
-        set_screen(SCR_MAP, wctx, sizeof(*wctx));
+        set_screen_ex(SCR_MAP, wctx, sizeof(*wctx));
         return;
     }
 

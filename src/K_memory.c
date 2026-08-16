@@ -1,5 +1,6 @@
 #include <SDL3/SDL_endian.h>
 
+#include "K_log.h"
 #include "K_memory.h"
 #include "K_misc.h"
 
@@ -72,4 +73,16 @@ void write_buffer_string(Buffer* buffer, const char* dest, size_t size) {
         if (c == '\0')
             break;
     }
+}
+
+FatPointer make_copy(const void* data, size_t size) {
+    FatPointer result = {0};
+
+    result.data = SDL_malloc(size);
+    EXPECT(result.data != NULL, "make_copy OOM");
+
+    SDL_memcpy(result.data, data, size);
+    result.size = size;
+
+    return result;
 }
