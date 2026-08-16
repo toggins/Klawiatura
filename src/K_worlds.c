@@ -203,7 +203,7 @@ void jump_to_world(const WorldContext* wctx, Bool as_host) {
 
     spread_world_packet(wctx);
     if (world->has_map) {
-        set_screen_ex(SCR_MAP, wctx, sizeof(*wctx));
+        set_screen_buf(SCR_MAP, wctx, sizeof(*wctx));
         return;
     }
 

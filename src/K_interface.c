@@ -308,7 +308,7 @@ void set_screen_uint(ScreenType type, Uint64 x) {
     set_screen_pro(type, (Secret){.type = ST_UINT, .uint = x});
 }
 
-void set_screen_ex(ScreenType type, const void* src, size_t size) {
+void set_screen_buf(ScreenType type, const void* src, size_t size) {
     Secret secret = {.type = ST_BUFFER, .buffer = make_copy(src, size)};
     set_screen_pro(type, secret);
 }

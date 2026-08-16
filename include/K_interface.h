@@ -141,7 +141,7 @@ typedef struct {
 void interface_init(), interface_event(SDL_Event*), interface_update(), interface_teardown();
 
 void set_screen_pro(ScreenType, Secret);
-void set_screen_ex(ScreenType, const void* src, size_t size);
+void set_screen_buf(ScreenType, const void* src, size_t size);
 void set_screen(ScreenType), set_screen_uint(ScreenType, Uint64);
 
 ScreenType get_screen();

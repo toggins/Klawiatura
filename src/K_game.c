@@ -478,7 +478,7 @@ void jump_to_game(const GameContext* ctx, Bool as_host) {
     }
 
     spread_game_packet(ctx);
-    set_screen_ex(SCR_GAME, ctx, sizeof(*ctx));
+    set_screen_buf(SCR_GAME, ctx, sizeof(*ctx));
 }
 
 // =====

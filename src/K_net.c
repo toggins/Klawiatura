@@ -271,7 +271,7 @@ void net_update() {
             if (world->has_map) {
                 if (get_screen() == SCR_MENU)
                     play_generic_sound("ui/enter", PLAY_SYSTEM);
-                set_screen_ex(SCR_MAP, &ctx, sizeof(ctx));
+                set_screen_buf(SCR_MAP, &ctx, sizeof(ctx));
             } else {
                 start_world(&ctx);
             }
@@ -318,7 +318,7 @@ void net_update() {
             if (screen == SCR_MENU || screen == SCR_MAP)
                 play_generic_sound("ui/enter", PLAY_SYSTEM);
 
-            set_screen_ex(SCR_GAME, &ctx, sizeof(ctx));
+            set_screen_buf(SCR_GAME, &ctx, sizeof(ctx));
             break;
         }
 
