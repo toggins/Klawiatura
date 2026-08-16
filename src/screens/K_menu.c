@@ -762,13 +762,15 @@ static void start(const void* secret, size_t secret_size) {
 s_no_secret:
     if (got_invite || !is_connected()) {
         // GROSS HACK: using `secret_size` as an extra uint parameter for `set_menu`.
-        if (!secret && secret_size)
+        if (!secret && secret_size) {
             set_menu(&CATALOG, secret_size);
-        else
+            CATALOG.menus[secret_size].from = MEN_MAIN;
+        } else {
             set_menu(&CATALOG, MEN_MAIN);
 
-        for (MenuType i = 0; i < (MenuType)MEN_SIZE; i++)
-            CATALOG.menus[i].from = MEN_NULL;
+            for (MenuType i = 0; i < (MenuType)MEN_SIZE; i++)
+                CATALOG.menus[i].from = MEN_NULL;
+        }
     }
 
     play_generic_track("doxeh_remix", PLAY_LOOPING, 0);
