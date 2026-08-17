@@ -3,6 +3,7 @@
 /.cache
 compile_commands.json
 /__*
+/_sanity.lua
 *.bak
 
 modsrc/placeholder*

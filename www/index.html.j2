@@ -10,7 +10,7 @@
     <title>Mario Together</title>
 
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
-    <link rel="stylesheet" href="/assets/style.css" />
+    <link rel="stylesheet" href="/assets/style.css{{ nocache }}" />
 
     <link rel="preload" href="/assets/loading.gif" as="image" />
 
@@ -25,10 +25,17 @@
         <script type="text/javascript">
             var Module = {
                 canvas: document.getElementById("canvas"),
+                locateFile: function (path, scriptDirectory) {
+                    if (path.endsWith('.wasm')) {
+                        return scriptDirectory + 'Klawiatura.wasm{{ nocache }}';
+                    } else {
+                        return scriptDirectory + path;
+                    }
+                }
             };
         </script>
 
-        <script async src="Klawiatura.js"></script>
+        <script async src="/Klawiatura.js{{ nocache }}"></script>
 
         <footer>
             Want custom content?
