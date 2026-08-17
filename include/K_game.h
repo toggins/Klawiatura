@@ -111,6 +111,9 @@ enum {
     ACT_POISON_MUSHROOM,
     ACT_GREEN_LUI,
     ACT_BEETROOT,
+    ACT_FIREBALL_PROJECTILE,
+    ACT_BEETROOT_PROJECTILE,
+    ACT_EXPLODE,
 
     ACT_SIZE,
 };
@@ -243,7 +246,7 @@ typedef struct {
     PlayerPowerup powerup;
 
     Uint8 track;
-    ActorID actor, projectiles[MAX_PROJECTILES], sinking_projectiles[MAX_SINKING_PROJECTILES];
+    ActorID actor;
     Fixed xscroll;
     FVec2 pos;
     FRect bounds;
@@ -444,6 +447,7 @@ void replace_actors(ActorType, ActorType);
 void move_actor(GameActor*, const FVec2), push_actors(GameActor*);
 
 Bool in_any_view(const FVec2, Fixed, Bool), in_player_view(const GamePlayer*, const FVec2, Fixed, Bool);
+Bool in_any_x_view(Fixed, Fixed), in_player_x_view(const GamePlayer*, Fixed, Fixed);
 Bool below_nearest_bounds(const FVec2, Fixed);
 
 void collide_actor(GameActor*);

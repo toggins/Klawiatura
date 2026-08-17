@@ -4,6 +4,7 @@
 
 #include "actors/K_effects.h"
 #include "actors/K_powerups.h"
+#include "actors/K_projectiles.h"
 
 typedef Uint8 BlockTypes;
 enum {
@@ -23,15 +24,18 @@ enum {
     FLG_BLOCK_EMPTY = CUSTOM_FLAG(3),
 };
 
-static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
+static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
     if (actor == NULL || actor->type != ACT_BLOCK || ANY_FLAG(actor, FLG_BLOCK_EMPTY))
-        return;
+        return FALSE;
 
     if (ANY_FLAG(actor, FLG_BLOCK_REPEAT)) {
-        if (VAL(actor, BLOCK_TIME) <= 0)
+        if (VAL(actor, BLOCK_TIME) <= 0) {
             VAL(actor, BLOCK_TIME) = 1;
-        else if (VAL(actor, BLOCK_BUMP) > 0 && VAL(actor, BLOCK_TIME) <= 301)
-            return;
+        } else if (from != NULL && from->type == ACT_PLAYER && VAL(actor, BLOCK_BUMP) > 0
+                   && VAL(actor, BLOCK_TIME) <= 301)
+        {
+            return FALSE;
+        }
     } else if (VAL(actor, BLOCK_TYPE) == BLOCK_BRICK && VAL(actor, BLOCK_ITEM) == ACT_NULL) {
         if (strong) {
             if (from != NULL) {
@@ -81,7 +85,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
         if (bump != NULL && from != NULL)
             bump->player = from->player;
 
-        return;
+        return TRUE;
     }
 
     VAL(actor, BLOCK_BUMP) = 1;
@@ -92,7 +96,7 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 
     if (VAL(actor, BLOCK_ITEM) == ACT_NULL || ANY_FLAG(actor, FLG_BLOCK_EMPTY)) {
         play_state_sound("bump", PLAY_POS, A_ACTOR(actor));
-        return;
+        return TRUE;
     }
 
     ActorType item_type = VAL(actor, BLOCK_ITEM);
@@ -149,6 +153,8 @@ static void bump_block(GameActor* actor, GameActor* from, Bool strong) {
 
     if (!ANY_FLAG(actor, FLG_BLOCK_REPEAT) || VAL(actor, BLOCK_TIME) > 301)
         FLAG_ON(actor, FLG_BLOCK_EMPTY);
+
+    return TRUE;
 }
 
 /* =====
@@ -326,14 +332,38 @@ static void draw(const GameActor* actor) {
     draw_actor(actor, sprite, FALSE);
 }
 
-static void on_bottom(GameActor* actor, GameActor* from) {
-    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_BLOCK_EMPTY))
+static void on_other_sides(GameActor* actor, GameActor* from) {
+    if (from->type != ACT_BEETROOT_PROJECTILE)
         return;
 
-    FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
+    const GamePlayer* player = get_player(from->player);
+    if ((player != NULL || (VAL(actor, BLOCK_TYPE) == BLOCK_BRICK && VAL(actor, BLOCK_ITEM) == ACT_NULL))
+        && bump_block(actor, from, TRUE))
+    {
+        FLAG_ON(from, FLG_PROJECTILE_HIT_BLOCK);
+    }
+}
 
-    GamePlayer* player = get_player(from->player);
-    bump_block(actor, from, player != NULL && player->powerup != POW_NONE);
+static void on_bottom(GameActor* actor, GameActor* from) {
+    switch (from->type) {
+    default:
+        break;
+
+    case ACT_PLAYER: {
+        FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
+        const GamePlayer* player = get_player(from->player);
+        bump_block(actor, from, player != NULL && player->powerup != POW_NONE);
+
+        break;
+    }
+
+    case ACT_BEETROOT_PROJECTILE: {
+        if (!ANY_FLAG(actor, FLG_BLOCK_HIDDEN))
+            on_other_sides(actor, from);
+
+        break;
+    }
+    }
 }
 
 const ActorTable TAB_BLOCK = {
@@ -343,7 +373,10 @@ const ActorTable TAB_BLOCK = {
     .create = create,
     .pre_tick = pre_tick,
     .draw = draw,
+    .on_top = on_other_sides,
+    .on_left = on_other_sides,
     .on_bottom = on_bottom,
+    .on_right = on_other_sides,
 };
 
 /* ==========
