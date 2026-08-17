@@ -18,6 +18,9 @@
     "cmake.configureSettings": {
         "CMAKE_WARN_DEPRECATED": "OFF"
     },
+    "Lua.workspace.library": [
+        "_sanity.lua"
+    ],
     "rewrap.wrappingColumn": 120,
     "files.exclude": {
         ".cache": true,
