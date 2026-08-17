@@ -162,7 +162,7 @@ void input_keydown(SDL_KeyboardEvent event) {
         if (event.scancode != BINDS[kb].key)
             continue;
 
-        const KeybindState mask = 1 << kb;
+        const KeybindState mask = 1U << kb;
         input_state.incoming |= mask;
         input_state.now |= mask;
         input_state.repeating |= mask;
@@ -209,7 +209,7 @@ void input_buttondown(SDL_GamepadButtonEvent event) {
         if (event.button != BINDS[kb].button)
             continue;
 
-        const KeybindState mask = 1 << kb;
+        const KeybindState mask = 1U << kb;
         input_state.incoming |= mask;
         input_state.now |= mask;
         input_state.repeating |= mask;
@@ -257,7 +257,7 @@ void input_axis(SDL_GamepadAxisEvent event) {
 void input_wipeout() {
     KeybindState mask = 0;
     for (Keybind i = KB_INTERFACE; i < (Keybind)KB_SIZE; i++)
-        mask |= 1 << i;
+        mask |= 1U << i;
     mask = ~mask;
 
     input_state.then &= mask;
@@ -277,7 +277,7 @@ const char* input_device() {
     return (dname == NULL) ? LFMT("value.keyboard") : dname;
 }
 
-#define CHECK_KB(table, kb) (((table) & (1 << (kb))) != 0)
+#define CHECK_KB(table, kb) (((table) & (KeybindState)(1U << (kb))) != 0)
 
 Bool kb_pressed(Keybind kb) {
     return CHECK_KB(input_state.now, kb) && !CHECK_KB(input_state.then, kb);

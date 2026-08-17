@@ -41,27 +41,21 @@ typedef Uint32 ActorFlag;
 typedef Sint16 ActorID;
 
 typedef Uint8 GameInput;
-enum {
-    GI_UP = 1 << 0,
-    GI_LEFT = 1 << 1,
-    GI_DOWN = 1 << 2,
-    GI_RIGHT = 1 << 3,
-    GI_JUMP = 1 << 4,
-    GI_RUN = 1 << 5,
-    GI_FIRE = 1 << 6,
-};
+#define GI_UP (GameInput)(1U << 0)
+#define GI_LEFT (GameInput)(1U << 1)
+#define GI_DOWN (GameInput)(1U << 2)
+#define GI_RIGHT (GameInput)(1U << 3)
+#define GI_JUMP (GameInput)(1U << 4)
+#define GI_RUN (GameInput)(1U << 5)
+#define GI_FIRE (GameInput)(1U << 6)
 
 typedef Uint16 GameFlags;
-enum {
-    GF_END = 1 << 0,       // Game session should end
-    GF_RESTARTED = 1 << 1, // Level was restarted
-
-    GF_HURRY = 1 << 2, // Time <= 100
-
-    GF_HARDCORE = 1 << 3,    // Hardcore World level
-    GF_LOST_MAP = 1 << 4,    // Lost Map level
-    GF_FUNNY_TANKS = 1 << 5, // Funny Tanks? level
-};
+#define GF_END (GameFlags)(1U << 0)         // Game session should end
+#define GF_RESTARTED (GameFlags)(1U << 1)   // Level was restarted
+#define GF_HURRY (GameFlags)(1U << 2)       // Time <= 100
+#define GF_HARDCORE (GameFlags)(1U << 3)    // Hardcore Level
+#define GF_LOST_MAP (GameFlags)(1U << 4)    // Lost Map Level
+#define GF_FUNNY_TANKS (GameFlags)(1U << 5) // Funny Tanks? Level
 
 typedef Uint8 GameSequenceType;
 enum {
@@ -180,29 +174,25 @@ enum {
 };
 
 typedef Uint8 SolidFlags;
-enum {
-    SOL_SOLID = 1 << 0,
-    SOL_TOP = 1 << 1,
-    SOL_BOTTOM = 1 << 2,
-    SOL_SLOPE = 1 << 3,
-    SOL_X_FLIP = 1 << 4,
-    SOL_Y_FLIP = 1 << 5,
-    SOL_ALL = SOL_SOLID | SOL_TOP | SOL_BOTTOM,
-};
+#define SOL_SOLID (SolidFlags)(1U << 0)
+#define SOL_TOP (SolidFlags)(1U << 1)
+#define SOL_BOTTOM (SolidFlags)(1U << 2)
+#define SOL_LEFT (SolidFlags)(1U << 3)
+#define SOL_RIGHT (SolidFlags)(1U << 4)
+#define SOL_SLOPE_LEFT (SolidFlags)(1U << 5)
+#define SOL_SLOPE_RIGHT (SolidFlags)(1U << 6)
+#define SOL_SLOPE (SOL_SLOPE_LEFT | SOL_SLOPE_RIGHT)
 
 typedef Uint8 TouchFlags;
-enum {
-    TOUCH_LEFT = 1 << 0,
-    TOUCH_RIGHT = 1 << 1,
-    TOUCH_TOP = 1 << 2,
-    TOUCH_BOTTOM = 1 << 3,
-    TOUCH_DISPLACEABLE = 1 << 4,
+#define TOUCH_LEFT (TouchFlags)(1U << 0)
+#define TOUCH_RIGHT (TouchFlags)(1U << 1)
+#define TOUCH_TOP (TouchFlags)(1U << 2)
+#define TOUCH_BOTTOM (TouchFlags)(1U << 3)
+#define TOUCH_DISPLACEABLE (TouchFlags)(1U << 4)
+#define TOUCH_SIDES (TOUCH_LEFT | TOUCH_RIGHT | TOUCH_TOP | TOUCH_BOTTOM)
+#define TOUCH_STUCK TOUCH_SIDES
 
-    TOUCH_SIDES = TOUCH_LEFT | TOUCH_RIGHT | TOUCH_TOP | TOUCH_BOTTOM,
-    TOUCH_STUCK = TOUCH_SIDES,
-};
-
-#define TOUCHING(actor, yes) (((actor)->touch & (yes)) != 0)
+#define TOUCHING(actor, tuff) (((actor)->touch & (tuff)) != 0)
 #define TOUCH_ON(actor, tuff) ((actor)->touch |= (tuff))
 #define TOUCH_OFF(actor, tuff) ((actor)->touch &= ~(tuff))
 
@@ -293,14 +283,12 @@ typedef struct {
     })
 
 typedef Uint32 ActorFlags;
-enum {
-    FLG_VISIBLE = 1 << 0,
-    FLG_DESTROY = 1 << 1,
-    FLG_X_FLIP = 1 << 2,
-    FLG_Y_FLIP = 1 << 3,
-    FLG_FREEZE = 1 << 4,
-#define CUSTOM_FLAG(idx) (1 << (5 + (idx)))
-};
+#define FLG_VISIBLE (ActorFlags)(1U << 0)
+#define FLG_DESTROY (ActorFlags)(1U << 1)
+#define FLG_X_FLIP (ActorFlags)(1U << 2)
+#define FLG_Y_FLIP (ActorFlags)(1U << 3)
+#define FLG_FREEZE (ActorFlags)(1U << 4)
+#define CUSTOM_FLAG(idx) (ActorFlags)(1U << (5 + (idx)))
 
 typedef struct {
     ActorType type;

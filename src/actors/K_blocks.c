@@ -17,12 +17,12 @@ enum {
     VAL_BLOCK_ITEM,
     VAL_BLOCK_BUMP,
     VAL_BLOCK_TIME,
-
-    FLG_BLOCK_REPEAT = CUSTOM_FLAG(0),
-    FLG_BLOCK_HIDDEN = CUSTOM_FLAG(1),
-    FLG_BLOCK_GRAY = CUSTOM_FLAG(2),
-    FLG_BLOCK_EMPTY = CUSTOM_FLAG(3),
 };
+
+#define FLG_BLOCK_REPEAT CUSTOM_FLAG(0)
+#define FLG_BLOCK_HIDDEN CUSTOM_FLAG(1)
+#define FLG_BLOCK_GRAY CUSTOM_FLAG(2)
+#define FLG_BLOCK_EMPTY CUSTOM_FLAG(3)
 
 static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
     if (actor == NULL || actor->type != ACT_BLOCK || ANY_FLAG(actor, FLG_BLOCK_EMPTY))

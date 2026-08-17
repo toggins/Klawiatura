@@ -66,11 +66,9 @@ enum {
 };
 
 typedef Uint8 UIFlags;
-enum {
-    UIF_DESTROY = 1 << 0,
-    UIF_BLOCK = 1 << 1,
-    UIF_MEGABLOCK = 1 << 2,
-};
+#define UIF_DESTROY (UIFlags)(1U << 0)
+#define UIF_BLOCK (UIFlags)(1U << 1)
+#define UIF_MEGABLOCK (UIFlags)(1U << 2)
 
 typedef struct UI {
     UIType type;

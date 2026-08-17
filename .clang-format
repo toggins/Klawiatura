@@ -47,4 +47,4 @@ IncludeCategories:
     Priority: 50
   - Regex: ".*"
     Priority: 100
-ForEachMacros: [TINY_MAP_FOREACH, TINY_PQ_FOREACH]
+ForEachMacros: [TINY_MAP_FOREACH, TINY_PQ_FOREACH, FOR_EACH_ACTOR]

@@ -774,6 +774,8 @@ static void start(const void* secret, size_t secret_size) {
     yyjson_doc_free(json);
 
 s_no_secret:
+    (void)0;
+
     const MenuType last_menu = CATALOG.current;
     if ((got_invite || !is_connected()) && CATALOG.current == MEN_LOBBY)
         previous_menu(&CATALOG);

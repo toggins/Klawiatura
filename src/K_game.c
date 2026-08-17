@@ -1210,7 +1210,7 @@ void pre_interp_game() {
             iplayer->from = iplayer->to = iplayer->current = game_state->players[i].xscroll;
         }
 
-        FOR_EACH_ACTOR(actor) {
+        FOR_EACH_ACTOR (actor) {
             InterpActor* iactor = &interp_state->actors[actor->id];
             iactor->type = actor->type;
             iactor->from = iactor->to = iactor->current = actor->pos;
@@ -1225,7 +1225,7 @@ void pre_interp_game() {
         iplayer->to = game_state->players[i].xscroll;
     }
 
-    FOR_EACH_ACTOR(actor) {
+    FOR_EACH_ACTOR (actor) {
         InterpActor* iactor = &interp_state->actors[actor->id];
         if (iactor->type == actor->type) {
             iactor->from = iactor->to;
@@ -1250,7 +1250,7 @@ void interp_game() {
     }
 
     const GameActor* actor = NULL;
-    FOR_EACH_ACTOR(actor) {
+    FOR_EACH_ACTOR (actor) {
         InterpActor* iactor = &interp_state->actors[actor->id];
         iactor->current = Vlerp(iactor->from, iactor->to, t);
     }
@@ -1288,8 +1288,8 @@ static void draw_game_state() {
     while ((layer = tilemap_iterate_next(tilemap)))
         TinyPqInsert(&sorter, layer->depth, (const void*)&(SortedItem){FALSE, layer}, sizeof(SortedItem));
 
-    for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
-    {
+    const GameActor* actor = NULL;
+    FOR_EACH_ACTOR (actor) {
         if (ANY_FLAG(actor, FLG_VISIBLE)) {
             TinyPqInsert(&sorter, (actor->sprout > 0) ? Fmax(actor->depth, Int2Fx(21)) : actor->depth,
                 (const void*)&(SortedItem){TRUE, actor}, sizeof(SortedItem));
@@ -1314,8 +1314,7 @@ static void draw_game_state() {
     if (player == NULL)
         goto dgs_no_hud;
 
-    for (const GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous))
-        ACTOR_CALL(actor, draw_hud);
+    FOR_EACH_ACTOR (actor) { ACTOR_CALL(actor, draw_hud); }
 
     batch_reset();
     batch_pos(B_F3_XY(32.f, 16.f));
@@ -1604,7 +1603,8 @@ void win_player(GamePlayer* player) {
     if (player == NULL)
         return;
 
-    for (GameActor* actor = get_actor(game_state->live_actors); actor != NULL; actor = get_actor(actor->previous)) {
+    GameActor* actor = NULL;
+    FOR_EACH_ACTOR (actor) {
         switch (actor->type) {
         default:
             break;
@@ -2309,7 +2309,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 
                     if (solid & SOL_SLOPE) {
                         if (actor->vel.y < Fx0) {
-                            if ((solid & SOL_Y_FLIP) || npos.y < cbox.end.y)
+                            if ((solid & SOL_TOP) || npos.y < cbox.end.y)
                                 continue;
 
                             npos.y = Fmax(npos.y, cbox.end.y - actor->box.start.y);
@@ -2319,7 +2319,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                             if (width == Fx0)
                                 continue;
 
-                            const Bool side = (solid & SOL_X_FLIP) == SOL_X_FLIP;
+                            const Bool side = (solid & SOL_SLOPE_RIGHT) == SOL_SLOPE_RIGHT;
                             const Fixed sa = side ? cbox.start.y : cbox.end.y, sb = side ? cbox.end.y : cbox.start.y,
                                         ax = npos.x + (side ? actor->box.start.x : actor->box.end.x);
 
@@ -2539,14 +2539,14 @@ void displace_actor_soft(GameActor* actor) {
 
                     if (solid & SOL_SLOPE) {
                         if (actor->vel.y < Fx0) {
-                            if (!(solid & SOL_Y_FLIP) && npos.y >= cbox.end.y)
+                            if (!(solid & SOL_TOP) && npos.y >= cbox.end.y)
                                 TOUCH_ON(actor, TOUCH_TOP);
                         } else {
                             const Fixed width = Fabs(cbox.end.x - cbox.start.x);
                             if (width == Fx0)
                                 continue;
 
-                            const Bool side = (solid & SOL_X_FLIP) == SOL_X_FLIP;
+                            const Bool side = (solid & SOL_SLOPE_RIGHT) == SOL_SLOPE_RIGHT;
                             const Fixed sa = side ? cbox.start.y : cbox.end.y, sb = side ? cbox.end.y : cbox.start.y,
                                         ax = npos.x + (side ? actor->box.start.x : actor->box.end.x);
 

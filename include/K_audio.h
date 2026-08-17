@@ -28,12 +28,10 @@ typedef struct {
 } Track;
 
 typedef Uint8 PlayFlags;
-enum {
-    PLAY_LOOPING = 1 << 0,
-    PLAY_PAN = 1 << 1,
-    PLAY_POS = 1 << 2,
-    PLAY_SYSTEM = 1 << 3,
-};
+#define PLAY_LOOPING (PlayFlags)(1U << 0)
+#define PLAY_PAN (PlayFlags)(1U << 1)
+#define PLAY_POS (PlayFlags)(1U << 2)
+#define PLAY_SYSTEM (PlayFlags)(1U << 3)
 
 typedef struct {
     PlayFlags flags;

@@ -7,9 +7,9 @@
 enum {
     VAL_COIN_POP_Y,
     VAL_COIN_POP_FRAME,
-
-    FLG_COIN_POP_START = CUSTOM_FLAG(0),
 };
+
+#define FLG_COIN_POP_START CUSTOM_FLAG(0)
 
 static void give_coin(GamePlayer* player) {
     if (player == NULL)

@@ -87,9 +87,9 @@ static void tick_beetroot(GameActor* actor) {
         const GameState* game_state = gamestate();
         if ((game_state->time % 10) == 0) {
             ActorID num_bubbles = 0;
-            for (const GameActor* bubble = get_actor(game_state->live_actors); bubble != NULL;
-                bubble = get_actor(bubble->previous))
-            {
+
+            const GameActor* bubble = NULL;
+            FOR_EACH_ACTOR (bubble) {
                 if (bubble->type == ACT_BUBBLE && !ANY_FLAG(bubble, FLG_EFFECT_END)) {
                     if (++num_bubbles >= 20)
                         break;

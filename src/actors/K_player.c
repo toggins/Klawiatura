@@ -535,14 +535,15 @@ static void tick(GameActor* actor) {
 
         case POW_FIRE_FLOWER: {
             ActorID num_fireballs = 0;
-            for (const GameActor* ofireball = get_actor(game_state->live_actors); ofireball != NULL;
-                ofireball = get_actor(ofireball->previous))
-            {
+
+            const GameActor* ofireball = NULL;
+            FOR_EACH_ACTOR (ofireball) {
                 if (ofireball->type == ACT_FIREBALL_PROJECTILE && ofireball->player == actor->player) {
                     if (++num_fireballs >= MAX_PROJECTILES)
                         break;
                 }
             }
+
             if (num_fireballs >= MAX_PROJECTILES)
                 break;
 
@@ -559,9 +560,9 @@ static void tick(GameActor* actor) {
 
         case POW_BEETROOT: {
             ActorID num_beetroots = 0, num_sinking = 0;
-            for (const GameActor* obeetroot = get_actor(game_state->live_actors); obeetroot != NULL;
-                obeetroot = get_actor(obeetroot->previous))
-            {
+
+            const GameActor* obeetroot = NULL;
+            FOR_EACH_ACTOR (obeetroot) {
                 if (obeetroot->type == ACT_BEETROOT_PROJECTILE && obeetroot->player == actor->player) {
                     if (ANY_FLAG(actor, FLG_PROJECTILE_SINK)) {
                         if (++num_sinking >= MAX_SINKING_PROJECTILES)
@@ -571,6 +572,7 @@ static void tick(GameActor* actor) {
                     }
                 }
             }
+
             if (num_beetroots >= MAX_PROJECTILES || num_sinking >= MAX_SINKING_PROJECTILES)
                 break;
 

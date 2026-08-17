@@ -110,7 +110,8 @@ static void collide(GameActor* actor, GameActor* from) {
     VAL(from, PLAYER_WARP_STATE) = 0;
 
     if (ANY_FLAG(actor, FLG_WARP_CALAMITY)) {
-        for (GameActor* item = get_actor(gamestate()->live_actors); item != NULL; item = get_actor(item->previous)) {
+        GameActor* item = NULL;
+        FOR_EACH_ACTOR (item) {
             switch (item->type) {
             default:
                 break;

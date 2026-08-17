@@ -6,9 +6,9 @@
 enum {
     VAL_WATER_TO,
     VAL_WATER_SPEED,
-
-    FLG_WATER_UNSWIMMABLE = CUSTOM_FLAG(0),
 };
+
+#define FLG_WATER_UNSWIMMABLE CUSTOM_FLAG(0)
 
 /* =====
    WATER
