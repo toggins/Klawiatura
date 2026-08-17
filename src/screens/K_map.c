@@ -194,7 +194,7 @@ static void start(const void* secret, size_t secret_size) {
             load_sound("kick", AKL_NEVER);
             load_sound("score", AKL_NEVER);
             load_sound("score2", AKL_NEVER);
-            load_sound(get_character_voice(wctx->players[wctx->winner].character, PV_READY), AKL_NEVER);
+            load_sound(get_character_voice(wctx->players[map_state->score.players[0]].character, PV_READY), AKL_NEVER);
         }
     } else {
         const WorldPlayerContext* pctx = &wctx->players[wctx->winner];
@@ -458,8 +458,10 @@ static void tick() {
             }
 
             const Uint16 end = 175 + (wctx->num_players * 25);
-            if (map_state->score.state == end)
-                play_generic_sound(get_character_voice(map_state->score.players[0], PV_READY), 0);
+            if (map_state->score.state == end) {
+                play_generic_sound(
+                    get_character_voice(wctx->players[map_state->score.players[0]].character, PV_READY), 0);
+            }
 
             if (map_state->score.state == (end + 50))
                 fade_generic_track(1.f, 150.f);
