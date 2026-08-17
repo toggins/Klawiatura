@@ -87,6 +87,8 @@
     "map.completed": "ui/map/world/en/completed/{0}",
     "map.press": "Press {0}",
     "map.waiting_for_leader": "Waiting for leader",
+    "map.player": "Player {0}",
+    "map.scoreboard": "Scoreboard",
 
     "hud.world": "World",
     "hud.world.koopa_the_devastator": "ui/world/en/koopa_the_devastator",

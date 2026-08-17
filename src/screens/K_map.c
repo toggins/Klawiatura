@@ -10,6 +10,11 @@
 #include "K_worlds.h"
 
 typedef struct {
+    PlayerID players[MAX_PLAYERS];
+    Uint16 state;
+} MapScore;
+
+typedef struct {
     float y, y_speed;
     struct {
         float from, to, y;
@@ -56,6 +61,7 @@ typedef struct {
     Uint16 size[2];
     Sint32 water[4];
 
+    MapScore score;
     MapLabel label;
     MapPlayer player;
     MapCamera camera;
@@ -71,6 +77,11 @@ typedef struct {
 } MapState;
 
 static MapState* map_state = NULL;
+
+static int qsort_callback(const void* a, const void* b) {
+    const WorldPlayerContext* players = worldcontext()->players;
+    return players[*(PlayerID*)a].score < players[*(PlayerID*)b].score;
+}
 
 static void start(const void* secret, size_t secret_size) {
     EXPECT(secret_size == sizeof(WorldContext), "Secret isn't WorldContext?");
@@ -94,6 +105,11 @@ static void start(const void* secret, size_t secret_size) {
 
     map_state = SDL_calloc(1, sizeof(*map_state));
     EXPECT(map_state, "Failed to allocate map state");
+
+    PlayerID* gamers = map_state->score.players;
+    for (PlayerID i = 0; i < MAX_PLAYERS; i++)
+        gamers[i] = (i < wctx->num_players) ? i : NULL_PLAYER;
+    SDL_qsort(gamers, wctx->num_players, sizeof(*gamers), qsort_callback);
 
     map_state->title = SDL_strdup(LFMT(fmt("map.world.%s", world->name)));
     EXPECT(map_state->title, "Failed to allocate map title");
@@ -174,12 +190,21 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite(map_state->title, AKL_NEVER);
     if (map_state->path == NULL) {
         load_sprite_num(LFMT("map.completed", 's', "%u"), 16, AKL_NEVER);
+        if (wctx->num_players > 1) {
+            load_sound("kick", AKL_NEVER);
+            load_sound("score", AKL_NEVER);
+            load_sound("score2", AKL_NEVER);
+            load_sound(get_character_voice(wctx->players[wctx->winner].character, PV_READY), AKL_NEVER);
+        }
     } else {
         const WorldPlayerContext* pctx = &wctx->players[wctx->winner];
         for (PlayerFrame i = PF_WALK1; i <= (PlayerFrame)PF_WALK3; i++)
             load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), AKL_NEVER);
         for (PlayerFrame i = PF_SWIM1; i <= (PlayerFrame)PF_SWIM8; i++)
             load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), AKL_NEVER);
+        if (wctx->num_players > 1)
+            for (PlayerID i = 0; i < wctx->num_players; i++)
+                load_sprite(fmt(get_character_cursor(wctx->players[i].character), 0), AKL_NEVER);
 
         load_sprite("ui/map/bubble", AKL_NEVER);
 
@@ -412,8 +437,36 @@ static void tick() {
                 point->appear += player->appear_speed;
             }
         }
-    } else if (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE)) {
-        set_screen(SCR_MENU, NULL, 0);
+    } else {
+        const WorldContext* wctx = worldcontext();
+        if (wctx->num_players > 1) {
+            ++map_state->score.state;
+
+            if (map_state->score.state == 50)
+                fade_generic_track(0.1f, 50.f);
+
+            const PlayerID* gamers = map_state->score.players;
+            for (PlayerID i = 0; i < wctx->num_players; i++) {
+                if (map_state->score.state == (100 + ((wctx->num_players - i) * 25) + ((i == 0) * 25))) {
+                    if (i == 0) {
+                        play_generic_sound("score", 0);
+                        play_generic_sound("score2", 0);
+                    } else {
+                        play_generic_sound("kick", 0);
+                    }
+                }
+            }
+
+            const Uint16 end = 175 + (wctx->num_players * 25);
+            if (map_state->score.state == end)
+                play_generic_sound(get_character_voice(map_state->score.players[0], PV_READY), 0);
+
+            if (map_state->score.state == (end + 50))
+                fade_generic_track(1.f, 150.f);
+        }
+
+        if (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE))
+            set_screen(SCR_MENU, NULL, 0);
     }
 
     if (can_move) {
@@ -573,6 +626,98 @@ static void draw_ui() {
 
     batch_pos(B_F3_SCREEN);
     batch_sprite("ui/map/logo");
+
+    const WorldContext* wctx = worldcontext();
+    if (wctx->num_players > 1) {
+        if (map_state->path == NULL) {
+            const float w = (float)wctx->num_players * 32.f;
+            if (map_state->score.state > 50) {
+                const float y = HALF_SCREEN_HEIGHT - (w * 0.5f);
+                batch_pos(B_F3_XY(0.f, y - 8.f));
+                const float a = (float)(SDL_min(map_state->score.state, 75) - 50) / 25.f;
+                batch_color(B_U4_ALPHA(a * 160.f));
+                batch_rectangle(NULL, B_F2(SCREEN_WIDTH, w + 16.f));
+
+                batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, y));
+                Uint8 colors[4][4] = {0};
+                SDL_memcpy(colors, B_U4X4_WHITE, sizeof(colors));
+                colors[0][3] = (Uint8)((float)colors[0][3] * a);
+                colors[1][3] = (Uint8)((float)colors[1][3] * a);
+                colors[2][3] = (Uint8)((float)colors[2][3] * a);
+                colors[3][3] = (Uint8)((float)colors[3][3] * a);
+                batch_colors(colors);
+                batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+                batch_string("header", 32.f, LFMT("map.scoreboard"));
+            }
+
+            const PlayerID* gamers = map_state->score.players;
+            for (PlayerID i = 0; i < wctx->num_players; i++) {
+                if (map_state->score.state < (100 + ((wctx->num_players - i) * 25) + ((i == 0) * 25)))
+                    continue;
+
+                const float y = HALF_SCREEN_HEIGHT + (w * 0.5f) - ((float)((wctx->num_players - i) - 1) * 32.f) - 4.f;
+                batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, y));
+                if (i == 0) {
+                    switch ((int)(screenticks() * 0.5f) % 4) {
+                    default:
+                        batch_color(B_U4_RGB(255, 192, 0));
+                        break;
+                    case 1:
+                    case 3:
+                        batch_color(B_U4_YELLOW);
+                        break;
+                    case 2:
+                        batch_color(B_U4_WHITE);
+                        break;
+                    }
+                } else {
+                    batch_color(B_U4_WHITE);
+                }
+
+                const PlayerID pid = gamers[i];
+                const char* name = get_peer_name(player_to_peer(pid));
+                if (name == NULL)
+                    name = LFMT("map.player", 'd', pid + 1);
+
+                const WorldPlayerContext* wplayer = &wctx->players[pid];
+                const char* str = fmt("%i. %s x%i, %u pts", i + 1, name, SDL_max(wplayer->lives, 0), wplayer->score);
+                batch_string("main", 24.f, str);
+
+                batch_pos(B_F3_XY(HALF_SCREEN_WIDTH - 24.f - (int)(string_width("main", 24.f, str) * 0.5f), y - 12.f));
+                batch_color(B_U4_WHITE);
+                batch_sprite(fmt(get_character_cursor(wplayer->character), 0));
+            }
+        } else {
+            batch_filter(TRUE);
+
+            const PlayerID* gamers = map_state->score.players;
+            for (PlayerID i = 0; i < wctx->num_players; i++) {
+                const float y = HALF_SCREEN_HEIGHT + ((float)i * 18.f);
+                batch_pos(B_F3_XY(SCREEN_WIDTH - 16.f, y));
+                batch_color((i == 0) ? B_U4(255, 255, 0, 160) : B_U4(255, 255, 255, 160));
+                batch_align(B_ALIGN(FA_RIGHT, FA_MIDDLE));
+
+                const PlayerID pid = gamers[i];
+                const char* name = get_peer_name(player_to_peer(pid));
+                if (name == NULL)
+                    name = LFMT("map.player", 'd', pid + 1);
+
+                const WorldPlayerContext* wplayer = &wctx->players[pid];
+                const char* str = fmt("%i. %s x%i, %u pts", i + 1, name, SDL_max(wplayer->lives, 0), wplayer->score);
+                batch_string("main", 16.f, str);
+
+                batch_filter(FALSE);
+                batch_pos(B_F3_XY(SCREEN_WIDTH - 28.f - string_width("main", 16.f, str), y));
+                batch_scale(B_F2_S(0.5f));
+                batch_color(B_U4(255, 255, 255, 160));
+                batch_sprite(fmt(get_character_cursor(wplayer->character), 0));
+                batch_scale(B_F2_1);
+                batch_filter(TRUE);
+            }
+
+            batch_filter(FALSE);
+        }
+    }
 
     if (map_state->enter <= 0 && map_state->path != NULL && map_state->current_node >= TinyDLength(map_state->path)
         && SDL_fmodf(screenticks(), 25.f) < 12.5f)
