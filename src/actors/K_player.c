@@ -3,6 +3,7 @@
 #include "K_video.h"
 
 #include "actors/K_player.h"
+#include "actors/K_projectiles.h"
 #include "actors/K_warp.h"
 
 static PlayerFrame get_player_frame(const GameActor* actor) {
@@ -113,6 +114,7 @@ static void load() {
     load_sprite_num("ui/coins/%u", 3, AKL_NEVER);
     load_font("hud", AKL_NEVER);
     load_sound("jump", AKL_NEVER);
+    load_sound("fire", AKL_NEVER);
     load_sound("swim", AKL_NEVER);
 
     if (gamestate()->clock >= 0) {
@@ -128,6 +130,8 @@ static void load() {
 
     load_track((gamestate()->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", AKL_NEVER);
     load_actor(ACT_PLAYER_DEAD);
+    load_actor(ACT_FIREBALL_PROJECTILE);
+    load_actor(ACT_BEETROOT_PROJECTILE);
     load_actor(ACT_WATER_SPLASH);
     load_actor(ACT_BUBBLE);
 }
@@ -147,6 +151,98 @@ static void cleanup(GameActor* actor) {
         player->actor = NULL_ACTOR;
 }
 
+// @NOLINTBEGIN(misc-no-recursion)
+static void update_animation(GameActor* actor) {
+    if (VAL(actor, PLAYER_ANIMATION) == PF_GROW) {
+        VAL(actor, PLAYER_FRAME) += 59638;
+
+        const GamePlayer* player = get_player(actor->player);
+        if (((player == NULL || player->powerup == POW_NONE || player->powerup == POW_SUPER_MUSHROOM)
+                && VAL(actor, PLAYER_FRAME) >= Int2Fx(30))
+            || (player != NULL && player->powerup != POW_NONE && player->powerup != POW_SUPER_MUSHROOM
+                && VAL(actor, PLAYER_FRAME) >= Int2Fx(40)))
+        {
+            VAL(actor, PLAYER_ANIMATION) = PF_IDLE;
+            VAL(actor, PLAYER_FRAME) = Fx0;
+            update_animation(actor);
+        }
+
+        return;
+    }
+
+    if (!TOUCHING(actor, TOUCH_BOTTOM)) {
+        const GameState* game_state = gamestate();
+
+        const GameActor* water = get_actor(game_state->water);
+        const Bool warping = get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
+        if (water != NULL && actor->pos.y > water->pos.y && !warping) {
+            if (VAL(actor, PLAYER_ANIMATION) != PF_SWIM) {
+                VAL(actor, PLAYER_ANIMATION) = PF_SWIM;
+                VAL(actor, PLAYER_FRAME) = Fx0;
+            }
+            VAL(actor, PLAYER_FRAME) += Fclamp(Fdiv(Fabs(actor->vel.x), 819200), 9175, 13763);
+        } else {
+            VAL(actor, PLAYER_ANIMATION) = (actor->vel.y < Fx0) ? PF_JUMP : PF_FALL;
+            VAL(actor, PLAYER_FRAME) = Fx0;
+        }
+
+        const GamePlayer* player = get_player(actor->player);
+        if (player != NULL && player->powerup == POW_GREEN_LUI && (game_state->time % 3) == 0 && !warping) {
+            GameActor* effect = create_actor(ACT_PLAYER_EFFECT, actor->pos);
+            if (effect != NULL) {
+                effect->player = player->id;
+                VAL(effect, PLAYER_EFFECT_CHARACTER) = gamecontext()->players[player->id].character;
+                VAL(effect, PLAYER_EFFECT_POWERUP) = player->powerup;
+                VAL(effect, PLAYER_EFFECT_FRAME) = get_player_frame(actor);
+                FLAG_ON(effect, actor->flags & FLG_X_FLIP);
+                align_interp(effect, actor);
+            }
+        }
+
+        return;
+    }
+
+    if (VAL(actor, PLAYER_ANIMATION) == PF_FIRE) {
+        const GamePlayer* player = get_player(actor->player);
+        if (player == NULL) {
+            VAL(actor, PLAYER_ANIMATION) = PF_IDLE;
+            VAL(actor, PLAYER_FRAME) = Fx0;
+            update_animation(actor);
+
+            return;
+        }
+
+        VAL(actor, PLAYER_FRAME) += (player->powerup == POW_FIRE_FLOWER) ? Fx1 : FxHalf;
+        if (VAL(actor, PLAYER_FRAME) >= Int2Fx(2)) {
+            VAL(actor, PLAYER_ANIMATION) = PF_IDLE;
+            VAL(actor, PLAYER_FRAME) = Fx0;
+            update_animation(actor);
+        }
+
+        return;
+    }
+
+    if (ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
+        VAL(actor, PLAYER_ANIMATION) = PF_DUCK;
+        VAL(actor, PLAYER_FRAME) = Fx0;
+
+        return;
+    }
+
+    if (Fabs(actor->vel.x) >= 8192 || get_actor(VAL(actor, PLAYER_WARP)) != NULL
+        || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
+    {
+        VAL(actor, PLAYER_ANIMATION) = PF_WALK;
+        VAL(actor, PLAYER_FRAME) += Fclamp(Fdiv(Fabs(actor->vel.x), 819200), 7864, 31457);
+
+        return;
+    }
+
+    VAL(actor, PLAYER_ANIMATION) = PF_IDLE;
+    VAL(actor, PLAYER_FRAME) = Fx0;
+}
+// @NOLINTEND(misc-no-recursion)
+
 static void tick(GameActor* actor) {
     GamePlayer* player = get_player(actor->player);
     if (player == NULL) {
@@ -165,6 +261,8 @@ static void tick(GameActor* actor) {
 
     const GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
     if (warp != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT)) {
+        Bool still_warping = TRUE;
+
         actor->depth = Int2Fx(22);
         actor->vel.x = actor->vel.y = Fx0;
         actor->touch = TOUCH_BOTTOM;
@@ -200,6 +298,7 @@ static void tick(GameActor* actor) {
             if (!touching_solid(Radd(actor->box, actor->pos), SOL_SOLID)) {
                 actor->depth = Fx0;
                 FLAG_OFF(actor, FLG_PLAYER_WARP_OUT);
+                still_warping = FALSE;
             }
         } else if (warp != NULL) {
             if (VAL(actor, PLAYER_WARP_STATE) < 60) {
@@ -275,7 +374,8 @@ static void tick(GameActor* actor) {
         actor->box.start.y
             = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
 
-        goto t_skip_physics;
+        if (still_warping)
+            goto t_skip_physics;
     }
 
     if (get_sequence()->type == GS_WIN) {
@@ -426,6 +526,76 @@ static void tick(GameActor* actor) {
         play_state_sound("jump", PLAY_POS, A_ACTOR(actor));
     }
 
+    // 249, 250, 258, 259
+    if (ANY_PRESSED(player, GI_FIRE) && !ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
+        Bool do_fire = FALSE;
+        switch (player->powerup) {
+        default:
+            break;
+
+        case POW_FIRE_FLOWER: {
+            ActorID num_fireballs = 0;
+            for (const GameActor* ofireball = get_actor(game_state->live_actors); ofireball != NULL;
+                ofireball = get_actor(ofireball->previous))
+            {
+                if (ofireball->type == ACT_FIREBALL_PROJECTILE && ofireball->player == actor->player) {
+                    if (++num_fireballs >= MAX_PROJECTILES)
+                        break;
+                }
+            }
+            if (num_fireballs >= MAX_PROJECTILES)
+                break;
+
+            GameActor* fireball = create_actor(ACT_FIREBALL_PROJECTILE,
+                Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-5) : Int2Fx(5), Int2Fx(-28)}));
+            if (fireball != NULL) {
+                fireball->player = actor->player;
+                fireball->vel.x = ANY_FLAG(actor, FLG_X_FLIP) ? -507904 : 507904;
+            }
+
+            do_fire = TRUE;
+            break;
+        }
+
+        case POW_BEETROOT: {
+            ActorID num_beetroots = 0, num_sinking = 0;
+            for (const GameActor* obeetroot = get_actor(game_state->live_actors); obeetroot != NULL;
+                obeetroot = get_actor(obeetroot->previous))
+            {
+                if (obeetroot->type == ACT_BEETROOT_PROJECTILE && obeetroot->player == actor->player) {
+                    if (ANY_FLAG(actor, FLG_PROJECTILE_SINK)) {
+                        if (++num_sinking >= MAX_SINKING_PROJECTILES)
+                            break;
+                    } else if (++num_beetroots >= MAX_PROJECTILES) {
+                        break;
+                    }
+                }
+            }
+            if (num_beetroots >= MAX_PROJECTILES || num_sinking >= MAX_SINKING_PROJECTILES)
+                break;
+
+            GameActor* beetroot = create_actor(ACT_BEETROOT_PROJECTILE,
+                Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? -Fx1 : Fx1, Int2Fx(-39)}));
+            if (beetroot != NULL) {
+                beetroot->player = actor->player;
+                beetroot->vel.x = ANY_FLAG(actor, FLG_X_FLIP) ? -155648 : 155648;
+                beetroot->vel.y = Int2Fx(-5);
+            }
+
+            do_fire = TRUE;
+            break;
+        }
+        }
+
+        if (do_fire) {
+            if (TOUCHING(actor, TOUCH_BOTTOM)) {
+                VAL(actor, PLAYER_ANIMATION) = PF_FIRE;
+                VAL(actor, PLAYER_FRAME) = Fx0;
+            }
+            play_state_sound("fire", PLAY_POS, A_ACTOR(actor));
+        }
+    }
+
     // 467, 468, 469: TODO
 
     // 471
@@ -479,55 +649,7 @@ static void tick(GameActor* actor) {
     }
 
 t_skip_physics:
-    (void)0;
-
-    const Bool warping = get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
-    if (VAL(actor, PLAYER_ANIMATION) == PF_GROW
-        && (((player->powerup == POW_NONE || player->powerup == POW_SUPER_MUSHROOM)
-                && VAL(actor, PLAYER_FRAME) < Int2Fx(30))
-            || (player->powerup != POW_NONE && player->powerup != POW_SUPER_MUSHROOM
-                && VAL(actor, PLAYER_FRAME) < Int2Fx(40))))
-    {
-        VAL(actor, PLAYER_FRAME) += 59638;
-    } else if (!TOUCHING(actor, TOUCH_BOTTOM)) {
-        if (water != NULL && actor->pos.y > water->pos.y && !warping) {
-            if (VAL(actor, PLAYER_ANIMATION) != PF_SWIM) {
-                VAL(actor, PLAYER_ANIMATION) = PF_SWIM;
-                VAL(actor, PLAYER_FRAME) = Fx0;
-            }
-            VAL(actor, PLAYER_FRAME) += Fclamp(Fdiv(Fabs(actor->vel.x), 819200), 9175, 13763);
-        } else {
-            VAL(actor, PLAYER_ANIMATION) = (actor->vel.y < Fx0) ? PF_JUMP : PF_FALL;
-            VAL(actor, PLAYER_FRAME) = Fx0;
-        }
-
-        if (player->powerup == POW_GREEN_LUI && (game_state->time % 3) == 0 && !warping) {
-            GameActor* effect = create_actor(ACT_PLAYER_EFFECT, actor->pos);
-            if (effect != NULL) {
-                effect->player = player->id;
-                VAL(effect, PLAYER_EFFECT_CHARACTER) = gamecontext()->players[player->id].character;
-                VAL(effect, PLAYER_EFFECT_POWERUP) = player->powerup;
-                VAL(effect, PLAYER_EFFECT_FRAME) = get_player_frame(actor);
-                FLAG_ON(effect, actor->flags & FLG_X_FLIP);
-                align_interp(effect, actor);
-            }
-        }
-    } else if (VAL(actor, PLAYER_ANIMATION) == PF_FIRE && VAL(actor, PLAYER_FRAME) < Int2Fx(2)) {
-        VAL(actor, PLAYER_FRAME) += (player->powerup == POW_FIRE_FLOWER) ? Fx1 : FxHalf;
-    } else if (ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
-        VAL(actor, PLAYER_ANIMATION) = PF_DUCK;
-        VAL(actor, PLAYER_FRAME) = Fx0;
-    } else if (Fabs(actor->vel.x) >= 8192 || get_actor(VAL(actor, PLAYER_WARP)) != NULL
-               || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
-    {
-        VAL(actor, PLAYER_ANIMATION) = PF_WALK;
-        VAL(actor, PLAYER_FRAME) += Fclamp(Fdiv(Fabs(actor->vel.x), 819200), 7864, 31457);
-    } else {
-        VAL(actor, PLAYER_ANIMATION) = PF_IDLE;
-        VAL(actor, PLAYER_FRAME) = Fx0;
-    }
-
-    if (warping)
+    if (get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
         collide_actor(actor);
 
     player->pos = actor->pos;
@@ -607,6 +729,7 @@ const ActorTable TAB_PLAYER = {
     .load = load,
     .create = create,
     .cleanup = cleanup,
+    .pre_tick = update_animation,
     .tick = tick,
     .post_tick = post_tick,
     .draw = draw,

@@ -107,11 +107,36 @@ static void draw_brick_shard(const GameActor* actor) {
     draw_actor(actor,
         fmt(ANY_FLAG(actor, FLG_EFFECT_ALT) ? "effects/brick_shard/gray/%i" : "effects/brick_shard/%i",
             (VAL(actor, EFFECT_FRAME) / 25) % 4),
-        AKL_NEVER);
+        FALSE);
 }
 
 const ActorTable TAB_BRICK_SHARD = {
     .load = load_brick_shard,
     .tick = tick_brick_shard,
     .draw = draw_brick_shard,
+};
+
+/* =========
+   EXPLOSION
+   ========= */
+
+static void load_explode() {
+    load_sprite_num("effects/explode/%u", 3, AKL_NEVER);
+}
+
+static void tick_explode(GameActor* actor) {
+    VAL(actor, EFFECT_FRAME) += 24;
+    if (VAL(actor, EFFECT_FRAME) >= 300)
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_explode(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("effects/explode/%i", VAL(actor, EFFECT_FRAME) / 100), FALSE);
+}
+
+const ActorTable TAB_EXPLODE = {
+    .load = load_explode,
+    .tick = tick_explode,
+    .draw = draw_explode,
 };

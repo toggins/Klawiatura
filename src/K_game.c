@@ -2,7 +2,6 @@
 
 #include "K_audio.h"
 #include "K_cmd.h"
-#include "K_game.h"
 #include "K_input.h"
 #include "K_interface.h"
 #include "K_levels.h"
@@ -16,6 +15,8 @@
 
 #include "actors/K_checkpoint.h"
 #include "actors/K_player.h"
+#include "actors/K_points.h"
+#include "actors/K_projectiles.h"
 
 #define ACTOR_CALL_STATIC(type, fn, ...)                                                                               \
     do {                                                                                                               \
@@ -493,14 +494,8 @@ static void start_game_state() {
     // Nullify entire state
     for (PlayerID i = 0; i < MAX_PLAYERS; i++) {
         GamePlayer* player = &game_state->players[i];
-
         player->id = NULL_PLAYER;
         player->actor = NULL_ACTOR;
-        for (ActorID j = 0; j < MAX_PROJECTILES; j++)
-            player->projectiles[j] = NULL_ACTOR;
-        for (ActorID j = 0; j < MAX_SINKING_PROJECTILES; j++)
-            player->sinking_projectiles[j] = NULL_ACTOR;
-
         player->lives = DEFAULT_LIVES;
         player->track = 255;
     }
@@ -508,7 +503,6 @@ static void start_game_state() {
     game_state->live_actors = NULL_ACTOR;
     for (ActorID i = 0; i < MAX_ACTORS; i++) {
         GameActor* actor = &game_state->actors[i];
-
         actor->id = actor->previous = actor->next = actor->previous_cell = actor->next_cell = NULL_ACTOR;
         actor->player = NULL_PLAYER;
         actor->platform = NULL_ACTOR;
@@ -1632,6 +1626,21 @@ void win_player(GamePlayer* player) {
             FLAG_ON(actor, FLG_DESTROY);
             break;
         }
+
+        case ACT_FIREBALL_PROJECTILE: {
+            give_points(actor, player, 100);
+            FLAG_ON(actor, FLG_DESTROY);
+            break;
+        }
+
+        case ACT_BEETROOT_PROJECTILE: {
+            if (!ANY_FLAG(actor, FLG_PROJECTILE_SINK)) {
+                give_points(actor, player, 200);
+                FLAG_ON(actor, FLG_DESTROY);
+            }
+
+            break;
+        }
         }
     }
 
@@ -1862,24 +1871,45 @@ void push_actors(GameActor* actor) {
 }
 
 Bool in_any_view(const FVec2 pos, Fixed edge, Bool ignore_top) {
-    for (PlayerID i = 0; i < game_context.num_players; i++) {
-        const GamePlayer* player = get_player(i);
-        if (player == NULL)
-            continue;
-
-        const Fixed cx = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-                        player->bounds.end.x - F_HALF_SCREEN_WIDTH),
-                    cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
-                        player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
-        const FRect cbox = {
-            {cx - F_HALF_SCREEN_WIDTH + edge, cy - F_HALF_SCREEN_HEIGHT + edge},
-            {cx + F_HALF_SCREEN_WIDTH - edge, cy + F_HALF_SCREEN_HEIGHT - edge}
-        };
-        if (pos.x < cbox.end.x && pos.x > cbox.start.x && pos.y < cbox.end.y && (ignore_top || pos.y > cbox.start.y))
+    for (PlayerID i = 0; i < game_context.num_players; i++)
+        if (in_player_view(get_player(i), pos, edge, ignore_top))
             return TRUE;
-    }
 
     return FALSE;
+}
+
+Bool in_player_view(const GamePlayer* player, const FVec2 pos, Fixed edge, Bool ignore_top) {
+    if (player == NULL)
+        return FALSE;
+
+    const Fixed cx = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+                    player->bounds.end.x - F_HALF_SCREEN_WIDTH),
+                cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
+                    player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
+    const FRect cbox = {
+        {cx - F_HALF_SCREEN_WIDTH + edge, cy - F_HALF_SCREEN_HEIGHT + edge},
+        {cx + F_HALF_SCREEN_WIDTH - edge, cy + F_HALF_SCREEN_HEIGHT - edge}
+    };
+
+    return pos.x < cbox.end.x && pos.x > cbox.start.x && pos.y < cbox.end.y && (ignore_top || pos.y > cbox.start.y);
+}
+
+Bool in_any_x_view(Fixed x, Fixed edge) {
+    for (PlayerID i = 0; i < game_context.num_players; i++)
+        if (in_player_x_view(get_player(i), x, edge))
+            return TRUE;
+
+    return FALSE;
+}
+
+Bool in_player_x_view(const GamePlayer* player, Fixed x, Fixed edge) {
+    if (player == NULL)
+        return FALSE;
+
+    const Fixed cx = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+        player->bounds.end.x - F_HALF_SCREEN_WIDTH);
+
+    return x < (cx + F_HALF_SCREEN_WIDTH - edge) && x > (cx - F_HALF_SCREEN_WIDTH + edge);
 }
 
 Bool below_nearest_bounds(const FVec2 pos, Fixed edge) {
@@ -2073,17 +2103,16 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                         continue;
 
                     const SolidFlags solid = ACTOR_GET_SOLID(displacer);
-                    if (!(solid & SOL_SOLID) || (solid & SOL_SLOPE)
-                        || !Rcollide(abox, Radd(displacer->box, displacer->pos)))
-                    {
+                    if (!(solid & SOL_SOLID) || (solid & SOL_SLOPE))
                         continue;
-                    }
 
-                    if (actor->vel.y >= Fx0
-                        && (npos.y + actor->box.end.y - climb) < (displacer->pos.y + displacer->box.start.y))
-                    {
-                        const Fixed step = displacer->pos.y + displacer->box.start.y - actor->box.end.y;
-                        const FRect solid = Radd(Radd(actor->box, npos), (FVec2){right ? Fx1 : -Fx1, Fx0});
+                    const FRect dbox = Radd(displacer->box, displacer->pos);
+                    if (!Rcollide(abox, dbox))
+                        continue;
+
+                    if (actor->vel.y >= Fx0 && (npos.y + actor->box.end.y - climb) < dbox.start.y) {
+                        const Fixed step = dbox.start.y - actor->box.end.y;
+                        const FRect solid = Radd(actor->box, (FVec2){npos.x + (right ? 1 : -1), step});
 
                         if (!touching_solid(solid, SOL_SOLID)) {
                             ACTOR_CALL(displacer, on_top, actor);
@@ -2095,17 +2124,15 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                             climbed = TRUE;
                             goto da_climbed;
                         }
-
-                        continue;
                     }
 
                     if (right) {
                         ACTOR_CALL(displacer, on_left, actor);
-                        npos.x = Fmin(npos.x, displacer->pos.x + displacer->box.start.x - actor->box.end.x);
+                        npos.x = Fmin(npos.x, dbox.start.x - actor->box.end.x);
                         stop |= actor->vel.x >= Fx0;
                     } else {
                         ACTOR_CALL(displacer, on_right, actor);
-                        npos.x = Fmax(npos.x, displacer->pos.x + displacer->box.end.x - actor->box.start.x);
+                        npos.x = Fmax(npos.x, dbox.end.x - actor->box.start.x);
                         stop |= actor->vel.x <= Fx0;
                     }
 
@@ -2144,7 +2171,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 
                     if (actor->vel.y >= Fx0 && (npos.y + actor->box.end.y - climb) < cbox.start.y) {
                         const Fixed step = cbox.start.y - actor->box.end.y;
-                        const FRect solid = Radd(Radd(actor->box, npos), (FVec2){right ? Fx1 : -Fx1, Fx0});
+                        const FRect solid = Radd(actor->box, (FVec2){npos.x + (right ? 1 : -1), step});
 
                         if (!touching_solid(solid, SOL_SOLID)) {
                             npos.y = step;
@@ -2154,8 +2181,6 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                             climbed = TRUE;
                             goto da_climbed;
                         }
-
-                        continue;
                     }
 
                     if (right) {
@@ -2199,33 +2224,32 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                     GameActor* displacer = next;
                     next = get_actor(next->previous_cell);
 
-                    if (actor == displacer || ANY_FLAG(displacer, FLG_DESTROY)
-                        || !Rcollide(abox, Radd(displacer->box, displacer->pos)))
-                    {
+                    if (actor == displacer || ANY_FLAG(displacer, FLG_DESTROY))
                         continue;
-                    }
+
+                    const FRect dbox = Radd(displacer->box, displacer->pos);
+                    if (!Rcollide(abox, dbox))
+                        continue;
 
                     const SolidFlags solid = ACTOR_GET_SOLID(displacer);
                     if (solid & SOL_SLOPE) {
                         if (actor->vel.y < Fx0) {
-                            if (ANY_FLAG(displacer, FLG_Y_FLIP) || npos.y < (displacer->pos.y + displacer->box.end.y))
+                            if (ANY_FLAG(displacer, FLG_Y_FLIP) || npos.y < dbox.end.y)
                                 continue;
 
                             ACTOR_CALL(displacer, on_bottom, actor);
-                            npos.y = Fmax(npos.y, displacer->pos.y + displacer->box.end.y - actor->box.start.y);
+                            npos.y = Fmax(npos.y, dbox.end.y - actor->box.start.y);
                             stop |= actor->vel.y <= Fx0;
                         } else {
-                            const Fixed width = Fabs(displacer->box.end.x - displacer->box.start.x);
+                            const Fixed width = Fabs(dbox.end.x - dbox.start.x);
                             if (width == Fx0)
                                 continue;
 
                             const Bool side = ANY_FLAG(displacer, FLG_X_FLIP);
-                            const Fixed sa = displacer->pos.y + (side ? displacer->box.start.y : displacer->box.end.y),
-                                        sb = displacer->pos.y + (side ? displacer->box.end.y : displacer->box.start.y),
-                                        ax = npos.x + (side ? actor->box.start.x : actor->box.end.x),
-                                        sx = displacer->pos.x + displacer->box.start.x;
+                            const Fixed sa = side ? dbox.start.y : dbox.end.y, sb = side ? dbox.end.y : dbox.start.y,
+                                        ax = npos.x + (side ? actor->box.start.x : actor->box.end.x);
 
-                            const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - sx, width), Fx0, Fx1));
+                            const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - dbox.start.x, width), Fx0, Fx1));
                             if ((npos.y + actor->box.end.y + Fabs(actor->vel.x)) >= slope) {
                                 npos.y = slope - actor->box.end.y;
                                 stop = TRUE;
@@ -2236,28 +2260,19 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                     }
 
                     if (actor->vel.y < Fx0) {
-                        if (!(solid & SOL_SOLID)
-                            && (!(solid & SOL_BOTTOM)
-                                || (npos.y + actor->box.start.y - actor->vel.y)
-                                       < (displacer->pos.y + displacer->box.end.y)))
+                        if ((solid & SOL_SOLID)
+                            || ((solid & SOL_BOTTOM) && (npos.y + actor->box.start.y - actor->vel.y) >= dbox.end.y))
                         {
-                            continue;
+                            ACTOR_CALL(displacer, on_bottom, actor);
+                            npos.y = Fmax(npos.y, dbox.end.y - actor->box.start.y);
+                            stop |= actor->vel.y <= Fx0;
                         }
-
-                        ACTOR_CALL(displacer, on_bottom, actor);
-                        npos.y = Fmax(npos.y, displacer->pos.y + displacer->box.end.y - actor->box.start.y);
-                        stop |= actor->vel.y <= Fx0;
-                    } else {
-                        if (!(solid & SOL_SOLID)
-                            || ((solid & SOL_TOP)
-                                && (npos.y + actor->box.end.y - actor->vel.y)
-                                       > (displacer->pos.y + displacer->box.start.y + climb)))
-                        {
-                            continue;
-                        }
-
+                    } else if ((solid & SOL_SOLID)
+                               || ((solid & SOL_TOP)
+                                   && (npos.y + actor->box.end.y - actor->vel.y) <= (dbox.start.y + climb)))
+                    {
                         ACTOR_CALL(displacer, on_top, actor);
-                        npos.y = Fmin(npos.y, displacer->pos.y + displacer->box.start.y - actor->box.end.y);
+                        npos.y = Fmin(npos.y, dbox.start.y - actor->box.end.y);
                         stop |= actor->vel.y >= Fx0;
                     }
                 }
@@ -2306,9 +2321,9 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 
                             const Bool side = (solid & SOL_X_FLIP) == SOL_X_FLIP;
                             const Fixed sa = side ? cbox.start.y : cbox.end.y, sb = side ? cbox.end.y : cbox.start.y,
-                                        ax = npos.x + (side ? actor->box.start.x : actor->box.end.x), sx = cbox.start.x;
+                                        ax = npos.x + (side ? actor->box.start.x : actor->box.end.x);
 
-                            const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - sx, width), Fx0, Fx1));
+                            const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - cbox.start.x, width), Fx0, Fx1));
                             if ((npos.y + actor->box.end.y + Fabs(actor->vel.x)) >= slope) {
                                 npos.y = slope - actor->box.end.y;
                                 stop = TRUE;
@@ -2319,22 +2334,16 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                     }
 
                     if (actor->vel.y < Fx0) {
-                        if (!(solid & SOL_SOLID)
-                            && (!(solid & SOL_BOTTOM) || (npos.y + actor->box.start.y - actor->vel.y) < cbox.end.y))
+                        if ((solid & SOL_SOLID)
+                            || ((solid & SOL_BOTTOM) && (npos.y + actor->box.start.y - actor->vel.y) >= cbox.end.y))
                         {
-                            continue;
+                            npos.y = Fmax(npos.y, cbox.end.y - actor->box.start.y);
+                            stop |= actor->vel.y <= Fx0;
                         }
-
-                        npos.y = Fmax(npos.y, cbox.end.y - actor->box.start.y);
-                        stop |= actor->vel.y <= Fx0;
-                    } else {
-                        if (!(solid & SOL_SOLID)
-                            || ((solid & SOL_TOP)
-                                && (npos.y + actor->box.end.y - actor->vel.y) > (cbox.start.y + climb)))
-                        {
-                            continue;
-                        }
-
+                    } else if ((solid & SOL_SOLID)
+                               || ((solid & SOL_TOP)
+                                   && (npos.y + actor->box.end.y - actor->vel.y) <= (cbox.start.y + climb)))
+                    {
                         npos.y = Fmin(npos.y, cbox.start.y - actor->box.end.y);
                         stop |= actor->vel.y >= Fx0;
                     }
@@ -2351,6 +2360,222 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
     move_actor(actor, npos);
 }
 // NOLINTEND(misc-no-recursion)
+
+void displace_actor_soft(GameActor* actor) {
+    if (actor == NULL)
+        return;
+
+    if (actor->sprout > 0) {
+        TOUCH_OFF(actor, TOUCH_SIDES);
+        return;
+    }
+
+    TOUCH_ON(actor, TOUCH_DISPLACEABLE);
+
+    const FVec2 npos = Vadd(actor->pos, actor->vel);
+    const FRect abox = Radd(actor->box, npos);
+    TOUCH_OFF(actor, TOUCH_SIDES);
+
+    // Horizontal collision
+    if (actor->vel.x != Fx0) {
+        Sint32 cx1 = (abox.start.x - CELL_SIZE) / CELL_SIZE, cy1 = (abox.start.y - CELL_SIZE) / CELL_SIZE;
+        Sint32 cx2 = (abox.end.x + CELL_SIZE) / CELL_SIZE, cy2 = (abox.end.y + CELL_SIZE) / CELL_SIZE;
+        cx1 = SDL_clamp(cx1, 0, MAX_CELLS - 1);
+        cy1 = SDL_clamp(cy1, 0, MAX_CELLS - 1);
+        cx2 = SDL_clamp(cx2, 0, MAX_CELLS - 1);
+        cy2 = SDL_clamp(cy2, 0, MAX_CELLS - 1);
+
+        const Bool right = actor->vel.x > Fx0;
+        for (Sint32 cx = cx1; cx <= cx2; cx++) {
+            for (Sint32 cy = cy1; cy <= cy2; cy++) {
+                GameActor* next = get_actor(game_state->grid[cx + (cy * MAX_CELLS)]);
+                while (next != NULL) {
+                    GameActor* displacer = next;
+                    next = get_actor(next->previous_cell);
+
+                    if (actor == displacer || ANY_FLAG(displacer, FLG_DESTROY))
+                        continue;
+
+                    const SolidFlags solid = ACTOR_GET_SOLID(displacer);
+                    if (!(solid & SOL_SOLID) || (solid & SOL_SLOPE)
+                        || !Rcollide(abox, Radd(displacer->box, displacer->pos)))
+                    {
+                        continue;
+                    }
+
+                    if (right) {
+                        ACTOR_CALL(displacer, on_left, actor);
+                        TOUCH_ON(actor, TOUCH_RIGHT);
+                    } else {
+                        ACTOR_CALL(displacer, on_right, actor);
+                        TOUCH_ON(actor, TOUCH_LEFT);
+                    }
+                }
+            }
+        }
+
+        for (Uint8 i = 0; i < level_info->num_collisions; i++) {
+            const CollisionMap* cmap = &level_info->collisions[i];
+            if (!Rcollide(abox, cmap->bounds))
+                continue;
+
+            const FRect orect = Rsub(abox, cmap->bounds.start);
+            Sint32 cx1 = (orect.start.x - cmap->cell_size.x) / cmap->cell_size.x,
+                   cy1 = (orect.start.y - cmap->cell_size.y) / cmap->cell_size.y;
+            Sint32 cx2 = (orect.end.x + cmap->cell_size.x) / cmap->cell_size.x,
+                   cy2 = (orect.end.y + cmap->cell_size.y) / cmap->cell_size.y;
+            cx1 = SDL_clamp(cx1, 0, cmap->size[0] - 1);
+            cy1 = SDL_clamp(cy1, 0, cmap->size[1] - 1);
+            cx2 = SDL_clamp(cx2, 0, cmap->size[0] - 1);
+            cy2 = SDL_clamp(cy2, 0, cmap->size[1] - 1);
+
+            for (Sint32 cx = cx1; cx <= cx2; cx++) {
+                for (Sint32 cy = cy1; cy <= cy2; cy++) {
+                    const SolidFlags solid = cmap->grid[cx + (cy * cmap->size[0])];
+                    if (!(solid & SOL_SOLID) || (solid & SOL_SLOPE))
+                        continue;
+
+                    const FVec2 cpos
+                        = Vadd(cmap->bounds.start, (FVec2){cx * cmap->cell_size.x, cy * cmap->cell_size.y});
+                    if (Rcollide(abox, (FRect){cpos, Vadd(cpos, cmap->cell_size)}))
+                        TOUCH_ON(actor, right ? TOUCH_RIGHT : TOUCH_LEFT);
+                }
+            }
+        }
+    }
+
+    // Vertical collision
+    if (actor->vel.y != Fx0) {
+        Sint32 cx1 = (abox.start.x - CELL_SIZE) / CELL_SIZE, cy1 = (abox.start.y - CELL_SIZE) / CELL_SIZE;
+        Sint32 cx2 = (abox.end.x + CELL_SIZE) / CELL_SIZE, cy2 = (abox.end.y + CELL_SIZE) / CELL_SIZE;
+        cx1 = SDL_clamp(cx1, 0, MAX_CELLS - 1);
+        cy1 = SDL_clamp(cy1, 0, MAX_CELLS - 1);
+        cx2 = SDL_clamp(cx2, 0, MAX_CELLS - 1);
+        cy2 = SDL_clamp(cy2, 0, MAX_CELLS - 1);
+
+        for (Sint32 cx = cx1; cx <= cx2; cx++) {
+            for (Sint32 cy = cy1; cy <= cy2; cy++) {
+                GameActor* next = get_actor(game_state->grid[cx + (cy * MAX_CELLS)]);
+                while (next != NULL) {
+                    GameActor* displacer = next;
+                    next = get_actor(next->previous_cell);
+
+                    if (actor == displacer || ANY_FLAG(displacer, FLG_DESTROY))
+                        continue;
+
+                    const FRect dbox = Radd(displacer->box, displacer->pos);
+                    if (!Rcollide(abox, dbox))
+                        continue;
+
+                    const SolidFlags solid = ACTOR_GET_SOLID(displacer);
+                    if (solid & SOL_SLOPE) {
+                        if (actor->vel.y < Fx0) {
+                            if (!ANY_FLAG(displacer, FLG_Y_FLIP) && npos.y >= dbox.end.y) {
+                                ACTOR_CALL(displacer, on_bottom, actor);
+                                TOUCH_ON(actor, TOUCH_TOP);
+                            }
+                        } else {
+                            const Fixed width = dbox.end.x - dbox.start.x;
+                            if (width == Fx0)
+                                continue;
+
+                            const Bool side = ANY_FLAG(displacer, FLG_X_FLIP);
+                            const Fixed sa = side ? dbox.start.y : dbox.end.y, sb = side ? dbox.end.y : dbox.start.y,
+                                        ax = npos.x + (side ? actor->box.start.x : actor->box.end.x);
+
+                            const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - dbox.start.x, width), Fx0, Fx1));
+                            if ((npos.y + actor->box.end.y + Fabs(actor->vel.x)) >= slope) {
+                                ACTOR_CALL(displacer, on_top, actor);
+                                TOUCH_ON(actor, TOUCH_BOTTOM);
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    if (actor->vel.y < Fx0) {
+                        if ((solid & SOL_SOLID)
+                            || ((solid & SOL_BOTTOM) && (npos.y + actor->box.start.y - actor->vel.y) >= dbox.end.y))
+                        {
+                            ACTOR_CALL(displacer, on_bottom, actor);
+                            TOUCH_ON(actor, TOUCH_TOP);
+                        }
+                    } else if ((solid & SOL_SOLID)
+                               || ((solid & SOL_TOP) && (npos.y + actor->box.end.y - actor->vel.y) <= dbox.start.y))
+                    {
+                        ACTOR_CALL(displacer, on_top, actor);
+                        TOUCH_ON(actor, TOUCH_BOTTOM);
+                    }
+                }
+            }
+        }
+
+        for (Uint8 i = 0; i < level_info->num_collisions; i++) {
+            const CollisionMap* cmap = &level_info->collisions[i];
+            if (!Rcollide(abox, cmap->bounds))
+                continue;
+
+            const FRect orect = Rsub(abox, cmap->bounds.start);
+            cx1 = (orect.start.x - cmap->cell_size.x) / cmap->cell_size.x;
+            cy1 = (orect.start.y - cmap->cell_size.y) / cmap->cell_size.y;
+            cx2 = (orect.end.x + cmap->cell_size.x) / cmap->cell_size.x;
+            cy2 = (orect.end.y + cmap->cell_size.y) / cmap->cell_size.y;
+            cx1 = SDL_clamp(cx1, 0, cmap->size[0] - 1);
+            cy1 = SDL_clamp(cy1, 0, cmap->size[1] - 1);
+            cx2 = SDL_clamp(cx2, 0, cmap->size[0] - 1);
+            cy2 = SDL_clamp(cy2, 0, cmap->size[1] - 1);
+
+            for (Sint32 cx = cx1; cx <= cx2; cx++) {
+                for (Sint32 cy = cy1; cy <= cy2; cy++) {
+                    const SolidFlags solid = cmap->grid[cx + (cy * cmap->size[0])];
+                    if (solid <= 0)
+                        continue;
+
+                    const FVec2 cpos
+                        = Vadd(cmap->bounds.start, (FVec2){cx * cmap->cell_size.x, cy * cmap->cell_size.y});
+                    const FRect cbox = (FRect){cpos, Vadd(cpos, cmap->cell_size)};
+                    if (!Rcollide(abox, cbox))
+                        continue;
+
+                    if (solid & SOL_SLOPE) {
+                        if (actor->vel.y < Fx0) {
+                            if (!(solid & SOL_Y_FLIP) && npos.y >= cbox.end.y)
+                                TOUCH_ON(actor, TOUCH_TOP);
+                        } else {
+                            const Fixed width = Fabs(cbox.end.x - cbox.start.x);
+                            if (width == Fx0)
+                                continue;
+
+                            const Bool side = (solid & SOL_X_FLIP) == SOL_X_FLIP;
+                            const Fixed sa = side ? cbox.start.y : cbox.end.y, sb = side ? cbox.end.y : cbox.start.y,
+                                        ax = npos.x + (side ? actor->box.start.x : actor->box.end.x);
+
+                            const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - cbox.start.x, width), Fx0, Fx1));
+                            if ((npos.y + actor->box.end.y + Fabs(actor->vel.x)) >= slope)
+                                TOUCH_ON(actor, TOUCH_BOTTOM);
+                        }
+
+                        continue;
+                    }
+
+                    if (actor->vel.y < Fx0) {
+                        if ((solid & SOL_SOLID)
+                            || ((solid & SOL_BOTTOM) && (npos.y + actor->box.start.y - actor->vel.y) >= cbox.end.y))
+                        {
+                            TOUCH_ON(actor, TOUCH_TOP);
+                        }
+                    } else if ((solid & SOL_SOLID)
+                               || ((solid & SOL_TOP) && (npos.y + actor->box.end.y - actor->vel.y) <= cbox.start.y))
+                    {
+                        TOUCH_ON(actor, TOUCH_BOTTOM);
+                    }
+                }
+            }
+        }
+    }
+
+    move_actor(actor, npos);
+}
 
 void draw_actor(const GameActor* actor, const char* sprite, Bool antijitter) {
     if (actor == NULL || !ANY_FLAG(actor, FLG_VISIBLE))
