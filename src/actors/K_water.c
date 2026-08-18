@@ -15,7 +15,10 @@ enum {
    ===== */
 
 static void load_water() {
-    load_sprite_num("markers/water/%u", 5, AKL_NEVER);
+    if (gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP))
+        load_sprite_num("markers/water/alt/%u", 7, AKL_NEVER);
+    else
+        load_sprite_num("markers/water/%u", 5, AKL_NEVER);
 }
 
 static void create_water(GameActor* actor) {
@@ -24,11 +27,9 @@ static void create_water(GameActor* actor) {
     VAL(actor, WATER_TO) = actor->pos.y;
 
     GameState* game_state = gamestate();
-
     GameActor* water = get_actor(game_state->water);
     if (water != NULL)
         FLAG_ON(water, FLG_DESTROY);
-
     game_state->water = actor->id;
 }
 
@@ -59,7 +60,10 @@ static void draw_water(const GameActor* actor) {
     const Sint32 cx = Fx2Int(video_state->camera.pos.x) - HALF_SCREEN_WIDTH, az = Fx2Int(actor->depth);
     batch_pos(B_F3(cx, ay, az));
     batch_color(B_U4_ALPHA(135));
-    batch_sprite(fmt("markers/water/%i", (gamestate()->time / 5) % 5));
+    const GameState* game_state = gamestate();
+    batch_sprite((game_state->flags & (GF_HARDCORE | GF_LOST_MAP))
+                     ? fmt("markers/water/alt/%i", (game_state->time / 5) % 7)
+                     : fmt("markers/water/%i", (game_state->time / 5) % 5));
 
     const Sint32 ay2 = ay + 16;
     if (ay2 >= cbottom)
