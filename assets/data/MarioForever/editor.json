@@ -299,6 +299,17 @@
             "sprite": "editor/goal_mark",
             "scalable": true
         },
+        "Water": {
+            "type": "actor",
+            "id": 13,
+            "sprite": "markers/water/0",
+            "flags": [
+                {
+                    "name": "Unswimmable",
+                    "index": 5
+                }
+            ]
+        },
         "Item Block": {
             "type": "actor",
             "id": 24,
@@ -575,6 +586,10 @@
                 {
                     "name": "Goal",
                     "items": ["Goal", "Goal Bar", "Goal Mark", "Goal Line"]
+                },
+                {
+                    "name": "Water",
+                    "items": ["Water", "Water Trigger"]
                 },
                 "Player Spawn",
                 "Warp",
