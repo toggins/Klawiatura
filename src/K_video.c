@@ -3,11 +3,11 @@
 #ifdef SDL_PLATFORM_EMSCRIPTEN
 #define GLAD_GLES2_IMPLEMENTATION
 #include <glad.h>
-#include <SDL3/SDL_opengles2.h>
 #else
 #define GLAD_GL_IMPLEMENTATION
 #include <glad.h>
 #include <SDL3/SDL_opengl.h>
+#define glClearDepthf glClearDepth // hack
 #endif
 
 #include <SDL3/SDL_timer.h>
@@ -425,7 +425,7 @@ void clear_color(const float color[4]) {
 }
 
 void clear_depth(float depth) {
-    glClearDepth(depth);
+    glClearDepthf(depth);
     glClear(GL_DEPTH_BUFFER_BIT);
 }
 
