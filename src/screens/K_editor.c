@@ -88,7 +88,7 @@ typedef struct EditorFolder {
 typedef struct {
     Bool has_scalable, has_highlighted, has_selected;
     Uint16 grid_size;
-    Sint32 pos[2];
+    Sint32 pos[2], highlight_pos[2];
     size_t scalable, highlighted, selected;
 } EditorCursor;
 
@@ -163,7 +163,7 @@ static void move_cursor(const Sint32 pos[2], Bool snap, Bool highlight) {
     }
 
     if (highlight && !ecursor->has_scalable) {
-        Sint32 ox = ecursor->pos[0], oy = ecursor->pos[1];
+        const Sint32 ox = ecursor->highlight_pos[0], oy = ecursor->highlight_pos[1];
         if (pos[0] != ox || pos[1] != oy) {
             ecursor->has_highlighted = FALSE;
 
@@ -212,6 +212,9 @@ static void move_cursor(const Sint32 pos[2], Bool snap, Bool highlight) {
         ecursor->pos[0] = pos[0];
         ecursor->pos[1] = pos[1];
     }
+
+    ecursor->highlight_pos[0] = pos[0];
+    ecursor->highlight_pos[1] = pos[1];
 }
 
 static void clear_level() {
@@ -1306,6 +1309,7 @@ static void draw_ui() {
     ImGui_NewFrame();
 
     EditorCamera* ecamera = &editor->camera;
+    EditorCursor* ecursor = &editor->cursor;
 
     const ImGuiIO* io = ImGui_GetIO();
     if (!io->WantCaptureKeyboard) {
@@ -1327,9 +1331,19 @@ static void draw_ui() {
             if (ImGui_IsKeyPressed(ImGuiKey_E))
                 editor->def_key = cdef->next;
         }
+
+        if (ecursor->has_selected) {
+            if (ImGui_IsKeyPressedEx(ImGuiKey_UpArrow, TRUE))
+                --editor->level.markers[ecursor->selected].pos[1];
+            if (ImGui_IsKeyPressedEx(ImGuiKey_LeftArrow, TRUE))
+                --editor->level.markers[ecursor->selected].pos[0];
+            if (ImGui_IsKeyPressedEx(ImGuiKey_DownArrow, TRUE))
+                ++editor->level.markers[ecursor->selected].pos[1];
+            if (ImGui_IsKeyPressedEx(ImGuiKey_RightArrow, TRUE))
+                ++editor->level.markers[ecursor->selected].pos[0];
+        }
     }
 
-    EditorCursor* ecursor = &editor->cursor;
     if (!io->WantCaptureMouse) {
         ImVec2 mpos = ImGui_GetMousePos();
 

@@ -1,6 +1,17 @@
 {
-    "tracks": ["one_fine_day"],
+    "lost_map": true,
     "backdrops": [
+        {
+            "def": "Gradient Background",
+            "pos": [0, 0, 200],
+            "size": [640, 480],
+            "colors": [
+                [59, 123, 163, 255],
+                [59, 123, 163, 255],
+                [242, 253, 252, 255],
+                [242, 253, 252, 255]
+            ]
+        },
         {
             "def": "Grass Top Left",
             "sprite": "tiles/grass/0",
@@ -55,6 +66,36 @@
             "def": "Grass Top",
             "sprite": "tiles/grass/1",
             "pos": [320, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [352, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [384, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [416, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [448, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [480, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [512, 416, 20]
         },
         {
             "def": "Grass Top",
@@ -129,6 +170,36 @@
         {
             "def": "Grass Middle",
             "sprite": "tiles/grass/4",
+            "pos": [352, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [384, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [416, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [448, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [480, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [512, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
             "pos": [544, 448, 20]
         },
         {
@@ -144,124 +215,12 @@
         {
             "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [544, 384, 20]
+            "pos": [128, 256, 20]
         },
         {
             "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [576, 384, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [576, 352, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [416, 256, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [384, 256, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [352, 256, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [320, 256, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [288, 256, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [288, 224, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [288, 192, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [288, 160, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [288, 128, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [352, 288, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [352, 320, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [352, 352, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [352, 384, 20]
-        },
-        {
-            "def": "Gradient Background",
-            "pos": [0, 0, 200],
-            "size": [640, 480],
-            "colors": [
-                [59, 123, 163, 255],
-                [59, 123, 163, 255],
-                [242, 253, 252, 255],
-                [242, 253, 252, 255]
-            ]
-        },
-        {
-            "def": "Gradient Background",
-            "pos": [0, 0, -100],
-            "size": [640, 480],
-            "colors": [
-                [59, 123, 163, 0],
-                [59, 123, 163, 0],
-                [242, 253, 252, 120],
-                [242, 253, 252, 120]
-            ]
-        },
-        {
-            "def": "Grass Top Right",
-            "sprite": "tiles/grass/2",
-            "pos": [352, 416, 20]
-        },
-        {
-            "def": "Grass Right",
-            "sprite": "tiles/grass/5",
-            "pos": [352, 448, 20]
-        },
-        {
-            "def": "Grass Left",
-            "sprite": "tiles/grass/3",
-            "pos": [512, 448, 20]
-        },
-        {
-            "def": "Grass Top Left",
-            "sprite": "tiles/grass/0",
-            "pos": [512, 416, 20]
+            "pos": [160, 256, 20]
         },
         {
             "def": "Brown Block",
@@ -371,21 +330,6 @@
         {
             "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [608, 384, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [608, 352, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [608, 320, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
             "pos": [640, 256, 20]
         },
         {
@@ -411,57 +355,27 @@
         {
             "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [-32, 416, 20]
+            "pos": [160, 288, 20]
         },
         {
             "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [-32, 448, 20]
+            "pos": [96, 256, 20]
         },
         {
             "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [640, 416, 20]
+            "pos": [160, 320, 20]
         },
         {
             "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [640, 448, 20]
+            "pos": [192, 320, 20]
         },
         {
             "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [16, 16, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [48, 16, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [16, 48, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [48, 48, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [122, 121, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [154, 121, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [186, 121, 20]
+            "pos": [224, 320, 20]
         }
     ],
     "collisions": [
@@ -481,6 +395,12 @@
                 [9, 13, 1],
                 [10, 13, 1],
                 [11, 13, 1],
+                [12, 13, 1],
+                [13, 13, 1],
+                [14, 13, 1],
+                [15, 13, 1],
+                [16, 13, 1],
+                [17, 13, 1],
                 [18, 13, 1],
                 [19, 13, 1],
                 [20, 13, 1],
@@ -495,29 +415,17 @@
                 [9, 14, 1],
                 [10, 14, 1],
                 [11, 14, 1],
+                [12, 14, 1],
+                [13, 14, 1],
+                [14, 14, 1],
+                [15, 14, 1],
+                [16, 14, 1],
+                [17, 14, 1],
                 [18, 14, 1],
                 [19, 14, 1],
                 [20, 14, 1],
-                [18, 12, 1],
-                [19, 12, 1],
-                [19, 11, 1],
-                [14, 8, 1],
-                [13, 8, 1],
-                [12, 8, 1],
-                [11, 8, 1],
-                [10, 8, 1],
-                [10, 7, 1],
-                [10, 6, 1],
-                [10, 5, 1],
-                [10, 4, 1],
-                [12, 9, 1],
-                [12, 10, 1],
-                [12, 11, 1],
-                [12, 12, 1],
-                [12, 13, 1],
-                [12, 14, 1],
-                [17, 14, 1],
-                [17, 13, 1],
+                [5, 8, 1],
+                [6, 8, 1],
                 [0, 0, 1],
                 [0, 1, 1],
                 [0, 2, 1],
@@ -539,82 +447,29 @@
                 [21, 5, 1],
                 [21, 6, 1],
                 [21, 7, 1],
-                [20, 12, 1],
-                [20, 11, 1],
-                [20, 10, 1],
                 [21, 8, 1],
                 [21, 9, 1],
                 [21, 10, 1],
                 [21, 11, 1],
                 [21, 12, 1],
-                [0, 13, 1],
-                [0, 14, 1],
-                [21, 13, 1],
-                [21, 14, 1]
-            ]
-        },
-        {
-            "pos": [122, 121],
-            "size": [3, 1],
-            "cell_size": [32, 32],
-            "cells": [
-                [0, 0, 1],
-                [1, 0, 1],
-                [2, 0, 1]
-            ]
-        },
-        {
-            "pos": [16, 16],
-            "size": [2, 2],
-            "cell_size": [32, 32],
-            "cells": [
-                [0, 0, 1],
-                [1, 0, 1],
-                [0, 1, 1],
-                [1, 1, 1]
+                [6, 9, 1],
+                [4, 8, 1],
+                [6, 10, 1],
+                [7, 10, 1],
+                [8, 10, 1]
             ]
         }
     ],
     "actors": [
         {
+            "def": "Water",
+            "id": 13,
+            "pos": [0, 352]
+        },
+        {
             "def": "Player Spawn",
             "id": 1,
-            "pos": [96, 415]
-        },
-        {
-            "def": "Item Block",
-            "id": 24,
-            "pos": [192, 256],
-            "values": [[1, 21]]
-        },
-        {
-            "def": "Brick Block",
-            "id": 24,
-            "pos": [224, 256],
-            "values": [
-                [0, 1],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Coin Block",
-            "id": 24,
-            "pos": [256, 256],
-            "values": [
-                [0, 1],
-                [1, 21]
-            ],
-            "flags": 32
-        },
-        {
-            "def": "Hidden Block",
-            "id": 24,
-            "pos": [320, 128],
-            "values": [
-                [0, 1],
-                [1, 2]
-            ],
-            "flags": 224
+            "pos": [128, 255]
         }
     ]
 }
