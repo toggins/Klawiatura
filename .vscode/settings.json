@@ -30,6 +30,9 @@
         "*.h.in": "c",
         ".clang*": "yaml"
     },
+    "search.exclude": {
+        "external/**": true
+    },
     "[c]": {
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
     },
