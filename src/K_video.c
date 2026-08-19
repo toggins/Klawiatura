@@ -153,7 +153,10 @@ void video_init(Bool force_shader) {
     EXPECT(version, "Failed to load OpenGL functions");
     INFO("GLAD version: %d.%d", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
 
-#ifndef SDL_PLATFORM_EMSCRIPTEN
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    EXPECT(GLAD_GL_ES_VERSION_3_0,
+        "Unsupported OpenGL version. At least OpenGL ES2 3.0 with framebuffer and shader support is required.");
+#else
     EXPECT(GLAD_GL_VERSION_3_3,
         "Unsupported OpenGL version. At least OpenGL 3.3 with framebuffer and shader support is required.");
 
