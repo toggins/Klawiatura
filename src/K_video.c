@@ -7,6 +7,7 @@
 #define GLAD_GL_IMPLEMENTATION
 #include <glad.h>
 #include <SDL3/SDL_opengl.h>
+
 #define glClearDepthf glClearDepth // hack
 #endif
 
@@ -127,11 +128,10 @@ void video_init(Bool force_shader) {
     // Window
     WINDOW = SDL_CreateWindow(
 #ifdef SDL_PLATFORM_EMSCRIPTEN
-        NULL
+        NULL,
 #else
-        GAME_NAME
+        GAME_NAME,
 #endif
-        ,
         window_width, window_height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     EXPECT(WINDOW, "Failed to create window: %s", SDL_GetError());
 
@@ -142,19 +142,18 @@ void video_init(Bool force_shader) {
 #ifdef SDL_PLATFORM_EMSCRIPTEN
     set_vsync(TRUE);
 
-    int version = gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress);
+    extern void* emscripten_GetProcAddress(const char* name);
+    int version = gladLoadGLES2((GLADloadfunc)emscripten_GetProcAddress);
 #else
     set_vsync(FALSE);
 
     int version = gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
 #endif
-    EXPECT(version, "Failed to load OpenGL functions");
 
+    EXPECT(version, "Failed to load OpenGL functions");
     INFO("GLAD version: %d.%d", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
-#ifdef SDL_PLATFORM_EMSCRIPTEN
-    EXPECT(GLAD_GL_ES_VERSION_3_0,
-        "Unsupported OpenGL version. At least OpenGL ES 3.0 with framebuffer and shader support is required.");
-#else
+
+#ifndef SDL_PLATFORM_EMSCRIPTEN
     EXPECT(GLAD_GL_VERSION_3_3,
         "Unsupported OpenGL version. At least OpenGL 3.3 with framebuffer and shader support is required.");
 
