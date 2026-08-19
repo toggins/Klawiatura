@@ -3,9 +3,6 @@
 #include "K_interface.h"
 
 #ifndef SDL_PLATFORM_EMSCRIPTEN
-//
-//
-//
 
 #include <SDL3/SDL_dialog.h>
 #include <SDL3/SDL_video.h>
