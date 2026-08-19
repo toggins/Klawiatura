@@ -8,7 +8,9 @@
 #include <glad.h>
 #include <SDL3/SDL_opengl.h>
 
-#define glClearDepthf glClearDepth // hack
+// HACK: `glClearDepthf` is exclusive to ES and GL4 onwards. on the other hand, ES doesn't have the double
+// `glClearDepth`, only the float version.
+#define glClearDepthf glClearDepth
 #endif
 
 #include <SDL3/SDL_timer.h>
