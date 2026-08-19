@@ -141,12 +141,9 @@ void video_init(Bool force_shader) {
 
 #ifdef SDL_PLATFORM_EMSCRIPTEN
     set_vsync(TRUE);
-
-    extern void* emscripten_GetProcAddress(const char* name);
-    int version = gladLoadGLES2((GLADloadfunc)emscripten_GetProcAddress);
+    int version = gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress);
 #else
     set_vsync(FALSE);
-
     int version = gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
 #endif
 
