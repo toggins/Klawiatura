@@ -48,15 +48,7 @@ You can adjust Klawiatura with these launch options:
 
 ## Building This Yourself
 
-In order to build this, you will need a C/C++ compiler, [CMake](https://cmake.org/download), and [Python 3.13.x](https://www.python.org/downloads) installed on your computer, as well as the libraries listed below. Make sure to download, install, and familiarize yourself with the aforementioned tools before you proceed.
-
-### Jinja2 for Python
-
-You will need a system-wide install of the `jinja2` Python module for our dependency [`glad`](https://github.com/Dav1dde/glad) to compile successfully. On Windows, you can install that with:
-
-```bat
-py -m pip install jinja2
-```
+In order to build this, you will need a C/C++ compiler and [CMake](https://cmake.org/download) installed on your computer, as well as the libraries listed below. Make sure to download, install, and familiarize yourself with the aforementioned tools before you proceed.
 
 ### [Discord Social SDK 1.9.15332](https://discord.com/developers/social-sdk) (Optional)
 
