@@ -108,22 +108,15 @@ FetchContent_Declare(SDL_GameControllerDB
     SYSTEM)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
 
-# GLAD (2.0.8, OpenGL 3.3 Core OR OpenGL ES 3.0)
-FetchContent_Declare(glad
-    GIT_REPOSITORY https://github.com/Dav1dde/glad.git
-    GIT_TAG v2.0.8
-    SOURCE_SUBDIR cmake
-    EXCLUDE_FROM_ALL
-    SYSTEM)
-FetchContent_MakeAvailable(glad)
-
 if(EMSCRIPTEN)
-    glad_add_library(glad_gles2_30 REPRODUCIBLE STATIC API gles2=3.0)
-    list(APPEND LIBS glad_gles2_30)
+    set(GLAD_VARIANT gles2)
 else()
-    glad_add_library(glad_gl_core_33 REPRODUCIBLE STATIC API gl:core=3.3)
-    list(APPEND LIBS glad_gl_core_33)
+    set(GLAD_VARIANT gl)
 endif()
+
+add_library(glad INTERFACE ${CMAKE_SOURCE_DIR}/external/glad-${GLAD_VARIANT}/glad.h)
+target_include_directories(glad INTERFACE ${CMAKE_SOURCE_DIR}/external/glad-${GLAD_VARIANT})
+list(APPEND LIBS glad)
 
 # cglm
 set(CGLM_SHARED OFF CACHE INTERNAL "")
@@ -271,6 +264,7 @@ endif()
 
 if(EMSCRIPTEN)
     target_link_options(${PROJECT_NAME} PRIVATE
+        "SHELL:-sASSERTIONS=2"
         "SHELL:-sEXPORTED_RUNTIME_METHODS=HEAPF32,HEAPU32,HEAPU8"
         "SHELL:-sALLOW_MEMORY_GROWTH=1"
         "SHELL:-sMIN_WEBGL_VERSION=2"

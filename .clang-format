@@ -31,7 +31,7 @@ SortIncludes: CaseSensitive
 IncludeCategories:
   - Regex: "^<std"
     Priority: 0
-  - Regex: "^<glad/" # MUST come before SDL3
+  - Regex: "^<glad" # MUST come before SDL3
     Priority: 5
     SortPriority: 0
   - Regex: "^<SDL3/"
