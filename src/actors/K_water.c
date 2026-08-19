@@ -19,6 +19,8 @@ static void load_water() {
         load_sprite_num("markers/water/alt/%u", 7, AKL_NEVER);
     else
         load_sprite_num("markers/water/%u", 5, AKL_NEVER);
+    load_actor(ACT_WATER_SPLASH);
+    load_actor(ACT_BUBBLE);
 }
 
 static void create_water(GameActor* actor) {

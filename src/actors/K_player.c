@@ -132,8 +132,6 @@ static void load() {
     load_actor(ACT_PLAYER_DEAD);
     load_actor(ACT_FIREBALL_PROJECTILE);
     load_actor(ACT_BEETROOT_PROJECTILE);
-    load_actor(ACT_WATER_SPLASH);
-    load_actor(ACT_BUBBLE);
 }
 
 static void create(GameActor* actor) {
@@ -600,24 +598,20 @@ static void tick(GameActor* actor) {
 
     // 467, 468, 469: TODO
 
-    // 471
-    if (water != NULL && actor->pos.y > water->pos.y && actor->vel.y > Int2Fx(3))
-        actor->vel.y -= Fx1;
-
-    // 472, 473
+    // 471, 472, 473, 561, 562, 563 (modified)
     if (water != NULL && actor->pos.y > water->pos.y) {
+        if (actor->vel.y > Int2Fx(3))
+            actor->vel.y -= Fx1;
+
         if (actor->vel.x > 245760)
             actor->vel.x -= 24576;
         if (actor->vel.x < -245760)
             actor->vel.x += 24576;
-    }
 
-    // Przejscie Etapu i Rury: TODO
-
-    // 561, 562, 563 (modified)
-    if (water != NULL && actor->pos.y > water->pos.y && (game_state->time % 5) == 0 && rng(10) == 5) {
-        create_actor(ACT_BUBBLE, Vadd(actor->pos, (player->powerup == POW_NONE) ? (FVec2){Fx0, Int2Fx(-18)}
-                                                                                : (FVec2){Int2Fx(2), Int2Fx(-39)}));
+        if ((game_state->time % 5) == 0 && rng(10) == 5) {
+            create_actor(ACT_BUBBLE, Vadd(actor->pos, (player->powerup == POW_NONE) ? (FVec2){Fx0, Int2Fx(-18)}
+                                                                                    : (FVec2){Int2Fx(2), Int2Fx(-39)}));
+        }
     }
 
     actor->box.start.y = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
