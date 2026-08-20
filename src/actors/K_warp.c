@@ -16,7 +16,7 @@ static void load_special(const GameActor* actor) {
         if (secret != NULL && secret[0] != '$')
             load_sprite(LFMT(secret), AKL_NEVER);
 
-        load_sound("vo/clone/dead", AKL_NEVER);
+        load_sound("vo/clone/a_dead", AKL_NEVER);
     }
     if (ANY_FLAG(actor, FLG_WARP_DEVASTATOR))
         load_sound("vo/thwomp", AKL_NEVER);
@@ -134,7 +134,7 @@ static void collide(GameActor* actor, GameActor* from) {
         }
 
         ++VAL(actor, WARP_STATE);
-        play_state_sound("vo/clone/dead", 0, NULL);
+        play_state_sound("vo/clone/a_dead", 0, NULL);
     } else if (ANY_FLAG(actor, FLG_WARP_DEVASTATOR)) {
         play_state_sound("vo/thwomp", 0, NULL);
         stop_state_track();

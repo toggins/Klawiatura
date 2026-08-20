@@ -1007,7 +1007,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
             }
         }
 
-        if (sequence->state >= 50 && (!(game_state->flags & GF_LOST_MAP) || sequence->time >= 139))
+        if (sequence->state >= 50 && (!(game_state->flags & GF_LOST_MAP) || sequence->time >= 140))
             game_state->flags |= GF_END;
 
         break;
