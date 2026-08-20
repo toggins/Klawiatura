@@ -29,6 +29,8 @@ enum {
 #define FLG_PLAYER_DUCK CUSTOM_FLAG(1)
 #define FLG_PLAYER_TOUCHED_WATER CUSTOM_FLAG(2)
 #define FLG_PLAYER_WARP_OUT CUSTOM_FLAG(3)
+#define FLG_PLAYER_STOMP CUSTOM_FLAG(4)
 
 Bool hit_player(GameActor*);
 void kill_player(GameActor*);
+void player_starman(GameActor*, GameActor*);

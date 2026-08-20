@@ -108,6 +108,8 @@ enum {
     ACT_FIREBALL_PROJECTILE,
     ACT_BEETROOT_PROJECTILE,
     ACT_EXPLODE,
+    ACT_GOOMBA,
+    ACT_DEAD,
 
     ACT_SIZE,
 };
@@ -436,6 +438,7 @@ void move_actor(GameActor*, const FVec2), push_actors(GameActor*);
 
 Bool in_any_view(const FVec2, Fixed, Bool), in_player_view(const GamePlayer*, const FVec2, Fixed, Bool);
 Bool in_any_x_view(Fixed, Fixed), in_player_x_view(const GamePlayer*, Fixed, Fixed);
+Bool box_in_any_view(const FRect), box_in_player_view(const GamePlayer*, const FRect);
 Bool below_nearest_bounds(const FVec2, Fixed);
 
 void collide_actor(GameActor*);

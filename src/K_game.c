@@ -14,6 +14,7 @@
 #include "K_video.h"
 
 #include "actors/K_checkpoint.h"
+#include "actors/K_enemies.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 #include "actors/K_projectiles.h"
@@ -1912,6 +1913,29 @@ Bool in_player_x_view(const GamePlayer* player, Fixed x, Fixed edge) {
     return x < (cx + F_HALF_SCREEN_WIDTH - edge) && x > (cx - F_HALF_SCREEN_WIDTH + edge);
 }
 
+Bool box_in_any_view(const FRect box) {
+    for (PlayerID i = 0; i < game_context.num_players; i++)
+        if (box_in_player_view(get_player(i), box))
+            return TRUE;
+
+    return FALSE;
+}
+
+Bool box_in_player_view(const GamePlayer* player, const FRect box) {
+    if (player == NULL)
+        return FALSE;
+
+    const Fixed cx = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+                    player->bounds.end.x - F_HALF_SCREEN_WIDTH),
+                cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
+                    player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
+
+    return Rcollide(box, (FRect){
+                             {cx - F_HALF_SCREEN_WIDTH, cy - F_HALF_SCREEN_HEIGHT},
+                             {cx + F_HALF_SCREEN_WIDTH, cy + F_HALF_SCREEN_HEIGHT}
+    });
+}
+
 Bool below_nearest_bounds(const FVec2 pos, Fixed edge) {
     FRect bounds = {0};
     Fixed score = 0x7FFFFFFF;
@@ -2656,6 +2680,12 @@ void draw_actor(const GameActor* actor, const char* sprite, Bool antijitter) {
     }
     batch_flip(B_B2(ANY_FLAG(actor, FLG_X_FLIP), ANY_FLAG(actor, FLG_Y_FLIP)));
     batch_sprite(sprite);
+}
+
+void draw_dead_actor(const GameActor* actor) {
+    const ActorType type = VAL(actor, DEAD_TYPE);
+    if (ACTORS[type] != NULL && ACTORS[type]->draw_dead != NULL)
+        ACTORS[type]->draw_dead(actor);
 }
 
 /// Produces an exclusive random number.

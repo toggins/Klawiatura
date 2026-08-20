@@ -2,7 +2,9 @@
 #include "K_net.h"
 #include "K_video.h"
 
+#include "actors/K_enemies.h"
 #include "actors/K_player.h"
+#include "actors/K_points.h"
 #include "actors/K_projectiles.h"
 #include "actors/K_warp.h"
 
@@ -36,6 +38,31 @@ static PlayerFrame get_player_frame(const GameActor* actor) {
     return PF_IDLE;
 }
 
+Bool hit_player(GameActor* actor) {
+    if (actor == NULL || actor->type != ACT_PLAYER || VAL(actor, PLAYER_FLASH) > 0 || VAL(actor, PLAYER_STARMAN) > 0
+        || get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT) || in_blocking_sequence())
+    {
+        return FALSE;
+    }
+
+    GamePlayer* player = get_player(actor->player);
+    if (player != NULL) {
+        if (player->powerup == POW_NONE) {
+            kill_player(actor);
+            return TRUE;
+        }
+
+        player->powerup = (player->powerup == POW_SUPER_MUSHROOM) ? POW_NONE : POW_SUPER_MUSHROOM;
+    }
+
+    VAL(actor, PLAYER_FLASH) = 100;
+    VAL(actor, PLAYER_ANIMATION) = PF_GROW;
+    VAL(actor, PLAYER_FRAME) = Fx0;
+    play_state_sound("warp", PLAY_POS, A_ACTOR(actor));
+
+    return TRUE;
+}
+
 void kill_player(GameActor* actor) {
     if (actor == NULL || actor->type != ACT_PLAYER)
         return;
@@ -61,6 +88,42 @@ void kill_player(GameActor* actor) {
         set_sequence(GS_LOSE, player, 0);
     else
         play_state_sound((player == NULL || player->lives >= 0) ? "lose" : "dead", PLAY_POS, A_ACTOR(dead));
+}
+
+void player_starman(GameActor* actor, GameActor* from) {
+    if (actor == NULL || from == NULL)
+        return;
+
+    Sint32 points = 0;
+    switch (VAL(actor, PLAYER_STARMAN_COMBO)++) {
+    case 0:
+        points = 100;
+        break;
+    case 1:
+        points = 200;
+        break;
+    case 2:
+        points = 500;
+        break;
+    case 3:
+        points = 1000;
+        break;
+    case 4:
+        points = 2000;
+        break;
+    case 5:
+        points = 5000;
+        break;
+    default: {
+        points = -1;
+        VAL(actor, PLAYER_STARMAN_COMBO) = 0;
+        break;
+    }
+    }
+
+    create_actor(ACT_EXPLODE, Rcenter(from->box));
+    give_points(from, get_player(actor->player), points);
+    kill_enemy(from, actor, TRUE);
 }
 
 /* ============
@@ -116,6 +179,8 @@ static void load() {
     load_sound("jump", AKL_NEVER);
     load_sound("fire", AKL_NEVER);
     load_sound("swim", AKL_NEVER);
+    load_sound("warp", AKL_NEVER);
+    load_sound("kick", AKL_NEVER);
 
     if (gamestate()->clock >= 0) {
         load_sound("hurry", AKL_NEVER);
@@ -132,6 +197,7 @@ static void load() {
     load_actor(ACT_PLAYER_DEAD);
     load_actor(ACT_FIREBALL_PROJECTILE);
     load_actor(ACT_BEETROOT_PROJECTILE);
+    load_actor(ACT_POINTS);
 }
 
 static void create(GameActor* actor) {
@@ -241,6 +307,17 @@ static void update_animation(GameActor* actor) {
 }
 // @NOLINTEND(misc-no-recursion)
 
+static void pre_tick(GameActor* actor) {
+    if (VAL(actor, PLAYER_FLASH) > 0) {
+        if (--VAL(actor, PLAYER_FLASH) <= 0)
+            FLAG_ON(actor, FLG_VISIBLE);
+        else
+            TOGGLE_FLAG(actor, FLG_VISIBLE);
+    }
+
+    update_animation(actor);
+}
+
 static void tick(GameActor* actor) {
     GamePlayer* player = get_player(actor->player);
     if (player == NULL) {
@@ -258,7 +335,8 @@ static void tick(GameActor* actor) {
     const GameActor* water = get_actor(game_state->water);
 
     const GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
-    if (warp != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT)) {
+    Bool was_warping = warp != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
+    if (was_warping) {
         Bool still_warping = TRUE;
 
         actor->depth = Int2Fx(22);
@@ -617,8 +695,8 @@ static void tick(GameActor* actor) {
     actor->box.start.y = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
 
     displace_actor(actor, Int2Fx(10), TRUE);
-    if (get_actor(VAL(actor, PLAYER_WARP)) == NULL && !ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
-        collide_actor(actor);
+    collide_actor(actor);
+    FLAG_OFF(actor, FLG_PLAYER_STOMP);
 
     // 209, 210, 211, 212, 213 (modified)
     // Moved below displacement/collision to fix a single frame of not being crouched.
@@ -645,8 +723,10 @@ static void tick(GameActor* actor) {
     }
 
 t_skip_physics:
-    if (get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
+    if (was_warping && (get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))) {
         collide_actor(actor);
+        FLAG_OFF(actor, FLG_PLAYER_STOMP);
+    }
 
     player->pos = actor->pos;
 
@@ -725,7 +805,7 @@ const ActorTable TAB_PLAYER = {
     .load = load,
     .create = create,
     .cleanup = cleanup,
-    .pre_tick = update_animation,
+    .pre_tick = pre_tick,
     .tick = tick,
     .post_tick = post_tick,
     .draw = draw,

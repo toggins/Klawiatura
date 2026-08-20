@@ -6268,6 +6268,54 @@
             "pos": [6309, 412],
             "vel": [131072, 0],
             "flags": 32
+        },
+        {
+            "def": "Goomba",
+            "id": 37,
+            "pos": [1455, 415],
+            "flags": 4
+        },
+        {
+            "def": "Goomba",
+            "id": 37,
+            "pos": [1839, 415],
+            "flags": 4
+        },
+        {
+            "def": "Goomba",
+            "id": 37,
+            "pos": [1903, 415],
+            "flags": 4
+        },
+        {
+            "def": "Goomba",
+            "id": 37,
+            "pos": [2671, 127],
+            "flags": 4
+        },
+        {
+            "def": "Goomba",
+            "id": 37,
+            "pos": [2703, 287],
+            "flags": 4
+        },
+        {
+            "def": "Goomba",
+            "id": 37,
+            "pos": [2767, 287],
+            "flags": 4
+        },
+        {
+            "def": "Goomba",
+            "id": 37,
+            "pos": [3247, 415],
+            "flags": 4
+        },
+        {
+            "def": "Goomba",
+            "id": 37,
+            "pos": [6415, 415],
+            "flags": 4
         }
     ]
 }

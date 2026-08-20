@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/goomba",
+    "size": [31, 32],
+    "offset": [15, 31],
+    "uvs": [32, 1, 1, 33]
+}

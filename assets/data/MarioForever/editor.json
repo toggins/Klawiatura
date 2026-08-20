@@ -488,6 +488,18 @@
                     "index": 5
                 }
             ]
+        },
+        "Goomba": {
+            "type": "actor",
+            "id": 37,
+            "sprite": "enemies/goomba/0",
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2,
+                    "default": true
+                }
+            ]
         }
     },
 
@@ -579,6 +591,10 @@
                 },
                 "Coin"
             ]
+        },
+        {
+            "name": "Enemies",
+            "items": ["Goomba"]
         },
         {
             "name": "Markers",
