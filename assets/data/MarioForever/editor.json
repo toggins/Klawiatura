@@ -500,6 +500,22 @@
                     "default": true
                 }
             ]
+        },
+        "Koopa": {
+            "type": "actor",
+            "id": 39,
+            "sprite": "enemies/koopa/0",
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2,
+                    "default": true
+                },
+                {
+                    "name": "Red",
+                    "index": 7
+                }
+            ]
         }
     },
 
@@ -594,7 +610,7 @@
         },
         {
             "name": "Enemies",
-            "items": ["Goomba"]
+            "items": ["Goomba", "Koopa", "Piranha Plant"]
         },
         {
             "name": "Markers",

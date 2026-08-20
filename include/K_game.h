@@ -110,6 +110,9 @@ enum {
     ACT_EXPLODE,
     ACT_GOOMBA,
     ACT_DEAD,
+    ACT_KOOPA,
+    ACT_KOOPA_SHELL,
+    ACT_PIRANHA_PLANT,
 
     ACT_SIZE,
 };
@@ -421,7 +424,7 @@ PlayerID localplayer(), viewplayer();
 void set_view_player(const GamePlayer*);
 
 GameSequence* get_sequence();
-void set_sequence(GameSequenceType, const GamePlayer*, Sint16 state);
+void set_sequence(GameSequenceType, const GamePlayer*, Sint16);
 Bool in_blocking_sequence();
 
 GamePlayer* get_player(PlayerID);

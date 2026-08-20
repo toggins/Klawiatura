@@ -1,6 +1,7 @@
 #include "K_audio.h"
 
 #include "actors/K_enemies.h"
+#include "actors/K_koopa.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 #include "actors/K_projectiles.h"
@@ -101,7 +102,10 @@ Bool check_stomp(GameActor* actor, GameActor* from, Fixed offset, Sint32 points)
 
     if (from->pos.y < (actor->pos.y + offset) && (from->vel.y >= Fx0 || ANY_FLAG(from, FLG_PLAYER_STOMP))) {
         GamePlayer* player = get_player(from->player);
-        from->vel.y = Fmin(from->vel.y, (player != NULL && ANY_INPUT(player, GI_JUMP)) ? Int2Fx(-13) : Int2Fx(-8));
+        const GameCharacter* character
+            = (player == NULL) ? NULL : get_character(gamecontext()->players[player->id].character);
+        from->vel.y = Fmul((player != NULL && ANY_INPUT(player, GI_JUMP)) ? Int2Fx(-13) : Int2Fx(-8),
+            (character == NULL) ? Fx1 : character->jump);
         FLAG_ON(from, FLG_PLAYER_STOMP);
 
         give_points(actor, player, points);
@@ -134,6 +138,52 @@ void hit_bump(GameActor* actor, GameActor* from, Sint32 points) {
 
     give_points(actor, player, points);
     kill_enemy(actor, from, TRUE);
+}
+
+Bool hit_shell(GameActor* actor, GameActor* from) {
+    if (actor == NULL || from == NULL || from->vel.x == Fx0)
+        return FALSE;
+
+    if (!in_any_view(actor->pos, Int2Fx(-32), FALSE))
+        return TRUE;
+
+    if (actor->type == ACT_KOOPA_SHELL && actor->vel.x != Fx0) {
+        VAL(actor, SHELL_COMBO) = VAL(from, SHELL_COMBO) = 0;
+        give_points(from, get_player(from->player), 100);
+        kill_enemy(from, from, TRUE);
+    }
+
+    Sint32 points = 0;
+    switch (VAL(from, SHELL_COMBO)++) {
+    case 0:
+        points = 100;
+        break;
+    case 1:
+        points = 200;
+        break;
+    case 2:
+        points = 500;
+        break;
+    case 3:
+        points = 1000;
+        break;
+    case 4:
+        points = 2000;
+        break;
+    case 5:
+        points = 5000;
+        break;
+
+    default: {
+        points = -1;
+        VAL(from, SHELL_COMBO) = 0;
+        break;
+    }
+    }
+    give_points(actor, get_player(from->player), points);
+
+    kill_enemy(actor, from, TRUE);
+    return TRUE;
 }
 
 void hit_fireball(GameActor* actor, GameActor* from, Sint32 points) {

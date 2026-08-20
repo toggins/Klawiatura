@@ -335,7 +335,7 @@ static void tick(GameActor* actor) {
     const GameActor* water = get_actor(game_state->water);
 
     const GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
-    Bool was_warping = warp != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
+    const Bool was_warping = warp != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
     if (was_warping) {
         Bool still_warping = TRUE;
 

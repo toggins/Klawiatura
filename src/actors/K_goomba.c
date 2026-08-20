@@ -4,16 +4,13 @@
 
 #include "actors/K_enemies.h"
 
-/* ======
-   GOOMBA
-   ====== */
-
 static void load() {
     load_sprite_num("enemies/goomba/%u", 2, AKL_NEVER);
     load_sprite("enemies/goomba/flat", AKL_NEVER);
     load_sprite("enemies/goomba/dead", AKL_NEVER);
     load_sound("stomp", AKL_NEVER);
     load_sound("kick", AKL_NEVER);
+    load_actor(ACT_POINTS);
 }
 
 static void create(GameActor* actor) {
@@ -72,7 +69,8 @@ static void collide(GameActor* actor, GameActor* from) {
 
     case ACT_PLAYER: {
         if (check_stomp(actor, from, Int2Fx(-16), 100)) {
-            actor->vel = (FVec2){Fx0};
+            ++actor->depth;
+            actor->vel.x = actor->vel.y = Fx0;
             actor->box.start.y = Int2Fx(-15);
             VAL(actor, ENEMY_FRAME) = 0;
             FLAG_ON(actor, FLG_ENEMY_FLAT);
@@ -86,21 +84,33 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
     }
 
-    case ACT_GOOMBA: {
+    case ACT_GOOMBA:
+    case ACT_KOOPA: {
         turn_enemy(actor);
         turn_enemy(from);
         break;
     }
 
-    case ACT_BLOCK_BUMP:
+    case ACT_KOOPA_SHELL: {
+        if (!hit_shell(actor, from))
+            turn_enemy(actor);
+        break;
+    }
+
+    case ACT_BLOCK_BUMP: {
         hit_bump(actor, from, 100);
         break;
-    case ACT_FIREBALL_PROJECTILE:
+    }
+
+    case ACT_FIREBALL_PROJECTILE: {
         hit_fireball(actor, from, 100);
         break;
-    case ACT_BEETROOT_PROJECTILE:
+    }
+
+    case ACT_BEETROOT_PROJECTILE: {
         hit_beetroot(actor, from, 100);
         break;
+    }
     }
 }
 
