@@ -12,6 +12,17 @@ enum {
     VAL_PLAYER_WARP,
     VAL_PLAYER_WARP_STATE,
     VAL_PLAYER_WARP_OUT_ANGLE,
+    VAL_PLAYER_FLASH,
+    VAL_PLAYER_STARMAN,
+    VAL_PLAYER_STARMAN_COMBO,
+    VAL_PLAYER_SPRING,
+
+    VAL_PLAYER_EFFECT_CHARACTER = 0,
+    VAL_PLAYER_EFFECT_POWERUP,
+    VAL_PLAYER_EFFECT_FRAME,
+    VAL_PLAYER_EFFECT_ALPHA,
+
+    VAL_PLAYER_DEAD = 0,
 };
 
 #define FLG_PLAYER_JUMP CUSTOM_FLAG(0)
@@ -19,23 +30,5 @@ enum {
 #define FLG_PLAYER_TOUCHED_WATER CUSTOM_FLAG(2)
 #define FLG_PLAYER_WARP_OUT CUSTOM_FLAG(3)
 
-/* =============
-   PLAYER EFFECT
-   ============= */
-
-enum {
-    VAL_PLAYER_EFFECT_CHARACTER,
-    VAL_PLAYER_EFFECT_POWERUP,
-    VAL_PLAYER_EFFECT_FRAME,
-    VAL_PLAYER_EFFECT_ALPHA,
-};
-
-/* ===========
-   DEAD PLAYER
-   =========== */
-
-enum {
-    VAL_PLAYER_DEAD,
-};
-
+Bool hit_player(GameActor*);
 void kill_player(GameActor*);

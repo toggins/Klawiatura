@@ -14,7 +14,7 @@ enum {
    WATER
    ===== */
 
-static void load_water() {
+static void load() {
     if (gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP))
         load_sprite_num("markers/water/alt/%u", 7, AKL_NEVER);
     else
@@ -23,7 +23,7 @@ static void load_water() {
     load_actor(ACT_BUBBLE);
 }
 
-static void create_water(GameActor* actor) {
+static void create(GameActor* actor) {
     actor->depth = Int2Fx(-100);
 
     VAL(actor, WATER_TO) = actor->pos.y;
@@ -35,13 +35,13 @@ static void create_water(GameActor* actor) {
     game_state->water = actor->id;
 }
 
-static void cleanup_water(GameActor* actor) {
+static void cleanup(GameActor* actor) {
     GameState* game_state = gamestate();
     if (game_state->water == actor->id)
         game_state->water = NULL_ACTOR;
 }
 
-static void tick_water(GameActor* actor) {
+static void tick(GameActor* actor) {
     if (actor->pos.y == VAL(actor, WATER_TO))
         return;
 
@@ -51,7 +51,7 @@ static void tick_water(GameActor* actor) {
                           : Vadd(actor->pos, (FVec2){Fx0, move}));
 }
 
-static void draw_water(const GameActor* actor) {
+static void draw(const GameActor* actor) {
     batch_reset();
 
     const VideoState* video_state = videostate();
@@ -77,26 +77,26 @@ static void draw_water(const GameActor* actor) {
 }
 
 const ActorTable TAB_WATER = {
-    .load = load_water,
-    .create = create_water,
-    .cleanup = cleanup_water,
-    .tick = tick_water,
-    .draw = draw_water,
+    .load = load,
+    .create = create,
+    .cleanup = cleanup,
+    .tick = tick,
+    .draw = draw,
 };
 
 /* =============
    WATER TRIGGER
    ============= */
 
-static void load_water_trigger() {
+static void load_trigger() {
     load_sound("water", AKL_NEVER);
 }
 
-static void create_water_trigger(GameActor* actor) {
+static void create_trigger(GameActor* actor) {
     actor->box.end.x = actor->box.end.y = Int2Fx(32);
 }
 
-static void collide_water_trigger(GameActor* actor, GameActor* other) {
+static void collide_trigger(GameActor* actor, GameActor* other) {
     if (other->type != ACT_PLAYER)
         return;
 
@@ -113,7 +113,7 @@ static void collide_water_trigger(GameActor* actor, GameActor* other) {
 }
 
 const ActorTable TAB_WATER_TRIGGER = {
-    .load = load_water_trigger,
-    .create = create_water_trigger,
-    .collide = collide_water_trigger,
+    .load = load_trigger,
+    .create = create_trigger,
+    .collide = collide_trigger,
 };
