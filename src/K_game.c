@@ -1571,6 +1571,29 @@ rp_spectate:
     return NULL;
 }
 
+const FVec2 nearest_player_pos(const FVec2 pos) {
+    FVec2 ppos = {Fx0};
+    Fixed score = 0x7FFFFFFF;
+
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn == NULL || pawn->type != ACT_PLAYER)
+            continue;
+
+        const Fixed dist = Vdist(pos, pawn->pos);
+        if (dist < score) {
+            ppos = player->pos;
+            score = dist;
+        }
+    }
+
+    return ppos;
+}
+
 void set_player_track(GamePlayer* player, Uint8 track) {
     if (player == NULL || player->track == track)
         return;

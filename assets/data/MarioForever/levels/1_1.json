@@ -6378,6 +6378,16 @@
             "id": 39,
             "pos": [4270, 416],
             "flags": 4
+        },
+        {
+            "def": "Piranha Plant",
+            "id": 41,
+            "pos": [5663, 322]
+        },
+        {
+            "def": "Piranha Plant",
+            "id": 41,
+            "pos": [6560, 321]
         }
     ]
 }

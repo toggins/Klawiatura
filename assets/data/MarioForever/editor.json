@@ -516,6 +516,21 @@
                     "index": 7
                 }
             ]
+        },
+        "Piranha Plant": {
+            "type": "actor",
+            "id": 41,
+            "sprite": "enemies/piranha/0",
+            "flags": [
+                {
+                    "name": "Flip Y",
+                    "index": 3
+                },
+                {
+                    "name": "Fire",
+                    "index": 8
+                }
+            ]
         }
     },
 

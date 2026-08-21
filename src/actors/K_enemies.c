@@ -72,7 +72,14 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
     default:
         break;
 
-        // TODO
+    case ACT_PIRANHA_PLANT: {
+        if (kick)
+            play_state_sound("kick", PLAY_POS, A_ACTOR(actor));
+
+        FLAG_ON(actor, FLG_DESTROY);
+        mark_ambush_winner(from);
+        return NULL;
+    }
     }
 
     GameActor* dead = create_actor(ACT_DEAD, actor->pos);

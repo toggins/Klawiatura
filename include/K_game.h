@@ -428,7 +428,8 @@ void set_sequence(GameSequenceType, const GamePlayer*, Sint16);
 Bool in_blocking_sequence();
 
 GamePlayer* get_player(PlayerID);
-GameActor *respawn_player(GamePlayer*), *nearest_player_actor(const FVec2);
+GameActor* respawn_player(GamePlayer*);
+const FVec2 nearest_player_pos(const FVec2);
 void set_player_track(GamePlayer*, Uint8);
 Bool all_players_dead();
 void win_player(GamePlayer*);
