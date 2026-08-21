@@ -69,7 +69,8 @@ static void create(GameActor* actor) {
 }
 
 static void pre_tick(GameActor* actor) {
-    if (!ANY_FLAG(actor, FLG_PLATFORM_START)) {
+    const GameState* game_state = gamestate();
+    if (game_state->time == 0) {
         switch (VAL(actor, PLATFORM_TYPE)) {
         default: {
             actor->box.start.x = actor->box.start.y = Fx0;
@@ -153,7 +154,7 @@ static void pre_tick(GameActor* actor) {
         }
 
         if (ANY_FLAG(actor, FLG_PLATFORM_RUN)) {
-            const GameActor* checkpoint = get_actor(gamestate()->checkpoint);
+            const GameActor* checkpoint = get_actor(game_state->checkpoint);
             if (checkpoint != NULL && ANY_FLAG(checkpoint, FLG_CHECKPOINT_SET_PLATFORM)) {
                 move_actor(
                     actor, (FVec2){VAL(checkpoint, CHECKPOINT_PLATFORM_X), VAL(checkpoint, CHECKPOINT_PLATFORM_Y)});
@@ -167,8 +168,6 @@ static void pre_tick(GameActor* actor) {
         VAL(actor, PLATFORM_START_X_SPEED) = actor->vel.x;
         VAL(actor, PLATFORM_START_Y_SPEED) = actor->vel.y;
         VAL(actor, PLATFORM_START_FLAGS) = (ActorValue)actor->flags;
-
-        FLAG_ON(actor, FLG_PLATFORM_START);
     }
 
     if (ANY_FLAG(actor, FLG_PLATFORM_FALLING) && actor->vel.y < Int2Fx(10))
@@ -200,7 +199,7 @@ static void pre_tick(GameActor* actor) {
     }
 
     if (ANY_FLAG(actor, FLG_PLATFORM_RUNNING) && gamecontext()->num_players > 1) {
-        GameActor* checkpoint = get_actor(gamestate()->checkpoint);
+        GameActor* checkpoint = get_actor(game_state->checkpoint);
         if (checkpoint != NULL && ANY_FLAG(checkpoint, FLG_CHECKPOINT_SET_PLATFORM)) {
             VAL(actor, PLATFORM_START_X) = VAL(checkpoint, CHECKPOINT_PLATFORM_X);
             VAL(actor, PLATFORM_START_Y) = VAL(checkpoint, CHECKPOINT_PLATFORM_Y);
