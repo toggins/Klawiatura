@@ -100,6 +100,14 @@ static void tick_beetroot(GameActor* actor) {
                 create_actor(ACT_BUBBLE, Vadd(actor->pos, (FVec2){Fx0, Int2Fx(-3)}));
         }
 
+        const GamePlayer* player = get_player(actor->player);
+        if ((player == NULL && !in_any_view(actor->pos, Int2Fx(-32), FALSE))
+            || (player != NULL && !in_player_view(player, actor->pos, Int2Fx(-32), FALSE)))
+        {
+            FLAG_ON(actor, FLG_DESTROY);
+            return;
+        }
+
         const GameActor* water = get_actor(game_state->water);
         if (water == NULL || actor->pos.y <= water->pos.y)
             FLAG_OFF(actor, FLG_PROJECTILE_SINK);
@@ -132,7 +140,7 @@ static void tick_beetroot(GameActor* actor) {
     }
 
     const GamePlayer* player = get_player(actor->player);
-    if ((player == NULL && in_any_x_view(actor->pos.x, Fx0))
+    if ((player == NULL && !in_any_x_view(actor->pos.x, Fx0))
         || (player != NULL && !in_player_x_view(player, actor->pos.x, Fx0)))
     {
         FLAG_ON(actor, FLG_DESTROY);

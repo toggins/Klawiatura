@@ -640,7 +640,7 @@ static void tick(GameActor* actor) {
             const GameActor* obeetroot = NULL;
             FOR_EACH_ACTOR (obeetroot) {
                 if (obeetroot->type == ACT_BEETROOT_PROJECTILE && obeetroot->player == actor->player) {
-                    if (ANY_FLAG(actor, FLG_PROJECTILE_SINK)) {
+                    if (ANY_FLAG(obeetroot, FLG_PROJECTILE_SINK)) {
                         if (++num_sinking >= MAX_SINKING_PROJECTILES)
                             break;
                     } else if (++num_beetroots >= MAX_PROJECTILES) {
