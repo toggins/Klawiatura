@@ -122,11 +122,9 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
         if (from != NULL)
             item->player = from->player;
 
-        move_actor(item, (FVec2){
-                             actor->pos.x + Flerp(actor->box.start.x, actor->box.end.x, FxHalf)
-                                 - Flerp(item->box.start.x, item->box.end.x, FxHalf),
-                             actor->pos.y - item->box.end.y,
-                         });
+        move_actor(item, Vadd(actor->pos, (FVec2){Flerp(actor->box.start.x, actor->box.end.x, FxHalf)
+                                                      - Flerp(item->box.start.x, item->box.end.x, FxHalf),
+                                              -item->box.end.y}));
         skip_interp(item);
 
         switch (item->type) {
