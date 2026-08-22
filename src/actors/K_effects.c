@@ -140,3 +140,37 @@ const ActorTable TAB_EXPLODE = {
     .tick = tick_explode,
     .draw = draw_explode,
 };
+
+/* ===========
+   TUBE BUBBLE
+   =========== */
+
+static void load_tube_bubble() {
+    load_sprite_num("effects/bubble/%u", 5, AKL_NEVER);
+}
+
+static void create_tube_bubble(GameActor* actor) {
+    actor->depth = Int2Fx(49);
+}
+
+static void tick_tube_bubble(GameActor* actor) {
+    ++VAL(actor, EFFECT_FRAME);
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+
+    if (!in_any_view(actor->pos, Int2Fx(-32), FALSE))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_tube_bubble(const GameActor* actor) {
+    batch_reset();
+    batch_color(B_U4_ALPHA(57));
+    draw_actor(actor, fmt("effects/bubble/%i", (VAL(actor, EFFECT_FRAME) / 2) % 5), FALSE);
+}
+
+const ActorTable TAB_TUBE_BUBBLE = {
+    .load = load_tube_bubble,
+    .create = create_tube_bubble,
+    .tick = tick_tube_bubble,
+    .draw = draw_tube_bubble,
+};

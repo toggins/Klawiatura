@@ -135,7 +135,8 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
         }
         case ACT_FIRE_FLOWER:
         case ACT_BEETROOT:
-        case ACT_GREEN_LUI: {
+        case ACT_GREEN_LUI:
+        case ACT_STARMAN: {
             FLAG_ON(item, FLG_POWERUP_SPROUTED);
         }
         default: {

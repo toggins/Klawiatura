@@ -1,0 +1,5 @@
+{
+    "texture": "tiles/pipe/purple",
+    "size": [64, 32],
+    "uvs": [0, 64, 64, 96]
+}

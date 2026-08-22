@@ -88,6 +88,21 @@
             "sprite": "tiles/pipe/green/v2",
             "depth": 20
         },
+        "Pipe Purple Top": {
+            "type": "tile",
+            "sprite": "tiles/pipe/purple/v0",
+            "depth": 20
+        },
+        "Pipe Purple Middle": {
+            "type": "tile",
+            "sprite": "tiles/pipe/purple/v1",
+            "depth": 20
+        },
+        "Pipe Purple Bottom": {
+            "type": "tile",
+            "sprite": "tiles/pipe/purple/v2",
+            "depth": 20
+        },
         "Hill": {
             "type": "background",
             "sprite": "scenery/hill",
@@ -133,6 +148,37 @@
             "id": 19,
             "sprite": "scenery/clouds",
             "depth": 50
+        },
+        "Lamp": {
+            "type": "background",
+            "sprite": "scenery/lamp",
+            "depth": 33
+        },
+        "Lamp Light": {
+            "type": "actor",
+            "id": 42,
+            "sprite": "scenery/lamp/light/0"
+        },
+        "Tube": {
+            "type": "background",
+            "sprite": "tiles/pipe/purple/v1",
+            "depth": 50,
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        "Tube Bubbles": {
+            "type": "actor",
+            "id": 43,
+            "sprite": "editor/tube_bubbles"
+        },
+        "Hardcore Near Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/hardcore_near",
+            "depth": 30
         },
         "Player Spawn": {
             "type": "actor",
@@ -286,7 +332,13 @@
         "Goal Bar": {
             "type": "actor",
             "id": 9,
-            "sprite": "markers/goal/bar"
+            "sprite": "markers/goal/bar",
+            "flags": [
+                {
+                    "name": "Jackpot",
+                    "index": 5
+                }
+            ]
         },
         "Goal Mark": {
             "type": "background",
@@ -298,6 +350,31 @@
             "id": 10,
             "sprite": "editor/goal_mark",
             "scalable": true
+        },
+        "Platform": {
+            "type": "actor",
+            "id": 11,
+            "sprite": "markers/platform/normal",
+            "values": [
+                {
+                    "name": "Type",
+                    "index": 5
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Fall",
+                    "index": 5
+                },
+                {
+                    "name": "Wrap",
+                    "index": 6
+                },
+                {
+                    "name": "5-2 Platform",
+                    "index": 7
+                }
+            ]
         },
         "Water": {
             "type": "actor",
@@ -572,8 +649,15 @@
                                 "Pipe Green Left",
                                 "Pipe Green Middle 2",
                                 "Pipe Green Right",
-                                "Pipe Green Connect Left"
+                                "Pipe Green Connect Left",
+                                "Fat Pipe Green Left",
+                                "Fat Pipe Green Middle 2",
+                                "Fat Pipe Green Right"
                             ]
+                        },
+                        {
+                            "name": "Purple",
+                            "items": ["Pipe Purple Top", "Pipe Purple Middle", "Pipe Purple Bottom"]
                         }
                     ]
                 }
@@ -597,6 +681,18 @@
                 {
                     "name": "Hills",
                     "items": ["Hill"]
+                },
+                {
+                    "name": "Lamps",
+                    "items": ["Lamp", "Lamp Light", "Broken Lamp"]
+                },
+                {
+                    "name": "Tube",
+                    "items": ["Tube", "Tube Bubbles"]
+                },
+                {
+                    "name": "Signs",
+                    "items": ["Hardcore Near Sign"]
                 },
                 "Bush"
             ]
@@ -633,6 +729,10 @@
                 {
                     "name": "Goal",
                     "items": ["Goal", "Goal Bar", "Goal Mark", "Goal Line"]
+                },
+                {
+                    "name": "Platforms",
+                    "items": ["Platform"]
                 },
                 {
                     "name": "Water",

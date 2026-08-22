@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/lamp/light",
+    "size": [53, 53],
+    "offset": [26, 26],
+    "uvs": [166, 1, 219, 54]
+}

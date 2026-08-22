@@ -139,6 +139,85 @@ const ActorTable TAB_FIRE_FLOWER = {
     .collide = collide_fire_flower,
 };
 
+/* =======
+   STARMAN
+   ======= */
+
+static void load_starman() {
+    load_sprite_num("items/starman/%u", 4, AKL_NEVER);
+    load_sound("grow", AKL_NEVER);
+    load_track("smw/starman", AKL_NEVER);
+    load_actor(ACT_EXPLODE);
+}
+
+static void create_starman(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-16);
+    actor->box.start.y = Int2Fx(-31);
+    actor->box.end.x = Int2Fx(17);
+    actor->box.end.y = Fx1;
+}
+
+static void tick_starman(GameActor* actor) {
+    actor->vel.y += 13107;
+
+    if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    if (actor->sprout > 0)
+        --actor->sprout;
+
+    if (ANY_FLAG(actor, FLG_POWERUP_SPROUTED)) {
+        VAL(actor, POWERUP_FRAME) += 14;
+        if (VAL(actor, POWERUP_FRAME) < 1200) {
+            return;
+        } else {
+            actor->vel.x = 163840;
+            VAL(actor, POWERUP_FRAME) = 0;
+            FLAG_OFF(actor, FLG_POWERUP_SPROUTED);
+        }
+    } else {
+        VAL(actor, POWERUP_FRAME) += 49;
+    }
+
+    if (TOUCHING(actor, TOUCH_BOTTOM))
+        actor->vel.y = Int2Fx(-5);
+
+    const Fixed speed = Fabs(actor->vel.x);
+    displace_actor(actor, Int2Fx(10), FALSE);
+    if (actor->vel.x == Fx0) {
+        if (TOUCHING(actor, TOUCH_RIGHT))
+            actor->vel.x = -speed;
+        if (TOUCHING(actor, TOUCH_LEFT))
+            actor->vel.x = speed;
+    }
+}
+
+static void draw_starman(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("items/starman/%i", (VAL(actor, POWERUP_FRAME) / 100) % 4), FALSE);
+}
+
+static void collide_starman(GameActor* actor, GameActor* from) {
+    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_SPROUTED))
+        return;
+
+    VAL(from, PLAYER_STARMAN) = 500;
+    update_player_track(get_player(from->player));
+
+    play_state_sound("grow", PLAY_POS, A_ACTOR(from));
+    FLAG_ON(actor, FLG_DESTROY);
+}
+
+const ActorTable TAB_STARMAN = {
+    .load = load_starman,
+    .create = create_starman,
+    .tick = tick_starman,
+    .draw = draw_starman,
+    .collide = collide_starman,
+};
+
 /* ============
    1UP MUSHROOM
    ============ */
