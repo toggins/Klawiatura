@@ -1,5 +1,6 @@
 #include "K_audio.h"
 #include "K_net.h"
+#include "K_string.h"
 #include "K_video.h"
 
 #include "actors/K_enemies.h"
@@ -177,6 +178,8 @@ static void load() {
     }
 
     load_sprite_num("ui/coins/%u", 3, AKL_NEVER);
+    load_sprite_num("effects/shield/%u", 4, AKL_NEVER);
+    load_sprite_num("effects/shield/super/%u", 4, AKL_NEVER);
     load_font("hud", AKL_NEVER);
     load_sound("jump", AKL_NEVER);
     load_sound("fire", AKL_NEVER);
@@ -801,15 +804,20 @@ static void draw(const GameActor* actor) {
         return;
 
     batch_reset();
+    batch_color(B_U4_ALPHA((player->id == localplayer()) ? 255 : 192));
     if (VAL(actor, PLAYER_STARMAN) <= 0 || (gamestate()->time % 2) != 0) {
-        batch_color(B_U4_ALPHA((player->id == localplayer()) ? 255 : 192));
         draw_actor(actor,
             get_character_sprite(
                 gamecontext()->players[player->id].character, player->powerup, get_player_frame(actor)),
             FALSE);
     }
     if (VAL(actor, PLAYER_STARMAN) > 0) {
-        // TODO: Draw shield
+        batch_blend(BM_ADD);
+        draw_actor(actor,
+            fmt((player->powerup == POW_NONE) ? "effects/shield/%i" : "effects/shield/super/%i",
+                (500 - VAL(actor, PLAYER_STARMAN)) % 4),
+            FALSE);
+        batch_blend(BM_NORMAL);
     }
 
     if (player->id == viewplayer())

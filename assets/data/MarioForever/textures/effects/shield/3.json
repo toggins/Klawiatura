@@ -1,0 +1,6 @@
+{
+    "texture": "effects/shield",
+    "size": [28, 30],
+    "offset": [14, 29],
+    "uvs": [91, 1, 119, 31]
+}
