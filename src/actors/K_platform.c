@@ -177,6 +177,24 @@ static void pre_tick(GameActor* actor) {
     collide_actor(actor);
     push_actors(actor);
 
+    if (ANY_FLAG(actor, FLG_PLATFORM_WRAP)) {
+        const Fixed lh = levelinfo()->size.y;
+
+        if (actor->vel.y > Fx0 && actor->pos.y > (lh + Int2Fx(10))) {
+            move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, -lh - Int2Fx(20)}));
+            actor->last_pos = actor->pos;
+            push_actors(actor);
+            skip_interp(actor);
+        }
+
+        if (actor->vel.y < Fx0 && actor->pos.y < -Int2Fx(10)) {
+            move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, lh + Int2Fx(20)}));
+            actor->last_pos = actor->pos;
+            push_actors(actor);
+            skip_interp(actor);
+        }
+    }
+
 #define DO_RESPAWN()                                                                                                   \
     do {                                                                                                               \
         move_actor(actor, (FVec2){VAL(actor, PLATFORM_START_X), VAL(actor, PLATFORM_START_Y)});                        \
@@ -267,7 +285,10 @@ static void draw(const GameActor* actor) {
 
     Bool antijitter = FALSE;
     const GamePlayer* player = get_player(viewplayer());
-    if (player != NULL) {
+    if (player != NULL
+        && ((actor->vel.x != Fx0 && (player->bounds.end.x - player->bounds.start.x) > F_SCREEN_WIDTH)
+            || (actor->vel.y != Fx0 && (player->bounds.end.y - player->bounds.start.y) > F_SCREEN_HEIGHT)))
+    {
         const GameActor* pawn = get_actor(player->actor);
         if (pawn != NULL && pawn->platform == actor->id)
             antijitter = TRUE;
