@@ -1847,9 +1847,6 @@ static void tile_batch_sprite(TileBatch* tile_batch, const Sprite* sprite, const
     tile_batch->tile[0] |= tile[0];
     tile_batch->tile[1] |= tile[1];
 
-    const float x = pos[0] - ((sprite == NULL || tile[0]) ? 0.f : sprite->offset[0]),
-                y = pos[1] - ((sprite == NULL || tile[1]) ? 0.f : sprite->offset[1]);
-
     float w = 1.f, h = 1.f;
     if (size == NULL) {
         if (sprite != NULL) {
@@ -1860,6 +1857,10 @@ static void tile_batch_sprite(TileBatch* tile_batch, const Sprite* sprite, const
         w = size[0];
         h = size[1];
     }
+
+    const float x
+        = pos[0] - ((sprite == NULL || tile[0]) ? 0.f : (flip[0] ? (w - sprite->offset[0]) : sprite->offset[0])),
+        y = pos[1] - ((sprite == NULL || tile[1]) ? 0.f : (flip[1] ? (h - sprite->offset[1]) : sprite->offset[1]));
 
     float u1 = 0.f, v1 = 0.f, u2 = 1.f, v2 = 1.f;
     if (sprite != NULL) {

@@ -540,7 +540,7 @@ static void load_level(TinyHash key) {
     if (yyjson_is_str(jval)) {
         const char* label = SDL_strdup(yyjson_get_str(jval));
         EXPECT(label, "Failed to allocate level \"%s\" label", level->name);
-        if (label[0] != '@' && label[0] != '$') {
+        if ((label[0] != '@' && label[0] != '$') || label[0] == '%') {
             // FIXME: This only loads the sprite for the current language.
             //        The label sprite will "disappear" when changing to another language.
             load_sprite(LFMT(label + 1), AKL_NEVER);
@@ -1399,6 +1399,13 @@ static void draw_game_state() {
             break;
         }
 
+        case '$': {
+            batch_pos(B_F3_XY(432.f, 34.f));
+            batch_align(B_ALIGN_CENTER);
+            batch_string("hud", 16.f, LFMT(label + 1));
+            break;
+        }
+
         case '@': {
             batch_pos(B_F3_XY(432.f, 16.f));
             batch_align(B_ALIGN(FA_CENTER, FA_TOP));
@@ -1408,10 +1415,12 @@ static void draw_game_state() {
             break;
         }
 
-        case '$': {
+        case '%': {
+            batch_pos(B_F3_XY(432.f, 16.f));
+            batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+            batch_string("hud", 16.f, LFMT("hud.world"));
             batch_pos(B_F3_XY(432.f, 34.f));
-            batch_align(B_ALIGN_CENTER);
-            batch_string("hud", 16.f, LFMT(label + 1));
+            batch_sprite(LFMT(label + 1));
             break;
         }
         }
