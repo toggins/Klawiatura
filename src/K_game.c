@@ -939,11 +939,11 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
             }
 
             if (game_state->flags & GF_LOST_MAP)
-                play_state_track("smw/lose2", 0);
+                play_state_track(ALL_TRACKS, "smw/lose2", 0);
             else if (game_state->flags & GF_HARDCORE)
-                play_state_track("smw/lose_hardcore", 0);
+                play_state_track(ALL_TRACKS, "smw/lose_hardcore", 0);
             else
-                play_state_track("smw/lose", 0);
+                play_state_track(ALL_TRACKS, "smw/lose", 0);
 
             break;
         }
@@ -962,7 +962,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         }
 
         case 211: {
-            play_state_track("smb/game_over", 0);
+            play_state_track(ALL_TRACKS, "smb/game_over", 0);
             break;
         }
 
@@ -1464,24 +1464,12 @@ PlayerID viewplayer() {
 }
 
 /// !!! CLIENT-SIDE !!!
-static void try_play_track(Uint8 track) {
-    if (!in_blocking_sequence()) {
-        if (track < 0 || track > (GSTR_TRACK_END - GSTR_TRACK_START))
-            stop_state_track();
-        else
-            play_state_track(level_info->strings[GSTR_TRACK_START + track], PLAY_LOOPING);
-    }
-}
-
 void set_view_player(const GamePlayer* player) {
     if (player == NULL || view_player == player->id)
         return;
 
     const GamePlayer* old_player = get_player(view_player);
     view_player = player->id;
-
-    if (old_player == NULL || player->track != old_player->track)
-        try_play_track(player->track);
 }
 /// !!! CLIENT-SIDE !!!
 
@@ -1595,15 +1583,25 @@ const FVec2 nearest_player_pos(const FVec2 pos) {
 }
 
 void set_player_track(GamePlayer* player, Uint8 track) {
-    if (player == NULL || player->track == track)
+    if (player != NULL)
+        player->track = track;
+    update_player_track(player);
+}
+
+void update_player_track(const GamePlayer* player) {
+    if (player == NULL || in_blocking_sequence())
         return;
 
-    player->track = track;
+    const GameActor* actor = get_actor(player->actor);
+    if (actor != NULL && actor->type == ACT_PLAYER && VAL(actor, PLAYER_STARMAN) > 0) {
+        play_state_track(player->id, "smw/starman", PLAY_LOOPING);
+        return;
+    }
 
-    /// !!! CLIENT-SIDE !!!
-    if (player->id == view_player)
-        try_play_track(track);
-    /// !!! CLIENT-SIDE !!!
+    if (player->track < 0 || player->track > (GSTR_TRACK_END - GSTR_TRACK_START))
+        stop_state_track(player->id);
+    else
+        play_state_track(player->id, level_info->strings[GSTR_TRACK_START + player->track], PLAY_LOOPING);
 }
 
 Bool all_players_dead() {
@@ -1633,10 +1631,18 @@ void win_player(GamePlayer* player) {
         default:
             break;
 
-        case ACT_PLAYER:
+        case ACT_PLAYER: {
+            if (actor->player != player->id)
+                FLAG_ON(actor, FLG_DESTROY);
+
+            VAL(actor, PLAYER_STARMAN) = 0;
+            break;
+        }
+
         case ACT_PLAYER_DEAD: {
             if (actor->player != player->id)
                 FLAG_ON(actor, FLG_DESTROY);
+
             break;
         }
 
@@ -1671,7 +1677,7 @@ void win_player(GamePlayer* player) {
     set_sequence(GS_WIN, player, 0);
 
     set_view_player(player);
-    play_state_track((game_state->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", 0);
+    play_state_track(ALL_TRACKS, (game_state->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", 0);
 }
 
 // ======

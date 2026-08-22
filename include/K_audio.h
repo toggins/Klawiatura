@@ -1,10 +1,13 @@
 #pragma once
 
 #include "K_assets.h"
+#include "K_game.h"
 #include "K_misc.h"
 
 #define MAX_GENERIC_SOUNDS 8
 #define MAX_STATE_SOUNDS 16
+#define MAX_STATE_TRACKS MAX_PLAYERS
+#define ALL_TRACKS MAX_STATE_TRACKS
 
 #define A_PAN(pan) ((float[2]){pan, 0.f})
 #define A_XY(x, y) ((float[2]){x, y})
@@ -52,7 +55,7 @@ typedef struct {
 typedef struct {
     Uint8 next_sound;
     SoundChannel sounds[MAX_STATE_SOUNDS];
-    TrackChannel track;
+    TrackChannel tracks[MAX_STATE_TRACKS];
 } AudioState;
 
 void audio_init(), audio_update(), audio_teardown();
@@ -83,6 +86,6 @@ void pause_audio_state(Bool);
 
 void play_state_sound(const char*, PlayFlags, const float[2]);
 
-void play_state_track(const char*, PlayFlags);
-void fade_state_track(float, float);
-void stop_state_track();
+void play_state_track(PlayerID, const char*, PlayFlags);
+void fade_state_track(PlayerID, float, float);
+void stop_state_track(PlayerID);

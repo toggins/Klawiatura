@@ -79,6 +79,8 @@ void kill_player(GameActor* actor) {
             --player->lives;
         player->powerup = POW_NONE;
         player->actor = dead->id;
+
+        update_player_track(player);
     }
 
     FLAG_ON(actor, FLG_DESTROY);
@@ -121,7 +123,7 @@ void player_starman(GameActor* actor, GameActor* from) {
     }
     }
 
-    create_actor(ACT_EXPLODE, Rcenter(from->box));
+    create_actor(ACT_EXPLODE, Rcenter(Radd(from->box, from->pos)));
     give_points(from, get_player(actor->player), points);
     kill_enemy(from, actor, TRUE);
 }
@@ -309,10 +311,11 @@ static void update_animation(GameActor* actor) {
 
 static void pre_tick(GameActor* actor) {
     if (VAL(actor, PLAYER_FLASH) > 0) {
-        if (--VAL(actor, PLAYER_FLASH) <= 0)
+        TOGGLE_FLAG(actor, FLG_VISIBLE);
+
+        --VAL(actor, PLAYER_FLASH);
+        if (VAL(actor, PLAYER_FLASH) <= 0 || VAL(actor, PLAYER_STARMAN) > 0)
             FLAG_ON(actor, FLG_VISIBLE);
-        else
-            TOGGLE_FLAG(actor, FLG_VISIBLE);
     }
 
     update_animation(actor);
@@ -736,6 +739,25 @@ t_skip_physics:
 
 static void post_tick(GameActor* actor) {
     GamePlayer* player = get_player(actor->player);
+
+    if (VAL(actor, PLAYER_STARMAN) > 0) {
+        switch (--VAL(actor, PLAYER_STARMAN)) {
+        default:
+            break;
+
+        case 99: {
+            fade_state_track(actor->player, 0.f, 100.f);
+            break;
+        }
+
+        case 0: {
+            VAL(actor, PLAYER_STARMAN_COMBO) = 0;
+            update_player_track(player);
+            break;
+        }
+        }
+    }
+
     if (player == NULL || !gamecontext()->players[player->id].xscroll)
         return;
 
@@ -779,10 +801,16 @@ static void draw(const GameActor* actor) {
         return;
 
     batch_reset();
-    batch_color(B_U4_ALPHA((player->id == localplayer()) ? 255 : 192));
-    draw_actor(actor,
-        get_character_sprite(gamecontext()->players[player->id].character, player->powerup, get_player_frame(actor)),
-        FALSE);
+    if (VAL(actor, PLAYER_STARMAN) <= 0 || (gamestate()->time % 2) != 0) {
+        batch_color(B_U4_ALPHA((player->id == localplayer()) ? 255 : 192));
+        draw_actor(actor,
+            get_character_sprite(
+                gamecontext()->players[player->id].character, player->powerup, get_player_frame(actor)),
+            FALSE);
+    }
+    if (VAL(actor, PLAYER_STARMAN) > 0) {
+        // TODO: Draw shield
+    }
 
     if (player->id == viewplayer())
         return;

@@ -113,6 +113,9 @@ enum {
     ACT_KOOPA,
     ACT_KOOPA_SHELL,
     ACT_PIRANHA_PLANT,
+    ACT_LAMP_LIGHT,
+    ACT_TUBE_BUBBLES,
+    ACT_TUBE_BUBBLE,
 
     ACT_SIZE,
 };
@@ -430,7 +433,7 @@ Bool in_blocking_sequence();
 GamePlayer* get_player(PlayerID);
 GameActor* respawn_player(GamePlayer*);
 const FVec2 nearest_player_pos(const FVec2);
-void set_player_track(GamePlayer*, Uint8);
+void set_player_track(GamePlayer*, Uint8), update_player_track(const GamePlayer*);
 Bool all_players_dead();
 void win_player(GamePlayer*);
 
