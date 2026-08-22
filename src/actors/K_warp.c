@@ -156,22 +156,22 @@ static void collide(GameActor* actor, GameActor* from) {
     if (ANY_FLAG(actor, FLG_WARP_CALAMITY | FLG_WARP_SECRET | FLG_WARP_WORLD | FLG_WARP_LEVEL | FLG_WARP_DEVASTATOR))
         ++VAL(actor, WARP_STATE);
 
-    if (ANY_FLAG(actor, FLG_WARP_WORLD | FLG_WARP_LEVEL)) {
-        for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
-            GamePlayer* oplayer = get_player(i);
-            if (oplayer == NULL || oplayer->id == player->id)
-                continue;
+    // if (ANY_FLAG(actor, FLG_WARP_WORLD | FLG_WARP_LEVEL)) {
+    //     for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+    //         GamePlayer* oplayer = get_player(i);
+    //         if (oplayer == NULL || oplayer->id == player->id)
+    //             continue;
 
-            GameActor* opawn = get_actor(oplayer->actor);
-            if (opawn == NULL || opawn->id == from->id)
-                continue;
+    //         GameActor* opawn = get_actor(oplayer->actor);
+    //         if (opawn == NULL || opawn->id == from->id)
+    //             continue;
 
-            FLAG_ON(opawn, FLG_DESTROY);
-        }
+    //         FLAG_ON(opawn, FLG_DESTROY);
+    //     }
 
-        set_sequence(GS_WARP, player, ANY_FLAG(actor, FLG_WARP_SECRET | FLG_WARP_DEVASTATOR));
-        set_view_player(player);
-    }
+    //     set_sequence(GS_WARP, player, ANY_FLAG(actor, FLG_WARP_SECRET | FLG_WARP_DEVASTATOR));
+    //     set_view_player(player);
+    // }
 }
 
 const ActorTable TAB_WARP = {
