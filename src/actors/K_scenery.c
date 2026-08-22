@@ -139,3 +139,26 @@ const ActorTable TAB_TUBE_BUBBLES = {
     .load = load_tube_bubbles,
     .tick = tick_tube_bubbles,
 };
+
+/* =========
+   WATERFALL
+   ========= */
+
+static void load_waterfall() {
+    load_sprite_num("scenery/waterfall/%u", 4, AKL_NEVER);
+}
+
+static void create_waterfall(GameActor* actor) {
+    actor->depth = Int2Fx(189);
+}
+
+static void draw_waterfall(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("scenery/waterfall/%i", ((gamestate()->time * 41) / 100) % 4), FALSE);
+}
+
+const ActorTable TAB_WATERFALL = {
+    .load = load_waterfall,
+    .create = create_waterfall,
+    .draw = draw_waterfall,
+};

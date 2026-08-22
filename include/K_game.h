@@ -116,6 +116,7 @@ enum {
     ACT_LAMP_LIGHT,
     ACT_TUBE_BUBBLES,
     ACT_TUBE_BUBBLE,
+    ACT_WATERFALL,
 
     ACT_SIZE,
 };

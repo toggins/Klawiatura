@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/waterfall",
+    "size": [95, 91],
+    "offset": [0, 90],
+    "uvs": [1, 1, 96, 92]
+}

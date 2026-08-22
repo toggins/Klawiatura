@@ -255,3 +255,58 @@ const ActorTable TAB_1UP_MUSHROOM = {
     .draw = draw_1up_mushroom,
     .collide = collide_1up_mushroom,
 };
+
+/* ========
+   BEETROOT
+   ======== */
+
+static void load_beetroot() {
+    load_sprite_num("items/beetroot/%u", 4, AKL_NEVER);
+    load_sound("grow", AKL_NEVER);
+}
+
+static void create_beetroot(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-13);
+    actor->box.start.y = Int2Fx(-32);
+    actor->box.end.x = Int2Fx(14);
+    actor->box.end.y = Fx1;
+}
+
+static void tick_beetroot(GameActor* actor) {
+    VAL(actor, POWERUP_FRAME) += 2;
+}
+
+static void draw_beetroot(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("items/beetroot/%i", (VAL(actor, POWERUP_FRAME) / 25) % 4), FALSE);
+}
+
+static void collide_beetroot(GameActor* actor, GameActor* from) {
+    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_CALAMITY) || actor->sprout > 0)
+        return;
+
+    GamePlayer* player = get_player(from->player);
+    if (player == NULL)
+        return;
+
+    if (player->powerup != POW_BEETROOT) {
+        player->powerup = (player->powerup == POW_NONE && ANY_FLAG(actor, FLG_POWERUP_SPROUTED)) ? POW_SUPER_MUSHROOM
+                                                                                                 : POW_BEETROOT;
+        player->score += 1000;
+        VAL(from, PLAYER_ANIMATION) = PF_GROW;
+        VAL(from, PLAYER_FRAME) = Fx0;
+    } else {
+        give_points(NULL, player, 1000);
+    }
+
+    play_state_sound("grow", PLAY_POS, A_ACTOR(from));
+    FLAG_ON(actor, FLG_DESTROY);
+}
+
+const ActorTable TAB_BEETROOT = {
+    .load = load_beetroot,
+    .create = create_beetroot,
+    .tick = tick_beetroot,
+    .draw = draw_beetroot,
+    .collide = collide_beetroot,
+};

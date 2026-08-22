@@ -18,6 +18,13 @@
             "max_scale": [32767, 480],
             "tile": [true, true]
         },
+        "Cliff Background": {
+            "type": "background",
+            "sprite": "backgrounds/cliff",
+            "depth": 190,
+            "max_scale": [32767, 102],
+            "tile": [true, false]
+        },
         "Grass Top Left": {
             "type": "tile",
             "sprite": "tiles/grass/0",
@@ -103,6 +110,36 @@
             "sprite": "tiles/pipe/purple/v2",
             "depth": 20
         },
+        "Tree Top Left": {
+            "type": "tile",
+            "sprite": "tiles/tree/0",
+            "depth": 20
+        },
+        "Tree Top": {
+            "type": "tile",
+            "sprite": "tiles/tree/1",
+            "depth": 20
+        },
+        "Tree Top Right": {
+            "type": "tile",
+            "sprite": "tiles/tree/2",
+            "depth": 20
+        },
+        "Tree Left": {
+            "type": "background",
+            "sprite": "tiles/tree/3",
+            "depth": 34
+        },
+        "Tree Middle": {
+            "type": "background",
+            "sprite": "tiles/tree/4",
+            "depth": 34
+        },
+        "Tree Right": {
+            "type": "background",
+            "sprite": "tiles/tree/5",
+            "depth": 34
+        },
         "Hill": {
             "type": "background",
             "sprite": "scenery/hill",
@@ -179,6 +216,21 @@
             "type": "background",
             "sprite": "scenery/sign/hardcore_near",
             "depth": 30
+        },
+        "Waterfall": {
+            "type": "actor",
+            "id": 45,
+            "sprite": "scenery/waterfall/0"
+        },
+        "Castle Top": {
+            "type": "background",
+            "sprite": "scenery/castle/top",
+            "depth": 35
+        },
+        "Castle Bottom": {
+            "type": "background",
+            "sprite": "scenery/castle/bottom",
+            "depth": 35
         },
         "Player Spawn": {
             "type": "actor",
@@ -373,6 +425,18 @@
                 {
                     "name": "5-2 Platform",
                     "index": 7
+                }
+            ]
+        },
+        "Platform Turn": {
+            "type": "actor",
+            "id": 12,
+            "sprite": "editor/platform_turn",
+            "scalable": true,
+            "flags": [
+                {
+                    "name": "Add",
+                    "index": 5
                 }
             ]
         },
@@ -614,7 +678,7 @@
     "items": [
         {
             "name": "Backgrounds",
-            "items": ["Gradient Background", "Cave Background"]
+            "items": ["Gradient Background", "Cave Background", "Cliff Background"]
         },
         {
             "name": "Tiles",
@@ -660,6 +724,10 @@
                             "items": ["Pipe Purple Top", "Pipe Purple Middle", "Pipe Purple Bottom"]
                         }
                     ]
+                },
+                {
+                    "name": "Tree",
+                    "items": ["Tree Top Left", "Tree Top", "Tree Top Right", "Tree Left", "Tree Middle", "Tree Right"]
                 }
             ]
         },
@@ -694,7 +762,12 @@
                     "name": "Signs",
                     "items": ["Hardcore Near Sign"]
                 },
-                "Bush"
+                {
+                    "name": "Castle",
+                    "items": ["Castle Top", "Castle Bottom"]
+                },
+                "Bush",
+                "Waterfall"
             ]
         },
         {
