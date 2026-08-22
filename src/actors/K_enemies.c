@@ -104,7 +104,7 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
 }
 
 Bool check_stomp(GameActor* actor, GameActor* from, Fixed offset, Sint32 points) {
-    if (actor == NULL || from == NULL || from->type != ACT_PLAYER || VAL(actor, PLAYER_STARMAN) > 0)
+    if (actor == NULL || from == NULL || from->type != ACT_PLAYER || VAL(from, PLAYER_STARMAN) > 0)
         return FALSE;
 
     if (from->pos.y < (actor->pos.y + offset) && (from->vel.y >= Fx0 || ANY_FLAG(from, FLG_PLAYER_STOMP))) {

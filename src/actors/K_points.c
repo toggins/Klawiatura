@@ -84,7 +84,7 @@ static void draw(const GameActor* actor) {
                   : (VAL(actor, POINTS) >= 500 && VAL(actor, POINTS) < 1000)      ? "effects/points/500"
                   : (VAL(actor, POINTS) >= 1000 && VAL(actor, POINTS) < 2000)     ? "effects/points/1000"
                   : (VAL(actor, POINTS) >= 2000 && VAL(actor, POINTS) < 5000)     ? "effects/points/2000"
-                  : (VAL(actor, POINTS) >= 5000 && VAL(actor, POINTS) < 10000)    ? "effects/points/10000"
+                  : (VAL(actor, POINTS) >= 5000 && VAL(actor, POINTS) < 10000)    ? "effects/points/5000"
                   : (VAL(actor, POINTS) >= 10000 && VAL(actor, POINTS) < 1000000) ? "effects/points/10000"
                                                                                   : "effects/points/1000000"),
         FALSE);
