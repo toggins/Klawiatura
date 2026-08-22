@@ -18,6 +18,7 @@
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 #include "actors/K_projectiles.h"
+#include "actors/K_warp.h"
 
 #define ACTOR_CALL_STATIC(type, fn, ...)                                                                               \
     do {                                                                                                               \
@@ -1012,6 +1013,14 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 
         break;
     }
+
+    case GS_WARP: {
+        ++sequence->time;
+        if ((sequence->state > 0 && sequence->time > 200) || (sequence->state <= 0 && sequence->time > 60))
+            game_state->flags |= GF_END;
+
+        break;
+    }
     }
 
     ++game_state->time;
@@ -1050,7 +1059,11 @@ void tick_game() {
                 return;
 
             const GameSequence* sequence = get_sequence();
-            if (sequence->type == GS_LOSE) {
+            switch (sequence->type) {
+            default:
+                return;
+
+            case GS_LOSE: {
                 GameContext ctx = game_context;
                 ctx.seed = SDL_GetTicksNS();
                 ctx.flags |= GF_RESTARTED;
@@ -1066,19 +1079,62 @@ void tick_game() {
                 return;
             }
 
-            WorldContext ctx = *worldcontext();
-            ++ctx.level;
-            if (sequence->type == GS_WIN)
+            case GS_WIN: {
+                WorldContext ctx = *worldcontext();
+                ++ctx.level;
                 ctx.winner = sequence->activator;
-            for (PlayerID i = 0; i < ctx.num_players; i++) {
-                ctx.players[i].lives = game_state->players[i].lives;
-                ctx.players[i].coins = game_state->players[i].coins;
-                ctx.players[i].score = game_state->players[i].score;
-                ctx.players[i].powerup = game_state->players[i].powerup;
+                for (PlayerID i = 0; i < ctx.num_players; i++) {
+                    ctx.players[i].lives = game_state->players[i].lives;
+                    ctx.players[i].coins = game_state->players[i].coins;
+                    ctx.players[i].score = game_state->players[i].score;
+                    ctx.players[i].powerup = game_state->players[i].powerup;
+                }
+
+                jump_to_world(&ctx, FALSE);
+                return;
             }
 
-            jump_to_world(&ctx, FALSE);
-            return;
+            case GS_WARP: {
+                const GamePlayer* player = get_player(sequence->activator);
+                if (player == NULL)
+                    return;
+
+                const GameActor* pawn = get_actor(player->actor);
+                if (pawn == NULL || pawn->type != ACT_PLAYER)
+                    return;
+
+                const GameActor* warp = get_actor(VAL(pawn, PLAYER_WARP));
+                if (warp == NULL || VAL(warp, WARP_ID) < 0 || VAL(warp, WARP_ID) >= MAX_GAME_WARPS)
+                    return;
+
+                if (ANY_FLAG(warp, FLG_WARP_WORLD)) {
+                    WorldContext ctx = *worldcontext();
+                    ctx.world = level_info->warps[VAL(warp, WARP_ID)];
+                    ctx.level = 0;
+                    ctx.winner = sequence->activator;
+                    for (PlayerID i = 0; i < ctx.num_players; i++) {
+                        ctx.players[i].lives = game_state->players[i].lives;
+                        ctx.players[i].coins = game_state->players[i].coins;
+                        ctx.players[i].score = game_state->players[i].score;
+                        ctx.players[i].powerup = game_state->players[i].powerup;
+                    }
+
+                    jump_to_world(&ctx, FALSE);
+                } else if (ANY_FLAG(warp, FLG_WARP_LEVEL)) {
+                    GameContext ctx = init_game_context(worldcontext(), level_info->warps[VAL(warp, WARP_ID)]);
+                    for (PlayerID i = 0; i < ctx.num_players; i++) {
+                        ctx.players[i].lives = game_state->players[i].lives;
+                        ctx.players[i].coins = game_state->players[i].coins;
+                        ctx.players[i].score = game_state->players[i].score;
+                        ctx.players[i].powerup = game_state->players[i].powerup;
+                    }
+
+                    jump_to_game(&ctx, FALSE);
+                }
+
+                return;
+            }
+            }
         }
 
         // LOCAL PLAYER GLOSSARY:
@@ -1443,6 +1499,7 @@ Bool in_blocking_sequence() {
         return FALSE;
     case GS_LOSE:
     case GS_WIN:
+    case GS_WARP:
         return TRUE;
     }
 

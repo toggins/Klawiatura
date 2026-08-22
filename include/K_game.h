@@ -62,10 +62,10 @@ enum {
     GS_NONE,
     GS_LOSE,
     GS_WIN,
+    GS_WARP,
+    GS_BOWSER_END,
     GS_AMBUSH,
     GS_AMBUSH_END,
-    GS_BOWSER_END,
-    GS_SECRET,
 };
 
 typedef Uint8 ActorType;

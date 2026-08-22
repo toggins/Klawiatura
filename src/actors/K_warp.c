@@ -11,13 +11,13 @@ static void load() {
 }
 
 static void load_special(const GameActor* actor) {
-    if (ANY_FLAG(actor, FLG_WARP_CALAMITY)) {
+    if (ANY_FLAG(actor, FLG_WARP_CALAMITY | FLG_WARP_SECRET | FLG_WARP_WORLD | FLG_WARP_LEVEL)) {
         const char* secret = get_game_secret(VAL(actor, WARP_SECRET));
         if (secret != NULL && secret[0] != '$')
             load_sprite(LFMT(secret), AKL_NEVER);
-
-        load_sound("vo/clone/a_dead", AKL_NEVER);
     }
+    if (ANY_FLAG(actor, FLG_WARP_CALAMITY))
+        load_sound("vo/clone/a_dead", AKL_NEVER);
     if (ANY_FLAG(actor, FLG_WARP_DEVASTATOR))
         load_sound("vo/thwomp", AKL_NEVER);
 }
@@ -38,27 +38,39 @@ static void create(GameActor* actor) {
 
 static void tick(GameActor* actor) {
     if (VAL(actor, WARP_STATE) > 0) {
-        if (++VAL(actor, WARP_STATE) > 200)
+        ++VAL(actor, WARP_STATE);
+        if (VAL(actor, WARP_STATE) > 200 && !ANY_FLAG(actor, FLG_WARP_WORLD | FLG_WARP_LEVEL))
             FLAG_ON(actor, FLG_DESTROY);
     }
 }
 
 static void draw_hud(const GameActor* actor) {
-    if (!ANY_FLAG(actor, FLG_WARP_CALAMITY) || VAL(actor, WARP_STATE) <= 0)
+    if (VAL(actor, WARP_STATE) <= 0)
         return;
 
-    const char* secret = get_game_secret(VAL(actor, WARP_SECRET));
-    if (secret == NULL)
-        return;
-
-    batch_reset();
-    batch_pos(B_F3_XY(318, 220));
-    if (VAL(actor, WARP_STATE) >= 101)
-        batch_color(B_U4_ALPHA((1.f - ((float)(VAL(actor, WARP_STATE) - 101) / 101.f)) * 255.f));
-    if (secret[0] == '$')
-        batch_string("main", 24.f, LFMT(secret + 1));
-    else
-        batch_sprite(LFMT(secret));
+    if (ANY_FLAG(actor, FLG_WARP_SECRET)) {
+        const char* secret = get_game_secret(VAL(actor, WARP_SECRET));
+        if (secret != NULL) {
+            batch_reset();
+            batch_pos(B_F3_XY(320.f, -37.f + (int)(((float)SDL_min(VAL(actor, WARP_STATE), 41) / 41.f) * 257.f)));
+            if (secret[0] == '$')
+                batch_string("main", 24.f, LFMT(secret + 1));
+            else
+                batch_sprite(LFMT(secret));
+        }
+    } else if (ANY_FLAG(actor, FLG_WARP_CALAMITY)) {
+        const char* secret = get_game_secret(VAL(actor, WARP_SECRET));
+        if (secret != NULL) {
+            batch_reset();
+            batch_pos(B_F3_XY(320.f, 220.f));
+            if (VAL(actor, WARP_STATE) >= 101)
+                batch_color(B_U4_ALPHA((1.f - ((float)(VAL(actor, WARP_STATE) - 101) / 101.f)) * 255.f));
+            if (secret[0] == '$')
+                batch_string("main", 24.f, LFMT(secret + 1));
+            else
+                batch_sprite(LFMT(secret));
+        }
+    }
 }
 
 static void collide(GameActor* actor, GameActor* from) {
@@ -74,7 +86,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
     switch (VAL(actor, WARP_ANGLE)) {
     default: {
-        if (!TOUCHING(from, TOUCH_RIGHT) || !ANY_INPUT(player, GI_RIGHT))
+        if (!TOUCHING(from, TOUCH_RIGHT) || !ANY_INPUT(player, GI_RIGHT) || from->pos.y > (actor->pos.y + Fx1))
             return;
 
         move_actor(from, Vadd(actor->pos, (FVec2){actor->box.end.x - from->box.end.x, Fx0}));
@@ -90,7 +102,7 @@ static void collide(GameActor* actor, GameActor* from) {
     }
 
     case 2: {
-        if (!TOUCHING(from, TOUCH_LEFT) || !ANY_INPUT(player, GI_LEFT))
+        if (!TOUCHING(from, TOUCH_LEFT) || !ANY_INPUT(player, GI_LEFT) || from->pos.y > (actor->pos.y + Fx1))
             return;
 
         move_actor(from, Vadd(actor->pos, (FVec2){actor->box.start.x - from->box.start.x, Fx0}));
@@ -133,13 +145,32 @@ static void collide(GameActor* actor, GameActor* from) {
             }
         }
 
-        ++VAL(actor, WARP_STATE);
         play_state_sound("vo/clone/a_dead", 0, NULL);
     } else if (ANY_FLAG(actor, FLG_WARP_DEVASTATOR)) {
         play_state_sound("vo/thwomp", 0, NULL);
-        stop_state_track(ALL_TRACKS);
+        stop_state_track(from->player);
     } else {
         play_state_sound("warp", PLAY_POS, A_ACTOR(from));
+    }
+
+    if (ANY_FLAG(actor, FLG_WARP_CALAMITY | FLG_WARP_SECRET | FLG_WARP_WORLD | FLG_WARP_LEVEL | FLG_WARP_DEVASTATOR))
+        ++VAL(actor, WARP_STATE);
+
+    if (ANY_FLAG(actor, FLG_WARP_WORLD | FLG_WARP_LEVEL)) {
+        for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+            GamePlayer* oplayer = get_player(i);
+            if (oplayer == NULL || oplayer->id == player->id)
+                continue;
+
+            GameActor* opawn = get_actor(oplayer->actor);
+            if (opawn == NULL || opawn->id == from->id)
+                continue;
+
+            FLAG_ON(opawn, FLG_DESTROY);
+        }
+
+        set_sequence(GS_WARP, player, ANY_FLAG(actor, FLG_WARP_SECRET | FLG_WARP_DEVASTATOR));
+        set_view_player(player);
     }
 }
 
