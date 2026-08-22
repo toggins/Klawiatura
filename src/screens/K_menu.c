@@ -192,7 +192,11 @@ static Bool draw_main_menu() {
     batch_reset();
     batch_pos(B_F3_XY(96.f, 130.f));
     batch_string("footer", 16.f, GAME_NAME " " GAME_VERSION);
+    batch_pos(B_F3_XY(96.f, 146.f));
+    batch_color(B_U4_ALPHA(160));
+    batch_string("footer", 12.f, GAME_BUILD_DATE);
     batch_pos(B_F3_XY(SCREEN_WIDTH - 96.f, 130.f));
+    batch_color(B_U4_WHITE);
     batch_align(B_ALIGN_TOP_RIGHT);
     batch_string("footer", 16.f, fmt("Checksum: %u", get_game_hash()));
 

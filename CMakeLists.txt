@@ -210,6 +210,7 @@ list(APPEND LIBS imgui)
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.c)
 file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/include/*.h)
 
+string(TIMESTAMP PROJECT_BUILD_DATE "%Y-%m-%d")
 set(CONFIGURE_FILE ${CMAKE_BINARY_DIR}/generated/K_cmake.h)
 configure_file(${CMAKE_SOURCE_DIR}/include/K_cmake.h.in ${CONFIGURE_FILE} @ONLY)
 list(APPEND HEADERS ${CONFIGURE_FILE})
