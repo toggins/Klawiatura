@@ -38,7 +38,12 @@ static void create(GameActor* actor) {
 
 static void tick(GameActor* actor) {
     if (VAL(actor, WARP_STATE) > 0) {
+        // GROSS HACK: Use actor Y for interpolated secret message
+        if (ANY_FLAG(actor, FLG_WARP_SECRET) && actor->pos.y < Int2Fx(220))
+            move_actor(actor, (FVec2){actor->pos.x, Fmin(actor->pos.y + 410799, Int2Fx(220))});
+
         ++VAL(actor, WARP_STATE);
+
         if (VAL(actor, WARP_STATE) > 200 && !ANY_FLAG(actor, FLG_WARP_WORLD | FLG_WARP_LEVEL))
             FLAG_ON(actor, FLG_DESTROY);
     }
@@ -52,7 +57,7 @@ static void draw_hud(const GameActor* actor) {
         const char* secret = get_game_secret(VAL(actor, WARP_SECRET));
         if (secret != NULL) {
             batch_reset();
-            batch_pos(B_F3_XY(320.f, -37.f + (int)(((float)SDL_min(VAL(actor, WARP_STATE), 41) / 41.f) * 257.f)));
+            batch_pos(B_F3_XY(320.f, Fx2Int(get_interp(actor).y)));
             if (secret[0] == '$')
                 batch_string("main", 24.f, LFMT(secret + 1));
             else
@@ -171,6 +176,12 @@ static void collide(GameActor* actor, GameActor* from) {
 
         set_sequence(GS_WARP, player, ANY_FLAG(actor, FLG_WARP_SECRET | FLG_WARP_DEVASTATOR));
         set_view_player(player);
+    }
+
+    // GROSS HACK: Use actor Y for interpolated secret message
+    if (ANY_FLAG(actor, FLG_WARP_SECRET)) {
+        move_actor(actor, (FVec2){Fx0, Int2Fx(-37)});
+        skip_interp(actor);
     }
 }
 
