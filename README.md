@@ -79,7 +79,11 @@ Listing some of the things we learned the hard way that you should consider:
 
 **This project's source code is public-domain under the terms of [the Unlicense](https://unlicense.org). Refer to [the provided copy](/UNLICENSE) of the license for more info.**
 
-All of the assets belong to Nintendo. This is a free, open-source project not created for any sort of profit. We do not condone any commercial use of this project.
+This is a free, open-source project not created for any sort of profit. We do not condone any commercial use of this project.
+
+Mario, related characters and original assets belong to Nintendo. Mario Forever is an unofficial fangame created by Buziol, and all of the custom assets that form Mario Together, which is built on top of Mario Forever, are created by people listed in the main menu's credits.
+
+Copying, modifying, and/or porting this project does not make the materials mentioned above your work.
 
 - [SDL](https://github.com/libsdl-org/SDL), [SDL_GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB), [SDL_mixer](https://github.com/libsdl-org/SDL_mixer) © Sam Lantinga ([Zlib License](https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt))
 - [GLAD](https://github.com/Dav1dde/glad) © David Herberth ([MIT License](https://github.com/Dav1dde/glad/blob/glad2/LICENSE))
