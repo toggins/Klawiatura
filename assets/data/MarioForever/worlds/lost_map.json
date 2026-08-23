@@ -15,7 +15,7 @@
             },
             {
                 "sprite": "scenery/clouds2",
-                "pos": [-31, 442, 50],
+                "pos": [-31, 468, 50],
                 "size": [15069, 27],
                 "tile": [true, false],
                 "flip": [false, true]
