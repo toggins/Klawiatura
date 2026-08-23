@@ -69,7 +69,13 @@ cmake -S . -B build -D CMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 ```
 
-The resulting binaries should now reside in `build` or `build/Release`, depending on which build-system CMake generated configuration for. There will be lots of junk in the directory, but you only need `data`, `fmodL.dll`, and the game's executable to run Klawiatura successfully.
+The resulting binaries should now reside in `build` or `build/Release`, depending on which build-system CMake generated configuration for. There will be junk in the directory, but you only need the following files to run Klawiatura successfully:
+
+- `data`
+- `discord_partner_sdk.*` (64-bit only)
+- `Klawiatura.*`
+- `soundfont.sf2`
+- `gamecontrollerdb.txt`
 
 ### Considerations
 
