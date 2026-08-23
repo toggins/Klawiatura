@@ -75,8 +75,8 @@ The resulting binaries should now reside in `build` or `build/Release`, dependin
 
 Listing some of the things we learned the hard way that you should consider:
 
-1. MSVC Debug builds require Debug versions of the Visual C++ libraries to run outside the machine that built the binary. If you really need to test Klawiatura on an external machine with debug information present, pass `RelWithDebInfo` to `--config` and for `CMAKE_BUILD_TYPE`.
-2. The correct "all" target for Visual Studio projects is `ALL_BUILD`, as opposed to `all` in every other CMake generator. Either way, you'll need to build _that_ in order to get `build/data` generated from [`modsrc`](/modsrc).
+1. On MSVC, only `RelWithDebInfo` and `Release` builds are available. CRT is also statically linked, so checking for memory leaks with [heob](https://github.com/ssbssa/heob) is not possible unless you build with GCC.
+2. On Emscripten, `Debug` and `RelWithDebInfo` builds may not work due to yyjson functions generating too many local variables.
 
 ## Attribution
 
