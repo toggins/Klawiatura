@@ -53,8 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
           let numFiles = 0;
 
           records.forEach((record, index) => {
-            if (record && record.contents && record.contents instanceof Uint8Array) {
-              if (record.contents.byteLength === 0) return;
+            if (record && record.contents && record.contents !== null) {
+              let byteLength =
+                record.contents.byteLength ?? record.contents.length ?? Object.keys(record.contents).length ?? 0;
+              if (byteLength === 0) return;
 
               let path = record.id || `file_${index}`;
               path = path.replace(/^\/+/, "");
