@@ -1,17 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
   const downloadUserFolder = document.getElementById("download-user-folder");
+
   downloadUserFolder.addEventListener("click", async () => {
-    if (typeof JSZip === "undefined") {
-      alert("JSZip not found");
-      return;
-    }
+    if (typeof JSZip === "undefined") return;
 
     downloadUserFolder.disabled = true;
     downloadUserFolder.innerText = "Downloading User Folder...";
 
     try {
       if (typeof Module !== "undefined" && Module.FS && Module.FS.syncfs) {
-        await new Promise((resolve, reject) => {
+        await new Promise((resolve) => {
           Module.FS.syncfs(false, function (err) {
             if (err) console.warn("Emscripten FS: ", err);
             resolve();
@@ -19,18 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      let dbName = null;
-      try {
-        const databases = await indexedDB.databases();
-        const targetDB = databases.find((db) => db.name.includes("emscripten") || db.name.startsWith("/"));
-        if (targetDB) dbName = targetDB.name;
-      } catch (e) {
-        console.warn("Indexed DB databases not available, falling back to default path");
-      }
-      if (!dbName) dbName = "/emscripten/fs";
-
-      const request = indexedDB.open(dbName);
-      request.onsuccess = function (event) {
+      const req = indexedDB.open("/storage");
+      req.onsuccess = function (event) {
         const db = event.target.result;
         if (!db.objectStoreNames.contains("FILE_DATA")) {
           alert("No file data found");
@@ -38,65 +26,70 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        const transaction = db.transaction("FILE_DATA", "readonly");
-        const objectStore = transaction.objectStore("FILE_DATA");
-        const getAllRequest = objectStore.getAll();
-        getAllRequest.onsuccess = function () {
-          const records = getAllRequest.result;
-          if (!records || records.length === 0) {
-            alert("User folder is empty");
-            resetDUF();
-            return;
-          }
+        const zip = new JSZip();
+        let numFiles = 0;
 
-          const zip = new JSZip();
-          let numFiles = 0;
+        const cursorReq = db.transaction("FILE_DATA", "readonly").objectStore("FILE_DATA").openCursor();
+        cursorReq.onsuccess = function (e) {
+          const cursor = e.target.result;
+          if (cursor) {
+            const key = cursor.key;
+            const record = cursor.value;
 
-          records.forEach((record, index) => {
-            if (record && record.contents && record.contents !== null) {
-              let byteLength =
-                record.contents.byteLength ?? record.contents.length ?? Object.keys(record.contents).length ?? 0;
-              if (byteLength === 0) return;
+            if (record && record.contents) {
+              let data = record.contents.contents !== undefined ? record.contents.contents : record.contents;
+              if (!(record.mode && record.mode & 0x4000)) {
+                const payload =
+                  data instanceof Uint8Array || data instanceof ArrayBuffer ? data : data.buffer ? data.buffer : null;
+                if (payload) {
+                  let path = String(key || `file_${numFiles}`);
+                  path = path.replace(/^\/+/, "");
+                  const prefix = "storage/toggins/Klawiatura/";
+                  if (path.startsWith(prefix)) path = path.substring(prefix.length);
 
-              let path = record.id || `file_${index}`;
-              path = path.replace(/^\/+/, "");
-
-              zip.file(path, record.contents);
-              ++numFiles;
+                  zip.file(path, payload);
+                  ++numFiles;
+                }
+              }
             }
-          });
 
-          if (numFiles === 0) {
-            alert("User folder is empty");
-            resetDUF();
-            return;
-          }
-
-          zip
-            .generateAsync({ type: "blob" })
-            .then(function (content) {
-              const blobURL = URL.createObjectURL(content);
-              const downloadLink = document.createElement("a");
-              downloadLink.href = blobURL;
-              downloadLink.download = "Klawiatura-user.zip";
-              document.body.appendChild(downloadLink);
-              downloadLink.click();
-              document.body.removeChild(downloadLink);
-              URL.revokeObjectURL(blobURL);
-
-              resetDUF();
-            })
-            .catch((err) => {
-              alert("Failed to generate ZIP: " + err.message);
+            cursor.continue();
+          } else {
+            if (numFiles === 0) {
+              alert("User folder is empty");
               resetDUF();
               return;
-            });
+            }
+
+            zip
+              .generateAsync({ type: "blob" })
+              .then(function (content) {
+                const blob = URL.createObjectURL(content);
+                const download = document.createElement("a");
+                download.href = blob;
+                download.download = "Klawiatura-user.zip";
+                document.body.appendChild(download);
+                download.click();
+                document.body.removeChild(download);
+                URL.revokeObjectURL(blob);
+
+                resetDUF();
+              })
+              .catch((err) => {
+                alert("Failed to generate ZIP: " + err.message);
+                resetDUF();
+              });
+          }
+        };
+
+        cursorReq.onerror = () => {
+          alert("Failed to read database records");
+          resetDUF();
         };
       };
-      request.onerror = () => {
+      req.onerror = () => {
         alert("Failed to open local storage");
         resetDUF();
-        return;
       };
     } catch (error) {
       console.error(error);
