@@ -440,6 +440,19 @@
                 }
             ]
         },
+        "Goomba Party": {
+            "type": "actor",
+            "id": 46,
+            "sprite": "editor/goomba_party",
+            "values": [
+                {
+                    "name": "Type",
+                    "index": 0,
+                    "type": "actor",
+                    "default": 37
+                }
+            ]
+        },
         "Water": {
             "type": "actor",
             "id": 13,
@@ -805,7 +818,7 @@
                 },
                 {
                     "name": "Platforms",
-                    "items": ["Platform"]
+                    "items": ["Platform", "Platform Turn"]
                 },
                 {
                     "name": "Water",
@@ -813,7 +826,8 @@
                 },
                 "Player Spawn",
                 "Warp",
-                "Checkpoint"
+                "Checkpoint",
+                "Goomba Party"
             ]
         }
     ]

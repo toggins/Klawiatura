@@ -4,6 +4,10 @@
 
 #include "actors/K_enemies.h"
 
+enum {
+    VAL_PARTY_TYPE,
+};
+
 static void load() {
     load_sprite_num("enemies/goomba/%u", 2, AKL_NEVER);
     load_sprite("enemies/goomba/flat", AKL_NEVER);
@@ -121,4 +125,46 @@ const ActorTable TAB_GOOMBA = {
     .draw = draw,
     .draw_dead = draw_dead,
     .collide = collide,
+};
+
+/* ============
+   GOOMBA PARTY
+   ============ */
+
+static void load_party_special(const GameActor* actor) {
+    load_actor(VAL(actor, PARTY_TYPE));
+}
+
+static void create_party(GameActor* actor) {
+    VAL(actor, PARTY_TYPE) = ACT_GOOMBA;
+}
+
+static void tick_party(GameActor* actor) {
+    if ((gamestate()->time % 50) != 0)
+        return;
+
+    Bool found = FALSE;
+    FVec2 ppos = {Fx0};
+    for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn == NULL || pawn->type != ACT_PLAYER || (found && pawn->pos.x <= ppos.x))
+            continue;
+
+        ppos = pawn->pos;
+        found = TRUE;
+    }
+
+    GameActor* goomba = create_actor(VAL(actor, PARTY_TYPE), Vadd(ppos, (FVec2){Int2Fx(201 + rng(200)), Int2Fx(-498)}));
+    if (goomba != NULL)
+        FLAG_ON(goomba, FLG_X_FLIP);
+}
+
+const ActorTable TAB_GOOMBA_PARTY = {
+    .load_special = load_party_special,
+    .create = create_party,
+    .tick = tick_party,
 };
