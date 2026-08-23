@@ -91,5 +91,6 @@ Copying, modifying, and/or porting this project does not make the materials ment
 - [yyjson](https://github.com/ibireme/yyjson) © Yaoyuan Guo ([MIT License](https://github.com/ibireme/yyjson/blob/master/LICENSE))
 - [GekkoNet](https://github.com/HeatXD/GekkoNet) © Jamie Meyer ([BSD-2-Clause License](https://github.com/HeatXD/GekkoNet/blob/main/LICENSE))
 - [Discord Social SDK](https://discord.com/developers/social-sdk) © Discord
+- [JSZip](https://github.com/Stuk/jszip) © Stuart Knightley ([MIT License](https://github.com/Stuk/jszip/blob/main/LICENSE.markdown))
 
 Module music provided by [modarchive.org](https://modarchive.org).
