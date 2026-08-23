@@ -53,31 +53,13 @@ document.addEventListener("DOMContentLoaded", () => {
           let numFiles = 0;
 
           records.forEach((record, index) => {
-            if (record && record.contents) {
-              if (
-                !(
-                  record.contents instanceof Uint8Array ||
-                  record.contents instanceof ArrayBuffer ||
-                  record.contents instanceof Blob ||
-                  typeof record.contents === "string"
-                )
-              )
-                return;
-
-              let byteLength = 0;
-              if (record.contents.byteLength !== undefined) {
-                byteLength = record.contents.byteLength;
-              } else if (record.contents.length !== undefined) {
-                byteLength = record.contents.length;
-              } else if (typeof record.contents === "object") {
-                byteLength = Object.keys(record.contents).length;
-              }
-              if (byteLength === 0) return;
+            if (record && record.contents && record.contents instanceof Uint8Array) {
+              if (record.contents.byteLength === 0) return;
 
               let path = record.id || `file_${index}`;
               path = path.replace(/^\/+/, "");
-              zip.file(path, record.contents);
 
+              zip.file(path, record.contents);
               ++numFiles;
             }
           });
