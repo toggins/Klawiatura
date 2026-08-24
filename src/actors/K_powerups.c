@@ -158,6 +158,7 @@ static void create_starman(GameActor* actor) {
 }
 
 static void tick_starman(GameActor* actor) {
+    VAL_TICK(actor, POWERUP_OVERLAP);
     actor->vel.y += 13107;
 
     if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
@@ -173,6 +174,14 @@ static void tick_starman(GameActor* actor) {
         if (VAL(actor, POWERUP_FRAME) < 1200) {
             return;
         } else {
+            // GROSS HACK: In MF, Starman sinks about 17 px down before bouncing for the first time.
+            //             This sorta replicates that by making the initial bounce ~17 px lower.
+            displace_actor(actor, Int2Fx(10), FALSE);
+            if (TOUCHING(actor, TOUCH_BOTTOM))
+                actor->vel.y = -280494;
+            TOUCH_OFF(actor, TOUCH_SIDES);
+            move_actor(actor, actor->last_pos);
+
             actor->vel.x = 163840;
             VAL(actor, POWERUP_FRAME) = 0;
             FLAG_OFF(actor, FLG_POWERUP_SPROUTED);
@@ -200,7 +209,17 @@ static void draw_starman(const GameActor* actor) {
 }
 
 static void collide_starman(GameActor* actor, GameActor* from) {
-    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_SPROUTED))
+    if (from->type != ACT_PLAYER)
+        return;
+
+    if (VAL(actor, POWERUP_OVERLAP) > 0) {
+        VAL(actor, POWERUP_OVERLAP) = 2;
+        return;
+    } else {
+        VAL(actor, POWERUP_OVERLAP) = 2;
+    }
+
+    if (ANY_FLAG(actor, FLG_POWERUP_SPROUTED))
         return;
 
     VAL(from, PLAYER_STARMAN) = 500;
