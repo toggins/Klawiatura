@@ -802,6 +802,10 @@ static void tick() {
     tick_catalog(&CATALOG, NULL);
 }
 
+static void draw() {
+    clear_color(B_F4_VALUE(0.f));
+}
+
 static void draw_ui() {
     batch_reset();
 
@@ -844,6 +848,7 @@ const ScreenTable TAB_MENU = {
     .start = start,
     .end = end,
     .tick = tick,
+    .draw = draw,
     .draw_ui = draw_ui,
     .transit = transit,
 };

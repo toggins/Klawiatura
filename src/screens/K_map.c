@@ -549,6 +549,10 @@ static void interp() {
     camera->interp.pos[1] = glm_lerp(camera->interp.from[1], camera->interp.to[1], t);
 }
 
+static void draw() {
+    clear_color(B_F4_VALUE(0.f));
+}
+
 static void draw_ui() {
     push_surface(map_state->surface);
 
@@ -765,6 +769,7 @@ const ScreenTable TAB_MAP = {
     .tick = tick,
     .pre_interp = pre_interp,
     .interp = interp,
+    .draw = draw,
     .draw_ui = draw_ui,
     .transit = transit,
 };

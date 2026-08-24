@@ -2,6 +2,7 @@
 #include "K_interface.h"
 #include "K_net.h"
 #include "K_replay.h"
+#include "K_video.h"
 
 static void start(const void* secret, size_t secret_size) {
     EXPECT(secret_size == sizeof(GameContext), "Secret isn't GameContext?");
@@ -22,6 +23,10 @@ static void tick() {
     tick_game();
 }
 
+static void draw() {
+    clear_color(B_F4_VALUE(0.f));
+}
+
 static void end() {
     end_replay();
     nuke_game();
@@ -32,6 +37,7 @@ const ScreenTable TAB_GAME = {
     .tick = tick,
     .pre_interp = pre_interp_game,
     .interp = interp_game,
+    .draw = draw,
     .draw_ui = draw_game,
     .end = end,
 };
