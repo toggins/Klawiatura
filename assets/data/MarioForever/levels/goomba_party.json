@@ -3459,6 +3459,7 @@
         {
             "def": "Checkpoint",
             "id": 7,
+            "multiplayer": true,
             "pos": [3552, 297],
             "values": [
                 [0, 0],
