@@ -254,7 +254,9 @@ iu_dont_change:
             get_resolution(&width, &height);
             batch_circle(
                 NULL, (1.f - (to_transition_time / to_transition.duration))
-                          * ((((float)width / (float)height) / ((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT))
+                          * (((height > width)
+                                     ? 1.f
+                                     : (((float)width / (float)height) / ((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT)))
                               * (SDL_sqrtf((SCREEN_WIDTH * SCREEN_WIDTH) + (SCREEN_HEIGHT * SCREEN_HEIGHT)) * 0.5f)));
 
             batch_write_color(TRUE, TRUE, TRUE, TRUE);
