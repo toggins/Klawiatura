@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/lava",
+    "size": [32, 49],
+    "offset": [0, 18],
+    "uvs": [3, 54, 35, 103]
+}

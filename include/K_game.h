@@ -118,6 +118,7 @@ enum {
     ACT_TUBE_BUBBLE,
     ACT_WATERFALL,
     ACT_GOOMBA_PARTY,
+    ACT_LAVA,
 
     ACT_SIZE,
 };
