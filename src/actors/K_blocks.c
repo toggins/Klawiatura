@@ -211,8 +211,9 @@ static void create(GameActor* actor) {
 static void pre_tick(GameActor* actor) {
     if (VAL(actor, BLOCK_BUMP) > 0) {
         ++VAL(actor, BLOCK_BUMP);
-        if (VAL(actor, BLOCK_BUMP)
-            > ((VAL(actor, BLOCK_TYPE) == BLOCK_BRICK && ANY_FLAG(actor, FLG_BLOCK_EMPTY)) ? 11 : 10))
+        if (VAL(actor, BLOCK_BUMP) > ((VAL(actor, BLOCK_TYPE) == BLOCK_BRICK && ANY_FLAG(actor, FLG_BLOCK_EMPTY))
+                                          ? (ANY_FLAG(actor, FLG_BLOCK_GRAY) ? 10 : 11)
+                                          : (ANY_FLAG(actor, FLG_BLOCK_GRAY) ? 6 : 10)))
         {
             VAL(actor, BLOCK_BUMP) = 0;
         }
@@ -258,30 +259,69 @@ static void draw(const GameActor* actor) {
 
         case BLOCK_BRICK: {
             if (ANY_FLAG(actor, FLG_BLOCK_EMPTY)) {
+                if (ANY_FLAG(actor, FLG_BLOCK_GRAY)) {
+                    switch (VAL(actor, BLOCK_BUMP)) {
+                    default:
+                        break;
+                    case 2:
+                    case 9:
+                        bump = 1;
+                        break;
+                    case 3:
+                    case 8:
+                        bump = 2;
+                        break;
+                    case 4:
+                    case 7:
+                        bump = 3;
+                        break;
+                    case 5:
+                    case 6:
+                        bump = 4;
+                        break;
+                    }
+                } else {
+                    switch (VAL(actor, BLOCK_BUMP)) {
+                    default:
+                        break;
+                    case 2:
+                        bump = 2;
+                        break;
+                    case 3:
+                        bump = 4;
+                        break;
+                    case 4:
+                        bump = 6;
+                        break;
+                    case 5:
+                    case 8:
+                        bump = 7;
+                        break;
+                    case 6:
+                    case 7:
+                        bump = 8;
+                        break;
+                    case 9:
+                        bump = 5;
+                        break;
+                    case 10:
+                        bump = 3;
+                        break;
+                    }
+                }
+            } else if (ANY_FLAG(actor, FLG_BLOCK_GRAY)) {
                 switch (VAL(actor, BLOCK_BUMP)) {
                 default:
                     break;
                 case 2:
-                    bump = 2;
+                case 6:
+                    bump = 1;
                     break;
                 case 3:
-                    bump = 4;
+                case 5:
+                    bump = 2;
                     break;
                 case 4:
-                    bump = 6;
-                    break;
-                case 5:
-                case 8:
-                    bump = 7;
-                    break;
-                case 6:
-                case 7:
-                    bump = 8;
-                    break;
-                case 9:
-                    bump = 5;
-                    break;
-                case 10:
                     bump = 3;
                     break;
                 }
