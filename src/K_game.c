@@ -940,11 +940,11 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
             }
 
             if (game_state->flags & GF_LOST_MAP)
-                play_state_track(ALL_TRACKS, "smw/lose2", 0);
+                play_state_track(sequence->activator, "smw/lose2", 0);
             else if (game_state->flags & GF_HARDCORE)
-                play_state_track(ALL_TRACKS, "smw/lose_hardcore", 0);
+                play_state_track(sequence->activator, "smw/lose_hardcore", 0);
             else
-                play_state_track(ALL_TRACKS, "smw/lose", 0);
+                play_state_track(sequence->activator, "smw/lose", 0);
 
             break;
         }
@@ -963,7 +963,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         }
 
         case 211: {
-            play_state_track(ALL_TRACKS, "smb/game_over", 0);
+            play_state_track(sequence->activator, "smb/game_over", 0);
             break;
         }
 
@@ -1743,7 +1743,7 @@ void win_player(GamePlayer* player) {
     set_sequence(GS_WIN, player, 0);
 
     set_view_player(player);
-    play_state_track(ALL_TRACKS, (game_state->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", 0);
+    play_state_track(player->id, (game_state->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", 0);
 }
 
 // ======
