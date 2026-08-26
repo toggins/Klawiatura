@@ -6,6 +6,26 @@
 #include "actors/K_points.h"
 #include "actors/K_powerups.h"
 
+static void draw_powerup(const GameActor* actor, const char* name) {
+    if (ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+        return;
+
+    batch_reset();
+
+    if (actor->player < 0 || actor->player == localplayer()) {
+        draw_actor(actor, name, FALSE);
+    } else {
+        batch_color(B_U4_ALPHA(192));
+        draw_actor(actor, name, FALSE);
+
+        batch_blend(BM_ADD);
+        const float v = 128.f + (SDL_sinf(((float)(gamestate()->time % 30) / 30.f) * 2.f * SDL_PI_F) * 128.f);
+        batch_color(B_U4_VALUE(v));
+        draw_actor(actor, name, FALSE);
+        batch_blend(BM_NORMAL);
+    }
+}
+
 /* ==============
    SUPER MUSHROOM
    ============== */
@@ -103,10 +123,7 @@ static void tick_fire_flower(GameActor* actor) {
 }
 
 static void draw_fire_flower(const GameActor* actor) {
-    if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY)) {
-        batch_reset();
-        draw_actor(actor, fmt("items/fire_flower/%i", (VAL(actor, POWERUP_FRAME) / 100) % 4), FALSE);
-    }
+    draw_powerup(actor, fmt("items/fire_flower/%i", (VAL(actor, POWERUP_FRAME) / 100) % 4));
 }
 
 static void collide_fire_flower(GameActor* actor, GameActor* from) {
@@ -118,8 +135,10 @@ static void collide_fire_flower(GameActor* actor, GameActor* from) {
         return;
 
     if (player->powerup != POW_FIRE_FLOWER) {
-        player->powerup = (player->powerup == POW_NONE && ANY_FLAG(actor, FLG_POWERUP_SPROUTED)) ? POW_SUPER_MUSHROOM
-                                                                                                 : POW_FIRE_FLOWER;
+        player->powerup = (player->powerup == POW_NONE && ANY_FLAG(actor, FLG_POWERUP_SPROUTED)
+                              && (actor->player < 0 || actor->player == player->id))
+                              ? POW_SUPER_MUSHROOM
+                              : POW_FIRE_FLOWER;
         player->score += 1000;
         VAL(from, PLAYER_ANIMATION) = PF_GROW;
         VAL(from, PLAYER_FRAME) = Fx0;
@@ -296,8 +315,7 @@ static void tick_beetroot(GameActor* actor) {
 }
 
 static void draw_beetroot(const GameActor* actor) {
-    batch_reset();
-    draw_actor(actor, fmt("items/beetroot/%i", (VAL(actor, POWERUP_FRAME) / 25) % 4), FALSE);
+    draw_powerup(actor, fmt("items/beetroot/%i", (VAL(actor, POWERUP_FRAME) / 25) % 4));
 }
 
 static void collide_beetroot(GameActor* actor, GameActor* from) {
@@ -309,8 +327,10 @@ static void collide_beetroot(GameActor* actor, GameActor* from) {
         return;
 
     if (player->powerup != POW_BEETROOT) {
-        player->powerup = (player->powerup == POW_NONE && ANY_FLAG(actor, FLG_POWERUP_SPROUTED)) ? POW_SUPER_MUSHROOM
-                                                                                                 : POW_BEETROOT;
+        player->powerup = (player->powerup == POW_NONE && ANY_FLAG(actor, FLG_POWERUP_SPROUTED)
+                              && (actor->player < 0 || actor->player == player->id))
+                              ? POW_SUPER_MUSHROOM
+                              : POW_BEETROOT;
         player->score += 1000;
         VAL(from, PLAYER_ANIMATION) = PF_GROW;
         VAL(from, PLAYER_FRAME) = Fx0;
