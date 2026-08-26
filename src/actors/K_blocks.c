@@ -81,18 +81,22 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
             play_state_sound("bump", PLAY_POS, A_ACTOR(actor));
         }
 
-        GameActor* bump = create_actor(ACT_BLOCK_BUMP, actor->pos);
-        if (bump != NULL && from != NULL)
-            bump->player = from->player;
+        if (from != NULL && get_player(from->player) != NULL) {
+            GameActor* bump = create_actor(ACT_BLOCK_BUMP, actor->pos);
+            if (bump != NULL)
+                bump->player = from->player;
+        }
 
         return TRUE;
     }
 
     VAL(actor, BLOCK_BUMP) = 1;
 
-    GameActor* bump = create_actor(ACT_BLOCK_BUMP, actor->pos);
-    if (bump != NULL && from != NULL)
-        bump->player = from->player;
+    if (from != NULL && get_player(from->player) != NULL) {
+        GameActor* bump = create_actor(ACT_BLOCK_BUMP, actor->pos);
+        if (bump != NULL)
+            bump->player = from->player;
+    }
 
     if (VAL(actor, BLOCK_ITEM) == ACT_NULL || ANY_FLAG(actor, FLG_BLOCK_EMPTY)) {
         play_state_sound("bump", PLAY_POS, A_ACTOR(actor));
