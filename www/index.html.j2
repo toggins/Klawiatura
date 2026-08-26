@@ -24,17 +24,29 @@
 
 <body>
     <div id="container">
+        <div id="error">
+            <b>Game crashed!</b><br>
+            Check console for more details.
+        </div>
+
         <canvas id="canvas" width="640" height="480" oncontextmenu="event.preventDefault()"></canvas>
 
         <script type="text/javascript">
             var Module = {
                 canvas: document.getElementById("canvas"),
                 locateFile: function (path, scriptDirectory) {
-                    if (path.endsWith('.wasm')) {
-                        return scriptDirectory + 'Klawiatura.wasm{{ nocache }}';
+                    if (path.endsWith(".wasm")) {
+                        return scriptDirectory + "Klawiatura.wasm{{ nocache }}";
                     } else {
                         return scriptDirectory + path;
                     }
+                },
+                onAbort: function (what) {
+                    document.getElementById("error").style.display = "block";
+
+                    var canvas = document.getElementById("canvas");
+                    canvas.style.opacity = 0.5;
+                    canvas.style.backgroundImage = "none";
                 }
             };
         </script>
