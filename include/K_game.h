@@ -440,6 +440,7 @@ Bool in_blocking_sequence();
 
 GamePlayer* get_player(PlayerID);
 GameActor* respawn_player(GamePlayer*);
+Fixed get_player_jump(const GamePlayer*);
 const FVec2 nearest_player_pos(const FVec2);
 void set_player_track(GamePlayer*, Uint8), update_player_track(const GamePlayer*);
 Bool all_players_dead();

@@ -109,10 +109,8 @@ Bool check_stomp(GameActor* actor, GameActor* from, Fixed offset, Sint32 points)
 
     if (from->pos.y < (actor->pos.y + offset) && (from->vel.y >= Fx0 || ANY_FLAG(from, FLG_PLAYER_STOMP))) {
         GamePlayer* player = get_player(from->player);
-        const GameCharacter* character
-            = (player == NULL) ? NULL : get_character(gamecontext()->players[player->id].character);
-        from->vel.y = Fmul((player != NULL && ANY_INPUT(player, GI_JUMP)) ? Int2Fx(-13) : Int2Fx(-8),
-            (character == NULL) ? Fx1 : character->jump);
+        from->vel.y
+            = Fmul((player != NULL && ANY_INPUT(player, GI_JUMP)) ? Int2Fx(-13) : Int2Fx(-8), get_player_jump(player));
         FLAG_ON(from, FLG_PLAYER_STOMP);
 
         give_points(actor, player, points);

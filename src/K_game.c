@@ -1626,6 +1626,14 @@ rp_spectate:
     return NULL;
 }
 
+Fixed get_player_jump(const GamePlayer* player) {
+    if (player == NULL)
+        return Fx1;
+
+    const GameCharacter* character = get_character(game_context.players[player->id].character);
+    return (character == NULL) ? Fx1 : character->jump;
+}
+
 const FVec2 nearest_player_pos(const FVec2 pos) {
     FVec2 ppos = {Fx0};
     Fixed score = 0x7FFFFFFF;
