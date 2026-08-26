@@ -186,6 +186,8 @@ static void load() {
     load_sound("swim", AKL_NEVER);
     load_sound("warp", AKL_NEVER);
     load_sound("kick", AKL_NEVER);
+    load_sound("bump", AKL_NEVER);
+    load_sound("stomp", AKL_NEVER);
 
     if (gamestate()->clock >= 0) {
         load_sound("hurry", AKL_NEVER);
@@ -844,6 +846,41 @@ static void draw(const GameActor* actor) {
     batch_filter(FALSE);
 }
 
+static void collide(GameActor* actor, GameActor* from) {
+    if (get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
+        return;
+
+    switch (from->type) {
+    default:
+        break;
+
+    case ACT_PLAYER: {
+        if (check_stomp(actor, from, Int2Fx(-16), 0) || Fabs(from->vel.x) <= Fabs(actor->vel.x)
+            || ((from->vel.x <= Fx0 || from->pos.x >= actor->pos.x)
+                && (from->vel.x >= Fx0 || from->pos.x <= actor->pos.x)))
+        {
+            break;
+        }
+
+        const Fixed push = Fhalf(from->vel.x);
+        actor->vel.x += push;
+        from->vel.x = -push;
+
+        if (Fabs(push) > Int2Fx(2))
+            play_state_sound("bump", PLAY_POS, A_ACTOR(actor));
+
+        break;
+    }
+
+    case ACT_BLOCK_BUMP: {
+        if (from->player != actor->player && TOUCHING(actor, TOUCH_BOTTOM))
+            actor->vel.y = Fmul(Int2Fx(-8), get_player_jump(get_player(actor->player)));
+
+        break;
+    }
+    }
+}
+
 const ActorTable TAB_PLAYER = {
     .load = load,
     .create = create,
@@ -852,6 +889,7 @@ const ActorTable TAB_PLAYER = {
     .tick = tick,
     .post_tick = post_tick,
     .draw = draw,
+    .collide = collide,
 };
 
 /* =============
