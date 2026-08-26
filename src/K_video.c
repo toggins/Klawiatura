@@ -75,7 +75,7 @@ typedef struct {
     StencilOperation stencil_op[3];
     GLuint texture;
     float pos[3], offset[3], scale[2], angle;
-    float stencil[4], alpha_test;
+    float alpha_test;
 
     GLuint vao, vbo;
     Vertex* vertices;
@@ -266,7 +266,6 @@ vi_bypass:
         GET_UNIFORM(UNI_MVP, "u_mvp");
         GET_UNIFORM(UNI_TEXTURE, "u_texture");
         GET_UNIFORM(UNI_ALPHA_TEST, "u_alpha_test");
-        GET_UNIFORM(UNI_STENCIL, "u_stencil");
 #undef GET_UNIFORM
     }
 
@@ -743,19 +742,6 @@ void batch_colors(const Uint8 colors[4][4]) {
     SDL_memcpy(batch.color, colors, sizeof(batch.color));
 }
 
-void batch_stencil(const float stencil[4]) {
-    if (batch.stencil[0] != stencil[0] || batch.stencil[1] != stencil[1] || batch.stencil[2] != stencil[2]
-        || batch.stencil[3] != stencil[3])
-    {
-        submit_batch();
-    }
-
-    batch.stencil[0] = stencil[0];
-    batch.stencil[1] = stencil[1];
-    batch.stencil[2] = stencil[2];
-    batch.stencil[3] = stencil[3];
-}
-
 void batch_flip(const Bool flip[2]) {
     batch.flip[0] = flip[0];
     batch.flip[1] = flip[1];
@@ -925,7 +911,6 @@ void batch_reset_hard() {
     batch_tile(B_B2_FALSE);
     batch_filter(TRUE);
     batch_alpha_test(0.f);
-    batch_stencil(B_F4_0);
     batch_blend(BM_NORMAL);
     batch_write_color(TRUE, TRUE, TRUE, TRUE);
     batch_test_depth(FALSE);
@@ -1547,7 +1532,6 @@ void submit_batch() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
     set_float_uniform(UNI_ALPHA_TEST, batch.alpha_test);
-    set_vec4_uniform(UNI_STENCIL, batch.stencil);
     set_mat4_uniform(UNI_MVP, *get_mvp_matrix());
 
     apply_batch();
@@ -2059,7 +2043,6 @@ void draw_tilemap_layer(const TileMapLayer* tilemap_layer) {
     submit_batch();
 
     set_float_uniform(UNI_ALPHA_TEST, batch.alpha_test);
-    set_vec4_uniform(UNI_STENCIL, batch.stencil);
     set_mat4_uniform(UNI_MVP, *get_mvp_matrix());
     apply_batch();
 

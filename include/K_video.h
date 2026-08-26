@@ -91,7 +91,6 @@ enum {
     UNI_MVP,
     UNI_TEXTURE,
     UNI_ALPHA_TEST,
-    UNI_STENCIL,
     UNI_SIZE,
 };
 
@@ -238,7 +237,7 @@ ASSET_HEAD(fonts, Font, font);
 
 // Batch
 void batch_pos(const float[3]), batch_offset(const float[3]), batch_scale(const float[2]), batch_angle(float);
-void batch_color(const Uint8[4]), batch_colors(const Uint8[4][4]), batch_stencil(const float[4]);
+void batch_color(const Uint8[4]), batch_colors(const Uint8[4][4]);
 void batch_flip(const Bool[2]), batch_tile(const Bool[2]), batch_align(const FontAlignment[2]);
 void batch_filter(Bool), batch_alpha_test(float);
 void batch_blend(BlendMode);
