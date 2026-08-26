@@ -270,7 +270,11 @@ if(EMSCRIPTEN)
         "SHELL:-sMIN_WEBGL_VERSION=2"
         "SHELL:-sMAX_WEBGL_VERSION=2"
         "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/assets@"
-        "SHELL:--preload-file ${CONTROLLER_DB}@gamecontrollerdb.txt")
+        "SHELL:--preload-file ${CONTROLLER_DB}@gamecontrollerdb.txt"
+
+        "-g"
+        "SHELL:-sASSERTIONS=2"
+        "SHELL:-sSAFE_HEAP=1")
 else()
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${PROJECT_NAME}>
