@@ -75,20 +75,7 @@ static void collide_super_mushroom(GameActor* actor, GameActor* from) {
     if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
         return;
 
-    GamePlayer* player = get_player(from->player);
-    if (player == NULL)
-        return;
-
-    if (player->powerup == POW_NONE) {
-        player->powerup = POW_SUPER_MUSHROOM;
-        player->score += 1000;
-        VAL(from, PLAYER_ANIMATION) = PF_GROW;
-        VAL(from, PLAYER_FRAME) = Fx0;
-    } else {
-        give_points(actor, player, 1000);
-    }
-
-    play_state_sound("grow", PLAY_POS, A_ACTOR(from));
+    grow_player(from, actor, POW_SUPER_MUSHROOM);
     FLAG_ON(actor, FLG_DESTROY);
 }
 
@@ -130,23 +117,7 @@ static void collide_fire_flower(GameActor* actor, GameActor* from) {
     if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_CALAMITY) || actor->sprout > 0)
         return;
 
-    GamePlayer* player = get_player(from->player);
-    if (player == NULL)
-        return;
-
-    if (player->powerup != POW_FIRE_FLOWER) {
-        player->powerup = (player->powerup == POW_NONE && ANY_FLAG(actor, FLG_POWERUP_SPROUTED)
-                              && (get_player(actor->player) == NULL || actor->player == player->id))
-                              ? POW_SUPER_MUSHROOM
-                              : POW_FIRE_FLOWER;
-        player->score += 1000;
-        VAL(from, PLAYER_ANIMATION) = PF_GROW;
-        VAL(from, PLAYER_FRAME) = Fx0;
-    } else {
-        give_points(NULL, player, 1000);
-    }
-
-    play_state_sound("grow", PLAY_POS, A_ACTOR(from));
+    grow_player(from, actor, POW_FIRE_FLOWER);
     FLAG_ON(actor, FLG_DESTROY);
 }
 
@@ -322,23 +293,7 @@ static void collide_beetroot(GameActor* actor, GameActor* from) {
     if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_CALAMITY) || actor->sprout > 0)
         return;
 
-    GamePlayer* player = get_player(from->player);
-    if (player == NULL)
-        return;
-
-    if (player->powerup != POW_BEETROOT) {
-        player->powerup = (player->powerup == POW_NONE && ANY_FLAG(actor, FLG_POWERUP_SPROUTED)
-                              && (get_player(actor->player) == NULL || actor->player == player->id))
-                              ? POW_SUPER_MUSHROOM
-                              : POW_BEETROOT;
-        player->score += 1000;
-        VAL(from, PLAYER_ANIMATION) = PF_GROW;
-        VAL(from, PLAYER_FRAME) = Fx0;
-    } else {
-        give_points(NULL, player, 1000);
-    }
-
-    play_state_sound("grow", PLAY_POS, A_ACTOR(from));
+    grow_player(from, actor, POW_BEETROOT);
     FLAG_ON(actor, FLG_DESTROY);
 }
 

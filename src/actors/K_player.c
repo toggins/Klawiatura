@@ -6,6 +6,7 @@
 #include "actors/K_enemies.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
+#include "actors/K_powerups.h"
 #include "actors/K_projectiles.h"
 #include "actors/K_warp.h"
 
@@ -91,6 +92,46 @@ void kill_player(GameActor* actor) {
         set_sequence(GS_LOSE, player, 0);
     else
         play_state_sound((player == NULL || player->lives >= 0) ? "lose" : "dead", PLAY_POS, A_ACTOR(dead));
+}
+
+void grow_player(GameActor* actor, GameActor* from, PlayerPowerup powerup) {
+    if (actor == NULL || actor->type != ACT_PLAYER || powerup == POW_NONE)
+        return;
+
+    GamePlayer* player = get_player(actor->player);
+    if (player == NULL)
+        return;
+
+    play_state_sound("grow", PLAY_POS, A_ACTOR(actor));
+
+    const PlayerPowerup last_powerup = player->powerup;
+    if (powerup != POW_SUPER_MUSHROOM && last_powerup == POW_NONE && from != NULL
+        && ANY_FLAG(from, FLG_POWERUP_SPROUTED) && (get_player(from->player) == NULL || from->player == player->id))
+    {
+        powerup = POW_SUPER_MUSHROOM;
+    }
+
+    if (last_powerup == powerup || (powerup == POW_SUPER_MUSHROOM && last_powerup != POW_NONE)) {
+        give_points(NULL, player, 1000);
+        return;
+    }
+
+    player->powerup = powerup;
+    player->score += 1000;
+    VAL(actor, PLAYER_ANIMATION) = PF_GROW;
+    VAL(actor, PLAYER_FRAME) = Fx0;
+
+    if (last_powerup != POW_NONE || TOUCHING(actor, TOUCH_BOTTOM) || ANY_FLAG(actor, FLG_PLAYER_DUCK))
+        return;
+
+    actor->box.start.y = Int2Fx(-51);
+    if (!touching_solid(Radd(actor->box, actor->pos), SOL_SOLID))
+        return;
+
+    const FVec2 ovel = actor->vel;
+    actor->vel = (FVec2){Fx0, -1};
+    displace_actor(actor, Int2Fx(10), FALSE);
+    actor->vel = ovel;
 }
 
 void player_starman(GameActor* actor, GameActor* from) {

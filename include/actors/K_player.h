@@ -33,4 +33,5 @@ enum {
 
 Bool hit_player(GameActor*);
 void kill_player(GameActor*);
+void grow_player(GameActor*, GameActor*, PlayerPowerup);
 void player_starman(GameActor*, GameActor*);
