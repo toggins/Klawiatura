@@ -53,8 +53,7 @@ static void collide(GameActor* actor, GameActor* other) {
     default:
         break;
 
-    case ACT_PLAYER:
-    case ACT_PLAYER_EFFECT: {
+    case ACT_PLAYER: {
         give_coin(get_player(other->player));
         FLAG_ON(actor, FLG_DESTROY);
 

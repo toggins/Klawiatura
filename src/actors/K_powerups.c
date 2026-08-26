@@ -148,6 +148,9 @@ static void create_starman(GameActor* actor) {
 }
 
 static void tick_starman(GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+        return;
+
     VAL_TICK(actor, POWERUP_OVERLAP);
     actor->vel.y += 13107;
 
@@ -199,7 +202,7 @@ static void draw_starman(const GameActor* actor) {
 }
 
 static void collide_starman(GameActor* actor, GameActor* from) {
-    if (from->type != ACT_PLAYER)
+    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
         return;
 
     if (VAL(actor, POWERUP_OVERLAP) > 0) {
@@ -243,6 +246,11 @@ static void create_1up_mushroom(GameActor* actor) {
     actor->box.end.y = Fx1;
 }
 
+static void tick_1up_mushroom(GameActor* actor) {
+    VAL_TICK(actor, POWERUP_OVERLAP);
+    tick_super_mushroom(actor);
+}
+
 static void draw_1up_mushroom(const GameActor* actor) {
     if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY)) {
         batch_reset();
@@ -251,16 +259,27 @@ static void draw_1up_mushroom(const GameActor* actor) {
 }
 
 static void collide_1up_mushroom(GameActor* actor, GameActor* from) {
-    if ((from->type == ACT_PLAYER || from->type == ACT_PLAYER_EFFECT) && !ANY_FLAG(actor, FLG_POWERUP_CALAMITY)) {
-        give_points(actor, get_player(from->player), -1);
-        FLAG_ON(actor, FLG_DESTROY);
+    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+        return;
+
+    if (VAL(actor, POWERUP_OVERLAP) > 0) {
+        VAL(actor, POWERUP_OVERLAP) = 2;
+        return;
+    } else {
+        VAL(actor, POWERUP_OVERLAP) = 2;
     }
+
+    if (actor->sprout > 0)
+        return;
+
+    give_points(actor, get_player(from->player), -1);
+    FLAG_ON(actor, FLG_DESTROY);
 }
 
 const ActorTable TAB_1UP_MUSHROOM = {
     .load = load_1up_mushroom,
     .create = create_1up_mushroom,
-    .tick = tick_super_mushroom,
+    .tick = tick_1up_mushroom,
     .draw = draw_1up_mushroom,
     .collide = collide_1up_mushroom,
 };
