@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/rotodisc",
+    "size": [27, 26],
+    "offset": [13, 13],
+    "uvs": [1, 1, 28, 27]
+}
