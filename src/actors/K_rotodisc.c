@@ -66,6 +66,8 @@ static void create(GameActor* actor) {
     actor->box.start.y = Int2Fx(-15);
     actor->box.end.x = actor->box.end.y = Int2Fx(17);
 
+    VAL(actor, ROTODISC_LENGTH) = Int2Fx(150);
+    VAL(actor, ROTODISC_SPEED) = 1144;
     VAL(actor, ROTODISC_OWNER) = NULL_ACTOR;
 }
 
