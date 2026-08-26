@@ -513,7 +513,7 @@ static void start_game_state() {
     for (Sint32 i = 0; i < GRID_SIZE; i++)
         game_state->grid[i] = NULL_ACTOR;
 
-    game_state->spawn = game_state->checkpoint = game_state->water = NULL_ACTOR;
+    game_state->spawn = game_state->checkpoint = game_state->autoscroll = game_state->water = NULL_ACTOR;
 
     game_state->clock = -1;
 
@@ -1982,10 +1982,44 @@ void push_actors(GameActor* actor) {
     }
 }
 
+static FRect get_autoscroll_cbox(const GameActor* autoscroll, Fixed edge) {
+    const FVec2 cpos = {
+        Fclamp(autoscroll->pos.x, level_info->bounds.start.x, level_info->bounds.end.x - F_SCREEN_WIDTH),
+        Fclamp(autoscroll->pos.y, level_info->bounds.start.y, level_info->bounds.end.y - F_SCREEN_HEIGHT),
+    };
+    return (FRect){
+        {cpos.x + edge,                  cpos.y + edge                  },
+        {cpos.x + F_SCREEN_WIDTH - edge, cpos.y + F_SCREEN_HEIGHT - edge},
+    };
+}
+
+static FRect get_player_cbox(const GamePlayer* player, Fixed edge) {
+    const FVec2 cpos = {
+        Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+            player->bounds.end.x - F_HALF_SCREEN_WIDTH),
+        Fclamp(
+            player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT, player->bounds.end.y - F_HALF_SCREEN_HEIGHT),
+    };
+    return (FRect){
+        {cpos.x - F_HALF_SCREEN_WIDTH + edge, cpos.y - F_HALF_SCREEN_HEIGHT + edge},
+        {cpos.x + F_HALF_SCREEN_WIDTH - edge, cpos.y + F_HALF_SCREEN_HEIGHT - edge},
+    };
+}
+
+static Bool cbox_in_view(const FVec2 pos, const FRect cbox, Bool ignore_top) {
+    return pos.x < cbox.end.x && pos.x > cbox.start.x && pos.y < cbox.end.y && (ignore_top || pos.y > cbox.start.y);
+}
+
 Bool in_any_view(const FVec2 pos, Fixed edge, Bool ignore_top) {
-    for (PlayerID i = 0; i < game_context.num_players; i++)
-        if (in_player_view(get_player(i), pos, edge, ignore_top))
+    const GameActor* autoscroll = get_actor(game_state->autoscroll);
+    if (autoscroll != NULL)
+        return cbox_in_view(pos, get_autoscroll_cbox(autoscroll, edge), ignore_top);
+
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player != NULL && cbox_in_view(pos, get_player_cbox(player, edge), ignore_top))
             return TRUE;
+    }
 
     return FALSE;
 }
@@ -1994,22 +2028,32 @@ Bool in_player_view(const GamePlayer* player, const FVec2 pos, Fixed edge, Bool 
     if (player == NULL)
         return FALSE;
 
-    const Fixed cx = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-                    player->bounds.end.x - F_HALF_SCREEN_WIDTH),
-                cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
-                    player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
-    const FRect cbox = {
-        {cx - F_HALF_SCREEN_WIDTH + edge, cy - F_HALF_SCREEN_HEIGHT + edge},
-        {cx + F_HALF_SCREEN_WIDTH - edge, cy + F_HALF_SCREEN_HEIGHT - edge}
-    };
+    const GameActor* autoscroll = get_actor(game_state->autoscroll);
+    return cbox_in_view(
+        pos, (autoscroll == NULL) ? get_player_cbox(player, edge) : get_autoscroll_cbox(autoscroll, edge), ignore_top);
+}
 
-    return pos.x < cbox.end.x && pos.x > cbox.start.x && pos.y < cbox.end.y && (ignore_top || pos.y > cbox.start.y);
+static Bool autoscroll_cx_in_view(const GameActor* autoscroll, Fixed x, Fixed edge) {
+    const Fixed cx = Fclamp(autoscroll->pos.x, level_info->bounds.start.x, level_info->bounds.end.x - F_SCREEN_WIDTH);
+    return x < (cx + F_SCREEN_WIDTH - edge) && x > (cx + edge);
+}
+
+static Bool player_cx_in_view(const GamePlayer* player, Fixed x, Fixed edge) {
+    const Fixed cx = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+        player->bounds.end.x - F_HALF_SCREEN_WIDTH);
+    return x < (cx + F_HALF_SCREEN_WIDTH - edge) && x > (cx - F_HALF_SCREEN_WIDTH + edge);
 }
 
 Bool in_any_x_view(Fixed x, Fixed edge) {
-    for (PlayerID i = 0; i < game_context.num_players; i++)
-        if (in_player_x_view(get_player(i), x, edge))
+    const GameActor* autoscroll = get_actor(game_state->autoscroll);
+    if (autoscroll != NULL)
+        return autoscroll_cx_in_view(autoscroll, x, edge);
+
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player != NULL && player_cx_in_view(player, x, edge))
             return TRUE;
+    }
 
     return FALSE;
 }
@@ -2018,33 +2062,8 @@ Bool in_player_x_view(const GamePlayer* player, Fixed x, Fixed edge) {
     if (player == NULL)
         return FALSE;
 
-    const Fixed cx = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-        player->bounds.end.x - F_HALF_SCREEN_WIDTH);
-
-    return x < (cx + F_HALF_SCREEN_WIDTH - edge) && x > (cx - F_HALF_SCREEN_WIDTH + edge);
-}
-
-Bool box_in_any_view(const FRect box) {
-    for (PlayerID i = 0; i < game_context.num_players; i++)
-        if (box_in_player_view(get_player(i), box))
-            return TRUE;
-
-    return FALSE;
-}
-
-Bool box_in_player_view(const GamePlayer* player, const FRect box) {
-    if (player == NULL)
-        return FALSE;
-
-    const Fixed cx = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-                    player->bounds.end.x - F_HALF_SCREEN_WIDTH),
-                cy = Fclamp(player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT,
-                    player->bounds.end.y - F_HALF_SCREEN_HEIGHT);
-
-    return Rcollide(box, (FRect){
-                             {cx - F_HALF_SCREEN_WIDTH, cy - F_HALF_SCREEN_HEIGHT},
-                             {cx + F_HALF_SCREEN_WIDTH, cy + F_HALF_SCREEN_HEIGHT}
-    });
+    const GameActor* autoscroll = get_actor(game_state->autoscroll);
+    return (autoscroll == NULL) ? player_cx_in_view(player, x, edge) : autoscroll_cx_in_view(autoscroll, x, edge);
 }
 
 Bool below_nearest_bounds(const FVec2 pos, Fixed edge) {

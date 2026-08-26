@@ -12,7 +12,7 @@ void move_enemy(GameActor* actor, FVec2 speed, Bool edge) {
         return;
     }
 
-    if (!ANY_FLAG(actor, FLG_ENEMY_ACTIVE) && box_in_any_view(Radd(actor->box, actor->pos))) {
+    if (!ANY_FLAG(actor, FLG_ENEMY_ACTIVE) && in_any_view(actor->pos, Int2Fx(-32), FALSE)) {
         actor->vel.x = ANY_FLAG(actor, FLG_X_FLIP) ? -speed.x : speed.x;
         FLAG_ON(actor, FLG_ENEMY_ACTIVE);
     }
