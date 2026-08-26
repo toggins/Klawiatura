@@ -15,6 +15,7 @@
 
 #include "actors/K_checkpoint.h"
 #include "actors/K_enemies.h"
+#include "actors/K_goal.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 #include "actors/K_projectiles.h"
@@ -1734,6 +1735,13 @@ void win_player(GamePlayer* player) {
                 give_points(actor, player, 200);
                 FLAG_ON(actor, FLG_DESTROY);
             }
+
+            break;
+        }
+
+        case ACT_GOAL_BAR: {
+            if (!ANY_FLAG(actor, FLG_BAR_FLY))
+                actor->vel.y = Fx0;
 
             break;
         }

@@ -1,15 +1,7 @@
-#include "K_game.h"
 #include "K_video.h"
 
+#include "actors/K_goal.h"
 #include "actors/K_points.h"
-
-enum {
-    VAL_BAR_Y,
-    VAL_BAR_ANGLE,
-};
-
-#define FLG_BAR_JACKPOT CUSTOM_FLAG(0)
-#define FLG_BAR_FLY CUSTOM_FLAG(1)
 
 /* ========
    GOAL BAR
@@ -45,9 +37,6 @@ static void tick(GameActor* actor) {
         return;
     }
 
-    if (get_sequence()->type == GS_WIN)
-        return;
-
     move_actor(actor, Vadd(actor->pos, actor->vel));
     if (actor->vel.y > Fx0) {
         const Fixed bottom = VAL(actor, BAR_Y) + Int2Fx(221);
@@ -68,7 +57,7 @@ static void draw(const GameActor* actor) {
 }
 
 static void collide(GameActor* actor, GameActor* from) {
-    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_BAR_FLY))
+    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_BAR_FLY) || get_sequence()->type == GS_WIN)
         return;
 
     GamePlayer* player = get_player(from->player);
