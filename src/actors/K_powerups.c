@@ -12,7 +12,7 @@ static void draw_powerup(const GameActor* actor, const char* name) {
 
     batch_reset();
 
-    if (actor->player < 0 || actor->player == localplayer()) {
+    if (get_player(actor->player) == NULL || actor->player == localplayer()) {
         draw_actor(actor, name, FALSE);
     } else {
         batch_color(B_U4_ALPHA(192));
@@ -136,7 +136,7 @@ static void collide_fire_flower(GameActor* actor, GameActor* from) {
 
     if (player->powerup != POW_FIRE_FLOWER) {
         player->powerup = (player->powerup == POW_NONE && ANY_FLAG(actor, FLG_POWERUP_SPROUTED)
-                              && (actor->player < 0 || actor->player == player->id))
+                              && (get_player(actor->player) == NULL || actor->player == player->id))
                               ? POW_SUPER_MUSHROOM
                               : POW_FIRE_FLOWER;
         player->score += 1000;
@@ -328,7 +328,7 @@ static void collide_beetroot(GameActor* actor, GameActor* from) {
 
     if (player->powerup != POW_BEETROOT) {
         player->powerup = (player->powerup == POW_NONE && ANY_FLAG(actor, FLG_POWERUP_SPROUTED)
-                              && (actor->player < 0 || actor->player == player->id))
+                              && (get_player(actor->player) == NULL || actor->player == player->id))
                               ? POW_SUPER_MUSHROOM
                               : POW_BEETROOT;
         player->score += 1000;
