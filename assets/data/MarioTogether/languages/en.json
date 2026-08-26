@@ -107,6 +107,7 @@
     "hud.secret.4": "ui/secret/en/4",
     "hud.secret.hardcore_1": "ui/secret/en/hardcore_1",
     "hud.secret.goomba_party": "ui/secret/en/goomba_party",
+    "hud.secret.3": "ui/secret/en/3",
     "hud.spectating": "Spectating",
 
     "bind.up": "Up",

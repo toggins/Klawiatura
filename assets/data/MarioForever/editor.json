@@ -140,6 +140,69 @@
             "sprite": "tiles/tree/5",
             "depth": 34
         },
+        "Brick": {
+            "type": "tile",
+            "sprite": "tiles/brick/0",
+            "depth": 20
+        },
+        "Brick 2": {
+            "type": "tile",
+            "sprite": "tiles/brick/1",
+            "depth": 20
+        },
+        "Brick Small": {
+            "type": "tile",
+            "sprite": "tiles/brick/small",
+            "depth": 20
+        },
+        "Bridge Gray": {
+            "type": "tile",
+            "sprite": "tiles/bridge/gray",
+            "depth": 20
+        },
+        "Support Left": {
+            "type": "background",
+            "sprite": "scenery/support_left",
+            "depth": 30
+        },
+        "Support Right": {
+            "type": "background",
+            "sprite": "scenery/support_right",
+            "depth": 30
+        },
+        "Lava Glow Left": {
+            "type": "background",
+            "depth": 19,
+            "scalable": true,
+            "colors": [
+                [128, 8, 8, 208],
+                [128, 8, 8, 0],
+                [128, 8, 8, 208],
+                [128, 8, 8, 0]
+            ]
+        },
+        "Lava Glow Right": {
+            "type": "background",
+            "depth": 19,
+            "scalable": true,
+            "colors": [
+                [128, 8, 8, 0],
+                [128, 8, 8, 208],
+                [128, 8, 8, 0],
+                [128, 8, 8, 208]
+            ]
+        },
+        "Lava Glow Bottom": {
+            "type": "background",
+            "depth": 19,
+            "scalable": true,
+            "colors": [
+                [163, 8, 8, 0],
+                [163, 8, 8, 0],
+                [163, 8, 8, 255],
+                [163, 8, 8, 255]
+            ]
+        },
         "Hill": {
             "type": "background",
             "sprite": "scenery/hill",
@@ -222,6 +285,16 @@
             "id": 45,
             "sprite": "scenery/waterfall/0"
         },
+        "Lavafall": {
+            "type": "actor",
+            "id": 48,
+            "sprite": "scenery/lavafall/0"
+        },
+        "Lava Bubbler": {
+            "type": "actor",
+            "id": 49,
+            "sprite": "editor/lava_bubbler"
+        },
         "Castle Top": {
             "type": "background",
             "sprite": "scenery/castle/top",
@@ -231,6 +304,21 @@
             "type": "background",
             "sprite": "scenery/castle/bottom",
             "depth": 35
+        },
+        "Pillar Big": {
+            "type": "background",
+            "sprite": "scenery/pillar/big",
+            "depth": 50
+        },
+        "Pillar Small Middle": {
+            "type": "background",
+            "sprite": "scenery/pillar/small/1",
+            "depth": 50
+        },
+        "Pillar Small Bottom": {
+            "type": "background",
+            "sprite": "scenery/pillar/small/2",
+            "depth": 50
         },
         "Player Spawn": {
             "type": "actor",
@@ -685,6 +773,49 @@
                     "index": 8
                 }
             ]
+        },
+        "Lava": {
+            "type": "actor",
+            "id": 47,
+            "sprite": "enemies/lava/0"
+        },
+        "Lava Bottom": {
+            "type": "background",
+            "sprite": "enemies/lava/bottom",
+            "depth": 20,
+            "scalable": true
+        },
+        "Roto-Disc": {
+            "type": "actor",
+            "id": 51,
+            "sprite": "enemies/rotodisc/ball",
+            "values": [
+                {
+                    "name": "Length",
+                    "index": 0,
+                    "default": 9830400,
+                    "type": "fixed"
+                },
+
+                {
+                    "name": "Angle",
+                    "index": 1,
+                    "type": "fixed"
+                },
+
+                {
+                    "name": "Speed",
+                    "index": 2,
+                    "default": 1144,
+                    "type": "fixed"
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Flower",
+                    "index": 5
+                }
+            ]
         }
     },
 
@@ -741,6 +872,18 @@
                 {
                     "name": "Tree",
                     "items": ["Tree Top Left", "Tree Top", "Tree Top Right", "Tree Left", "Tree Middle", "Tree Right"]
+                },
+                {
+                    "name": "Brick",
+                    "items": ["Brick", "Brick 2", "Brick Small"]
+                },
+                {
+                    "name": "Lava Glow",
+                    "items": ["Lava Glow Left", "Lava Glow Right", "Lava Glow Bottom"]
+                },
+                {
+                    "name": "Bridge",
+                    "items": ["Bridge Gray"]
                 }
             ]
         },
@@ -779,6 +922,18 @@
                     "name": "Castle",
                     "items": ["Castle Top", "Castle Bottom"]
                 },
+                {
+                    "name": "Lava",
+                    "items": ["Lavafall", "Lava Bubbler"]
+                },
+                {
+                    "name": "Support",
+                    "items": ["Support Left", "Support Right"]
+                },
+                {
+                    "name": "Pillar",
+                    "items": ["Pillar Big", "Pillar Small Middle", "Pillar Small Bottom"]
+                },
                 "Bush",
                 "Waterfall"
             ]
@@ -807,7 +962,16 @@
         },
         {
             "name": "Enemies",
-            "items": ["Goomba", "Koopa", "Piranha Plant"]
+            "items": [
+                {
+                    "name": "Lava",
+                    "items": ["Lava", "Lava Bottom"]
+                },
+                "Goomba",
+                "Koopa",
+                "Piranha Plant",
+                "Roto-Disc"
+            ]
         },
         {
             "name": "Markers",
