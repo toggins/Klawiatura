@@ -203,7 +203,7 @@ static void load_lava_bubbler() {
 }
 
 static void tick_lava_bubbler(GameActor* actor) {
-    if ((gamestate()->time % 3) != 0 || !in_any_view(actor->pos, Int2Fx(-32), FALSE))
+    if (((gamestate()->time * 2) % 5) > 1 || !in_any_view(actor->pos, Int2Fx(-32), FALSE))
         return;
 
     FVec2 bpos = actor->pos;
