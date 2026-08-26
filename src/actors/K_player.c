@@ -870,6 +870,8 @@ static void create_effect(GameActor* actor) {
 }
 
 static void tick_effect(GameActor* actor) {
+    collide_actor(actor);
+
     actor->box.start.y = (VAL(actor, PLAYER_EFFECT_POWERUP) == POW_NONE || VAL(actor, PLAYER_EFFECT_FRAME) == PF_DUCK)
                              ? Int2Fx(-25)
                              : Int2Fx(-51);
