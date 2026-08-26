@@ -1314,64 +1314,12 @@ void interp_game() {
     }
 }
 
-static void draw_game_state() {
-    static mat4 oview = GLM_MAT4_IDENTITY_INIT, view = GLM_MAT4_IDENTITY_INIT;
-
-    get_view_matrix(oview);
-
-    batch_filter(FALSE);
-
+static void draw_hud() {
     const GamePlayer* player = get_player(view_player);
-
-    VideoState* video_state = videostate();
-    VideoCamera* camera = &video_state->camera;
-    if (player != NULL) {
-        const GameActor* pawn = get_actor(player->actor);
-        if (pawn != NULL && pawn->type == ACT_PLAYER) {
-            camera->pos = Vclamp(Vadd(get_interp(pawn), (FVec2){interp_state->players[player->id].current, Fx0}),
-                Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
-        }
-    }
-
-    const Sint32 cx = Fx2Int(camera->pos.x), cy = Fx2Int(camera->pos.y);
-    glm_look((vec3){(float)(cx - HALF_SCREEN_WIDTH), (float)(cy - HALF_SCREEN_HEIGHT), 0.f}, GLM_ZUP, GLM_YUP, view);
-    set_view_matrix(view);
-    apply_matrices();
-
-    TinyPq sorter = {0};
-
-    TileMap* tilemap = video_state->tilemap;
-    tilemap_iterate_start(tilemap);
-    const TileMapLayer* layer = NULL;
-    while ((layer = tilemap_iterate_next(tilemap)))
-        TinyPqInsert(&sorter, layer->depth, (const void*)&(SortedItem){FALSE, layer}, sizeof(SortedItem));
+    if (player == NULL)
+        return;
 
     const GameActor* actor = NULL;
-    FOR_EACH_ACTOR (actor) {
-        if (ANY_FLAG(actor, FLG_VISIBLE)) {
-            TinyPqInsert(&sorter, (actor->sprout > 0) ? Fmax(actor->depth, Int2Fx(21)) : actor->depth,
-                (const void*)&(SortedItem){TRUE, actor}, sizeof(SortedItem));
-        }
-    }
-
-    TINY_PQ_FOREACH (&sorter, iter) {
-        const SortedItem* sitem = iter.data;
-        if (sitem->is_actor) {
-            const GameActor* actor = sitem->ptr;
-            ACTOR_CALL(actor, draw);
-        } else {
-            draw_tilemap_layer(sitem->ptr);
-        }
-    }
-
-    FreeTinyPq(&sorter);
-
-    set_view_matrix(oview);
-    apply_matrices();
-
-    if (player == NULL)
-        goto dgs_no_hud;
-
     FOR_EACH_ACTOR (actor) { ACTOR_CALL(actor, draw_hud); }
 
     batch_reset();
@@ -1430,6 +1378,7 @@ static void draw_game_state() {
     if (game_state->clock >= 0) {
         batch_pos(B_F3_XY(SCREEN_WIDTH - 32.f, 24.f));
 
+        const VideoState* video_state = videostate();
         if (video_state->hurry > 0 && video_state->hurry <= 120) {
             const float hurry = (float)((video_state->hurry - 1) % 12);
             batch_scale(B_F2(
@@ -1459,8 +1408,70 @@ static void draw_game_state() {
         batch_align(B_ALIGN_CENTER);
         batch_string("hud", 16.f, LFMT("hud.game_over"));
     }
+}
 
-dgs_no_hud:
+static void draw_game_state() {
+    static mat4 oview = GLM_MAT4_IDENTITY_INIT, view = GLM_MAT4_IDENTITY_INIT;
+
+    get_view_matrix(oview);
+
+    batch_filter(FALSE);
+
+    VideoState* video_state = videostate();
+    VideoCamera* camera = &video_state->camera;
+
+    const GameActor* autoscroll = get_actor(game_state->autoscroll);
+    if (autoscroll == NULL) {
+        const GamePlayer* player = get_player(view_player);
+        if (player != NULL) {
+            const GameActor* pawn = get_actor(player->actor);
+            if (pawn != NULL && pawn->type == ACT_PLAYER) {
+                camera->pos = Vclamp(Vadd(get_interp(pawn), (FVec2){interp_state->players[player->id].current, Fx0}),
+                    Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
+            }
+        }
+    } else {
+        camera->pos = Vclamp(get_interp(autoscroll), level_info->bounds.start, Vsub(level_info->bounds.end, F_SCREEN));
+    }
+
+    const Sint32 cx = Fx2Int(camera->pos.x), cy = Fx2Int(camera->pos.y);
+    glm_look((vec3){(float)(cx - HALF_SCREEN_WIDTH), (float)(cy - HALF_SCREEN_HEIGHT), 0.f}, GLM_ZUP, GLM_YUP, view);
+    set_view_matrix(view);
+    apply_matrices();
+
+    TinyPq sorter = {0};
+
+    TileMap* tilemap = video_state->tilemap;
+    tilemap_iterate_start(tilemap);
+    const TileMapLayer* layer = NULL;
+    while ((layer = tilemap_iterate_next(tilemap)))
+        TinyPqInsert(&sorter, layer->depth, (const void*)&(SortedItem){FALSE, layer}, sizeof(SortedItem));
+
+    const GameActor* actor = NULL;
+    FOR_EACH_ACTOR (actor) {
+        if (ANY_FLAG(actor, FLG_VISIBLE)) {
+            TinyPqInsert(&sorter, (actor->sprout > 0) ? Fmax(actor->depth, Int2Fx(21)) : actor->depth,
+                (const void*)&(SortedItem){TRUE, actor}, sizeof(SortedItem));
+        }
+    }
+
+    TINY_PQ_FOREACH (&sorter, iter) {
+        const SortedItem* sitem = iter.data;
+        if (sitem->is_actor) {
+            const GameActor* actor = sitem->ptr;
+            ACTOR_CALL(actor, draw);
+        } else {
+            draw_tilemap_layer(sitem->ptr);
+        }
+    }
+
+    FreeTinyPq(&sorter);
+
+    set_view_matrix(oview);
+    apply_matrices();
+
+    draw_hud();
+
     batch_filter(TRUE);
 }
 
