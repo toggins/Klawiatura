@@ -176,3 +176,38 @@ const ActorTable TAB_TUBE_BUBBLE = {
     .tick = tick_tube_bubble,
     .draw = draw_tube_bubble,
 };
+
+/* ===========
+   LAVA BUBBLE
+   =========== */
+
+static void load_lava_bubble() {
+    load_sprite("effects/lava_bubble", AKL_NEVER);
+}
+
+static void create_lava_bubble(GameActor* actor) {
+    actor->depth = -1;
+}
+
+static void tick_lava_bubble(GameActor* actor) {
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    actor->vel.y += 6554;
+
+    ++VAL(actor, EFFECT_FRAME);
+    if (VAL(actor, EFFECT_FRAME) >= 42 || !in_any_view(actor->pos, Int2Fx(-8), FALSE))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_lava_bubble(const GameActor* actor) {
+    batch_reset();
+    const float scale = 1.f - ((float)(VAL(actor, EFFECT_FRAME) >> 1) / 21.f);
+    batch_scale(B_F2_S(scale));
+    draw_actor(actor, "effects/lava_bubble", FALSE);
+}
+
+const ActorTable TAB_LAVA_BUBBLE = {
+    .load = load_lava_bubble,
+    .create = create_lava_bubble,
+    .tick = tick_lava_bubble,
+    .draw = draw_lava_bubble,
+};

@@ -162,3 +162,64 @@ const ActorTable TAB_WATERFALL = {
     .create = create_waterfall,
     .draw = draw_waterfall,
 };
+
+/* ========
+   LAVAFALL
+   ======== */
+
+static void load_lavafall() {
+    load_sprite_num("scenery/lavafall/%u", 10, AKL_NEVER);
+}
+
+static void create_lavafall(GameActor* actor) {
+    actor->depth = Int2Fx(40);
+}
+
+static void draw_lavafall(const GameActor* actor) {
+    batch_reset();
+
+    const Sint32 ax = Fx2Int(get_interp(actor).x), ay = (Sint32)SDL_fmodf(screenticks() * 6.f, 32.f);
+    const float az = Fx2Float(actor->depth);
+    const char* sprite = fmt("scenery/lavafall/%i", gamestate()->time % 10);
+
+    for (Sint32 i = -32, n = Fx2Int(levelinfo()->size.y); i < n; i += 32) {
+        batch_pos(B_F3(ax, i + ay, az));
+        batch_sprite(sprite);
+    }
+}
+
+const ActorTable TAB_LAVAFALL = {
+    .load = load_lavafall,
+    .create = create_lavafall,
+    .draw = draw_lavafall,
+};
+
+/* ============
+   LAVA BUBBLER
+   ============ */
+
+static void load_lava_bubbler() {
+    load_actor(ACT_LAVA_BUBBLE);
+}
+
+static void tick_lava_bubbler(GameActor* actor) {
+    if ((gamestate()->time % 3) != 0 || !in_any_view(actor->pos, Int2Fx(-32), FALSE))
+        return;
+
+    FVec2 bpos = actor->pos;
+    bpos.x += Int2Fx(rng(24));
+    bpos.x -= Int2Fx(rng(24));
+
+    GameActor* bubble = create_actor(ACT_LAVA_BUBBLE, bpos);
+    if (bubble == NULL)
+        return;
+
+    bubble->vel.x += Int2Fx(rng(3));
+    bubble->vel.x -= Int2Fx(rng(3));
+    bubble->vel.y = Int2Fx(-2 - rng(4));
+}
+
+const ActorTable TAB_LAVA_BUBBLER = {
+    .load = load_lava_bubbler,
+    .tick = tick_lava_bubbler,
+};
