@@ -386,11 +386,10 @@ static void tick(GameActor* actor) {
     const GameState* game_state = gamestate();
     const GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
     const Bool was_warping = warp != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
+    const GameActor* autoscroll = get_actor(game_state->autoscroll);
 
     if (ANY_FLAG(actor, FLG_PLAYER_DESCEND)) {
         FVec2 npos = Vadd(actor->pos, (FVec2){Fx0, Fx1});
-
-        const GameActor* autoscroll = get_actor(game_state->autoscroll);
         if (autoscroll != NULL)
             npos = Vadd(npos, Vsub(autoscroll->pos, autoscroll->last_pos));
 
@@ -771,7 +770,6 @@ static void tick(GameActor* actor) {
 
     displace_actor(actor, Int2Fx(10), TRUE);
 
-    const GameActor* autoscroll = get_actor(game_state->autoscroll);
     if (autoscroll != NULL && get_sequence()->type != GS_WIN) {
         Fixed sx = autoscroll->pos.x;
         if ((actor->pos.x + actor->box.start.x) < sx) {
@@ -837,8 +835,11 @@ t_skip_physics:
 
     player->pos = actor->pos;
 
-    if (actor->pos.y > (player->bounds.end.y + Int2Fx(64)))
+    if (actor->pos.y
+        > (((autoscroll == NULL) ? player->bounds.end.y : (autoscroll->pos.y + F_SCREEN_HEIGHT)) + Int2Fx(64)))
+    {
         kill_player(actor);
+    }
 }
 
 static void post_tick(GameActor* actor) {

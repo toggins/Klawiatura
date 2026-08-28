@@ -1570,14 +1570,23 @@ GameActor* respawn_player(GamePlayer* player) {
     if (player->lives < 0)
         goto rp_spectate;
 
-    const GameActor* spawn = get_actor(game_state->checkpoint);
+    const GameActor* spawn = get_actor(game_state->autoscroll);
+    if (spawn == NULL)
+        spawn = get_actor(game_state->checkpoint);
     if (spawn == NULL)
         spawn = get_actor(game_state->spawn);
     if (spawn == NULL)
         goto rp_spectate;
 
     FVec2 spos = spawn->pos;
-    if (spawn->type == ACT_CHECKPOINT) {
+    switch (spawn->type) {
+    default: {
+        player->bounds = level_info->bounds;
+        set_player_track(player, 0);
+        break;
+    }
+
+    case ACT_CHECKPOINT: {
         spos = Vadd(spos, (FVec2){Int2Fx(53), Int2Fx(118)});
 
         const Fixed bx1 = VAL(spawn, CHECKPOINT_BOUNDS_X1), by1 = VAL(spawn, CHECKPOINT_BOUNDS_Y1),
@@ -1589,9 +1598,15 @@ GameActor* respawn_player(GamePlayer* player) {
         };
 
         set_player_track(player, VAL(spawn, CHECKPOINT_TRACK));
-    } else {
+        break;
+    }
+
+    case ACT_AUTOSCROLL: {
+        spos = Vadd(spos, (FVec2){F_HALF_SCREEN_WIDTH, Fx1});
         player->bounds = level_info->bounds;
-        set_player_track(player, 0);
+        set_player_track(player, VAL(spawn, SCROLL_TRACK));
+        break;
+    }
     }
 
     GameActor* pawn = create_actor(ACT_PLAYER, spos);
@@ -1609,22 +1624,29 @@ GameActor* respawn_player(GamePlayer* player) {
     pawn->player = player->id;
     FLAG_ON(pawn, spawn->flags & FLG_X_FLIP);
 
-    const GameActor* autoscroll = get_actor(game_state->autoscroll);
-    if (autoscroll == NULL) {
-        if (spawn->type == ACT_PLAYER_SPAWN && ANY_FLAG(spawn, FLG_PLAYER_WARP_OUT)) {
-            VAL(pawn, PLAYER_WARP_OUT_ANGLE) = VAL(spawn, PLAYER_WARP_OUT_ANGLE);
-            FLAG_ON(pawn, FLG_PLAYER_WARP_OUT);
+    switch (spawn->type) {
+    default:
+        break;
 
-            play_state_sound("warp", PLAY_POS, A_ACTOR(pawn));
-        }
-    } else {
-        move_actor(pawn, Vadd(autoscroll->pos, (FVec2){F_HALF_SCREEN_WIDTH, Fx1}));
-        if (touching_solid(Radd(pawn->box, pawn->pos), SOL_SOLID)) {
-            VAL(pawn, PLAYER_FLASH) = 100;
-            FLAG_ON(pawn, FLG_PLAYER_DESCEND);
-        }
+    case ACT_PLAYER_SPAWN: {
+        if (!ANY_FLAG(spawn, FLG_PLAYER_WARP_OUT))
+            break;
 
-        skip_interp(pawn);
+        VAL(pawn, PLAYER_WARP_OUT_ANGLE) = VAL(spawn, PLAYER_WARP_OUT_ANGLE);
+        FLAG_ON(pawn, FLG_PLAYER_WARP_OUT);
+
+        play_state_sound("warp", PLAY_POS, A_ACTOR(pawn));
+        break;
+    }
+
+    case ACT_AUTOSCROLL: {
+        if (!touching_solid(Radd(pawn->box, pawn->pos), SOL_SOLID))
+            break;
+
+        VAL(pawn, PLAYER_FLASH) = 100;
+        FLAG_ON(pawn, FLG_PLAYER_DESCEND);
+        break;
+    }
     }
 
     player->actor = pawn->id;

@@ -52,7 +52,7 @@ static void pre_tick_autoscroll(GameActor* actor) {
     for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
         GamePlayer* player = get_player(i);
         set_player_track(player, VAL(autoscroll, SCROLL_TRACK));
-        if (!in_player_view(player, player->pos, Fx0, FALSE))
+        if (!in_player_view(player, player->pos, Fx0, TRUE))
             respawn_player(player);
     }
 }
