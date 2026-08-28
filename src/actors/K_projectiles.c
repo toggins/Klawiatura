@@ -2,6 +2,7 @@
 #include "K_video.h"
 
 #include "actors/K_effects.h"
+#include "actors/K_player.h"
 #include "actors/K_projectiles.h"
 
 /* ========
@@ -21,6 +22,23 @@ static void create_fireball(GameActor* actor) {
 
 static void tick_fireball(GameActor* actor) {
     VAL(actor, PROJECTILE_ANGLE) += 12868;
+
+    if (ANY_FLAG(actor, FLG_PROJECTILE_ALT)) {
+        move_actor(actor, Vadd(actor->pos, actor->vel));
+        collide_actor(actor);
+
+        actor->vel.y += 13107;
+
+        const LevelInfo* level_info = levelinfo();
+        if ((level_info->bounds.end.y - level_info->bounds.start.y) <= F_SCREEN_HEIGHT) {
+            if (below_nearest_bounds(actor->pos, Int2Fx(8)))
+                FLAG_ON(actor, FLG_DESTROY);
+        } else if (!in_any_view(actor->pos, Int2Fx(-64), FALSE)) {
+            FLAG_ON(actor, FLG_DESTROY);
+        }
+
+        return;
+    }
 
     displace_actor(actor, Int2Fx(10), FALSE);
     collide_actor(actor);
@@ -53,11 +71,17 @@ static void draw_fireball(const GameActor* actor) {
     draw_actor(actor, "projectiles/fireball", FALSE);
 }
 
+static void collide_fireball(GameActor* actor, GameActor* from) {
+    if (from->type == ACT_PLAYER && get_player(actor->player) == NULL)
+        hit_player(from);
+}
+
 const ActorTable TAB_FIREBALL_PROJECTILE = {
     .load = load_fireball,
     .create = create_fireball,
     .tick = tick_fireball,
     .draw = draw_fireball,
+    .collide = collide_fireball,
 };
 
 /* ========
