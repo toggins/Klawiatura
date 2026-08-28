@@ -540,6 +540,10 @@
             ],
             "flags": [
                 {
+                    "name": "Bowser",
+                    "index": 5
+                },
+                {
                     "name": "Tanks",
                     "index": 6
                 }

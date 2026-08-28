@@ -17,13 +17,6 @@ static void pre_tick_autoscroll(GameActor* actor) {
         FLAG_OFF(actor, FLG_VISIBLE);
 
     if (game_state->autoscroll == actor->id) {
-        const LevelInfo* level_info = levelinfo();
-        if (actor->pos.x < level_info->bounds.start.x || actor->pos.x > level_info->bounds.end.x
-            || actor->pos.y < level_info->bounds.start.y || actor->pos.y > level_info->bounds.end.y)
-        {
-            return;
-        }
-
         FVec2 npos = Vadd(actor->pos, actor->vel);
         if (!ANY_FLAG(actor, FLG_SCROLL_BOWSER | FLG_SCROLL_TANKS) && get_sequence()->type == GS_WIN) {
             if (actor->vel.x != Fx0)
@@ -32,16 +25,40 @@ static void pre_tick_autoscroll(GameActor* actor) {
                 npos.y += (actor->vel.y > Fx0) ? Int2Fx(4) : Int2Fx(-4);
         }
 
-        move_actor(actor, npos);
-        return;
-    } else if (!in_any_view(actor->pos, Fx0, FALSE)) {
+        const LevelInfo* level_info = levelinfo();
+        move_actor(actor, Vclamp(npos, level_info->bounds.start, Vsub(level_info->bounds.end, F_SCREEN)));
         return;
     }
+
+    const GamePlayer* player = NULL;
+    const PlayerID n = gamecontext()->num_players;
+    for (PlayerID i = 0; i < n; i++) {
+        player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        if (ANY_FLAG(actor, FLG_SCROLL_BOWSER)) {
+            if (player->pos.x > actor->pos.x)
+                break;
+        } else if (in_player_view(player, actor->pos, Fx0, FALSE)) {
+            break;
+        }
+
+        player = NULL;
+    }
+
+    if (player == NULL)
+        return;
 
     GameActor* autoscroll = get_actor(game_state->autoscroll);
     if (autoscroll == NULL) {
         game_state->autoscroll = actor->id;
         autoscroll = actor;
+
+        if (ANY_FLAG(actor, FLG_SCROLL_BOWSER)) {
+            move_actor(actor, Vsub(player->pos, F_HALF_SCREEN));
+            skip_interp(actor);
+        }
     } else {
         autoscroll->vel = actor->vel;
         VAL(autoscroll, SCROLL_TRACK) = VAL(actor, SCROLL_TRACK);
@@ -49,11 +66,14 @@ static void pre_tick_autoscroll(GameActor* actor) {
         FLAG_ON(actor, FLG_DESTROY);
     }
 
-    for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
-        GamePlayer* player = get_player(i);
-        set_player_track(player, VAL(autoscroll, SCROLL_TRACK));
-        if (!in_player_view(player, player->pos, Fx0, TRUE))
-            respawn_player(player);
+    for (PlayerID i = 0; i < n; i++) {
+        GamePlayer* oplayer = get_player(i);
+        if (oplayer == NULL)
+            continue;
+
+        set_player_track(oplayer, VAL(autoscroll, SCROLL_TRACK));
+        if (oplayer->id != player->id && !in_player_view(oplayer, oplayer->pos, Int2Fx(-32), TRUE))
+            respawn_player(oplayer);
     }
 }
 
