@@ -19,6 +19,7 @@
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 #include "actors/K_projectiles.h"
+#include "actors/K_screen.h"
 #include "actors/K_warp.h"
 
 #define ACTOR_CALL_STATIC(type, fn, ...)                                                                               \
@@ -940,6 +941,10 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
                     FLAG_ON(actor, FLG_DESTROY);
             }
 
+            GameActor* autoscroll = get_actor(game_state->autoscroll);
+            if (autoscroll != NULL && !ANY_FLAG(autoscroll, FLG_SCROLL_BOWSER | FLG_SCROLL_TANKS))
+                autoscroll->vel.x = autoscroll->vel.y = Fx0;
+
             if (game_state->flags & GF_LOST_MAP)
                 play_state_track(sequence->activator, "smw/lose2", 0);
             else if (game_state->flags & GF_HARDCORE)
@@ -1431,7 +1436,9 @@ static void draw_game_state() {
             }
         }
     } else {
-        camera->pos = Vclamp(get_interp(autoscroll), level_info->bounds.start, Vsub(level_info->bounds.end, F_SCREEN));
+        camera->pos
+            = Vadd(Vclamp(get_interp(autoscroll), level_info->bounds.start, Vsub(level_info->bounds.end, F_SCREEN)),
+                F_HALF_SCREEN);
     }
 
     const Sint32 cx = Fx2Int(camera->pos.x), cy = Fx2Int(camera->pos.y);
@@ -1593,25 +1600,36 @@ GameActor* respawn_player(GamePlayer* player) {
 
     GameActor* old_pawn = get_actor(player->actor);
     if (old_pawn != NULL) {
-        if (old_pawn->type == ACT_PLAYER_DEAD) {
-            // TODO: flash
-            play_state_sound("respawn", PLAY_POS, A_ACTOR(pawn));
-        }
-
+        VAL(pawn, PLAYER_FLASH) = 100;
         FLAG_ON(old_pawn, FLG_DESTROY);
+
+        play_state_sound("respawn", PLAY_POS, A_ACTOR(pawn));
     }
 
     pawn->player = player->id;
     FLAG_ON(pawn, spawn->flags & FLG_X_FLIP);
 
-    if (spawn->type == ACT_PLAYER_SPAWN && ANY_FLAG(spawn, FLG_PLAYER_WARP_OUT)) {
-        VAL(pawn, PLAYER_WARP_OUT_ANGLE) = VAL(spawn, PLAYER_WARP_OUT_ANGLE);
-        FLAG_ON(pawn, FLG_PLAYER_WARP_OUT);
-        play_state_sound("warp", PLAY_POS, A_ACTOR(pawn));
+    const GameActor* autoscroll = get_actor(game_state->autoscroll);
+    if (autoscroll == NULL) {
+        if (spawn->type == ACT_PLAYER_SPAWN && ANY_FLAG(spawn, FLG_PLAYER_WARP_OUT)) {
+            VAL(pawn, PLAYER_WARP_OUT_ANGLE) = VAL(spawn, PLAYER_WARP_OUT_ANGLE);
+            FLAG_ON(pawn, FLG_PLAYER_WARP_OUT);
+
+            play_state_sound("warp", PLAY_POS, A_ACTOR(pawn));
+        }
+    } else {
+        move_actor(pawn, Vadd(autoscroll->pos, (FVec2){F_HALF_SCREEN_WIDTH, Fx1}));
+        if (touching_solid(Radd(pawn->box, pawn->pos), SOL_SOLID)) {
+            VAL(pawn, PLAYER_FLASH) = 100;
+            FLAG_ON(pawn, FLG_PLAYER_DESCEND);
+        }
+
+        skip_interp(pawn);
     }
 
     player->actor = pawn->id;
     player->xscroll = Fx0;
+    player->pos = pawn->pos;
 
     /// !!! CLIENT-SIDE !!!
     InterpPlayer* iplayer = &interp_state->players[player->id];
@@ -1744,13 +1762,16 @@ void win_player(GamePlayer* player) {
         }
 
         case ACT_FIREBALL_PROJECTILE: {
-            give_points(actor, player, 100);
-            FLAG_ON(actor, FLG_DESTROY);
+            if (get_player(actor->player) != NULL) {
+                give_points(actor, player, 100);
+                FLAG_ON(actor, FLG_DESTROY);
+            }
+
             break;
         }
 
         case ACT_BEETROOT_PROJECTILE: {
-            if (!ANY_FLAG(actor, FLG_PROJECTILE_SINK)) {
+            if (get_player(actor->player) != NULL && !ANY_FLAG(actor, FLG_PROJECTILE_SINK)) {
                 give_points(actor, player, 200);
                 FLAG_ON(actor, FLG_DESTROY);
             }

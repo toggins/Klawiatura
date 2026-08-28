@@ -359,9 +359,11 @@ static void pre_tick(GameActor* actor) {
     if (VAL(actor, PLAYER_FLASH) > 0) {
         TOGGLE_FLAG(actor, FLG_VISIBLE);
 
-        --VAL(actor, PLAYER_FLASH);
-        if (VAL(actor, PLAYER_FLASH) <= 0 || VAL(actor, PLAYER_STARMAN) > 0)
-            FLAG_ON(actor, FLG_VISIBLE);
+        if (!ANY_FLAG(actor, FLG_PLAYER_DESCEND)) {
+            --VAL(actor, PLAYER_FLASH);
+            if (VAL(actor, PLAYER_FLASH) <= 0 || VAL(actor, PLAYER_STARMAN) > 0)
+                FLAG_ON(actor, FLG_VISIBLE);
+        }
     }
 
     update_animation(actor);
@@ -380,11 +382,28 @@ static void tick(GameActor* actor) {
         return;
     }
 
+    // DECLARE HERE TO BE USED AFTER `t_skip_physics`
     const GameState* game_state = gamestate();
-    const GameActor* water = get_actor(game_state->water);
-
     const GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
     const Bool was_warping = warp != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
+
+    if (ANY_FLAG(actor, FLG_PLAYER_DESCEND)) {
+        FVec2 npos = Vadd(actor->pos, (FVec2){Fx0, Fx1});
+
+        const GameActor* autoscroll = get_actor(game_state->autoscroll);
+        if (autoscroll != NULL)
+            npos = Vadd(npos, Vsub(autoscroll->pos, autoscroll->last_pos));
+
+        move_actor(actor, npos);
+        actor->box.start.y
+            = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
+
+        if (touching_solid(Radd(actor->box, actor->pos), SOL_SOLID))
+            goto t_skip_physics;
+        else
+            FLAG_OFF(actor, FLG_PLAYER_DESCEND);
+    }
+
     if (was_warping) {
         Bool still_warping = TRUE;
 
@@ -594,6 +613,7 @@ static void tick(GameActor* actor) {
 
     // 242, 243
     // Moved here to replicate jump buffer while sinking underwater, like in Clickteam.
+    const GameActor* water = get_actor(game_state->water);
     if (!ANY_INPUT(player, GI_JUMP) && (water == NULL || actor->pos.y < water->pos.y) && !ANY_INPUT(player, GI_DOWN)
         && TOUCHING(actor, TOUCH_BOTTOM) && ANY_FLAG(actor, FLG_PLAYER_JUMP))
     {
@@ -750,6 +770,38 @@ static void tick(GameActor* actor) {
     actor->box.start.y = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
 
     displace_actor(actor, Int2Fx(10), TRUE);
+
+    const GameActor* autoscroll = get_actor(game_state->autoscroll);
+    if (autoscroll != NULL && get_sequence()->type != GS_WIN) {
+        Fixed sx = autoscroll->pos.x;
+        if ((actor->pos.x + actor->box.start.x) < sx) {
+            if (actor->vel.x <= Fx0) {
+                actor->vel.x = Fx0;
+                TOUCH_ON(actor, TOUCH_LEFT);
+            }
+
+            move_actor(actor, (FVec2){sx - actor->box.start.x, actor->pos.y});
+            if (touching_solid(Radd(actor->box, actor->pos), SOL_SOLID)) {
+                kill_player(actor);
+                return;
+            }
+        }
+
+        sx += F_SCREEN_WIDTH;
+        if ((actor->pos.x + actor->box.end.x) > sx) {
+            if (actor->vel.x >= Fx0) {
+                actor->vel.x = Fx0;
+                TOUCH_ON(actor, TOUCH_RIGHT);
+            }
+
+            move_actor(actor, (FVec2){sx - actor->box.end.x, actor->pos.y});
+            if (touching_solid(Radd(actor->box, actor->pos), SOL_SOLID)) {
+                kill_player(actor);
+                return;
+            }
+        }
+    }
+
     collide_actor(actor);
     FLAG_OFF(actor, FLG_PLAYER_STOMP);
 

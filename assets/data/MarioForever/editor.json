@@ -528,6 +528,23 @@
                 }
             ]
         },
+        "Autoscroll": {
+            "type": "actor",
+            "id": 15,
+            "sprite": "editor/autoscroll",
+            "values": [
+                {
+                    "name": "Track",
+                    "index": 0
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Tanks",
+                    "index": 6
+                }
+            ]
+        },
         "Goomba Party": {
             "type": "actor",
             "id": 46,
@@ -991,6 +1008,7 @@
                 "Player Spawn",
                 "Warp",
                 "Checkpoint",
+                "Autoscroll",
                 "Goomba Party"
             ]
         }
