@@ -224,6 +224,10 @@ void decrease_ambush() {
    DEAD ENEMY
    ========== */
 
+static void create_dead(GameActor* actor) {
+    actor->depth = -1;
+}
+
 static void tick_dead(GameActor* actor) {
     move_actor(actor, Vadd(actor->pos, actor->vel));
     actor->vel.y += 13107;

@@ -92,6 +92,10 @@ static void load_brick_shard() {
     load_sprite("effects/brick_shard/gray", AKL_NEVER);
 }
 
+static void create_brick_shard(GameActor* actor) {
+    actor->depth = -1;
+}
+
 static void tick_brick_shard(GameActor* actor) {
     VAL(actor, EFFECT_FRAME) += ANY_FLAG(actor, FLG_EFFECT_ALT) ? 1 : 7;
 
@@ -114,6 +118,7 @@ static void draw_brick_shard(const GameActor* actor) {
 
 const ActorTable TAB_BRICK_SHARD = {
     .load = load_brick_shard,
+    .create = create_brick_shard,
     .tick = tick_brick_shard,
     .draw = draw_brick_shard,
 };
@@ -124,6 +129,10 @@ const ActorTable TAB_BRICK_SHARD = {
 
 static void load_explode() {
     load_sprite_num("effects/explode/%u", 3, AKL_NEVER);
+}
+
+static void create_explode(GameActor* actor) {
+    actor->depth = -1;
 }
 
 static void tick_explode(GameActor* actor) {
@@ -139,6 +148,7 @@ static void draw_explode(const GameActor* actor) {
 
 const ActorTable TAB_EXPLODE = {
     .load = load_explode,
+    .create = create_explode,
     .tick = tick_explode,
     .draw = draw_explode,
 };
