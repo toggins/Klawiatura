@@ -594,41 +594,42 @@ void play_state_track(PlayerID pid, const char* name, PlayFlags flags) {
     }
 }
 
-// @NOLINTBEGIN(misc-no-recursion)
 void fade_state_track(PlayerID pid, float volume, float time) {
     if (pid < 0)
         return;
+
+    PlayerID i = pid, n = (PlayerID)(pid + 1);
     if (pid >= ALL_TRACKS) {
-        for (PlayerID i = 0; i < MAX_STATE_TRACKS; i++)
-            fade_state_track(pid, volume, time);
-
-        return;
+        i = 0;
+        n = MAX_STATE_TRACKS;
     }
 
-    TrackChannel* dtchan = &desired_audio_state->tracks[pid];
+    for (; i < n; i++) {
+        TrackChannel* dtchan = &desired_audio_state->tracks[i];
 
-    if (time <= 0.f) {
-        dtchan->volume[0] = dtchan->volume[1] = dtchan->volume[2] = volume;
-        dtchan->time[0] = dtchan->time[1] = time;
-        return;
+        if (time <= 0.f) {
+            dtchan->volume[0] = dtchan->volume[1] = dtchan->volume[2] = volume;
+            dtchan->time[0] = dtchan->time[1] = time;
+            return;
+        }
+
+        dtchan->volume[1] = dtchan->volume[0];
+        dtchan->volume[2] = volume;
+        dtchan->time[0] = 0.f;
+        dtchan->time[1] = time;
     }
-
-    dtchan->volume[1] = dtchan->volume[0];
-    dtchan->volume[2] = volume;
-    dtchan->time[0] = 0.f;
-    dtchan->time[1] = time;
 }
 
 void stop_state_track(PlayerID pid) {
     if (pid < 0)
         return;
-    if (pid >= ALL_TRACKS) {
-        for (PlayerID i = 0; i < MAX_STATE_TRACKS; i++)
-            stop_state_track(pid);
 
-        return;
+    PlayerID i = pid, n = (PlayerID)(pid + 1);
+    if (pid >= ALL_TRACKS) {
+        i = 0;
+        n = MAX_STATE_TRACKS;
     }
 
-    desired_audio_state->tracks[pid].track_key = 0;
+    for (; i < n; i++)
+        desired_audio_state->tracks[i].track_key = 0;
 }
-// @NOLINTEND(misc-no-recursion)
