@@ -102,4 +102,4 @@ Copying, modifying, and/or porting this project does not make the materials ment
 - [Discord Social SDK](https://discord.com/developers/social-sdk) © Discord
 - [JSZip](https://github.com/Stuk/jszip) © Stuart Knightley ([MIT License](https://github.com/Stuk/jszip/blob/main/LICENSE.markdown))
 
-Module music provided by [modarchive.org](https://modarchive.org).
+Tracker modules provided by [mirsoft.info](http://www.mirsoft.info) and [modarchive.org](https://modarchive.org). MIDIs provided by [vgmusic.com](https://vgmusic.com/).
