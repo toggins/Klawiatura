@@ -105,6 +105,7 @@ typedef struct {
 
     int size[2], bounds[4];
     int time;
+    int bowser_bounds[2];
 
     EditorMarker* markers;
 } EditorLevel;
@@ -309,6 +310,12 @@ static void open_level(const char* filename) {
     jval = yyjson_obj_get(root, "time");
     if (yyjson_is_int(jval))
         elevel->time = (int)yyjson_get_sint(jval);
+
+    jval = yyjson_obj_get(root, "bowser_bounds");
+    if (yyjson_is_arr(jval)) {
+        elevel->bowser_bounds[0] = (int)yyjson_get_sint(yyjson_arr_get(jval, 0));
+        elevel->bowser_bounds[1] = (int)yyjson_get_sint(yyjson_arr_get(jval, 1));
+    }
 
     jval = yyjson_obj_get(root, "backdrops");
     for (size_t i = 0, n = yyjson_arr_size(jval); i < n; i++) {
@@ -528,6 +535,12 @@ static void save_level(const char* filename) {
 
     if (elevel->time != -1)
         yyjson_mut_obj_add_sint(json, root, "time", elevel->time);
+
+    if (elevel->bowser_bounds[0] != 0 || elevel->bowser_bounds[1] != 0) {
+        yyjson_mut_val* jval = yyjson_mut_obj_add_arr(json, root, "bowser_bounds");
+        yyjson_mut_arr_add_uint(json, jval, elevel->bowser_bounds[0]);
+        yyjson_mut_arr_add_uint(json, jval, elevel->bowser_bounds[1]);
+    }
 
     yyjson_mut_val *jbackdrops = yyjson_mut_obj_add_arr(json, root, "backdrops"),
                    *jcollisions = yyjson_mut_obj_add_arr(json, root, "collisions"),
@@ -1518,7 +1531,8 @@ static void draw_ui() {
                 }
             }
 
-            if (ImGui_CollapsingHeader(LFMT("editor.constants"), 0)) {}
+            if (ImGui_CollapsingHeader(LFMT("editor.constants"), 0))
+                ImGui_InputInt2(LFMT("editor.bowser_bounds"), elevel->bowser_bounds, 0);
 
             if (ImGui_CollapsingHeader(LFMT("editor.flags"), 0)) {
                 ImGui_CheckboxFlagsUintPtr(LFMT("editor.hardcore"), &elevel->flags, GF_HARDCORE);

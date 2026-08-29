@@ -597,6 +597,12 @@ static void load_level(TinyHash key) {
     if (yyjson_is_int(jval))
         game_state->clock = (Sint16)yyjson_get_sint(jval);
 
+    jval = yyjson_obj_get(root, "bowser_bounds");
+    if (yyjson_is_arr(jval)) {
+        level_info->bowser_bounds.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 0)));
+        level_info->bowser_bounds.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 1)));
+    }
+
     if (yyjson_get_bool(yyjson_obj_get(root, "hardcore")))
         game_state->flags |= GF_HARDCORE;
     if (yyjson_get_bool(yyjson_obj_get(root, "lost_map")))

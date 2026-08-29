@@ -124,6 +124,9 @@ enum {
     ACT_LAVA_BUBBLE,
     ACT_ROTODISC_BALL,
     ACT_ROTODISC,
+    ACT_BOWSER,
+    ACT_BOWSER_DEAD,
+    ACT_BOWSER_FIRE_PROJECTILE,
 
     ACT_SIZE,
 };
@@ -393,7 +396,7 @@ enum {
 };
 
 typedef struct {
-    FVec2 size;
+    FVec2 size, bowser_bounds;
     FRect bounds;
 
     TinyHash warps[MAX_GAME_WARPS];
