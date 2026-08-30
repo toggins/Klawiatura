@@ -1103,6 +1103,8 @@ static float string_width_fast(const Font* font, float size, const char* str) {
         // Valid glyph
         const Glyph* glyph = (Glyph*)TinyMapGet(&font->glyphs, gid);
         if (glyph == NULL)
+            glyph = (Glyph*)TinyMapGet(&font->glyphs, '?');
+        if (glyph == NULL)
             continue;
 
         const float advance = glyph->advance * xscale, extend = glyph->bounds[2] * xscale;
@@ -1199,6 +1201,8 @@ void batch_string(const char* name, float size, const char* str) {
         // Valid glyph
         const Glyph* glyph = (Glyph*)TinyMapGet(&font->glyphs, gid);
         if (glyph == NULL)
+            glyph = (Glyph*)TinyMapGet(&font->glyphs, '?');
+        if (glyph == NULL)
             continue;
         const Texture* texture = get_texture_key(glyph->texture_key);
         batch_texture((texture == NULL) ? blank_texture : *(GLuint*)texture->internal);
@@ -1236,7 +1240,12 @@ static float string_width_wrap_fast(const Font* font, float size, const char* st
         const size_t gid = SDL_StepUTF8(&adv, &advbytes);
         const Bool space = SDL_isspace((int)gid);
 
-        const Glyph* glyph = (gid == '\n') ? NULL : (Glyph*)TinyMapGet(&font->glyphs, space ? ' ' : gid);
+        const Glyph* glyph = NULL;
+        if (gid != '\n') {
+            glyph = (Glyph*)TinyMapGet(&font->glyphs, space ? ' ' : gid);
+            if (glyph == NULL)
+                glyph = (Glyph*)TinyMapGet(&font->glyphs, '?');
+        }
         float gadv = (glyph == NULL) ? 0.f : (glyph->advance * xscale);
 
         i += (Sint32)(last_advbytes - advbytes) - 1;
@@ -1308,7 +1317,12 @@ static float string_height_wrap_fast(const Font* font, float size, const char* s
         const size_t gid = SDL_StepUTF8(&adv, &advbytes);
         const Bool space = SDL_isspace((int)gid);
 
-        const Glyph* glyph = (gid == '\n') ? NULL : (Glyph*)TinyMapGet(&font->glyphs, space ? ' ' : gid);
+        const Glyph* glyph = NULL;
+        if (gid != '\n') {
+            glyph = (Glyph*)TinyMapGet(&font->glyphs, space ? ' ' : gid);
+            if (glyph == NULL)
+                glyph = (Glyph*)TinyMapGet(&font->glyphs, '?');
+        }
         float gwidth = (glyph == NULL) ? 0.f : (glyph->advance * xscale);
 
         i += (Sint32)(last_advbytes - advbytes) - 1;
@@ -1410,7 +1424,12 @@ void batch_string_wrap(const char* name, float size, const char* str, float wrap
         const size_t gid = SDL_StepUTF8(&adv, &advbytes);
         const Bool space = SDL_isspace((int)gid);
 
-        const Glyph* glyph = (gid == '\n') ? NULL : (Glyph*)TinyMapGet(&font->glyphs, space ? ' ' : gid);
+        const Glyph* glyph = NULL;
+        if (gid != '\n') {
+            glyph = (Glyph*)TinyMapGet(&font->glyphs, space ? ' ' : gid);
+            if (glyph == NULL)
+                glyph = (Glyph*)TinyMapGet(&font->glyphs, '?');
+        }
         float gwidth = (glyph == NULL) ? 0.f : (glyph->advance * xscale);
         if (glyph != NULL) {
             const Texture* texture = get_texture_key(glyph->texture_key);
