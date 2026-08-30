@@ -192,12 +192,19 @@ typedef struct {
 } TileMap;
 
 typedef struct {
+    Bool active;
+    Uint8 health;
+    float y;
+} VideoBowser;
+
+typedef struct {
     FVec2 pos, from;
     float lerp_time, lerp_duration;
 } VideoCamera;
 
 typedef struct {
     Uint8 hurry;
+    VideoBowser bowser;
     VideoCamera camera;
     TileMap* tilemap;
 } VideoState;

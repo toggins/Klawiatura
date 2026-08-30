@@ -532,7 +532,7 @@ static void tick(GameActor* actor) {
         FLAG_OFF(actor, FLG_X_FLIP | FLG_PLAYER_JUMP | FLG_PLAYER_DUCK);
     }
 
-    // EVENTS FROM "Level 1-1"
+    // EVENTS FROM "Level 1 - 1"
 
     // 179, 180, 181, 182
     if (!ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
@@ -768,6 +768,22 @@ static void tick(GameActor* actor) {
 
     actor->box.start.y = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
 
+    if (VAL(actor, PLAYER_SLIP) != 0
+        && (autoscroll == NULL
+            || ((actor->pos.x + actor->box.start.x) >= autoscroll->pos.x
+                && (actor->pos.x + actor->box.end.x) <= (autoscroll->pos.x + F_SCREEN_WIDTH))))
+    {
+        if (VAL(actor, PLAYER_SLIP) > 0)
+            --VAL(actor, PLAYER_SLIP);
+        else
+            ++VAL(actor, PLAYER_SLIP);
+
+        FVec2 spos = actor->pos;
+        spos.x += Int2Fx(VAL(actor, PLAYER_SLIP));
+        if (!touching_solid(Radd(actor->box, spos), SOL_SOLID))
+            move_actor(actor, spos);
+    }
+
     displace_actor(actor, Int2Fx(10), TRUE);
 
     if (autoscroll != NULL && get_sequence()->type != GS_WIN) {
@@ -866,7 +882,7 @@ static void post_tick(GameActor* actor) {
     if (player == NULL || !gamecontext()->players[player->id].xscroll)
         return;
 
-    // EVENTS FROM "Level 1-1"
+    // EVENTS FROM "Level 1 - 1"
     // Modified to not jitter while slow walking (holding left+right).
 
     if (!ALL_INPUT(player, GI_LEFT | GI_RIGHT)) {

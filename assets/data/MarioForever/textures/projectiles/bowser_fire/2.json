@@ -1,0 +1,6 @@
+{
+    "texture": "projectiles/bowser_fire",
+    "size": [53, 30],
+    "offset": [36, 15],
+    "uvs": [1, 33, 54, 63]
+}

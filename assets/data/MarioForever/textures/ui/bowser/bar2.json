@@ -1,0 +1,6 @@
+{
+    "texture": "ui/bowser",
+    "size": [10, 32],
+    "offset": [9, -7],
+    "uvs": [79, 1, 89, 33]
+}

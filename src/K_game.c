@@ -1033,6 +1033,20 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 
         break;
     }
+
+    case GS_BOWSER_END: {
+        if (sequence->time == 0) {
+            fade_state_track(ALL_TRACKS, 0.f, 100.f);
+            ++sequence->time;
+        }
+
+        if ((sequence->time == 1 && get_num_actors(ACT_BOWSER_DEAD) <= 0) || sequence->time > 1) {
+            if (++sequence->time > 11)
+                win_player(get_player(sequence->activator));
+        }
+
+        break;
+    }
     }
 
     ++game_state->time;
@@ -1330,10 +1344,29 @@ static void draw_hud() {
     if (player == NULL)
         return;
 
+    VideoState* video_state = videostate();
+    video_state->bowser.health = 0;
+
     const GameActor* actor = NULL;
     FOR_EACH_ACTOR (actor) { ACTOR_CALL(actor, draw_hud); }
 
     batch_reset();
+
+    if (video_state->bowser.active) {
+        if (video_state->bowser.y < 60.f) {
+            video_state->bowser.y += deltaticks() * 4.f;
+            if (video_state->bowser.y >= 60.f)
+                video_state->bowser.y = 60.f;
+        }
+
+        batch_pos(B_F3_XY(SCREEN_WIDTH - 75.f, video_state->bowser.y));
+        batch_sprite("ui/bowser");
+        for (Uint8 i = 0; i < video_state->bowser.health; i++) {
+            batch_pos(B_F3_XY(SCREEN_WIDTH - 75.f - ((float)i * 9.f), video_state->bowser.y));
+            batch_sprite("ui/bowser/bar");
+        }
+    }
+
     batch_pos(B_F3_XY(32.f, 16.f));
     const char* cname = get_character_name(game_context.players[player->id].character);
     batch_string("hud", 16.f, fmt("%s × %i", cname, SDL_max(player->lives, 0)));
@@ -1389,7 +1422,6 @@ static void draw_hud() {
     if (game_state->clock >= 0) {
         batch_pos(B_F3_XY(SCREEN_WIDTH - 32.f, 24.f));
 
-        const VideoState* video_state = videostate();
         if (video_state->hurry > 0 && video_state->hurry <= 120) {
             const float hurry = (float)((video_state->hurry - 1) % 12);
             batch_scale(B_F2(
@@ -1951,6 +1983,18 @@ GameActor* get_actor(ActorID id) {
 
     GameActor* actor = &game_state->actors[id];
     return (actor->id < 0 || actor->id >= MAX_ACTORS) ? NULL : actor;
+}
+
+ActorID get_num_actors(ActorType type) {
+    ActorID num_actors = 0;
+
+    const GameActor* actor = NULL;
+    FOR_EACH_ACTOR (actor) {
+        if (actor->type == type)
+            ++num_actors;
+    }
+
+    return num_actors;
 }
 
 void move_actor(GameActor* actor, const FVec2 pos) {

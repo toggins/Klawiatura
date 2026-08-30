@@ -1,4 +1,5 @@
 #include "K_audio.h"
+#include "K_string.h"
 #include "K_video.h"
 
 #include "actors/K_effects.h"
@@ -106,6 +107,8 @@ static void create_beetroot(GameActor* actor) {
 
 static void tick_beetroot(GameActor* actor) {
     if (ANY_FLAG(actor, FLG_PROJECTILE_SINK)) {
+        VAL(actor, PROJECTILE_COOLDOWN) = 0;
+
         move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, Int2Fx(rng(3))}));
 
         const GameState* game_state = gamestate();
@@ -138,6 +141,8 @@ static void tick_beetroot(GameActor* actor) {
 
         return;
     }
+
+    VAL_TICK(actor, PROJECTILE_COOLDOWN);
 
     const Bool dead = VAL(actor, PROJECTILE_HITS) <= 0;
     if (dead) {
@@ -185,14 +190,14 @@ static void tick_beetroot(GameActor* actor) {
 
     if (!ANY_FLAG(actor, FLG_PROJECTILE_HIT_ENEMY)) {
         create_actor(ACT_EXPLODE, Vadd(actor->pos, (FVec2){Fx0, Fx1}));
-        if (!ANY_FLAG(actor, FLG_PROJECTILE_HIT_BLOCK))
+        if (!ANY_FLAG(actor, FLG_PROJECTILE_HIT_BLOCK | FLG_PROJECTILE_HIT_BOSS))
             play_state_sound("stun", PLAY_POS, A_ACTOR(actor));
     }
 
     actor->vel.x = -actor->vel.x;
     actor->vel.y = Int2Fx(-8);
     VAL_TICK(actor, PROJECTILE_HITS);
-    FLAG_OFF(actor, FLG_PROJECTILE_HIT | FLG_PROJECTILE_HIT_ENEMY | FLG_PROJECTILE_HIT_BLOCK);
+    FLAG_OFF(actor, FLG_PROJECTILE_HIT | FLG_PROJECTILE_HIT_ENEMY | FLG_PROJECTILE_HIT_BLOCK | FLG_PROJECTILE_HIT_BOSS);
 }
 
 static void draw_beetroot(const GameActor* actor) {
@@ -205,4 +210,71 @@ const ActorTable TAB_BEETROOT_PROJECTILE = {
     .create = create_beetroot,
     .tick = tick_beetroot,
     .draw = draw_beetroot,
+};
+
+/* ===========
+   BOWSER FIRE
+   =========== */
+
+static void load_bowser_fire() {
+    load_sprite_num("projectiles/bowser_fire/%u", 3, AKL_NEVER);
+    load_sound("kick", AKL_NEVER);
+}
+
+static void create_bowser_fire(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-17);
+    actor->box.start.y = Int2Fx(-11);
+    actor->box.end.x = Int2Fx(17);
+    actor->box.end.y = Int2Fx(15);
+
+    VAL(actor, PROJECTILE_Y) = actor->pos.y;
+}
+
+static void tick_bowser_fire(GameActor* actor) {
+    ++VAL(actor, PROJECTILE_FRAME);
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    if (actor->pos.y < VAL(actor, PROJECTILE_Y))
+        move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, Int2Fx(4)}));
+    if (ANY_FLAG(actor, FLG_PROJECTILE_ALT) && actor->pos.y > (VAL(actor, PROJECTILE_Y) + Int2Fx(4)))
+        move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, Int2Fx(-4)}));
+
+    if (!in_any_view(actor->pos, Int2Fx(-48), FALSE))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_bowser_fire(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("projectiles/bowser_fire/%i", (VAL(actor, PROJECTILE_FRAME) / 2) % 3), FALSE);
+}
+
+static void collide_bowser_fire(GameActor* actor, GameActor* from) {
+    (void)actor;
+
+    switch (from->type) {
+    default:
+        break;
+
+    case ACT_PLAYER: {
+        hit_player(from);
+        break;
+    }
+
+    case ACT_FIREBALL_PROJECTILE: {
+        if (get_player(from->player) != NULL) {
+            FLAG_ON(from, FLG_PROJECTILE_HIT);
+            play_state_sound("kick", PLAY_POS, A_ACTOR(from));
+        }
+
+        break;
+    }
+    }
+}
+
+const ActorTable TAB_BOWSER_FIRE_PROJECTILE = {
+    .load = load_bowser_fire,
+    .create = create_bowser_fire,
+    .tick = tick_bowser_fire,
+    .draw = draw_bowser_fire,
+    .collide = collide_bowser_fire,
 };

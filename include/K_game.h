@@ -127,6 +127,7 @@ enum {
     ACT_BOWSER,
     ACT_BOWSER_DEAD,
     ACT_BOWSER_FIRE_PROJECTILE,
+    ACT_LAVA_WAVER,
 
     ACT_SIZE,
 };
@@ -451,6 +452,7 @@ void win_player(GamePlayer*);
 
 void load_actor(ActorType);
 GameActor *create_actor(ActorType, const FVec2), *get_actor(ActorID);
+ActorID get_num_actors(ActorType);
 void replace_actors(ActorType, ActorType);
 
 void move_actor(GameActor*, const FVec2), push_actors(GameActor*);
