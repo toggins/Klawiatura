@@ -216,7 +216,7 @@ static void tick_lava_bubbler(GameActor* actor) {
 
     bubble->vel.x += Int2Fx(rng(3));
     bubble->vel.x -= Int2Fx(rng(3));
-    bubble->vel.y = Int2Fx(-2 - rng(4));
+    bubble->vel.y = Int2Fx(-2) - Int2Fx(rng(4));
 }
 
 const ActorTable TAB_LAVA_BUBBLER = {

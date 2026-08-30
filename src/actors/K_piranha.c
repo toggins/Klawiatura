@@ -128,7 +128,7 @@ static void tick(GameActor* actor) {
         if (fireball != NULL) {
             fireball->vel.x = Int2Fx(rng(5));
             fireball->vel.x -= Int2Fx(rng(5));
-            fireball->vel.y = ANY_FLAG(actor, FLG_Y_FLIP) ? Int2Fx(rng(6)) : Int2Fx(-3 - rng(9));
+            fireball->vel.y = ANY_FLAG(actor, FLG_Y_FLIP) ? Int2Fx(rng(6)) : (Int2Fx(-3) - Int2Fx(rng(9)));
             FLAG_ON(fireball, FLG_PROJECTILE_ALT);
         }
 

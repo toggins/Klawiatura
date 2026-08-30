@@ -158,7 +158,8 @@ static void tick_party(GameActor* actor) {
         found = TRUE;
     }
 
-    GameActor* goomba = create_actor(VAL(actor, PARTY_TYPE), Vadd(ppos, (FVec2){Int2Fx(201 + rng(200)), Int2Fx(-498)}));
+    GameActor* goomba
+        = create_actor(VAL(actor, PARTY_TYPE), Vadd(ppos, (FVec2){Int2Fx(201) + Int2Fx(rng(200)), Int2Fx(-498)}));
     if (goomba != NULL)
         FLAG_ON(goomba, FLG_X_FLIP);
 }
