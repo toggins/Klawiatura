@@ -817,13 +817,11 @@
                     "default": 9830400,
                     "type": "fixed"
                 },
-
                 {
                     "name": "Angle",
                     "index": 1,
                     "type": "fixed"
                 },
-
                 {
                     "name": "Speed",
                     "index": 2,
@@ -835,6 +833,99 @@
                 {
                     "name": "Flower",
                     "index": 5
+                }
+            ]
+        },
+        "Bowser": {
+            "type": "actor",
+            "id": 53,
+            "sprite": "enemies/bowser/0",
+            "values": [
+                {
+                    "name": "Health",
+                    "index": 0,
+                    "default": 5
+                },
+                {
+                    "name": "Speed",
+                    "index": 1,
+                    "default": 131072,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Jump Chance",
+                    "index": 2,
+                    "default": 5
+                },
+                {
+                    "name": "Jump Speed",
+                    "index": 3,
+                    "default": -327680,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Attack Chance",
+                    "index": 4,
+                    "default": 3
+                },
+                {
+                    "name": "Attack Speed",
+                    "index": 5,
+                    "default": 65536,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Projectile Speed",
+                    "index": 6,
+                    "default": 65536,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Hurt Duration",
+                    "index": 7,
+                    "default": 100
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Charge Attack",
+                    "index": 5
+                },
+                {
+                    "name": "Hammer Attack",
+                    "index": 6
+                },
+                {
+                    "name": "Vomit Attack",
+                    "index": 7
+                },
+                {
+                    "name": "Koopa the Devastator",
+                    "index": 8
+                },
+                {
+                    "name": "Bill Blaster",
+                    "index": 9
+                },
+                {
+                    "name": "Homing Fire",
+                    "index": 10
+                },
+                {
+                    "name": "Moving Bullets",
+                    "index": 11
+                },
+                {
+                    "name": "Homing Bullets",
+                    "index": 12
+                },
+                {
+                    "name": "Volcano Attack",
+                    "index": 13
+                },
+                {
+                    "name": "Giga Bowser",
+                    "index": 14
                 }
             ]
         }
@@ -991,7 +1082,8 @@
                 "Goomba",
                 "Koopa",
                 "Piranha Plant",
-                "Roto-Disc"
+                "Roto-Disc",
+                "Bowser"
             ]
         },
         {

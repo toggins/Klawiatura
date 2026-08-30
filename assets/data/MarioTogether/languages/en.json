@@ -270,6 +270,7 @@
     "editor.secrets": "Secrets",
     "editor.secret": "Secret {0}",
     "editor.constants": "Constants",
+    "editor.bowser_bounds": "Bowser Bounds",
     "editor.flags": "Flags",
     "editor.hardcore": "Hardcore Level",
     "editor.lost_map": "\"Lost Map\" Level",
