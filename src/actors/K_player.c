@@ -956,6 +956,36 @@ static void draw(const GameActor* actor) {
     batch_filter(FALSE);
 }
 
+static void draw_hud(const GameActor* actor) {
+    if (actor->player == localplayer() || in_blocking_sequence())
+        return;
+
+    const GamePlayer* player = get_player(actor->player);
+    if (player == NULL)
+        return;
+
+    const GamePlayer* view_player = get_player(viewplayer());
+    if (view_player == NULL || !Rcollide(player->bounds, view_player->bounds))
+        return;
+
+    static const FRect cbox = {
+        {Int2Fx(32) - F_HALF_SCREEN_WIDTH, Int2Fx(80) - F_HALF_SCREEN_HEIGHT},
+        {F_HALF_SCREEN_WIDTH - Int2Fx(32), F_HALF_SCREEN_HEIGHT - Int2Fx(32)}
+    };
+
+    FVec2 apos = get_interp(actor);
+    const FVec2 cpos = videostate()->camera.pos;
+    if (Rcollide(Radd(actor->box, apos), Radd(cbox, cpos)))
+        return;
+
+    batch_reset();
+    apos.y += Flerp(actor->box.start.y, actor->box.end.y, FxHalf);
+    apos = Vadd(Vclamp(Vsub(apos, cpos), cbox.start, cbox.end), F_HALF_SCREEN);
+    batch_pos(B_F3_XY(Fx2Int(apos.x), Fx2Int(apos.y)));
+    batch_color((actor->type == ACT_PLAYER_DEAD) ? B_U4(255, 0, 0, 128) : B_U4_ALPHA(128));
+    batch_sprite(fmt(get_character_cursor(gamecontext()->players[player->id].character), 0));
+}
+
 static void collide(GameActor* actor, GameActor* from) {
     if (get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
         return;
@@ -999,6 +1029,7 @@ const ActorTable TAB_PLAYER = {
     .tick = tick,
     .post_tick = post_tick,
     .draw = draw,
+    .draw_hud = draw_hud,
     .collide = collide,
 };
 
@@ -1103,4 +1134,5 @@ const ActorTable TAB_PLAYER_DEAD = {
     .cleanup = cleanup,
     .tick = tick_dead,
     .draw = draw_dead,
+    .draw_hud = draw_hud,
 };
