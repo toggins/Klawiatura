@@ -95,12 +95,7 @@ static void tick(GameActor* actor) {
 
 static void draw(const GameActor* actor) {
     batch_reset();
-    batch_blend(BM_MULTIPLY);
-    const char* sprite = fmt("enemies/rotodisc/%i", gamestate()->time % 26);
-    draw_actor(actor, sprite, FALSE);
-    batch_blend(BM_ADD);
-    draw_actor(actor, sprite, FALSE);
-    batch_blend(BM_NORMAL);
+    draw_actor(actor, fmt("enemies/rotodisc/%i", gamestate()->time % 26), FALSE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {
