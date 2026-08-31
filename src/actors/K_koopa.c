@@ -47,7 +47,11 @@ static void cleanup(GameActor* actor) {
 static void tick(GameActor* actor) {
     const Bool red = ANY_FLAG(actor, FLG_KOOPA_RED);
     VAL(actor, ENEMY_FRAME) += red ? 9 : 6;
+
     move_enemy(actor, (FVec2){ANY_FLAG(actor, FLG_KOOPA_RED) ? Int2Fx(2) : Fx1, 19005}, red);
+
+    if (VAL(actor, KOOPA_MAYDAY) < 11)
+        ++VAL(actor, KOOPA_MAYDAY);
 }
 
 static void draw(const GameActor* actor) {
@@ -69,18 +73,19 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
 
     case ACT_PLAYER: {
-        if (check_stomp(actor, from, Int2Fx(-16), 100)) {
-            GameActor* shell = create_actor(ACT_KOOPA_SHELL, actor->pos);
-            if (shell != NULL) {
-                FLAG_ON(shell, actor->flags & FLG_KOOPA_RED);
-                align_interp(shell, actor);
-            }
-
-            FLAG_ON(actor, FLG_DESTROY);
+        if (VAL(actor, KOOPA_MAYDAY) <= 10 && VAL(from, PLAYER_STARMAN) <= 0)
             break;
+
+        if (!check_stomp(actor, from, Int2Fx(-16), 100, TRUE))
+            break;
+
+        GameActor* shell = create_actor(ACT_KOOPA_SHELL, actor->pos);
+        if (shell != NULL) {
+            FLAG_ON(shell, actor->flags & FLG_KOOPA_RED);
+            align_interp(shell, actor);
         }
 
-        maybe_hit_player(actor, from);
+        FLAG_ON(actor, FLG_DESTROY);
         break;
     }
 

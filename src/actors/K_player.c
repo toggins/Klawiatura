@@ -995,7 +995,14 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
 
     case ACT_PLAYER: {
-        if (check_stomp(actor, from, Int2Fx(-16), 0) || Fabs(from->vel.x) <= Fabs(actor->vel.x)
+        if (check_stomp(actor, from, Int2Fx(-16), 0, FALSE)) {
+            if (actor->vel.y < Fx0)
+                actor->vel.y = Fx0;
+
+            break;
+        }
+
+        if (Fabs(from->vel.x) <= Fabs(actor->vel.x)
             || ((from->vel.x <= Fx0 || from->pos.x >= actor->pos.x)
                 && (from->vel.x >= Fx0 || from->pos.x <= actor->pos.x)))
         {

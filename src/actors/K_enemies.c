@@ -103,11 +103,18 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
     return dead;
 }
 
-Bool check_stomp(GameActor* actor, GameActor* from, Fixed offset, Sint32 points) {
-    if (actor == NULL || from == NULL || from->type != ACT_PLAYER || VAL(from, PLAYER_STARMAN) > 0)
+Bool check_stomp(GameActor* actor, GameActor* from, Fixed offset, Sint32 points, Bool hurt) {
+    if (actor == NULL || from == NULL || from->type != ACT_PLAYER)
         return FALSE;
 
-    if (from->pos.y < (actor->pos.y + offset) && (from->vel.y >= Fx0 || ANY_FLAG(from, FLG_PLAYER_STOMP))) {
+    if ((VAL(from, PLAYER_STARMAN) > 0 && hurt) || from->pos.y >= (actor->pos.y + offset)) {
+        if (hurt)
+            maybe_hit_player(actor, from);
+
+        return FALSE;
+    }
+
+    if (from->vel.y >= Fx0 || ANY_FLAG(from, FLG_PLAYER_STOMP)) {
         GamePlayer* player = get_player(from->player);
         from->vel.y
             = Fmul((player != NULL && ANY_INPUT(player, GI_JUMP)) ? Int2Fx(-13) : Int2Fx(-8), get_player_jump(player));
@@ -115,6 +122,7 @@ Bool check_stomp(GameActor* actor, GameActor* from, Fixed offset, Sint32 points)
 
         give_points(actor, player, points);
         play_state_sound("stomp", PLAY_POS, A_ACTOR(actor));
+
         return TRUE;
     }
 

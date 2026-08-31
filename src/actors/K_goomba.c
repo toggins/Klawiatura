@@ -72,19 +72,17 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
 
     case ACT_PLAYER: {
-        if (check_stomp(actor, from, Int2Fx(-16), 100)) {
-            ++actor->depth;
-            actor->vel.x = actor->vel.y = Fx0;
-            actor->box.start.y = Int2Fx(-15);
-            VAL(actor, ENEMY_FRAME) = 0;
-            FLAG_ON(actor, FLG_ENEMY_FLAT);
-
-            decrease_ambush();
-            mark_ambush_winner(from);
+        if (!check_stomp(actor, from, Int2Fx(-16), 100, TRUE))
             break;
-        }
 
-        maybe_hit_player(actor, from);
+        ++actor->depth;
+        actor->vel.x = actor->vel.y = Fx0;
+        actor->box.start.y = Int2Fx(-15);
+        VAL(actor, ENEMY_FRAME) = 0;
+        FLAG_ON(actor, FLG_ENEMY_FLAT);
+
+        decrease_ambush();
+        mark_ambush_winner(from);
         break;
     }
 
