@@ -146,7 +146,10 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     audio_update();
     discord_update();
 
+    // `SDL_Delay*` causes audio playback to lag under Emscripten.
+#ifndef SDL_PLATFORM_EMSCRIPTEN
     limit_framerate();
+#endif
 
     return SDL_APP_CONTINUE;
 }

@@ -82,8 +82,8 @@ static Catalog CATALOG = {
 
 		[MEN_VIDEO] = {
 			{.fmt = fmt_resolution, .cycle = resolution_cycle},
-            {.fmt = fmt_framerate, .cycle = framerate_cycle},
 #ifndef SDL_PLATFORM_EMSCRIPTEN
+            {.fmt = fmt_framerate, .cycle = framerate_cycle},
             {},
 			{.fmt = fmt_fullscreen, .cycle = fullscreen_cycle},
 			{.fmt = fmt_vsync, .cycle = vsync_cycle},

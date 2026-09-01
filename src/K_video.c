@@ -342,6 +342,7 @@ void limit_framerate() {
 
     const Uint64 next_frame_time = last_frame_time + (1000000000 / framerate);
     const Uint64 current_frame_time = SDL_GetTicksNS();
+
     if (current_frame_time < next_frame_time) {
         SDL_DelayPrecise(next_frame_time - current_frame_time);
         last_frame_time = next_frame_time;

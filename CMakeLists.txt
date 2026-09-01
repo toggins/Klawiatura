@@ -267,12 +267,14 @@ if(EMSCRIPTEN)
     target_link_options(${PROJECT_NAME} PRIVATE
         "SHELL:-sEXPORTED_RUNTIME_METHODS=FS,HEAPU8,HEAPU32,HEAPF32"
         "SHELL:-sALLOW_MEMORY_GROWTH=1"
+
         "SHELL:-sMIN_WEBGL_VERSION=2"
         "SHELL:-sMAX_WEBGL_VERSION=2"
+
         "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/assets@"
         "SHELL:--preload-file ${CONTROLLER_DB}@gamecontrollerdb.txt"
 
-        "-g"
+        "SHELL:-g"
         "SHELL:-sASSERTIONS=2")
 else()
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
