@@ -34,7 +34,7 @@
 
         <script type="text/javascript">
             var Module = {
-                canvas: document.getElementById("canvas"),
+                canvas: canvas,
                 locateFile: function (path, scriptDirectory) {
                     if (path.endsWith(".wasm")) {
                         return scriptDirectory + "Klawiatura.wasm{{ nocache }}";
@@ -43,7 +43,7 @@
                     }
                 },
                 onAbort: function (what) {
-                    document.getElementById("error").style.display = "block";
+                    error.style.display = "block";
 
                     var canvas = document.getElementById("canvas");
                     canvas.style.opacity = 0.5;
