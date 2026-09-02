@@ -4,6 +4,7 @@
 
 enum {
     VAL_EFFECT_FRAME,
+    VAL_EFFECT_ALPHA,
 };
 
 #define FLG_EFFECT_END CUSTOM_FLAG(0)

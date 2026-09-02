@@ -221,3 +221,42 @@ const ActorTable TAB_LAVA_BUBBLE = {
     .tick = tick_lava_bubble,
     .draw = draw_lava_bubble,
 };
+
+/* ===========
+   SINK BUBBLE
+   =========== */
+
+static void load_sink_bubble() {
+    load_sprite_num("effects/bubble/%u", 5, AKL_NEVER);
+}
+
+static void create_sink_bubble(GameActor* actor) {
+    VAL(actor, EFFECT_ALPHA) = 4096;
+}
+
+static void tick_sink_bubble(GameActor* actor) {
+    ++VAL(actor, EFFECT_FRAME);
+
+    if (VAL(actor, EFFECT_ALPHA) < Fx1) {
+        VAL(actor, EFFECT_ALPHA) += 1024;
+        if (VAL(actor, EFFECT_ALPHA) >= Fx1)
+            VAL(actor, EFFECT_ALPHA) = Fx1;
+    }
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    if (below_nearest_bounds(actor->pos, Int2Fx(8)))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_sink_bubble(const GameActor* actor) {
+    batch_reset();
+    batch_color(B_U4_ALPHA(Fx2Float(VAL(actor, EFFECT_ALPHA)) * 255.f));
+    draw_actor(actor, fmt("effects/bubble/%i", (VAL(actor, EFFECT_FRAME) / 2) % 5), FALSE);
+}
+
+const ActorTable TAB_SINK_BUBBLE = {
+    .load = load_sink_bubble,
+    .create = create_sink_bubble,
+    .tick = tick_sink_bubble,
+    .draw = draw_sink_bubble,
+};
