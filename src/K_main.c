@@ -160,9 +160,9 @@ void SDL_AppQuit(void* appstate, SDL_AppResult result) {
 
     net_teardown();
     chat_teardown();
+    interface_teardown();
     levels_teardown();
     worlds_teardown();
-    interface_teardown();
     discord_teardown();
     config_teardown();
     input_teardown();
