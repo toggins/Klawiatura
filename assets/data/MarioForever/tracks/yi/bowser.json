@@ -1,1 +1,4 @@
-{ "loop_end": 88000 }
+{
+    "loop_start": 16000,
+    "loop_end": 154000
+}
