@@ -85,7 +85,12 @@ SDL_Window* WINDOW = NULL;
 SDL_GLContext GPU = NULL;
 
 static int window_width = SCREEN_WIDTH, window_height = SCREEN_HEIGHT;
-static int framerate = TICKRATE;
+static int framerate =
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    0;
+#else
+    TICKRATE;
+#endif
 static Bool vsync = FALSE;
 
 #define SHD(idx, nm) [idx] = {.name = (nm), -1}
