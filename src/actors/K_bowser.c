@@ -6,6 +6,21 @@
 #include "actors/K_player.h"
 #include "actors/K_projectiles.h"
 
+static const char* get_bowser_sprite(BowserAnimations animation, Uint8 frame) {
+    switch (animation) {
+    default:
+        return fmt("enemies/bowser/%i", frame % 2);
+    case BA_FIRE:
+        return fmt("enemies/bowser/fire/%i", frame % 6);
+    case BA_JUMP:
+        return fmt("enemies/bowser/jump/%i", frame % 3);
+    case BA_FIRE_END:
+        return fmt("enemies/bowser/fire/end/%i", frame % 2);
+    }
+
+    return NULL;
+}
+
 /* ======
    BOWSER
    ====== */
@@ -62,24 +77,26 @@ static void pre_tick(GameActor* actor) {
         VAL(actor, BOWSER_ANIMATION) = BA_FIRE_END;
         VAL(actor, BOWSER_FRAME) = Fx0;
 
-        GameActor* fire = create_actor(ACT_BOWSER_FIRE_PROJECTILE,
-            Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-17) : Int2Fx(17), Int2Fx(-38)}));
-        if (fire != NULL) {
-            fire->vel.x
-                = Fmul(ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-4) : Int2Fx(4), VAL(actor, BOWSER_PROJECTILE_SPEED));
+        for (ActorID i = 0, n = ANY_FLAG(actor, FLG_BOWSER_DEVASTATOR) ? 2 : 1; i < n; i++) {
+            GameActor* fire = create_actor(ACT_BOWSER_FIRE_PROJECTILE,
+                Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-17) : Int2Fx(17), Int2Fx(-38)}));
+            if (fire != NULL) {
+                fire->vel.x
+                    = Fmul(ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-4) : Int2Fx(4), VAL(actor, BOWSER_PROJECTILE_SPEED));
 
-            if (ANY_FLAG(actor, FLG_BOWSER_CHARGE)) {
-                VAL(fire, PROJECTILE_Y) = VAL(actor, BOWSER_Y) - Int2Fx(27);
-                const Sint32 r = rng(3);
-                if (r > 0)
-                    VAL(fire, PROJECTILE_Y) -= Int2Fx(4) + (r * Int2Fx(32));
+                if (ANY_FLAG(actor, FLG_BOWSER_CHARGE)) {
+                    VAL(fire, PROJECTILE_Y) = VAL(actor, BOWSER_Y) - Int2Fx(27);
+                    const Sint32 r = rng(3);
+                    if (r > 0)
+                        VAL(fire, PROJECTILE_Y) -= Int2Fx(4) + (r * Int2Fx(32));
 
-                FLAG_ON(fire, FLG_PROJECTILE_ALT);
-            } else {
-                VAL(fire, PROJECTILE_Y) = VAL(actor, BOWSER_Y) - Int2Fx(31) - (rng(3) * Int2Fx(32));
+                    FLAG_ON(fire, FLG_PROJECTILE_ALT);
+                } else {
+                    VAL(fire, PROJECTILE_Y) = VAL(actor, BOWSER_Y) - Int2Fx(31) - (rng(3) * Int2Fx(32));
+                }
+
+                FLAG_ON(fire, actor->flags & FLG_X_FLIP);
             }
-
-            FLAG_ON(fire, actor->flags & FLG_X_FLIP);
         }
 
         play_state_sound("bowser/fire", PLAY_POS, A_ACTOR(actor));
@@ -131,7 +148,7 @@ static void tick(GameActor* actor) {
     // EVENTS FROM "Level 1 - 4"
 
     // 800
-    const GameState* game_state = gamestate();
+    GameState* game_state = gamestate();
     if ((game_state->time % 50) == 0 && ANY_FLAG(actor, FLG_BOWSER_ACTIVE))
         VAL(actor, BOWSER_MOVE) = rng(64);
 
@@ -188,8 +205,14 @@ static void tick(GameActor* actor) {
         FLAG_OFF(actor, FLG_X_FLIP);
 
     // 817
-    if (ANY_FLAG(actor, FLG_BOWSER_ACTIVE))
-        VAL(actor, BOWSER_ATTACK) += rng(VAL(actor, BOWSER_ATTACK_CHANCE));
+    if (ANY_FLAG(actor, FLG_BOWSER_ACTIVE)) {
+        if (ANY_FLAG(actor, FLG_BOWSER_DEVASTATOR)) {
+            if (VAL(actor, BOWSER_ATTACK) <= 150 && VAL(actor, BOWSER_ANIMATION) != BA_FIRE)
+                VAL(actor, BOWSER_ATTACK) += VAL(actor, BOWSER_ATTACK_CHANCE);
+        } else {
+            VAL(actor, BOWSER_ATTACK) += rng(VAL(actor, BOWSER_ATTACK_CHANCE));
+        }
+    }
 
     // 818
     if (VAL(actor, BOWSER_ATTACK) > 150) {
@@ -230,6 +253,9 @@ static void tick(GameActor* actor) {
         if (get_num_actors(ACT_BOWSER) <= 1)
             set_sequence(GS_BOWSER_END, get_player(actor->player), 0);
 
+        if (ANY_FLAG(actor, FLG_BOWSER_DEVASTATOR))
+            game_state->flags |= GF_1UP;
+
         GameActor* dead = create_actor(ACT_BOWSER_DEAD, actor->pos);
         if (dead != NULL) {
             FLAG_ON(dead, actor->flags & FLG_X_FLIP);
@@ -244,27 +270,25 @@ static void tick(GameActor* actor) {
     displace_actor(actor, Int2Fx(10), FALSE);
 }
 
+static void post_tick(GameActor* actor) {
+    if (!ALL_FLAG(actor, FLG_BOWSER_ACTIVE | FLG_BOWSER_DEVASTATOR))
+        return;
+
+    GameActor* effect = create_actor(ACT_BOWSER_EFFECT, actor->pos);
+    if (effect == NULL)
+        return;
+
+    VAL(effect, BOWSER_EFFECT_ANIMATION) = VAL(actor, BOWSER_ANIMATION);
+    VAL(effect, BOWSER_EFFECT_FRAME) = Fx2Int(VAL(actor, BOWSER_FRAME));
+    FLAG_ON(effect, actor->flags & FLG_X_FLIP);
+
+    align_interp(effect, actor);
+}
+
 static void draw(const GameActor* actor) {
     batch_reset();
     batch_color(B_U4_ALPHA((1.f - ((float)VAL(actor, BOWSER_FADE) / 128.f)) * 255.f));
-
-    const char* sprite = NULL;
-    switch (VAL(actor, BOWSER_ANIMATION)) {
-    default:
-        sprite = fmt("enemies/bowser/%i", Fx2Int(VAL(actor, BOWSER_FRAME)) % 2);
-        break;
-    case BA_FIRE:
-        sprite = fmt("enemies/bowser/fire/%i", Fx2Int(VAL(actor, BOWSER_FRAME)) % 6);
-        break;
-    case BA_JUMP:
-        sprite = fmt("enemies/bowser/jump/%i", Fx2Int(VAL(actor, BOWSER_FRAME)) % 3);
-        break;
-    case BA_FIRE_END:
-        sprite = fmt("enemies/bowser/fire/end/%i", Fx2Int(VAL(actor, BOWSER_FRAME)) % 2);
-        break;
-    }
-
-    draw_actor(actor, sprite, FALSE);
+    draw_actor(actor, get_bowser_sprite(VAL(actor, BOWSER_ANIMATION), Fx2Int(VAL(actor, BOWSER_FRAME))), FALSE);
 }
 
 static void draw_hud(const GameActor* actor) {
@@ -343,6 +367,7 @@ const ActorTable TAB_BOWSER = {
     .create = create,
     .pre_tick = pre_tick,
     .tick = tick,
+    .post_tick = post_tick,
     .draw = draw,
     .draw_hud = draw_hud,
     .collide = collide,
@@ -422,4 +447,32 @@ const ActorTable TAB_BOWSER_DEAD = {
     .create = create_dead,
     .tick = tick_dead,
     .draw = draw_dead,
+};
+
+/* =============
+   BOWSER EFFECT
+   ============= */
+
+static void create_effect(GameActor* actor) {
+    actor->depth = 3;
+
+    VAL(actor, BOWSER_EFFECT_ALPHA) = Fx1;
+}
+
+static void tick_effect(GameActor* actor) {
+    VAL(actor, BOWSER_EFFECT_ALPHA) -= 2560;
+    if (VAL(actor, BOWSER_EFFECT_ALPHA) <= Fx0)
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_effect(const GameActor* actor) {
+    batch_reset();
+    batch_color(B_U4_ALPHA(Fx2Float(VAL(actor, BOWSER_EFFECT_ALPHA)) * 255.f));
+    draw_actor(actor, get_bowser_sprite(VAL(actor, BOWSER_EFFECT_ANIMATION), VAL(actor, BOWSER_EFFECT_FRAME)), FALSE);
+}
+
+const ActorTable TAB_BOWSER_EFFECT = {
+    .create = create_effect,
+    .tick = tick_effect,
+    .draw = draw_effect,
 };

@@ -56,6 +56,7 @@ typedef Uint16 GameFlags;
 #define GF_HARDCORE (GameFlags)(1U << 3)    // Hardcore Level
 #define GF_LOST_MAP (GameFlags)(1U << 4)    // Lost Map Level
 #define GF_FUNNY_TANKS (GameFlags)(1U << 5) // Funny Tanks? Level
+#define GF_1UP (GameFlags)(1U << 6)         // Free 1UPs
 
 typedef Uint8 GameSequenceType;
 enum {
@@ -128,6 +129,7 @@ enum {
     ACT_BOWSER_DEAD,
     ACT_BOWSER_FIRE_PROJECTILE,
     ACT_LAVA_WAVER,
+    ACT_BOWSER_EFFECT,
 
     ACT_SIZE,
 };

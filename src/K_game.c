@@ -845,6 +845,9 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         // Apply input
         player->last_input = player->input;
         player->input = in_blocking_sequence() ? 0 : inputs[i];
+
+        if ((game_state->flags & GF_1UP) && (game_state->time % 25) == 0)
+            give_points(NULL, player, -1);
     }
 
     GameActor* actor = get_actor(game_state->live_actors);
