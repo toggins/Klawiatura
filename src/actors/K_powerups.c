@@ -284,6 +284,86 @@ const ActorTable TAB_1UP_MUSHROOM = {
     .collide = collide_1up_mushroom,
 };
 
+/* =========
+   GREEN LUI
+   ========= */
+
+static void load_green_lui() {
+    load_sprite_num("items/green_lui/%u", 12, AKL_NEVER);
+    load_sprite_num("items/green_lui/bounce/%u", 6, AKL_NEVER);
+    load_sound("kick", AKL_NEVER);
+    load_sprite("grow", AKL_NEVER);
+}
+
+static void create_green_lui(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-15);
+    actor->box.start.y = Int2Fx(-30);
+    actor->box.end.x = Int2Fx(15);
+    actor->box.end.y = Fx1;
+
+    actor->vel.y = Int2Fx(-7);
+}
+
+static void tick_green_lui(GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+        return;
+
+    if (ANY_FLAG(actor, FLG_POWERUP_BOUNCE)) {
+        VAL(actor, POWERUP_FRAME) += 44;
+        if (VAL(actor, POWERUP_FRAME) >= 600) {
+            VAL(actor, POWERUP_FRAME) = 0;
+            FLAG_OFF(actor, FLG_POWERUP_BOUNCE);
+        }
+    } else {
+        ++VAL(actor, POWERUP_FRAME);
+    }
+
+    displace_actor(actor, Fx0, FALSE);
+
+    if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    if (actor->sprout <= 0) {
+        actor->vel.y += 13107;
+        if (TOUCHING(actor, TOUCH_BOTTOM)) {
+            actor->vel.y = Int2Fx(-7);
+            VAL(actor, POWERUP_FRAME) = 0;
+            FLAG_ON(actor, FLG_POWERUP_BOUNCE);
+
+            play_state_sound("kick", PLAY_POS, A_ACTOR(actor));
+        }
+    }
+}
+
+static void draw_green_lui(const GameActor* actor) {
+    if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY)) {
+        batch_reset();
+        draw_actor(actor,
+            ANY_FLAG(actor, FLG_POWERUP_BOUNCE)
+                ? fmt("items/green_lui/bounce/%i", (VAL(actor, POWERUP_FRAME) / 100) % 6)
+                : fmt("items/green_lui/%i", VAL(actor, POWERUP_FRAME) % 12),
+            FALSE);
+    }
+}
+
+static void collide_green_lui(GameActor* actor, GameActor* from) {
+    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_CALAMITY) || actor->sprout > 0)
+        return;
+
+    grow_player(from, actor, POW_GREEN_LUI);
+    FLAG_ON(actor, FLG_DESTROY);
+}
+
+const ActorTable TAB_GREEN_LUI = {
+    .load = load_green_lui,
+    .create = create_green_lui,
+    .tick = tick_green_lui,
+    .draw = draw_green_lui,
+    .collide = collide_green_lui,
+};
+
 /* ========
    BEETROOT
    ======== */
