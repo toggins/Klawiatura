@@ -42,7 +42,8 @@ static PlayerFrame get_player_frame(const GameActor* actor) {
 
 Bool hit_player(GameActor* actor) {
     if (actor == NULL || actor->type != ACT_PLAYER || VAL(actor, PLAYER_FLASH) > 0 || VAL(actor, PLAYER_STARMAN) > 0
-        || get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT) || in_blocking_sequence())
+        || get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT) || in_blocking_sequence()
+        || get_sequence()->type == GS_BOWSER_END)
     {
         return FALSE;
     }
