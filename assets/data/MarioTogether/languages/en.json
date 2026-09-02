@@ -108,6 +108,8 @@
     "hud.secret.hardcore_1": "ui/secret/en/hardcore_1",
     "hud.secret.goomba_party": "ui/secret/en/goomba_party",
     "hud.secret.3": "ui/secret/en/3",
+    "hud.secret.koopa_the_devastator": "ui/secret/en/koopa_the_devastator",
+    "hud.secret.8": "ui/secret/en/8",
     "hud.spectating": "Spectating",
 
     "bind.up": "Up",

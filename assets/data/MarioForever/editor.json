@@ -208,6 +208,11 @@
             "sprite": "scenery/hill",
             "depth": 61
         },
+        "Hills": {
+            "type": "background",
+            "sprite": "scenery/hills",
+            "depth": 62
+        },
         "Tree Small": {
             "type": "background",
             "sprite": "scenery/tree/small",
@@ -1016,7 +1021,7 @@
                 },
                 {
                     "name": "Hills",
-                    "items": ["Hill"]
+                    "items": ["Hill", "Hills"]
                 },
                 {
                     "name": "Lamps",
