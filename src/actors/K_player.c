@@ -283,11 +283,10 @@ static void update_animation(GameActor* actor) {
     }
 
     if (!TOUCHING(actor, TOUCH_BOTTOM)) {
-        const GameState* game_state = gamestate();
-
-        const GameActor* water = get_actor(game_state->water);
-        const Bool warping = get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
-        if (water != NULL && actor->pos.y > water->pos.y && !warping) {
+        const GameActor* water = get_actor(gamestate()->water);
+        if (water != NULL && actor->pos.y > water->pos.y && get_actor(VAL(actor, PLAYER_WARP)) == NULL
+            && !ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
+        {
             if (VAL(actor, PLAYER_ANIMATION) != PF_SWIM) {
                 VAL(actor, PLAYER_ANIMATION) = PF_SWIM;
                 VAL(actor, PLAYER_FRAME) = Fx0;
@@ -296,19 +295,6 @@ static void update_animation(GameActor* actor) {
         } else {
             VAL(actor, PLAYER_ANIMATION) = (actor->vel.y < Fx0) ? PF_JUMP : PF_FALL;
             VAL(actor, PLAYER_FRAME) = Fx0;
-        }
-
-        const GamePlayer* player = get_player(actor->player);
-        if (player != NULL && player->powerup == POW_GREEN_LUI && (game_state->time % 3) == 0 && !warping) {
-            GameActor* effect = create_actor(ACT_PLAYER_EFFECT, actor->pos);
-            if (effect != NULL) {
-                effect->player = player->id;
-                VAL(effect, PLAYER_EFFECT_CHARACTER) = gamecontext()->players[player->id].character;
-                VAL(effect, PLAYER_EFFECT_POWERUP) = player->powerup;
-                VAL(effect, PLAYER_EFFECT_FRAME) = get_player_frame(actor);
-                FLAG_ON(effect, actor->flags & FLG_X_FLIP);
-                align_interp(effect, actor);
-            }
         }
 
         return;
@@ -367,6 +353,22 @@ static void pre_tick(GameActor* actor) {
     }
 
     update_animation(actor);
+
+    const GamePlayer* player = get_player(actor->player);
+    if (player != NULL && player->powerup == POW_GREEN_LUI && !TOUCHING(actor, TOUCH_BOTTOM)
+        && (gamestate()->time % 3) == 0 && get_actor(VAL(actor, PLAYER_WARP)) == NULL
+        && !ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
+    {
+        GameActor* effect = create_actor(ACT_PLAYER_EFFECT, actor->pos);
+        if (effect != NULL) {
+            effect->player = player->id;
+            VAL(effect, PLAYER_EFFECT_CHARACTER) = gamecontext()->players[player->id].character;
+            VAL(effect, PLAYER_EFFECT_POWERUP) = player->powerup;
+            VAL(effect, PLAYER_EFFECT_FRAME) = get_player_frame(actor);
+            FLAG_ON(effect, actor->flags & FLG_X_FLIP);
+            align_interp(effect, actor);
+        }
+    }
 }
 
 static void tick(GameActor* actor) {
