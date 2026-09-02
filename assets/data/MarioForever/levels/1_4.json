@@ -1,6 +1,6 @@
 {
     "label": "@1-4",
-    "tracks": ["yi/castle", "kaosession"],
+    "tracks": [{ "track": "yi/castle" }, { "track": "kaosession" }],
     "warps": ["3"],
     "secrets": ["hud.secret.3"],
     "size": [8920, 480],

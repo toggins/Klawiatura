@@ -86,6 +86,6 @@ void pause_audio_state(Bool);
 
 void play_state_sound(const char*, PlayFlags, const float[2]);
 
-void play_state_track(PlayerID, const char*, PlayFlags);
+void play_state_track(PlayerID, const char*, PlayFlags, Uint32);
 void fade_state_track(PlayerID, float, float);
 void stop_state_track(PlayerID);

@@ -552,15 +552,21 @@ static void load_level(TinyHash key) {
     }
 
     jval = yyjson_obj_get(root, "tracks");
-    for (Uint64 i = 0, n = yyjson_arr_size(jval); i < n && i <= (GSTR_TRACK_END - GSTR_TRACK_START); i++) {
+    for (Uint64 i = 0, n = yyjson_arr_size(jval); i < n && i < MAX_GAME_TRACKS; i++) {
         yyjson_val* jval2 = yyjson_arr_get(jval, i);
-        if (!yyjson_is_str(jval2))
+        if (!yyjson_is_obj(jval2))
             continue;
 
-        const char* track = SDL_strdup(yyjson_get_str(jval2));
+        const char* otrack = yyjson_get_str(yyjson_obj_get(jval2, "track"));
+        if (otrack == NULL)
+            continue;
+
+        const char* track = SDL_strdup(otrack);
         EXPECT(track, "Failed to allocate level \"%s\" track %" SDL_PRIu64, level->name, i + 1);
         load_track(track, AKL_NEVER);
+
         level_info->strings[GSTR_TRACK_START + i] = track;
+        level_info->track_offsets[i] = yyjson_get_uint(yyjson_obj_get(jval2, "offset"));
     }
 
     jval = yyjson_obj_get(root, "warps");
@@ -568,7 +574,7 @@ static void load_level(TinyHash key) {
         level_info->warps[i] = StHashStr(yyjson_get_str(yyjson_arr_get(jval, i)));
 
     jval = yyjson_obj_get(root, "secrets");
-    for (Uint64 i = 0, n = yyjson_arr_size(jval); i < n && i <= (GSTR_SECRET_END - GSTR_SECRET_START); i++) {
+    for (Uint64 i = 0, n = yyjson_arr_size(jval); i < n && i < MAX_GAME_SECRETS; i++) {
         yyjson_val* jval2 = yyjson_arr_get(jval, i);
         if (!yyjson_is_str(jval2))
             continue;
@@ -952,11 +958,11 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
                 autoscroll->vel.x = autoscroll->vel.y = Fx0;
 
             if (game_state->flags & GF_LOST_MAP)
-                play_state_track(sequence->activator, "smw/lose2", 0);
+                play_state_track(sequence->activator, "smw/lose2", 0, 0);
             else if (game_state->flags & GF_HARDCORE)
-                play_state_track(sequence->activator, "smw/lose_hardcore", 0);
+                play_state_track(sequence->activator, "smw/lose_hardcore", 0, 0);
             else
-                play_state_track(sequence->activator, "smw/lose", 0);
+                play_state_track(sequence->activator, "smw/lose", 0, 0);
 
             break;
         }
@@ -975,7 +981,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         }
 
         case 211: {
-            play_state_track(sequence->activator, "smb/game_over", 0);
+            play_state_track(sequence->activator, "smb/game_over", 0, 0);
             break;
         }
 
@@ -1544,8 +1550,7 @@ GameState* gamestate() {
 }
 
 const char* get_game_secret(Uint8 sid) {
-    const GameStringID strid = GSTR_SECRET_START + sid;
-    return (strid < GSTR_SECRET_START || strid > GSTR_SECRET_END) ? NULL : level_info->strings[strid];
+    return (sid < 0 || sid > MAX_GAME_SECRETS) ? NULL : level_info->strings[GSTR_SECRET_START + sid];
 }
 
 GameSequence* get_sequence() {
@@ -1758,14 +1763,16 @@ void update_player_track(const GamePlayer* player) {
 
     const GameActor* actor = get_actor(player->actor);
     if (actor != NULL && actor->type == ACT_PLAYER && VAL(actor, PLAYER_STARMAN) > 0) {
-        play_state_track(player->id, "smw/starman", PLAY_LOOPING);
+        play_state_track(player->id, "smw/starman", PLAY_LOOPING, 0);
         return;
     }
 
-    if (player->track < 0 || player->track > (GSTR_TRACK_END - GSTR_TRACK_START))
+    if (player->track < 0 || player->track > MAX_GAME_TRACKS) {
         stop_state_track(player->id);
-    else
-        play_state_track(player->id, level_info->strings[GSTR_TRACK_START + player->track], PLAY_LOOPING);
+    } else {
+        play_state_track(player->id, level_info->strings[GSTR_TRACK_START + player->track], PLAY_LOOPING,
+            level_info->track_offsets[player->track]);
+    }
 }
 
 Bool all_players_dead() {
@@ -1851,7 +1858,7 @@ void win_player(GamePlayer* player) {
     set_sequence(GS_WIN, player, 0);
 
     set_view_player(player);
-    play_state_track(player->id, (game_state->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", 0);
+    play_state_track(player->id, (game_state->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", 0, 0);
 }
 
 // ======

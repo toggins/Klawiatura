@@ -267,6 +267,7 @@
     "editor.label": "Label",
     "editor.tracks": "Tracks",
     "editor.track": "Track {0}",
+    "editor.offset": "Offset",
     "editor.warps": "Warps",
     "editor.warp": "Warp {0}",
     "editor.secrets": "Secrets",

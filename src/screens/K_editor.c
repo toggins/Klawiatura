@@ -96,12 +96,13 @@ typedef struct {
 
 typedef struct {
     char label[256];
-    char tracks[GSTR_TRACK_END - GSTR_TRACK_START + 1][256];
+    char tracks[MAX_GAME_TRACKS][256];
     char warps[MAX_GAME_WARPS][256];
-    char secrets[GSTR_SECRET_END - GSTR_SECRET_START + 1][256];
+    char secrets[MAX_GAME_SECRETS][256];
 
     Bool ambush;
     unsigned int flags;
+    int track_offsets[MAX_GAME_TRACKS];
 
     int size[2], bounds[4];
     int time;
@@ -270,8 +271,14 @@ static void open_level(const char* filename) {
     jval = yyjson_obj_get(root, "tracks");
     for (size_t i = 0, n = yyjson_arr_size(jval); i < n && i < SDL_arraysize(elevel->tracks); i++) {
         yyjson_val* jval2 = yyjson_arr_get(jval, i);
-        if (yyjson_is_str(jval2))
-            SDL_strlcpy(elevel->tracks[i], yyjson_get_str(jval2), sizeof(elevel->tracks[i]));
+        if (!yyjson_is_obj(jval2))
+            continue;
+
+        const char* tname = yyjson_get_str(yyjson_obj_get(jval2, "track"));
+        if (tname != NULL)
+            SDL_strlcpy(elevel->tracks[i], tname, sizeof(elevel->tracks[i]));
+
+        elevel->track_offsets[i] = (int)yyjson_get_uint(yyjson_obj_get(jval2, "offset"));
     }
 
     jval = yyjson_obj_get(root, "warps");
@@ -471,11 +478,16 @@ static void save_level(const char* filename) {
             continue;
 
         yyjson_mut_val* jval = yyjson_mut_obj_add_arr(json, root, "tracks");
-        for (size_t j = 0; j < SDL_arraysize(elevel->tracks); j++)
-            if (elevel->tracks[j][0] == '\0')
+        for (size_t j = 0; j < SDL_arraysize(elevel->tracks); j++) {
+            if (elevel->tracks[j][0] == '\0') {
                 yyjson_mut_arr_add_null(json, jval);
-            else
-                yyjson_mut_arr_add_strcpy(json, jval, elevel->tracks[j]);
+            } else {
+                yyjson_mut_val* jval2 = yyjson_mut_arr_add_obj(json, jval);
+                yyjson_mut_obj_add_strcpy(json, jval2, "track", elevel->tracks[j]);
+                if (elevel->track_offsets[j] != 0)
+                    yyjson_mut_obj_add_uint(json, jval2, "offset", elevel->track_offsets[j]);
+            }
+        }
 
         break;
     }
@@ -1506,6 +1518,10 @@ static void draw_ui() {
                     for (size_t i = 0; i < SDL_arraysize(elevel->tracks); i++) {
                         ImGui_InputText(
                             LFMT("editor.track", 'd', i + 1), elevel->tracks[i], sizeof(elevel->tracks[i]), 0);
+                        ImGui_InputInt(fmt("%s##offs%zu", LFMT("editor.offset"), i), &elevel->track_offsets[i]);
+
+                        if (i < (SDL_arraysize(elevel->tracks) - 1))
+                            ImGui_Separator();
                     }
 
                     ImGui_TreePop();

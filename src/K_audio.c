@@ -413,21 +413,19 @@ void tick_audio_state(Bool rollback) {
             const SoundChannel* dschan = &desired_audio_state->sounds[i];
             SoundChannel* aschan = &actual_audio_state->sounds[i];
 
-            if (aschan->sound_key == dschan->sound_key && aschan->flags == dschan->flags) {
-                update_state_sound(i);
-            } else {
+            if (aschan->sound_key != dschan->sound_key || aschan->flags != dschan->flags) {
                 MIX_StopTrack(state_sound_channels[i], 0);
 
                 const Sound* sound = get_sound_key(dschan->sound_key);
                 if (sound != NULL) {
                     MIX_SetTrackAudio(state_sound_channels[i], sound->internal);
+                    MIX_PlayTrack(state_sound_channels[i], 0);
                     MIX_SetTrackPlaybackPosition(
                         state_sound_channels[i], MIX_TrackMSToFrames(state_sound_channels[i], (Sint64)dschan->offset));
-                    update_state_sound(i);
-                    MIX_PlayTrack(state_sound_channels[i], 0);
                 }
             }
 
+            update_state_sound(i);
             *aschan = *dschan;
         }
 
@@ -442,7 +440,6 @@ void tick_audio_state(Bool rollback) {
                 const Track* track = get_track_key(dtchan->track_key);
                 if (track != NULL) {
                     MIX_SetTrackAudio(tdata, track->internal);
-                    MIX_SetTrackPlaybackPosition(tdata, MIX_TrackMSToFrames(tdata, (Sint64)dtchan->offset));
                     if (dtchan->flags & PLAY_LOOPING) {
                         SDL_SetNumberProperty(
                             loop_properties, MIX_PROP_PLAY_LOOP_START_MILLISECOND_NUMBER, track->loop[0]);
@@ -452,6 +449,7 @@ void tick_audio_state(Bool rollback) {
                     } else {
                         MIX_PlayTrack(tdata, 0);
                     }
+                    MIX_SetTrackPlaybackPosition(tdata, MIX_TrackMSToFrames(tdata, (Sint64)dtchan->offset));
                 }
             }
 
@@ -561,7 +559,7 @@ void play_state_sound(const char* name, PlayFlags flags, const float pos[2]) {
     desired_audio_state->next_sound = (desired_audio_state->next_sound + 1) % MAX_STATE_SOUNDS;
 }
 
-void play_state_track(PlayerID pid, const char* name, PlayFlags flags) {
+void play_state_track(PlayerID pid, const char* name, PlayFlags flags, Uint32 offset) {
     if (pid < 0)
         return;
 
@@ -580,7 +578,7 @@ void play_state_track(PlayerID pid, const char* name, PlayFlags flags) {
         TrackChannel* dtchan = &desired_audio_state->tracks[i];
         if (key != dtchan->track_key || flags != dtchan->flags) {
             dtchan->track_key = key;
-            dtchan->offset = 0;
+            dtchan->offset = offset;
             dtchan->flags = flags;
 
             dtchan->volume[0] = dtchan->volume[1] = 0.f;

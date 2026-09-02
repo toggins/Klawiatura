@@ -1,6 +1,6 @@
 {
     "label": "@1-2",
-    "tracks": ["smw/underground"],
+    "tracks": [{ "track": "smw/underground" }],
     "warps": ["4", "hardcore_1"],
     "secrets": ["hud.secret.4", "hud.secret.hardcore_1"],
     "size": [8000, 1440],

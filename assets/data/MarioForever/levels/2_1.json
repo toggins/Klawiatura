@@ -1,6 +1,6 @@
 {
     "label": "@2-1",
-    "tracks": ["smw/overworld"],
+    "tracks": [{ "track": "smw/overworld" }],
     "warps": ["koopa_the_devastator"],
     "secrets": ["hud.secret.koopa_the_devastator"],
     "size": [8000, 480],

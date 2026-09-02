@@ -379,20 +379,14 @@ typedef Uint8 GameWarpID;
 #define MAX_GAME_WARPS 4
 
 typedef Uint8 GameStringID;
+#define MAX_GAME_TRACKS 4
+#define MAX_GAME_SECRETS 4
 enum {
     GSTR_LABEL,
     GSTR_TRACK_START,
-    GSTR_TRACK1 = GSTR_TRACK_START,
-    GSTR_TRACK2,
-    GSTR_TRACK3,
-    GSTR_TRACK4,
-    GSTR_TRACK_END = GSTR_TRACK4,
+    GSTR_TRACK_END = GSTR_TRACK_START + MAX_GAME_TRACKS - 1,
     GSTR_SECRET_START,
-    GSTR_SECRET1 = GSTR_SECRET_START,
-    GSTR_SECRET2,
-    GSTR_SECRET3,
-    GSTR_SECRET4,
-    GSTR_SECRET_END = GSTR_SECRET4,
+    GSTR_SECRET_END = GSTR_SECRET_START + MAX_GAME_SECRETS - 1,
     GSTR_SIZE,
 };
 
@@ -402,6 +396,7 @@ typedef struct {
 
     TinyHash warps[MAX_GAME_WARPS];
     const char* strings[GSTR_SIZE];
+    Uint32 track_offsets[MAX_GAME_TRACKS];
 
     Uint8 num_collisions;
     CollisionMap* collisions;
