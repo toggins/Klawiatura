@@ -545,7 +545,7 @@ static void load_level(TinyHash key) {
         if ((label[0] != '@' && label[0] != '$') || label[0] == '%') {
             // FIXME: This only loads the sprite for the current language.
             //        The label sprite will "disappear" when changing to another language.
-            load_sprite(LFMT(label + 1), AKL_NEVER);
+            load_sprite(LFMT(label), AKL_NEVER);
         }
 
         level_info->strings[GSTR_LABEL] = label;
