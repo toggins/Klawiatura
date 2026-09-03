@@ -132,6 +132,9 @@ enum {
     ACT_BOWSER_EFFECT,
     ACT_SINK,
     ACT_SINK_BUBBLE,
+    ACT_CHEEP_SPAWNER,
+    ACT_CHEEP,
+    ACT_CHEEP_BLUE,
 
     ACT_SIZE,
 };
