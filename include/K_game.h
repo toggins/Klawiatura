@@ -398,7 +398,7 @@ enum {
 };
 
 typedef struct {
-    FVec2 size, bowser_bounds;
+    FVec2 size, bowser_bounds, cheep_bounds;
     FRect bounds;
 
     TinyHash warps[MAX_GAME_WARPS];

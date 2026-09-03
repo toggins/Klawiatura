@@ -106,7 +106,7 @@ typedef struct {
 
     int size[2], bounds[4];
     int time;
-    int bowser_bounds[2];
+    int bowser_bounds[2], cheep_bounds[2];
 
     EditorMarker* markers;
 } EditorLevel;
@@ -322,6 +322,12 @@ static void open_level(const char* filename) {
     if (yyjson_is_arr(jval)) {
         elevel->bowser_bounds[0] = (int)yyjson_get_sint(yyjson_arr_get(jval, 0));
         elevel->bowser_bounds[1] = (int)yyjson_get_sint(yyjson_arr_get(jval, 1));
+    }
+
+    jval = yyjson_obj_get(root, "cheep_bounds");
+    if (yyjson_is_arr(jval)) {
+        elevel->cheep_bounds[0] = (int)yyjson_get_sint(yyjson_arr_get(jval, 0));
+        elevel->cheep_bounds[1] = (int)yyjson_get_sint(yyjson_arr_get(jval, 1));
     }
 
     jval = yyjson_obj_get(root, "backdrops");
@@ -552,6 +558,12 @@ static void save_level(const char* filename) {
         yyjson_mut_val* jval = yyjson_mut_obj_add_arr(json, root, "bowser_bounds");
         yyjson_mut_arr_add_uint(json, jval, elevel->bowser_bounds[0]);
         yyjson_mut_arr_add_uint(json, jval, elevel->bowser_bounds[1]);
+    }
+
+    if (elevel->cheep_bounds[0] != 0 || elevel->cheep_bounds[1] != 0) {
+        yyjson_mut_val* jval = yyjson_mut_obj_add_arr(json, root, "cheep_bounds");
+        yyjson_mut_arr_add_uint(json, jval, elevel->cheep_bounds[0]);
+        yyjson_mut_arr_add_uint(json, jval, elevel->cheep_bounds[1]);
     }
 
     yyjson_mut_val *jbackdrops = yyjson_mut_obj_add_arr(json, root, "backdrops"),
@@ -1547,8 +1559,10 @@ static void draw_ui() {
                 }
             }
 
-            if (ImGui_CollapsingHeader(LFMT("editor.constants"), 0))
+            if (ImGui_CollapsingHeader(LFMT("editor.constants"), 0)) {
                 ImGui_InputInt2(LFMT("editor.bowser_bounds"), elevel->bowser_bounds, 0);
+                ImGui_InputInt2(LFMT("editor.cheep_bounds"), elevel->cheep_bounds, 0);
+            }
 
             if (ImGui_CollapsingHeader(LFMT("editor.flags"), 0)) {
                 ImGui_CheckboxFlagsUintPtr(LFMT("editor.hardcore"), &elevel->flags, GF_HARDCORE);
