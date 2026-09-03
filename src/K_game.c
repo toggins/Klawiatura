@@ -1733,7 +1733,7 @@ Fixed get_player_jump(const GamePlayer* player) {
 
 const FVec2 nearest_player_pos(const FVec2 pos) {
     FVec2 ppos = {Fx0};
-    Fixed score = 0x7FFFFFFF;
+    Fixed score = FxUpper;
 
     for (PlayerID i = 0; i < game_context.num_players; i++) {
         const GamePlayer* player = get_player(i);
@@ -2182,7 +2182,7 @@ Bool in_player_x_view(const GamePlayer* player, Fixed x, Fixed edge) {
 
 Bool below_nearest_bounds(const FVec2 pos, Fixed edge) {
     FRect bounds = {0};
-    Fixed score = 0x7FFFFFFF;
+    Fixed score = FxUpper;
     Bool found = FALSE;
 
     for (PlayerID i = 0; i < game_context.num_players; i++) {
