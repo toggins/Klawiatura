@@ -8,6 +8,8 @@ enum {
     VAL_CHEEP_SPEED,
     VAL_CHEEP_ANGLE,
     VAL_CHEEP_FRAME,
+
+    VAL_CHEEP_SPAWN = 0,
 };
 
 #define FLG_CHEEP_ACTIVE CUSTOM_FLAG(0)
@@ -25,45 +27,79 @@ static void load_spawner() {
 
 static void create_spawner(GameActor* actor) {
     actor->vel.x = -73728;
+
+    VAL(actor, CHEEP_SPAWN) = 100;
 }
 
 static void tick_spawner(GameActor* actor) {
     const GameState* game_state = gamestate();
-    const GameActor* water = get_actor(game_state->water);
-    if (water == NULL || below_nearest_bounds(water->pos, Fx0) || (game_state->time % 100) != 0)
+    if (ANY_FLAG(actor, FLG_CHEEP_JUMP)
+        && ((VAL(actor, CHEEP_SPAWN) > 1 && (game_state->time % VAL(actor, CHEEP_SPAWN)) != 0) || rng(20) != 10))
+    {
         return;
+    }
+
+    const GameActor* water = get_actor(game_state->water);
+    if (!ANY_FLAG(actor, FLG_CHEEP_JUMP)
+        && (water == NULL || below_nearest_bounds(water->pos, Fx0)
+            || (VAL(actor, CHEEP_SPAWN) > 1 && (game_state->time % VAL(actor, CHEEP_SPAWN)) != 0)))
+    {
+        return;
+    }
 
     const PlayerID n = gamecontext()->num_players;
     if (get_num_actors(ACT_CHEEP) >= (10 * n))
         return;
 
-    Fixed edge = Fx0;
-    if (actor->vel.x < Fx0) {
-        edge = FxLower;
-        for (PlayerID i = 0; i < n; i++) {
-            const GamePlayer* player = get_player(i);
-            if (player != NULL) {
-                edge = Fmax(edge, Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-                                      player->bounds.end.x - F_HALF_SCREEN_WIDTH));
-            }
+    Bool found = FALSE;
+    Fixed edge = (actor->vel.x < Fx0) ? FxLower : FxUpper;
+    for (PlayerID i = 0; i < n; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const LevelInfo* level_info = levelinfo();
+        if (level_info->cheep_bounds.x != level_info->cheep_bounds.y
+            && (player->pos.x <= level_info->cheep_bounds.x || player->pos.x >= level_info->cheep_bounds.y))
+        {
+            continue;
         }
-    } else if (actor->vel.x > Fx0) {
-        edge = FxUpper;
-        for (PlayerID i = 0; i < n; i++) {
-            const GamePlayer* player = get_player(i);
-            if (player != NULL) {
-                edge = Fmin(edge, Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-                                      player->bounds.end.x - F_HALF_SCREEN_WIDTH));
-            }
-        }
+
+        edge = (actor->vel.x < Fx0) ? Fmax(edge, Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+                                                     player->bounds.end.x - F_HALF_SCREEN_WIDTH))
+                                    : Fmin(edge, Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+                                                     player->bounds.end.x - F_HALF_SCREEN_WIDTH));
+        found = TRUE;
     }
 
-    FVec2 cpos = Vsub(actor->pos, water->pos);
+    if (!found)
+        return;
+
+    FVec2 cpos = actor->pos;
     cpos.x += edge - F_HALF_SCREEN_WIDTH;
-    cpos.y += water->pos.y + Int2Fx(rng(300));
+    if (ANY_FLAG(actor, FLG_CHEEP_JUMP)) {
+        cpos.x -= Int2Fx(rng(100));
+    } else {
+        cpos = Vsub(cpos, water->pos);
+        cpos.y += water->pos.y + Int2Fx(rng(300));
+    }
+
     GameActor* cheep = create_actor(ACT_CHEEP, cpos);
     if (cheep == NULL)
         return;
+
+    if (ANY_FLAG(actor, FLG_CHEEP_JUMP)) {
+        cheep->vel.x = Fx1 + Int2Fx(rng(5));
+        cheep->vel.y = Int2Fx(-5) - Int2Fx(rng(7));
+
+        if (actor->vel.x < 0) {
+            cheep->vel.x = -cheep->vel.x;
+            FLAG_ON(cheep, FLG_X_FLIP);
+        }
+
+        FLAG_ON(cheep, FLG_CHEEP_JUMP);
+        return;
+    }
 
     cheep->vel.x = actor->vel.x;
     if (actor->vel.x > Fx0) {
@@ -101,10 +137,36 @@ static void create(GameActor* actor) {
 }
 
 static void tick(GameActor* actor) {
-    ++VAL(actor, CHEEP_FRAME);
+    VAL(actor, CHEEP_FRAME) += ANY_FLAG(actor, FLG_CHEEP_JUMP) ? 7 : 1;
+
+    if (ANY_FLAG(actor, FLG_CHEEP_JUMP))
+        move_actor(actor, Vadd(actor->pos, actor->vel));
 
     if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
         FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    if (ANY_FLAG(actor, FLG_CHEEP_JUMP)) {
+        const GameActor* water = get_actor(gamestate()->water);
+        if (ANY_FLAG(actor, FLG_CHEEP_TOUCHED_WATER)) {
+            if (water == NULL || (actor->pos.y + actor->box.end.y) <= water->pos.y
+                || (actor->pos.y + actor->box.start.y) >= (water->pos.y + Int2Fx(16)))
+            {
+                FLAG_OFF(actor, FLG_CHEEP_TOUCHED_WATER);
+            }
+        } else if (water != NULL && (actor->pos.y + actor->box.end.y) > water->pos.y
+                   && (actor->pos.y + actor->box.start.y) < (water->pos.y + Int2Fx(16)))
+        {
+            create_actor(ACT_WATER_SPLASH, actor->pos);
+            FLAG_ON(actor, FLG_CHEEP_TOUCHED_WATER);
+        }
+
+        actor->vel.y += 13107;
+
+        if (!in_any_view(actor->pos, Int2Fx(-96), FALSE))
+            FLAG_ON(actor, FLG_DESTROY);
+
         return;
     }
 
@@ -174,7 +236,10 @@ static void tick(GameActor* actor) {
 
 static void draw(const GameActor* actor) {
     batch_reset();
-    draw_actor(actor, fmt("enemies/cheep/%i", (VAL(actor, CHEEP_FRAME) / 2) % 24), FALSE);
+    draw_actor(actor,
+        ANY_FLAG(actor, FLG_CHEEP_JUMP) ? fmt("enemies/cheep/alt/%i", (VAL(actor, CHEEP_FRAME) / 50) % 2)
+                                        : fmt("enemies/cheep/%i", (VAL(actor, CHEEP_FRAME) / 2) % 24),
+        FALSE);
 }
 
 static void draw_dead(const GameActor* actor) {
@@ -188,7 +253,13 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
 
     case ACT_PLAYER: {
-        maybe_hit_player(actor, from);
+        if (ANY_FLAG(actor, FLG_CHEEP_JUMP)) {
+            if (check_stomp(actor, from, Int2Fx(-10), 100, TRUE))
+                kill_enemy(actor, from, FALSE);
+        } else {
+            maybe_hit_player(actor, from);
+        }
+
         break;
     }
 

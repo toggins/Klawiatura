@@ -187,6 +187,11 @@
             "sprite": "tiles/bridge/gray",
             "depth": 20
         },
+        "Bridge Purple": {
+            "type": "tile",
+            "sprite": "tiles/bridge/purple",
+            "depth": 20
+        },
         "Support Left": {
             "type": "background",
             "sprite": "scenery/support_left",
@@ -1030,7 +1035,20 @@
         "Cheep Spawner": {
             "type": "actor",
             "id": 60,
-            "sprite": "editor/cheep"
+            "sprite": "editor/cheep",
+            "values": [
+                {
+                    "name": "Spawn Rate",
+                    "index": 0,
+                    "default": 100
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Jump",
+                    "index": 8
+                }
+            ]
         },
         "Cheep Blue": {
             "type": "actor",
@@ -1110,7 +1128,7 @@
                 },
                 {
                     "name": "Bridge",
-                    "items": ["Bridge Gray"]
+                    "items": ["Bridge Gray", "Bridge Purple"]
                 },
                 {
                     "name": "Sand",
