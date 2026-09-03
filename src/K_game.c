@@ -2952,7 +2952,7 @@ Sint32 rng(Sint32 n) {
 #define BAD_ACTOR(actor) ((actor) == NULL || (actor)->id < 0 || (actor)->id >= MAX_ACTORS)
 
 const FVec2 get_interp(const GameActor* actor) {
-    return (BAD_ACTOR(actor)) ? (FVec2){0} : interp_state->actors[actor->id].current;
+    return (BAD_ACTOR(actor)) ? (FVec2){Fx0} : interp_state->actors[actor->id].current;
 }
 
 void skip_interp(const GameActor* actor) {
