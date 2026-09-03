@@ -9,6 +9,7 @@
 #include "actors/K_powerups.h"
 #include "actors/K_projectiles.h"
 #include "actors/K_warp.h"
+#include "actors/K_water.h"
 
 static PlayerFrame get_player_frame(const GameActor* actor) {
     if (actor == NULL)
