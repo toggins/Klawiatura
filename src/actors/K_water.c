@@ -1,14 +1,8 @@
 #include "K_audio.h"
-#include "K_game.h"
 #include "K_string.h"
 #include "K_video.h"
 
-enum {
-    VAL_WATER_TO,
-    VAL_WATER_SPEED,
-};
-
-#define FLG_WATER_UNSWIMMABLE CUSTOM_FLAG(0)
+#include "actors/K_water.h"
 
 /* =====
    WATER
