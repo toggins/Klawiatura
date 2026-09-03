@@ -65,10 +65,9 @@ static void tick_spawner(GameActor* actor) {
             continue;
         }
 
-        edge = (actor->vel.x < Fx0) ? Fmax(edge, Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-                                                     player->bounds.end.x - F_HALF_SCREEN_WIDTH))
-                                    : Fmin(edge, Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-                                                     player->bounds.end.x - F_HALF_SCREEN_WIDTH));
+        const Fixed px = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+            player->bounds.end.x - F_HALF_SCREEN_WIDTH);
+        edge = (actor->vel.x < Fx0) ? Fmax(edge, px) : Fmin(edge, px);
         found = TRUE;
     }
 
@@ -184,34 +183,19 @@ static void tick(GameActor* actor) {
         actor->vel.y = Fmul(VAL(actor, CHEEP_SPEED), -Fsin(VAL(actor, CHEEP_ANGLE)));
     }
 
-    if (actor->vel.x > Fx0) {
-        Fixed edge = FxLower;
-        for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
-            const GamePlayer* player = get_player(i);
-            if (player != NULL) {
-                edge = Fmax(edge, Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-                                      player->bounds.end.x - F_HALF_SCREEN_WIDTH)
-                                      + F_HALF_SCREEN_WIDTH + Int2Fx(100));
-            }
+    Fixed edge = (actor->vel.x > Fx0) ? FxLower : FxUpper;
+    for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player != NULL) {
+            const Fixed px = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
+                player->bounds.end.x - F_HALF_SCREEN_WIDTH);
+            edge = (actor->vel.x > Fx0) ? Fmax(edge, px + F_HALF_SCREEN_WIDTH + Int2Fx(100))
+                                        : Fmin(edge, px - F_HALF_SCREEN_WIDTH - Int2Fx(100));
         }
-        if (actor->pos.x > edge) {
-            FLAG_ON(actor, FLG_DESTROY);
-            return;
-        }
-    } else if (actor->vel.x < Fx0) {
-        Fixed edge = FxUpper;
-        for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
-            const GamePlayer* player = get_player(i);
-            if (player != NULL) {
-                edge = Fmin(edge, Fclamp(player->pos.x, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-                                      player->bounds.end.x - F_HALF_SCREEN_WIDTH)
-                                      - F_HALF_SCREEN_WIDTH - Int2Fx(100));
-            }
-        }
-        if (actor->pos.x < edge) {
-            FLAG_ON(actor, FLG_DESTROY);
-            return;
-        }
+    }
+    if ((actor->vel.x > Fx0 && actor->pos.x > edge) || (actor->vel.x <= Fx0 && actor->pos.x < edge)) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
     }
 
     const GameActor* water = get_actor(game_state->water);
