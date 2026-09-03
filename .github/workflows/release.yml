@@ -60,7 +60,7 @@ jobs:
         uses: awalsh128/cache-apt-pkgs-action@latest
         if: matrix.os == 'ubuntu-latest'
         with:
-          version: 2.2
+          version: 2.3
           packages: ${{ env.CRAZY_AHH_DEPS }}
 
       - name: Source pasture-raised gluten-free emsdk
