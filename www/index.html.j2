@@ -24,6 +24,8 @@
 </head>
 
 <body>
+    <div id="matrix"></div>
+
     <div id="container">
         <div id="error" style="display: none;">
             <b>Game crashed!</b><br>
@@ -48,6 +50,26 @@
                     var canvas = document.getElementById("canvas");
                     canvas.style.opacity = 0.5;
                     canvas.style.backgroundImage = "none";
+                },
+                print: function (text) {
+                    console.log(text);
+
+                    matrix.append(document.createTextNode(text));
+                    matrix.append(document.createElement("br"));
+
+                    matrix.scrollTop = matrix.scrollHeight;
+                },
+                printErr: function (text) {
+                    console.error(text);
+
+                    const span = document.createElement("span");
+                    span.textContent = text + "\n";
+                    span.className = "error";
+
+                    matrix.append(span);
+                    matrix.append(document.createElement("br"));
+
+                    matrix.scrollTop = matrix.scrollHeight;
                 }
             };
         </script>
