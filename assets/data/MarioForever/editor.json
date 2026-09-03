@@ -25,6 +25,13 @@
             "max_scale": [32767, 102],
             "tile": [true, false]
         },
+        "Underwater Background": {
+            "type": "background",
+            "sprite": "backgrounds/underwater",
+            "depth": 190,
+            "max_scale": [32767, 162],
+            "tile": [true, false]
+        },
         "Grass Top Left": {
             "type": "tile",
             "sprite": "tiles/grass/0",
@@ -80,6 +87,11 @@
             "sprite": "tiles/block/blue",
             "depth": 20
         },
+        "Coral Block": {
+            "type": "tile",
+            "sprite": "tiles/block/coral",
+            "depth": 20
+        },
         "Pipe Green Top": {
             "type": "tile",
             "sprite": "tiles/pipe/green/v0",
@@ -93,6 +105,21 @@
         "Pipe Green Bottom": {
             "type": "tile",
             "sprite": "tiles/pipe/green/v2",
+            "depth": 20
+        },
+        "Pipe Green Left": {
+            "type": "tile",
+            "sprite": "tiles/pipe/green/h0",
+            "depth": 20
+        },
+        "Pipe Green Middle 2": {
+            "type": "tile",
+            "sprite": "tiles/pipe/green/h1",
+            "depth": 20
+        },
+        "Pipe Green Right": {
+            "type": "tile",
+            "sprite": "tiles/pipe/green/h2",
             "depth": 20
         },
         "Pipe Purple Top": {
@@ -202,6 +229,41 @@
                 [163, 8, 8, 255],
                 [163, 8, 8, 255]
             ]
+        },
+        "Sand Top Left": {
+            "type": "tile",
+            "sprite": "tiles/sand/0",
+            "depth": 20
+        },
+        "Sand Top": {
+            "type": "tile",
+            "sprite": "tiles/sand/1",
+            "depth": 20
+        },
+        "Sand Top Right": {
+            "type": "tile",
+            "sprite": "tiles/sand/2",
+            "depth": 20
+        },
+        "Sand Left": {
+            "type": "tile",
+            "sprite": "tiles/sand/3",
+            "depth": 20
+        },
+        "Sand Middle": {
+            "type": "tile",
+            "sprite": "tiles/sand/4",
+            "depth": 20
+        },
+        "Sand Right": {
+            "type": "tile",
+            "sprite": "tiles/sand/5",
+            "depth": 20
+        },
+        "Coral": {
+            "type": "tile",
+            "sprite": "tiles/coral",
+            "depth": 20
         },
         "Hill": {
             "type": "background",
@@ -324,6 +386,32 @@
             "type": "background",
             "sprite": "scenery/pillar/small/2",
             "depth": 50
+        },
+        "Corals": {
+            "type": "background",
+            "sprite": "scenery/corals",
+            "depth": 192,
+            "max_scale": [32767, 256],
+            "tile": [true, false],
+            "colors": [
+                [255, 255, 255, 109],
+                [255, 255, 255, 109],
+                [255, 255, 255, 109],
+                [255, 255, 255, 109]
+            ]
+        },
+        "Corals 2": {
+            "type": "background",
+            "sprite": "scenery/corals2",
+            "depth": 193,
+            "max_scale": [32767, 352],
+            "tile": [true, false],
+            "colors": [
+                [255, 255, 255, 53],
+                [255, 255, 255, 53],
+                [255, 255, 255, 53],
+                [255, 255, 255, 53]
+            ]
         },
         "Player Spawn": {
             "type": "actor",
@@ -577,6 +665,11 @@
                     "index": 5
                 }
             ]
+        },
+        "Sink": {
+            "type": "actor",
+            "id": 58,
+            "sprite": "editor/sink"
         },
         "Item Block": {
             "type": "actor",
@@ -933,13 +1026,30 @@
                     "index": 14
                 }
             ]
+        },
+        "Cheep Spawner": {
+            "type": "actor",
+            "id": 60,
+            "sprite": "editor/cheep"
+        },
+        "Cheep Blue": {
+            "type": "actor",
+            "id": 62,
+            "sprite": "enemies/cheep/blue/0",
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2,
+                    "default": true
+                }
+            ]
         }
     },
 
     "items": [
         {
             "name": "Backgrounds",
-            "items": ["Gradient Background", "Cave Background", "Cliff Background"]
+            "items": ["Gradient Background", "Cave Background", "Cliff Background", "Underwater Background"]
         },
         {
             "name": "Tiles",
@@ -960,7 +1070,7 @@
                 },
                 {
                     "name": "Blocks",
-                    "items": ["Brown Block", "Blue Block"]
+                    "items": ["Brown Block", "Blue Block", "Coral Block", "Coral"]
                 },
                 {
                     "name": "Pipes",
@@ -1001,6 +1111,10 @@
                 {
                     "name": "Bridge",
                     "items": ["Bridge Gray"]
+                },
+                {
+                    "name": "Sand",
+                    "items": ["Sand Top Left", "Sand Top", "Sand Top Right", "Sand Left", "Sand Middle", "Sand Right"]
                 }
             ]
         },
@@ -1051,6 +1165,10 @@
                     "name": "Pillar",
                     "items": ["Pillar Big", "Pillar Small Middle", "Pillar Small Bottom"]
                 },
+                {
+                    "name": "Corals",
+                    "items": ["Corals", "Corals 2"]
+                },
                 "Bush",
                 "Waterfall"
             ]
@@ -1084,6 +1202,10 @@
                     "name": "Lava",
                     "items": ["Lava", "Lava Bottom"]
                 },
+                {
+                    "name": "Cheep",
+                    "items": ["Cheep Spawner", "Cheep Blue", "Cheep Green", "Cheep Spiky"]
+                },
                 "Goomba",
                 "Koopa",
                 "Piranha Plant",
@@ -1110,7 +1232,8 @@
                 "Warp",
                 "Checkpoint",
                 "Autoscroll",
-                "Goomba Party"
+                "Goomba Party",
+                "Sink"
             ]
         }
     ]
