@@ -85,7 +85,7 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
     GameActor* dead = create_actor(ACT_DEAD, actor->pos);
     if (dead != NULL) {
         VAL(dead, DEAD_TYPE) = actor->type;
-        dead->flags = actor->flags & ~(FLG_DESTROY | FLG_X_FLIP | FLG_FREEZE);
+        dead->flags = actor->flags & ~(FLG_DESTROY | FLG_FREEZE);
 
         if (kick) {
             const Fixed r = Int2Fx(rng(5));
@@ -213,7 +213,27 @@ void hit_fireball(GameActor* actor, GameActor* from, Sint32 points) {
 }
 
 void hit_beetroot(GameActor* actor, GameActor* from, Sint32 points) {
-    hit_fireball(actor, from, points);
+    if (actor == NULL || from == NULL || ANY_FLAG(from, FLG_PROJECTILE_SINK))
+        return;
+
+    GamePlayer* player = get_player(from->player);
+    if (player == NULL)
+        return;
+
+    give_points(actor, player, points);
+    kill_enemy(actor, from, TRUE);
+    FLAG_ON(from, FLG_PROJECTILE_HIT | FLG_PROJECTILE_HIT_ENEMY);
+}
+
+void block_fireball(GameActor* from) {
+    if (from != NULL && get_player(from->player) != NULL) {
+        FLAG_ON(from, FLG_PROJECTILE_HIT | FLG_PROJECTILE_HIT_BLOCK);
+        play_state_sound("bump", PLAY_POS, A_ACTOR(from));
+    }
+}
+
+void block_beetroot(GameActor* from) {
+    block_fireball(from);
 }
 
 void mark_ambush_winner(GameActor* actor) {
