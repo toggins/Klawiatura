@@ -627,7 +627,7 @@ static void tick(GameActor* actor) {
 
     // 221 (modified), 222 (modified)
     if (ANY_PRESSED(player, GI_JUMP) && water != NULL && actor->pos.y >= water->pos.y && !TOUCHING(actor, TOUCH_TOP)
-        && !ANY_INPUT(player, GI_DOWN) && !ANY_FLAG(actor, FLG_WATER_UNSWIMMABLE))
+        && !ANY_INPUT(player, GI_DOWN) && !ANY_FLAG(water, FLG_WATER_UNSWIMMABLE))
     {
         actor->vel.y = Fmul(((actor->pos.y + actor->box.end.y) <= water->pos.y
                                 || (actor->pos.y + actor->box.start.y) >= (water->pos.y + Int2Fx(16)))
