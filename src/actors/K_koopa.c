@@ -28,9 +28,9 @@ static void load_special(const GameActor* actor) {
 }
 
 static void create(GameActor* actor) {
-    actor->box.start.x = Int2Fx(-13);
+    actor->box.start.x = Int2Fx(-16);
     actor->box.start.y = Int2Fx(-27);
-    actor->box.end.x = Int2Fx(19);
+    actor->box.end.x = Int2Fx(16);
     actor->box.end.y = Fx1;
 
     actor->depth = Fx1;
@@ -146,7 +146,7 @@ static void load_shell() {
 static void create_shell(GameActor* actor) {
     actor->box.start.x = Int2Fx(-16);
     actor->box.start.y = Int2Fx(-27);
-    actor->box.end.x = Int2Fx(17);
+    actor->box.end.x = Int2Fx(16);
     actor->box.end.y = Fx1;
 
     actor->depth = Fx1;
