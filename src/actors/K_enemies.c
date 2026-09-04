@@ -142,7 +142,7 @@ Bool maybe_hit_player(GameActor* actor, GameActor* from) {
 }
 
 void hit_bump(GameActor* actor, GameActor* from, Sint32 points) {
-    if (actor == NULL || from == NULL)
+    if (actor == NULL || from == NULL || actor->sprout > 0)
         return;
 
     GamePlayer* player = get_player(from->player);
