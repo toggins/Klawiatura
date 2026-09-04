@@ -3,6 +3,7 @@
 #include "K_video.h"
 
 #include "actors/K_effects.h"
+#include "actors/K_enemies.h"
 #include "actors/K_player.h"
 #include "actors/K_projectiles.h"
 
@@ -254,20 +255,15 @@ static void collide_bowser_fire(GameActor* actor, GameActor* from) {
     switch (from->type) {
     default:
         break;
-
-    case ACT_PLAYER: {
+    case ACT_PLAYER:
         hit_player(from);
         break;
-    }
-
-    case ACT_FIREBALL_PROJECTILE: {
-        if (get_player(from->player) != NULL) {
-            FLAG_ON(from, FLG_PROJECTILE_HIT);
-            play_state_sound("kick", PLAY_POS, A_ACTOR(from));
-        }
-
+    case ACT_FIREBALL_PROJECTILE:
+        block_fireball(from);
         break;
-    }
+    case ACT_BEETROOT_PROJECTILE:
+        block_beetroot(from);
+        break;
     }
 }
 
