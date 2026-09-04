@@ -3,7 +3,12 @@
 #include "K_video.h"
 
 #include "actors/K_player.h"
-#include "actors/K_spring.h"
+
+enum {
+    VAL_SPRING_FRAME
+};
+
+#define FLG_SPRING_BOUNCE CUSTOM_FLAG(0)
 
 static void load() {
     load_sprite("markers/spring", AKL_NEVER);
