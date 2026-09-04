@@ -290,6 +290,11 @@
             "sprite": "scenery/tree/big",
             "depth": 32
         },
+        "Tree Tall": {
+            "type": "background",
+            "sprite": "scenery/tree/tall",
+            "depth": 32
+        },
         "Bush": {
             "type": "actor",
             "id": 17,
@@ -675,6 +680,11 @@
             "type": "actor",
             "id": 58,
             "sprite": "editor/sink"
+        },
+        "Spring": {
+            "type": "actor",
+            "id": 63,
+            "sprite": "markers/spring"
         },
         "Item Block": {
             "type": "actor",
@@ -1145,7 +1155,7 @@
                 },
                 {
                     "name": "Trees",
-                    "items": ["Tree Small", "Tree Big"]
+                    "items": ["Tree Small", "Tree Big", "Tree Tall"]
                 },
                 {
                     "name": "Fence",
@@ -1251,7 +1261,8 @@
                 "Checkpoint",
                 "Autoscroll",
                 "Goomba Party",
-                "Sink"
+                "Sink",
+                "Spring"
             ]
         }
     ]
