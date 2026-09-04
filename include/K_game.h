@@ -135,6 +135,7 @@ enum {
     ACT_CHEEP_SPAWNER,
     ACT_CHEEP,
     ACT_CHEEP_BLUE,
+    ACT_SPRING,
 
     ACT_SIZE,
 };

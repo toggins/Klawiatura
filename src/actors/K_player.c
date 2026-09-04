@@ -788,6 +788,10 @@ static void tick(GameActor* actor) {
             move_actor(actor, spos);
     }
 
+    VAL_TICK(actor, PLAYER_SPRING);
+    if (ANY_PRESSED(player, GI_JUMP))
+        VAL(actor, PLAYER_SPRING) = 7;
+
     displace_actor(actor, Int2Fx(10), TRUE);
 
     if (autoscroll != NULL && get_sequence()->type != GS_WIN) {
