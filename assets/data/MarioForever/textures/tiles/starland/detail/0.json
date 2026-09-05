@@ -1,0 +1,5 @@
+{
+    "texture": "tiles/starland",
+    "size": [12, 12],
+    "uvs": [99, 1, 111, 13]
+}

@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/tree/starland/light",
+    "size": [124, 120],
+    "offset": [62, 58],
+    "uvs": [1, 123, 125, 243]
+}

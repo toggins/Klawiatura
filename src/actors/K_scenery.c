@@ -305,3 +305,50 @@ const ActorTable TAB_CLOUD_FACE = {
     .tick = tick_cloud_face,
     .draw = draw_cloud_face,
 };
+
+/* ==============
+   STARLAND LIGHT
+   ============== */
+
+static void load_starland_light() {
+    load_sprite_num("scenery/tree/starland/light/%u", 3, AKL_NEVER);
+}
+
+static void create_starland_light(GameActor* actor) {
+    actor->depth = 2097151;
+}
+
+static void draw_starland_light(const GameActor* actor) {
+    batch_reset();
+    batch_color(B_U4_ALPHA(135));
+    draw_actor(actor, fmt("scenery/tree/starland/light/%i", (gamestate()->time / 2) % 3), FALSE);
+}
+
+const ActorTable TAB_STARLAND_LIGHT = {
+    .load = load_starland_light,
+    .create = create_starland_light,
+    .draw = draw_starland_light,
+};
+
+/* =============
+   STARLAND GLOW
+   ============= */
+
+static void load_starland_glow() {
+    load_sprite_num("scenery/tree/starland/glow/%u", 3, AKL_NEVER);
+}
+
+static void create_starland_glow(GameActor* actor) {
+    actor->depth = 1310719;
+}
+
+static void draw_starland_glow(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("scenery/tree/starland/glow/%i", (gamestate()->time / 2) % 3), FALSE);
+}
+
+const ActorTable TAB_STARLAND_GLOW = {
+    .load = load_starland_glow,
+    .create = create_starland_glow,
+    .draw = draw_starland_glow,
+};

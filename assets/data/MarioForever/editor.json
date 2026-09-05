@@ -39,6 +39,13 @@
             "max_scale": [32767, 480],
             "tile": [true, false]
         },
+        "Starland Background": {
+            "type": "background",
+            "sprite": "backgrounds/starland",
+            "depth": 190,
+            "max_scale": [32767, 197],
+            "tile": [true, false]
+        },
         "Grass Top Left": {
             "type": "tile",
             "sprite": "tiles/grass/0",
@@ -307,9 +314,69 @@
             "sprite": "tiles/castle/5",
             "depth": 20
         },
+        "Starland Top Left": {
+            "type": "tile",
+            "sprite": "tiles/starland/0",
+            "depth": 20
+        },
+        "Starland Top": {
+            "type": "tile",
+            "sprite": "tiles/starland/1",
+            "depth": 20
+        },
+        "Starland Top Right": {
+            "type": "tile",
+            "sprite": "tiles/starland/2",
+            "depth": 20
+        },
+        "Starland Left": {
+            "type": "tile",
+            "sprite": "tiles/starland/3",
+            "depth": 20
+        },
+        "Starland Middle": {
+            "type": "tile",
+            "sprite": "tiles/starland/4",
+            "depth": 20
+        },
+        "Starland Right": {
+            "type": "tile",
+            "sprite": "tiles/starland/5",
+            "depth": 20
+        },
+        "Starland Detail": {
+            "type": "background",
+            "sprite": "tiles/starland/detail/0",
+            "depth": 19
+        },
+        "Starland Detail 2": {
+            "type": "background",
+            "sprite": "tiles/starland/detail/1",
+            "depth": 19
+        },
+        "Starland Detail 3": {
+            "type": "background",
+            "sprite": "tiles/starland/detail/2",
+            "depth": 19
+        },
+        "Starland Detail 4": {
+            "type": "background",
+            "sprite": "tiles/starland/detail/3",
+            "depth": 21
+        },
+        "Starland Detail 5": {
+            "type": "background",
+            "sprite": "tiles/starland/detail/4",
+            "depth": 19
+        },
         "Hill": {
             "type": "background",
             "sprite": "scenery/hill",
+            "depth": 61
+        },
+        "Starland Hill": {
+            "type": "background",
+            "sprite": "scenery/hill/starland",
             "depth": 61
         },
         "Hills": {
@@ -336,6 +403,26 @@
             "type": "background",
             "sprite": "scenery/tree/tall",
             "depth": 32
+        },
+        "Starland Tree Small": {
+            "type": "background",
+            "sprite": "scenery/tree/starland/small",
+            "depth": 32
+        },
+        "Starland Tree Big": {
+            "type": "background",
+            "sprite": "scenery/tree/starland/big",
+            "depth": 32
+        },
+        "Starland Tree Light": {
+            "type": "actor",
+            "id": 72,
+            "sprite": "scenery/tree/starland/light/0"
+        },
+        "Starland Tree Glow": {
+            "type": "actor",
+            "id": 73,
+            "sprite": "scenery/tree/starland/glow/0"
         },
         "Bush": {
             "type": "actor",
@@ -1182,7 +1269,8 @@
                 "Cave Background",
                 "Cliff Background",
                 "Underwater Background",
-                "Castle Background"
+                "Castle Background",
+                "Starland Background"
             ]
         },
         {
@@ -1258,10 +1346,28 @@
                         "Castle Top Right",
                         "Castle Left",
                         "Castle Middle",
-                        "Castle Right",
-                        "Castle Bottom Left",
-                        "Castle Bottom",
-                        "Castle Bottom Right"
+                        "Castle Right"
+                    ]
+                },
+                {
+                    "name": "Starland",
+                    "items": [
+                        {
+                            "name": "Detail",
+                            "items": [
+                                "Starland Detail",
+                                "Starland Detail 2",
+                                "Starland Detail 3",
+                                "Starland Detail 4",
+                                "Starland Detail 5"
+                            ]
+                        },
+                        "Starland Top Left",
+                        "Starland Top",
+                        "Starland Top Right",
+                        "Starland Left",
+                        "Starland Middle",
+                        "Starland Right"
                     ]
                 }
             ]
@@ -1275,7 +1381,20 @@
                 },
                 {
                     "name": "Trees",
-                    "items": ["Tree Small", "Tree Big", "Tree Tall"]
+                    "items": [
+                        {
+                            "name": "Starland",
+                            "items": [
+                                "Starland Tree Small",
+                                "Starland Tree Big",
+                                "Starland Tree Light",
+                                "Starland Tree Glow"
+                            ]
+                        },
+                        "Tree Small",
+                        "Tree Big",
+                        "Tree Tall"
+                    ]
                 },
                 {
                     "name": "Fence",
@@ -1283,7 +1402,7 @@
                 },
                 {
                     "name": "Hills",
-                    "items": ["Hill", "Hills"]
+                    "items": ["Hill", "Hills", "Starland Hill"]
                 },
                 {
                     "name": "Lamps",
