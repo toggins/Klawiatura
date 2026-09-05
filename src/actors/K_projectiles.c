@@ -274,3 +274,52 @@ const ActorTable TAB_BOWSER_FIRE_PROJECTILE = {
     .draw = draw_bowser_fire,
     .collide = collide_bowser_fire,
 };
+
+/* ======
+   HAMMER
+   ====== */
+
+static void load_hammer() {
+    load_sprite("projectiles/hammer", AKL_NEVER);
+}
+
+static void create_hammer(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-12);
+    actor->box.start.y = Int2Fx(-18);
+    actor->box.end.x = Int2Fx(12);
+    actor->box.end.y = Int2Fx(15);
+
+    actor->depth = -1;
+}
+
+static void tick_hammer(GameActor* actor) {
+    VAL(actor, PROJECTILE_ANGLE) += ANY_FLAG(actor, FLG_X_FLIP) ? -6434 : 6434;
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+
+    if (below_nearest_view(actor->pos, Int2Fx(64))) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    actor->vel.y += 18725;
+}
+
+static void draw_hammer(const GameActor* actor) {
+    batch_reset();
+    batch_angle(Fx2Float(VAL(actor, PROJECTILE_ANGLE)));
+    draw_actor(actor, "projectiles/hammer", FALSE);
+}
+
+static void collide_hammer(GameActor* actor, GameActor* from) {
+    if (from->type == ACT_PLAYER && get_player(actor->player) == NULL)
+        hit_player(from);
+}
+
+const ActorTable TAB_HAMMER_PROJECTILE = {
+    .load = load_hammer,
+    .create = create_hammer,
+    .tick = tick_hammer,
+    .draw = draw_hammer,
+    .collide = collide_hammer,
+};

@@ -4,6 +4,7 @@
 #include "K_video.h"
 
 enum {
+    VAL_SCENERY_ANIMATION,
     VAL_SCENERY_FRAME,
     VAL_SCENERY_ALPHA,
 };
@@ -222,4 +223,85 @@ static void tick_lava_bubbler(GameActor* actor) {
 const ActorTable TAB_LAVA_BUBBLER = {
     .load = load_lava_bubbler,
     .tick = tick_lava_bubbler,
+};
+
+/* ==========
+   CLOUD FACE
+   ========== */
+
+static void load_cloud_face() {
+    load_sprite("scenery/cloud/face", AKL_NEVER);
+    load_sprite_num("scenery/cloud/face/%u", 14, AKL_NEVER);
+    load_sprite_num("scenery/cloud/face/alt/%u", 2, AKL_NEVER);
+}
+
+static void create_cloud_face(GameActor* actor) {
+    actor->depth = Int2Fx(69);
+}
+
+static void tick_cloud_face(GameActor* actor) {
+    switch (VAL(actor, SCENERY_ANIMATION)) {
+    default:
+        break;
+
+    case 1: {
+        if (++VAL(actor, SCENERY_FRAME) >= 14)
+            VAL(actor, SCENERY_ANIMATION) = VAL(actor, SCENERY_FRAME) = 0;
+
+        break;
+    }
+
+    case 2: {
+        if (++VAL(actor, SCENERY_FRAME) >= 50)
+            VAL(actor, SCENERY_ANIMATION) = VAL(actor, SCENERY_FRAME) = 0;
+
+        break;
+    }
+    }
+
+    if ((gamestate()->time % 5) == 0 && in_any_view(actor->pos, Int2Fx(-32), FALSE)
+        && VAL(actor, SCENERY_ANIMATION) == 0)
+    {
+        switch (rng(20)) {
+        default:
+            break;
+
+        case 10: {
+            VAL(actor, SCENERY_ANIMATION) = 1;
+            VAL(actor, SCENERY_FRAME) = 0;
+            break;
+        }
+
+        case 15: {
+            VAL(actor, SCENERY_ANIMATION) = 2;
+            VAL(actor, SCENERY_FRAME) = 0;
+            break;
+        }
+        }
+    }
+}
+
+static void draw_cloud_face(const GameActor* actor) {
+    batch_reset();
+
+    const char* sprite = "scenery/cloud/face";
+    switch (VAL(actor, SCENERY_ANIMATION)) {
+    default:
+        break;
+    case 1:
+        sprite = fmt("scenery/cloud/face/%i", VAL(actor, SCENERY_FRAME) % 14);
+        break;
+    case 2:
+        sprite = fmt("scenery/cloud/face/alt/%i", (VAL(actor, SCENERY_FRAME) / 25) % 2);
+        break;
+    }
+
+    draw_actor(actor, sprite, FALSE);
+}
+
+const ActorTable TAB_CLOUD_FACE = {
+    .load = load_cloud_face,
+    .create = create_cloud_face,
+    .tick = tick_cloud_face,
+    .draw = draw_cloud_face,
 };

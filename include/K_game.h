@@ -66,7 +66,6 @@ enum {
     GS_WARP,
     GS_BOWSER_END,
     GS_AMBUSH,
-    GS_AMBUSH_END,
 };
 
 typedef Uint8 ActorType;
@@ -136,6 +135,11 @@ enum {
     ACT_CHEEP,
     ACT_CHEEP_BLUE,
     ACT_SPRING,
+    ACT_BRO,
+    ACT_BRO_LAYER,
+    ACT_HAMMER_PROJECTILE,
+    ACT_SILVER_HAMMER_PROJECTILE,
+    ACT_CLOUD_FACE,
 
     ACT_SIZE,
 };
@@ -399,6 +403,7 @@ enum {
 };
 
 typedef struct {
+    Uint8 bro_throw;
     FVec2 size, bowser_bounds, cheep_bounds;
     FRect bounds;
 
@@ -462,7 +467,7 @@ void move_actor(GameActor*, const FVec2), push_actors(GameActor*);
 
 Bool in_any_view(const FVec2, Fixed, Bool), in_player_view(const GamePlayer*, const FVec2, Fixed, Bool);
 Bool in_any_x_view(Fixed, Fixed), in_player_x_view(const GamePlayer*, Fixed, Fixed);
-Bool below_nearest_bounds(const FVec2, Fixed);
+Bool below_nearest_bounds(const FVec2, Fixed), below_nearest_view(const FVec2, Fixed);
 
 void collide_actor(GameActor*);
 Bool touching_solid(const FRect, SolidFlags);

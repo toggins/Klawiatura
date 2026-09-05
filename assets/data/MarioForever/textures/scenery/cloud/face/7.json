@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/cloud/face",
+    "size": [30, 32],
+    "offset": [14, 16],
+    "uvs": [1, 69, 31, 101]
+}

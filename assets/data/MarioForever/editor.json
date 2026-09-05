@@ -280,6 +280,11 @@
             "sprite": "scenery/hills",
             "depth": 62
         },
+        "Forest": {
+            "type": "background",
+            "sprite": "scenery/forest",
+            "depth": 60
+        },
         "Tree Small": {
             "type": "background",
             "sprite": "scenery/tree/small",
@@ -325,6 +330,16 @@
             "id": 19,
             "sprite": "scenery/clouds",
             "depth": 50
+        },
+        "Giant Cloud": {
+            "type": "background",
+            "sprite": "scenery/cloud/giant",
+            "depth": 70
+        },
+        "Cloud Face": {
+            "type": "actor",
+            "id": 68,
+            "sprite": "scenery/cloud/face"
         },
         "Lamp": {
             "type": "background",
@@ -1071,6 +1086,31 @@
                     "default": true
                 }
             ]
+        },
+        "Bro": {
+            "type": "actor",
+            "id": 64,
+            "sprite": "enemies/bro/0",
+            "values": [
+                {
+                    "name": "Type",
+                    "index": 0,
+                    "type": "actor",
+                    "default": 66
+                }
+            ]
+        },
+        "Bro Layer": {
+            "type": "actor",
+            "id": 65,
+            "sprite": "editor/bro_layer",
+            "scalable": true,
+            "flags": [
+                {
+                    "name": "Top",
+                    "index": 5
+                }
+            ]
         }
     },
 
@@ -1151,7 +1191,7 @@
             "items": [
                 {
                     "name": "Clouds",
-                    "items": ["Cloud", "Clouds", "Clouds Static"]
+                    "items": ["Cloud", "Clouds", "Clouds Static", "Giant Cloud", "Cloud Face"]
                 },
                 {
                     "name": "Trees",
@@ -1197,6 +1237,7 @@
                     "name": "Corals",
                     "items": ["Corals", "Corals 2"]
                 },
+                "Forest",
                 "Bush",
                 "Waterfall"
             ]
@@ -1233,6 +1274,10 @@
                 {
                     "name": "Cheep",
                     "items": ["Cheep Spawner", "Cheep Blue", "Cheep Green", "Cheep Spiky"]
+                },
+                {
+                    "name": "Bro",
+                    "items": ["Bro", "Bro Layer"]
                 },
                 "Goomba",
                 "Koopa",

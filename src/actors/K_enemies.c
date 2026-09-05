@@ -237,15 +237,21 @@ void block_beetroot(GameActor* from) {
 }
 
 void mark_ambush_winner(GameActor* actor) {
-    // TODO
+    GameSequence* sequence = get_sequence();
+    if (sequence->type == GS_AMBUSH && actor != NULL && get_player(actor->player) != NULL)
+        sequence->activator = actor->player;
 }
 
 void increase_ambush() {
-    // TODO
+    GameSequence* sequence = get_sequence();
+    if (sequence->type == GS_AMBUSH)
+        ++sequence->state;
 }
 
 void decrease_ambush() {
-    // TODO
+    GameSequence* sequence = get_sequence();
+    if (sequence->type == GS_AMBUSH)
+        --sequence->state;
 }
 
 /* ==========

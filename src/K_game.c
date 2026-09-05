@@ -524,6 +524,7 @@ static void start_game_state() {
     level_info = SDL_calloc(1, sizeof(*level_info));
     EXPECT(level_info, "Failed to allocate level info");
 
+    level_info->bro_throw = 30;
     level_info->size.x = level_info->bounds.end.x = F_SCREEN_WIDTH;
     level_info->size.y = level_info->bounds.end.y = F_SCREEN_HEIGHT;
 }
@@ -614,6 +615,10 @@ static void load_level(TinyHash key) {
         level_info->cheep_bounds.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 0)));
         level_info->cheep_bounds.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 1)));
     }
+
+    jval = yyjson_obj_get(root, "bro_throw");
+    if (yyjson_is_uint(jval))
+        level_info->bro_throw = yyjson_get_uint(jval);
 
     if (yyjson_get_bool(yyjson_obj_get(root, "hardcore")))
         game_state->flags |= GF_HARDCORE;
@@ -893,6 +898,16 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
     switch (sequence->type) {
     default:
         break;
+
+    case GS_AMBUSH: {
+        if (sequence->state <= 0 && get_num_actors(ACT_DEAD) <= 0) {
+            GamePlayer* player = get_player(sequence->activator);
+            if (player != NULL) {
+                player->score += 10000;
+                win_player(player);
+            }
+        }
+    }
 
     case GS_NONE: {
         if (game_state->clock <= 0 || game_state->time <= 0 || (game_state->time % 25) > 0)
@@ -2208,6 +2223,39 @@ Bool below_nearest_bounds(const FVec2 pos, Fixed edge) {
     }
 
     return found && pos.y > (bounds.end.y + edge);
+}
+
+Bool below_nearest_view(const FVec2 pos, Fixed edge) {
+    const GameActor* autoscroll = get_actor(gamestate()->autoscroll);
+    if (autoscroll != NULL) {
+        const LevelInfo* level_info = levelinfo();
+        return pos.y
+               > (Fclamp(autoscroll->pos.y, level_info->bounds.start.y, level_info->bounds.end.y - F_SCREEN_HEIGHT)
+                   + F_SCREEN_HEIGHT + edge);
+    }
+
+    FRect view = {0};
+    Fixed score = FxUpper;
+    Bool found = FALSE;
+
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const FRect pview = get_player_cbox(player, edge);
+        const Fixed dist = Vdist(pos, (FVec2){
+                                          Fclamp(pos.x, pview.start.x, pview.end.x),
+                                          Fclamp(pos.y, pview.start.y, pview.end.y),
+                                      });
+        if (dist < score) {
+            view = pview;
+            score = dist;
+            found = TRUE;
+        }
+    }
+
+    return pos.y > (found ? (view.end.y + edge) : (levelinfo()->bounds.end.y + edge));
 }
 
 void collide_actor(GameActor* actor) {
