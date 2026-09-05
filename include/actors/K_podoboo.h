@@ -1,0 +1,9 @@
+#pragma once
+
+enum {
+    VAL_PODOBOO_JUMP,
+    VAL_PODOBOO_TIME,
+    VAL_PODOBOO_Y,
+    VAL_PODOBOO_OVERLAP,
+    VAL_PODOBOO_FRAME,
+};

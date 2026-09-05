@@ -4,6 +4,7 @@
 
 #include "actors/K_bowser.h"
 #include "actors/K_player.h"
+#include "actors/K_podoboo.h"
 
 enum {
     VAL_LAVA_WAVE,
@@ -73,6 +74,8 @@ static void collide(GameActor* actor, GameActor* from) {
         if ((from->pos.y + from->box.end.y) <= ly || VAL(from, BOWSER_DEAD_LAVA) > 0)
             break;
 
+        create_actor(ACT_LAVA_SPLASH, Vadd(from->pos, (FVec2){Fx0, Int2Fx(-9)}));
+
         GameActor* waver = create_actor(ACT_LAVA_WAVER, from->pos);
         if (waver != NULL)
             waver->vel.x = 122880;
@@ -107,6 +110,19 @@ static void collide(GameActor* actor, GameActor* from) {
         FLAG_ON(actor, FLG_LAVA_WAVE);
 
         VAL(from, LAVA_WAVE) -= Int2Fx(4);
+        break;
+    }
+
+    case ACT_PODOBOO: {
+        if (VAL(from, PODOBOO_OVERLAP) > 0) {
+            VAL(from, PODOBOO_OVERLAP) = 2;
+            break;
+        }
+
+        VAL(from, PODOBOO_OVERLAP) = 2;
+        if (from->vel.y >= Fmul(VAL(from, PODOBOO_JUMP), 43691))
+            FLAG_OFF(from, FLG_VISIBLE);
+
         break;
     }
     }

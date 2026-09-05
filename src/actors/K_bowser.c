@@ -383,6 +383,7 @@ static void load_dead() {
     load_sprite_num("enemies/bowser/dead/%u", 2, AKL_NEVER);
     load_sound("bowser/fall", AKL_NEVER);
     load_sound("bowser/lava", AKL_NEVER);
+    load_actor(ACT_LAVA_SPLASH);
     load_actor(ACT_LAVA_BUBBLE);
 }
 

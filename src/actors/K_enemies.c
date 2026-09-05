@@ -73,7 +73,8 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
         break;
 
     case ACT_PIRANHA_PLANT:
-    case ACT_ROTODISC: {
+    case ACT_ROTODISC:
+    case ACT_PODOBOO: {
         if (kick)
             play_state_sound("kick", PLAY_POS, A_ACTOR(actor));
 

@@ -1,0 +1,6 @@
+{
+    "texture": "effects/lava_splash",
+    "size": [73, 25],
+    "offset": [37, 24],
+    "uvs": [76, 25, 149, 50]
+}

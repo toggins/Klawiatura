@@ -260,3 +260,33 @@ const ActorTable TAB_SINK_BUBBLE = {
     .tick = tick_sink_bubble,
     .draw = draw_sink_bubble,
 };
+
+/* ===========
+   LAVA SPLASH
+   =========== */
+
+static void load_lava_splash() {
+    load_sprite_num("effects/lava_splash/%u", 11, AKL_NEVER);
+}
+
+static void create_lava_splash(GameActor* actor) {
+    actor->depth = -1;
+}
+
+static void tick_lava_splash(GameActor* actor) {
+    VAL(actor, EFFECT_FRAME) += 49;
+    if (VAL(actor, EFFECT_FRAME) >= 1100)
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_lava_splash(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("effects/lava_splash/%i", (VAL(actor, EFFECT_FRAME) / 100) % 11), FALSE);
+}
+
+const ActorTable TAB_LAVA_SPLASH = {
+    .load = load_lava_splash,
+    .create = create_lava_splash,
+    .tick = tick_lava_splash,
+    .draw = draw_lava_splash,
+};

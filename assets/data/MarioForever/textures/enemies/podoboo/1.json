@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/podoboo",
+    "size": [27, 32],
+    "offset": [13, 15],
+    "uvs": [30, 1, 57, 33]
+}
