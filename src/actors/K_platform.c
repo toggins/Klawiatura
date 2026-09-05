@@ -273,7 +273,7 @@ static void draw(const GameActor* actor) {
         break;
     }
 
-    if (((ANY_FLAG(actor, FLG_PLATFORM_FALLING) && VAL(actor, PLATFORM_RESPAWN) >= 200)
+    if (((ANY_FLAG(actor, FLG_PLATFORM_FALLING) && VAL(actor, PLATFORM_RESPAWN) >= 100)
             || (ANY_FLAG(actor, FLG_PLATFORM_RUNNING) && VAL(actor, PLATFORM_RESPAWN) >= 400))
         && (VAL(actor, PLATFORM_RESPAWN) % 2) == 0)
     {
