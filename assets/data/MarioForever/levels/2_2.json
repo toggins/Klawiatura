@@ -7304,7 +7304,16 @@
             "id": 60,
             "pos": [674, 1094],
             "vel": [-73728, 0],
-            "values": [[0, 100]]
+            "values": [[0, 100]],
+            "singleplayer": true
+        },
+        {
+            "def": "Cheep Spawner",
+            "id": 60,
+            "pos": [674, 1094],
+            "vel": [-73728, 0],
+            "values": [[0, 75]],
+            "multiplayer": true
         },
         {
             "def": "Cheep Blue",

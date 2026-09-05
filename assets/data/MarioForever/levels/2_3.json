@@ -2028,7 +2028,17 @@
             "pos": [674, 502],
             "vel": [-65536, 0],
             "values": [[0, 5]],
-            "flags": 256
+            "flags": 256,
+            "singleplayer": true
+        },
+        {
+            "def": "Cheep Spawner",
+            "id": 60,
+            "pos": [674, 502],
+            "vel": [-65536, 0],
+            "values": [[0, 2]],
+            "flags": 256,
+            "multiplayer": true
         },
         {
             "def": "Bush",
