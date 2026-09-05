@@ -1,3 +1,6 @@
+$fg: #ffffff;
+$bg: #2f2f2f;
+
 body,
 html {
   margin: 0;
@@ -16,20 +19,21 @@ body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 9pt;
   line-height: 1.5;
-  color: white;
-  text-align: center;
 
-  background-color: #2f2f2f;
-}
+  background: $bg;
+  color: $fg;
 
-footer {
-  margin: 0.5em auto;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
 }
 
 #container {
   padding: 1em;
-  margin: auto 0;
-  width: 100%;
+}
+
+footer {
+  text-align: center;
 }
 
 a {
