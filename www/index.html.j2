@@ -9,16 +9,19 @@
 
     <title>Mario Together</title>
 
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
-    <link rel="stylesheet" href="/assets/style.css{{ nocache }}" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="stylesheet" href="/assets/style.css{{ nocache }}">
 
-    <link rel="preload" href="/assets/loading.gif" as="image" />
+    <link rel="preload" href="/assets/loading.gif" as="image">
+
+    <link rel="preload" href="/assets/init.js{{ nocache }}" as="script">
+    <link rel="preload" href="/Klawiatura.js{{ nocache }}" as="script">
+    <script defer src="/assets/download.js{{ nocache }}"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
         integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <script defer src="/assets/download.js{{ nocache }}"></script>
     <script defer src="https://umami.schwung.us/script.js"
         data-website-id="a1f4d4d5-effb-4d9f-887e-254badfe403a"></script>
 </head>
@@ -32,30 +35,9 @@
 
         <canvas id="canvas" width="640" height="480" oncontextmenu="event.preventDefault()"></canvas>
 
-        <script type="text/javascript">
-            // sdl3 intercepts all keyboard events even if they coincide with the browser's "open dev console" shortcut.
-            // here we remedy this behavior for the most common of the browser-console shortcuts, and allow it to open normally.
-            window.addEventListener('keydown', function (event) {
-                const shortcuts = [
-                    { key: 'I', ctrl: true, shift: true },
-                    { key: 'i', ctrl: true, shift: true },
-                    { key: 'C', ctrl: true, shift: true },
-                    { key: 'c', ctrl: true, shift: true },
-                    { key: 'F12' },
-                ];
+        <script src="/assets/init.js{{ nocache }}"></script>
 
-                for (const shortcut of shortcuts) {
-                    const ctrl = !("ctrl" in shortcut) || shortcut.ctrl && event.ctrlKey;
-                    const shift = !("shift" in shortcut) || shortcut.shift && event.shiftKey;
-                    const key = shortcut.key === event.key;
-
-                    if (ctrl && shift && key) {
-                        event.stopImmediatePropagation();
-                        return;
-                    }
-                }
-            }, true);
-
+        <script>
             var Module = {
                 canvas: canvas,
                 locateFile: function (path, scriptDirectory) {
@@ -74,7 +56,6 @@
                 }
             };
         </script>
-
         <script async src="/Klawiatura.js{{ nocache }}"></script>
 
         <footer>
