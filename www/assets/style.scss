@@ -40,13 +40,25 @@ a {
   color: #649ec5;
 }
 
-#canvas {
-  margin: 0 auto;
+#canvas-layers {
+  display: grid;
+
+  width: 640px;
+  height: 480px;
+
   outline: 1px solid gray;
 
-  background-image: url(/assets/loading.gif);
-  background-repeat: no-repeat;
-  background-position: center center;
+  & > * {
+    grid-column: 1;
+    grid-row: 1;
+  }
+}
+
+#loading {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  text-align: center;
 }
 
 #error {

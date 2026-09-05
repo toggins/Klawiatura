@@ -33,7 +33,13 @@
             Check console for more details.
         </div>
 
-        <canvas id="canvas" width="640" height="480" oncontextmenu="event.preventDefault()"></canvas>
+        <div id="canvas-layers">
+            <div id="loading">
+                <div><img src="/assets/loading.gif"></div>
+                <div>Loading...</div>
+            </div>
+            <canvas id="canvas" width="640" height="480" oncontextmenu="event.preventDefault()"></canvas>
+        </div>
 
         <script src="/assets/init.js{{ nocache }}"></script>
 
