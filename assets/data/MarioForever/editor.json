@@ -32,6 +32,13 @@
             "max_scale": [32767, 162],
             "tile": [true, false]
         },
+        "Castle Background": {
+            "type": "background",
+            "sprite": "backgrounds/castle",
+            "depth": 190,
+            "max_scale": [32767, 480],
+            "tile": [true, false]
+        },
         "Grass Top Left": {
             "type": "tile",
             "sprite": "tiles/grass/0",
@@ -270,6 +277,36 @@
             "sprite": "tiles/coral",
             "depth": 20
         },
+        "Castle Top Left": {
+            "type": "tile",
+            "sprite": "tiles/castle/0",
+            "depth": 20
+        },
+        "Castle Top 2": {
+            "type": "tile",
+            "sprite": "tiles/castle/1",
+            "depth": 20
+        },
+        "Castle Top Right": {
+            "type": "tile",
+            "sprite": "tiles/castle/2",
+            "depth": 20
+        },
+        "Castle Left": {
+            "type": "tile",
+            "sprite": "tiles/castle/3",
+            "depth": 20
+        },
+        "Castle Middle": {
+            "type": "tile",
+            "sprite": "tiles/castle/4",
+            "depth": 20
+        },
+        "Castle Right": {
+            "type": "tile",
+            "sprite": "tiles/castle/5",
+            "depth": 20
+        },
         "Hill": {
             "type": "background",
             "sprite": "scenery/hill",
@@ -437,6 +474,11 @@
                 [255, 255, 255, 53],
                 [255, 255, 255, 53]
             ]
+        },
+        "Portrait": {
+            "type": "background",
+            "sprite": "scenery/portrait",
+            "depth": 189
         },
         "Player Spawn": {
             "type": "actor",
@@ -1111,13 +1153,37 @@
                     "index": 5
                 }
             ]
+        },
+        "Podoboo": {
+            "type": "actor",
+            "id": 69,
+            "sprite": "enemies/podoboo/0",
+            "values": [
+                {
+                    "name": "Jump Speed",
+                    "index": 0,
+                    "type": "fixed",
+                    "default": 786432
+                },
+                {
+                    "name": "Time",
+                    "index": 1,
+                    "default": 250
+                }
+            ]
         }
     },
 
     "items": [
         {
             "name": "Backgrounds",
-            "items": ["Gradient Background", "Cave Background", "Cliff Background", "Underwater Background"]
+            "items": [
+                "Gradient Background",
+                "Cave Background",
+                "Cliff Background",
+                "Underwater Background",
+                "Castle Background"
+            ]
         },
         {
             "name": "Tiles",
@@ -1183,6 +1249,20 @@
                 {
                     "name": "Sand",
                     "items": ["Sand Top Left", "Sand Top", "Sand Top Right", "Sand Left", "Sand Middle", "Sand Right"]
+                },
+                {
+                    "name": "Castle",
+                    "items": [
+                        "Castle Top Left",
+                        "Castle Top 2",
+                        "Castle Top Right",
+                        "Castle Left",
+                        "Castle Middle",
+                        "Castle Right",
+                        "Castle Bottom Left",
+                        "Castle Bottom",
+                        "Castle Bottom Right"
+                    ]
                 }
             ]
         },
@@ -1239,7 +1319,8 @@
                 },
                 "Forest",
                 "Bush",
-                "Waterfall"
+                "Waterfall",
+                "Portrait"
             ]
         },
         {
@@ -1278,6 +1359,10 @@
                 {
                     "name": "Bro",
                     "items": ["Bro", "Bro Layer"]
+                },
+                {
+                    "name": "Podoboo",
+                    "items": ["Podoboo", "Volcano"]
                 },
                 "Goomba",
                 "Koopa",

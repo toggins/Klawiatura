@@ -1,0 +1,5 @@
+{
+    "texture": "tiles/castle",
+    "size": [32, 32],
+    "uvs": [32, 0, 64, 32]
+}
