@@ -212,7 +212,7 @@ static void pre_tick(GameActor* actor) {
     {
         if (gamecontext()->num_players <= 1)
             FLAG_ON(actor, FLG_DESTROY);
-        else if (++VAL(actor, PLATFORM_RESPAWN) > 250)
+        else if (++VAL(actor, PLATFORM_RESPAWN) > 150)
             DO_RESPAWN();
     }
 
