@@ -1,5 +1,5 @@
-// sdl3 intercepts all keyboard events even if they coincide with the browser's "open dev console" shortcut.
-// here we remedy this behavior for the most common of the browser-console shortcuts, and allow it to open normally.
+// sdl3 intercepts all keyboard events even if they coincide with the browser's keyboard shortcuts.
+// here we remedy this behavior for (in my opinion) the most common of these shortcuts, and allow them to trigger properly.
 window.addEventListener('keydown', function (event) {
     const shortcuts = [
         { key: 'I', ctrl: true, shift: true },
@@ -7,6 +7,8 @@ window.addEventListener('keydown', function (event) {
         { key: 'C', ctrl: true, shift: true },
         { key: 'c', ctrl: true, shift: true },
         { key: 'F12' },
+        { key: 'F5' }, // refresh page
+        { key: 'F11' }, // fullscreen
     ];
 
     for (const shortcut of shortcuts) {
