@@ -43,8 +43,8 @@ a {
 #canvas-layers {
   display: grid;
 
-  width: 640px;
-  height: 480px;
+  min-width: 640px;
+  min-height: 480px;
 
   outline: 1px solid gray;
 
