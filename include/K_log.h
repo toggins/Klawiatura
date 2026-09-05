@@ -14,10 +14,10 @@ const char* log_basename(const char*);
 #define WTF(...) LOG_WITH(SDL_LogError, __VA_ARGS__)
 #define FATAL(...) (LOG_WITH(SDL_LogCritical, __VA_ARGS__), handle_fatal(__FILE__, __LINE__, __func__, __VA_ARGS__))
 
-#define EXPECT(expr, ...)                                                                                              \
+#define EXPECT(expr, msg, ...)                                                                                         \
     do {                                                                                                               \
         if (!(expr))                                                                                                   \
-            FATAL(__VA_ARGS__);                                                                                        \
+            FATAL(msg "\n\nAssertion \"" #expr "\" failed", ##__VA_ARGS__);                                            \
     } while (FALSE)
 
 #define ASSUME(expr, ...)                                                                                              \
