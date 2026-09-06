@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/star",
+    "size": [11, 12],
+    "offset": [5, 6],
+    "uvs": [14, 1, 25, 13]
+}

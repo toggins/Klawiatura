@@ -352,3 +352,84 @@ const ActorTable TAB_STARLAND_GLOW = {
     .create = create_starland_glow,
     .draw = draw_starland_glow,
 };
+
+/* ====
+   STAR
+   ==== */
+
+static void load_star() {
+    load_sprite_num("scenery/star/%u", 4, AKL_NEVER);
+}
+
+static void create_star(GameActor* actor) {
+    actor->depth = 13041663;
+
+    VAL(actor, SCENERY_ALPHA) = 100;
+}
+
+static void tick_star(GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_SCENERY_ACTIVE)) {
+        if (--VAL(actor, SCENERY_ALPHA) <= 0)
+            FLAG_ON(actor, FLG_DESTROY);
+
+        return;
+    }
+
+    if ((gamestate()->time % 10) > 0)
+        return;
+
+    Bool stay = TRUE;
+    for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn != NULL && pawn->type == ACT_PLAYER && pawn->pos.x > (levelinfo()->size.x - Int2Fx(2000))) {
+            stay = FALSE;
+            break;
+        }
+    }
+    if (stay)
+        return;
+
+    GameActor* star = NULL;
+    FOR_EACH_ACTOR (star) {
+        if (star->type == ACT_STAR && !ANY_FLAG(star, FLG_SCENERY_ACTIVE)) {
+            if (star->id == actor->id)
+                break;
+            else
+                return;
+        }
+    }
+
+    FOR_EACH_ACTOR (star) {
+        if (star->type == ACT_STAR && rng(2) <= 0)
+            break;
+    }
+    if (star != NULL && star->type == ACT_STAR)
+        FLAG_ON(star, FLG_SCENERY_ACTIVE);
+}
+
+static void draw_star(const GameActor* actor) {
+    batch_reset();
+
+    const Fixed cx = videostate()->camera.pos.x - F_HALF_SCREEN_WIDTH;
+    const FVec2 ipos = get_interp(actor);
+    Fixed ax = ipos.x - cx + ((Fixed)screenticks() * actor->vel.x);
+    while (ax < Int2Fx(-32))
+        ax += F_SCREEN_WIDTH + Int2Fx(64);
+    while (ax > (F_SCREEN_WIDTH + Int2Fx(32)))
+        ax -= F_SCREEN_WIDTH + Int2Fx(64);
+
+    batch_pos(B_F3(Fx2Int(cx + ax), Fx2Int(ipos.y), Fx2Float(actor->depth)));
+    batch_color(B_U4_ALPHA(((float)VAL(actor, SCENERY_ALPHA) / 100.f) * 135.f));
+    batch_sprite(fmt("scenery/star/%i", gamestate()->time % 4));
+}
+
+const ActorTable TAB_STAR = {
+    .load = load_star,
+    .create = create_star,
+    .tick = tick_star,
+    .draw = draw_star,
+};

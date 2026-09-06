@@ -602,6 +602,11 @@
             "sprite": "scenery/portrait",
             "depth": 189
         },
+        "Star": {
+            "type": "actor",
+            "id": 75,
+            "sprite": "scenery/star/0"
+        },
         "Player Spawn": {
             "type": "actor",
             "id": 1,

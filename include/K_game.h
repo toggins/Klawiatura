@@ -146,6 +146,7 @@ enum {
     ACT_STARLAND_LIGHT,
     ACT_STARLAND_GLOW,
     ACT_SPINY,
+    ACT_STAR,
 
     ACT_SIZE,
 };
