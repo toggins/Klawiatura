@@ -369,6 +369,36 @@
             "sprite": "tiles/starland/detail/4",
             "depth": 19
         },
+        "Cave Top Left": {
+            "type": "tile",
+            "sprite": "tiles/cave/0",
+            "depth": 20
+        },
+        "Cave Top": {
+            "type": "tile",
+            "sprite": "tiles/cave/1",
+            "depth": 20
+        },
+        "Cave Top Right": {
+            "type": "tile",
+            "sprite": "tiles/cave/2",
+            "depth": 20
+        },
+        "Cave Left": {
+            "type": "tile",
+            "sprite": "tiles/cave/3",
+            "depth": 20
+        },
+        "Cave Middle": {
+            "type": "tile",
+            "sprite": "tiles/cave/4",
+            "depth": 20
+        },
+        "Cave Right": {
+            "type": "tile",
+            "sprite": "tiles/cave/5",
+            "depth": 20
+        },
         "Hill": {
             "type": "background",
             "sprite": "scenery/hill",
@@ -474,6 +504,11 @@
             "type": "actor",
             "id": 42,
             "sprite": "scenery/lamp/light/0"
+        },
+        "Broken Lamp": {
+            "type": "background",
+            "sprite": "scenery/lamp/broken",
+            "depth": 33
         },
         "Tube": {
             "type": "background",
@@ -1258,6 +1293,22 @@
                     "default": 250
                 }
             ]
+        },
+        "Spiny": {
+            "type": "actor",
+            "id": 74,
+            "sprite": "enemies/spiny/0",
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2,
+                    "default": true
+                },
+                {
+                    "name": "Gray",
+                    "index": 7
+                }
+            ]
         }
     },
 
@@ -1369,6 +1420,10 @@
                         "Starland Middle",
                         "Starland Right"
                     ]
+                },
+                {
+                    "name": "Cave",
+                    "items": ["Cave Top Left", "Cave Top", "Cave Top Right", "Cave Left", "Cave Middle", "Cave Right"]
                 }
             ]
         },
@@ -1487,7 +1542,8 @@
                 "Koopa",
                 "Piranha Plant",
                 "Roto-Disc",
-                "Bowser"
+                "Bowser",
+                "Spiny"
             ]
         },
         {
