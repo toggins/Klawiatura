@@ -7,6 +7,9 @@ on:
     paths-ignore: &ig
       - README.md
       - .*
+      - .github/assets/**
+      - .github/dependabot.yml
+      - blueprints/**
 
   push:
     branches: [master]
