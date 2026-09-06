@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/spiny",
+    "size": [33, 31],
+    "offset": [16, 31],
+    "uvs": [36, 1, 69, 32]
+}
