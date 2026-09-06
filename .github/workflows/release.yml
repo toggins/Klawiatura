@@ -43,7 +43,7 @@ jobs:
             name: HTML5
 
     env:
-      CACHE_BUST: 7
+      CACHE_BUST: 8
       SCCACHE_GHA_ENABLED: true
       OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
 
@@ -85,7 +85,9 @@ jobs:
       - name: Cache deps
         uses: actions/cache@v6
         with:
-          path: build
+          path: |
+            build/CMakeCache.txt
+            build/CMakeFiles
           key: ${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
             ${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-
@@ -147,7 +149,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           pattern: build-*
-          path: fuck
+          path: artifacts
 
       - name: Release binaries
         uses: softprops/action-gh-release@v3
@@ -155,10 +157,10 @@ jobs:
           draft: ${{ github.ref_name != 'master' }}
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
           prerelease: ${{ github.ref_name == 'master' }}
-          files: fuck/build-*/Klawiatura-*.zip
+          files: artifacts/build-*/Klawiatura-*.zip
 
       - name: Prepare for HTML5 distibution
-        run: cp -vr fuck/build-HTML5/Klawiatura.{js,wasm,data} www
+        run: cp -vr artifacts/build-HTML5/Klawiatura.{js,wasm,data} www
 
       - name: Publish HTML5
         id: publish
