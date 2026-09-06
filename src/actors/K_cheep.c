@@ -34,7 +34,7 @@ static void create_spawner(GameActor* actor) {
 static void tick_spawner(GameActor* actor) {
     const GameState* game_state = gamestate();
     if (ANY_FLAG(actor, FLG_CHEEP_JUMP)
-        && ((VAL(actor, CHEEP_SPAWN) > 1 && (game_state->time % VAL(actor, CHEEP_SPAWN)) != 0) || rng(20) != 10))
+        && ((VAL(actor, CHEEP_SPAWN) > 1 && (game_state->time % VAL(actor, CHEEP_SPAWN)) > 0) || rng(20) != 10))
     {
         return;
     }
@@ -42,7 +42,7 @@ static void tick_spawner(GameActor* actor) {
     const GameActor* water = get_actor(game_state->water);
     if (!ANY_FLAG(actor, FLG_CHEEP_JUMP)
         && (water == NULL || below_nearest_bounds(water->pos, Fx0)
-            || (VAL(actor, CHEEP_SPAWN) > 1 && (game_state->time % VAL(actor, CHEEP_SPAWN)) != 0)))
+            || (VAL(actor, CHEEP_SPAWN) > 1 && (game_state->time % VAL(actor, CHEEP_SPAWN)) > 0)))
     {
         return;
     }

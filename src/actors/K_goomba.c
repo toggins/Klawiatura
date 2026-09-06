@@ -140,7 +140,7 @@ static void create_party(GameActor* actor) {
 }
 
 static void tick_party(GameActor* actor) {
-    if ((gamestate()->time % 50) != 0)
+    if ((gamestate()->time % 50) > 0)
         return;
 
     Bool found = FALSE;

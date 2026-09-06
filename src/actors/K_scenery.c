@@ -126,7 +126,7 @@ static void load_tube_bubbles() {
 }
 
 static void tick_tube_bubbles(GameActor* actor) {
-    if (!in_any_view(actor->pos, Int2Fx(-32), FALSE) || (gamestate()->time % 5) != 0 || rng(11) != 10)
+    if (!in_any_view(actor->pos, Int2Fx(-32), FALSE) || (gamestate()->time % 5) > 0 || rng(11) != 10)
         return;
 
     Sint32 r = rng(10);

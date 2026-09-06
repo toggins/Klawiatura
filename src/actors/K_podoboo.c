@@ -23,7 +23,7 @@ static void create(GameActor* actor) {
 
 static void tick(GameActor* actor) {
     if (!ANY_FLAG(actor, FLG_VISIBLE)) {
-        if ((VAL(actor, PODOBOO_TIME) > 1 && (gamestate()->time % VAL(actor, PODOBOO_TIME)) != 0)
+        if ((VAL(actor, PODOBOO_TIME) > 1 && (gamestate()->time % VAL(actor, PODOBOO_TIME)) > 0)
             || !in_any_view(Vsub(actor->pos, (FVec2){Int2Fx(16), Int2Fx(-16)}), Int2Fx(-640), FALSE))
         {
             return;

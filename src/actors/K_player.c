@@ -931,7 +931,7 @@ static void draw(const GameActor* actor) {
 
     batch_reset();
     batch_color(B_U4_ALPHA((player->id == localplayer()) ? 255 : 192));
-    if (VAL(actor, PLAYER_STARMAN) <= 0 || (gamestate()->time % 2) != 0) {
+    if (VAL(actor, PLAYER_STARMAN) <= 0 || (gamestate()->time % 2) > 0) {
         draw_actor(actor,
             get_character_sprite(
                 gamecontext()->players[player->id].character, player->powerup, get_player_frame(actor)),
