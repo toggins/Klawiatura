@@ -376,15 +376,33 @@ static void draw(const GameActor* actor) {
 }
 
 static void on_other_sides(GameActor* actor, GameActor* from) {
-    if (from->type != ACT_BEETROOT_PROJECTILE)
-        return;
+    switch (from->type) {
+    default:
+        break;
 
-    const GamePlayer* player = get_player(from->player);
-    if ((player != NULL || (VAL(actor, BLOCK_TYPE) == BLOCK_BRICK && VAL(actor, BLOCK_ITEM) == ACT_NULL))
-        && bump_block(actor, from, TRUE))
-    {
-        FLAG_ON(from, FLG_PROJECTILE_HIT_BLOCK);
+    case ACT_KOOPA_SHELL: {
+        if (from->vel.x != Fx0)
+            bump_block(actor, from, TRUE);
+
+        break;
     }
+
+    case ACT_BEETROOT_PROJECTILE: {
+        const GamePlayer* player = get_player(from->player);
+        if ((player != NULL || (VAL(actor, BLOCK_TYPE) == BLOCK_BRICK && VAL(actor, BLOCK_ITEM) == ACT_NULL))
+            && bump_block(actor, from, TRUE))
+        {
+            FLAG_ON(from, FLG_PROJECTILE_HIT_BLOCK);
+        }
+
+        break;
+    }
+    }
+}
+
+static void on_top(GameActor* actor, GameActor* from) {
+    if (from->type != ACT_KOOPA_SHELL)
+        on_other_sides(actor, from);
 }
 
 static void on_bottom(GameActor* actor, GameActor* from) {
@@ -416,7 +434,7 @@ const ActorTable TAB_BLOCK = {
     .create = create,
     .pre_tick = pre_tick,
     .draw = draw,
-    .on_top = on_other_sides,
+    .on_top = on_top,
     .on_left = on_other_sides,
     .on_bottom = on_bottom,
     .on_right = on_other_sides,

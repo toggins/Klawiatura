@@ -87,7 +87,8 @@ static void collide(GameActor* actor, GameActor* from) {
     }
 
     case ACT_GOOMBA:
-    case ACT_KOOPA: {
+    case ACT_KOOPA:
+    case ACT_SPINY: {
         turn_enemy(actor);
         turn_enemy(from);
         break;
@@ -96,6 +97,7 @@ static void collide(GameActor* actor, GameActor* from) {
     case ACT_KOOPA_SHELL: {
         if (!hit_shell(actor, from))
             turn_enemy(actor);
+
         break;
     }
 

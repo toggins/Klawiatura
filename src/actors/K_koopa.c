@@ -11,6 +11,8 @@
    ===== */
 
 static void load() {
+    load_sprite_num("enemies/koopa/%u", 2, AKL_NEVER);
+    load_sprite("enemies/koopa/dead", AKL_NEVER);
     load_sound("stomp", AKL_NEVER);
     load_sound("kick", AKL_NEVER);
     load_actor(ACT_KOOPA_SHELL);
@@ -21,9 +23,6 @@ static void load_special(const GameActor* actor) {
     if (ANY_FLAG(actor, FLG_KOOPA_RED)) {
         load_sprite_num("enemies/koopa/red/%u", 2, AKL_NEVER);
         load_sprite("enemies/koopa/red/dead", AKL_NEVER);
-    } else {
-        load_sprite_num("enemies/koopa/%u", 2, AKL_NEVER);
-        load_sprite("enemies/koopa/dead", AKL_NEVER);
     }
 }
 
@@ -48,7 +47,7 @@ static void tick(GameActor* actor) {
     const Bool red = ANY_FLAG(actor, FLG_KOOPA_RED);
     VAL(actor, ENEMY_FRAME) += red ? 9 : 6;
 
-    move_enemy(actor, (FVec2){ANY_FLAG(actor, FLG_KOOPA_RED) ? Int2Fx(2) : Fx1, 19005}, red);
+    move_enemy(actor, (FVec2){red ? Int2Fx(2) : Fx1, 19005}, red);
 
     if (VAL(actor, KOOPA_MAYDAY) < 11)
         ++VAL(actor, KOOPA_MAYDAY);
@@ -90,7 +89,8 @@ static void collide(GameActor* actor, GameActor* from) {
     }
 
     case ACT_GOOMBA:
-    case ACT_KOOPA: {
+    case ACT_KOOPA:
+    case ACT_SPINY: {
         turn_enemy(actor);
         turn_enemy(from);
         break;
@@ -99,6 +99,7 @@ static void collide(GameActor* actor, GameActor* from) {
     case ACT_KOOPA_SHELL: {
         if (!hit_shell(actor, from))
             turn_enemy(actor);
+
         break;
     }
 
