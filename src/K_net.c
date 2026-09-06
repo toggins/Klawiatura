@@ -158,7 +158,6 @@ static void net_logger(NutBlast_LogLevel level, const char* message) {
 void net_init() {
     NutBlast_SetLogger(net_logger);
     update_net_game_id();
-    NutBlast_SetMaxChannels(PCH_SIZE);
 
     NutBlast_OnReady(on_ready);
     NutBlast_OnDisconnected(on_disconnected);
@@ -385,11 +384,14 @@ void net_flush() {
 }
 
 void update_net_game_id() {
-    NutBlast_SetGameID(fmt(GAME_NAME " " GAME_VERSION " %X", get_game_hash()));
+    NutBlast_InitOptions options = {0};
+    options.game_id = fmt(GAME_NAME " " GAME_VERSION " %X", get_game_hash());
+    options.max_channels = PCH_SIZE;
+    NutBlast_Init(options);
 }
 
 void set_hostname(const char* hn) {
-    NutBlast_SetNutBlaster((hn == NULL || hn[0] == '\0') ? NUTBLAST_DEFAULT_SERVER : hn);
+    NutBlast_SetNutBlasterAddress((hn == NULL || hn[0] == '\0') ? NULL : hn);
 }
 
 Bool is_connected() {
@@ -417,11 +419,11 @@ const char* net_error() {
 }
 
 const NetID* get_peers() {
-    return NutBlast_GetPlayerIDs();
+    return NutBlast_ListPlayers();
 }
 
 NetID get_local_peer() {
-    return is_connected() ? NutBlast_GetOurID() : 0;
+    return is_connected() ? NutBlast_GetPlayerID() : 0;
 }
 
 NetID get_master_peer() {
@@ -556,7 +558,11 @@ void host_lobby() {
     update_lobby_data();
     update_peer_data();
     NutBlast_SetPlayerField("spectator", "0"); // GROSS HACK: pre-set `spectator` to trigger diff the first time.
-    NutBlast_Host(0, CLIENT.lobby_limit, !CLIENT.private_lobby);
+
+    NutBlast_HostOptions options = {0};
+    options.max_players = CLIENT.lobby_limit;
+    options.unlisted = CLIENT.private_lobby;
+    NutBlast_Host(options);
 
     connect_state = CONN_CONNECTING;
 }

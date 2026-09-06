@@ -43,7 +43,7 @@ set(SDL_INSTALL ON CACHE INTERNAL "")
 
 FetchContent_Declare(SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG release-3.4.14
+    GIT_TAG release-3.4.16
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(SDL3)
@@ -93,7 +93,7 @@ endif()
 
 FetchContent_Declare(SDL3_mixer
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
-    GIT_TAG 9c12eb245ebbf568b6eb7b838cf350aa9f729497
+    GIT_TAG 00d108dc09e78817112e4bf542012c91e066892a
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(SDL3_mixer)
@@ -103,7 +103,7 @@ list(APPEND LIBS SDL3_mixer::SDL3_mixer-static)
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG 92580540a27913da37a34cfcc006f973d471c081
+    GIT_TAG 55c3bc818853e77937c2373527533d7baecd42f8
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
@@ -168,7 +168,7 @@ list(APPEND LIBS S_tructures)
 # NutBlast
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG 2e7879bce1f93d8f5c75c390dfec4b11a6143e91
+	GIT_TAG 2536f1a846bd49615ac75363600856c6dff07765
 	EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(NutBlast)
@@ -180,7 +180,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG v20260804094329-5924b5c
+    GIT_TAG v20260902101441-3b21722
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(GekkoNet)
