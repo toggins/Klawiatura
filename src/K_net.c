@@ -155,9 +155,17 @@ static void net_logger(NutBlast_LogLevel level, const char* message) {
     }
 }
 
+static const char* get_net_game_id() {
+    return fmt(GAME_NAME " " GAME_VERSION " %X", get_game_hash());
+}
+
 void net_init() {
     NutBlast_SetLogger(net_logger);
-    update_net_game_id();
+
+    NutBlast_InitOptions options = {0};
+    options.game_id = get_net_game_id();
+    options.max_channels = PCH_SIZE;
+    NutBlast_Init(options);
 
     NutBlast_OnReady(on_ready);
     NutBlast_OnDisconnected(on_disconnected);
@@ -384,10 +392,7 @@ void net_flush() {
 }
 
 void update_net_game_id() {
-    NutBlast_InitOptions options = {0};
-    options.game_id = fmt(GAME_NAME " " GAME_VERSION " %X", get_game_hash());
-    options.max_channels = PCH_SIZE;
-    NutBlast_Init(options);
+    NutBlast_SetGameID(get_net_game_id());
 }
 
 void set_hostname(const char* hn) {
