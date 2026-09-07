@@ -1,0 +1,23 @@
+{
+    "map": {
+        "size": [720, 480],
+        "track": "maf_maaryo",
+        "backdrops": [
+            {
+                "sprite": "maps/1",
+                "pos": [0, 0, 50]
+            }
+        ],
+        "paths": [
+            { "nodes": [[58, 200]] },
+            { "nodes": [[58, 200]] },
+            { "nodes": [[58, 200]] },
+            { "nodes": [[58, 200]] },
+            { "nodes": [[58, 200]] },
+            { "nodes": [[58, 200]] },
+            { "nodes": [[58, 200]] },
+            { "nodes": [[58, 200]] }
+        ]
+    },
+    "levels": ["remix_1", "remix_2", "remix_3", "remix_4", "remix_5", "remix_6", "remix_7", "remix_8"]
+}
