@@ -500,6 +500,9 @@ Bool nuke_spectator_peer(NetID pid) {
 }
 
 Uint8 get_lobby_player_count() {
+    if (!is_connected())
+        return 1;
+
     Uint8 count = 0;
     for (const NetID* pids = get_peers(); *pids > 0; pids++)
         if (!get_peer_bool(*pids, "spectator"))
