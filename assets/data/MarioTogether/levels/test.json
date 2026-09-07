@@ -1,6 +1,6 @@
 {
     "label": "$Run!!",
-    "tracks": ["smw/athletic", "smw/athletic_yoshi"],
+    "tracks": [{ "track": "smw/athletic" }, { "track": "smw/athletic_yoshi" }],
     "size": [9800, 480],
     "bounds": [0, 0, 9800, 480],
     "time": 150,
