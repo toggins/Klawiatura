@@ -2118,10 +2118,7 @@ void push_actors(GameActor* actor) {
 }
 
 static FRect get_autoscroll_cbox(const GameActor* autoscroll, Fixed edge) {
-    const FVec2 cpos = {
-        Fclamp(autoscroll->pos.x, level_info->bounds.start.x, level_info->bounds.end.x - F_SCREEN_WIDTH),
-        Fclamp(autoscroll->pos.y, level_info->bounds.start.y, level_info->bounds.end.y - F_SCREEN_HEIGHT),
-    };
+    const FVec2 cpos = Vclamp(autoscroll->pos, level_info->bounds.start, Vsub(level_info->bounds.end, F_SCREEN));
     return (FRect){
         {cpos.x + edge,                  cpos.y + edge                  },
         {cpos.x + F_SCREEN_WIDTH - edge, cpos.y + F_SCREEN_HEIGHT - edge},
@@ -2129,12 +2126,8 @@ static FRect get_autoscroll_cbox(const GameActor* autoscroll, Fixed edge) {
 }
 
 static FRect get_player_cbox(const GamePlayer* player, Fixed edge) {
-    const FVec2 cpos = {
-        Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-            player->bounds.end.x - F_HALF_SCREEN_WIDTH),
-        Fclamp(
-            player->pos.y, player->bounds.start.y + F_HALF_SCREEN_HEIGHT, player->bounds.end.y - F_HALF_SCREEN_HEIGHT),
-    };
+    const FVec2 cpos = Vclamp(Vadd(player->pos, (FVec2){player->xscroll, Fx0}),
+        Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
     return (FRect){
         {cpos.x - F_HALF_SCREEN_WIDTH + edge, cpos.y - F_HALF_SCREEN_HEIGHT + edge},
         {cpos.x + F_HALF_SCREEN_WIDTH - edge, cpos.y + F_HALF_SCREEN_HEIGHT - edge},
@@ -2202,6 +2195,9 @@ Bool in_player_x_view(const GamePlayer* player, Fixed x, Fixed edge) {
 }
 
 Bool below_nearest_bounds(const FVec2 pos, Fixed edge) {
+    if (get_actor(game_state->autoscroll) != NULL)
+        return pos.y > (level_info->bounds.end.y + edge);
+
     FRect bounds = {0};
     Fixed score = FxUpper;
     Bool found = FALSE;
@@ -2211,10 +2207,7 @@ Bool below_nearest_bounds(const FVec2 pos, Fixed edge) {
         if (player == NULL)
             continue;
 
-        const Fixed dist = Vdist(pos, (FVec2){
-                                          Fclamp(pos.x, player->bounds.start.x, player->bounds.end.x),
-                                          Fclamp(pos.y, player->bounds.start.y, player->bounds.end.y),
-                                      });
+        const Fixed dist = Vdist(pos, Vclamp(pos, player->bounds.start, player->bounds.end));
         if (dist < score) {
             bounds = player->bounds;
             score = dist;
@@ -2243,11 +2236,8 @@ Bool below_nearest_view(const FVec2 pos, Fixed edge) {
         if (player == NULL)
             continue;
 
-        const FRect pview = get_player_cbox(player, edge);
-        const Fixed dist = Vdist(pos, (FVec2){
-                                          Fclamp(pos.x, pview.start.x, pview.end.x),
-                                          Fclamp(pos.y, pview.start.y, pview.end.y),
-                                      });
+        const FRect pview = get_player_cbox(player, Fx0);
+        const Fixed dist = Vdist(pos, Vclamp(pos, pview.start, pview.end));
         if (dist < score) {
             view = pview;
             score = dist;
