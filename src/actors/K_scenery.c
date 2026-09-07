@@ -363,7 +363,7 @@ static void load_star() {
 }
 
 static void create_star(GameActor* actor) {
-    actor->depth = 13041663;
+    actor->depth = Int2Fx(197);
 
     VAL(actor, SCENERY_ALPHA) = 100;
 }
