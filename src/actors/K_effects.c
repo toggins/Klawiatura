@@ -65,7 +65,7 @@ static void tick_bubble(GameActor* actor) {
         return;
     }
 
-    if (!in_any_view(actor->pos, Int2Fx(-32), FALSE))
+    if (!in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
         FLAG_ON(actor, FLG_DESTROY);
 }
 
@@ -170,7 +170,7 @@ static void tick_tube_bubble(GameActor* actor) {
 
     move_actor(actor, Vadd(actor->pos, actor->vel));
 
-    if (!in_any_view(actor->pos, Int2Fx(-32), FALSE))
+    if (!in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
         FLAG_ON(actor, FLG_DESTROY);
 }
 
@@ -204,7 +204,7 @@ static void tick_lava_bubble(GameActor* actor) {
     actor->vel.y += 6554;
 
     ++VAL(actor, EFFECT_FRAME);
-    if (VAL(actor, EFFECT_FRAME) >= 42 || !in_any_view(actor->pos, Int2Fx(-8), FALSE))
+    if (VAL(actor, EFFECT_FRAME) >= 42 || !in_any_view(actor->pos, Int2Fx(-8), VEF_ALL))
         FLAG_ON(actor, FLG_DESTROY);
 }
 

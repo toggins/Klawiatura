@@ -65,9 +65,8 @@ static void tick_spawner(GameActor* actor) {
             continue;
         }
 
-        const Fixed px = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-            player->bounds.end.x - F_HALF_SCREEN_WIDTH);
-        edge = (actor->vel.x < Fx0) ? Fmax(edge, px) : Fmin(edge, px);
+        const FVec2 ppos = get_player_view(player);
+        edge = (actor->vel.x < Fx0) ? Fmax(edge, ppos.x) : Fmin(edge, ppos.x);
         found = TRUE;
     }
 
@@ -75,7 +74,7 @@ static void tick_spawner(GameActor* actor) {
         return;
 
     FVec2 cpos = actor->pos;
-    cpos.x += edge - F_HALF_SCREEN_WIDTH;
+    cpos.x += edge;
     if (ANY_FLAG(actor, FLG_CHEEP_JUMP)) {
         cpos.x -= Int2Fx(rng(100));
     } else {
@@ -163,7 +162,7 @@ static void tick(GameActor* actor) {
 
         actor->vel.y += 13107;
 
-        if (!in_any_view(actor->pos, Int2Fx(-96), FALSE))
+        if (!in_any_view(actor->pos, Int2Fx(-96), VEF_ALL))
             FLAG_ON(actor, FLG_DESTROY);
 
         return;
@@ -187,10 +186,9 @@ static void tick(GameActor* actor) {
     for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
         const GamePlayer* player = get_player(i);
         if (player != NULL) {
-            const Fixed px = Fclamp(player->pos.x + player->xscroll, player->bounds.start.x + F_HALF_SCREEN_WIDTH,
-                player->bounds.end.x - F_HALF_SCREEN_WIDTH);
-            edge = (actor->vel.x > Fx0) ? Fmax(edge, px + F_HALF_SCREEN_WIDTH + Int2Fx(100))
-                                        : Fmin(edge, px - F_HALF_SCREEN_WIDTH - Int2Fx(100));
+            const FVec2 ppos = get_player_view(player);
+            edge = (actor->vel.x > Fx0) ? Fmax(edge, ppos.x + F_SCREEN_WIDTH + Int2Fx(100))
+                                        : Fmin(edge, ppos.x - Int2Fx(100));
         }
     }
     if ((actor->vel.x > Fx0 && actor->pos.x > edge) || (actor->vel.x <= Fx0 && actor->pos.x < edge)) {
@@ -296,7 +294,7 @@ static void tick_blue(GameActor* actor) {
 
     if (ANY_FLAG(actor, FLG_CHEEP_ACTIVE))
         move_actor(actor, Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? -81920 : 81920, Fx0}));
-    else if (in_any_view(actor->pos, Int2Fx(-32), FALSE))
+    else if (in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
         FLAG_ON(actor, FLG_CHEEP_ACTIVE);
 
     if (ANY_FLAG(actor, FLG_CHEEP_OVERLAP)) {

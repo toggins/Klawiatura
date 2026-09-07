@@ -33,9 +33,9 @@ static void tick_fireball(GameActor* actor) {
 
         const LevelInfo* level_info = levelinfo();
         if ((level_info->bounds.end.y - level_info->bounds.start.y) <= F_SCREEN_HEIGHT) {
-            if (below_nearest_bounds(actor->pos, Int2Fx(8)))
+            if (below_nearest_view(actor->pos, Int2Fx(8)))
                 FLAG_ON(actor, FLG_DESTROY);
-        } else if (!in_any_view(actor->pos, Int2Fx(-64), FALSE)) {
+        } else if (!in_any_view(actor->pos, Int2Fx(-64), VEF_ALL)) {
             FLAG_ON(actor, FLG_DESTROY);
         }
 
@@ -48,8 +48,8 @@ static void tick_fireball(GameActor* actor) {
     actor->vel.y += 26214;
 
     GamePlayer* player = get_player(actor->player);
-    if ((player == NULL && !in_any_view(actor->pos, Int2Fx(-8), TRUE))
-        || (player != NULL && !in_player_view(player, actor->pos, Int2Fx(-8), TRUE)))
+    if ((player == NULL && !in_any_view(actor->pos, Int2Fx(-8), VEF_IGNORE_TOP))
+        || (player != NULL && !in_player_view(player, actor->pos, Int2Fx(-8), VEF_IGNORE_TOP)))
     {
         FLAG_ON(actor, FLG_DESTROY);
         return;
@@ -129,8 +129,8 @@ static void tick_beetroot(GameActor* actor) {
         }
 
         const GamePlayer* player = get_player(actor->player);
-        if ((player == NULL && !in_any_view(actor->pos, Int2Fx(-32), FALSE))
-            || (player != NULL && !in_player_view(player, actor->pos, Int2Fx(-32), FALSE)))
+        if ((player == NULL && !in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
+            || (player != NULL && !in_player_view(player, actor->pos, Int2Fx(-32), VEF_ALL)))
         {
             FLAG_ON(actor, FLG_DESTROY);
             return;
@@ -170,8 +170,8 @@ static void tick_beetroot(GameActor* actor) {
     }
 
     const GamePlayer* player = get_player(actor->player);
-    if ((player == NULL && !in_any_x_view(actor->pos.x, Fx0))
-        || (player != NULL && !in_player_x_view(player, actor->pos.x, Fx0)))
+    if ((player == NULL && !in_any_view(actor->pos, Fx0, VEF_IGNORE_Y))
+        || (player != NULL && !in_player_view(player, actor->pos, Fx0, VEF_IGNORE_Y)))
     {
         FLAG_ON(actor, FLG_DESTROY);
         return;
@@ -240,7 +240,7 @@ static void tick_bowser_fire(GameActor* actor) {
     if (ANY_FLAG(actor, FLG_PROJECTILE_ALT) && actor->pos.y > (VAL(actor, PROJECTILE_Y) + Int2Fx(4)))
         move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, Int2Fx(-4)}));
 
-    if (!in_any_view(actor->pos, Int2Fx(-48), FALSE))
+    if (!in_any_view(actor->pos, Int2Fx(-48), VEF_ALL))
         FLAG_ON(actor, FLG_DESTROY);
 }
 

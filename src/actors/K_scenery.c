@@ -127,7 +127,7 @@ static void load_tube_bubbles() {
 }
 
 static void tick_tube_bubbles(GameActor* actor) {
-    if (!in_any_view(actor->pos, Int2Fx(-32), FALSE) || (gamestate()->time % 5) > 0 || rng(11) != 10)
+    if (!in_any_view(actor->pos, Int2Fx(-32), VEF_ALL) || (gamestate()->time % 5) > 0 || rng(11) != 10)
         return;
 
     Sint32 r = rng(10);
@@ -205,7 +205,7 @@ static void load_lava_bubbler() {
 }
 
 static void tick_lava_bubbler(GameActor* actor) {
-    if (((gamestate()->time * 2) % 5) > 1 || !in_any_view(actor->pos, Int2Fx(-32), FALSE))
+    if (((gamestate()->time * 2) % 5) > 1 || !in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
         return;
 
     FVec2 bpos = actor->pos;
@@ -260,7 +260,7 @@ static void tick_cloud_face(GameActor* actor) {
     }
     }
 
-    if ((gamestate()->time % 5) == 0 && in_any_view(actor->pos, Int2Fx(-32), FALSE)
+    if ((gamestate()->time % 5) == 0 && in_any_view(actor->pos, Int2Fx(-32), VEF_ALL)
         && VAL(actor, SCENERY_ANIMATION) == 0)
     {
         switch (rng(20)) {
@@ -458,9 +458,7 @@ static void tick_shooting_star_spawner(GameActor* actor) {
         if (pawn == NULL || pawn->type != ACT_PLAYER || rng(20) != 10)
             continue;
 
-        FVec2 spos = Vsub(
-            Vclamp(pawn->pos, Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN)),
-            F_HALF_SCREEN);
+        FVec2 spos = get_player_view(player);
         spos.x += Int2Fx(100) + Int2Fx(rng(800));
         spos.y -= Int2Fx(32);
 

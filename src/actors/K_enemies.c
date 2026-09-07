@@ -12,7 +12,7 @@ void move_enemy(GameActor* actor, FVec2 speed, Bool edge) {
         return;
     }
 
-    if (!ANY_FLAG(actor, FLG_ENEMY_ACTIVE) && in_any_view(actor->pos, Int2Fx(-32), FALSE)) {
+    if (!ANY_FLAG(actor, FLG_ENEMY_ACTIVE) && in_any_view(actor->pos, Int2Fx(-32), VEF_ALL)) {
         actor->vel.x = ANY_FLAG(actor, FLG_X_FLIP) ? -speed.x : speed.x;
         FLAG_ON(actor, FLG_ENEMY_ACTIVE);
     }
@@ -158,7 +158,7 @@ Bool hit_shell(GameActor* actor, GameActor* from) {
     if (actor == NULL || from == NULL || from->vel.x == Fx0)
         return FALSE;
 
-    if (!in_any_view(actor->pos, Int2Fx(-32), FALSE))
+    if (!in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
         return TRUE;
 
     if (actor->type == ACT_KOOPA_SHELL && actor->vel.x != Fx0) {

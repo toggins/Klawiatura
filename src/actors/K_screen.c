@@ -40,7 +40,7 @@ static void pre_tick_autoscroll(GameActor* actor) {
         if (ANY_FLAG(actor, FLG_SCROLL_BOWSER)) {
             if (player->pos.x > actor->pos.x)
                 break;
-        } else if (in_player_view(player, actor->pos, Fx0, FALSE)) {
+        } else if (in_player_view(player, actor->pos, Fx0, VEF_ALL)) {
             break;
         }
 
@@ -72,7 +72,7 @@ static void pre_tick_autoscroll(GameActor* actor) {
             continue;
 
         set_player_track(oplayer, VAL(autoscroll, SCROLL_TRACK));
-        if (oplayer->id != player->id && !in_player_view(oplayer, oplayer->pos, Int2Fx(-32), TRUE))
+        if (oplayer->id != player->id && !in_player_view(oplayer, oplayer->pos, Int2Fx(-32), VEF_IGNORE_TOP))
             respawn_player(oplayer);
     }
 }

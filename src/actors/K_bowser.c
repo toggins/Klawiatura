@@ -153,7 +153,7 @@ static void tick(GameActor* actor) {
         VAL(actor, BOWSER_MOVE) = rng(64);
 
     // 801 (modified)
-    if (!ANY_FLAG(actor, FLG_BOWSER_ACTIVE) && in_any_view(actor->pos, Int2Fx(-32), FALSE)) {
+    if (!ANY_FLAG(actor, FLG_BOWSER_ACTIVE) && in_any_view(actor->pos, Int2Fx(-32), VEF_ALL)) {
         FLAG_ON(actor, FLG_BOWSER_ACTIVE);
 
         // !!! CLIENT-SIDE !!!

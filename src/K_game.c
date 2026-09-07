@@ -2117,6 +2117,18 @@ void push_actors(GameActor* actor) {
     }
 }
 
+const FVec2 get_player_view(const GamePlayer* player) {
+    const GameActor* autoscroll = get_actor(game_state->autoscroll);
+    if (autoscroll != NULL)
+        return Vclamp(autoscroll->pos, level_info->bounds.start, Vsub(level_info->bounds.end, F_SCREEN));
+
+    return (player == NULL)
+               ? (FVec2){Fx0, Fx0}
+               : Vsub(Vclamp(Vadd(player->pos, (FVec2){player->xscroll, Fx0}),
+                          Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN)),
+                     F_HALF_SCREEN);
+}
+
 static FRect get_autoscroll_cbox(const GameActor* autoscroll, Fixed edge) {
     const FVec2 cpos = Vclamp(autoscroll->pos, level_info->bounds.start, Vsub(level_info->bounds.end, F_SCREEN));
     return (FRect){
@@ -2134,31 +2146,32 @@ static FRect get_player_cbox(const GamePlayer* player, Fixed edge) {
     };
 }
 
-static Bool cbox_in_view(const FVec2 pos, const FRect cbox, Bool ignore_top) {
-    return pos.x < cbox.end.x && pos.x > cbox.start.x && pos.y < cbox.end.y && (ignore_top || pos.y > cbox.start.y);
+static Bool cbox_in_view(const FVec2 pos, const FRect cbox, ViewEdgeFlags flags) {
+    return (!(flags & VEF_RIGHT) || pos.x < cbox.end.x) && (!(flags & VEF_LEFT) || pos.x > cbox.start.x)
+           && (!(flags & VEF_BOTTOM) || pos.y < cbox.end.y) && (!(flags & VEF_TOP) || pos.y > cbox.start.y);
 }
 
-Bool in_any_view(const FVec2 pos, Fixed edge, Bool ignore_top) {
+Bool in_any_view(const FVec2 pos, Fixed edge, ViewEdgeFlags flags) {
     const GameActor* autoscroll = get_actor(game_state->autoscroll);
     if (autoscroll != NULL)
-        return cbox_in_view(pos, get_autoscroll_cbox(autoscroll, edge), ignore_top);
+        return cbox_in_view(pos, get_autoscroll_cbox(autoscroll, edge), flags);
 
     for (PlayerID i = 0; i < game_context.num_players; i++) {
         const GamePlayer* player = get_player(i);
-        if (player != NULL && cbox_in_view(pos, get_player_cbox(player, edge), ignore_top))
+        if (player != NULL && cbox_in_view(pos, get_player_cbox(player, edge), flags))
             return TRUE;
     }
 
     return FALSE;
 }
 
-Bool in_player_view(const GamePlayer* player, const FVec2 pos, Fixed edge, Bool ignore_top) {
+Bool in_player_view(const GamePlayer* player, const FVec2 pos, Fixed edge, ViewEdgeFlags flags) {
     if (player == NULL)
         return FALSE;
 
     const GameActor* autoscroll = get_actor(game_state->autoscroll);
     return cbox_in_view(
-        pos, (autoscroll == NULL) ? get_player_cbox(player, edge) : get_autoscroll_cbox(autoscroll, edge), ignore_top);
+        pos, (autoscroll == NULL) ? get_player_cbox(player, edge) : get_autoscroll_cbox(autoscroll, edge), flags);
 }
 
 static Bool autoscroll_cx_in_view(const GameActor* autoscroll, Fixed x, Fixed edge) {
@@ -2219,9 +2232,8 @@ Bool below_nearest_bounds(const FVec2 pos, Fixed edge) {
 }
 
 Bool below_nearest_view(const FVec2 pos, Fixed edge) {
-    const GameActor* autoscroll = get_actor(gamestate()->autoscroll);
+    const GameActor* autoscroll = get_actor(game_state->autoscroll);
     if (autoscroll != NULL) {
-        const LevelInfo* level_info = levelinfo();
         return pos.y
                > (Fclamp(autoscroll->pos.y, level_info->bounds.start.y, level_info->bounds.end.y - F_SCREEN_HEIGHT)
                    + F_SCREEN_HEIGHT + edge);
@@ -2245,7 +2257,7 @@ Bool below_nearest_view(const FVec2 pos, Fixed edge) {
         }
     }
 
-    return pos.y > (found ? (view.end.y + edge) : (levelinfo()->bounds.end.y + edge));
+    return pos.y > (found ? (view.end.y + edge) : (level_info->bounds.end.y + edge));
 }
 
 void collide_actor(GameActor* actor) {
@@ -2996,7 +3008,7 @@ Sint32 rng(Sint32 n) {
 #define BAD_ACTOR(actor) ((actor) == NULL || (actor)->id < 0 || (actor)->id >= MAX_ACTORS)
 
 const FVec2 get_interp(const GameActor* actor) {
-    return (BAD_ACTOR(actor)) ? (FVec2){Fx0} : interp_state->actors[actor->id].current;
+    return (BAD_ACTOR(actor)) ? (FVec2){Fx0, Fx0} : interp_state->actors[actor->id].current;
 }
 
 void skip_interp(const GameActor* actor) {

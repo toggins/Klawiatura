@@ -73,7 +73,7 @@ static void tick(GameActor* actor) {
 
     // 666
     if (!ANY_FLAG(actor, FLG_PIRANHA_BLOCKED | FLG_PIRANHA_MOVE | FLG_PIRANHA_HIDE)
-        && in_any_view(actor->pos, Int2Fx(-128), FALSE))
+        && in_any_view(actor->pos, Int2Fx(-128), VEF_ALL))
     {
         FLAG_ON(actor, FLG_PIRANHA_MOVE);
         VAL(actor, PIRANHA_MOVE) = ANY_FLAG(actor, FLG_Y_FLIP) ? 60 : -60;

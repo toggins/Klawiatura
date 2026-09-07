@@ -11,7 +11,7 @@ static void create(GameActor* actor) {
 
 static void tick(GameActor* actor) {
     const GameState* game_state = gamestate();
-    if (in_any_view(actor->pos, Int2Fx(-128), FALSE) && (game_state->time % 15) == 0) {
+    if (in_any_view(actor->pos, Int2Fx(-128), VEF_ALL) && (game_state->time % 15) == 0) {
         FVec2 bpos = actor->pos;
         bpos.y -= Int2Fx(200) + Int2Fx(rng(32));
         bpos.x += Int2Fx(rng(64));

@@ -475,8 +475,19 @@ void replace_actors(ActorType, ActorType);
 
 void move_actor(GameActor*, const FVec2), push_actors(GameActor*);
 
-Bool in_any_view(const FVec2, Fixed, Bool), in_player_view(const GamePlayer*, const FVec2, Fixed, Bool);
-Bool in_any_x_view(Fixed, Fixed), in_player_x_view(const GamePlayer*, Fixed, Fixed);
+typedef Uint8 ViewEdgeFlags;
+#define VEF_LEFT (ViewEdgeFlags)(1U << 0)
+#define VEF_TOP (ViewEdgeFlags)(1U << 1)
+#define VEF_BOTTOM (ViewEdgeFlags)(1U << 2)
+#define VEF_RIGHT (ViewEdgeFlags)(1U << 3)
+#define VEF_ALL (ViewEdgeFlags)(VEF_LEFT | VEF_TOP | VEF_BOTTOM | VEF_RIGHT)
+#define VEF_IGNORE_TOP (ViewEdgeFlags)(VEF_LEFT | VEF_BOTTOM | VEF_RIGHT)
+#define VEF_IGNORE_X (ViewEdgeFlags)(VEF_TOP | VEF_BOTTOM)
+#define VEF_IGNORE_Y (ViewEdgeFlags)(VEF_LEFT | VEF_RIGHT)
+
+const FVec2 get_player_view(const GamePlayer*);
+Bool in_any_view(const FVec2, Fixed, ViewEdgeFlags),
+    in_player_view(const GamePlayer*, const FVec2, Fixed, ViewEdgeFlags);
 Bool below_nearest_bounds(const FVec2, Fixed), below_nearest_view(const FVec2, Fixed);
 
 void collide_actor(GameActor*);

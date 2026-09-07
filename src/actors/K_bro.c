@@ -106,7 +106,7 @@ static void tick(GameActor* actor) {
     if (ANY_FLAG(actor, FLG_BRO_ACTIVE)) {
         if (VAL(actor, BRO_MOVE) == 0)
             VAL(actor, BRO_B) += VAL(actor, BRO_E);
-    } else if (in_any_view(actor->pos, Int2Fx(-32), FALSE)) {
+    } else if (in_any_view(actor->pos, Int2Fx(-32), VEF_ALL)) {
         FLAG_ON(actor, FLG_BRO_ACTIVE);
         VAL(actor, BRO_B) = 101;
         VAL(actor, BRO_C) = VAL(actor, BRO_E) = 1;
@@ -212,7 +212,7 @@ static void tick(GameActor* actor) {
     }
 
     if (((game_state->time * 2) % 5) <= 1 && ANY_FLAG(actor, FLG_BRO_ACTIVE)
-        && in_any_view(actor->pos, Int2Fx(-32), FALSE) && rng(20) == 10)
+        && in_any_view(actor->pos, Int2Fx(-32), VEF_ALL) && rng(20) == 10)
     {
         VAL(actor, BRO_FRAME) = 0;
         ++VAL(actor, BRO_THROW);

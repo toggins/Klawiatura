@@ -175,7 +175,7 @@ static void tick_effect(GameActor* actor) {
         }
     }
 
-    if (!in_any_view(actor->pos, Int2Fx(-40), FALSE)) {
+    if (!in_any_view(actor->pos, Int2Fx(-40), VEF_ALL)) {
         FLAG_ON(actor, FLG_DESTROY);
         return;
     }
