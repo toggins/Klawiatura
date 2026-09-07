@@ -1319,6 +1319,11 @@
                     "index": 7
                 }
             ]
+        },
+        "Fake Brick": {
+            "type": "actor",
+            "id": 78,
+            "sprite": "enemies/fake_brick"
         }
     },
 
@@ -1557,7 +1562,8 @@
                 "Piranha Plant",
                 "Roto-Disc",
                 "Bowser",
-                "Spiny"
+                "Spiny",
+                "Fake Brick"
             ]
         },
         {
