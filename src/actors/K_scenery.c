@@ -6,6 +6,7 @@
 enum {
     VAL_SCENERY_ANIMATION,
     VAL_SCENERY_FRAME,
+    VAL_SCENERY_ANGLE,
     VAL_SCENERY_ALPHA,
 };
 
@@ -432,4 +433,82 @@ const ActorTable TAB_STAR = {
     .create = create_star,
     .tick = tick_star,
     .draw = draw_star,
+};
+
+/* =====================
+   SHOOTING STAR SPAWNER
+   ===================== */
+
+static void load_shooting_star_spawner() {
+    load_actor(ACT_SHOOTING_STAR);
+}
+
+static void tick_shooting_star_spawner(GameActor* actor) {
+    (void)actor;
+
+    if ((gamestate()->time % 5) > 0)
+        return;
+
+    for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn == NULL || pawn->type != ACT_PLAYER || rng(20) != 10)
+            continue;
+
+        FVec2 spos = Vsub(
+            Vclamp(pawn->pos, Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN)),
+            F_HALF_SCREEN);
+        spos.x += Int2Fx(100) + Int2Fx(rng(800));
+        spos.y -= Int2Fx(32);
+
+        GameActor* star = create_actor(ACT_SHOOTING_STAR, spos);
+        if (star == NULL)
+            continue;
+
+        const Fixed dir = 244491 + (rng(4) * 12868);
+        const Fixed speed = 163840 + (rng(60) * 8192);
+        star->vel.x = Fmul(speed, Fcos(dir));
+        star->vel.y = Fmul(speed, -Fsin(dir));
+    }
+}
+
+const ActorTable TAB_SHOOTING_STAR_SPAWNER = {
+    .load = load_shooting_star_spawner,
+    .tick = tick_shooting_star_spawner,
+};
+
+/* =============
+   SHOOTING STAR
+   ============= */
+
+static void load_shooting_star() {
+    load_sprite("scenery/shooting_star", AKL_NEVER);
+}
+
+static void create_shooting_star(GameActor* actor) {
+    actor->depth = -3276799;
+}
+
+static void tick_shooting_star(GameActor* actor) {
+    VAL(actor, SCENERY_ANGLE) += 12868;
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+
+    if (below_nearest_view(actor->pos, Int2Fx(32)))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_shooting_star(const GameActor* actor) {
+    batch_reset();
+    batch_angle(Fx2Float(VAL(actor, SCENERY_ANGLE)));
+    draw_actor(actor, "scenery/shooting_star", FALSE);
+}
+
+const ActorTable TAB_SHOOTING_STAR = {
+    .load = load_shooting_star,
+    .create = create_shooting_star,
+    .tick = tick_shooting_star,
+    .draw = draw_shooting_star,
 };

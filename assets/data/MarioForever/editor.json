@@ -607,6 +607,11 @@
             "id": 75,
             "sprite": "scenery/star/0"
         },
+        "Shooting Star Spawner": {
+            "type": "actor",
+            "id": 76,
+            "sprite": "scenery/shooting_star"
+        },
         "Player Spawn": {
             "type": "actor",
             "id": 1,
@@ -1495,6 +1500,10 @@
                 {
                     "name": "Corals",
                     "items": ["Corals", "Corals 2"]
+                },
+                {
+                    "name": "Stars",
+                    "items": ["Star", "Shooting Star Spawner"]
                 },
                 "Forest",
                 "Bush",
