@@ -101,7 +101,7 @@ void audio_init() {
 
     midi_properties = SDL_CreateProperties();
     EXPECT(midi_properties, "Failed to create midi properties: %s", SDL_GetError());
-    SDL_SetFloatProperty(midi_properties, "synth.gain", 0.5f);
+    SDL_SetFloatProperty(midi_properties, "synth.gain", 0.4f);
     SDL_SetNumberProperty(midi_properties, "synth.reverb.active", 0);
     SDL_SetNumberProperty(midi_properties, "synth.chorus.active", 0);
 
