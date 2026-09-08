@@ -2446,13 +2446,14 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 
                         if (!touching_solid(sbox, SOL_SOLID)) {
                             ACTOR_CALL(displacer, on_top, actor);
+                            if (!ACTOR_IS_SOLID(displacer, SOL_GHOST)) {
+                                npos.y = step;
+                                actor->vel.y = Fx0;
+                                TOUCH_ON(actor, TOUCH_BOTTOM);
 
-                            npos.y = step;
-                            actor->vel.y = Fx0;
-                            TOUCH_ON(actor, TOUCH_BOTTOM);
-
-                            climbed = TRUE;
-                            goto da_climbed;
+                                climbed = TRUE;
+                                goto da_climbed;
+                            }
                         }
                     }
 
@@ -2461,15 +2462,19 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                             || ((solid & SOL_LEFT) && (npos.x + actor->box.end.x - actor->vel.x) <= dbox.start.x))
                         {
                             ACTOR_CALL(displacer, on_left, actor);
-                            npos.x = Fmin(npos.x, dbox.start.x - actor->box.end.x);
-                            stop |= actor->vel.x >= Fx0;
+                            if (!ACTOR_IS_SOLID(displacer, SOL_GHOST)) {
+                                npos.x = Fmin(npos.x, dbox.start.x - actor->box.end.x);
+                                stop |= actor->vel.x >= Fx0;
+                            }
                         }
                     } else if ((solid & SOL_SOLID)
                                || ((solid & SOL_RIGHT) && (npos.x + actor->box.start.x - actor->vel.x) >= dbox.end.x))
                     {
                         ACTOR_CALL(displacer, on_right, actor);
-                        npos.x = Fmax(npos.x, dbox.end.x - actor->box.start.x);
-                        stop |= actor->vel.x <= Fx0;
+                        if (!ACTOR_IS_SOLID(displacer, SOL_GHOST)) {
+                            npos.x = Fmax(npos.x, dbox.end.x - actor->box.start.x);
+                            stop |= actor->vel.x <= Fx0;
+                        }
                     }
 
                     climbed = FALSE;
@@ -2589,8 +2594,10 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                                 continue;
 
                             ACTOR_CALL(displacer, on_bottom, actor);
-                            npos.y = Fmax(npos.y, dbox.end.y - actor->box.start.y);
-                            stop |= actor->vel.y <= Fx0;
+                            if (!ACTOR_IS_SOLID(displacer, SOL_GHOST)) {
+                                npos.y = Fmax(npos.y, dbox.end.y - actor->box.start.y);
+                                stop |= actor->vel.y <= Fx0;
+                            }
                         } else {
                             const Fixed width = Fabs(dbox.end.x - dbox.start.x);
                             if (width == Fx0)
@@ -2602,8 +2609,11 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
 
                             const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - dbox.start.x, width), Fx0, Fx1));
                             if ((npos.y + actor->box.end.y + Fabs(actor->vel.x)) >= slope) {
-                                npos.y = slope - actor->box.end.y;
-                                stop = TRUE;
+                                ACTOR_CALL(displacer, on_top, actor);
+                                if (!ACTOR_IS_SOLID(displacer, SOL_GHOST)) {
+                                    npos.y = slope - actor->box.end.y;
+                                    stop = TRUE;
+                                }
                             }
                         }
 
@@ -2615,16 +2625,20 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                             || ((solid & SOL_BOTTOM) && (npos.y + actor->box.start.y - actor->vel.y) >= dbox.end.y))
                         {
                             ACTOR_CALL(displacer, on_bottom, actor);
-                            npos.y = Fmax(npos.y, dbox.end.y - actor->box.start.y);
-                            stop |= actor->vel.y <= Fx0;
+                            if (!ACTOR_IS_SOLID(displacer, SOL_GHOST)) {
+                                npos.y = Fmax(npos.y, dbox.end.y - actor->box.start.y);
+                                stop |= actor->vel.y <= Fx0;
+                            }
                         }
                     } else if ((solid & SOL_SOLID)
                                || ((solid & SOL_TOP)
                                    && (npos.y + actor->box.end.y - actor->vel.y) <= (dbox.start.y + climb)))
                     {
                         ACTOR_CALL(displacer, on_top, actor);
-                        npos.y = Fmin(npos.y, dbox.start.y - actor->box.end.y);
-                        stop |= actor->vel.y >= Fx0;
+                        if (!ACTOR_IS_SOLID(displacer, SOL_GHOST)) {
+                            npos.y = Fmin(npos.y, dbox.start.y - actor->box.end.y);
+                            stop |= actor->vel.y >= Fx0;
+                        }
                     }
                 }
             }
@@ -2764,13 +2778,15 @@ void displace_actor_soft(GameActor* actor) {
                             || ((solid & SOL_LEFT) && (npos.x + actor->box.end.x - actor->vel.x) <= dbox.start.x))
                         {
                             ACTOR_CALL(displacer, on_left, actor);
-                            TOUCH_ON(actor, TOUCH_RIGHT);
+                            if (!ACTOR_IS_SOLID(displacer, SOL_GHOST))
+                                TOUCH_ON(actor, TOUCH_RIGHT);
                         }
                     } else if ((solid & SOL_SOLID)
                                || ((solid & SOL_RIGHT) && (npos.x + actor->box.start.x - actor->vel.x) >= dbox.end.x))
                     {
                         ACTOR_CALL(displacer, on_right, actor);
-                        TOUCH_ON(actor, TOUCH_LEFT);
+                        if (!ACTOR_IS_SOLID(displacer, SOL_GHOST))
+                            TOUCH_ON(actor, TOUCH_LEFT);
                     }
                 }
             }
@@ -2854,7 +2870,8 @@ void displace_actor_soft(GameActor* actor) {
                         if (actor->vel.y < Fx0) {
                             if ((solid & SOL_BOTTOM) && npos.y >= dbox.end.y) {
                                 ACTOR_CALL(displacer, on_bottom, actor);
-                                TOUCH_ON(actor, TOUCH_TOP);
+                                if (!ACTOR_IS_SOLID(displacer, SOL_GHOST))
+                                    TOUCH_ON(actor, TOUCH_TOP);
                             }
                         } else {
                             const Fixed width = dbox.end.x - dbox.start.x;
@@ -2868,7 +2885,8 @@ void displace_actor_soft(GameActor* actor) {
                             const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - dbox.start.x, width), Fx0, Fx1));
                             if ((npos.y + actor->box.end.y + Fabs(actor->vel.x)) >= slope) {
                                 ACTOR_CALL(displacer, on_top, actor);
-                                TOUCH_ON(actor, TOUCH_BOTTOM);
+                                if (!ACTOR_IS_SOLID(displacer, SOL_GHOST))
+                                    TOUCH_ON(actor, TOUCH_BOTTOM);
                             }
                         }
 
@@ -2880,13 +2898,15 @@ void displace_actor_soft(GameActor* actor) {
                             || ((solid & SOL_BOTTOM) && (npos.y + actor->box.start.y - actor->vel.y) >= dbox.end.y))
                         {
                             ACTOR_CALL(displacer, on_bottom, actor);
-                            TOUCH_ON(actor, TOUCH_TOP);
+                            if (!ACTOR_IS_SOLID(displacer, SOL_GHOST))
+                                TOUCH_ON(actor, TOUCH_TOP);
                         }
                     } else if ((solid & SOL_SOLID)
                                || ((solid & SOL_TOP) && (npos.y + actor->box.end.y - actor->vel.y) <= dbox.start.y))
                     {
                         ACTOR_CALL(displacer, on_top, actor);
-                        TOUCH_ON(actor, TOUCH_BOTTOM);
+                        if (!ACTOR_IS_SOLID(displacer, SOL_GHOST))
+                            TOUCH_ON(actor, TOUCH_BOTTOM);
                     }
                 }
             }

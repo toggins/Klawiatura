@@ -228,6 +228,8 @@ typedef Uint8 SolidFlags;
 #define SOL_LEFT (SolidFlags)(1U << 3)
 #define SOL_RIGHT (SolidFlags)(1U << 4)
 #define SOL_SLOPE (SolidFlags)(1U << 5)
+#define SOL_GHOST (SolidFlags)(1U << 6)
+
 #define SOL_SLOPE_LEFT (SOL_SLOPE | SOL_RIGHT)
 #define SOL_SLOPE_RIGHT (SOL_SLOPE | SOL_LEFT)
 

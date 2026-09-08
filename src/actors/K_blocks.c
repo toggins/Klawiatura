@@ -165,7 +165,7 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
    ===== */
 
 static SolidFlags is_solid(const GameActor* actor) {
-    return ANY_FLAG(actor, FLG_BLOCK_HIDDEN) ? SOL_BOTTOM : SOL_SOLID;
+    return ANY_FLAG(actor, FLG_BLOCK_HIDDEN) ? (SOL_BOTTOM | SOL_GHOST) : SOL_SOLID;
 }
 
 static void load() {
