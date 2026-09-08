@@ -1093,6 +1093,10 @@
             "sprite": "enemies/koopa/paratroopa/0",
             "flags": [
                 {
+                    "name": "Flip X",
+                    "index": 2
+                },
+                {
                     "name": "Red",
                     "index": 7
                 },

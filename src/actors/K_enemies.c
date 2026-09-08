@@ -17,7 +17,7 @@ void move_enemy(GameActor* actor, FVec2 speed, Bool edge) {
         FLAG_ON(actor, FLG_ENEMY_ACTIVE);
     }
 
-    if (edge) {
+    if (edge && TOUCHING(actor, TOUCH_BOTTOM)) {
         const Fixed x1 = ANY_FLAG(actor, FLG_X_FLIP) ? (actor->pos.x + actor->box.start.x - Fx1)
                                                      : (actor->pos.x + actor->box.end.x);
         const Fixed y1 = actor->pos.y + actor->box.start.y;

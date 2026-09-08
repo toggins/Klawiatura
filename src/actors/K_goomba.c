@@ -3,6 +3,7 @@
 #include "K_video.h"
 
 #include "actors/K_enemies.h"
+#include "actors/K_koopa.h"
 
 enum {
     VAL_PARTY_TYPE,
@@ -96,6 +97,15 @@ static void collide(GameActor* actor, GameActor* from) {
     case ACT_SHY_GUY: {
         turn_enemy(actor);
         turn_enemy(from);
+        break;
+    }
+
+    case ACT_PARATROOPA: {
+        if (ANY_FLAG(from, FLG_KOOPA_BOUNCE)) {
+            turn_enemy(actor);
+            turn_enemy(from);
+        }
+
         break;
     }
 

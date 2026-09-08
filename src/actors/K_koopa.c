@@ -134,6 +134,15 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
     }
 
+    case ACT_PARATROOPA: {
+        if (ANY_FLAG(from, FLG_KOOPA_BOUNCE)) {
+            turn_enemy(actor);
+            turn_enemy(from);
+        }
+
+        break;
+    }
+
     case ACT_KOOPA_SHELL:
     case ACT_CODER_CLONE_RUN:
     case ACT_BUZZY_SHELL: {
@@ -251,6 +260,8 @@ static void collide_shell(GameActor* actor, GameActor* from) {
         hit_bump(actor, from, 100);
         break;
     case ACT_KOOPA_SHELL:
+    case ACT_CODER_CLONE_RUN:
+    case ACT_BUZZY_SHELL:
         hit_shell(actor, from);
         break;
     case ACT_FIREBALL_PROJECTILE:
@@ -305,6 +316,15 @@ static void create_paratroopa(GameActor* actor) {
 static void tick_paratroopa(GameActor* actor) {
     VAL(actor, ENEMY_FRAME) += 3;
 
+    if (ANY_FLAG(actor, FLG_KOOPA_BOUNCE)) {
+        move_enemy(
+            actor, (FVec2){Int2Fx(2), ANY_FLAG(actor, FLG_ENEMY_ACTIVE) ? 19005 : Fx0}, ANY_FLAG(actor, FLG_KOOPA_RED));
+        if (TOUCHING(actor, TOUCH_BOTTOM))
+            actor->vel.y = Int2Fx(-9);
+
+        return;
+    }
+
     move_actor(actor,
         (FVec2){
             VAL(actor, KOOPA_X)
@@ -313,6 +333,9 @@ static void tick_paratroopa(GameActor* actor) {
                 + (ANY_FLAG(actor, FLG_KOOPA_HORIZONTAL) ? Fx0 : Fmul(Int2Fx(50), Fcos(VAL(actor, KOOPA_ANGLE)))),
         });
     VAL(actor, KOOPA_ANGLE) = Fmod(VAL(actor, KOOPA_ANGLE) + 2288, Fx2Pi);
+
+    if (gamestate()->time == 0)
+        skip_interp(actor);
 
     const FVec2 ppos = nearest_player_pos(actor->pos);
     if (actor->pos.x > ppos.x)
@@ -335,7 +358,10 @@ static void collide_paratroopa(GameActor* actor, GameActor* from) {
         break;
 
     case ACT_PLAYER: {
-        if (!check_stomp(actor, from, Int2Fx(-16), 100, TRUE))
+        Fixed offset = Int2Fx(-16);
+        if (ANY_FLAG(actor, FLG_KOOPA_BOUNCE) && (from->vel.y >= Fx0 || ANY_FLAG(from, FLG_PLAYER_STOMP)))
+            offset -= Fmin(actor->vel.y, Fx0);
+        if (!check_stomp(actor, from, offset, 100, TRUE))
             break;
 
         GameActor* koopa = create_actor(ACT_KOOPA, actor->pos);
@@ -348,13 +374,42 @@ static void collide_paratroopa(GameActor* actor, GameActor* from) {
         break;
     }
 
+    case ACT_GOOMBA:
+    case ACT_KOOPA:
+    case ACT_SPINY:
+    case ACT_CLONE:
+    case ACT_CODER_CLONE:
+    case ACT_CLONE_3A:
+    case ACT_BUZZY:
+    case ACT_SHY_GUY: {
+        if (ANY_FLAG(actor, FLG_KOOPA_BOUNCE)) {
+            turn_enemy(actor);
+            turn_enemy(from);
+        }
+
+        break;
+    }
+
+    case ACT_PARATROOPA: {
+        if (ANY_FLAG(actor, FLG_KOOPA_BOUNCE) && ANY_FLAG(from, FLG_KOOPA_BOUNCE)) {
+            turn_enemy(actor);
+            turn_enemy(from);
+        }
+
+        break;
+    }
+
     case ACT_BLOCK_BUMP: {
         hit_bump(actor, from, 100);
         break;
     }
 
-    case ACT_KOOPA_SHELL: {
-        hit_shell(actor, from);
+    case ACT_KOOPA_SHELL:
+    case ACT_CODER_CLONE_RUN:
+    case ACT_BUZZY_SHELL: {
+        if (!hit_shell(actor, from) && ANY_FLAG(actor, FLG_KOOPA_BOUNCE))
+            turn_enemy(actor);
+
         break;
     }
 
@@ -454,6 +509,15 @@ static void collide_buzzy(GameActor* actor, GameActor* from) {
         break;
     }
 
+    case ACT_PARATROOPA: {
+        if (ANY_FLAG(from, FLG_KOOPA_BOUNCE)) {
+            turn_enemy(actor);
+            turn_enemy(from);
+        }
+
+        break;
+    }
+
     case ACT_KOOPA_SHELL:
     case ACT_CODER_CLONE_RUN:
     case ACT_BUZZY_SHELL: {
@@ -536,6 +600,8 @@ static void collide_buzzy_shell(GameActor* actor, GameActor* from) {
         hit_bump(actor, from, 100);
         break;
     case ACT_KOOPA_SHELL:
+    case ACT_CODER_CLONE_RUN:
+    case ACT_BUZZY_SHELL:
         hit_shell(actor, from);
         break;
     case ACT_FIREBALL_PROJECTILE:

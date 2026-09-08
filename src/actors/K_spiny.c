@@ -2,6 +2,7 @@
 #include "K_video.h"
 
 #include "actors/K_enemies.h"
+#include "actors/K_koopa.h"
 
 #define FLG_SPINY_GRAY CUSTOM_ENEMY_FLAG(0)
 
@@ -73,6 +74,15 @@ static void collide(GameActor* actor, GameActor* from) {
     case ACT_SHY_GUY: {
         turn_enemy(actor);
         turn_enemy(from);
+        break;
+    }
+
+    case ACT_PARATROOPA: {
+        if (ANY_FLAG(from, FLG_KOOPA_BOUNCE)) {
+            turn_enemy(actor);
+            turn_enemy(from);
+        }
+
         break;
     }
 
