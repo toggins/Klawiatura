@@ -1635,7 +1635,7 @@ GameActor* respawn_player(GamePlayer* player) {
         return NULL;
 
     if (player->lives < 0)
-        goto rp_spectate;
+        goto spectate;
 
     const GameActor* spawn = get_actor(game_state->autoscroll);
     if (spawn == NULL)
@@ -1643,7 +1643,7 @@ GameActor* respawn_player(GamePlayer* player) {
     if (spawn == NULL)
         spawn = get_actor(game_state->spawn);
     if (spawn == NULL)
-        goto rp_spectate;
+        goto spectate;
 
     FVec2 spos = spawn->pos;
     switch (spawn->type) {
@@ -1678,7 +1678,7 @@ GameActor* respawn_player(GamePlayer* player) {
 
     GameActor* pawn = create_actor(ACT_PLAYER, spos);
     if (pawn == NULL)
-        goto rp_spectate;
+        goto spectate;
 
     GameActor* old_pawn = get_actor(player->actor);
     if (old_pawn != NULL) {
@@ -1730,7 +1730,7 @@ GameActor* respawn_player(GamePlayer* player) {
 
     return pawn;
 
-rp_spectate:
+spectate:
     /// !!! CLIENT-SIDE !!!
     if (player->id == view_player) {
         for (PlayerID i = 0; i < game_context.num_players; i++) {
@@ -1925,7 +1925,7 @@ GameActor* create_actor(ActorType type, const FVec2 pos) {
     for (ActorID i = 0; i < MAX_ACTORS; i++) {
         actor = &game_state->actors[index];
         if (actor->id == NULL_ACTOR)
-            goto ca_found;
+            goto found;
 
         index = (ActorID)((index + 1) % MAX_ACTORS);
     }
@@ -1933,7 +1933,7 @@ GameActor* create_actor(ActorType type, const FVec2 pos) {
     WARN("Too many actors!!!");
     return NULL;
 
-ca_found:
+found:
     SDL_zerop(actor);
 
     actor->id = index;
@@ -2452,7 +2452,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                                 TOUCH_ON(actor, TOUCH_BOTTOM);
 
                                 climbed = TRUE;
-                                goto da_climbed;
+                                goto climbed;
                             }
                         }
                     }
@@ -2526,7 +2526,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                             TOUCH_ON(actor, TOUCH_BOTTOM);
 
                             climbed = TRUE;
-                            goto da_climbed;
+                            goto climbed;
                         }
                     }
 
@@ -2549,7 +2549,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
             }
         }
 
-    da_climbed:
+    climbed:
         if (stop) {
             if (!climbed)
                 TOUCH_ON(actor, right ? TOUCH_RIGHT : TOUCH_LEFT);

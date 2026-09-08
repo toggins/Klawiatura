@@ -104,7 +104,7 @@ const char* handle_lfmt(const char* key, ...) {
     while (num_args < MAX_LFMT_ARGS) {
         const char type = va_arg(args, int);
         if (type == '\0')
-            goto lfmt_end_parse;
+            goto end_parse;
 
         const size_t remaining = (abuf + sizeof(abuf)) - rpos;
         if (remaining <= 1)
@@ -113,7 +113,7 @@ const char* handle_lfmt(const char* key, ...) {
         int written = 0;
         switch (type) {
         default:
-            goto lfmt_end_parse;
+            goto end_parse;
 
         case 'd': {
             const int val = va_arg(args, int);
@@ -135,7 +135,7 @@ const char* handle_lfmt(const char* key, ...) {
         rpos += written + 1;
     }
 
-lfmt_end_parse:
+end_parse:
     va_end(args);
 
     if (num_args <= 0)

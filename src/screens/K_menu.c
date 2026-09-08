@@ -751,23 +751,23 @@ static void start(const void* secret, size_t secret_size) {
     Bool got_invite = FALSE;
 
     if (secret == NULL)
-        goto s_no_secret;
+        goto no_secret;
 
     yyjson_doc* json = read_json(secret, secret_size, NULL);
     if (json == NULL)
-        goto s_no_secret;
+        goto no_secret;
 
     yyjson_val* root = yyjson_doc_get_root(json);
     if (!yyjson_is_obj(root)) {
         yyjson_doc_free(json);
-        goto s_no_secret;
+        goto no_secret;
     }
 
     const char* server = yyjson_get_str(yyjson_obj_get(root, "server"));
     const NetID lid = yyjson_get_uint(yyjson_obj_get(root, "lobby"));
     if (server == NULL || lid <= 0) {
         yyjson_doc_free(json);
-        goto s_no_secret;
+        goto no_secret;
     }
 
     set_hostname(server);
@@ -777,7 +777,7 @@ static void start(const void* secret, size_t secret_size) {
 
     yyjson_doc_free(json);
 
-s_no_secret:
+no_secret:
     (void)0;
 
     const MenuType last_menu = CATALOG.current;

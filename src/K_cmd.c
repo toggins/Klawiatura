@@ -20,12 +20,12 @@ static void handle_cmdline_fr() {
             {
                 argi++;
                 cmd->handler();
-                goto hclfr_next;
+                goto next;
             }
         }
         WARN("Unrecognized command-line option: '%s'", argv[argi++]);
 
-    hclfr_next:
+    next:
         continue;
     }
 }

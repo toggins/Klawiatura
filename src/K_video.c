@@ -166,7 +166,7 @@ void video_init(Bool force_shader) {
 
     if (force_shader) {
         WARN("Bypassing OpenGL support checks");
-        goto vi_bypass;
+        goto bypass;
     }
 
     CHECK_GL_EXTENSION(GLAD_GL_ARB_vertex_array_object);
@@ -177,7 +177,7 @@ void video_init(Bool force_shader) {
     CHECK_GL_EXTENSION(GLAD_GL_ARB_fragment_shader);
 #endif
 
-vi_bypass:
+bypass:
     INFO("OpenGL vendor: %s", glGetString(GL_VENDOR));
     INFO("OpenGL version: %s", glGetString(GL_VERSION));
     INFO("OpenGL renderer: %s", glGetString(GL_RENDERER));

@@ -402,7 +402,7 @@ static void tick(GameActor* actor) {
             = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
 
         if (touching_solid(Radd(actor->box, actor->pos), SOL_SOLID))
-            goto t_skip_physics;
+            goto skip_physics;
         else
             FLAG_OFF(actor, FLG_PLAYER_DESCEND);
     }
@@ -528,7 +528,7 @@ static void tick(GameActor* actor) {
             = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
 
         if (still_warping)
-            goto t_skip_physics;
+            goto skip_physics;
     }
 
     if (get_sequence()->type == GS_WIN) {
@@ -851,7 +851,7 @@ static void tick(GameActor* actor) {
             actor->vel.y -= FxHalf;
     }
 
-t_skip_physics:
+skip_physics:
     if (was_warping && (get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))) {
         collide_actor(actor);
         FLAG_OFF(actor, FLG_PLAYER_STOMP);

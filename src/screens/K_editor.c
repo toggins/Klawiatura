@@ -643,10 +643,10 @@ static void save_level(const char* filename) {
                             yyjson_mut_arr_add_uint(json, jcol, (Uint8)(marker->colors[l][m] * 255.f));
                     }
 
-                    goto sl_jcolors_done;
+                    goto jcolors_done;
                 }
             }
-        sl_jcolors_done:
+        jcolors_done:
 
             if (def->type != DEFT_TILE)
                 break;

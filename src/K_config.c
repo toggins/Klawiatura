@@ -154,7 +154,7 @@ static void kb_load_key(Binding* bind, yyjson_val* value) {
 #define HANDLE_OPT(fn, conversion)                                                                                     \
     if (opt->fn != NULL) {                                                                                             \
         opt->fn(conversion(value));                                                                                    \
-        goto pc_next_opt;                                                                                              \
+        goto next_opt;                                                                                                 \
     }
 
 static void parse_config(yyjson_val* obj) {
@@ -179,7 +179,7 @@ static void parse_config(yyjson_val* obj) {
             HANDLE_OPT(w_string, yyjson_get_str);
         }
 
-    pc_next_opt:
+    next_opt:
         continue;
     }
 

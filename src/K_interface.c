@@ -92,7 +92,7 @@ static void cancel_boot() {
 static void destroy_ui(UI*);
 void interface_update() {
     if (to_screen == SCR_NULL || to_transition_time < to_transition.duration)
-        goto iu_dont_change;
+        goto dont_change;
 
     if (to_screen >= SCR_EXIT) {
         SDL_Event event = {0};
@@ -130,7 +130,7 @@ void interface_update() {
     input_wipeout();
     from_scratch();
 
-iu_dont_change:
+dont_change:
     poll_game();
 
     new_frame();
