@@ -83,7 +83,7 @@ static void tick(GameActor* actor) {
         && in_any_view(actor->pos, Int2Fx(-128), VEF_ALL))
     {
         FLAG_ON(actor, FLG_PIRANHA_MOVE);
-        VAL(actor, PIRANHA_MOVE) = ANY_FLAG(actor, FLG_Y_FLIP) ? 60 : -60;
+        VAL(actor, PIRANHA_MOVE) = -60;
     }
 
     // 667
@@ -100,7 +100,7 @@ static void tick(GameActor* actor) {
     // 669
     if (ANY_FLAG(actor, FLG_PIRANHA_MOVE) && !ANY_FLAG(actor, FLG_PIRANHA_HIDE) && VAL(actor, PIRANHA_WAIT) > 50) {
         VAL(actor, PIRANHA_WAIT) = 0;
-        VAL(actor, PIRANHA_MOVE) = ANY_FLAG(actor, FLG_Y_FLIP) ? -60 : 60;
+        VAL(actor, PIRANHA_MOVE) = 60;
         FLAG_ON(actor, FLG_PIRANHA_HIDE | FLG_PIRANHA_SHOULD_FIRE);
     }
 
