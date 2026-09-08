@@ -62,6 +62,22 @@
             "sprite": "tiles/block/old",
             "depth": 20
         },
+        "Autumn Hill": {
+            "type": "background",
+            "sprite": "scenery/hill/autumn",
+            "depth": 61
+        },
+        "P-Switch": {
+            "type": "actor",
+            "id": 141,
+            "sprite": "markers/pswitch/0",
+            "flags": [
+                {
+                    "name": "Once",
+                    "index": 5
+                }
+            ]
+        },
         "Buzzy": {
             "type": "actor",
             "id": 134,
@@ -101,6 +117,15 @@
                 {
                     "name": "Spikes",
                     "items": ["Brown Spike", "Blue Spike"]
+                }
+            ]
+        },
+        {
+            "name": "Scenery",
+            "items": [
+                {
+                    "name": "Hills",
+                    "items": ["Autumn Hill"]
                 }
             ]
         },

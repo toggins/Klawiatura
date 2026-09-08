@@ -13,12 +13,14 @@
 #include "K_tick.h"
 #include "K_video.h"
 
+#include "actors/K_blocks.h"
 #include "actors/K_checkpoint.h"
 #include "actors/K_enemies.h"
 #include "actors/K_goal.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 #include "actors/K_projectiles.h"
+#include "actors/K_pswitch.h"
 #include "actors/K_screen.h"
 #include "actors/K_warp.h"
 
@@ -859,6 +861,46 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 
         if ((game_state->flags & GF_1UP) && (game_state->time % 25) == 0)
             give_points(NULL, player, -1);
+    }
+
+    if (game_state->pswitch > 0) {
+        --game_state->pswitch;
+        if (game_state->pswitch == 99) {
+            if (!in_blocking_sequence())
+                fade_state_track(ALL_TRACKS, 0.f, 100.f);
+        } else if (game_state->pswitch <= 0) {
+            GameActor* replacee = NULL;
+            FOR_EACH_ACTOR (replacee) {
+                switch (replacee->type) {
+                default:
+                    break;
+
+                case ACT_PSWITCH: {
+                    if (!ANY_FLAG(replacee, FLG_PSWITCH_ONCE))
+                        FLAG_OFF(replacee, FLG_PSWITCH_FLAT);
+
+                    break;
+                }
+
+                case ACT_PSWITCH_BLOCK: {
+                    replace_actor(replacee, ACT_COIN);
+                    break;
+                }
+
+                case ACT_PSWITCH_COIN: {
+                    const ActorFlags flags = replacee->flags & FLG_BLOCK_GRAY;
+                    replace_actor(replacee, ACT_BLOCK);
+                    VAL(replacee, BLOCK_TYPE) = BLOCK_BRICK;
+                    FLAG_ON(replacee, flags);
+
+                    break;
+                }
+                }
+            }
+
+            for (PlayerID i = 0; i < game_context.num_players; i++)
+                update_player_track(get_player(i));
+        }
     }
 
     GameActor* actor = get_actor(game_state->live_actors);
@@ -1785,6 +1827,11 @@ void update_player_track(const GamePlayer* player) {
     if (player == NULL || in_blocking_sequence())
         return;
 
+    if (game_state->pswitch > 0) {
+        play_state_track(player->id, "smw/pswitch", PLAY_LOOPING, 0);
+        return;
+    }
+
     const GameActor* actor = get_actor(player->actor);
     if (actor != NULL && actor->type == ACT_PLAYER && VAL(actor, PLAYER_STARMAN) > 0) {
         play_state_track(player->id, "smw/starman", PLAY_LOOPING, 0);
@@ -1830,7 +1877,7 @@ void win_player(GamePlayer* player) {
             if (actor->player != player->id)
                 FLAG_ON(actor, FLG_DESTROY);
 
-            VAL(actor, PLAYER_STARMAN) = 0;
+            VAL(actor, PLAYER_STARMAN) = VAL(actor, PLAYER_STARMAN_COMBO) = 0;
             break;
         }
 
@@ -2006,6 +2053,15 @@ static void destroy_actor(GameActor* actor) {
 
     actor->id = NULL_ACTOR;
     actor->type = ACT_NULL;
+}
+
+void replace_actor(GameActor* actor, ActorType type) {
+    if (actor == NULL || type <= ACT_NULL || type >= ACT_SIZE)
+        return;
+
+    ACTOR_CALL(actor, cleanup);
+    actor->type = type;
+    ACTOR_CALL(actor, create);
 }
 
 GameActor* get_actor(ActorID id) {

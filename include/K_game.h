@@ -434,6 +434,7 @@ typedef struct {
     ActorID grid[GRID_SIZE];
 
     Sint16 clock;
+    Uint16 pswitch;
     Uint64 seed;
     Uint64 time;
 
@@ -543,7 +544,7 @@ void win_player(GamePlayer*);
 void load_actor(ActorType);
 GameActor *create_actor(ActorType, const FVec2), *get_actor(ActorID);
 ActorID get_num_actors(ActorType);
-void replace_actors(ActorType, ActorType);
+void replace_actor(GameActor*, ActorType);
 
 void move_actor(GameActor*, const FVec2), push_actors(GameActor*);
 

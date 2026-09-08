@@ -2,30 +2,14 @@
 #include "K_string.h"
 #include "K_video.h"
 
+#include "actors/K_blocks.h"
 #include "actors/K_effects.h"
 #include "actors/K_powerups.h"
 #include "actors/K_projectiles.h"
-
-typedef Uint8 BlockTypes;
-enum {
-    BLOCK_ITEM,
-    BLOCK_BRICK,
-};
-
-enum {
-    VAL_BLOCK_TYPE,
-    VAL_BLOCK_ITEM,
-    VAL_BLOCK_BUMP,
-    VAL_BLOCK_TIME,
-};
-
-#define FLG_BLOCK_REPEAT CUSTOM_FLAG(0)
-#define FLG_BLOCK_HIDDEN CUSTOM_FLAG(1)
-#define FLG_BLOCK_GRAY CUSTOM_FLAG(2)
-#define FLG_BLOCK_EMPTY CUSTOM_FLAG(3)
+#include "actors/K_pswitch.h"
 
 static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
-    if (actor == NULL || actor->type != ACT_BLOCK || ANY_FLAG(actor, FLG_BLOCK_EMPTY))
+    if (actor == NULL || ANY_FLAG(actor, FLG_BLOCK_EMPTY))
         return FALSE;
 
     if (ANY_FLAG(actor, FLG_BLOCK_REPEAT)) {
@@ -131,26 +115,32 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
                                               -item->box.end.y}));
         skip_interp(item);
 
-        switch (item->type) {
-        case ACT_SUPER_MUSHROOM:
-        case ACT_1UP_MUSHROOM:
-        case ACT_POISON_MUSHROOM: {
-            item->vel.x = Int2Fx(2);
-        }
-        case ACT_FIRE_FLOWER:
-        case ACT_BEETROOT:
-        case ACT_GREEN_LUI:
-        case ACT_STARMAN: {
-            FLAG_ON(item, FLG_POWERUP_SPROUTED);
-        }
-        default: {
+        if (item->type != ACT_COIN_POP) {
+            switch (item->type) {
+            default:
+                break;
+
+            case ACT_PSWITCH: {
+                FLAG_ON(item, FLG_PSWITCH_ONCE);
+                break;
+            }
+
+            case ACT_SUPER_MUSHROOM:
+            case ACT_1UP_MUSHROOM:
+            case ACT_POISON_MUSHROOM: {
+                item->vel.x = Int2Fx(2);
+            }
+            case ACT_FIRE_FLOWER:
+            case ACT_BEETROOT:
+            case ACT_GREEN_LUI:
+            case ACT_STARMAN: {
+                FLAG_ON(item, FLG_POWERUP_SPROUTED);
+                break;
+            }
+            }
+
             item->sprout = 32;
             play_state_sound("sprout", PLAY_POS, A_ACTOR(item));
-            break;
-        }
-
-        case ACT_COIN_POP:
-            break;
         }
     }
 
@@ -169,27 +159,25 @@ static SolidFlags is_solid(const GameActor* actor) {
 }
 
 static void load() {
+    load_sprite("items/block/brick", AKL_NEVER);
+    load_sound("bump", AKL_NEVER);
+    load_sound("break", AKL_NEVER);
     load_actor(ACT_BLOCK_BUMP);
+    load_actor(ACT_BRICK_SHARD);
 }
 
 static void load_special(const GameActor* actor) {
     if (VAL(actor, BLOCK_TYPE) == BLOCK_BRICK) {
-        load_sprite(ANY_FLAG(actor, FLG_BLOCK_GRAY) ? "items/block/brick_gray" : "items/block/brick", AKL_NEVER);
-
-        if (VAL(actor, BLOCK_ITEM) == ACT_NULL && !ANY_FLAG(actor, FLG_BLOCK_REPEAT)) {
-            load_sound("break", AKL_NEVER);
-            load_actor(ACT_BRICK_SHARD);
-        } else {
+        if (ANY_FLAG(actor, FLG_BLOCK_GRAY))
+            load_sprite("items/block/brick_gray", AKL_NEVER);
+        if (VAL(actor, BLOCK_ITEM) != ACT_NULL || ANY_FLAG(actor, FLG_BLOCK_REPEAT))
             load_sprite("items/block/empty", AKL_NEVER);
-        }
     } else {
         load_sprite_num("items/block/%u", 3, AKL_NEVER);
         load_sprite("items/block/empty", AKL_NEVER);
     }
 
-    if (VAL(actor, BLOCK_ITEM) == ACT_NULL) {
-        load_sound("bump", AKL_NEVER);
-    } else {
+    if (VAL(actor, BLOCK_ITEM) != ACT_NULL) {
         if (VAL(actor, BLOCK_ITEM) != ACT_COIN_POP)
             load_sound("sprout", AKL_NEVER);
 
@@ -207,9 +195,10 @@ static void load_special(const GameActor* actor) {
 }
 
 static void create(GameActor* actor) {
+    actor->box.start.x = actor->box.start.y = Fx0;
     actor->box.end.x = actor->box.end.y = Int2Fx(32);
 
-    actor->depth = Int2Fx(19);
+    actor->depth = 1310719;
 }
 
 static void pre_tick(GameActor* actor) {
@@ -465,3 +454,9 @@ const ActorTable TAB_BLOCK_BUMP = {
     .create = create_bump,
     .tick = tick_bump,
 };
+
+/* ==============
+   P-SWITCH BLOCK
+   ============== */
+
+const ActorTable TAB_PSWITCH_BLOCK = TAB_BLOCK;

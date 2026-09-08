@@ -5,7 +5,9 @@
 #include "actors/K_points.h"
 
 enum {
-    VAL_COIN_POP_Y,
+    VAL_COIN_FRAME,
+
+    VAL_COIN_POP_Y = 0,
     VAL_COIN_POP_FRAME,
 };
 
@@ -43,9 +45,13 @@ static void create(GameActor* actor) {
     actor->depth = Int2Fx(2);
 }
 
+static void tick(GameActor* actor) {
+    ++VAL(actor, COIN_FRAME);
+}
+
 static void draw(const GameActor* actor) {
     batch_reset();
-    draw_actor(actor, fmt("items/coin/%i", (gamestate()->time / 5) % 3), FALSE);
+    draw_actor(actor, fmt("items/coin/%i", (VAL(actor, COIN_FRAME) / 5) % 3), FALSE);
 }
 
 static void collide(GameActor* actor, GameActor* other) {
@@ -78,6 +84,7 @@ static void collide(GameActor* actor, GameActor* other) {
 const ActorTable TAB_COIN = {
     .load = load,
     .create = create,
+    .tick = tick,
     .draw = draw,
     .collide = collide,
 };
@@ -138,3 +145,9 @@ const ActorTable TAB_COIN_POP = {
     .tick = tick_pop,
     .draw = draw_pop,
 };
+
+/* =============
+   P-SWITCH COIN
+   ============= */
+
+const ActorTable TAB_PSWITCH_COIN = TAB_COIN;
