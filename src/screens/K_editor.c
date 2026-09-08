@@ -55,6 +55,7 @@ typedef struct {
     ActorType actor;
 
     Bool flip[2], tile[2], scalable;
+    SolidFlags solid;
     float max_scale[2], colors[4][4];
     int depth;
 
@@ -692,7 +693,7 @@ static void save_level(const char* filename) {
             EditorCollisionCell ccell = {0};
             ccell.pos[0] = marker->pos[0];
             ccell.pos[1] = marker->pos[1];
-            ccell.flags = SOL_SOLID;
+            ccell.flags = def->solid;
 
             if (cmap->cells == NULL)
                 cmap->cells = MakeTinyDPro(1, sizeof(*cmap->cells));
@@ -962,6 +963,7 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
 
         def->name = SDL_strdup(name);
         EXPECT(def->name, "Failed to allocate def \"%s\" name", name);
+        def->solid = SOL_SOLID;
 
         const char* sprite = yyjson_get_str(yyjson_obj_get(jdef, "sprite"));
         if (sprite != NULL) {
@@ -1065,6 +1067,16 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
                 if (def->flags == NULL)
                     def->flags = MakeTinyDPro(1, sizeof(flag));
                 def->flags = TinyDPush(def->flags, &flag);
+            }
+        } else if (def->type == DEFT_TILE) {
+            const char* sname = yyjson_get_str(yyjson_obj_get(jdef, "solid"));
+            if (sname != NULL) {
+                if (SDL_strcmp(sname, "slope_left") == 0)
+                    def->solid = SOL_SLOPE_LEFT | SOL_BOTTOM;
+                else if (SDL_strcmp(sname, "slope_right") == 0)
+                    def->solid = SOL_SLOPE_RIGHT | SOL_BOTTOM;
+                else if (SDL_strcmp(sname, "hurt") == 0)
+                    def->solid = SOL_HURT;
             }
         }
 

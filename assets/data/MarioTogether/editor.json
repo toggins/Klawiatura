@@ -45,6 +45,18 @@
             "sprite": "tiles/swamp/8",
             "depth": 20
         },
+        "Brown Spike": {
+            "type": "tile",
+            "sprite": "tiles/spike/brown",
+            "depth": 20,
+            "solid": "hurt"
+        },
+        "Blue Spike": {
+            "type": "tile",
+            "sprite": "tiles/spike/blue",
+            "depth": 20,
+            "solid": "hurt"
+        },
         "Old Block": {
             "type": "tile",
             "sprite": "tiles/block/old",
@@ -73,6 +85,10 @@
                 {
                     "name": "Blocks",
                     "items": ["Old Block"]
+                },
+                {
+                    "name": "Spikes",
+                    "items": ["Brown Spike", "Blue Spike"]
                 }
             ]
         }
