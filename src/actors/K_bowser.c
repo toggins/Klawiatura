@@ -360,6 +360,26 @@ static void collide(GameActor* actor, GameActor* from) {
         play_state_sound("kick", PLAY_POS, A_ACTOR(from));
         break;
     }
+
+    case ACT_HAMMER_PROJECTILE: {
+        if (get_player(from->player) == NULL || VAL(actor, BOWSER_HURT) > 0)
+            break;
+
+        if (VAL(from, PROJECTILE_COOLDOWN) > 0) {
+            VAL(from, PROJECTILE_COOLDOWN) = 2;
+            break;
+        }
+
+        actor->player = from->player;
+        --VAL(actor, BOWSER_HITS);
+
+        VAL(from, PROJECTILE_COOLDOWN) = 2;
+        FLAG_ON(from, FLG_PROJECTILE_HIT | FLG_PROJECTILE_HIT_BOSS);
+        create_actor(ACT_EXPLODE, from->pos);
+
+        play_state_sound("kick", PLAY_POS, A_ACTOR(from));
+        break;
+    }
     }
 }
 

@@ -178,7 +178,9 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
     }
 
-    case ACT_KOOPA_SHELL: {
+    case ACT_KOOPA_SHELL:
+    case ACT_CODER_CLONE_RUN:
+    case ACT_BUZZY_SHELL: {
         hit_shell(actor, from);
         break;
     }
@@ -192,6 +194,11 @@ static void collide(GameActor* actor, GameActor* from) {
         hit_beetroot(actor, from, 100);
         create_actor(
             ACT_EXPLODE, Vadd(actor->pos, (FVec2){Fx0, ANY_FLAG(actor, FLG_Y_FLIP) ? Int2Fx(32) : Int2Fx(-24)}));
+        break;
+    }
+
+    case ACT_HAMMER_PROJECTILE: {
+        hit_hammer(actor, from, 100);
         break;
     }
     }

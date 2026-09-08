@@ -161,7 +161,9 @@ Bool hit_shell(GameActor* actor, GameActor* from) {
     if (!in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
         return TRUE;
 
-    if (actor->type == ACT_KOOPA_SHELL && actor->vel.x != Fx0) {
+    if ((actor->type == ACT_KOOPA_SHELL || actor->type == ACT_CODER_CLONE_RUN || actor->type == ACT_BUZZY_SHELL)
+        && actor->vel.x != Fx0)
+    {
         VAL(actor, SHELL_COMBO) = VAL(from, SHELL_COMBO) = 0;
         give_points(from, get_player(from->player), 100);
         kill_enemy(from, from, TRUE);
@@ -224,6 +226,10 @@ void hit_beetroot(GameActor* actor, GameActor* from, Sint32 points) {
     give_points(actor, player, points);
     kill_enemy(actor, from, TRUE);
     FLAG_ON(from, FLG_PROJECTILE_HIT | FLG_PROJECTILE_HIT_ENEMY);
+}
+
+void hit_hammer(GameActor* actor, GameActor* from, Sint32 points) {
+    hit_fireball(actor, from, points);
 }
 
 void block_fireball(GameActor* from) {

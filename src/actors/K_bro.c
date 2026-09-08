@@ -285,7 +285,9 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
     }
 
-    case ACT_KOOPA_SHELL: {
+    case ACT_KOOPA_SHELL:
+    case ACT_CODER_CLONE_RUN:
+    case ACT_BUZZY_SHELL: {
         hit_shell(actor, from);
         break;
     }
@@ -297,6 +299,11 @@ static void collide(GameActor* actor, GameActor* from) {
 
     case ACT_BEETROOT_PROJECTILE: {
         hit_beetroot(actor, from, 200);
+        break;
+    }
+
+    case ACT_HAMMER_PROJECTILE: {
+        hit_hammer(actor, from, 200);
         break;
     }
     }

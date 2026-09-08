@@ -25,5 +25,6 @@ void hit_bump(GameActor*, GameActor*, Sint32);
 Bool hit_shell(GameActor*, GameActor*);
 void block_fireball(GameActor*), hit_fireball(GameActor*, GameActor*, Sint32);
 void block_beetroot(GameActor*), hit_beetroot(GameActor*, GameActor*, Sint32);
+void hit_hammer(GameActor*, GameActor*, Sint32);
 
 void mark_ambush_winner(GameActor*), increase_ambush(), decrease_ambush();
