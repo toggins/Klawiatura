@@ -1,1 +1,80 @@
-{}
+{
+    "defs": {
+        "Swamp Top Left": {
+            "type": "tile",
+            "sprite": "tiles/swamp/0",
+            "depth": 20
+        },
+        "Swamp Top": {
+            "type": "tile",
+            "sprite": "tiles/swamp/1",
+            "depth": 20
+        },
+        "Swamp Top Right": {
+            "type": "tile",
+            "sprite": "tiles/swamp/2",
+            "depth": 20
+        },
+        "Swamp Left": {
+            "type": "tile",
+            "sprite": "tiles/swamp/3",
+            "depth": 20
+        },
+        "Swamp Middle": {
+            "type": "tile",
+            "sprite": "tiles/swamp/4",
+            "depth": 20
+        },
+        "Swamp Right": {
+            "type": "tile",
+            "sprite": "tiles/swamp/5",
+            "depth": 20
+        },
+        "Swamp Bottom Left": {
+            "type": "tile",
+            "sprite": "tiles/swamp/6",
+            "depth": 20
+        },
+        "Swamp Bottom": {
+            "type": "tile",
+            "sprite": "tiles/swamp/7",
+            "depth": 20
+        },
+        "Swamp Bottom Right": {
+            "type": "tile",
+            "sprite": "tiles/swamp/8",
+            "depth": 20
+        },
+        "Old Block": {
+            "type": "tile",
+            "sprite": "tiles/block/old",
+            "depth": 20
+        }
+    },
+
+    "items": [
+        {
+            "name": "Tiles",
+            "items": [
+                {
+                    "name": "Swamp",
+                    "items": [
+                        "Swamp Top Left",
+                        "Swamp Top",
+                        "Swamp Top Right",
+                        "Swamp Left",
+                        "Swamp Middle",
+                        "Swamp Right",
+                        "Swamp Bottom Left",
+                        "Swamp Bottom",
+                        "Swamp Bottom Right"
+                    ]
+                },
+                {
+                    "name": "Blocks",
+                    "items": ["Old Block"]
+                }
+            ]
+        }
+    ]
+}
