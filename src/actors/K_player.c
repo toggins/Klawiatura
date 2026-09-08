@@ -871,20 +871,12 @@ static void post_tick(GameActor* actor) {
     GamePlayer* player = get_player(actor->player);
 
     if (VAL(actor, PLAYER_STARMAN) > 0) {
-        switch (--VAL(actor, PLAYER_STARMAN)) {
-        default:
-            break;
-
-        case 99: {
+        --VAL(actor, PLAYER_STARMAN);
+        if (VAL(actor, PLAYER_STARMAN) == 99) {
             fade_state_track(actor->player, 0.f, 100.f);
-            break;
-        }
-
-        case 0: {
+        } else if (VAL(actor, PLAYER_STARMAN) <= 0) {
             VAL(actor, PLAYER_STARMAN_COMBO) = 0;
             update_player_track(player);
-            break;
-        }
         }
     }
 
