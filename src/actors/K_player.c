@@ -792,7 +792,8 @@ static void tick(GameActor* actor) {
     if (ANY_PRESSED(player, GI_JUMP))
         VAL(actor, PLAYER_SPRING) = 7;
 
-    displace_actor(actor, Int2Fx(10), TRUE);
+    if (displace_actor(actor, Int2Fx(10), TRUE) & SOL_HURT)
+        hit_player(actor);
 
     if (autoscroll != NULL && get_sequence()->type != GS_WIN) {
         Fixed sx = autoscroll->pos.x;

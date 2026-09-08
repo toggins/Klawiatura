@@ -290,9 +290,11 @@ typedef Uint8 SolidFlags;
 #define SOL_RIGHT (SolidFlags)(1U << 4)
 #define SOL_SLOPE (SolidFlags)(1U << 5)
 #define SOL_GHOST (SolidFlags)(1U << 6)
+#define SOL_HURT (SolidFlags)(1U << 7)
 
 #define SOL_SLOPE_LEFT (SOL_SLOPE | SOL_RIGHT)
 #define SOL_SLOPE_RIGHT (SOL_SLOPE | SOL_LEFT)
+#define SOL_HAZARD (SOL_HURT)
 
 typedef Uint8 TouchFlags;
 #define TOUCH_LEFT (TouchFlags)(1U << 0)
@@ -300,6 +302,7 @@ typedef Uint8 TouchFlags;
 #define TOUCH_TOP (TouchFlags)(1U << 2)
 #define TOUCH_BOTTOM (TouchFlags)(1U << 3)
 #define TOUCH_DISPLACEABLE (TouchFlags)(1U << 4)
+
 #define TOUCH_SIDES (TOUCH_LEFT | TOUCH_RIGHT | TOUCH_TOP | TOUCH_BOTTOM)
 #define TOUCH_STUCK TOUCH_SIDES
 
@@ -549,10 +552,11 @@ typedef Uint8 ViewEdgeFlags;
 #define VEF_TOP (ViewEdgeFlags)(1U << 1)
 #define VEF_BOTTOM (ViewEdgeFlags)(1U << 2)
 #define VEF_RIGHT (ViewEdgeFlags)(1U << 3)
-#define VEF_ALL (ViewEdgeFlags)(VEF_LEFT | VEF_TOP | VEF_BOTTOM | VEF_RIGHT)
-#define VEF_IGNORE_TOP (ViewEdgeFlags)(VEF_LEFT | VEF_BOTTOM | VEF_RIGHT)
-#define VEF_IGNORE_X (ViewEdgeFlags)(VEF_TOP | VEF_BOTTOM)
-#define VEF_IGNORE_Y (ViewEdgeFlags)(VEF_LEFT | VEF_RIGHT)
+
+#define VEF_ALL (VEF_LEFT | VEF_TOP | VEF_BOTTOM | VEF_RIGHT)
+#define VEF_IGNORE_TOP (VEF_LEFT | VEF_BOTTOM | VEF_RIGHT)
+#define VEF_IGNORE_X (VEF_TOP | VEF_BOTTOM)
+#define VEF_IGNORE_Y (VEF_LEFT | VEF_RIGHT)
 
 const FVec2 get_player_view(const GamePlayer*);
 Bool in_any_view(const FVec2, Fixed, ViewEdgeFlags),
@@ -560,8 +564,8 @@ Bool in_any_view(const FVec2, Fixed, ViewEdgeFlags),
 Bool below_nearest_bounds(const FVec2, Fixed), below_nearest_view(const FVec2, Fixed);
 
 void collide_actor(GameActor*);
-Bool touching_solid(const FRect, SolidFlags);
-void displace_actor(GameActor*, Fixed, Bool), displace_actor_soft(GameActor*);
+SolidFlags touching_solid(const FRect, SolidFlags);
+SolidFlags displace_actor(GameActor*, Fixed, Bool), displace_actor_soft(GameActor*);
 
 void draw_actor(const GameActor*, const char*, Bool);
 void draw_dead_actor(const GameActor*);

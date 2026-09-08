@@ -2294,7 +2294,9 @@ void collide_actor(GameActor* actor) {
     }
 }
 
-Bool touching_solid(const FRect rect, SolidFlags types) {
+SolidFlags touching_solid(const FRect rect, SolidFlags types) {
+    SolidFlags result = 0;
+
     for (Uint8 i = 0; i < level_info->num_collisions; i++) {
         const CollisionMap* cmap = &level_info->collisions[i];
         if (!Rcollide(rect, cmap->bounds))
@@ -2312,17 +2314,20 @@ Bool touching_solid(const FRect rect, SolidFlags types) {
 
         for (Sint32 cx = cx1; cx <= cx2; cx++) {
             for (Sint32 cy = cy1; cy <= cy2; cy++) {
-                const SolidFlags solid = cmap->grid[cx + (cy * cmap->size[0])];
-                if (!(solid & types))
+                const SolidFlags solid = cmap->grid[cx + (cy * cmap->size[0])] & types;
+                if (solid == 0)
                     continue;
 
                 const FVec2 cpos = (FVec2){cx * cmap->cell_size.x, cy * cmap->cell_size.y};
                 const FRect crect = (FRect){cpos, Vadd(cpos, cmap->cell_size)};
                 if (Rcollide(orect, crect))
-                    return TRUE;
+                    result |= solid;
             }
         }
     }
+
+    if (result == types)
+        return result;
 
     Sint32 cx1 = (rect.start.x - CELL_SIZE) / CELL_SIZE, cy1 = (rect.start.y - CELL_SIZE) / CELL_SIZE;
     Sint32 cx2 = (rect.end.x + CELL_SIZE) / CELL_SIZE, cy2 = (rect.end.y + CELL_SIZE) / CELL_SIZE;
@@ -2333,27 +2338,27 @@ Bool touching_solid(const FRect rect, SolidFlags types) {
 
     for (Sint32 cx = cx1; cx <= cx2; cx++) {
         for (Sint32 cy = cy1; cy <= cy2; cy++) {
-            for (GameActor* actor = get_actor(game_state->grid[cx + (cy * MAX_CELLS)]); actor != NULL;
+            for (const GameActor* actor = get_actor(game_state->grid[cx + (cy * MAX_CELLS)]); actor != NULL;
                 actor = get_actor(actor->previous_cell))
             {
-                const SolidFlags solid = ACTOR_GET_SOLID(actor);
-                if ((solid & types) && Rcollide(rect, Radd(actor->box, actor->pos)))
-                    return TRUE;
+                const SolidFlags solid = ACTOR_GET_SOLID(actor) & types;
+                if (solid != 0 && Rcollide(rect, Radd(actor->box, actor->pos)))
+                    result |= solid;
             }
         }
     }
 
-    return FALSE;
+    return result;
 }
 
 // NOLINTBEGIN(misc-no-recursion)
-void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
+SolidFlags displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
     if (actor == NULL)
-        return;
+        return 0;
 
     if (actor->sprout > 0) {
         TOUCH_OFF(actor, TOUCH_SIDES);
-        return;
+        return 0;
     }
 
     if (unstuck && touching_solid(Radd(actor->box, actor->pos), SOL_SOLID)) {
@@ -2374,10 +2379,11 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
         actor->vel.x = actor->vel.y = Fx0;
         TOUCH_ON(actor, TOUCH_STUCK);
 
-        return;
+        return touching_solid(Radd(actor->box, actor->pos), SOL_HAZARD);
     }
 
     TOUCH_ON(actor, TOUCH_DISPLACEABLE);
+    SolidFlags result = 0;
 
     const GameActor* platform = get_actor(actor->platform);
     if (platform != NULL) {
@@ -2387,7 +2393,7 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
         const FVec2 pvel = Vsub(platform->pos, platform->last_pos);
 
         actor->vel = pvel;
-        displace_actor(actor, Fx0, FALSE);
+        result |= displace_actor(actor, Fx0, FALSE);
         actor->vel = avel;
 
         if (actor->platform == platform->id) {
@@ -2723,16 +2729,17 @@ void displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
     }
 
     move_actor(actor, npos);
+    return result | touching_solid(Radd(actor->box, npos), SOL_HAZARD);
 }
 // NOLINTEND(misc-no-recursion)
 
-void displace_actor_soft(GameActor* actor) {
+SolidFlags displace_actor_soft(GameActor* actor) {
     if (actor == NULL)
-        return;
+        return 0;
 
     if (actor->sprout > 0) {
         TOUCH_OFF(actor, TOUCH_SIDES);
-        return;
+        return 0;
     }
 
     TOUCH_ON(actor, TOUCH_DISPLACEABLE);
@@ -2977,6 +2984,7 @@ void displace_actor_soft(GameActor* actor) {
     }
 
     move_actor(actor, npos);
+    return touching_solid(Radd(actor->box, npos), SOL_HAZARD);
 }
 
 void draw_actor(const GameActor* actor, const char* sprite, Bool antijitter) {
