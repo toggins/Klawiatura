@@ -1,7 +1,7 @@
 {
     "map": {
         "size": [720, 480],
-        "track": "maf_maaryo",
+        "track": "madness",
         "backdrops": [
             {
                 "sprite": "maps/1",
