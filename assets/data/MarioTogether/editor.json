@@ -61,6 +61,18 @@
             "type": "tile",
             "sprite": "tiles/block/old",
             "depth": 20
+        },
+        "Buzzy": {
+            "type": "actor",
+            "id": 134,
+            "sprite": "enemies/buzzy/0",
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2,
+                    "default": true
+                }
+            ]
         }
     },
 
@@ -91,6 +103,10 @@
                     "items": ["Brown Spike", "Blue Spike"]
                 }
             ]
+        },
+        {
+            "name": "Enemies",
+            "items": ["Buzzy"]
         }
     ]
 }

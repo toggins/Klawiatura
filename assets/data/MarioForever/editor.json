@@ -1087,6 +1087,25 @@
                 }
             ]
         },
+        "Paratroopa": {
+            "type": "actor",
+            "id": 84,
+            "sprite": "enemies/koopa/paratroopa/0",
+            "flags": [
+                {
+                    "name": "Red",
+                    "index": 7
+                },
+                {
+                    "name": "Horizontal",
+                    "index": 8
+                },
+                {
+                    "name": "Bounce",
+                    "index": 9
+                }
+            ]
+        },
         "Piranha Plant": {
             "type": "actor",
             "id": 41,
@@ -1103,6 +1122,21 @@
                 {
                     "name": "Red",
                     "index": 10
+                }
+            ]
+        },
+        "Piranha Head": {
+            "type": "actor",
+            "id": 83,
+            "sprite": "enemies/piranha/head/0",
+            "flags": [
+                {
+                    "name": "Flip Y",
+                    "index": 3
+                },
+                {
+                    "name": "Fire",
+                    "index": 8
                 }
             ]
         },
@@ -1333,21 +1367,6 @@
             "type": "actor",
             "id": 78,
             "sprite": "enemies/fake_brick"
-        },
-        "Piranha Head": {
-            "type": "actor",
-            "id": 83,
-            "sprite": "enemies/piranha/head/0",
-            "flags": [
-                {
-                    "name": "Flip Y",
-                    "index": 3
-                },
-                {
-                    "name": "Fire",
-                    "index": 8
-                }
-            ]
         }
     },
 
@@ -1567,6 +1586,10 @@
             "name": "Enemies",
             "items": [
                 {
+                    "name": "Koopas",
+                    "items": ["Koopa", "Paratroopa"]
+                },
+                {
                     "name": "Piranha Plants",
                     "items": ["Piranha Plant", "Piranha Head"]
                 },
@@ -1587,7 +1610,6 @@
                     "items": ["Podoboo", "Volcano"]
                 },
                 "Goomba",
-                "Koopa",
                 "Roto-Disc",
                 "Bowser",
                 "Spiny",

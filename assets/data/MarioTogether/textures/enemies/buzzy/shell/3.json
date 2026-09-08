@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/buzzy",
+    "size": [33, 30],
+    "offset": [16, 29],
+    "uvs": [134, 1, 101, 31]
+}
