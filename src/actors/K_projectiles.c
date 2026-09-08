@@ -63,7 +63,10 @@ static void tick_fireball(GameActor* actor) {
     if (!ANY_FLAG(actor, FLG_PROJECTILE_HIT))
         return;
 
-    align_interp(create_actor(ACT_EXPLODE, actor->pos), actor);
+    GameActor* explode = create_actor(ACT_EXPLODE, actor->pos);
+    if (explode != NULL)
+        align_interp(explode, actor);
+
     FLAG_ON(actor, FLG_DESTROY);
 }
 
