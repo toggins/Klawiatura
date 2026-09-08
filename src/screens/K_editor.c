@@ -1105,6 +1105,9 @@ static void start(const void* secret, size_t secret_size) {
 
 // @NOLINTBEGIN(misc-no-recursion)
 static void destroy_folder(EditorFolder* folder) {
+    if (folder == NULL)
+        return;
+
     SDL_free((void*)folder->name);
 
     for (size_t i = 0, n = TinyDLength(folder->folders); i < n; i++)
