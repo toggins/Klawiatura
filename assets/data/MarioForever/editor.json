@@ -612,6 +612,11 @@
             "id": 76,
             "sprite": "scenery/shooting_star"
         },
+        "Cobweb": {
+            "type": "background",
+            "sprite": "scenery/cobweb",
+            "depth": 30
+        },
         "Player Spawn": {
             "type": "actor",
             "id": 1,
@@ -1094,6 +1099,10 @@
                 {
                     "name": "Fire",
                     "index": 8
+                },
+                {
+                    "name": "Red",
+                    "index": 10
                 }
             ]
         },
@@ -1324,6 +1333,21 @@
             "type": "actor",
             "id": 78,
             "sprite": "enemies/fake_brick"
+        },
+        "Piranha Head": {
+            "type": "actor",
+            "id": 83,
+            "sprite": "enemies/piranha/head/0",
+            "flags": [
+                {
+                    "name": "Flip Y",
+                    "index": 3
+                },
+                {
+                    "name": "Fire",
+                    "index": 8
+                }
+            ]
         }
     },
 
@@ -1513,7 +1537,8 @@
                 "Forest",
                 "Bush",
                 "Waterfall",
-                "Portrait"
+                "Portrait",
+                "Cobweb"
             ]
         },
         {
@@ -1542,6 +1567,10 @@
             "name": "Enemies",
             "items": [
                 {
+                    "name": "Piranha Plants",
+                    "items": ["Piranha Plant", "Piranha Head"]
+                },
+                {
                     "name": "Lava",
                     "items": ["Lava", "Lava Bottom"]
                 },
@@ -1559,7 +1588,6 @@
                 },
                 "Goomba",
                 "Koopa",
-                "Piranha Plant",
                 "Roto-Disc",
                 "Bowser",
                 "Spiny",
