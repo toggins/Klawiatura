@@ -1,6 +1,6 @@
 {
     "label": "$Remix-1",
-    "tracks": [{ "track": "smw/overworld" }],
+    "tracks": [{ "track": "smw/overworld" }, { "track": "smb/underground" }],
     "warps": ["remix_secret_1"],
     "secrets": ["hud.secret.remix_secret_1"],
     "size": [5660, 1440],
@@ -1743,12 +1743,4295 @@
             "def": "Pipe Green Right",
             "sprite": "tiles/pipe/green/h2",
             "pos": [3964, 384, 19]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 736, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 768, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 800, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 832, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 864, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 896, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 928, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 960, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 992, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1024, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1056, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1088, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1120, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1152, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1184, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1216, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1248, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1280, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1312, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1344, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1376, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1408, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1408, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1376, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1344, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1312, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1280, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1248, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1216, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1184, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1152, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1120, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1088, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1056, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 1024, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 992, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 960, 20]
+        },
+        {
+            "def": "Cave Background",
+            "sprite": "backgrounds/cave",
+            "pos": [0, 960, 190],
+            "size": [5696, 480],
+            "tile": [true, true],
+            "colors": [
+                [255, 255, 255, 155],
+                [255, 255, 255, 155],
+                [255, 255, 255, 155],
+                [255, 255, 255, 155]
+            ]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [0, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [32, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [64, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [96, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [128, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [160, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [192, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [224, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [256, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [288, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [320, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [448, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [480, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [352, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [384, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [416, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [512, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [544, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [576, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [608, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [640, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [672, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [704, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [736, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [768, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [800, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [832, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [864, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [896, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [928, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [960, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [992, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1024, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1056, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1088, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1120, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1152, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1184, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1248, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1280, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1344, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1376, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1408, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1440, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1472, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1504, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1600, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1216, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1312, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1536, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1568, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1632, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1664, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1696, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1728, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1760, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1792, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1824, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1856, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1888, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1920, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1952, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1984, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2016, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2048, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2080, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2112, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2176, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2208, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2240, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2272, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2304, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2336, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2368, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2400, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2432, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2464, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2496, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2528, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2560, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2592, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2624, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2656, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2688, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2752, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2784, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2848, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2880, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2944, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2976, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3008, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3040, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3072, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3104, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3136, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3168, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3200, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3232, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3264, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3296, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3328, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3360, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3392, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3424, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3456, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3488, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3520, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3552, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3584, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3616, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3680, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3712, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2912, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2816, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2720, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2144, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3744, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3776, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3808, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3840, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3872, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3904, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3936, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3968, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4000, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4032, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4064, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4096, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4128, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4160, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4192, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4224, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4256, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4288, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4320, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4352, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4384, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4416, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4448, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4480, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4512, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4544, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4576, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4608, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4640, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4672, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4704, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4768, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4800, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4832, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4864, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4736, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4896, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4928, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4960, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4992, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5024, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5056, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5088, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5120, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5152, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5184, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5216, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5248, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5280, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5312, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5344, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5376, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5408, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5440, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5472, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5504, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5536, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5568, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5600, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5632, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 928, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 896, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 864, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 832, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 768, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 736, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5664, 800, 20]
+        },
+        {
+            "def": "Pipe Green Bottom",
+            "sprite": "tiles/pipe/green/v2",
+            "pos": [160, 1024, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [160, 992, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [160, 960, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [160, 928, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [160, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [0, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [32, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [64, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [96, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [224, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [256, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [288, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [320, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [352, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [384, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [352, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [320, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [288, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [256, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [224, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [96, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [64, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [32, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [0, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [384, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [192, 1184, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [160, 1184, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [160, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [192, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [352, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [352, 1344, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [384, 1344, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [384, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [384, 1056, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [384, 1024, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [384, 992, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [384, 960, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [416, 960, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [448, 960, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [480, 960, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [480, 992, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [480, 1024, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [448, 1024, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [448, 1056, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [416, 1056, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [416, 1024, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [416, 992, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [448, 992, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [480, 1056, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [480, 1088, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [384, 928, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [384, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [416, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [448, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [480, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [480, 928, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [448, 928, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [416, 928, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [384, 864, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [416, 864, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [448, 864, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [480, 864, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [480, 832, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [448, 832, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [416, 832, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [384, 832, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [480, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [544, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [544, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [576, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [576, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [512, 1120, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [544, 1120, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [576, 1120, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [608, 1120, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [512, 1088, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [544, 1088, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [512, 1056, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [512, 1024, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [512, 992, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [512, 960, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [512, 928, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [512, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [512, 864, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [512, 832, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [544, 832, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [576, 832, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [608, 832, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [608, 864, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [608, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [608, 928, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [608, 960, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [608, 992, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [608, 1024, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [608, 1056, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [608, 1088, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [576, 1088, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [576, 1056, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [576, 1024, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [576, 992, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [576, 960, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [576, 928, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [576, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [576, 864, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [544, 864, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [544, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [544, 928, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [544, 960, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [544, 992, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [544, 1024, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [544, 1056, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [608, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [640, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [640, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [608, 1408, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [0, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [32, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [64, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [96, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [224, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [256, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [288, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [320, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [480, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [512, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [512, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [480, 1120, 20]
+        },
+        {
+            "def": "Gradient Background",
+            "pos": [0, 960, 200],
+            "size": [5664, 480],
+            "colors": [
+                [15, 15, 15, 255],
+                [15, 15, 15, 255],
+                [8, 0, 63, 255],
+                [8, 0, 63, 255]
+            ]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [928, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [928, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [896, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [864, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [832, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [896, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [864, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [832, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [800, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [800, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [768, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [768, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [672, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [704, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [736, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [736, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [704, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [672, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [288, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1024, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1024, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1056, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1088, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1120, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1152, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1184, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1216, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1248, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1280, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1312, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1344, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1376, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 1344, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 1344, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 1344, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1504, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1504, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1504, 1344, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1504, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1376, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1344, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1312, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1280, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1248, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1216, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1184, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1152, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1120, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1088, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1056, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 1120, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 1088, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 1056, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 1024, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 992, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 960, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 960, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 960, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 1120, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 1120, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 1088, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 1056, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 1024, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 992, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 992, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 1024, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 1056, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 1088, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1568, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1632, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1696, 1312, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [1504, 1280, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [1632, 1280, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1760, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1824, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1856, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1728, 1120, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1792, 1120, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1952, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2016, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2080, 1312, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1824, 1056, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1824, 1024, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1824, 992, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1824, 960, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1824, 928, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1824, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 832, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 832, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 832, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 864, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1408, 928, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 928, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 864, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 864, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1472, 928, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1440, 896, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1824, 864, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1824, 832, 20]
+        },
+        {
+            "def": "Pipe Purple Bottom",
+            "sprite": "tiles/pipe/purple/v2",
+            "pos": [1824, 1088, 20]
+        },
+        {
+            "def": "Pipe Purple Top",
+            "sprite": "tiles/pipe/purple/v0",
+            "pos": [2176, 1312, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2176, 1376, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2176, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2176, 1120, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2240, 1120, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2304, 1120, 20]
+        },
+        {
+            "def": "Pipe Purple Bottom",
+            "sprite": "tiles/pipe/purple/v2",
+            "pos": [2336, 1184, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2336, 1152, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2336, 1120, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2336, 1088, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2336, 1056, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2336, 1024, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2336, 992, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2336, 960, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2336, 928, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2336, 896, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2240, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2304, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2336, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2368, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2400, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2240, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2272, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2304, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2336, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2368, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2400, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2432, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2464, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2496, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2528, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2560, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2592, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2624, 1408, 20]
+        },
+        {
+            "def": "Pipe Purple Bottom",
+            "sprite": "tiles/pipe/purple/v2",
+            "pos": [2496, 1280, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2496, 1248, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2496, 1216, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2496, 1184, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2496, 1152, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2496, 1120, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2496, 1088, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2496, 1056, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2496, 1024, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2496, 992, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2496, 960, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2560, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2592, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2624, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2656, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2688, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2720, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2784, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2816, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2880, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2912, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2656, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2688, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2720, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2752, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2784, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2816, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2848, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2880, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2912, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2944, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3008, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3040, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3072, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2752, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2848, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2944, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2976, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3008, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3040, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3072, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3104, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3136, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3200, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3232, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3296, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3328, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3392, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3424, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3520, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3552, 1248, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3136, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3168, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3200, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3264, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3296, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3328, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3392, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3424, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3456, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3520, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3552, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2560, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2592, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2624, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2656, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2688, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2720, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2752, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2784, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2816, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2848, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2880, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2912, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2944, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2976, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3008, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3040, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3072, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3104, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3136, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3168, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3200, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3232, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3264, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3296, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3328, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3360, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3392, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3424, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3456, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3488, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3520, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3552, 1216, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3680, 1408, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [3744, 1344, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3744, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3744, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3808, 1280, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3840, 1280, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [3872, 1280, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [3872, 1248, 20]
+        },
+        {
+            "def": "Pipe Purple Top",
+            "sprite": "tiles/pipe/purple/v0",
+            "pos": [3904, 1280, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [3904, 1344, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [3904, 1376, 20]
+        },
+        {
+            "def": "Pipe Purple Middle",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [3904, 1408, 20]
+        },
+        {
+            "def": "Pipe Purple Top",
+            "sprite": "tiles/pipe/purple/v0",
+            "pos": [4352, 1312, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4032, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4064, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4096, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4128, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4160, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4192, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4224, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4256, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4288, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4320, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4352, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4384, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4384, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4352, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4320, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4288, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4256, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4224, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4192, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4160, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4128, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4096, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4064, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4032, 1408, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [4736, 1152, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [4736, 1120, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [4736, 1088, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [4736, 1056, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [4736, 1024, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [4736, 992, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [4736, 960, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [4736, 928, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [4736, 896, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [4736, 864, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [4736, 832, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4608, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4640, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4672, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4704, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4736, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4768, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4768, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4736, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4704, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4672, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4640, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4608, 1408, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [4608, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [4832, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [4864, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [4896, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [4928, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [4960, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [4992, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5024, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5056, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5088, 1344, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4832, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4864, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4896, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4928, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4960, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4992, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5024, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5056, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5088, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5056, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5024, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4992, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4960, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4928, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4896, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4864, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4832, 1408, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5120, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5152, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5184, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5216, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5248, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5280, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5312, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5344, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5376, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5408, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5440, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5472, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5504, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5536, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5568, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5600, 1344, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [5632, 1344, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5120, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5152, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5184, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5216, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5248, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5280, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5312, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5344, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5376, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5408, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5440, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5472, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5504, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5536, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5568, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5600, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5632, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5632, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5600, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5568, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5536, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5504, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5472, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5440, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5408, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5376, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5344, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5312, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5280, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5248, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5216, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5184, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5152, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5120, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [5088, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1984, 1088, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2048, 1088, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [2272, 1312, 20]
+        },
+        {
+            "def": "Pipe Green Bottom",
+            "sprite": "tiles/pipe/green/v2",
+            "pos": [4736, 1184, 20]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 960, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 992, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1024, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1056, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1088, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1120, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1152, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1184, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1216, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1248, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1280, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1312, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1344, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1376, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [1888, 1408, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2944, 1184, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2944, 1152, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2944, 1120, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2944, 1088, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2944, 1056, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2944, 1024, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2944, 992, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [2944, 960, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [3296, 1184, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [3296, 1152, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [3296, 1120, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [3296, 1088, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [3296, 1056, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [3296, 1024, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [3296, 992, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [3296, 960, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 1344, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 1312, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 1280, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 1248, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 1216, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 1184, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 1152, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 1120, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 1088, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 1056, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 1024, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 992, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Tube",
+            "sprite": "tiles/pipe/purple/v1",
+            "pos": [4032, 960, 50],
+            "colors": [
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95],
+                [255, 255, 255, 95]
+            ]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [1600, 1312, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [1728, 1088, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [1792, 1088, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [1984, 1056, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [2048, 1056, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [2176, 1088, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [2240, 1088, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [2304, 1088, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [4576, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [4576, 1408, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [288, 1184, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [224, 1184, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [224, 1216, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [192, 1376, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [160, 1376, 20]
+        },
+        {
+            "def": "Blue Spike",
+            "sprite": "tiles/spike/blue",
+            "pos": [128, 1376, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [192, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [160, 1408, 20]
+        },
+        {
+            "def": "Blue Block",
+            "sprite": "tiles/block/blue",
+            "pos": [128, 1408, 20]
+        },
+        {
+            "def": "Lamp",
+            "sprite": "scenery/lamp",
+            "pos": [1292, 1056, 33]
+        },
+        {
+            "def": "Lamp",
+            "sprite": "scenery/lamp",
+            "pos": [2636, 1056, 33]
+        },
+        {
+            "def": "Lamp",
+            "sprite": "scenery/lamp",
+            "pos": [4268, 1056, 33]
         }
     ],
     "collisions": [
         {
             "pos": [-32, -320],
-            "size": [181, 26],
+            "size": [181, 55],
             "cell_size": [32, 32],
             "cells": [
                 [1, 23, 1],
@@ -2042,7 +6325,704 @@
                 [180, 21, 1],
                 [180, 22, 1],
                 [180, 23, 1],
-                [180, 24, 1]
+                [180, 24, 1],
+                [0, 32, 1],
+                [0, 33, 1],
+                [0, 34, 1],
+                [0, 35, 1],
+                [0, 36, 1],
+                [0, 37, 1],
+                [0, 38, 1],
+                [0, 39, 1],
+                [0, 40, 1],
+                [0, 41, 1],
+                [0, 42, 1],
+                [0, 43, 1],
+                [0, 44, 1],
+                [0, 45, 1],
+                [0, 46, 1],
+                [0, 47, 1],
+                [0, 48, 1],
+                [0, 49, 1],
+                [0, 50, 1],
+                [0, 51, 1],
+                [0, 52, 1],
+                [0, 53, 1],
+                [0, 54, 1],
+                [178, 54, 1],
+                [178, 53, 1],
+                [178, 52, 1],
+                [178, 51, 1],
+                [178, 50, 1],
+                [178, 49, 1],
+                [178, 48, 1],
+                [178, 47, 1],
+                [178, 46, 1],
+                [178, 45, 1],
+                [178, 44, 1],
+                [178, 43, 1],
+                [178, 42, 1],
+                [178, 41, 1],
+                [178, 40, 1],
+                [1, 32, 1],
+                [2, 32, 1],
+                [3, 32, 1],
+                [4, 32, 1],
+                [5, 32, 1],
+                [6, 32, 1],
+                [7, 32, 1],
+                [8, 32, 1],
+                [9, 32, 1],
+                [10, 32, 1],
+                [11, 32, 1],
+                [15, 32, 1],
+                [16, 32, 1],
+                [12, 32, 1],
+                [13, 32, 1],
+                [14, 32, 1],
+                [17, 32, 1],
+                [18, 32, 1],
+                [19, 32, 1],
+                [20, 32, 1],
+                [21, 32, 1],
+                [22, 32, 1],
+                [23, 32, 1],
+                [24, 32, 1],
+                [25, 32, 1],
+                [26, 32, 1],
+                [27, 32, 1],
+                [28, 32, 1],
+                [29, 32, 1],
+                [30, 32, 1],
+                [31, 32, 1],
+                [32, 32, 1],
+                [33, 32, 1],
+                [34, 32, 1],
+                [35, 32, 1],
+                [36, 32, 1],
+                [37, 32, 1],
+                [38, 32, 1],
+                [40, 32, 1],
+                [41, 32, 1],
+                [43, 32, 1],
+                [44, 32, 1],
+                [45, 32, 1],
+                [46, 32, 1],
+                [47, 32, 1],
+                [48, 32, 1],
+                [51, 32, 1],
+                [39, 32, 1],
+                [42, 32, 1],
+                [49, 32, 1],
+                [50, 32, 1],
+                [52, 32, 1],
+                [53, 32, 1],
+                [54, 32, 1],
+                [55, 32, 1],
+                [56, 32, 1],
+                [57, 32, 1],
+                [58, 32, 1],
+                [59, 32, 1],
+                [60, 32, 1],
+                [61, 32, 1],
+                [62, 32, 1],
+                [63, 32, 1],
+                [64, 32, 1],
+                [65, 32, 1],
+                [66, 32, 1],
+                [67, 32, 1],
+                [69, 32, 1],
+                [70, 32, 1],
+                [71, 32, 1],
+                [72, 32, 1],
+                [73, 32, 1],
+                [74, 32, 1],
+                [75, 32, 1],
+                [76, 32, 1],
+                [77, 32, 1],
+                [78, 32, 1],
+                [79, 32, 1],
+                [80, 32, 1],
+                [81, 32, 1],
+                [82, 32, 1],
+                [83, 32, 1],
+                [84, 32, 1],
+                [85, 32, 1],
+                [87, 32, 1],
+                [88, 32, 1],
+                [90, 32, 1],
+                [91, 32, 1],
+                [93, 32, 1],
+                [94, 32, 1],
+                [95, 32, 1],
+                [96, 32, 1],
+                [97, 32, 1],
+                [98, 32, 1],
+                [99, 32, 1],
+                [100, 32, 1],
+                [101, 32, 1],
+                [102, 32, 1],
+                [103, 32, 1],
+                [104, 32, 1],
+                [105, 32, 1],
+                [106, 32, 1],
+                [107, 32, 1],
+                [108, 32, 1],
+                [109, 32, 1],
+                [110, 32, 1],
+                [111, 32, 1],
+                [112, 32, 1],
+                [113, 32, 1],
+                [114, 32, 1],
+                [115, 32, 1],
+                [116, 32, 1],
+                [117, 32, 1],
+                [92, 32, 1],
+                [89, 32, 1],
+                [86, 32, 1],
+                [68, 32, 1],
+                [118, 32, 1],
+                [119, 32, 1],
+                [120, 32, 1],
+                [121, 32, 1],
+                [122, 32, 1],
+                [123, 32, 1],
+                [124, 32, 1],
+                [125, 32, 1],
+                [126, 32, 1],
+                [127, 32, 1],
+                [128, 32, 1],
+                [129, 32, 1],
+                [130, 32, 1],
+                [131, 32, 1],
+                [132, 32, 1],
+                [133, 32, 1],
+                [134, 32, 1],
+                [135, 32, 1],
+                [136, 32, 1],
+                [137, 32, 1],
+                [138, 32, 1],
+                [139, 32, 1],
+                [140, 32, 1],
+                [141, 32, 1],
+                [142, 32, 1],
+                [143, 32, 1],
+                [144, 32, 1],
+                [145, 32, 1],
+                [146, 32, 1],
+                [147, 32, 1],
+                [148, 32, 1],
+                [150, 32, 1],
+                [151, 32, 1],
+                [152, 32, 1],
+                [153, 32, 1],
+                [149, 32, 1],
+                [154, 32, 1],
+                [155, 32, 1],
+                [156, 32, 1],
+                [157, 32, 1],
+                [158, 32, 1],
+                [159, 32, 1],
+                [160, 32, 1],
+                [161, 32, 1],
+                [162, 32, 1],
+                [163, 32, 1],
+                [164, 32, 1],
+                [165, 32, 1],
+                [166, 32, 1],
+                [167, 32, 1],
+                [168, 32, 1],
+                [169, 32, 1],
+                [170, 32, 1],
+                [171, 32, 1],
+                [172, 32, 1],
+                [173, 32, 1],
+                [174, 32, 1],
+                [175, 32, 1],
+                [176, 32, 1],
+                [177, 32, 1],
+                [178, 32, 1],
+                [178, 32, 1],
+                [178, 39, 1],
+                [178, 38, 1],
+                [178, 37, 1],
+                [178, 36, 1],
+                [178, 34, 1],
+                [178, 33, 1],
+                [178, 35, 1],
+                [1, 53, 1],
+                [2, 53, 1],
+                [3, 53, 1],
+                [4, 53, 1],
+                [8, 53, 1],
+                [9, 53, 1],
+                [10, 53, 1],
+                [11, 53, 1],
+                [12, 53, 1],
+                [13, 53, 1],
+                [12, 54, 1],
+                [11, 54, 1],
+                [10, 54, 1],
+                [9, 54, 1],
+                [8, 54, 1],
+                [4, 54, 1],
+                [3, 54, 1],
+                [2, 54, 1],
+                [1, 54, 1],
+                [13, 54, 1],
+                [7, 47, 1],
+                [6, 47, 1],
+                [6, 48, 1],
+                [7, 48, 1],
+                [12, 51, 1],
+                [12, 52, 1],
+                [13, 52, 1],
+                [13, 51, 1],
+                [13, 43, 1],
+                [13, 42, 1],
+                [13, 41, 1],
+                [13, 40, 1],
+                [14, 40, 1],
+                [15, 40, 1],
+                [16, 40, 1],
+                [16, 41, 1],
+                [16, 42, 1],
+                [15, 42, 1],
+                [15, 43, 1],
+                [14, 43, 1],
+                [14, 42, 1],
+                [14, 41, 1],
+                [15, 41, 1],
+                [16, 43, 1],
+                [16, 44, 1],
+                [13, 39, 1],
+                [13, 38, 1],
+                [14, 38, 1],
+                [15, 38, 1],
+                [16, 38, 1],
+                [16, 39, 1],
+                [15, 39, 1],
+                [14, 39, 1],
+                [13, 37, 1],
+                [14, 37, 1],
+                [15, 37, 1],
+                [16, 37, 1],
+                [16, 36, 1],
+                [15, 36, 1],
+                [14, 36, 1],
+                [13, 36, 1],
+                [16, 54, 1],
+                [18, 53, 1],
+                [18, 54, 1],
+                [19, 54, 1],
+                [19, 53, 1],
+                [17, 45, 1],
+                [18, 45, 1],
+                [19, 45, 1],
+                [20, 45, 1],
+                [17, 44, 1],
+                [18, 44, 1],
+                [17, 43, 1],
+                [17, 42, 1],
+                [17, 41, 1],
+                [17, 40, 1],
+                [17, 39, 1],
+                [17, 38, 1],
+                [17, 37, 1],
+                [17, 36, 1],
+                [18, 36, 1],
+                [19, 36, 1],
+                [20, 36, 1],
+                [20, 37, 1],
+                [20, 38, 1],
+                [20, 39, 1],
+                [20, 40, 1],
+                [20, 41, 1],
+                [20, 42, 1],
+                [20, 43, 1],
+                [20, 44, 1],
+                [19, 44, 1],
+                [19, 43, 1],
+                [19, 42, 1],
+                [19, 41, 1],
+                [19, 40, 1],
+                [19, 39, 1],
+                [19, 38, 1],
+                [19, 37, 1],
+                [18, 37, 1],
+                [18, 38, 1],
+                [18, 39, 1],
+                [18, 40, 1],
+                [18, 41, 1],
+                [18, 42, 1],
+                [18, 43, 1],
+                [20, 53, 1],
+                [21, 53, 1],
+                [21, 54, 1],
+                [20, 54, 1],
+                [1, 52, 128],
+                [2, 52, 128],
+                [3, 52, 128],
+                [4, 52, 128],
+                [8, 52, 128],
+                [9, 52, 128],
+                [10, 52, 128],
+                [11, 52, 128],
+                [16, 53, 128],
+                [17, 53, 1],
+                [17, 54, 1],
+                [16, 45, 1],
+                [30, 53, 1],
+                [30, 54, 1],
+                [29, 54, 1],
+                [28, 54, 1],
+                [27, 54, 1],
+                [29, 53, 1],
+                [28, 53, 1],
+                [27, 53, 1],
+                [26, 53, 1],
+                [26, 54, 1],
+                [25, 53, 1],
+                [25, 54, 1],
+                [22, 53, 1],
+                [23, 53, 1],
+                [24, 53, 1],
+                [24, 54, 1],
+                [23, 54, 1],
+                [22, 54, 1],
+                [10, 48, 1],
+                [33, 53, 1],
+                [33, 54, 1],
+                [34, 53, 1],
+                [35, 53, 1],
+                [36, 53, 1],
+                [37, 53, 1],
+                [38, 53, 1],
+                [39, 53, 1],
+                [40, 53, 1],
+                [41, 53, 1],
+                [42, 53, 1],
+                [43, 53, 1],
+                [44, 53, 1],
+                [45, 53, 1],
+                [45, 52, 1],
+                [45, 51, 1],
+                [46, 51, 1],
+                [46, 52, 1],
+                [46, 53, 1],
+                [46, 54, 1],
+                [47, 51, 1],
+                [47, 52, 1],
+                [47, 53, 1],
+                [47, 54, 1],
+                [48, 54, 1],
+                [48, 53, 1],
+                [48, 52, 1],
+                [48, 51, 1],
+                [45, 54, 1],
+                [44, 54, 1],
+                [43, 54, 1],
+                [42, 54, 1],
+                [41, 54, 1],
+                [40, 54, 1],
+                [39, 54, 1],
+                [38, 54, 1],
+                [37, 54, 1],
+                [36, 54, 1],
+                [35, 54, 1],
+                [34, 54, 1],
+                [45, 45, 1],
+                [45, 44, 1],
+                [45, 43, 1],
+                [45, 42, 1],
+                [45, 41, 1],
+                [45, 40, 1],
+                [46, 40, 1],
+                [47, 40, 1],
+                [47, 45, 1],
+                [46, 45, 1],
+                [46, 44, 1],
+                [46, 43, 1],
+                [46, 42, 1],
+                [46, 41, 1],
+                [47, 41, 1],
+                [47, 42, 1],
+                [47, 43, 1],
+                [47, 44, 1],
+                [50, 51, 1],
+                [52, 51, 1],
+                [54, 51, 1],
+                [48, 50, 128],
+                [52, 50, 128],
+                [56, 51, 1],
+                [58, 51, 1],
+                [59, 51, 1],
+                [55, 45, 1],
+                [57, 45, 1],
+                [62, 51, 1],
+                [64, 51, 1],
+                [66, 51, 1],
+                [47, 36, 1],
+                [46, 36, 1],
+                [45, 36, 1],
+                [45, 37, 1],
+                [45, 38, 1],
+                [45, 39, 1],
+                [46, 39, 1],
+                [47, 38, 1],
+                [47, 37, 1],
+                [46, 37, 1],
+                [47, 39, 1],
+                [46, 38, 1],
+                [69, 45, 1],
+                [71, 45, 1],
+                [73, 45, 1],
+                [71, 51, 1],
+                [73, 51, 1],
+                [74, 51, 1],
+                [75, 51, 1],
+                [76, 51, 1],
+                [71, 54, 1],
+                [72, 54, 1],
+                [73, 54, 1],
+                [74, 54, 1],
+                [75, 54, 1],
+                [76, 54, 1],
+                [77, 54, 1],
+                [78, 54, 1],
+                [79, 54, 1],
+                [80, 54, 1],
+                [81, 54, 1],
+                [82, 54, 1],
+                [83, 54, 1],
+                [81, 49, 1],
+                [82, 49, 1],
+                [83, 49, 1],
+                [84, 49, 1],
+                [85, 49, 1],
+                [86, 49, 1],
+                [88, 49, 1],
+                [89, 49, 1],
+                [91, 49, 1],
+                [92, 49, 1],
+                [84, 54, 1],
+                [85, 54, 1],
+                [86, 54, 1],
+                [87, 54, 1],
+                [88, 54, 1],
+                [89, 54, 1],
+                [90, 54, 1],
+                [91, 54, 1],
+                [92, 54, 1],
+                [93, 54, 1],
+                [95, 54, 1],
+                [96, 54, 1],
+                [97, 54, 1],
+                [87, 49, 1],
+                [90, 49, 1],
+                [93, 49, 1],
+                [94, 49, 1],
+                [95, 49, 1],
+                [96, 49, 1],
+                [97, 49, 1],
+                [98, 49, 1],
+                [99, 49, 1],
+                [101, 49, 1],
+                [102, 49, 1],
+                [104, 49, 1],
+                [105, 49, 1],
+                [107, 49, 1],
+                [108, 49, 1],
+                [111, 49, 1],
+                [112, 49, 1],
+                [99, 54, 1],
+                [100, 54, 1],
+                [101, 54, 1],
+                [103, 54, 1],
+                [104, 54, 1],
+                [105, 54, 1],
+                [107, 54, 1],
+                [108, 54, 1],
+                [109, 54, 1],
+                [111, 54, 1],
+                [112, 54, 1],
+                [81, 48, 1],
+                [82, 48, 1],
+                [83, 48, 1],
+                [84, 48, 1],
+                [85, 48, 1],
+                [86, 48, 1],
+                [87, 48, 1],
+                [88, 48, 1],
+                [89, 48, 1],
+                [90, 48, 1],
+                [91, 48, 1],
+                [92, 48, 1],
+                [93, 48, 1],
+                [94, 48, 1],
+                [95, 48, 1],
+                [96, 48, 1],
+                [97, 48, 1],
+                [98, 48, 1],
+                [99, 48, 1],
+                [100, 48, 1],
+                [101, 48, 1],
+                [102, 48, 1],
+                [103, 48, 1],
+                [104, 48, 1],
+                [105, 48, 1],
+                [106, 48, 1],
+                [107, 48, 1],
+                [108, 48, 1],
+                [109, 48, 1],
+                [110, 48, 1],
+                [111, 48, 1],
+                [112, 48, 1],
+                [116, 54, 1],
+                [118, 52, 128],
+                [118, 53, 1],
+                [118, 54, 1],
+                [120, 50, 1],
+                [121, 50, 1],
+                [122, 50, 1],
+                [122, 49, 128],
+                [127, 53, 1],
+                [128, 53, 1],
+                [129, 53, 1],
+                [130, 53, 1],
+                [131, 53, 1],
+                [132, 53, 1],
+                [133, 53, 1],
+                [134, 53, 1],
+                [135, 53, 1],
+                [136, 53, 1],
+                [137, 53, 1],
+                [138, 53, 1],
+                [138, 54, 1],
+                [137, 54, 1],
+                [136, 54, 1],
+                [135, 54, 1],
+                [134, 54, 1],
+                [133, 54, 1],
+                [132, 54, 1],
+                [131, 54, 1],
+                [130, 54, 1],
+                [129, 54, 1],
+                [128, 54, 1],
+                [127, 54, 1],
+                [145, 53, 1],
+                [146, 53, 1],
+                [147, 53, 1],
+                [148, 53, 1],
+                [149, 53, 1],
+                [150, 53, 1],
+                [150, 54, 1],
+                [149, 54, 1],
+                [148, 54, 1],
+                [147, 54, 1],
+                [146, 54, 1],
+                [145, 54, 1],
+                [145, 52, 128],
+                [152, 52, 128],
+                [153, 52, 128],
+                [154, 52, 128],
+                [155, 52, 128],
+                [156, 52, 128],
+                [157, 52, 128],
+                [158, 52, 128],
+                [159, 52, 128],
+                [160, 52, 128],
+                [152, 53, 1],
+                [153, 53, 1],
+                [154, 53, 1],
+                [155, 53, 1],
+                [156, 53, 1],
+                [157, 53, 1],
+                [158, 53, 1],
+                [159, 53, 1],
+                [160, 53, 1],
+                [159, 54, 1],
+                [158, 54, 1],
+                [157, 54, 1],
+                [156, 54, 1],
+                [155, 54, 1],
+                [154, 54, 1],
+                [153, 54, 1],
+                [152, 54, 1],
+                [161, 52, 128],
+                [162, 52, 128],
+                [163, 52, 128],
+                [164, 52, 128],
+                [165, 52, 128],
+                [166, 52, 128],
+                [167, 52, 128],
+                [168, 52, 128],
+                [169, 52, 128],
+                [170, 52, 128],
+                [171, 52, 128],
+                [172, 52, 128],
+                [173, 52, 128],
+                [174, 52, 128],
+                [175, 52, 128],
+                [176, 52, 128],
+                [177, 52, 128],
+                [161, 53, 1],
+                [162, 53, 1],
+                [163, 53, 1],
+                [164, 53, 1],
+                [165, 53, 1],
+                [166, 53, 1],
+                [167, 53, 1],
+                [168, 53, 1],
+                [169, 53, 1],
+                [170, 53, 1],
+                [171, 54, 1],
+                [172, 54, 1],
+                [173, 54, 1],
+                [174, 54, 1],
+                [175, 54, 1],
+                [176, 53, 1],
+                [177, 53, 1],
+                [177, 54, 1],
+                [176, 54, 1],
+                [175, 53, 1],
+                [174, 53, 1],
+                [173, 53, 1],
+                [172, 53, 1],
+                [171, 53, 1],
+                [170, 54, 1],
+                [169, 54, 1],
+                [168, 54, 1],
+                [167, 54, 1],
+                [166, 54, 1],
+                [165, 54, 1],
+                [164, 54, 1],
+                [163, 54, 1],
+                [162, 54, 1],
+                [161, 54, 1],
+                [160, 54, 1],
+                [63, 44, 1],
+                [65, 44, 1],
+                [72, 51, 1],
+                [51, 51, 1],
+                [55, 44, 128],
+                [57, 44, 128],
+                [63, 43, 128],
+                [65, 43, 128],
+                [69, 44, 128],
+                [71, 44, 128],
+                [73, 44, 128],
+                [144, 53, 128],
+                [144, 54, 1],
+                [10, 47, 128],
+                [8, 47, 1],
+                [8, 48, 1],
+                [7, 53, 128],
+                [6, 53, 128],
+                [5, 53, 128],
+                [7, 54, 1],
+                [6, 54, 1],
+                [5, 54, 1]
             ]
         },
         {
@@ -2052,64 +7032,125 @@
             "cells": [[0, 0, 1]]
         },
         {
-            "pos": [4864, 352],
-            "size": [1, 1],
+            "pos": [2176, 352],
+            "size": [43, 16],
             "cell_size": [64, 64],
-            "cells": [[0, 0, 1]]
+            "cells": [
+                [42, 0, 1],
+                [0, 15, 1],
+                [34, 15, 1],
+                [40, 13, 1]
+            ]
         },
         {
-            "pos": [3616, 256],
-            "size": [1, 1],
+            "pos": [160, 256],
+            "size": [55, 14],
             "cell_size": [64, 64],
-            "cells": [[0, 0, 1]]
+            "cells": [
+                [54, 0, 1],
+                [0, 12, 1],
+                [26, 13, 1]
+            ]
         },
         {
-            "pos": [3168, 288],
-            "size": [8, 6],
+            "pos": [160, 288],
+            "size": [55, 28],
             "cell_size": [64, 32],
             "cells": [
-                [0, 0, 1],
-                [0, 1, 1],
-                [0, 2, 1],
-                [0, 3, 1],
-                [0, 4, 1],
-                [0, 5, 1],
-                [7, 1, 1],
-                [7, 2, 1],
-                [7, 3, 1],
-                [7, 4, 1],
-                [7, 5, 1]
+                [47, 0, 1],
+                [47, 1, 1],
+                [47, 2, 1],
+                [47, 3, 1],
+                [47, 4, 1],
+                [47, 5, 1],
+                [54, 1, 1],
+                [54, 2, 1],
+                [54, 3, 1],
+                [54, 4, 1],
+                [54, 5, 1],
+                [0, 22, 1],
+                [0, 21, 1],
+                [0, 20, 1],
+                [0, 19, 1],
+                [26, 24, 1],
+                [26, 23, 1],
+                [26, 22, 1],
+                [26, 21, 1],
+                [26, 20, 1],
+                [26, 19, 1],
+                [26, 18, 1],
+                [26, 17, 1],
+                [34, 27, 1],
+                [34, 26, 1],
+                [34, 25, 1],
+                [34, 24, 1],
+                [34, 23, 1],
+                [34, 22, 1],
+                [34, 21, 1],
+                [34, 20, 1],
+                [34, 19, 1]
             ]
         },
         {
-            "pos": [2592, 32],
-            "size": [29, 6],
+            "pos": [2336, 32],
+            "size": [33, 19],
             "cell_size": [64, 64],
             "cells": [
-                [0, 5, 1],
-                [7, 5, 1],
-                [9, 3, 1],
-                [28, 0, 1]
+                [4, 5, 1],
+                [11, 5, 1],
+                [13, 3, 1],
+                [32, 0, 1],
+                [0, 18, 1]
             ]
         },
         {
-            "pos": [3904, 320],
-            "size": [1, 6],
+            "pos": [2176, 320],
+            "size": [41, 35],
             "cell_size": [64, 32],
             "cells": [
-                [0, 0, 1],
-                [0, 1, 1],
-                [0, 3, 1],
-                [0, 2, 1],
-                [0, 4, 1],
-                [0, 5, 1]
+                [27, 0, 1],
+                [27, 1, 1],
+                [27, 3, 1],
+                [27, 2, 1],
+                [27, 4, 1],
+                [27, 5, 1],
+                [0, 33, 1],
+                [0, 34, 1],
+                [5, 29, 1],
+                [5, 28, 1],
+                [5, 27, 1],
+                [5, 26, 1],
+                [5, 25, 1],
+                [5, 24, 1],
+                [5, 23, 1],
+                [5, 22, 1],
+                [5, 21, 1],
+                [5, 20, 1],
+                [27, 32, 1],
+                [27, 33, 1],
+                [27, 34, 1],
+                [40, 26, 1],
+                [40, 25, 1],
+                [40, 24, 1],
+                [40, 23, 1],
+                [40, 22, 1],
+                [40, 21, 1],
+                [40, 20, 1],
+                [40, 19, 1],
+                [40, 18, 1],
+                [40, 17, 1],
+                [40, 16, 1]
             ]
         },
         {
-            "pos": [3904, 256],
-            "size": [1, 1],
+            "pos": [2496, 256],
+            "size": [23, 17],
             "cell_size": [64, 64],
-            "cells": [[0, 0, 1]]
+            "cells": [
+                [22, 0, 1],
+                [0, 16, 1],
+                [22, 16, 1]
+            ]
         }
     ],
     "actors": [
@@ -2328,12 +7369,6 @@
             "flags": 1024
         },
         {
-            "def": "Spiny",
-            "id": 74,
-            "pos": [3023, 413],
-            "flags": 4
-        },
-        {
             "def": "Piranha Plant",
             "id": 41,
             "pos": [3072, 352],
@@ -2362,28 +7397,6 @@
             "id": 24,
             "pos": [3296, 288],
             "values": [[1, 21]]
-        },
-        {
-            "def": "Spiny",
-            "id": 74,
-            "pos": [2416, 413]
-        },
-        {
-            "def": "Koopa",
-            "id": 39,
-            "pos": [2291, 191],
-            "flags": 4
-        },
-        {
-            "def": "Spiny",
-            "id": 74,
-            "pos": [2480, 413]
-        },
-        {
-            "def": "Spiny",
-            "id": 74,
-            "pos": [2987, 413],
-            "flags": 4
         },
         {
             "def": "Coin Block",
@@ -2533,15 +7546,15 @@
             "id": 6,
             "pos": [4036, 447],
             "values": [
-                [0, 320864256],
-                [1, 23920640],
+                [0, 12582912],
+                [1, 71237632],
                 [2, 2],
-                [3, 1],
+                [3, 3],
                 [4, 0],
-                [5, 0],
-                [6, 0],
-                [7, 0],
-                [8, 0],
+                [5, 62914560],
+                [6, 370933760],
+                [7, 94371840],
+                [8, 1],
                 [9, 0],
                 [10, 0]
             ]
@@ -2564,6 +7577,491 @@
                 [10, 0]
             ],
             "flags": 320
+        },
+        {
+            "def": "Checkpoint",
+            "id": 7,
+            "pos": [687, 1257],
+            "values": [
+                [0, 0],
+                [1, 62914560],
+                [2, 370933760],
+                [3, 94371840],
+                [4, 1],
+                [5, 0],
+                [6, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1056, 1248],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1088, 1248],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1120, 1248],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1152, 1248],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1088, 1120],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1120, 1120],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [1152, 1120],
+            "values": [[1, 33]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [1184, 1120],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [896, 1024],
+            "values": [[1, 30]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [928, 1024],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [960, 1024],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1088, 992]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1120, 992]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1120, 960]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1088, 960]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1088, 928]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1120, 928]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1344, 1152]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1344, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1344, 1216]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1344, 1248]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1312, 1152]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1312, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1312, 1216]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1312, 1248]
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [1456, 1309],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [1360, 1373],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [1296, 1373],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [1232, 1373],
+            "flags": 4
+        },
+        {
+            "def": "Buzzy",
+            "id": 134,
+            "pos": [943, 1375],
+            "flags": 4
+        },
+        {
+            "def": "Hidden Block",
+            "id": 24,
+            "pos": [864, 1120],
+            "values": [
+                [0, 0],
+                [1, 21]
+            ],
+            "flags": 64
+        },
+        {
+            "def": "Hidden Block",
+            "id": 24,
+            "pos": [896, 1120],
+            "values": [
+                [0, 0],
+                [1, 21]
+            ],
+            "flags": 64
+        },
+        {
+            "def": "Hidden Block",
+            "id": 24,
+            "pos": [928, 1120],
+            "values": [
+                [0, 0],
+                [1, 21]
+            ],
+            "flags": 64
+        },
+        {
+            "def": "Piranha Plant",
+            "id": 41,
+            "pos": [1856, 1152],
+            "flags": 1288
+        },
+        {
+            "def": "Piranha Plant",
+            "id": 41,
+            "pos": [2208, 1312],
+            "flags": 1280
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [2096, 1309],
+            "flags": 4
+        },
+        {
+            "def": "Piranha Plant",
+            "id": 41,
+            "pos": [2368, 1248],
+            "flags": 1032
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [672, 1373],
+            "flags": 4
+        },
+        {
+            "def": "Piranha Plant",
+            "id": 41,
+            "pos": [2528, 1344],
+            "flags": 1032
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [2960, 1405],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [2896, 1405],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [3024, 1405],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [3280, 1405],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [3344, 1405],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [3408, 1405],
+            "flags": 4
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3520, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3488, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3456, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3424, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3392, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3168, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3136, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3104, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3072, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [2880, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [2848, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [2816, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [2784, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [2752, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3200, 1184]
+        },
+        {
+            "def": "Piranha Plant",
+            "id": 41,
+            "pos": [3936, 1280],
+            "flags": 1280
+        },
+        {
+            "def": "Piranha Plant",
+            "id": 41,
+            "pos": [4384, 1312],
+            "flags": 1280
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [4304, 1373],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [4240, 1373],
+            "flags": 4
+        },
+        {
+            "def": "Warp",
+            "id": 6,
+            "pos": [4768, 1261],
+            "values": [
+                [0, 320864256],
+                [1, 23920640],
+                [2, 1],
+                [3, 1],
+                [4, 0],
+                [5, 0],
+                [6, 370933760],
+                [7, 31457280],
+                [8, 0],
+                [9, 0],
+                [10, 0]
+            ]
+        },
+        {
+            "def": "Tube Bubbles",
+            "id": 43,
+            "pos": [1920, 1438]
+        },
+        {
+            "def": "Tube Bubbles",
+            "id": 43,
+            "pos": [2976, 1214]
+        },
+        {
+            "def": "Tube Bubbles",
+            "id": 43,
+            "pos": [3328, 1214]
+        },
+        {
+            "def": "Tube Bubbles",
+            "id": 43,
+            "pos": [4064, 1374]
+        },
+        {
+            "def": "Buzzy",
+            "id": 134,
+            "pos": [2351, 1407],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [2416, 413]
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [3021, 413],
+            "flags": 4
+        },
+        {
+            "def": "Koopa",
+            "id": 39,
+            "pos": [2291, 191],
+            "flags": 4
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [3424, 224]
+        },
+        {
+            "def": "Lamp Light",
+            "id": 42,
+            "pos": [1291, 1082]
+        },
+        {
+            "def": "Lamp Light",
+            "id": 42,
+            "pos": [2635, 1082]
+        },
+        {
+            "def": "Lamp Light",
+            "id": 42,
+            "pos": [4267, 1082]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [2925, 223]
         }
     ]
 }
