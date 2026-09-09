@@ -6026,6 +6026,11 @@
             "def": "Lamp",
             "sprite": "scenery/lamp",
             "pos": [4268, 1056, 33]
+        },
+        {
+            "def": "Left Sign",
+            "sprite": "scenery/sign/left",
+            "pos": [4134, 337, 30]
         }
     ],
     "collisions": [
