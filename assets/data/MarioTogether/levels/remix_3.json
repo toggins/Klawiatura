@@ -5689,7 +5689,7 @@
             "id": 11,
             "multiplayer": true,
             "pos": [8800, 160],
-            "values": [[5, 2]],
+            "values": [[0, 2]],
             "flags": 32
         },
         {
