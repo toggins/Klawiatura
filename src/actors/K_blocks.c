@@ -459,4 +459,14 @@ const ActorTable TAB_BLOCK_BUMP = {
    P-SWITCH BLOCK
    ============== */
 
-const ActorTable TAB_PSWITCH_BLOCK = TAB_BLOCK;
+const ActorTable TAB_PSWITCH_BLOCK = {
+    .is_solid = is_solid,
+    .load = load,
+    .create = create,
+    .pre_tick = pre_tick,
+    .draw = draw,
+    .on_top = on_top,
+    .on_left = on_other_sides,
+    .on_bottom = on_bottom,
+    .on_right = on_other_sides,
+};

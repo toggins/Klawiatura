@@ -150,4 +150,10 @@ const ActorTable TAB_COIN_POP = {
    P-SWITCH COIN
    ============= */
 
-const ActorTable TAB_PSWITCH_COIN = TAB_COIN;
+const ActorTable TAB_PSWITCH_COIN = {
+    .load = load,
+    .create = create,
+    .tick = tick,
+    .draw = draw,
+    .collide = collide,
+};
