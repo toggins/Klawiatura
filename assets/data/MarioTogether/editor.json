@@ -67,6 +67,16 @@
             "sprite": "scenery/hill/autumn",
             "depth": 61
         },
+        "Castle Bottom Alt": {
+            "type": "background",
+            "sprite": "scenery/castle/bottom2",
+            "depth": 35
+        },
+        "Left Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/left",
+            "depth": 30
+        },
         "P-Switch": {
             "type": "actor",
             "id": 141,
@@ -126,8 +136,20 @@
                 {
                     "name": "Hills",
                     "items": ["Autumn Hill"]
+                },
+                {
+                    "name": "Castle",
+                    "items": ["Castle Bottom Alt"]
+                },
+                {
+                    "name": "Signs",
+                    "items": ["Left Sign"]
                 }
             ]
+        },
+        {
+            "name": "Markers",
+            "items": ["P-Switch"]
         },
         {
             "name": "Enemies",
