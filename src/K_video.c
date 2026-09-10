@@ -19,7 +19,6 @@
 #include "K_cmd.h"
 #include "K_log.h"
 #include "K_string.h"
-#include "K_tick.h"
 #include "K_video.h"
 
 #define BBMOD_VERSION_MAJOR 3
@@ -85,12 +84,7 @@ SDL_Window* WINDOW = NULL;
 SDL_GLContext GPU = NULL;
 
 static int window_width = SCREEN_WIDTH, window_height = SCREEN_HEIGHT;
-static int framerate =
-#ifdef SDL_PLATFORM_EMSCRIPTEN
-    0;
-#else
-    TICKRATE;
-#endif
+static float framerate = 60.f, target_framerate = 0.f;
 static Bool vsync = FALSE;
 
 #define SHD(idx, nm) [idx] = {.name = (nm), -1}
@@ -146,12 +140,12 @@ void video_init(Bool force_shader) {
     GPU = SDL_GL_CreateContext(WINDOW);
     EXPECT(GPU && SDL_GL_MakeCurrent(WINDOW, GPU), "Failed to create graphics context: %s", SDL_GetError());
 
-#ifdef SDL_PLATFORM_EMSCRIPTEN
     set_vsync(TRUE);
-    int version = gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress);
+    int version =
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+        gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress);
 #else
-    set_vsync(FALSE);
-    int version = gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
+        gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
 #endif
 
     EXPECT(version, "Failed to load OpenGL functions");
@@ -342,11 +336,9 @@ void stop_drawing() {
 }
 
 void limit_framerate() {
-    if (framerate <= 0)
-        return;
-
-    const Uint64 next_frame_time = last_frame_time + (1000000000 / framerate);
-    const Uint64 current_frame_time = SDL_GetTicksNS();
+#ifndef SDL_PLATFORM_EMSCRIPTEN
+    const Uint64 next_frame_time = last_frame_time + (Uint64)(1000000000. / (double)framerate),
+                 current_frame_time = SDL_GetTicksNS();
 
     if (current_frame_time < next_frame_time) {
         SDL_DelayPrecise(next_frame_time - current_frame_time);
@@ -354,6 +346,7 @@ void limit_framerate() {
     } else {
         last_frame_time = current_frame_time;
     }
+#endif
 }
 
 Bool window_maximized() {
@@ -402,12 +395,38 @@ void set_fullscreen(Bool fullscreen) {
     get_resolution(&window_width, &window_height);
 }
 
-int get_framerate() {
+float get_framerate() {
     return framerate;
 }
 
-void set_framerate(int fps) {
-    framerate = fps;
+float get_target_framerate() {
+    return target_framerate;
+}
+
+static void update_framerate() {
+#ifndef SDL_PLATFORM_EMSCRIPTEN
+    if (target_framerate > 0.f) {
+        if (get_vsync()) {
+            const SDL_DisplayMode* display = SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay());
+            framerate = (display != NULL && display->refresh_rate > 0.f && target_framerate > display->refresh_rate)
+                            ? display->refresh_rate
+                            : target_framerate;
+        } else {
+            framerate = target_framerate;
+        }
+    } else {
+        const SDL_DisplayMode* display = SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay());
+        if (display != NULL && display->refresh_rate > 0.f)
+            framerate = display->refresh_rate;
+    }
+#endif
+}
+
+void set_target_framerate(float fps) {
+#ifndef SDL_PLATFORM_EMSCRIPTEN
+    target_framerate = fps;
+    update_framerate();
+#endif
 }
 
 Bool get_vsync() {
@@ -419,6 +438,7 @@ void set_vsync(Bool vs) {
         SDL_GL_SetSwapInterval(vs);
 
     vsync = vs;
+    update_framerate();
 }
 
 // =====

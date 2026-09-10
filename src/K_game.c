@@ -1356,15 +1356,13 @@ void tick_game() {
 }
 
 void pre_interp_game() {
-    const GameActor* actor = NULL;
-
-    const int fps = get_framerate();
-    if (fps > 0 && fps <= TICKRATE) {
+    if (get_framerate() <= TICKRATE) {
         for (PlayerID i = 0; i < game_context.num_players; i++) {
             InterpPlayer* iplayer = &interp_state->players[i];
             iplayer->from = iplayer->to = iplayer->current = game_state->players[i].xscroll;
         }
 
+        const GameActor* actor = NULL;
         FOR_EACH_ACTOR (actor) {
             InterpActor* iactor = &interp_state->actors[actor->id];
             iactor->type = actor->type;
@@ -1380,6 +1378,7 @@ void pre_interp_game() {
         iplayer->to = game_state->players[i].xscroll;
     }
 
+    const GameActor* actor = NULL;
     FOR_EACH_ACTOR (actor) {
         InterpActor* iactor = &interp_state->actors[actor->id];
         if (iactor->type == actor->type) {
@@ -1393,8 +1392,7 @@ void pre_interp_game() {
 }
 
 void interp_game() {
-    const int fps = get_framerate();
-    if (fps > 0 && fps <= TICKRATE)
+    if (get_framerate() <= TICKRATE)
         return;
 
     const Fixed t = Float2Fx(pendingticks());

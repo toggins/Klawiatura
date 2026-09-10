@@ -12,7 +12,8 @@
 ### Features
 
 - Native support for Windows, Linux and Emscripten
-- High framerates
+- Keyboard and gamepad support
+- Customizable framerate
 - Basic mod system with custom worlds and levels
 - **Online multiplayer with up to 8 players**
 

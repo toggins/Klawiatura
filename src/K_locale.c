@@ -115,6 +115,12 @@ const char* handle_lfmt(const char* key, ...) {
         default:
             goto end_parse;
 
+        case 'f': {
+            const double val = va_arg(args, double);
+            written = SDL_snprintf(rpos, remaining, "%g", val);
+            break;
+        }
+
         case 'd': {
             const int val = va_arg(args, int);
             written = SDL_snprintf(rpos, remaining, "%d", val);

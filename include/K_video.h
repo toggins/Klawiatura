@@ -217,8 +217,8 @@ void limit_framerate();
 void get_resolution(int*, int*), set_resolution(int, int, Bool);
 Bool get_fullscreen();
 void set_fullscreen(Bool);
-int get_framerate();
-void set_framerate(int);
+float get_framerate(), get_target_framerate();
+void set_target_framerate(float);
 Bool get_vsync();
 void set_vsync(Bool);
 

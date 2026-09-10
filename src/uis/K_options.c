@@ -385,30 +385,31 @@ static const char* fmt_framerate(size_t idx) {
     (void)idx;
 
     return fmt("%s: %s", LFMT("option.framerate"),
-        (get_framerate() <= 0) ? LFMT("value.unlimited") : LFMT("value.fps", 'd', get_framerate()));
+        (get_target_framerate() <= 0.f) ? fmt("%s (%s)", LFMT("value.auto"), LFMT("value.fps", 'f', get_framerate()))
+                                        : LFMT("value.fps", 'f', get_target_framerate()));
 }
 
 static void framerate_cycle(Sint8 cycle) {
-    static const int ranges[] = {0, 50, 60, 75, 120, 144, 165, 180, 240, 360, 480};
+    static const float ranges[] = {0.f, 50.f, 60.f, 75.f, 120.f, 144.f, 165.f, 180.f, 240.f, 360.f, 480.f};
     const size_t len = SDL_arraysize(ranges);
 
-    const int fps = get_framerate();
+    const float fps = get_target_framerate();
     if (cycle >= 0) {
         for (int i = 0; i < len; i++) {
-            if (fps < ranges[i]) {
-                set_framerate(ranges[i]);
+            if (fps < (ranges[i] - 0.01f)) {
+                set_target_framerate(ranges[i]);
                 return;
             }
         }
-        set_framerate(ranges[0]);
+        set_target_framerate(ranges[0]);
     } else {
         for (int i = (int)len - 2; i >= 0; i--) {
-            if (fps > ranges[i]) {
-                set_framerate(ranges[i]);
+            if (fps > (ranges[i] + 0.01f)) {
+                set_target_framerate(ranges[i]);
                 return;
             }
         }
-        set_framerate(ranges[len - 1]);
+        set_target_framerate(ranges[len - 1]);
     }
 }
 

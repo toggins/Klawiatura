@@ -195,7 +195,7 @@
     "value.yes": "Yes",
     "value.scanning": "<Press any button>",
     "value.keyboard": "Keyboard",
-    "value.unlimited": "Unlimited",
+    "value.auto": "Auto",
     "value.fps": "{0} FPS",
     "value.nearest": "Nearest",
     "value.linear": "Linear",

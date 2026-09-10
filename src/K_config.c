@@ -94,8 +94,10 @@ static const ConfigOption OPTIONS[] = {
     CVAR(width, int),
     CVAR(height, int),
     CVAR(fullscreen, bool),
-    CVAR(framerate, int),
+#ifndef SDL_PLATFORM_EMSCRIPTEN
+    {"framerate", .r_float = get_target_framerate, .w_float = set_target_framerate},
     CVAR(vsync, bool),
+#endif
     CVAR(texture_filter, bool),
     CVAR(volume, float),
     CVAR(sound_volume, float),
