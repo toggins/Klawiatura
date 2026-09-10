@@ -1,6 +1,5 @@
 #pragma once
 
-#include "K_cmake.h" // IWYU pragma: export
 #include "K_math.h"
 #include "K_memory.h" // IWYU pragma: export
 

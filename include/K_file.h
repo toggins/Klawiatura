@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SDL3/SDL_endian.h>
 #include <SDL3/SDL_iostream.h>
 
 #include <yyjson.h>

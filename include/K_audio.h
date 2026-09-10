@@ -2,7 +2,6 @@
 
 #include "K_assets.h"
 #include "K_game.h"
-#include "K_misc.h"
 
 #define MAX_GENERIC_SOUNDS 8
 #define MAX_STATE_SOUNDS 16

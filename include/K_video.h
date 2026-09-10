@@ -3,7 +3,6 @@
 #include "K_assets.h"
 #include "K_file.h" // IWYU pragma: export
 #include "K_math.h"
-#include "K_misc.h"
 #include "K_vmath.h" // IWYU pragma: export
 
 // Shortcut macros for graphic functions

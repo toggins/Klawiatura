@@ -7,7 +7,6 @@
 #include "K_string.h"
 #include "K_tick.h"
 #include "K_video.h"
-#include "K_worlds.h"
 
 typedef struct {
     PlayerID players[MAX_PLAYERS];

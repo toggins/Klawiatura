@@ -2,7 +2,6 @@
 #include <SDL3/SDL_platform_defines.h>
 
 #include "K_chat.h"
-#include "K_file.h"
 #include "K_input.h"
 #include "K_locale.h"
 #include "K_log.h"

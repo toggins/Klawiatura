@@ -4,13 +4,10 @@
 
 #include "K_cmake.h"
 #include "K_file.h"
-#include "K_game.h"
 #include "K_levels.h"
 #include "K_log.h"
-#include "K_memory.h" // IWYU pragma: export
 #include "K_net.h"
 #include "K_string.h"
-#include "K_worlds.h"
 
 typedef struct Mod {
     const char *name, *path;

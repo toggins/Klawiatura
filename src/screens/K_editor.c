@@ -5,14 +5,12 @@
 #ifndef SDL_PLATFORM_EMSCRIPTEN
 
 #include <SDL3/SDL_dialog.h>
-#include <SDL3/SDL_video.h>
 
 #include <dcimgui.h>
 #include <dcimgui_impl_opengl3.h>
 #include <dcimgui_impl_sdl3.h>
 
 #include "K_game.h"
-#include "K_levels.h"
 #include "K_locale.h"
 #include "K_string.h"
 #include "K_video.h"
@@ -1712,17 +1710,8 @@ const ScreenTable TAB_EDITOR = {
     .draw_ui = draw_ui,
 };
 
-//
-//
-//
 #else
-//
-//
-//
 
 const ScreenTable TAB_EDITOR = {};
 
-//
-//
-//
 #endif // SDL_PLATFORM_EMSCRIPTEN

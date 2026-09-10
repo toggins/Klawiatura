@@ -16,6 +16,7 @@
 #include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_video.h>
 
+#include "K_cmake.h"
 #include "K_cmd.h"
 #include "K_log.h"
 #include "K_string.h"

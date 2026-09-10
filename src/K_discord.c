@@ -4,13 +4,11 @@
 
 #include "K_cmd.h"
 #include "K_discord.h"
-#include "K_file.h" // IWYU pragma: export
 #include "K_interface.h"
 #include "K_levels.h"
 #include "K_locale.h"
 #include "K_net.h"
 #include "K_string.h"
-#include "K_worlds.h"
 
 #ifdef K_DISCORD
 

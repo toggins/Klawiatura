@@ -3,7 +3,6 @@
 #include <gekkonet.h>
 
 #include "K_misc.h"
-#include "K_worlds.h"
 
 typedef Uint64 NetID;
 

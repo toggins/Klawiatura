@@ -1,4 +1,4 @@
-#include "K_game.h" // IWYU pragma: export
+#include "K_game.h"
 #include "K_input.h"
 #include "K_interface.h"
 #include "K_locale.h"
