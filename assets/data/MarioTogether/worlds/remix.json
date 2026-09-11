@@ -10,13 +10,13 @@
         ],
         "paths": [
             { "nodes": [[58, 200]] },
-            { "nodes": [[58, 200]] },
-            { "nodes": [[58, 200]] },
-            { "nodes": [[58, 200]] },
-            { "nodes": [[58, 200]] },
-            { "nodes": [[58, 200]] },
-            { "nodes": [[58, 200]] },
-            { "nodes": [[58, 200]] }
+            { "offset": 7680, "nodes": [[58, 200]] },
+            { "offset": 7680, "nodes": [[58, 200]] },
+            { "offset": 7680, "nodes": [[58, 200]] },
+            { "offset": 30720, "nodes": [[58, 200]] },
+            { "offset": 39680, "nodes": [[58, 200]] },
+            { "offset": 39680, "nodes": [[58, 200]] },
+            { "offset": 263680, "nodes": [[58, 200]] }
         ]
     },
     "levels": ["remix_1", "remix_2", "remix_3", "remix_4", "remix_5", "remix_6", "remix_7", "remix_8"]
