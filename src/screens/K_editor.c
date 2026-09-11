@@ -105,7 +105,7 @@ typedef struct {
 
     int size[2], bounds[4];
     int time;
-    int bowser_bounds[2], cheep_bounds[2], bro_throw;
+    int bro_throw;
 
     EditorMarker* markers;
 } EditorLevel;
@@ -317,18 +317,6 @@ static void open_level(const char* filename) {
     jval = yyjson_obj_get(root, "time");
     if (yyjson_is_int(jval))
         elevel->time = (int)yyjson_get_sint(jval);
-
-    jval = yyjson_obj_get(root, "bowser_bounds");
-    if (yyjson_is_arr(jval)) {
-        elevel->bowser_bounds[0] = (int)yyjson_get_sint(yyjson_arr_get(jval, 0));
-        elevel->bowser_bounds[1] = (int)yyjson_get_sint(yyjson_arr_get(jval, 1));
-    }
-
-    jval = yyjson_obj_get(root, "cheep_bounds");
-    if (yyjson_is_arr(jval)) {
-        elevel->cheep_bounds[0] = (int)yyjson_get_sint(yyjson_arr_get(jval, 0));
-        elevel->cheep_bounds[1] = (int)yyjson_get_sint(yyjson_arr_get(jval, 1));
-    }
 
     jval = yyjson_obj_get(root, "bro_throw");
     if (yyjson_is_uint(jval))
@@ -557,18 +545,6 @@ static void save_level(const char* filename) {
 
     if (elevel->time != -1)
         yyjson_mut_obj_add_sint(json, root, "time", elevel->time);
-
-    if (elevel->bowser_bounds[0] != 0 || elevel->bowser_bounds[1] != 0) {
-        yyjson_mut_val* jval = yyjson_mut_obj_add_arr(json, root, "bowser_bounds");
-        yyjson_mut_arr_add_uint(json, jval, elevel->bowser_bounds[0]);
-        yyjson_mut_arr_add_uint(json, jval, elevel->bowser_bounds[1]);
-    }
-
-    if (elevel->cheep_bounds[0] != 0 || elevel->cheep_bounds[1] != 0) {
-        yyjson_mut_val* jval = yyjson_mut_obj_add_arr(json, root, "cheep_bounds");
-        yyjson_mut_arr_add_uint(json, jval, elevel->cheep_bounds[0]);
-        yyjson_mut_arr_add_uint(json, jval, elevel->cheep_bounds[1]);
-    }
 
     if (elevel->bro_throw != 30)
         yyjson_mut_obj_add_uint(json, root, "bro_throw", elevel->bro_throw);
@@ -1551,7 +1527,7 @@ static void draw_ui() {
                     for (size_t i = 0; i < SDL_arraysize(elevel->tracks); i++) {
                         ImGui_InputText(
                             LFMT("editor.track", 'd', i + 1), elevel->tracks[i], sizeof(elevel->tracks[i]), 0);
-                        ImGui_InputInt(fmt("%s##offs%zu", LFMT("editor.offset"), i), &elevel->track_offsets[i]);
+                        ImGui_InputInt(fmt("%s##o%zu", LFMT("editor.offset"), i), &elevel->track_offsets[i]);
 
                         if (i < (SDL_arraysize(elevel->tracks) - 1))
                             ImGui_Separator();
@@ -1580,11 +1556,8 @@ static void draw_ui() {
                 }
             }
 
-            if (ImGui_CollapsingHeader(LFMT("editor.constants"), 0)) {
-                ImGui_InputInt2(LFMT("editor.bowser_bounds"), elevel->bowser_bounds, 0);
-                ImGui_InputInt2(LFMT("editor.cheep_bounds"), elevel->cheep_bounds, 0);
+            if (ImGui_CollapsingHeader(LFMT("editor.constants"), 0))
                 ImGui_InputInt(LFMT("editor.bro_throw"), &elevel->bro_throw);
-            }
 
             if (ImGui_CollapsingHeader(LFMT("editor.flags"), 0)) {
                 ImGui_CheckboxFlagsUintPtr(LFMT("editor.hardcore"), &elevel->flags, GF_HARDCORE);
@@ -1635,7 +1608,7 @@ static void draw_ui() {
         EditorMarker* marker = &editor->level.markers[ecursor->selected];
         const EditorDef* def = (EditorDef*)TinyMapGet(&editor->defs, marker->def_key);
         if (def != NULL) {
-            if (ImGui_Begin(def->name, (bool*)&ecursor->has_selected, 0)) {
+            if (ImGui_Begin(fmt("%s##m%zu", def->name, ecursor->selected), (bool*)&ecursor->has_selected, 0)) {
                 ImGui_InputInt2(LFMT("editor.position"), marker->pos, 0);
                 ImGui_InputInt(LFMT("editor.depth"), &marker->pos[2]);
                 ImGui_InputFloat2(
@@ -1654,14 +1627,14 @@ static void draw_ui() {
                     for (size_t i = 0, n = TinyDLength(def->values); i < n; i++) {
                         const EditorDefValue* dvalue = &def->values[i];
                         if (!dvalue->hidden)
-                            ImGui_InputInt(fmt("%s##value", dvalue->name), &marker->values[dvalue->index]);
+                            ImGui_InputInt(fmt("%s##v%zu", dvalue->name, i), &marker->values[dvalue->index]);
                     }
 
                     for (size_t i = 0, n = TinyDLength(def->flags); i < n; i++) {
                         const EditorDefFlag* dflag = &def->flags[i];
                         if (!dflag->hidden) {
                             ImGui_CheckboxFlagsUintPtr(
-                                fmt("%s##flag", dflag->name), &marker->flags, 1U << dflag->index);
+                                fmt("%s##f%zu", dflag->name, i), &marker->flags, 1U << dflag->index);
                         }
                     }
                 } else {

@@ -10,6 +10,10 @@ enum {
     VAL_CHEEP_FRAME,
 
     VAL_CHEEP_SPAWN = 0,
+    VAL_CHEEP_SPAWN_START_X,
+    VAL_CHEEP_SPAWN_START_Y,
+    VAL_CHEEP_SPAWN_END_X,
+    VAL_CHEEP_SPAWN_END_Y,
 };
 
 #define FLG_CHEEP_ACTIVE CUSTOM_FLAG(0)
@@ -58,9 +62,11 @@ static void tick_spawner(GameActor* actor) {
         if (player == NULL)
             continue;
 
-        const LevelInfo* level_info = levelinfo();
-        if (level_info->cheep_bounds.x != level_info->cheep_bounds.y
-            && (player->pos.x <= level_info->cheep_bounds.x || player->pos.x >= level_info->cheep_bounds.y))
+        if ((VAL(actor, CHEEP_SPAWN_START_X) != VAL(actor, CHEEP_SPAWN_END_X)
+                && (player->pos.x <= VAL(actor, CHEEP_SPAWN_START_X) || player->pos.x >= VAL(actor, CHEEP_SPAWN_END_X)))
+            || (VAL(actor, CHEEP_SPAWN_START_Y) != VAL(actor, CHEEP_SPAWN_END_Y)
+                && (player->pos.y <= VAL(actor, CHEEP_SPAWN_START_Y)
+                    || player->pos.y >= VAL(actor, CHEEP_SPAWN_END_Y))))
         {
             continue;
         }

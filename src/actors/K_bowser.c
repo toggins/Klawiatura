@@ -174,11 +174,10 @@ static void tick(GameActor* actor) {
     }
 
     // 805, 806 (modified)
-    const LevelInfo* level_info = levelinfo();
-    if (level_info->bowser_bounds.x != level_info->bowser_bounds.y) {
-        if ((actor->pos.x + actor->box.start.x) < level_info->bowser_bounds.x || TOUCHING(actor, TOUCH_LEFT))
+    if (VAL(actor, BOWSER_START_X) != VAL(actor, BOWSER_END_X)) {
+        if ((actor->pos.x + actor->box.start.x) < VAL(actor, BOWSER_START_X) || TOUCHING(actor, TOUCH_LEFT))
             FLAG_ON(actor, FLG_BOWSER_RIGHT);
-        if ((actor->pos.x + actor->box.end.x) > level_info->bowser_bounds.y || TOUCHING(actor, TOUCH_RIGHT))
+        if ((actor->pos.x + actor->box.end.x) > VAL(actor, BOWSER_END_X) || TOUCHING(actor, TOUCH_RIGHT))
             FLAG_OFF(actor, FLG_BOWSER_RIGHT);
     }
 

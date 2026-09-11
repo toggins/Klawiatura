@@ -1233,6 +1233,16 @@
                     "name": "Hurt Duration",
                     "index": 7,
                     "default": 100
+                },
+                {
+                    "name": "Start X",
+                    "type": "fixed",
+                    "index": 8
+                },
+                {
+                    "name": "End X",
+                    "type": "fixed",
+                    "index": 9
                 }
             ],
             "flags": [
@@ -1287,6 +1297,26 @@
                     "name": "Spawn Rate",
                     "index": 0,
                     "default": 100
+                },
+                {
+                    "name": "Start X",
+                    "type": "fixed",
+                    "index": 1
+                },
+                {
+                    "name": "Start Y",
+                    "type": "fixed",
+                    "index": 2
+                },
+                {
+                    "name": "End X",
+                    "type": "fixed",
+                    "index": 3
+                },
+                {
+                    "name": "End Y",
+                    "type": "fixed",
+                    "index": 4
                 }
             ],
             "flags": [

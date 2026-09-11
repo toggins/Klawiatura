@@ -486,7 +486,7 @@ enum {
 
 typedef struct {
     Uint8 bro_throw;
-    FVec2 size, bowser_bounds, cheep_bounds;
+    FVec2 size;
     FRect bounds;
 
     TinyHash warps[MAX_GAME_WARPS];

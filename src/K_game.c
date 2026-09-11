@@ -583,7 +583,6 @@ static void load_level(TinyHash key) {
 
         const char* track = SDL_strdup(yyjson_get_str(jval2));
         EXPECT(track, "Failed to allocate level \"%s\" secret %" SDL_PRIu64, level->name, i + 1);
-        // TODO: Do something with secret strings
         level_info->strings[GSTR_SECRET_START + i] = track;
     }
 
@@ -604,18 +603,6 @@ static void load_level(TinyHash key) {
     jval = yyjson_obj_get(root, "time");
     if (yyjson_is_int(jval))
         game_state->clock = (Sint16)yyjson_get_sint(jval);
-
-    jval = yyjson_obj_get(root, "bowser_bounds");
-    if (yyjson_is_arr(jval)) {
-        level_info->bowser_bounds.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 0)));
-        level_info->bowser_bounds.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 1)));
-    }
-
-    jval = yyjson_obj_get(root, "cheep_bounds");
-    if (yyjson_is_arr(jval)) {
-        level_info->cheep_bounds.x = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 0)));
-        level_info->cheep_bounds.y = Int2Fx(yyjson_get_sint(yyjson_arr_get(jval, 1)));
-    }
 
     jval = yyjson_obj_get(root, "bro_throw");
     if (yyjson_is_uint(jval))
