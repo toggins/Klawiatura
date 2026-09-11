@@ -17,13 +17,19 @@ void move_enemy(GameActor* actor, FVec2 speed, Bool edge) {
         FLAG_ON(actor, FLG_ENEMY_ACTIVE);
     }
 
+    actor->vel.y += speed.y;
+    displace_actor(actor, Int2Fx(10), FALSE);
+
     if (edge && TOUCHING(actor, TOUCH_BOTTOM)) {
-        const Fixed x1 = ANY_FLAG(actor, FLG_X_FLIP) ? (actor->pos.x + actor->box.start.x - Fx1)
+        const Fixed ex = ANY_FLAG(actor, FLG_X_FLIP) ? (actor->pos.x + actor->box.start.x - Fx1)
                                                      : (actor->pos.x + actor->box.end.x);
-        const Fixed y1 = actor->pos.y + actor->box.start.y;
-        const Fixed x2 = x1 + Fx1;
-        const Fixed y2 = actor->pos.y + actor->box.end.y + Fx1;
-        if (!touching_solid((FRect){x1, y1, x2, y2}, SOL_SOLID | SOL_SLOPE)) {
+        if (!touching_solid(
+                (FRect){
+                    {ex,       actor->pos.y + actor->box.start.y    },
+                    {ex + Fx1, actor->pos.y + actor->box.end.y + Fx1}
+        },
+                SOL_SOLID | SOL_SLOPE))
+        {
             if (actor->vel.x < Fx0) {
                 actor->vel.x = speed.x;
                 FLAG_OFF(actor, FLG_X_FLIP);
@@ -33,9 +39,6 @@ void move_enemy(GameActor* actor, FVec2 speed, Bool edge) {
             }
         }
     }
-
-    actor->vel.y += speed.y;
-    displace_actor(actor, Int2Fx(10), FALSE);
 
     collide_actor(actor);
     VAL_TICK(actor, ENEMY_TURN);
