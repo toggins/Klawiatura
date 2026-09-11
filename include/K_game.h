@@ -530,7 +530,7 @@ void set_view_player(const GamePlayer*);
 
 GameSequence* get_sequence();
 void set_sequence(GameSequenceType, const GamePlayer*, Sint16);
-Bool in_blocking_sequence();
+Bool in_blocking_sequence(), can_affect_track();
 
 GamePlayer* get_player(PlayerID);
 GameActor* respawn_player(GamePlayer*);

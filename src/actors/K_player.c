@@ -876,7 +876,8 @@ static void post_tick(GameActor* actor) {
     if (VAL(actor, PLAYER_STARMAN) > 0) {
         --VAL(actor, PLAYER_STARMAN);
         if (VAL(actor, PLAYER_STARMAN) == 99) {
-            fade_state_track(actor->player, 0.f, 100.f);
+            if (can_affect_track())
+                fade_state_track(actor->player, 0.f, 100.f);
         } else if (VAL(actor, PLAYER_STARMAN) <= 0) {
             VAL(actor, PLAYER_STARMAN_COMBO) = 0;
             update_player_track(player);

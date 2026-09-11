@@ -852,7 +852,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
     if (game_state->pswitch > 0) {
         --game_state->pswitch;
         if (game_state->pswitch == 99) {
-            if (!in_blocking_sequence())
+            if (can_affect_track())
                 fade_state_track(ALL_TRACKS, 0.f, 100.f);
         } else if (game_state->pswitch <= 0) {
             GameActor* replacee = NULL;
@@ -1627,6 +1627,36 @@ Bool in_blocking_sequence() {
     return FALSE;
 }
 
+Bool can_affect_track() {
+    const GameSequence* sequence = get_sequence();
+    switch (sequence->type) {
+    default: {
+        return TRUE;
+    }
+
+    case GS_LOSE:
+    case GS_WIN:
+    case GS_BOWSER_END: {
+        return FALSE;
+    }
+
+    case GS_WARP: {
+        const GamePlayer* player = get_player(sequence->activator);
+        if (player == NULL)
+            return TRUE;
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn->type != ACT_PLAYER)
+            return TRUE;
+
+        const GameActor* warp = get_actor(VAL(pawn, PLAYER_WARP));
+        return warp == NULL || !ANY_FLAG(warp, FLG_WARP_DEVASTATOR);
+    }
+    }
+
+    return TRUE;
+}
+
 // =======
 // PLAYERS
 // =======
@@ -1808,7 +1838,7 @@ void set_player_track(GamePlayer* player, Uint8 track) {
 }
 
 void update_player_track(const GamePlayer* player) {
-    if (player == NULL || in_blocking_sequence())
+    if (player == NULL || !can_affect_track())
         return;
 
     if (game_state->pswitch > 0) {
@@ -1816,8 +1846,8 @@ void update_player_track(const GamePlayer* player) {
         return;
     }
 
-    const GameActor* actor = get_actor(player->actor);
-    if (actor != NULL && actor->type == ACT_PLAYER && VAL(actor, PLAYER_STARMAN) > 0) {
+    const GameActor* pawn = get_actor(player->actor);
+    if (pawn != NULL && pawn->type == ACT_PLAYER && VAL(pawn, PLAYER_STARMAN) > 0) {
         play_state_track(player->id, "smw/starman", PLAY_LOOPING, 0);
         return;
     }
