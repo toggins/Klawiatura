@@ -96,7 +96,7 @@ void update_discord_status() {
         Discord_ActivityParty_SetMaxSize(&party, get_peer_limit());
         Discord_Activity_SetParty(&activity, &party);
 
-        yyjson_mut_doc* json = yyjson_mut_doc_new(NULL);
+        yyjson_mut_doc* json = create_json();
         yyjson_mut_val* root = yyjson_mut_obj(json);
 
         yyjson_mut_doc_set_root(json, root);
@@ -104,7 +104,7 @@ void update_discord_status() {
         yyjson_mut_obj_add(root, yyjson_mut_strcpy(json, "lobby"), yyjson_mut_uint(json, lobby_id));
 
         size_t len = 0;
-        char* buffer = yyjson_mut_write_opts(json, 0, NULL, &len, NULL);
+        char* buffer = write_json(json, &len, NULL);
         yyjson_mut_doc_free(json);
 
         if (buffer != NULL) {

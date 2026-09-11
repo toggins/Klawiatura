@@ -14,6 +14,8 @@ void file_init(const char*), file_teardown();
 void rediscover_mods();
 
 yyjson_doc* read_json(const char*, size_t, const char**);
+yyjson_mut_doc* create_json();
+char* write_json(const yyjson_mut_doc*, size_t*, const char**);
 
 const char* get_base_path();
 

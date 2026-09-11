@@ -233,7 +233,7 @@ static void save_kb(yyjson_mut_doc* json, yyjson_mut_val* root, const char* name
 }
 
 void save_config() {
-    yyjson_mut_doc* json = yyjson_mut_doc_new(NULL);
+    yyjson_mut_doc* json = create_json();
     yyjson_mut_val* root = yyjson_mut_obj(json);
     yyjson_mut_doc_set_root(json, root);
 
@@ -257,11 +257,11 @@ void save_config() {
     save_kb(json, root, "controls", kb_serialize_key);
 
     size_t size = 0;
-    yyjson_write_err error;
-
-    char* buffer = yyjson_mut_write_opts(json, JSON_WRITE_FLAGS, NULL, &size, &error);
-    yyjson_mut_doc_free(json);
-    ASSUME(buffer, "Failed to save config: %s", error.msg);
+    char* buffer = write_json(json, &size, NULL);
+    if (buffer == NULL) {
+        WARN("Failed to save config");
+        return;
+    }
 
     if (save_user_file("config.json", buffer, size))
         INFO("Config saved");

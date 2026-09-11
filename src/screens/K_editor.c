@@ -248,12 +248,12 @@ static void open_level(const char* filename) {
     size_t size = 0;
     char* buffer = SDL_LoadFile(filename, &size);
 
-    yyjson_read_err error = {0};
-    yyjson_doc* json = yyjson_read_opts(buffer, size, JSON_READ_FLAGS, NULL, &error);
+    const char* error = NULL;
+    yyjson_doc* json = read_json(buffer, size, &error);
     SDL_free(buffer);
 
     if (json == NULL) {
-        editor->error = error.msg;
+        editor->error = error;
         return;
     }
 
@@ -465,8 +465,7 @@ static void save_level(const char* filename) {
     if (filename == NULL)
         return;
 
-    yyjson_mut_doc* json = yyjson_mut_doc_new(NULL);
-
+    yyjson_mut_doc* json = create_json();
     yyjson_mut_val* root = yyjson_mut_obj(json);
     yyjson_mut_doc_set_root(json, root);
 
@@ -772,11 +771,11 @@ static void save_level(const char* filename) {
     if (len < 5 || SDL_strcmp(filename + len - 5, ".json") != 0)
         filename = fmt("%s.json", filename);
 
-    yyjson_write_err error = {0};
+    const char* error = NULL;
     size_t size = 0;
-    char* buffer = yyjson_mut_write_opts(json, JSON_WRITE_FLAGS, NULL, &size, &error);
+    char* buffer = write_json(json, &size, &error);
     if (buffer == NULL) {
-        editor->error = error.msg;
+        editor->error = error;
     } else {
         SDL_SaveFile(filename, buffer, size);
         SDL_free(buffer);

@@ -158,6 +158,36 @@ static SDL_IOStream* stream_file(const char* path, const char* pattern, Bool wri
     return io;
 }
 
+static void* json_malloc(void* ctx, size_t size) {
+    (void)ctx;
+
+    return (size <= 0) ? NULL : SDL_malloc(size);
+}
+
+static void* json_realloc(void* ctx, void* ptr, size_t old_size, size_t size) {
+    (void)ctx;
+    (void)old_size;
+
+    if (size <= 0) {
+        SDL_free(ptr);
+        return NULL;
+    }
+
+    return SDL_realloc(ptr, size);
+}
+
+static void json_free(void* ctx, void* ptr) {
+    (void)ctx;
+
+    return SDL_free(ptr);
+}
+
+static const yyjson_alc* json_allocator = &(yyjson_alc){
+    .malloc = json_malloc,
+    .realloc = json_realloc,
+    .free = json_free,
+};
+
 static yyjson_doc* load_json(const char* path, const char* pattern) {
     char** files = SDL_GlobDirectory(path, pattern, 0, NULL);
     if (files == NULL)
@@ -171,7 +201,7 @@ static yyjson_doc* load_json(const char* path, const char* pattern) {
         char* buffer = SDL_LoadFile(filename, &size);
 
         yyjson_read_err error = {0};
-        json = yyjson_read_opts(buffer, size, JSON_READ_FLAGS, NULL, &error);
+        json = yyjson_read_opts(buffer, size, JSON_READ_FLAGS, json_allocator, &error);
         SDL_free(buffer);
 
         if (json == NULL)
@@ -184,7 +214,7 @@ static yyjson_doc* load_json(const char* path, const char* pattern) {
 
 yyjson_doc* read_json(const char* str, size_t len, const char** err) {
     yyjson_read_err error = {0};
-    yyjson_doc* json = yyjson_read_opts((char*)str, len, JSON_READ_FLAGS, NULL, &error);
+    yyjson_doc* json = yyjson_read_opts((char*)str, len, JSON_READ_FLAGS, json_allocator, &error);
     if (json == NULL) {
         if (err != NULL)
             *err = error.msg;
@@ -192,6 +222,22 @@ yyjson_doc* read_json(const char* str, size_t len, const char** err) {
     }
 
     return json;
+}
+
+yyjson_mut_doc* create_json() {
+    return yyjson_mut_doc_new(json_allocator);
+}
+
+char* write_json(const yyjson_mut_doc* json, size_t* size, const char** err) {
+    yyjson_write_err error = {0};
+    char* buffer = yyjson_mut_write_opts(json, JSON_WRITE_FLAGS, json_allocator, size, &error);
+    if (buffer == NULL) {
+        if (err != NULL)
+            *err = error.msg;
+        WTF("Failed to write JSON: %s", error.msg);
+    }
+
+    return buffer;
 }
 
 const char* get_base_path() {
