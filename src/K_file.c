@@ -179,7 +179,7 @@ static void* json_realloc(void* ctx, void* ptr, size_t old_size, size_t size) {
 static void json_free(void* ctx, void* ptr) {
     (void)ctx;
 
-    return SDL_free(ptr);
+    SDL_free(ptr);
 }
 
 static const yyjson_alc* json_allocator = &(yyjson_alc){
