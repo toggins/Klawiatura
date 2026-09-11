@@ -636,6 +636,8 @@ static void tick(GameActor* actor) {
             character->jump);
         if (VAL(actor, PLAYER_ANIMATION) == PF_SWIM)
             VAL(actor, PLAYER_FRAME) = Fx0;
+        FLAG_OFF(actor, FLG_PLAYER_DUCK);
+
         play_state_sound("swim", PLAY_POS, A_ACTOR(actor));
     }
 
@@ -676,7 +678,8 @@ static void tick(GameActor* actor) {
             || (ANY_INPUT(player, GI_JUMP) && ANY_FLAG(actor, FLG_PLAYER_JUMP))))
     {
         actor->vel.y = Fmul(Int2Fx(-13), character->jump);
-        FLAG_OFF(actor, FLG_PLAYER_JUMP);
+        FLAG_OFF(actor, FLG_PLAYER_JUMP | FLG_PLAYER_DUCK);
+
         play_state_sound("jump", PLAY_POS, A_ACTOR(actor));
     }
 
