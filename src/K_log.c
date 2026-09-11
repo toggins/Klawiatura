@@ -1,4 +1,5 @@
-#include <stdlib.h> // required for `exit(EXIT_FAILURE)`, `fprintf()` and `fflush`
+#include <stdio.h>  // required `fprintf()` and `fflush()`
+#include <stdlib.h> // required for `exit()`
 
 #include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_platform_defines.h>

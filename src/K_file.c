@@ -166,8 +166,14 @@ static yyjson_doc* load_json(const char* path, const char* pattern) {
     yyjson_doc* json = NULL;
     if (files[0] != NULL) {
         const char* filename = fmt("%s%s", path, files[0]);
+
+        size_t size = 0;
+        char* buffer = SDL_LoadFile(filename, &size);
+
         yyjson_read_err error = {0};
-        json = yyjson_read_file(filename, JSON_READ_FLAGS, NULL, &error);
+        json = yyjson_read_opts(buffer, size, JSON_READ_FLAGS, NULL, &error);
+        SDL_free(buffer);
+
         if (json == NULL)
             WTF("Failed to load JSON from file \"%s\": %s", filename, error.msg);
     }

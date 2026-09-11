@@ -103,7 +103,7 @@ list(APPEND LIBS SDL3_mixer::SDL3_mixer-static)
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG 55c3bc818853e77937c2373527533d7baecd42f8
+    GIT_TAG 5a12daa568d19344f9b6e9286ef5929833b25c7c
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
@@ -132,9 +132,12 @@ FetchContent_MakeAvailable(cglm)
 list(APPEND LIBS cglm)
 
 # yyjson (0.12.0)
+set(YYJSON_DISABLE_FILE ON CACHE INTERNAL "")
+set(YYJSON_FREESTANDING ON CACHE INTERNAL "")
+
 FetchContent_Declare(yyjson
     GIT_REPOSITORY https://github.com/ibireme/yyjson.git
-    GIT_TAG 0.12.0
+    GIT_TAG 0.13.0
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(yyjson)
@@ -168,7 +171,7 @@ list(APPEND LIBS S_tructures)
 # NutBlast
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG f609c63396e12bdd89135ccb4347d4af5960f41d
+	GIT_TAG 249c584d0d4749dcd2a057b526322435c8a2e6b8
 	EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(NutBlast)

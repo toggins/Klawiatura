@@ -245,9 +245,13 @@ static EditorMarker init_marker() {
 }
 
 static void open_level(const char* filename) {
+    size_t size = 0;
+    char* buffer = SDL_LoadFile(filename, &size);
+
     yyjson_read_err error = {0};
-    yyjson_doc* json
-        = yyjson_read_file(filename, YYJSON_READ_ALLOW_COMMENTS | YYJSON_READ_ALLOW_TRAILING_COMMAS, NULL, &error);
+    yyjson_doc* json = yyjson_read_opts(buffer, size, JSON_READ_FLAGS, NULL, &error);
+    SDL_free(buffer);
+
     if (json == NULL) {
         editor->error = error.msg;
         return;
@@ -769,8 +773,14 @@ static void save_level(const char* filename) {
         filename = fmt("%s.json", filename);
 
     yyjson_write_err error = {0};
-    if (!yyjson_mut_write_file(filename, json, YYJSON_WRITE_PRETTY | YYJSON_WRITE_NEWLINE_AT_END, NULL, &error))
+    size_t size = 0;
+    char* buffer = yyjson_mut_write_opts(json, JSON_WRITE_FLAGS, NULL, &size, &error);
+    if (buffer == NULL) {
         editor->error = error.msg;
+    } else {
+        SDL_SaveFile(filename, buffer, size);
+        SDL_free(buffer);
+    }
 
     yyjson_mut_doc_free(json);
 }
