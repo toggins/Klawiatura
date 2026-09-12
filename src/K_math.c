@@ -46,7 +46,7 @@ Fixed Vdist(FVec2 a, FVec2 b) {
 /// Radian angle between two points.
 Fixed Vtheta(FVec2 a, FVec2 b) {
     b = Vsub(b, a);
-    return Fatan2(b.y, b.x);
+    return Fatan2(-b.y, b.x);
 }
 
 /// Lerp between two points.

@@ -1073,9 +1073,10 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 
                     play_state_sound("tick", 0, NULL);
                 }
-            } else if (sequence->state < 50) {
-                ++sequence->state;
             }
+
+            if (game_state->clock <= 0 && sequence->state < 50)
+                ++sequence->state;
         }
 
         if (sequence->state >= 50 && (!(game_state->flags & GF_LOST_MAP) || sequence->time >= 140))

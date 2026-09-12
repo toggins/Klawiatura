@@ -338,33 +338,23 @@ static void collide_blue(GameActor* actor, GameActor* from) {
     switch (from->type) {
     default:
         break;
-
-    case ACT_PLAYER: {
+    case ACT_PLAYER:
         maybe_hit_player(actor, from);
         break;
-    }
-
-    case ACT_FIREBALL_PROJECTILE: {
+    case ACT_FIREBALL_PROJECTILE:
         block_fireball(from);
         break;
-    }
-
-    case ACT_BEETROOT_PROJECTILE: {
+    case ACT_BEETROOT_PROJECTILE:
         block_beetroot(from);
         break;
-    }
-
-    case ACT_HAMMER_PROJECTILE: {
+    case ACT_HAMMER_PROJECTILE:
         hit_hammer(actor, from, 500);
         break;
-    }
-
     case ACT_KOOPA_SHELL:
     case ACT_CODER_CLONE_RUN:
-    case ACT_BUZZY_SHELL: {
+    case ACT_BUZZY_SHELL:
         hit_shell(actor, from);
         break;
-    }
     }
 }
 

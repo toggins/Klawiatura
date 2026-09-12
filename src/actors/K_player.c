@@ -388,9 +388,9 @@ static void tick(GameActor* actor) {
 
     // DECLARE HERE TO BE USED AFTER `t_skip_physics`
     const GameState* game_state = gamestate();
-    const GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
+    const GameActor *warp = get_actor(VAL(actor, PLAYER_WARP)), *autoscroll = get_actor(game_state->autoscroll),
+                    *water = get_actor(game_state->water);
     const Bool was_warping = warp != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
-    const GameActor* autoscroll = get_actor(game_state->autoscroll);
 
     if (ANY_FLAG(actor, FLG_PLAYER_DESCEND)) {
         FVec2 npos = Vadd(actor->pos, (FVec2){Fx0, Fx1});
@@ -485,8 +485,9 @@ static void tick(GameActor* actor) {
             }
 
             if (!ANY_FLAG(warp, FLG_WARP_WORLD | FLG_WARP_LEVEL) && VAL(actor, PLAYER_WARP_STATE) == 60) {
-                if (ANY_FLAG(actor, FLG_WARP_GOAL)) {
+                if (ANY_FLAG(warp, FLG_WARP_GOAL)) {
                     win_player(player);
+                    ++VAL(actor, PLAYER_WARP_STATE);
                 } else {
                     switch (VAL(warp, WARP_OUT_ANGLE)) {
                     default:
@@ -616,7 +617,6 @@ static void tick(GameActor* actor) {
 
     // 242, 243
     // Moved here to replicate jump buffer while sinking underwater, like in Clickteam.
-    const GameActor* water = get_actor(game_state->water);
     if (!ANY_INPUT(player, GI_JUMP) && (water == NULL || actor->pos.y < water->pos.y) && !ANY_INPUT(player, GI_DOWN)
         && TOUCHING(actor, TOUCH_BOTTOM) && ANY_FLAG(actor, FLG_PLAYER_JUMP))
     {
@@ -757,7 +757,7 @@ static void tick(GameActor* actor) {
 
     // 467, 468, 469: TODO
 
-    // 471, 472, 473, 561, 562, 563 (modified)
+    // 471, 472, 473, 561, 562
     if (water != NULL && actor->pos.y > water->pos.y) {
         if (actor->vel.y > Int2Fx(3))
             actor->vel.y -= Fx1;
@@ -766,11 +766,6 @@ static void tick(GameActor* actor) {
             actor->vel.x -= 24576;
         if (actor->vel.x < -245760)
             actor->vel.x += 24576;
-
-        if ((game_state->time % 5) == 0 && rng(10) == 5) {
-            create_actor(ACT_BUBBLE, Vadd(actor->pos, (player->powerup == POW_NONE) ? (FVec2){Fx0, Int2Fx(-18)}
-                                                                                    : (FVec2){Int2Fx(2), Int2Fx(-39)}));
-        }
     }
 
     actor->box.start.y = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
@@ -859,6 +854,12 @@ skip_physics:
     if (was_warping && (get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))) {
         collide_actor(actor);
         FLAG_OFF(actor, FLG_PLAYER_STOMP);
+    }
+
+    // 563 (modified)
+    if (water != NULL && actor->pos.y > water->pos.y && (game_state->time % 5) == 0 && rng(10) == 5) {
+        create_actor(ACT_BUBBLE, Vadd(actor->pos, (player->powerup == POW_NONE) ? (FVec2){Fx0, Int2Fx(-18)}
+                                                                                : (FVec2){Int2Fx(2), Int2Fx(-39)}));
     }
 
     player->pos = actor->pos;
