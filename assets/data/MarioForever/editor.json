@@ -485,10 +485,28 @@
             "sprite": "scenery/clouds",
             "depth": 50
         },
+        "Clouds Static": {
+            "type": "background",
+            "sprite": "scenery/clouds2",
+            "depth": 50,
+            "max_scale": [32767, 28],
+            "tile": [true, false]
+        },
         "Giant Cloud": {
             "type": "background",
             "sprite": "scenery/cloud/giant",
             "depth": 70
+        },
+        "Giant Cloud Back": {
+            "type": "background",
+            "sprite": "scenery/cloud/giant",
+            "depth": 71,
+            "colors": [
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129]
+            ]
         },
         "Cloud Face": {
             "type": "actor",
@@ -1524,7 +1542,7 @@
             "items": [
                 {
                     "name": "Clouds",
-                    "items": ["Cloud", "Clouds", "Clouds Static", "Giant Cloud", "Cloud Face"]
+                    "items": ["Cloud", "Clouds", "Clouds Static", "Giant Cloud", "Giant Cloud Back", "Cloud Face"]
                 },
                 {
                     "name": "Trees",
