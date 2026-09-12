@@ -1,0 +1,5 @@
+{
+    "texture": "enemies/coral",
+    "size": [28, 30],
+    "uvs": [61, 1, 89, 31]
+}
