@@ -546,12 +546,6 @@
     ],
     "actors": [
         {
-            "def": "Autoscroll",
-            "id": 15,
-            "pos": [1, 1],
-            "values": [[0, 0]]
-        },
-        {
             "def": "Player Spawn",
             "id": 1,
             "pos": [139, 414]

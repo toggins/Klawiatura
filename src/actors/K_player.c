@@ -798,8 +798,8 @@ static void tick(GameActor* actor) {
     if (displace_actor(actor, Int2Fx(10), TRUE) & SOL_HURT)
         hit_player(actor);
 
-    if (autoscroll != NULL && get_sequence()->type != GS_WIN) {
-        Fixed sx = autoscroll->pos.x;
+    if ((autoscroll != NULL && get_sequence()->type != GS_WIN) || get_sequence()->type == GS_AMBUSH) {
+        Fixed sx = (autoscroll == NULL) ? player->bounds.start.x : autoscroll->pos.x;
         if ((actor->pos.x + actor->box.start.x) < sx) {
             if (actor->vel.x <= Fx0) {
                 actor->vel.x = Fx0;
@@ -813,7 +813,7 @@ static void tick(GameActor* actor) {
             }
         }
 
-        sx += F_SCREEN_WIDTH;
+        sx = (autoscroll == NULL) ? player->bounds.end.x : (autoscroll->pos.x + F_SCREEN_WIDTH);
         if ((actor->pos.x + actor->box.end.x) > sx) {
             if (actor->vel.x >= Fx0) {
                 actor->vel.x = Fx0;
