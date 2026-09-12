@@ -247,8 +247,10 @@ static void create_1up_mushroom(GameActor* actor) {
 }
 
 static void tick_1up_mushroom(GameActor* actor) {
-    VAL_TICK(actor, POWERUP_OVERLAP);
-    tick_super_mushroom(actor);
+    if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY)) {
+        VAL_TICK(actor, POWERUP_OVERLAP);
+        tick_super_mushroom(actor);
+    }
 }
 
 static void draw_1up_mushroom(const GameActor* actor) {
@@ -269,11 +271,10 @@ static void collide_1up_mushroom(GameActor* actor, GameActor* from) {
         VAL(actor, POWERUP_OVERLAP) = 2;
     }
 
-    if (actor->sprout > 0)
-        return;
-
-    give_points(actor, get_player(from->player), -1);
-    FLAG_ON(actor, FLG_DESTROY);
+    if (actor->sprout <= 0) {
+        give_points(actor, get_player(from->player), -1);
+        FLAG_ON(actor, FLG_DESTROY);
+    }
 }
 
 const ActorTable TAB_1UP_MUSHROOM = {
@@ -282,6 +283,69 @@ const ActorTable TAB_1UP_MUSHROOM = {
     .tick = tick_1up_mushroom,
     .draw = draw_1up_mushroom,
     .collide = collide_1up_mushroom,
+};
+
+/* ===============
+   POISON MUSHROOM
+   =============== */
+
+static void load_poison_mushroom() {
+    load_sprite_num("items/mushroom/poison/%u", 2, AKL_NEVER);
+    load_actor(ACT_EXPLODE);
+}
+
+static void tick_poison_mushroom(GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+        return;
+
+    VAL(actor, POWERUP_FRAME) += 9;
+
+    if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    const Fixed xvel = Fabs(actor->vel.x);
+    actor->vel.y += FxHalf;
+
+    displace_actor(actor, Int2Fx(10), FALSE);
+    if (actor->vel.x == Fx0) {
+        if (TOUCHING(actor, TOUCH_LEFT))
+            actor->vel.x = xvel;
+        else if (TOUCHING(actor, TOUCH_RIGHT))
+            actor->vel.x = -xvel;
+    }
+}
+
+static void draw_poison_mushroom(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("items/mushroom/poison/%i", (VAL(actor, POWERUP_FRAME) / 100) % 2), FALSE);
+}
+
+static void collide_poison_mushroom(GameActor* actor, GameActor* from) {
+    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+        return;
+
+    if (VAL(actor, POWERUP_OVERLAP) > 0) {
+        VAL(actor, POWERUP_OVERLAP) = 2;
+        return;
+    } else {
+        VAL(actor, POWERUP_OVERLAP) = 2;
+    }
+
+    if (actor->sprout <= 0) {
+        kill_player(from);
+        create_actor(ACT_EXPLODE, Vadd(actor->pos, (FVec2){Fx0, Int2Fx(-15)}));
+        FLAG_ON(actor, FLG_DESTROY);
+    }
+}
+
+const ActorTable TAB_POISON_MUSHROOM = {
+    .load = load_poison_mushroom,
+    .create = create_super_mushroom,
+    .tick = tick_poison_mushroom,
+    .draw = draw_poison_mushroom,
+    .collide = collide_poison_mushroom,
 };
 
 /* =========
