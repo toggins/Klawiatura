@@ -615,6 +615,19 @@
                 [255, 255, 255, 53]
             ]
         },
+        "Coral Block Wall": {
+            "type": "background",
+            "sprite": "tiles/block/coral",
+            "depth": 50,
+            "scalable": true,
+            "tile": [true, true],
+            "colors": [
+                [255, 255, 255, 75],
+                [255, 255, 255, 75],
+                [255, 255, 255, 75],
+                [255, 255, 255, 75]
+            ]
+        },
         "Portrait": {
             "type": "background",
             "sprite": "scenery/portrait",
@@ -639,10 +652,21 @@
             "type": "actor",
             "id": 1,
             "sprite": "editor/player_spawn",
+            "values": [
+                {
+                    "name": "Warp Out Angle",
+                    "index": 4,
+                    "default": 1
+                }
+            ],
             "flags": [
                 {
                     "name": "Flip X",
                     "index": 2
+                },
+                {
+                    "name": "Warp Out",
+                    "index": 8
                 }
             ]
         },
@@ -1356,6 +1380,11 @@
                 }
             ]
         },
+        "Cheep Spiky": {
+            "type": "actor",
+            "id": 86,
+            "sprite": "enemies/cheep/spiky/0"
+        },
         "Bro": {
             "type": "actor",
             "id": 64,
@@ -1419,6 +1448,11 @@
             "type": "actor",
             "id": 78,
             "sprite": "enemies/fake_brick"
+        },
+        "Electric Coral": {
+            "type": "actor",
+            "id": 133,
+            "sprite": "enemies/coral/0"
         }
     },
 
@@ -1599,7 +1633,7 @@
                 },
                 {
                     "name": "Corals",
-                    "items": ["Corals", "Corals 2"]
+                    "items": ["Corals", "Corals 2", "Coral Block Wall"]
                 },
                 {
                     "name": "Stars",
@@ -1661,11 +1695,14 @@
                     "name": "Podoboo",
                     "items": ["Podoboo", "Volcano"]
                 },
+                {
+                    "name": "Hazards",
+                    "items": ["Fake Brick", "Electric Coral"]
+                },
                 "Goomba",
                 "Roto-Disc",
                 "Bowser",
-                "Spiny",
-                "Fake Brick"
+                "Spiny"
             ]
         },
         {
