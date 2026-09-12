@@ -1109,7 +1109,9 @@ static void tick_dead(GameActor* actor) {
         break;
 
     case 25: {
-        actor->vel.y = Int2Fx(-10);
+        if (gamestate()->clock != 0)
+            actor->vel.y = Int2Fx(-10);
+
         break;
     }
 
