@@ -21,6 +21,18 @@ enum {
 #define FLG_CHEEP_OVERLAP CUSTOM_FLAG(2)
 #define FLG_CHEEP_JUMP CUSTOM_FLAG(3)
 
+static void move_cheep(GameActor* actor, Fixed angle) {
+    actor->vel.x = Fmul(VAL(actor, CHEEP_SPEED), Fcos(angle));
+    actor->vel.y = Fmul(VAL(actor, CHEEP_SPEED), -Fsin(angle));
+
+    if (actor->vel.x < Fx0)
+        FLAG_ON(actor, FLG_X_FLIP);
+    else if (actor->vel.x > Fx0)
+        FLAG_OFF(actor, FLG_X_FLIP);
+
+    VAL(actor, CHEEP_ANGLE) = angle;
+}
+
 /* ===================
    CHEEP CHEEP SPAWNER
    =================== */
@@ -138,6 +150,8 @@ static void create(GameActor* actor) {
     actor->box.start.y = Int2Fx(-31);
     actor->box.end.x = Int2Fx(16);
     actor->box.end.y = Fx1;
+
+    actor->depth = Fx1;
 }
 
 static void tick(GameActor* actor) {
@@ -176,16 +190,8 @@ static void tick(GameActor* actor) {
 
     const GameState* game_state = gamestate();
     if ((game_state->time % 50) == 0) {
-        if (Fabs(VAL(actor, CHEEP_ANGLE)) > FxPi2) {
-            VAL(actor, CHEEP_ANGLE) = 193019 + (rng(3) * 12868);
-            FLAG_ON(actor, FLG_X_FLIP);
-        } else {
-            VAL(actor, CHEEP_ANGLE) = 12868 - (rng(3) * 12868);
-            FLAG_OFF(actor, FLG_X_FLIP);
-        }
-
-        actor->vel.x = Fmul(VAL(actor, CHEEP_SPEED), Fcos(VAL(actor, CHEEP_ANGLE)));
-        actor->vel.y = Fmul(VAL(actor, CHEEP_SPEED), -Fsin(VAL(actor, CHEEP_ANGLE)));
+        move_cheep(
+            actor, (Fabs(VAL(actor, CHEEP_ANGLE)) > FxPi2) ? (193019 + (rng(3) * 12868)) : (12868 - (rng(3) * 12868)));
     }
 
     Fixed edge = (actor->vel.x > Fx0) ? FxLower : FxUpper;
@@ -212,10 +218,7 @@ static void tick(GameActor* actor) {
     } else if (water != NULL && (actor->pos.y + actor->box.end.y) > water->pos.y
                && (actor->pos.y + actor->box.start.y) < (water->pos.y + Int2Fx(16)))
     {
-        VAL(actor, CHEEP_ANGLE) = 218755;
-        actor->vel.x = Fmul(VAL(actor, CHEEP_SPEED), Fcos(VAL(actor, CHEEP_ANGLE)));
-        actor->vel.y = Fmul(VAL(actor, CHEEP_SPEED), -Fsin(VAL(actor, CHEEP_ANGLE)));
-
+        move_cheep(actor, 218755);
         FLAG_ON(actor, FLG_CHEEP_TOUCHED_WATER);
     }
 
@@ -300,6 +303,8 @@ static void create_blue(GameActor* actor) {
     actor->box.start.y = Int2Fx(-31);
     actor->box.end.x = Int2Fx(16);
     actor->box.end.y = Fx1;
+
+    actor->depth = Fx1;
 }
 
 static void tick_blue(GameActor* actor) {
@@ -370,4 +375,101 @@ const ActorTable TAB_CHEEP_BLUE = {
     .draw = draw_blue,
     .draw_dead = draw_dead_blue,
     .collide = collide_blue,
+};
+
+/* =================
+   SPIKY CHEEP CHEEP
+   ================= */
+
+static void load_spiky() {
+    load_sprite_num("enemies/cheep/spiky/%u", 2, AKL_NEVER);
+    load_sprite("enemies/cheep/spiky/dead", AKL_NEVER);
+    load_sound("bump", AKL_NEVER);
+    load_sound("kick", AKL_NEVER);
+    load_actor(ACT_POINTS);
+}
+
+static void create_spiky(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-16);
+    actor->box.start.y = Int2Fx(-25);
+    actor->box.end.x = Int2Fx(15);
+    actor->box.end.y = Int2Fx(12);
+
+    actor->depth = Fx1;
+}
+
+static void tick_spiky(GameActor* actor) {
+    VAL(actor, CHEEP_FRAME) += 4;
+
+    if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    if (in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
+        FLAG_ON(actor, FLG_CHEEP_ACTIVE);
+
+    const GameState* game_state = gamestate();
+    if (ANY_FLAG(actor, FLG_CHEEP_ACTIVE) && (game_state->time % 50) == 0) {
+        VAL(actor, CHEEP_SPEED) = 81920;
+        move_cheep(actor,
+            Fmul(Ffloor(Fdiv(Vtheta(actor->pos, Vadd(nearest_player_pos(actor->pos), (FVec2){Fx0, Int2Fx(-14)})), 12868)
+                        + FxHalf),
+                12868));
+    }
+
+    const GameActor* water = get_actor(game_state->water);
+    if (water == NULL || actor->pos.y < water->pos.y)
+        move_cheep(actor, 270227 + (rng(7) * 12868));
+
+    if (!ANY_FLAG(actor, FLG_CHEEP_ACTIVE))
+        actor->vel.x = actor->vel.y = Fx0;
+
+    if (in_any_view(actor->pos, Int2Fx(256), VEF_ALL))
+        FLAG_OFF(actor, FLG_CHEEP_ACTIVE);
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+}
+
+static void draw_spiky(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("enemies/cheep/spiky/%i", (VAL(actor, CHEEP_FRAME) / 25) % 2), FALSE);
+}
+
+static void draw_dead_spiky(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, "enemies/cheep/spiky/dead", FALSE);
+}
+
+static void collide_spiky(GameActor* actor, GameActor* from) {
+    switch (from->type) {
+    default:
+        break;
+    case ACT_PLAYER:
+        maybe_hit_player(actor, from);
+        break;
+    case ACT_KOOPA_SHELL:
+    case ACT_CODER_CLONE_RUN:
+    case ACT_BUZZY_SHELL:
+        hit_shell(actor, from);
+        break;
+    case ACT_FIREBALL_PROJECTILE:
+        block_fireball(from);
+        break;
+    case ACT_BEETROOT_PROJECTILE:
+        block_beetroot(from);
+        break;
+    case ACT_HAMMER_PROJECTILE:
+        hit_hammer(actor, from, 500);
+        break;
+    }
+}
+
+const ActorTable TAB_CHEEP_SPIKY = {
+    .load = load_spiky,
+    .create = create_spiky,
+    .tick = tick_spiky,
+    .draw = draw_spiky,
+    .draw_dead = draw_dead_spiky,
+    .collide = collide_spiky,
 };

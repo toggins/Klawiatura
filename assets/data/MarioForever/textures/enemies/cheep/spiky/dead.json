@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/cheep",
+    "size": [31, 37],
+    "offset": [16, 25],
+    "uvs": [34, 106, 65, 69]
+}
