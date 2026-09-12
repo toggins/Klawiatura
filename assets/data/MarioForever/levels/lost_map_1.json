@@ -4425,7 +4425,7 @@
         {
             "def": "Hill",
             "sprite": "scenery/hill",
-            "pos": [0, 341, 61]
+            "pos": [0, 342, 61]
         },
         {
             "def": "Hill",
