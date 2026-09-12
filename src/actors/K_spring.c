@@ -22,7 +22,7 @@ static void create(GameActor* actor) {
     actor->box.end.x = Int2Fx(16);
     actor->box.end.y = Fx1;
 
-    actor->depth = Fx1;
+    actor->depth = 131073;
 }
 
 static void tick(GameActor* actor) {
