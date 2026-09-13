@@ -847,6 +847,18 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 
         if ((game_state->flags & GF_1UP) && (game_state->time % 25) == 0)
             give_points(NULL, player, -1);
+
+        if (player->quake.x > Fx0) {
+            const Sint32 q = Fx2Int(player->quake.x);
+            player->current_quake = Int2Fx(rng(q));
+            player->current_quake -= Int2Fx(rng(q));
+
+            player->quake.x -= player->quake.y;
+            if (player->quake.x <= Fx0)
+                player->quake.x = player->quake.y = Fx0;
+        } else {
+            player->current_quake = Fx0;
+        }
     }
 
     if (game_state->pswitch > 0) {
@@ -1526,8 +1538,10 @@ static void draw_game_state() {
         if (player != NULL) {
             const GameActor* pawn = get_actor(player->actor);
             if (pawn != NULL && pawn->type == ACT_PLAYER) {
-                camera->pos = Vclamp(Vadd(get_interp(pawn), (FVec2){interp_state->players[player->id].current, Fx0}),
-                    Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
+                camera->pos
+                    = Vclamp(Vadd(get_interp(pawn),
+                                 (FVec2){interp_state->players[player->id].current + player->current_quake, Fx0}),
+                        Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
             }
         }
     } else {
@@ -2016,7 +2030,6 @@ found:
 
     actor->platform = NULL_ACTOR;
     FLAG_ON(actor, FLG_VISIBLE);
-    TOUCH_ON(actor, TOUCH_BOTTOM);
 
     ACTOR_CALL(actor, create);
     skip_interp(actor);
@@ -2188,6 +2201,28 @@ void push_actors(GameActor* actor) {
     }
 }
 
+void quake_actor(const GameActor* actor, FVec2 quake) {
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        Fixed range = quake.x;
+        if (actor != NULL && game_context.num_players > 1) {
+            range = Fdiv(range,
+                Fmax(Fdiv(Vdist(actor->pos, Vadd(get_player_view(player), F_HALF_SCREEN)), F_SCREEN_WIDTH), Fx1));
+            if (range < Fx1)
+                continue;
+        }
+
+        player->quake.x = Fmax(player->quake.x, range);
+        if (player->quake.y > Fx0 && player->quake.y != quake.y)
+            player->quake.y = Fmul(player->quake.y, quake.y);
+        else
+            player->quake.y = quake.y;
+    }
+}
+
 const FVec2 get_player_view(const GamePlayer* player) {
     const GameActor* autoscroll = get_actor(game_state->autoscroll);
     if (autoscroll != NULL)
@@ -2195,7 +2230,7 @@ const FVec2 get_player_view(const GamePlayer* player) {
 
     return (player == NULL)
                ? (FVec2){Fx0, Fx0}
-               : Vsub(Vclamp(Vadd(player->pos, (FVec2){player->xscroll, Fx0}),
+               : Vsub(Vclamp(Vadd(player->pos, (FVec2){player->xscroll + player->current_quake, Fx0}),
                           Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN)),
                      F_HALF_SCREEN);
 }
@@ -2209,7 +2244,7 @@ static FRect get_autoscroll_cbox(const GameActor* autoscroll, Fixed edge) {
 }
 
 static FRect get_player_cbox(const GamePlayer* player, Fixed edge) {
-    const FVec2 cpos = Vclamp(Vadd(player->pos, (FVec2){player->xscroll, Fx0}),
+    const FVec2 cpos = Vclamp(Vadd(player->pos, (FVec2){player->xscroll + player->current_quake, Fx0}),
         Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
     return (FRect){
         {cpos.x - F_HALF_SCREEN_WIDTH + edge, cpos.y - F_HALF_SCREEN_HEIGHT + edge},

@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/thwomp",
+    "size": [53, 68],
+    "offset": [27, 31],
+    "uvs": [166, 71, 219, 139]
+}

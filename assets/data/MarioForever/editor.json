@@ -1449,6 +1449,11 @@
             "id": 78,
             "sprite": "enemies/fake_brick"
         },
+        "Thwomp": {
+            "type": "actor",
+            "id": 89,
+            "sprite": "enemies/thwomp"
+        },
         "Electric Coral": {
             "type": "actor",
             "id": 133,
@@ -1702,7 +1707,8 @@
                 "Goomba",
                 "Roto-Disc",
                 "Bowser",
-                "Spiny"
+                "Spiny",
+                "Thwomp"
             ]
         },
         {

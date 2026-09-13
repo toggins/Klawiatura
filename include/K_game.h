@@ -361,8 +361,8 @@ typedef struct {
 
     Uint8 track;
     ActorID actor;
-    Fixed xscroll;
-    FVec2 pos;
+    Fixed xscroll, current_quake;
+    FVec2 pos, quake;
     FRect bounds;
 
     Uint32 score;
@@ -557,6 +557,7 @@ ActorID get_num_actors(ActorType);
 void replace_actor(GameActor*, ActorType);
 
 void move_actor(GameActor*, const FVec2), push_actors(GameActor*);
+void quake_actor(const GameActor*, FVec2);
 
 typedef Uint8 ViewEdgeFlags;
 #define VEF_LEFT (ViewEdgeFlags)(1U << 0)
@@ -580,7 +581,6 @@ SolidFlags displace_actor(GameActor*, Fixed, Bool), displace_actor_soft(GameActo
 
 void draw_actor(const GameActor*, const char*, Bool);
 void draw_dead_actor(const GameActor*);
-void quake_at_actor(const GameActor*, float);
 
 Sint32 rng(Sint32);
 

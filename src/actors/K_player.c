@@ -256,6 +256,7 @@ static void create(GameActor* actor) {
     actor->box.end.x = Int2Fx(10);
     actor->box.end.y = Fx1;
 
+    TOUCH_ON(actor, TOUCH_BOTTOM);
     VAL(actor, PLAYER_WARP) = NULL_ACTOR;
 }
 
