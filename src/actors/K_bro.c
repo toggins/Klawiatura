@@ -244,6 +244,11 @@ static void tick(GameActor* actor) {
         }
 
         case ACT_FIREBALL_PROJECTILE: {
+            GameActor* fireball = create_actor(ACT_FIREBALL_PROJECTILE,
+                Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-9) : Int2Fx(9), Int2Fx(-20)}));
+            if (fireball != NULL)
+                fireball->vel.x = ANY_FLAG(actor, FLG_X_FLIP) ? -507904 : 507904;
+
             play_state_sound("fire", PLAY_POS, A_ACTOR(actor));
             break;
         }
@@ -258,9 +263,23 @@ static void tick(GameActor* actor) {
 
 static void draw(const GameActor* actor) {
     batch_reset();
-    draw_actor(actor,
-        fmt((VAL(actor, BRO_THROW) > 0) ? "enemies/bro/hammer/%i" : "enemies/bro/%i", (VAL(actor, BRO_FRAME) / 50) % 2),
-        FALSE);
+
+    const char* sprite = "enemies/bro/%i";
+    if (VAL(actor, BRO_THROW) > 0) {
+        switch (VAL(actor, BRO_TYPE)) {
+        default:
+            sprite = "enemies/bro/hammer/%i";
+            break;
+        case ACT_FIREBALL_PROJECTILE:
+            sprite = "enemies/bro/fire/%i";
+            break;
+        case ACT_SILVER_HAMMER_PROJECTILE:
+            sprite = "enemies/bro/silver/%i";
+            break;
+        }
+    }
+
+    draw_actor(actor, fmt(sprite, (VAL(actor, BRO_FRAME) / 50) % 2), FALSE);
 }
 
 static void draw_dead(const GameActor* actor) {

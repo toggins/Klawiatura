@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/bro",
+    "size": [37, 48],
+    "offset": [18, 47],
+    "uvs": [185, 1, 222, 49]
+}
