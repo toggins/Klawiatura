@@ -570,7 +570,7 @@ void play_state_track(PlayerID pid, const char* name, PlayFlags flags, Uint32 of
     PlayerID i = pid, n = (PlayerID)(pid + 1);
     if (pid >= ALL_TRACKS) {
         i = 0;
-        n = MAX_STATE_TRACKS;
+        n = SDL_min(gamecontext()->num_players, MAX_STATE_TRACKS);
     }
 
     for (; i < n; i++) {
