@@ -93,7 +93,7 @@ endif()
 
 FetchContent_Declare(SDL3_mixer
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
-    GIT_TAG 00d108dc09e78817112e4bf542012c91e066892a
+    GIT_TAG 9edf53e092202ecc41118057d73eca6ad4ea1138
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(SDL3_mixer)
@@ -171,7 +171,7 @@ list(APPEND LIBS S_tructures)
 # NutBlast
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG 249c584d0d4749dcd2a057b526322435c8a2e6b8
+	GIT_TAG 994205a0d0530020cbae89c42b88dc6e6a104e22
 	EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(NutBlast)
