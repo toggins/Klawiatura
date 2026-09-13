@@ -114,6 +114,7 @@
     "hud.world.hardcore_2_4": "ui/world/en/hardcore_2_4",
     "hud.world.funny_tanks": "ui/world/en/funny_tanks",
     "hud.world.remix_secret_1": "ui/world/en/remix_secret_1",
+    "hud.world.remix_secret_3": "ui/world/en/remix_secret_3",
     "hud.time": "Time",
     "hud.game_over": "Game Over",
     "hud.secret.green_mushroom_calamity": "ui/secret/en/green_mushroom_calamity",
@@ -124,6 +125,10 @@
     "hud.secret.koopa_the_devastator": "ui/secret/en/koopa_the_devastator",
     "hud.secret.8": "ui/secret/en/8",
     "hud.secret.remix_secret_1": "ui/secret/en/remix_secret_1",
+    "hud.secret.remix_secret_3": "ui/secret/en/remix_secret_3",
+    "hud.end.hardcore_1": "ui/end/en/hardcore_1",
+    "hud.end.hardcore_2": "ui/end/en/hardcore_2",
+    "hud.end.lost_map": "ui/end/en/lost_map",
     "hud.spectating": "Spectating",
 
     "bind.up": "Up",
