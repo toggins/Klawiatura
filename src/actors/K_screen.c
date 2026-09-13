@@ -1,3 +1,6 @@
+#include "K_locale.h"
+#include "K_video.h"
+
 #include "actors/K_screen.h"
 
 /* ==========
@@ -79,4 +82,57 @@ static void pre_tick_autoscroll(GameActor* actor) {
 
 const ActorTable TAB_AUTOSCROLL = {
     .pre_tick = pre_tick_autoscroll,
+};
+
+/* ===========
+   SECRET TEXT
+   =========== */
+
+static void create_secret_text(GameActor* actor) {
+    FLAG_OFF(actor, FLG_VISIBLE);
+}
+
+static void tick_secret_text(GameActor* actor) {
+    switch (VAL(actor, TEXT_ANIMATION)) {
+    default: {
+        break;
+    }
+
+    case TXTA_REAPPEAR: {
+        move_actor(actor, (FVec2){actor->pos.x, Int2Fx(96)});
+        break;
+    }
+
+    case TXTA_SMOOTH: {
+        if (actor->pos.y < Int2Fx(13))
+            move_actor(actor, (FVec2){actor->pos.x, Fmin(actor->pos.y + 409600, Int2Fx(13))});
+        else if (actor->pos.y < Int2Fx(74))
+            move_actor(actor, (FVec2){actor->pos.x, Fmin(actor->pos.y + 204800, Int2Fx(74))});
+        else if (actor->pos.y < Int2Fx(118))
+            move_actor(actor, (FVec2){actor->pos.x, Fmin(actor->pos.y + 81920, Int2Fx(118))});
+
+        break;
+    }
+    }
+}
+
+static void draw_secret_text_hud(const GameActor* actor) {
+    const char* secret = get_game_secret(VAL(actor, TEXT_SECRET));
+    if (secret == NULL)
+        return;
+
+    batch_reset();
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, Fx2Int(get_interp(actor).y)));
+    if (secret[0] == '$') {
+        batch_align(B_ALIGN_CENTER);
+        batch_string("main", 24.f, LFMT(secret));
+    } else {
+        batch_sprite(LFMT(secret));
+    }
+}
+
+const ActorTable TAB_SECRET_TEXT = {
+    .create = create_secret_text,
+    .tick = tick_secret_text,
+    .draw_hud = draw_secret_text_hud,
 };

@@ -1,10 +1,12 @@
 #include "K_audio.h"
+#include "K_locale.h"
 #include "K_string.h"
 #include "K_video.h"
 
 #include "actors/K_bowser.h"
 #include "actors/K_player.h"
 #include "actors/K_projectiles.h"
+#include "actors/K_screen.h"
 
 static const char* get_bowser_sprite(BowserAnimations animation, Uint8 frame) {
     switch (animation) {
@@ -16,6 +18,8 @@ static const char* get_bowser_sprite(BowserAnimations animation, Uint8 frame) {
         return fmt("enemies/bowser/jump/%i", frame % 3);
     case BA_FIRE_END:
         return fmt("enemies/bowser/fire/end/%i", frame % 2);
+    case BA_CHARGE:
+        return fmt("enemies/bowser/charge/%i", frame % 65);
     }
 
     return NULL;
@@ -38,10 +42,27 @@ static void load() {
     load_sound("kick", AKL_NEVER);
     load_actor(ACT_BOWSER_FIRE_PROJECTILE);
     load_actor(ACT_BOWSER_DEAD);
+
+    if (gamestate()->flags & GF_LOST_MAP)
+        load_track("smb3/boss_clear", AKL_NEVER);
 }
 
 static void load_special(const GameActor* actor) {
-    // TODO
+    if (ANY_FLAG(actor, FLG_BOWSER_CHARGE))
+        load_sprite_num("enemies/bowser/charge/%i", 65, AKL_NEVER);
+
+    if (ANY_FLAG(actor, FLG_BOWSER_GUN)) {
+        load_sprite("enemies/bowser/gun", AKL_NEVER);
+        load_sound("bang/0", AKL_NEVER);
+        load_actor(ACT_EXPLODE);
+        load_actor(ACT_BULLET_BILL);
+    }
+
+    if (ANY_FLAG(actor, FLG_BOWSER_SECRET)) {
+        const char* secret = get_game_secret(VAL(actor, BOWSER_SECRET));
+        if (secret != NULL && secret[0] != '$')
+            load_sprite(LFMT(secret), AKL_NEVER);
+    }
 }
 
 static void create(GameActor* actor) {
@@ -99,6 +120,9 @@ static void pre_tick(GameActor* actor) {
             }
         }
 
+        if (ANY_FLAG(actor, FLG_BOWSER_CHARGE))
+            ++VAL(actor, BOWSER_CHARGE);
+
         play_state_sound("bowser/fire", PLAY_POS, A_ACTOR(actor));
         return;
     }
@@ -113,12 +137,42 @@ static void pre_tick(GameActor* actor) {
 
         return;
     }
+
+    case BA_CHARGE: {
+        VAL(actor, BOWSER_FRAME) += VAL(actor, BOWSER_ATTACK_SPEED);
+        if (VAL(actor, BOWSER_FRAME) < Int2Fx(65))
+            return;
+
+        VAL(actor, BOWSER_ANIMATION) = BA_FIRE_END;
+        VAL(actor, BOWSER_FRAME) = Fx0;
+
+        for (ActorID i = 0; i < 3; i++) {
+            GameActor* fire = create_actor(ACT_BOWSER_FIRE_PROJECTILE,
+                Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-17) : Int2Fx(17), Int2Fx(-38)}));
+            if (fire != NULL) {
+                fire->vel.x
+                    = Fmul(ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-4) : Int2Fx(4), VAL(actor, BOWSER_PROJECTILE_SPEED));
+
+                VAL(fire, PROJECTILE_Y) = VAL(actor, BOWSER_Y) - Int2Fx(27);
+                if (i > 0)
+                    VAL(fire, PROJECTILE_Y) -= Int2Fx(4) + (i * Int2Fx(32));
+
+                FLAG_ON(fire, (actor->flags & FLG_X_FLIP) | FLG_PROJECTILE_ALT);
+            }
+        }
+
+        VAL(actor, BOWSER_CHARGE) = 0;
+
+        play_state_sound("bowser/fire", PLAY_POS, A_ACTOR(actor));
+        return;
+    }
     }
 
     if (TOUCHING(actor, TOUCH_BOTTOM)) {
         if (VAL(actor, BOWSER_ANIMATION) == BA_JUMP) {
             VAL(actor, BOWSER_ANIMATION) = BA_IDLE;
             VAL(actor, BOWSER_FRAME) = Fx0;
+
             return;
         }
     } else {
@@ -129,12 +183,14 @@ static void pre_tick(GameActor* actor) {
         case BA_IDLE: {
             VAL(actor, BOWSER_ANIMATION) = BA_JUMP;
             VAL(actor, BOWSER_FRAME) = Fx0;
+
             return;
         }
 
         case BA_JUMP: {
             if (VAL(actor, BOWSER_FRAME) < Int2Fx(2))
                 VAL(actor, BOWSER_FRAME) += FxHalf;
+
             return;
         }
         }
@@ -207,9 +263,12 @@ static void tick(GameActor* actor) {
 
     // 817
     if (ANY_FLAG(actor, FLG_BOWSER_ACTIVE)) {
-        if (ANY_FLAG(actor, FLG_BOWSER_DEVASTATOR)) {
-            if (VAL(actor, BOWSER_ATTACK) <= 150 && VAL(actor, BOWSER_ANIMATION) != BA_FIRE)
+        if (ANY_FLAG(actor, FLG_BOWSER_DEVASTATOR | FLG_BOWSER_CHARGE)) {
+            if (VAL(actor, BOWSER_ATTACK) <= 150 && VAL(actor, BOWSER_ANIMATION) != BA_FIRE
+                && VAL(actor, BOWSER_ANIMATION) != BA_CHARGE)
+            {
                 VAL(actor, BOWSER_ATTACK) += VAL(actor, BOWSER_ATTACK_CHANCE);
+            }
         } else {
             VAL(actor, BOWSER_ATTACK) += rng(VAL(actor, BOWSER_ATTACK_CHANCE));
         }
@@ -218,7 +277,7 @@ static void tick(GameActor* actor) {
     // 818
     if (VAL(actor, BOWSER_ATTACK) > 150) {
         VAL(actor, BOWSER_ATTACK) = 0;
-        VAL(actor, BOWSER_ANIMATION) = BA_FIRE;
+        VAL(actor, BOWSER_ANIMATION) = (VAL(actor, BOWSER_CHARGE) >= 5) ? BA_CHARGE : BA_FIRE;
         VAL(actor, BOWSER_FRAME) = Fx0;
     }
 
@@ -251,8 +310,23 @@ static void tick(GameActor* actor) {
 
     // 848
     if (VAL(actor, BOWSER_HEALTH) <= 0) {
-        if (get_num_actors(ACT_BOWSER) <= 1)
+        if (get_num_actors(ACT_BOWSER) <= 1) {
             set_sequence(GS_BOWSER_END, get_player(actor->player), 0);
+
+            if (ANY_FLAG(actor, FLG_BOWSER_SECRET)) {
+                GameActor* text = create_actor(
+                    ACT_SECRET_TEXT, (FVec2){Fx0, (game_state->flags & GF_HARDCORE) ? Int2Fx(96) : Int2Fx(-73)});
+                if (text != NULL) {
+                    VAL(text, TEXT_SECRET) = VAL(actor, BOWSER_SECRET);
+                    VAL(text, TEXT_ANIMATION) = (game_state->flags & GF_HARDCORE) ? TXTA_REAPPEAR : TXTA_SMOOTH;
+                }
+            }
+
+            if (game_state->flags & GF_LOST_MAP) {
+                game_state->flags |= GF_LOST_MAP_END;
+                play_state_track(ALL_TRACKS, "smb3/boss_clear", 0, 0);
+            }
+        }
 
         if (ANY_FLAG(actor, FLG_BOWSER_DEVASTATOR))
             game_state->flags |= GF_1UP;
@@ -269,6 +343,31 @@ static void tick(GameActor* actor) {
     }
 
     displace_actor(actor, Int2Fx(10), FALSE);
+
+    if (ANY_FLAG(actor, FLG_BOWSER_GUN)) {
+        if (VAL(actor, BOWSER_GUN) > 100) {
+            VAL(actor, BOWSER_GUN) = 0;
+
+            const FVec2 bpos
+                = Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-23) : Int2Fx(23), Int2Fx(-22)});
+            GameActor* bullet = create_actor(ACT_BULLET_BILL, bpos);
+            if (bullet != NULL) {
+                bullet->depth = actor->depth - 1;
+                bullet->vel.x
+                    = Fmul(ANY_FLAG(actor, FLG_X_FLIP) ? -212992 : 212992, VAL(actor, BOWSER_PROJECTILE_SPEED));
+                FLAG_ON(bullet, actor->flags & FLG_X_FLIP);
+            }
+            create_actor(ACT_EXPLODE, bpos);
+
+            play_state_sound("bang/0", PLAY_POS, A_FVEC2(bpos));
+        }
+
+        if (ANY_FLAG(actor, FLG_BOWSER_ACTIVE) && VAL(actor, BOWSER_ANIMATION) != BA_FIRE
+            && VAL(actor, BOWSER_ANIMATION) != BA_CHARGE)
+        {
+            ++VAL(actor, BOWSER_GUN);
+        }
+    }
 }
 
 static void post_tick(GameActor* actor) {
@@ -290,6 +389,13 @@ static void draw(const GameActor* actor) {
     batch_reset();
     batch_color(B_U4_ALPHA((1.f - ((float)VAL(actor, BOWSER_FADE) / 128.f)) * 255.f));
     draw_actor(actor, get_bowser_sprite(VAL(actor, BOWSER_ANIMATION), Fx2Int(VAL(actor, BOWSER_FRAME))), FALSE);
+
+    if (ANY_FLAG(actor, FLG_BOWSER_GUN)) {
+        batch_offset(B_F3_XY(ANY_FLAG(actor, FLG_X_FLIP) ? 23.f : -23.f, 22.f));
+        batch_flip(B_B2_FALSE);
+        batch_color(B_U4_WHITE);
+        batch_sprite("enemies/bowser/gun");
+    }
 }
 
 static void draw_hud(const GameActor* actor) {

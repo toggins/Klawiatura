@@ -49,13 +49,14 @@ typedef Uint8 GameInput;
 #define GI_FIRE (GameInput)(1U << 6)
 
 typedef Uint16 GameFlags;
-#define GF_END (GameFlags)(1U << 0)         // Game session should end
-#define GF_RESTARTED (GameFlags)(1U << 1)   // Level was restarted
-#define GF_HURRY (GameFlags)(1U << 2)       // Time <= 100
-#define GF_HARDCORE (GameFlags)(1U << 3)    // Hardcore Level
-#define GF_LOST_MAP (GameFlags)(1U << 4)    // Lost Map Level
-#define GF_FUNNY_TANKS (GameFlags)(1U << 5) // Funny Tanks? Level
-#define GF_1UP (GameFlags)(1U << 6)         // Free 1UPs
+#define GF_END (GameFlags)(1U << 0)          // Game session should end
+#define GF_RESTARTED (GameFlags)(1U << 1)    // Level was restarted
+#define GF_HURRY (GameFlags)(1U << 2)        // Time <= 100
+#define GF_HARDCORE (GameFlags)(1U << 3)     // Hardcore Level
+#define GF_LOST_MAP (GameFlags)(1U << 4)     // Lost Map Level
+#define GF_FUNNY_TANKS (GameFlags)(1U << 5)  // Funny Tanks? Level
+#define GF_1UP (GameFlags)(1U << 6)          // Free 1UPs
+#define GF_LOST_MAP_END (GameFlags)(1U << 7) // Lost Map Completed
 
 typedef Uint8 GameSequenceType;
 enum {

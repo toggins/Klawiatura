@@ -1059,6 +1059,23 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
     }
 
     case GS_WIN: {
+        if (game_state->flags & GF_LOST_MAP_END) {
+            for (PlayerID i = 0; i < game_context.num_players; i++) {
+                const GamePlayer* player = get_player(i);
+                if (player == NULL)
+                    continue;
+
+                const GameActor* pawn = get_actor(player->actor);
+                if (pawn != NULL && pawn->type == ACT_PLAYER
+                    && (pawn->pos.x + pawn->box.end.x) > (level_info->bounds.end.x + Int2Fx(16)))
+                {
+                    game_state->flags |= GF_END;
+                }
+            }
+
+            break;
+        }
+
         if (sequence->time < 400)
             ++sequence->time;
 
@@ -1107,7 +1124,9 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 
     case GS_BOWSER_END: {
         if (sequence->time == 0) {
-            fade_state_track(ALL_TRACKS, 0.f, 100.f);
+            if (!(game_state->flags & GF_LOST_MAP_END))
+                fade_state_track(ALL_TRACKS, 0.f, 100.f);
+
             ++sequence->time;
         }
 
@@ -1958,7 +1977,8 @@ void win_player(GamePlayer* player) {
     set_sequence(GS_WIN, player, 0);
 
     set_view_player(player);
-    play_state_track(player->id, (game_state->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", 0, 0);
+    if (!(game_state->flags & GF_LOST_MAP_END))
+        play_state_track(player->id, (game_state->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", 0, 0);
 }
 
 // ======

@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/bowser",
+    "size": [33, 32],
+    "offset": [17, 17],
+    "uvs": [336, 229, 369, 261]
+}

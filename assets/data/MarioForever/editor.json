@@ -1285,6 +1285,10 @@
                     "name": "End X",
                     "type": "fixed",
                     "index": 9
+                },
+                {
+                    "name": "Secret",
+                    "index": 10
                 }
             ],
             "flags": [
@@ -1327,6 +1331,10 @@
                 {
                     "name": "Giga Bowser",
                     "index": 14
+                },
+                {
+                    "name": "Has Secret",
+                    "index": 15
                 }
             ]
         },

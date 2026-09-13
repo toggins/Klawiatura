@@ -1,5 +1,6 @@
 #include "K_audio.h"
 
+#include "actors/K_artillery.h"
 #include "actors/K_enemies.h"
 #include "actors/K_koopa.h"
 #include "actors/K_player.h"
@@ -78,11 +79,25 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
     case ACT_PIRANHA_PLANT:
     case ACT_ROTODISC:
     case ACT_PODOBOO: {
+        FLAG_ON(actor, FLG_DESTROY);
+
         if (kick)
             play_state_sound("kick", PLAY_POS, A_ACTOR(actor));
 
-        FLAG_ON(actor, FLG_DESTROY);
         return NULL;
+    }
+
+    case ACT_BULLET_BILL: {
+        if (ANY_FLAG(actor, FLG_ARTILLERY_DEAD))
+            return actor;
+
+        actor->vel.x = Fmul(actor->vel.x, 45371);
+        FLAG_ON(actor, FLG_ARTILLERY_DEAD);
+
+        if (kick)
+            play_state_sound("kick", PLAY_POS, A_ACTOR(actor));
+
+        return actor;
     }
     }
 
