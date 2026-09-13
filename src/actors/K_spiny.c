@@ -18,7 +18,7 @@ static void load() {
 static void load_special(const GameActor* actor) {
     if (ANY_FLAG(actor, FLG_SPINY_GRAY)) {
         load_sprite_num("enemies/spiny/gray/%u", 2, AKL_NEVER);
-        load_sprite("enemies/spiny/gray", AKL_NEVER);
+        load_sprite("enemies/spiny/gray/dead", AKL_NEVER);
     }
 }
 
