@@ -8,6 +8,8 @@ enum {
     VAL_SCENERY_FRAME,
     VAL_SCENERY_ANGLE,
     VAL_SCENERY_ALPHA,
+    VAL_SCENERY_SCALE,
+    VAL_SCENERY_SPEED,
 };
 
 #define FLG_SCENERY_ACTIVE CUSTOM_FLAG(0)
@@ -509,4 +511,40 @@ const ActorTable TAB_SHOOTING_STAR = {
     .create = create_shooting_star,
     .tick = tick_shooting_star,
     .draw = draw_shooting_star,
+};
+
+/* ======
+   FLOWER
+   ====== */
+
+static void load_flower() {
+    load_sprite("scenery/flower", AKL_NEVER);
+}
+
+static void create_flower(GameActor* actor) {
+    VAL(actor, SCENERY_ANGLE) = rng(Int2Fx(10));
+    VAL(actor, SCENERY_SCALE) = rng(FxHalf + 1) + FxHalf;
+}
+
+static void tick_flower(GameActor* actor) {
+    // EVENTS FROM... Block Party!? (modified)
+
+    VAL(actor, SCENERY_ANGLE) = Fmod(VAL(actor, SCENERY_ANGLE) + VAL(actor, SCENERY_SPEED), Fx2Pi);
+    if ((gamestate()->time % 100) == 0)
+        VAL(actor, SCENERY_SPEED) = 3932 + rng(3933);
+}
+
+static void draw_flower(const GameActor* actor) {
+    batch_reset();
+    const float scale = Fx2Float(VAL(actor, SCENERY_SCALE));
+    batch_scale(B_F2_S(scale));
+    batch_angle(((5.f * SDL_sinf(Fx2Float(VAL(actor, SCENERY_ANGLE))) + 5.f) / 360.f) * 2.f * SDL_PI_F);
+    draw_actor(actor, "scenery/flower", FALSE);
+}
+
+const ActorTable TAB_FLOWER = {
+    .load = load_flower,
+    .create = create_flower,
+    .tick = tick_flower,
+    .draw = draw_flower,
 };
