@@ -31,10 +31,12 @@ enum {
     MEN_SIZE,
 };
 
-static const char* credits[6][2] = {
+static const char* credits[8][2] = {
     {"menu.credits.mario_forever",  "menu.credits.mario_forever.text" },
     {"menu.credits.graphics",       "menu.credits.graphics.text"      },
+    {"menu.credits.audio",          "menu.credits.audio.text"         },
     {"menu.credits.programming",    "menu.credits.programming.text"   },
+    {"menu.credits.levels",         "menu.credits.levels.text"        },
     {"menu.credits.beta_testing",   "menu.credits.beta_testing.text"  },
     {"menu.credits.special_thanks", "menu.credits.special_thanks.text"},
     {NULL,                          "menu.credits.end"                },

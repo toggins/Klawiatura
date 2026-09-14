@@ -1,5 +1,5 @@
 {
-    "label": "$Remix-3",
+    "label": "hud.world.remix_3",
     "tracks": [{ "track": "buy_a_cow" }],
     "warps": ["remix_secret_3"],
     "secrets": ["hud.secret.remix_secret_3"],

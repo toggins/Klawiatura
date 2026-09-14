@@ -1,5 +1,5 @@
 {
-    "label": "$Remix-1",
+    "label": "hud.world.remix_1",
     "tracks": [{ "track": "smw/overworld" }, { "track": "smb/underground" }],
     "warps": ["remix_secret_1"],
     "secrets": ["hud.secret.remix_secret_1"],
