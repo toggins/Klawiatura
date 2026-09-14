@@ -278,7 +278,8 @@ if(EMSCRIPTEN)
         "SHELL:--preload-file ${CONTROLLER_DB}@gamecontrollerdb.txt"
 
         "SHELL:-g"
-        "SHELL:-sASSERTIONS=2")
+        "SHELL:-sASSERTIONS=2"
+        "SHELL:-sNO_DISABLE_EXCEPTION_CATCHING")
 else()
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${PROJECT_NAME}>
