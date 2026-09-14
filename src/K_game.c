@@ -824,6 +824,18 @@ static void save_game_state(GameState* gs) {
 
 static void load_game_state(const GameState* gs) {
     *game_state = *gs;
+
+    // GROSS HACK: to prevent being stuck on spectating during rollbacks
+    if (view_player == local_player || local_player < 0 || local_player >= MAX_PLAYERS)
+        return;
+
+    const GamePlayer* player = get_player(local_player);
+    if (player == NULL || player->lives < 0)
+        return;
+
+    const GameActor* pawn = get_actor(player->actor);
+    if (pawn != NULL && pawn->type == ACT_PLAYER)
+        set_view_player(player);
 }
 
 static Uint32 check_game_state() {
