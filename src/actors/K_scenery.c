@@ -10,9 +10,13 @@ enum {
     VAL_SCENERY_ALPHA,
     VAL_SCENERY_SCALE,
     VAL_SCENERY_SPEED,
+    VAL_SCENERY_X,
+    VAL_SCENERY_Y,
 };
 
 #define FLG_SCENERY_ACTIVE CUSTOM_FLAG(0)
+#define FLG_SCENERY_ALT CUSTOM_FLAG(1)
+#define FLG_SCENERY_SECRET CUSTOM_FLAG(2)
 
 /* ====
    BUSH
@@ -49,6 +53,26 @@ static void create_cloud(GameActor* actor) {
     actor->depth = Int2Fx(33);
 }
 
+static void tick_cloud(GameActor* actor) {
+    if (!ANY_FLAG(actor, FLG_SCENERY_ALT))
+        return;
+
+    if (!ANY_FLAG(actor, FLG_SCENERY_ACTIVE)) {
+        VAL(actor, SCENERY_X) = actor->pos.x;
+        VAL(actor, SCENERY_Y) = actor->pos.y;
+        VAL(actor, SCENERY_ANGLE) = rng(360) * 1144;
+        FLAG_ON(actor, FLG_SCENERY_ACTIVE);
+
+        skip_interp(actor);
+    }
+
+    move_actor(actor, (FVec2){actor->pos.x, VAL(actor, SCENERY_Y) + Fmul(Int2Fx(5), Fcos(VAL(actor, SCENERY_ANGLE)))});
+    VAL(actor, SCENERY_ANGLE) += 1144;
+    move_actor(actor, (FVec2){VAL(actor, SCENERY_X) + Fmul(VAL(actor, SCENERY_SPEED), -Fsin(VAL(actor, SCENERY_ANGLE))),
+                          actor->pos.y});
+    VAL(actor, SCENERY_SPEED) = Fmin(VAL(actor, SCENERY_SPEED) + Int2Fx(rng(2)), Int2Fx(20));
+}
+
 static void draw_cloud(const GameActor* actor) {
     batch_reset();
     draw_actor(actor, fmt("scenery/cloud/%i", ((gamestate()->time * 2) / 25) % 3), FALSE);
@@ -57,6 +81,7 @@ static void draw_cloud(const GameActor* actor) {
 const ActorTable TAB_CLOUD = {
     .load = load_cloud,
     .create = create_cloud,
+    .tick = tick_cloud,
     .draw = draw_cloud,
 };
 
