@@ -1,0 +1,6 @@
+{
+    "texture": "characters/luigi/hammer",
+    "size": [31, 62],
+    "offset": [14, 61],
+    "uvs": [1, 1, 32, 63]
+}

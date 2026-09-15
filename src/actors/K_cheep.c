@@ -298,6 +298,7 @@ const ActorTable TAB_CHEEP = {
 
 static void load_blue() {
     load_sprite_num("enemies/cheep/blue/%u", 2, AKL_NEVER);
+    load_sprite("enemies/cheep/blue/dead", AKL_NEVER);
     load_sound("bump", AKL_NEVER);
     load_sound("kick", AKL_NEVER);
     load_actor(ACT_POINTS);

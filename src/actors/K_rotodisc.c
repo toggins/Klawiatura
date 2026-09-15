@@ -99,7 +99,20 @@ static void draw(const GameActor* actor) {
 }
 
 static void collide(GameActor* actor, GameActor* from) {
-    maybe_hit_player(actor, from);
+    switch (from->type) {
+    default:
+        break;
+
+    case ACT_PLAYER: {
+        maybe_hit_player(actor, from);
+        break;
+    }
+
+    case ACT_HAMMER_PROJECTILE: {
+        hit_hammer(actor, from, 500);
+        break;
+    }
+    }
 }
 
 const ActorTable TAB_ROTODISC = {

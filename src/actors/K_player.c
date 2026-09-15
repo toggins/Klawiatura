@@ -247,6 +247,7 @@ static void load() {
     load_actor(ACT_PLAYER_DEAD);
     load_actor(ACT_FIREBALL_PROJECTILE);
     load_actor(ACT_BEETROOT_PROJECTILE);
+    load_actor(ACT_HAMMER_PROJECTILE);
     load_actor(ACT_POINTS);
 }
 
@@ -740,6 +741,33 @@ static void tick(GameActor* actor) {
                 beetroot->player = actor->player;
                 beetroot->vel.x = ANY_FLAG(actor, FLG_X_FLIP) ? -155648 : 155648;
                 beetroot->vel.y = Int2Fx(-5);
+            }
+
+            do_fire = TRUE;
+            break;
+        }
+
+        case POW_HAMMER_SUIT: {
+            ActorID num_hammers = 0;
+
+            const GameActor* ohammer = NULL;
+            FOR_EACH_ACTOR (ohammer) {
+                if (ohammer->type == ACT_HAMMER_PROJECTILE && ohammer->player == actor->player) {
+                    if (++num_hammers >= MAX_PROJECTILES)
+                        break;
+                }
+            }
+
+            if (num_hammers >= MAX_PROJECTILES)
+                break;
+
+            GameActor* hammer = create_actor(ACT_HAMMER_PROJECTILE,
+                Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-5) : Int2Fx(5), Int2Fx(-28)}));
+            if (hammer != NULL) {
+                hammer->player = actor->player;
+                hammer->vel.x = (ANY_FLAG(actor, FLG_X_FLIP) ? -122880 : 122880) + actor->vel.x;
+                hammer->vel.y = Int2Fx(-9);
+                FLAG_ON(hammer, actor->flags & FLG_X_FLIP);
             }
 
             do_fire = TRUE;

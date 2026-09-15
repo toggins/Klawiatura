@@ -1,0 +1,6 @@
+{
+    "texture": "characters/mario/hammer",
+    "size": [35, 56],
+    "offset": [19, 55],
+    "uvs": [42, 127, 77, 183]
+}

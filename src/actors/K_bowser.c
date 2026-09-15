@@ -468,7 +468,7 @@ static void collide(GameActor* actor, GameActor* from) {
     }
 
     case ACT_HAMMER_PROJECTILE: {
-        if (get_player(from->player) == NULL || VAL(actor, BOWSER_HURT) > 0)
+        if (get_player(from->player) == NULL)
             break;
 
         if (VAL(from, PROJECTILE_COOLDOWN) > 0) {

@@ -467,3 +467,39 @@ const ActorTable TAB_BEETROOT = {
     .draw = draw_beetroot,
     .collide = collide_beetroot,
 };
+
+/* ===========
+   HAMMER SUIT
+   =========== */
+
+static void load_hammer_suit() {
+    load_sprite("items/hammer_suit", AKL_NEVER);
+    load_sound("grow", AKL_NEVER);
+    load_actor(ACT_POINTS);
+}
+
+static void create_hammer_suit(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-13);
+    actor->box.start.y = Int2Fx(-31);
+    actor->box.end.x = Int2Fx(14);
+    actor->box.end.y = Fx1;
+}
+
+static void draw_hammer_suit(const GameActor* actor) {
+    draw_powerup(actor, "items/hammer_suit");
+}
+
+static void collide_hammer_suit(GameActor* actor, GameActor* from) {
+    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_POWERUP_CALAMITY) || actor->sprout > 0)
+        return;
+
+    grow_player(from, actor, POW_HAMMER_SUIT);
+    FLAG_ON(actor, FLG_DESTROY);
+}
+
+const ActorTable TAB_HAMMER_SUIT = {
+    .load = load_hammer_suit,
+    .create = create_hammer_suit,
+    .draw = draw_hammer_suit,
+    .collide = collide_hammer_suit,
+};

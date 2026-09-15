@@ -134,7 +134,8 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
             case ACT_FIRE_FLOWER:
             case ACT_BEETROOT:
             case ACT_GREEN_LUI:
-            case ACT_STARMAN: {
+            case ACT_STARMAN:
+            case ACT_HAMMER_SUIT: {
                 FLAG_ON(item, FLG_POWERUP_SPROUTED);
                 break;
             }
@@ -189,6 +190,7 @@ static void load_special(const GameActor* actor) {
         case ACT_FIRE_FLOWER:
         case ACT_BEETROOT:
         case ACT_GREEN_LUI:
+        case ACT_HAMMER_SUIT:
             load_actor(ACT_SUPER_MUSHROOM);
             break;
         }

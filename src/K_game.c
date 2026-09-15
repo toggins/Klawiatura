@@ -181,7 +181,30 @@ static const GameCharacter CHARACTERS[CHR_SIZE] = {
                 [PF_GROW2] = "characters/mario/lui/grow1",
                 [PF_GROW3] = "characters/mario/lui/grow2",
                 [PF_GROW4] = "characters/mario/lui/grow3",
-            }
+            },
+            [POW_HAMMER_SUIT] = {
+                [PF_IDLE] = "characters/mario/hammer/idle",
+                [PF_WALK1] = "characters/mario/hammer/walk0",
+                [PF_WALK2] = "characters/mario/hammer/walk1",
+                [PF_WALK3] = "characters/mario/hammer/walk2",
+                [PF_JUMP] = "characters/mario/hammer/jump",
+                [PF_FALL] = "characters/mario/hammer/fall",
+                [PF_DUCK] = "characters/mario/hammer/duck",
+                [PF_FIRE1] = "characters/mario/hammer/fire0",
+                [PF_FIRE2] = "characters/mario/hammer/fire1",
+                [PF_SWIM1] = "characters/mario/hammer/swim0",
+                [PF_SWIM2] = "characters/mario/hammer/swim1",
+                [PF_SWIM3] = "characters/mario/hammer/swim2",
+                [PF_SWIM4] = "characters/mario/hammer/swim3",
+                [PF_SWIM5] = "characters/mario/hammer/swim4",
+                [PF_SWIM6] = "characters/mario/hammer/swim5",
+                [PF_SWIM7] = "characters/mario/hammer/swim6",
+                [PF_SWIM8] = "characters/mario/hammer/swim7",
+                [PF_GROW1] = "characters/mario/hammer/grow0",
+                [PF_GROW2] = "characters/mario/hammer/grow1",
+                [PF_GROW3] = "characters/mario/hammer/grow2",
+                [PF_GROW4] = "characters/mario/hammer/grow3",
+            },
         },
         .voices = {
             [PV_READY] = "vo/mario/ready",
@@ -305,7 +328,30 @@ static const GameCharacter CHARACTERS[CHR_SIZE] = {
                 [PF_GROW2] = "characters/luigi/lui/grow1",
                 [PF_GROW3] = "characters/luigi/lui/grow2",
                 [PF_GROW4] = "characters/luigi/lui/grow3",
-            }
+            },
+            [POW_HAMMER_SUIT] = {
+                [PF_IDLE] = "characters/luigi/hammer/idle",
+                [PF_WALK1] = "characters/luigi/hammer/walk0",
+                [PF_WALK2] = "characters/luigi/hammer/walk1",
+                [PF_WALK3] = "characters/luigi/hammer/walk2",
+                [PF_JUMP] = "characters/luigi/hammer/jump",
+                [PF_FALL] = "characters/luigi/hammer/fall",
+                [PF_DUCK] = "characters/luigi/hammer/duck",
+                [PF_FIRE1] = "characters/luigi/hammer/fire0",
+                [PF_FIRE2] = "characters/luigi/hammer/fire1",
+                [PF_SWIM1] = "characters/luigi/hammer/swim0",
+                [PF_SWIM2] = "characters/luigi/hammer/swim1",
+                [PF_SWIM3] = "characters/luigi/hammer/swim2",
+                [PF_SWIM4] = "characters/luigi/hammer/swim3",
+                [PF_SWIM5] = "characters/luigi/hammer/swim4",
+                [PF_SWIM6] = "characters/luigi/hammer/swim5",
+                [PF_SWIM7] = "characters/luigi/hammer/swim6",
+                [PF_SWIM8] = "characters/luigi/hammer/swim7",
+                [PF_GROW1] = "characters/luigi/hammer/grow0",
+                [PF_GROW2] = "characters/luigi/hammer/grow1",
+                [PF_GROW3] = "characters/luigi/hammer/grow2",
+                [PF_GROW4] = "characters/luigi/hammer/grow3",
+            },
         },
         .voices = {
             [PV_READY] = "vo/luigi/ready",
@@ -387,6 +433,8 @@ const char* get_powerup_name(PlayerPowerup powerup) {
         return LFMT("value.beetroot");
     case POW_GREEN_LUI:
         return LFMT("value.green_lui");
+    case POW_HAMMER_SUIT:
+        return LFMT("value.hammer_suit");
     }
 }
 
@@ -400,6 +448,8 @@ Sint8 get_powerup_cost(PlayerPowerup powerup) {
     case POW_BEETROOT:
     case POW_GREEN_LUI:
         return 2;
+    case POW_HAMMER_SUIT:
+        return 3;
     }
 }
 
@@ -1954,7 +2004,8 @@ void win_player(GamePlayer* player) {
         case ACT_1UP_MUSHROOM:
         case ACT_POISON_MUSHROOM:
         case ACT_GREEN_LUI:
-        case ACT_BEETROOT: {
+        case ACT_BEETROOT:
+        case ACT_HAMMER_SUIT: {
             FLAG_ON(actor, FLG_DESTROY);
             break;
         }

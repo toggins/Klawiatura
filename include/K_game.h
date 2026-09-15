@@ -248,6 +248,7 @@ enum {
     POW_FIRE_FLOWER,
     POW_BEETROOT,
     POW_GREEN_LUI,
+    POW_HAMMER_SUIT,
     POW_SIZE,
 };
 

@@ -296,16 +296,22 @@ static void create_hammer(GameActor* actor) {
 }
 
 static void tick_hammer(GameActor* actor) {
-    VAL(actor, PROJECTILE_ANGLE) += ANY_FLAG(actor, FLG_X_FLIP) ? -6434 : 6434;
+    const GamePlayer* player = get_player(actor->player);
+
+    const Fixed spd = (player == NULL) ? 6434 : 11438;
+    VAL(actor, PROJECTILE_ANGLE) += ANY_FLAG(actor, FLG_X_FLIP) ? -spd : spd;
 
     move_actor(actor, Vadd(actor->pos, actor->vel));
+    collide_actor(actor);
 
-    if (below_nearest_view(actor->pos, Int2Fx(64))) {
+    if ((player == NULL && below_nearest_view(actor->pos, Int2Fx(64)))
+        || (player != NULL && !in_player_view(player, actor->pos, Int2Fx(-8), VEF_IGNORE_TOP)))
+    {
         FLAG_ON(actor, FLG_DESTROY);
         return;
     }
 
-    actor->vel.y += 18725;
+    actor->vel.y += (player == NULL) ? 18725 : 26214;
 }
 
 static void draw_hammer(const GameActor* actor) {

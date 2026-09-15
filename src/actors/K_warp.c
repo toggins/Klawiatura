@@ -139,7 +139,8 @@ static void collide(GameActor* actor, GameActor* from) {
             case ACT_FIRE_FLOWER:
             case ACT_BEETROOT:
             case ACT_GREEN_LUI:
-            case ACT_STARMAN: {
+            case ACT_STARMAN:
+            case ACT_HAMMER_SUIT: {
                 if (ANY_FLAG(item, FLG_POWERUP_CALAMITY)) {
                     item->sprout = 32;
                     FLAG_OFF(item, FLG_POWERUP_CALAMITY);
