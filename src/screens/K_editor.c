@@ -55,7 +55,7 @@ typedef struct {
     Bool flip[2], tile[2], scalable;
     SolidFlags solid;
     float max_scale[2], colors[4][4];
-    int depth;
+    int depth, box[4];
 
     TinyHash previous, next;
     const char *name, *sprite;
@@ -621,16 +621,21 @@ static void save_level(const char* filename) {
                 break;
 
             float tile_width = marker->scale[0], tile_height = marker->scale[1];
-            if (sprite != NULL) {
-                tile_width *= sprite->size[0];
-                tile_height *= sprite->size[1];
+            float tile_xoffset = (float)marker->pos[0], tile_yoffset = (float)marker->pos[1];
+            if (def->box[0] == def->box[2] || def->box[1] == def->box[3]) {
+                if (sprite != NULL) {
+                    tile_width *= sprite->size[0];
+                    tile_height *= sprite->size[1];
+                    tile_xoffset -= sprite->offset[0];
+                    tile_yoffset -= sprite->offset[1];
+                }
+            } else {
+                tile_width *= (float)(def->box[2] - def->box[0]);
+                tile_height *= (float)(def->box[3] - def->box[1]);
+                tile_xoffset += (float)def->box[0];
+                tile_yoffset += (float)def->box[1];
             }
 
-            float tile_xoffset = (float)marker->pos[0], tile_yoffset = (float)marker->pos[1];
-            if (sprite != NULL) {
-                tile_xoffset -= sprite->offset[0];
-                tile_yoffset -= sprite->offset[1];
-            }
             while (tile_xoffset >= tile_width)
                 tile_xoffset -= tile_width;
             while (tile_xoffset < 0.f)
@@ -1051,6 +1056,14 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
                     def->solid = SOL_SLOPE_RIGHT | SOL_BOTTOM;
                 else if (SDL_strcmp(sname, "hurt") == 0)
                     def->solid = SOL_HURT;
+            }
+
+            jdval = yyjson_obj_get(jdef, "box");
+            if (yyjson_is_arr(jdval) && yyjson_arr_size(jdval) >= 4) {
+                def->box[0] = (int)yyjson_get_sint(yyjson_arr_get(jdval, 0));
+                def->box[1] = (int)yyjson_get_sint(yyjson_arr_get(jdval, 1));
+                def->box[2] = (int)yyjson_get_sint(yyjson_arr_get(jdval, 2));
+                def->box[3] = (int)yyjson_get_sint(yyjson_arr_get(jdval, 3));
             }
         }
 
