@@ -45,6 +45,51 @@
             "sprite": "tiles/swamp/8",
             "depth": 20
         },
+        "Forest Top Left": {
+            "type": "tile",
+            "sprite": "tiles/forest/0",
+            "depth": 20
+        },
+        "Forest Top": {
+            "type": "tile",
+            "sprite": "tiles/forest/1",
+            "depth": 20
+        },
+        "Forest Top Right": {
+            "type": "tile",
+            "sprite": "tiles/forest/2",
+            "depth": 20
+        },
+        "Forest Left": {
+            "type": "tile",
+            "sprite": "tiles/forest/3",
+            "depth": 20
+        },
+        "Forest Middle": {
+            "type": "tile",
+            "sprite": "tiles/forest/4",
+            "depth": 20
+        },
+        "Forest Right": {
+            "type": "tile",
+            "sprite": "tiles/forest/5",
+            "depth": 20
+        },
+        "Forest Bottom Left": {
+            "type": "tile",
+            "sprite": "tiles/forest/6",
+            "depth": 20
+        },
+        "Forest Bottom": {
+            "type": "tile",
+            "sprite": "tiles/forest/7",
+            "depth": 20
+        },
+        "Forest Bottom Right": {
+            "type": "tile",
+            "sprite": "tiles/forest/8",
+            "depth": 20
+        },
         "Brown Spike": {
             "type": "tile",
             "sprite": "tiles/spike/brown",
@@ -77,6 +122,16 @@
             "sprite": "scenery/sign/left",
             "depth": 30
         },
+        "Shotgun Up Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/shotgun_up",
+            "depth": 30
+        },
+        "Flower": {
+            "type": "actor",
+            "id": 156,
+            "sprite": "scenery/flower"
+        },
         "P-Switch": {
             "type": "actor",
             "id": 149,
@@ -87,6 +142,11 @@
                     "index": 5
                 }
             ]
+        },
+        "Shotgun": {
+            "type": "actor",
+            "id": 155,
+            "sprite": "items/shotgun"
         },
         "Buzzy": {
             "type": "actor",
@@ -121,6 +181,20 @@
                     ]
                 },
                 {
+                    "name": "Forest",
+                    "items": [
+                        "Forest Top Left",
+                        "Forest Top",
+                        "Forest Top Right",
+                        "Forest Left",
+                        "Forest Middle",
+                        "Forest Right",
+                        "Forest Bottom Left",
+                        "Forest Bottom",
+                        "Forest Bottom Right"
+                    ]
+                },
+                {
                     "name": "Blocks",
                     "items": ["Old Block"]
                 },
@@ -143,13 +217,18 @@
                 },
                 {
                     "name": "Signs",
-                    "items": ["Left Sign"]
-                }
+                    "items": ["Left Sign", "Shotgun Up Sign"]
+                },
+                "Flower"
             ]
         },
         {
             "name": "Markers",
             "items": ["P-Switch"]
+        },
+        {
+            "name": "Items",
+            "items": ["Shotgun"]
         },
         {
             "name": "Enemies",
