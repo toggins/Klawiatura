@@ -90,6 +90,21 @@
             "sprite": "tiles/forest/8",
             "depth": 20
         },
+        "Sweden Top": {
+            "type": "tile",
+            "sprite": "tiles/sweden/0",
+            "depth": 20
+        },
+        "Sweden Middle": {
+            "type": "tile",
+            "sprite": "tiles/sweden/1",
+            "depth": 20
+        },
+        "Red Brick Block": {
+            "type": "tile",
+            "sprite": "tiles/block/brick",
+            "depth": 20
+        },
         "Brown Spike": {
             "type": "tile",
             "sprite": "tiles/spike/brown",
@@ -131,6 +146,28 @@
             "type": "actor",
             "id": 156,
             "sprite": "scenery/flower"
+        },
+        "Sweden Tree Back": {
+            "type": "background",
+            "sprite": "scenery/tree/sweden/small",
+            "depth": 60,
+            "flip": [true, false],
+            "colors": [
+                [255, 255, 255, 110],
+                [255, 255, 255, 110],
+                [255, 255, 255, 110],
+                [255, 255, 255, 110]
+            ]
+        },
+        "Sweden Tree Small": {
+            "type": "background",
+            "sprite": "scenery/tree/sweden/small",
+            "depth": 33
+        },
+        "Sweden Tree Big": {
+            "type": "background",
+            "sprite": "scenery/tree/sweden/big",
+            "depth": 33
         },
         "P-Switch": {
             "type": "actor",
@@ -195,8 +232,12 @@
                     ]
                 },
                 {
+                    "name": "Sweden",
+                    "items": ["Sweden Top", "Sweden Middle"]
+                },
+                {
                     "name": "Blocks",
-                    "items": ["Old Block"]
+                    "items": ["Old Block", "Red Brick Block"]
                 },
                 {
                     "name": "Spikes",
@@ -218,6 +259,15 @@
                 {
                     "name": "Signs",
                     "items": ["Left Sign", "Shotgun Up Sign"]
+                },
+                {
+                    "name": "Trees",
+                    "items": [
+                        {
+                            "name": "Sweden",
+                            "items": ["Sweden Tree Back", "Sweden Tree Small", "Sweden Tree Big"]
+                        }
+                    ]
                 },
                 "Flower"
             ]
