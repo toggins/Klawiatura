@@ -161,7 +161,7 @@ enum {
     ACT_CHEEP_GREEN,
     ACT_CENTIPEDE,
     ACT_THWOMP,
-    ACT_TANKS_CLOUD,
+    ACT_UNUSED_00,
     ACT_WHEEL_L,
     ACT_WHEEL,
     ACT_WHEEL_R,
@@ -186,7 +186,7 @@ enum {
     ACT_CODER_CLONE,
     ACT_CODER_CLONE_RUN,
     ACT_CODER_CLONE_KEYBOARD,
-    ACT_DARK_CLOUD,
+    ACT_UNUSED_01,
     ACT_CLONE_3A,
     ACT_JAWS_CLONE_HEAD,
     ACT_COMPUTER,
@@ -207,9 +207,9 @@ enum {
     ACT_ELECTRIC_CORAL,
     ACT_EXPLODE2,
     ACT_SMOKE,
-    ACT_SUCK,
+    ACT_UNUSED_02,
     ACT_SECRET_TEXT,
-    ACT_SAVE_CLOUD,
+    ACT_UNUSED_03,
     ACT_STUPID_CLOUD,
     ACT_STUPID_CLOUD_TONGUE,
     ACT_FAKE_BLOCK,
@@ -500,7 +500,6 @@ enum {
 };
 
 typedef struct {
-    Uint8 bro_throw;
     FVec2 size;
     FRect bounds;
 
