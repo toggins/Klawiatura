@@ -129,12 +129,18 @@ static void collide(GameActor* actor, GameActor* from) {
     if (from->type != ACT_PLAYER || get_player(actor->player) != NULL || ANY_FLAG(from, FLG_PLAYER_WEAPON))
         return;
 
-    actor->player = from->player;
-    FLAG_OFF(actor, FLG_SHOTGUN_DROPPED);
-    FLAG_ON(from, FLG_PLAYER_WEAPON);
-    give_points(actor, get_player(from->player), 2000);
+    GameActor* shotgun = (gamecontext()->num_players > 1 && !ANY_FLAG(actor, FLG_SHOTGUN_DROPPED))
+                             ? create_actor(ACT_SHOTGUN, actor->pos)
+                             : actor;
+    if (shotgun == NULL)
+        return;
 
-    play_state_sound("weapon", PLAY_POS, A_ACTOR(actor));
+    shotgun->player = from->player;
+    FLAG_OFF(shotgun, FLG_SHOTGUN_DROPPED);
+    FLAG_ON(from, FLG_PLAYER_WEAPON);
+    give_points(shotgun, get_player(from->player), 2000);
+
+    play_state_sound("weapon", PLAY_POS, A_ACTOR(shotgun));
 }
 
 const ActorTable TAB_SHOTGUN = {
