@@ -1050,7 +1050,9 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
         } else if (def->type == DEFT_TILE) {
             const char* sname = yyjson_get_str(yyjson_obj_get(jdef, "solid"));
             if (sname != NULL) {
-                if (SDL_strcmp(sname, "slope_left") == 0)
+                if (SDL_strcmp(sname, "top") == 0)
+                    def->solid = SOL_TOP;
+                else if (SDL_strcmp(sname, "slope_left") == 0)
                     def->solid = SOL_SLOPE_LEFT | SOL_BOTTOM;
                 else if (SDL_strcmp(sname, "slope_right") == 0)
                     def->solid = SOL_SLOPE_RIGHT | SOL_BOTTOM;
