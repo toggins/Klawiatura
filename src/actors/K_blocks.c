@@ -415,15 +415,11 @@ static void on_bottom(GameActor* actor, GameActor* from) {
         break;
     }
 
-    case ACT_BEETROOT_PROJECTILE: {
+    case ACT_BEETROOT_PROJECTILE:
+    case ACT_BULLET_PROJECTILE: {
         if (!ANY_FLAG(actor, FLG_BLOCK_HIDDEN))
             on_other_sides(actor, from);
 
-        break;
-    }
-
-    case ACT_BULLET_PROJECTILE: {
-        on_other_sides(actor, from);
         break;
     }
     }

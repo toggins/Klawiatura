@@ -99,7 +99,7 @@ static void post_tick(GameActor* actor) {
         if (pawn != NULL && pawn->type == ACT_PLAYER) {
             pawn->vel.x -= ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-5) : Int2Fx(5);
             if (pawn->vel.y < Fx0)
-                pawn->vel.y -= Int2Fx(3);
+                pawn->vel.y = Fdiv(Int2Fx(-13), get_player_jump(player));
         }
 
         const FVec2 bpos
