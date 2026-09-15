@@ -4,7 +4,6 @@
     "size": [9000, 480],
     "bounds": [0, 0, 9000, 480],
     "time": 360,
-    "bro_throw": 50,
     "backdrops": [
         {
             "def": "Starland Detail 2",
@@ -3140,7 +3139,8 @@
         {
             "def": "Player Spawn",
             "id": 1,
-            "pos": [73, 414]
+            "pos": [73, 414],
+            "values": [[4, 0]]
         },
         {
             "def": "Checkpoint",
@@ -3443,14 +3443,14 @@
             "def": "Platform",
             "id": 11,
             "pos": [1856, 384],
-            "values": [[5, 0]],
+            "values": [[0, 0]],
             "flags": 32
         },
         {
             "def": "Platform",
             "id": 11,
             "pos": [2944, 128],
-            "values": [[5, 0]],
+            "values": [[0, 0]],
             "flags": 32
         },
         {
@@ -3458,21 +3458,21 @@
             "id": 11,
             "pos": [4768, 367],
             "vel": [-196608, 0],
-            "values": [[5, 0]]
+            "values": [[0, 0]]
         },
         {
             "def": "Platform",
             "id": 11,
             "pos": [5344, 352],
             "vel": [-196608, 0],
-            "values": [[5, 0]]
+            "values": [[0, 0]]
         },
         {
             "def": "Platform",
             "id": 11,
             "pos": [8000, 401],
             "vel": [-196608, 0],
-            "values": [[5, 0]]
+            "values": [[0, 0]]
         },
         {
             "def": "Platform Turn",
@@ -3610,8 +3610,12 @@
         {
             "def": "Bro",
             "id": 64,
+            "singleplayer": true,
             "pos": [7541, 279],
-            "values": [[0, 66]]
+            "values": [
+                [0, 66],
+                [1, 50]
+            ]
         },
         {
             "def": "Bro Layer",
@@ -3644,14 +3648,20 @@
             "id": 64,
             "multiplayer": true,
             "pos": [7637, 279],
-            "values": [[0, 66]]
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
         },
         {
             "def": "Bro",
             "id": 64,
             "multiplayer": true,
             "pos": [7584, 415],
-            "values": [[0, 66]]
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
         },
         {
             "def": "Brick Block",
@@ -3848,7 +3858,10 @@
             "id": 64,
             "multiplayer": true,
             "pos": [7584, 159],
-            "values": [[0, 66]]
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
         },
         {
             "def": "Bro Layer",
@@ -3865,6 +3878,16 @@
             "pos": [7680, 128],
             "scale": [116508, 58254],
             "flags": 32
+        },
+        {
+            "def": "Bro",
+            "id": 64,
+            "multiplayer": true,
+            "pos": [7534, 271],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
         }
     ]
 }

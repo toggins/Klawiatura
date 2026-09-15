@@ -6,7 +6,6 @@
     "size": [9000, 1440],
     "bounds": [0, 0, 9000, 480],
     "time": 360,
-    "bro_throw": 50,
     "backdrops": [
         {
             "def": "Starland Detail",
@@ -4388,7 +4387,8 @@
         {
             "def": "Player Spawn",
             "id": 1,
-            "pos": [169, 415]
+            "pos": [169, 415],
+            "values": [[4, 0]]
         },
         {
             "def": "Starland Tree Light",
@@ -5430,21 +5430,32 @@
         {
             "def": "Bro",
             "id": 64,
+            "singleplayer": true,
             "pos": [4711, 417],
-            "values": [[0, 66]]
+            "values": [
+                [0, 66],
+                [1, 50]
+            ]
         },
         {
             "def": "Bro",
             "id": 64,
+            "singleplayer": true,
             "pos": [4789, 159],
-            "values": [[0, 66]]
+            "values": [
+                [0, 66],
+                [1, 50]
+            ]
         },
         {
             "def": "Bro",
             "id": 64,
             "multiplayer": true,
             "pos": [4750, 271],
-            "values": [[0, 66]]
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
         },
         {
             "def": "Bro Layer",
@@ -5516,6 +5527,26 @@
             "id": 10,
             "pos": [8815, 384],
             "scale": [524288, 65536]
+        },
+        {
+            "def": "Bro",
+            "id": 64,
+            "multiplayer": true,
+            "pos": [4718, 399],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Bro",
+            "id": 64,
+            "multiplayer": true,
+            "pos": [4782, 143],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
         }
     ]
 }

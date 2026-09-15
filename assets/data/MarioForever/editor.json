@@ -477,7 +477,26 @@
         "Cloud": {
             "type": "actor",
             "id": 18,
-            "sprite": "scenery/cloud/0"
+            "sprite": "scenery/cloud/0",
+            "flags": [
+                {
+                    "name": "Sway",
+                    "index": 6
+                }
+            ]
+        },
+        "Cloud Save": {
+            "type": "actor",
+            "id": 18,
+            "sprite": "scenery/cloud/0",
+            "flags": [
+                {
+                    "name": "Sway",
+                    "index": 6,
+                    "default": true,
+                    "hidden": true
+                }
+            ]
         },
         "Clouds": {
             "type": "actor",
@@ -1403,6 +1422,11 @@
                     "index": 0,
                     "type": "actor",
                     "default": 66
+                },
+                {
+                    "name": "Throw Time",
+                    "index": 1,
+                    "default": 30
                 }
             ]
         },
@@ -1589,7 +1613,15 @@
             "items": [
                 {
                     "name": "Clouds",
-                    "items": ["Cloud", "Clouds", "Clouds Static", "Giant Cloud", "Giant Cloud Back", "Cloud Face"]
+                    "items": [
+                        "Cloud",
+                        "Cloud Save",
+                        "Clouds",
+                        "Clouds Static",
+                        "Giant Cloud",
+                        "Giant Cloud Back",
+                        "Cloud Face"
+                    ]
                 },
                 {
                     "name": "Trees",

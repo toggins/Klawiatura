@@ -105,7 +105,6 @@ typedef struct {
 
     int size[2], bounds[4];
     int time;
-    int bro_throw;
 
     EditorMarker* markers;
 } EditorLevel;
@@ -228,7 +227,6 @@ static void clear_level() {
     level->bounds[2] = SCREEN_WIDTH;
     level->bounds[3] = SCREEN_HEIGHT;
     level->time = -1;
-    level->bro_throw = 30;
 
     editor->cursor.has_scalable = editor->cursor.has_highlighted = editor->cursor.has_selected = FALSE;
 }
@@ -321,10 +319,6 @@ static void open_level(const char* filename) {
     jval = yyjson_obj_get(root, "time");
     if (yyjson_is_int(jval))
         elevel->time = (int)yyjson_get_sint(jval);
-
-    jval = yyjson_obj_get(root, "bro_throw");
-    if (yyjson_is_uint(jval))
-        elevel->bro_throw = (int)yyjson_get_uint(jval);
 
     jval = yyjson_obj_get(root, "backdrops");
     for (size_t i = 0, n = yyjson_arr_size(jval); i < n; i++) {
@@ -548,9 +542,6 @@ static void save_level(const char* filename) {
 
     if (elevel->time != -1)
         yyjson_mut_obj_add_sint(json, root, "time", elevel->time);
-
-    if (elevel->bro_throw != 30)
-        yyjson_mut_obj_add_uint(json, root, "bro_throw", elevel->bro_throw);
 
     yyjson_mut_val *jbackdrops = yyjson_mut_obj_add_arr(json, root, "backdrops"),
                    *jcollisions = yyjson_mut_obj_add_arr(json, root, "collisions"),
@@ -1564,9 +1555,6 @@ static void draw_ui() {
                     ImGui_Spacing();
                 }
             }
-
-            if (ImGui_CollapsingHeader(LFMT("editor.constants"), 0))
-                ImGui_InputInt(LFMT("editor.bro_throw"), &elevel->bro_throw);
 
             if (ImGui_CollapsingHeader(LFMT("editor.flags"), 0)) {
                 ImGui_CheckboxFlagsUintPtr(LFMT("editor.hardcore"), &elevel->flags, GF_HARDCORE);

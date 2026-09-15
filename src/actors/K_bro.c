@@ -7,6 +7,7 @@
 
 enum {
     VAL_BRO_TYPE,
+    VAL_BRO_THROW_TIME,
 
     VAL_BRO_MOVE,
     VAL_BRO_B,
@@ -70,6 +71,7 @@ static void create(GameActor* actor) {
     actor->box.end.y = Fx1;
 
     VAL(actor, BRO_TYPE) = ACT_HAMMER_PROJECTILE;
+    VAL(actor, BRO_THROW_TIME) = 30;
 
     increase_ambush();
 }
@@ -236,9 +238,7 @@ static void tick(GameActor* actor) {
     if (VAL(actor, BRO_THROW) > 0)
         ++VAL(actor, BRO_THROW);
 
-    if (VAL(actor, BRO_THROW)
-        > ((ActorValue)((VAL(actor, BRO_TYPE) == ACT_SHOTGUN) ? 3 : 1) * (ActorValue)(levelinfo()->bro_throw)))
-    {
+    if (VAL(actor, BRO_THROW) > VAL(actor, BRO_THROW_TIME)) {
         if (VAL(actor, BRO_TYPE) != ACT_SHOTGUN)
             VAL(actor, BRO_FRAME) = 0;
         VAL(actor, BRO_THROW) = 0;

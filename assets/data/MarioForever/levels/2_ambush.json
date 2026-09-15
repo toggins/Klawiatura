@@ -2,7 +2,6 @@
     "tracks": [{ "track": "smb/bowser" }],
     "ambush": true,
     "time": 150,
-    "bro_throw": 50,
     "backdrops": [
         {
             "def": "Grass Top Left",
@@ -548,7 +547,8 @@
         {
             "def": "Player Spawn",
             "id": 1,
-            "pos": [139, 414]
+            "pos": [139, 414],
+            "values": [[4, 0]]
         },
         {
             "def": "Hidden Block",
@@ -665,15 +665,22 @@
         {
             "def": "Bro",
             "id": 64,
+            "singleplayer": true,
             "pos": [469, 255],
-            "values": [[0, 66]]
+            "values": [
+                [0, 66],
+                [1, 50]
+            ]
         },
         {
             "def": "Bro",
             "id": 64,
             "multiplayer": true,
             "pos": [469, 415],
-            "values": [[0, 66]]
+            "values": [
+                [0, 66],
+                [1, 25]
+            ]
         },
         {
             "def": "Cloud",
@@ -704,6 +711,16 @@
             "def": "Cloud Face",
             "id": 68,
             "pos": [495, 319]
+        },
+        {
+            "def": "Bro",
+            "id": 64,
+            "multiplayer": true,
+            "pos": [462, 255],
+            "values": [
+                [0, 66],
+                [1, 25]
+            ]
         }
     ]
 }

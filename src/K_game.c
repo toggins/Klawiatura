@@ -575,7 +575,6 @@ static void start_game_state() {
     level_info = SDL_calloc(1, sizeof(*level_info));
     EXPECT(level_info, "Failed to allocate level info");
 
-    level_info->bro_throw = 30;
     level_info->size.x = level_info->bounds.end.x = F_SCREEN_WIDTH;
     level_info->size.y = level_info->bounds.end.y = F_SCREEN_HEIGHT;
 }
@@ -653,10 +652,6 @@ static void load_level(TinyHash key) {
     jval = yyjson_obj_get(root, "time");
     if (yyjson_is_int(jval))
         game_state->clock = (Sint16)yyjson_get_sint(jval);
-
-    jval = yyjson_obj_get(root, "bro_throw");
-    if (yyjson_is_uint(jval))
-        level_info->bro_throw = yyjson_get_uint(jval);
 
     if (yyjson_get_bool(yyjson_obj_get(root, "hardcore")))
         game_state->flags |= GF_HARDCORE;
