@@ -399,6 +399,42 @@
             "sprite": "tiles/cave/5",
             "depth": 20
         },
+        "Blaster": {
+            "type": "tile",
+            "sprite": "tiles/blaster/0",
+            "depth": 20,
+            "box": [0, 0, 32, 32]
+        },
+        "Blaster Down": {
+            "type": "tile",
+            "sprite": "tiles/blaster/5",
+            "depth": 20,
+            "box": [0, 0, 32, 32]
+        },
+        "Blaster Full": {
+            "type": "tile",
+            "sprite": "tiles/blaster/1",
+            "depth": 20,
+            "box": [0, 0, 32, 64]
+        },
+        "Blaster Full 2": {
+            "type": "tile",
+            "sprite": "tiles/blaster/2",
+            "depth": 20,
+            "box": [0, 0, 32, 64]
+        },
+        "Blaster Tower": {
+            "type": "tile",
+            "sprite": "tiles/blaster/3",
+            "depth": 20,
+            "box": [0, 0, 32, 64]
+        },
+        "Blaster Tower 2": {
+            "type": "tile",
+            "sprite": "tiles/blaster/4",
+            "depth": 20,
+            "box": [0, 0, 32, 64]
+        },
         "Hill": {
             "type": "background",
             "sprite": "scenery/hill",
@@ -1481,6 +1517,24 @@
             "id": 78,
             "sprite": "enemies/fake_brick"
         },
+        "Bill Blaster": {
+            "type": "actor",
+            "id": 81,
+            "sprite": "editor/bill_blaster",
+            "values": [
+                {
+                    "name": "Fire Speed",
+                    "index": 0,
+                    "default": 1
+                },
+                {
+                    "name": "Bullet Speed",
+                    "index": 1,
+                    "type": "fixed",
+                    "default": 212992
+                }
+            ]
+        },
         "Thwomp": {
             "type": "actor",
             "id": 89,
@@ -1605,6 +1659,17 @@
                 {
                     "name": "Cave",
                     "items": ["Cave Top Left", "Cave Top", "Cave Top Right", "Cave Left", "Cave Middle", "Cave Right"]
+                },
+                {
+                    "name": "Blaster",
+                    "items": [
+                        "Blaster",
+                        "Blaster Full",
+                        "Blaster Full 2",
+                        "Blaster Tower",
+                        "Blaster Tower 2",
+                        "Blaster Down"
+                    ]
                 }
             ]
         },
@@ -1743,6 +1808,10 @@
                 {
                     "name": "Hazards",
                     "items": ["Fake Brick", "Electric Coral"]
+                },
+                {
+                    "name": "Artillery",
+                    "items": ["Bill Blaster"]
                 },
                 "Goomba",
                 "Roto-Disc",

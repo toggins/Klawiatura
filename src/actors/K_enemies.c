@@ -91,7 +91,10 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
         if (ANY_FLAG(actor, FLG_ARTILLERY_DEAD))
             return actor;
 
-        actor->vel.x = Fmul(actor->vel.x, 45371);
+        if (actor->vel.x > Fx0)
+            actor->vel.x = 147456;
+        else if (actor->vel.x < Fx0)
+            actor->vel.x = -147456;
         FLAG_ON(actor, FLG_ARTILLERY_DEAD);
 
         if (kick)

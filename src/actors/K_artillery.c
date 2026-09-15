@@ -95,3 +95,59 @@ const ActorTable TAB_BULLET_BILL = {
     .draw = draw_bullet_bill,
     .collide = collide_bullet_bill,
 };
+
+/* ============
+   BILL BLASTER
+   ============ */
+
+static void load_bill_blaster() {
+    load_sound("bang/0", AKL_NEVER);
+    load_actor(ACT_EXPLODE);
+    load_actor(ACT_BULLET_BILL);
+}
+
+static void create_bill_blaster(GameActor* actor) {
+    VAL(actor, ARTILLERY_FIRE_SPEED) = 1;
+    VAL(actor, ARTILLERY_BULLET_SPEED) = 212992;
+
+    FLAG_OFF(actor, FLG_VISIBLE);
+}
+
+static void tick_bill_blaster(GameActor* actor) {
+    const GameState* game_state = gamestate();
+    if ((game_state->time % 10) == 0)
+        FLAG_OFF(actor, FLG_ARTILLERY_BLOCKED);
+
+    const FVec2 ppos = nearest_player_pos(actor->pos);
+    if (actor->pos.x < (ppos.x + Int2Fx(80)) && actor->pos.x > (ppos.x - Int2Fx(80)))
+        FLAG_ON(actor, FLG_ARTILLERY_BLOCKED);
+
+    if (!ANY_FLAG(actor, FLG_ARTILLERY_BLOCKED) && in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
+        VAL(actor, ARTILLERY_FIRE) += VAL(actor, ARTILLERY_FIRE_SPEED);
+
+    if (VAL(actor, ARTILLERY_FIRE) > 25 && (actor->pos.x > ppos.x || actor->pos.x < ppos.x)) {
+        VAL(actor, ARTILLERY_FIRE) = -50 - rng(150);
+
+        GameActor* bullet = create_actor(ACT_BULLET_BILL, actor->pos);
+        if (bullet != NULL) {
+            if (actor->pos.x > ppos.x) {
+                bullet->vel.x = -VAL(actor, ARTILLERY_BULLET_SPEED);
+                FLAG_ON(bullet, FLG_X_FLIP);
+            } else {
+                bullet->vel.x = VAL(actor, ARTILLERY_BULLET_SPEED);
+            }
+
+            bullet->vel.x = Fmul(bullet->vel.x, (game_state->flags & GF_FUNNY_TANKS) ? Int2Fx(2) : Fx1);
+        }
+
+        create_actor(ACT_EXPLODE, Vadd(actor->pos, (FVec2){(actor->pos.x > ppos.x) ? Int2Fx(-16) : Int2Fx(16), Fx0}));
+
+        play_state_sound("bang/0", PLAY_POS, A_ACTOR(actor));
+    }
+}
+
+const ActorTable TAB_BILL_BLASTER = {
+    .load = load_bill_blaster,
+    .create = create_bill_blaster,
+    .tick = tick_bill_blaster,
+};

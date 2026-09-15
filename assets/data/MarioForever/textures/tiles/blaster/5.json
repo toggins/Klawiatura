@@ -1,0 +1,5 @@
+{
+    "texture": "tiles/blaster",
+    "size": [33, 32],
+    "uvs": [1, 33, 34, 1]
+}
