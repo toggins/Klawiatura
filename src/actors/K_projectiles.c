@@ -355,17 +355,21 @@ static void tick_bullet(GameActor* actor) {
     if (VAL(actor, PROJECTILE_FRAME) <= 0) {
         const FVec2 ovel = actor->vel;
         actor->vel.x = actor->vel.y = 1;
+
         displace_actor_soft(actor);
+        collide_actor(actor);
+
         move_actor(actor, actor->last_pos);
         actor->vel = ovel;
 
-        if (!TOUCHING(actor, TOUCH_SIDES))
+        if (!TOUCHING(actor, TOUCH_SIDES) && !ANY_FLAG(actor, FLG_PROJECTILE_HIT)) {
             displace_actor_soft(actor);
+            collide_actor(actor);
+        }
     } else {
         displace_actor_soft(actor);
+        collide_actor(actor);
     }
-
-    collide_actor(actor);
 
     if (TOUCHING(actor, TOUCH_SIDES) || ANY_FLAG(actor, FLG_PROJECTILE_HIT)) {
         GameActor* explode = create_actor(ACT_EXPLODE2, actor->pos);
