@@ -171,6 +171,11 @@ static void collide(GameActor* actor, GameActor* from) {
         hit_hammer(actor, from, 100);
         break;
     }
+
+    case ACT_BULLET_PROJECTILE: {
+        hit_bullet(actor, from, 100);
+        break;
+    }
     }
 }
 
@@ -272,6 +277,9 @@ static void collide_shell(GameActor* actor, GameActor* from) {
         break;
     case ACT_HAMMER_PROJECTILE:
         hit_hammer(actor, from, 100);
+        break;
+    case ACT_BULLET_PROJECTILE:
+        hit_bullet(actor, from, 100);
         break;
     }
 }
@@ -427,6 +435,11 @@ static void collide_paratroopa(GameActor* actor, GameActor* from) {
         hit_hammer(actor, from, 100);
         break;
     }
+
+    case ACT_BULLET_PROJECTILE: {
+        hit_bullet(actor, from, 100);
+        break;
+    }
     }
 }
 
@@ -546,6 +559,11 @@ static void collide_buzzy(GameActor* actor, GameActor* from) {
         hit_hammer(actor, from, 100);
         break;
     }
+
+    case ACT_BULLET_PROJECTILE: {
+        block_bullet(from);
+        break;
+    }
     }
 }
 
@@ -612,6 +630,9 @@ static void collide_buzzy_shell(GameActor* actor, GameActor* from) {
         break;
     case ACT_HAMMER_PROJECTILE:
         hit_hammer(actor, from, 100);
+        break;
+    case ACT_BULLET_PROJECTILE:
+        block_bullet(from);
         break;
     }
 }

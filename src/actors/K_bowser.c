@@ -434,7 +434,8 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
     }
 
-    case ACT_FIREBALL_PROJECTILE: {
+    case ACT_FIREBALL_PROJECTILE:
+    case ACT_BULLET_PROJECTILE: {
         if (get_player(from->player) == NULL || VAL(actor, BOWSER_HURT) > 0)
             break;
 

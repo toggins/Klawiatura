@@ -1,0 +1,6 @@
+{
+    "texture": "effects/explode/alt",
+    "size": [10, 10],
+    "offset": [4, 5],
+    "uvs": [225, 33, 235, 43]
+}

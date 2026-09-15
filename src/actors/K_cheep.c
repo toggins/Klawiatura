@@ -269,6 +269,11 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
     }
 
+    case ACT_BULLET_PROJECTILE: {
+        hit_bullet(actor, from, 100);
+        break;
+    }
+
     case ACT_KOOPA_SHELL:
     case ACT_CODER_CLONE_RUN:
     case ACT_BUZZY_SHELL: {
@@ -349,6 +354,9 @@ static void collide_blue(GameActor* actor, GameActor* from) {
         break;
     case ACT_HAMMER_PROJECTILE:
         hit_hammer(actor, from, 500);
+        break;
+    case ACT_BULLET_PROJECTILE:
+        hit_bullet(actor, from, 500);
         break;
     case ACT_KOOPA_SHELL:
     case ACT_CODER_CLONE_RUN:
@@ -451,6 +459,9 @@ static void collide_spiky(GameActor* actor, GameActor* from) {
         break;
     case ACT_HAMMER_PROJECTILE:
         hit_hammer(actor, from, 500);
+        break;
+    case ACT_BULLET_PROJECTILE:
+        hit_bullet(actor, from, 500);
         break;
     }
 }

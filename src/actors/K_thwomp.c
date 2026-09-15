@@ -164,6 +164,11 @@ static void collide(GameActor* actor, GameActor* from) {
         hit_hammer(actor, from, 1000);
         break;
     }
+
+    case ACT_BULLET_PROJECTILE: {
+        block_bullet(from);
+        break;
+    }
     }
 }
 

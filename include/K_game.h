@@ -229,6 +229,7 @@ enum {
     ACT_HAMMER_SUIT,
     ACT_SHOTGUN,
     ACT_FLOWER,
+    ACT_BULLET_PROJECTILE,
 
     ACT_SIZE,
 };

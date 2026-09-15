@@ -2,6 +2,7 @@
 #include "K_string.h"
 #include "K_video.h"
 
+#include "actors/K_effects.h"
 #include "actors/K_enemies.h"
 
 enum {
@@ -52,6 +53,11 @@ static void load_special(const GameActor* actor) {
         load_sprite_num("enemies/bro/silver/%u", 2, AKL_NEVER);
         break;
     }
+
+    case ACT_SHOTGUN: {
+        load_sprite_num("enemies/bro/shotgun/%u", 2, AKL_NEVER);
+        break;
+    }
     }
 
     load_actor(VAL(actor, BRO_TYPE));
@@ -72,6 +78,14 @@ static void cleanup(GameActor* actor) {
     (void)actor;
 
     decrease_ambush();
+}
+
+static void shoot_bullet(GameActor* actor, FVec2 bpos, Fixed yvel) {
+    GameActor* bullet = create_actor(ACT_BULLET_PROJECTILE, bpos);
+    if (bullet != NULL) {
+        bullet->vel.x = ANY_FLAG(actor, FLG_X_FLIP) ? (Int2Fx(-24) - Int2Fx(rng(7))) : (Int2Fx(24) + Int2Fx(rng(7)));
+        bullet->vel.y = yvel;
+    }
 }
 
 static void tick(GameActor* actor) {
@@ -214,15 +228,20 @@ static void tick(GameActor* actor) {
     if (((game_state->time * 2) % 5) <= 1 && ANY_FLAG(actor, FLG_BRO_ACTIVE)
         && in_any_view(actor->pos, Int2Fx(-32), VEF_ALL) && rng(20) == 10)
     {
-        VAL(actor, BRO_FRAME) = 0;
+        if (VAL(actor, BRO_TYPE) != ACT_SHOTGUN)
+            VAL(actor, BRO_FRAME) = 0;
         ++VAL(actor, BRO_THROW);
     }
 
     if (VAL(actor, BRO_THROW) > 0)
         ++VAL(actor, BRO_THROW);
 
-    if (VAL(actor, BRO_THROW) > levelinfo()->bro_throw) {
-        VAL(actor, BRO_FRAME) = VAL(actor, BRO_THROW) = 0;
+    if (VAL(actor, BRO_THROW)
+        > ((ActorValue)((VAL(actor, BRO_TYPE) == ACT_SHOTGUN) ? 3 : 1) * (ActorValue)(levelinfo()->bro_throw)))
+    {
+        if (VAL(actor, BRO_TYPE) != ACT_SHOTGUN)
+            VAL(actor, BRO_FRAME) = 0;
+        VAL(actor, BRO_THROW) = 0;
 
         switch (VAL(actor, BRO_TYPE)) {
         default:
@@ -257,6 +276,23 @@ static void tick(GameActor* actor) {
             play_state_sound("hammer", PLAY_POS, A_ACTOR(actor));
             break;
         }
+
+        case ACT_SHOTGUN: {
+            const FVec2 bpos
+                = Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-47) : Int2Fx(47), Int2Fx(-27)});
+
+            shoot_bullet(actor, bpos, Int2Fx(-4));
+            shoot_bullet(actor, bpos, -98304);
+            shoot_bullet(actor, bpos, 98304);
+            shoot_bullet(actor, bpos, Int2Fx(4));
+
+            GameActor* explode = create_actor(ACT_EXPLODE2, bpos);
+            if (explode != NULL)
+                VAL(explode, EFFECT_SPEED) = 125;
+
+            play_state_sound("shotgun", PLAY_POS, A_ACTOR(actor));
+            break;
+        }
         }
     }
 }
@@ -265,7 +301,9 @@ static void draw(const GameActor* actor) {
     batch_reset();
 
     const char* sprite = "enemies/bro/%i";
-    if (VAL(actor, BRO_THROW) > 0) {
+    if (VAL(actor, BRO_TYPE) == ACT_SHOTGUN) {
+        sprite = "enemies/bro/shotgun/%i";
+    } else if (VAL(actor, BRO_THROW) > 0) {
         switch (VAL(actor, BRO_TYPE)) {
         default:
             sprite = "enemies/bro/hammer/%i";
@@ -325,6 +363,11 @@ static void collide(GameActor* actor, GameActor* from) {
         hit_hammer(actor, from, 200);
         break;
     }
+
+    case ACT_BULLET_PROJECTILE: {
+        hit_bullet(actor, from, 200);
+        break;
+    }
     }
 }
 
@@ -344,7 +387,7 @@ const ActorTable TAB_BRO = {
    ========= */
 
 static void create_layer(GameActor* actor) {
-    actor->box.end.x = actor->box.end.y = Int2Fx(32);
+    actor->box.end.x = actor->box.end.y = Int2Fx(40);
 
     FLAG_OFF(actor, FLG_VISIBLE);
 }

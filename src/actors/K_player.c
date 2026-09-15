@@ -348,7 +348,7 @@ static void pre_tick(GameActor* actor) {
     if (VAL(actor, PLAYER_FLASH) > 0) {
         TOGGLE_FLAG(actor, FLG_VISIBLE);
 
-        if (!ANY_FLAG(actor, FLG_PLAYER_DESCEND)) {
+        if (!ANY_FLAG(actor, FLG_PLAYER_RESPAWNING)) {
             --VAL(actor, PLAYER_FLASH);
             if (VAL(actor, PLAYER_FLASH) <= 0 || VAL(actor, PLAYER_STARMAN) > 0)
                 FLAG_ON(actor, FLG_VISIBLE);
@@ -393,7 +393,7 @@ static void tick(GameActor* actor) {
                     *water = get_actor(game_state->water);
     const Bool was_warping = warp != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT);
 
-    if (ANY_FLAG(actor, FLG_PLAYER_DESCEND)) {
+    if (ANY_FLAG(actor, FLG_PLAYER_RESPAWNING)) {
         FVec2 npos = Vadd(actor->pos, (FVec2){Fx0, Fx1});
         if (autoscroll != NULL)
             npos = Vadd(npos, Vsub(autoscroll->pos, autoscroll->last_pos));
@@ -405,7 +405,7 @@ static void tick(GameActor* actor) {
         if (touching_solid(Radd(actor->box, actor->pos), SOL_SOLID))
             goto skip_physics;
         else
-            FLAG_OFF(actor, FLG_PLAYER_DESCEND);
+            FLAG_OFF(actor, FLG_PLAYER_RESPAWNING);
     }
 
     if (was_warping) {
@@ -685,7 +685,7 @@ static void tick(GameActor* actor) {
     }
 
     // 249, 250, 258, 259
-    if (ANY_PRESSED(player, GI_FIRE) && !ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
+    if (ANY_PRESSED(player, GI_FIRE) && !ANY_FLAG(actor, FLG_PLAYER_DUCK | FLG_PLAYER_WEAPON)) {
         Bool do_fire = FALSE;
         switch (player->powerup) {
         default:

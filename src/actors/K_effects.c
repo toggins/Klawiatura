@@ -136,7 +136,7 @@ static void create_explode(GameActor* actor) {
 }
 
 static void tick_explode(GameActor* actor) {
-    VAL(actor, EFFECT_FRAME) += 24;
+    VAL(actor, EFFECT_FRAME) += 24 + VAL(actor, EFFECT_SPEED);
     if (VAL(actor, EFFECT_FRAME) >= 300)
         FLAG_ON(actor, FLG_DESTROY);
 }
@@ -289,4 +289,30 @@ const ActorTable TAB_LAVA_SPLASH = {
     .create = create_lava_splash,
     .tick = tick_lava_splash,
     .draw = draw_lava_splash,
+};
+
+/* ===========
+   EXPLOSION 2
+   =========== */
+
+static void load_explode2() {
+    load_sprite_num("effects/explode/alt/%u", 25, AKL_NEVER);
+}
+
+static void tick_explode2(GameActor* actor) {
+    VAL(actor, EFFECT_FRAME) += 100 + VAL(actor, EFFECT_SPEED);
+    if (VAL(actor, EFFECT_FRAME) >= 2500)
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_explode2(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("effects/explode/alt/%i", VAL(actor, EFFECT_FRAME) / 100), FALSE);
+}
+
+const ActorTable TAB_EXPLODE2 = {
+    .load = load_explode2,
+    .create = create_explode,
+    .tick = tick_explode2,
+    .draw = draw_explode2,
 };

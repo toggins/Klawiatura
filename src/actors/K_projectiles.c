@@ -326,3 +326,76 @@ const ActorTable TAB_HAMMER_PROJECTILE = {
     .draw = draw_hammer,
     .collide = collide_hammer,
 };
+
+/* ======
+   BULLET
+   ====== */
+
+static void load_bullet() {
+    load_sprite("projectiles/bullet", AKL_NEVER);
+    load_actor(ACT_EXPLODE2);
+}
+
+static void create_bullet(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-20);
+    actor->box.start.y = -Fx1;
+    actor->box.end.x = Int2Fx(20);
+    actor->box.end.y = Fx1;
+
+    actor->depth = -2;
+}
+
+static void tick_bullet(GameActor* actor) {
+    if (VAL(actor, PROJECTILE_FRAME) <= 0) {
+        const FVec2 ovel = actor->vel;
+        actor->vel.x = actor->vel.y = 1;
+        displace_actor_soft(actor);
+        move_actor(actor, actor->last_pos);
+        actor->vel = ovel;
+
+        if (!TOUCHING(actor, TOUCH_SIDES))
+            displace_actor_soft(actor);
+    } else {
+        displace_actor_soft(actor);
+    }
+
+    collide_actor(actor);
+
+    if (TOUCHING(actor, TOUCH_SIDES) || ANY_FLAG(actor, FLG_PROJECTILE_HIT)) {
+        GameActor* explode = create_actor(ACT_EXPLODE2, actor->pos);
+        if (explode != NULL) {
+            VAL(explode, EFFECT_SPEED) = 125;
+            align_interp(explode, actor);
+        }
+
+        FLAG_ON(actor, FLG_DESTROY);
+
+        return;
+    }
+
+    if (++VAL(actor, PROJECTILE_FRAME) > 9) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+}
+
+static void draw_bullet(const GameActor* actor) {
+    if (VAL(actor, PROJECTILE_FRAME) > 0) {
+        batch_reset();
+        batch_angle(SDL_atan2f(Fx2Float(actor->vel.y), Fx2Float(actor->vel.x)));
+        draw_actor(actor, "projectiles/bullet", FALSE);
+    }
+}
+
+static void collide_bullet(GameActor* actor, GameActor* from) {
+    if (from->type == ACT_PLAYER && get_player(actor->player) == NULL)
+        hit_player(from);
+}
+
+const ActorTable TAB_BULLET_PROJECTILE = {
+    .load = load_bullet,
+    .create = create_bullet,
+    .tick = tick_bullet,
+    .draw = draw_bullet,
+    .collide = collide_bullet,
+};

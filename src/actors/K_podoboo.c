@@ -64,8 +64,7 @@ static void draw(const GameActor* actor) {
 }
 
 static void collide(GameActor* actor, GameActor* from) {
-    if (from->type == ACT_PLAYER)
-        maybe_hit_player(actor, from);
+    maybe_hit_player(actor, from);
 }
 
 const ActorTable TAB_PODOBOO = {

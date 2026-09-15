@@ -250,6 +250,10 @@ void hit_hammer(GameActor* actor, GameActor* from, Sint32 points) {
     hit_fireball(actor, from, points);
 }
 
+void hit_bullet(GameActor* actor, GameActor* from, Sint32 points) {
+    hit_fireball(actor, from, points);
+}
+
 void block_fireball(GameActor* from) {
     if (from != NULL && get_player(from->player) != NULL) {
         FLAG_ON(from, FLG_PROJECTILE_HIT | FLG_PROJECTILE_HIT_BLOCK);
@@ -258,6 +262,10 @@ void block_fireball(GameActor* from) {
 }
 
 void block_beetroot(GameActor* from) {
+    block_fireball(from);
+}
+
+void block_bullet(GameActor* from) {
     block_fireball(from);
 }
 

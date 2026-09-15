@@ -122,6 +122,15 @@ static void collide(GameActor* actor, GameActor* from) {
         hit_hammer(actor, from, 100);
         break;
     }
+
+    case ACT_BULLET_PROJECTILE: {
+        if (ANY_FLAG(actor, FLG_SPINY_GRAY))
+            block_bullet(from);
+        else
+            hit_bullet(actor, from, 100);
+
+        break;
+    }
     }
 }
 

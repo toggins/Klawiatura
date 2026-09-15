@@ -94,7 +94,8 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
 
     case ACT_FIRE_FLOWER:
     case ACT_BEETROOT:
-    case ACT_GREEN_LUI: {
+    case ACT_GREEN_LUI:
+    case ACT_HAMMER_SUIT: {
         if (from != NULL) {
             GamePlayer* player = get_player(from->player);
             if (player != NULL && player->powerup == POW_NONE)
@@ -386,6 +387,11 @@ static void on_other_sides(GameActor* actor, GameActor* from) {
 
         break;
     }
+
+    case ACT_BULLET_PROJECTILE: {
+        bump_block(actor, from, TRUE);
+        break;
+    }
     }
 }
 
@@ -411,6 +417,11 @@ static void on_bottom(GameActor* actor, GameActor* from) {
         if (!ANY_FLAG(actor, FLG_BLOCK_HIDDEN))
             on_other_sides(actor, from);
 
+        break;
+    }
+
+    case ACT_BULLET_PROJECTILE: {
+        on_other_sides(actor, from);
         break;
     }
     }

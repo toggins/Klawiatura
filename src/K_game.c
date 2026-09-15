@@ -1813,7 +1813,7 @@ GameActor* respawn_player(GamePlayer* player) {
             break;
 
         VAL(pawn, PLAYER_FLASH) = 100;
-        FLAG_ON(pawn, FLG_PLAYER_DESCEND);
+        FLAG_ON(pawn, FLG_PLAYER_RESPAWNING);
         break;
     }
     }
@@ -1980,6 +1980,13 @@ void win_player(GamePlayer* player) {
         case ACT_GOAL_BAR: {
             if (!ANY_FLAG(actor, FLG_BAR_FLY))
                 actor->vel.y = Fx0;
+
+            break;
+        }
+
+        case ACT_SHOTGUN: {
+            give_points(actor, get_player(actor->player), -1);
+            FLAG_ON(actor, FLG_DESTROY);
 
             break;
         }

@@ -74,6 +74,11 @@ static void collide_bullet_bill(GameActor* actor, GameActor* from) {
         break;
     }
 
+    case ACT_BULLET_PROJECTILE: {
+        block_bullet(from);
+        break;
+    }
+
     case ACT_KOOPA_SHELL:
     case ACT_CODER_CLONE_RUN:
     case ACT_BUZZY_SHELL: {
