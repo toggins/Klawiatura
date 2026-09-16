@@ -11,6 +11,7 @@
 #include "K_net.h"
 #include "K_replay.h"
 #include "K_string.h"
+#include "K_tick.h"
 #include "K_video.h"
 
 #define MAX_GAME_PACKETS 64
@@ -114,8 +115,25 @@ static void on_lobbies_found(const NutBlast_Lobby* lobbies, size_t count) {
 }
 
 static void on_master_changed(NetID pid) {
+    const NetID master = get_master_peer();
+    if (master == get_local_peer())
+        update_lobby_data();
+
     if (pid > 0)
-        chat_message(LFMT("chat.peer_hosting", 's', get_peer_name(get_master_peer())), B_U4_YELLOW);
+        chat_message(LFMT("chat.peer_hosting", 's', get_peer_name(master)), B_U4_YELLOW);
+}
+
+static void on_lobby_data_changed(NutBlast_FieldDiff diff) {
+    const NetID master = get_master_peer();
+    if (master > 0 && get_local_peer() == master)
+        return;
+
+    if (SDL_strcmp(diff.name, "tickrate") == 0) {
+        set_tickrate(SDL_atoi(diff.new_value));
+        chat_message(LFMT("chat.tickrate", 'f', (float)get_tickrate() / (float)DEFAULT_TICKRATE), B_U4_YELLOW);
+
+        return;
+    }
 }
 
 static void on_peer_data_changed(NetID pid, NutBlast_FieldDiff diff) {
@@ -169,6 +187,7 @@ void net_init() {
     NutBlast_OnPlayerLeft(on_peer_left);
     NutBlast_OnLobbiesFound(on_lobbies_found);
     NutBlast_OnMasterChanged(on_master_changed);
+    NutBlast_OnLobbyMetadataChanged(on_lobby_data_changed);
     NutBlast_OnPlayerMetadataChanged(on_peer_data_changed);
 
     clear_player_peer_tables();
@@ -424,7 +443,7 @@ const NetID* get_peers() {
 }
 
 NetID get_local_peer() {
-    return is_connected() ? NutBlast_GetPlayerID() : 0;
+    return NutBlast_GetPlayerID();
 }
 
 NetID get_master_peer() {
@@ -654,7 +673,13 @@ size_t get_lobby_list_count() {
 }
 
 void update_lobby_data() {
-    NutBlast_SetLobbyField("world", CLIENT.world[0] == '\0' ? NULL : CLIENT.world);
+    const char* field = get_lobby_string("world");
+    if (field == NULL || SDL_strcmp(CLIENT.world, field) != 0)
+        NutBlast_SetLobbyField("world", (CLIENT.world[0] == '\0') ? NULL : CLIENT.world);
+
+    const int tickrate = get_tickrate();
+    if (tickrate != get_lobby_number("tickrate"))
+        NutBlast_SetLobbyField("tickrate", fmt("%i", tickrate));
 }
 
 void update_peer_data() {

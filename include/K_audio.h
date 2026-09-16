@@ -37,16 +37,14 @@ typedef Uint8 PlayFlags;
 
 typedef struct {
     PlayFlags flags;
-    Uint32 offset;
-    float pos[2];
+    float offset, pos[2];
 
     TinyHash sound_key;
 } SoundChannel;
 
 typedef struct {
     PlayFlags flags;
-    Uint32 offset;
-    float volume[3], time[2];
+    float offset, volume[3], time[2];
 
     TinyHash track_key;
 } TrackChannel;

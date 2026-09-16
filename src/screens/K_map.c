@@ -485,7 +485,7 @@ static void pre_interp() {
     MapPlayer* player = &map_state->player;
     MapCamera* camera = &map_state->camera;
 
-    if (get_framerate() <= TICKRATE) {
+    if (get_framerate() <= (float)get_tickrate()) {
         label->interp.from = label->interp.to = label->interp.y = label->y;
 
         player->interp.from[0] = player->interp.to[0] = player->interp.pos[0] = player->pos[0];
@@ -524,7 +524,7 @@ static void pre_interp() {
 }
 
 static void interp() {
-    if (get_framerate() <= TICKRATE)
+    if (get_framerate() <= (float)get_tickrate())
         return;
 
     MapLabel* label = &map_state->label;

@@ -8,6 +8,7 @@
 #include "K_locale.h"
 #include "K_net.h"
 #include "K_string.h"
+#include "K_tick.h"
 #include "K_video.h"
 
 #include "uis/K_message.h"
@@ -18,6 +19,7 @@ enum {
     MEN_MAIN,
     MEN_LANGUAGE,
     MEN_CONTROLS,
+    MEN_GAMEPLAY,
     MEN_VIDEO,
     MEN_AUDIO,
     MEN_NETWORK,
@@ -25,18 +27,20 @@ enum {
     MEN_SIZE,
 };
 
+static Bool tickrate_disabled();
 static const char *fmt_language(size_t), *fmt_name(size_t), *fmt_server(size_t), *fmt_show_user_messages(size_t),
     *fmt_language_option(size_t), *fmt_resolution(size_t), *fmt_fullscreen(size_t), *fmt_vsync(size_t),
     *fmt_master_volume(size_t), *fmt_sound_volume(size_t), *fmt_music_volume(size_t), *fmt_audio_in_background(size_t),
     *fmt_input_delay(size_t), *fmt_device(size_t), *fmt_up(size_t), *fmt_left(size_t), *fmt_down(size_t),
     *fmt_right(size_t), *fmt_jump(size_t), *fmt_run(size_t), *fmt_fire(size_t), *fmt_chat(size_t),
-    *fmt_record_replay(size_t), *fmt_framerate(size_t), *fmt_texture_filter(size_t), *fmt_xscroll(size_t);
+    *fmt_record_replay(size_t), *fmt_framerate(size_t), *fmt_texture_filter(size_t), *fmt_xscroll(size_t),
+    *fmt_tickrate(size_t);
 static void enter_language_menu(MenuType), submit_name(Bool), submit_server(Bool), show_user_messages_cycle(Sint8),
     language_option(), resolution_cycle(Sint8), fullscreen_cycle(Sint8), master_volume_cycle(Sint8),
     sound_volume_cycle(Sint8), music_volume_cycle(Sint8), audio_in_background_cycle(Sint8), vsync_cycle(Sint8),
     input_delay_cycle(Sint8), up_option(), left_option(), down_option(), right_option(), jump_option(), run_option(),
     fire_option(), chat_option(), record_replay_option(), framerate_cycle(Sint8), texture_filter_cycle(Sint8),
-    xscroll_cycle(Sint8);
+    xscroll_cycle(Sint8), tickrate_cycle(Sint8);
 
 static Catalog CATALOG = {
 	.current = MEN_MAIN,
@@ -45,6 +49,7 @@ static Catalog CATALOG = {
 		[MEN_MAIN] = {.name = "option.options"},
 		[MEN_LANGUAGE] = {.name = "option.language", .enter = enter_language_menu},
 		[MEN_CONTROLS] = {.name = "option.controls"},
+        [MEN_GAMEPLAY] = {.name = "option.gameplay"},
 		[MEN_VIDEO] = {.name = "option.video"},
 		[MEN_AUDIO] = {.name = "option.audio"},
         [MEN_NETWORK] = {.name = "option.network"},
@@ -54,9 +59,9 @@ static Catalog CATALOG = {
 		[MEN_MAIN] = {
             {.fmt = fmt_name, OPTION_PROMPT(CLIENT.name), .submit = submit_name},
 			{.fmt = fmt_language, .menu = MEN_LANGUAGE},
-            {.fmt = fmt_xscroll, .cycle = xscroll_cycle},
 			{},
 			{.name = "option.controls", .menu = MEN_CONTROLS},
+            {.name = "option.gameplay", .menu = MEN_GAMEPLAY},
 			{.name = "option.video", .menu = MEN_VIDEO},
 			{.name = "option.audio", .menu = MEN_AUDIO},
             {.name = "option.network", .menu = MEN_NETWORK},
@@ -79,6 +84,11 @@ static Catalog CATALOG = {
             {.fmt = fmt_chat, .callback = chat_option},
             {.fmt= fmt_record_replay, .callback = record_replay_option},
 		},
+
+        [MEN_GAMEPLAY] = {
+            {.fmt = fmt_xscroll, .cycle = xscroll_cycle},
+            {.fmt = fmt_tickrate, .cycle = tickrate_cycle, .disabled = tickrate_disabled},
+        },
 
 		[MEN_VIDEO] = {
 			{.fmt = fmt_resolution, .cycle = resolution_cycle},
@@ -168,6 +178,7 @@ static void xscroll_cycle(Sint8 cycle) {
     (void)cycle;
 
     CLIENT.xscroll = !CLIENT.xscroll;
+    update_peer_data();
 
     if (CLIENT.seen_xscroll_notice || get_screen() != SCR_GAME)
         return;
@@ -179,6 +190,23 @@ static void xscroll_cycle(Sint8 cycle) {
     userdata->title = "message.notice";
     userdata->text = "message.xscroll_notice";
     userdata->cancel = saw_xscroll_notice;
+}
+
+static Bool tickrate_disabled() {
+    return is_connected() && is_client();
+}
+
+static const char* fmt_tickrate(size_t idx) {
+    (void)idx;
+
+    return fmt("%s: %gx", LFMT("option.tickrate"), (float)get_tickrate() / (float)DEFAULT_TICKRATE);
+}
+
+static void tickrate_cycle(Sint8 cycle) {
+    (void)cycle;
+
+    set_tickrate((get_tickrate() == DEFAULT_TICKRATE) ? MAX_TICKRATE : DEFAULT_TICKRATE);
+    update_lobby_data();
 }
 
 static const char* fmt_server(size_t idx) {

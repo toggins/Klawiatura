@@ -469,8 +469,9 @@ void tick_audio_state(Bool rollback) {
         if (sound == NULL)
             continue;
 
-        dschan->offset += 1000 / TICKRATE;
-        if (dschan->offset > (sound->length + (1000 / TICKRATE)))
+        const float inc = 1000.f / (float)get_tickrate();
+        dschan->offset += inc;
+        if (dschan->offset > ((float)sound->length + inc))
             dschan->sound_key = 0;
     }
 
@@ -489,11 +490,11 @@ void tick_audio_state(Bool rollback) {
             dtchan->volume[0] = glm_lerp(dtchan->volume[1], dtchan->volume[2], dtchan->time[0] / dtchan->time[1]);
         }
 
-        dtchan->offset += 1000 / TICKRATE;
+        dtchan->offset += 1000.f / (float)get_tickrate();
         if (dtchan->flags & PLAY_LOOPING)
-            while (dtchan->offset >= track->loop[1])
-                dtchan->offset = track->loop[0] + (dtchan->offset - track->loop[1]);
-        else if (dtchan->offset >= track->length)
+            while (dtchan->offset >= (float)track->loop[1])
+                dtchan->offset = (float)track->loop[0] + (dtchan->offset - (float)track->loop[1]);
+        else if (dtchan->offset >= (float)track->length)
             dtchan->track_key = 0;
     }
 }
@@ -547,7 +548,7 @@ void play_state_sound(const char* name, PlayFlags flags, const float pos[2]) {
     const SoundChannel* last_sound
         = &desired_audio_state->sounds[(desired_audio_state->next_sound <= 0) ? MAX_STATE_SOUNDS
                                                                               : (desired_audio_state->next_sound - 1)];
-    if (last_sound->sound_key == key && last_sound->offset <= 0) {
+    if (last_sound->sound_key == key && last_sound->offset <= 0.f) {
         if (flags & PLAY_PAN) {
             if (SDL_fabsf(last_sound->pos[0] - ((pos == NULL) ? 0.f : pos[0])) < 0.05f)
                 return;
@@ -597,7 +598,7 @@ void play_state_track(PlayerID pid, const char* name, PlayFlags flags, Uint32 of
         TrackChannel* dtchan = &desired_audio_state->tracks[i];
         if (key != dtchan->track_key || flags != dtchan->flags) {
             dtchan->track_key = key;
-            dtchan->offset = offset;
+            dtchan->offset = (float)offset;
             dtchan->flags = flags;
 
             dtchan->volume[0] = dtchan->volume[1] = 0.f;

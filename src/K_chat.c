@@ -78,7 +78,7 @@ void chat_message(const char* str, const Uint8 color[4]) {
         lines[i] = lines[i - 1];
 
     SDL_memcpy(lines[0].color, color, sizeof(lines[0].color));
-    lines[0].time = 6 * TICKRATE;
+    lines[0].time = 6 * get_tickrate();
     lines[0].str = SDL_strdup(str);
 
     if (SDL_memcmp(color, B_U4_WHITE, 4) == 0)
@@ -111,8 +111,8 @@ void draw_chat() {
             break;
 
         const Uint8* color = lines[i].color;
-        const float a
-            = (typing ? 1.f : (0.75f * (SDL_min(lines[i].time, (float)TICKRATE) / (float)TICKRATE))) * (float)color[3];
+        const float tickrate = (float)get_tickrate(),
+                    a = (typing ? 1.f : (0.75f * (SDL_min(lines[i].time, tickrate) / tickrate))) * (float)color[3];
 
         batch_pos(B_F3_XY(16.f, y));
         batch_color(B_U4(color[0], color[1], color[2], a));

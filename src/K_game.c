@@ -1431,7 +1431,7 @@ void tick_game() {
 }
 
 void pre_interp_game() {
-    if (get_framerate() <= TICKRATE) {
+    if (get_framerate() <= (float)get_tickrate()) {
         for (PlayerID i = 0; i < game_context.num_players; i++) {
             InterpPlayer* iplayer = &interp_state->players[i];
             iplayer->from = iplayer->to = iplayer->current = game_state->players[i].xscroll;
@@ -1467,7 +1467,7 @@ void pre_interp_game() {
 }
 
 void interp_game() {
-    if (get_framerate() <= TICKRATE)
+    if (get_framerate() <= (float)get_tickrate())
         return;
 
     const Fixed t = Float2Fx(pendingticks());

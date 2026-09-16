@@ -7,6 +7,7 @@
 #include "K_locale.h"
 #include "K_log.h"
 #include "K_net.h"
+#include "K_tick.h"
 #include "K_video.h"
 
 typedef struct {
@@ -92,6 +93,7 @@ static const ConfigOption OPTIONS[] = {
     CVAR(name, string),
     CVAR(language, string),
     CVAR(xscroll, bool),
+    CVAR(tickrate, int),
     CVAR(width, int),
     CVAR(height, int),
     CVAR(fullscreen, bool),

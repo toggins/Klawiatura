@@ -9,6 +9,8 @@ static Uint64 last_time = 0;
 static float delta_ticks = 0.f, pending_ticks = 0.f;
 static float screen_ticks = 0.f, ui_ticks = 0.f;
 
+static int tickrate = DEFAULT_TICKRATE;
+
 void from_scratch() {
     last_time = SDL_GetTicksNS();
     delta_ticks = pending_ticks = screen_ticks = ui_ticks = 0.f;
@@ -17,7 +19,7 @@ void from_scratch() {
 void new_frame() {
     const Uint64 current_time = SDL_GetTicksNS();
     const float ahead = frames_ahead();
-    delta_ticks = ((float)(current_time - last_time) * ((float)TICKRATE - SDL_clamp(ahead, 0.f, 1.f))) / 1000000000.f;
+    delta_ticks = ((float)(current_time - last_time) * ((float)tickrate - SDL_clamp(ahead, 0.f, 1.f))) / 1000000000.f;
     last_time = current_time;
 
     pending_ticks += delta_ticks;
@@ -53,4 +55,12 @@ float screenticks() {
 
 float uiticks() {
     return ui_ticks;
+}
+
+int get_tickrate() {
+    return tickrate;
+}
+
+void set_tickrate(int tps) {
+    tickrate = SDL_clamp(tps, DEFAULT_TICKRATE, MAX_TICKRATE);
 }
