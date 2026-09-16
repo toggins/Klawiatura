@@ -544,6 +544,12 @@ void play_state_sound(const char* name, PlayFlags flags, const float pos[2]) {
     const Sound* sound = get_sound_key(key);
     WHATEVER(sound, "Unknown sound \"%s\"", name);
 
+    const SoundChannel* last_sound
+        = &desired_audio_state->sounds[(desired_audio_state->next_sound <= 0) ? MAX_STATE_SOUNDS
+                                                                              : (desired_audio_state->next_sound - 1)];
+    if (last_sound->sound_key == key && last_sound->offset <= 0)
+        return;
+
     SoundChannel* dschan = &desired_audio_state->sounds[desired_audio_state->next_sound];
     dschan->flags = flags;
     dschan->offset = 0;
