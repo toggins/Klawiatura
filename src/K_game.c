@@ -1585,7 +1585,7 @@ static void draw_hud() {
         batch_string("hud", 16.f, fmt("%i", game_state->clock));
     }
 
-    if (view_player != local_player) {
+    if (view_player != local_player && get_replay_state() != RPS_PLAYING) {
         const char* name = get_peer_name(player_to_peer(view_player));
         if (name != NULL) {
             batch_pos(B_F3_XY(32.f, 64.f));
