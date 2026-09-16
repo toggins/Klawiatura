@@ -1,6 +1,6 @@
 {
     "label": "%ui/world/goomba_party",
-    "tracks": ["smw/overworld"],
+    "tracks": [{ "track": "smw/overworld" }],
     "size": [7500, 480],
     "bounds": [0, 0, 7500, 480],
     "time": 360,
