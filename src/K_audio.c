@@ -547,8 +547,22 @@ void play_state_sound(const char* name, PlayFlags flags, const float pos[2]) {
     const SoundChannel* last_sound
         = &desired_audio_state->sounds[(desired_audio_state->next_sound <= 0) ? MAX_STATE_SOUNDS
                                                                               : (desired_audio_state->next_sound - 1)];
-    if (last_sound->sound_key == key && last_sound->offset <= 0)
-        return;
+    if (last_sound->sound_key == key && last_sound->offset <= 0) {
+        if (flags & PLAY_PAN) {
+            if (SDL_fabsf(last_sound->pos[0] - ((pos == NULL) ? 0.f : pos[0])) < 0.05f)
+                return;
+        } else if (flags & PLAY_POS) {
+            float dx = last_sound->pos[0], dy = last_sound->pos[1];
+            if (pos != NULL) {
+                dx -= pos[0];
+                dy -= pos[1];
+            }
+            if (SDL_sqrtf((dx * dx) + (dy * dy)) < 32.f)
+                return;
+        } else {
+            return;
+        }
+    }
 
     SoundChannel* dschan = &desired_audio_state->sounds[desired_audio_state->next_sound];
     dschan->flags = flags;
