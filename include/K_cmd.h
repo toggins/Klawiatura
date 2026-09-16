@@ -38,6 +38,7 @@ typedef struct {
     Bool show_user_messages;
 
     Uint8 input_delay;
+    Uint8 always_run;
 
     Bool texture_filter;
     Bool show_hud;

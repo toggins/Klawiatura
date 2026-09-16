@@ -34,13 +34,13 @@ static const char *fmt_language(size_t), *fmt_name(size_t), *fmt_server(size_t),
     *fmt_input_delay(size_t), *fmt_device(size_t), *fmt_up(size_t), *fmt_left(size_t), *fmt_down(size_t),
     *fmt_right(size_t), *fmt_jump(size_t), *fmt_run(size_t), *fmt_fire(size_t), *fmt_chat(size_t),
     *fmt_record_replay(size_t), *fmt_framerate(size_t), *fmt_texture_filter(size_t), *fmt_xscroll(size_t),
-    *fmt_tickrate(size_t);
+    *fmt_tickrate(size_t), *fmt_always_run(size_t);
 static void enter_language_menu(MenuType), submit_name(Bool), submit_server(Bool), show_user_messages_cycle(Sint8),
     language_option(), resolution_cycle(Sint8), fullscreen_cycle(Sint8), master_volume_cycle(Sint8),
     sound_volume_cycle(Sint8), music_volume_cycle(Sint8), audio_in_background_cycle(Sint8), vsync_cycle(Sint8),
     input_delay_cycle(Sint8), up_option(), left_option(), down_option(), right_option(), jump_option(), run_option(),
     fire_option(), chat_option(), record_replay_option(), framerate_cycle(Sint8), texture_filter_cycle(Sint8),
-    xscroll_cycle(Sint8), tickrate_cycle(Sint8);
+    xscroll_cycle(Sint8), tickrate_cycle(Sint8), always_run_cycle(Sint8);
 
 static Catalog CATALOG = {
 	.current = MEN_MAIN,
@@ -88,6 +88,7 @@ static Catalog CATALOG = {
         [MEN_GAMEPLAY] = {
             {.fmt = fmt_xscroll, .cycle = xscroll_cycle},
             {.fmt = fmt_tickrate, .cycle = tickrate_cycle, .disabled = tickrate_disabled},
+            {.fmt = fmt_always_run, .cycle = always_run_cycle},
         },
 
 		[MEN_VIDEO] = {
@@ -207,6 +208,25 @@ static void tickrate_cycle(Sint8 cycle) {
 
     set_tickrate((get_tickrate() == DEFAULT_TICKRATE) ? MAX_TICKRATE : DEFAULT_TICKRATE);
     update_lobby_data();
+}
+
+static const char* fmt_always_run(size_t idx) {
+    (void)idx;
+
+    return fmt("%s: %s", LFMT("option.always_run"),
+        LFMT((CLIENT.always_run <= 0) ? "value.no"
+                                      : ((CLIENT.always_run == 1) ? "value.hold_run_to_walk" : "value.yes")));
+}
+
+static void always_run_cycle(Sint8 cycle) {
+    if (cycle > 0) {
+        CLIENT.always_run = (CLIENT.always_run + 1) % 3;
+    } else if (cycle < 0) {
+        if (CLIENT.always_run <= 0)
+            CLIENT.always_run = 2;
+        else
+            --CLIENT.always_run;
+    }
 }
 
 static const char* fmt_server(size_t idx) {
