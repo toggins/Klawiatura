@@ -10,10 +10,10 @@
 **Klawiatura** (a.k.a. **Mario Together**) is an enhanced port of Mario Forever 4.0, written in plain C.
 
 <p align="center">
-    <img src=".github/assets/screenshot1.png" width="30%" />
-    <img src=".github/assets/screenshot2.png" width="30%" />
-    <img src=".github/assets/screenshot3.png" width="30%" />
-    <img src=".github/assets/screenshot4.png" width="30%" />
+    <img src=".github/assets/screenshot1.png" width="40%" />
+    <img src=".github/assets/screenshot2.png" width="40%" />
+    <img src=".github/assets/screenshot3.png" width="40%" />
+    <img src=".github/assets/screenshot4.png" width="40%" />
 </p>
 
 ### Features
