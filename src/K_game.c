@@ -368,7 +368,9 @@ static Uint32 game_hash = 0;
 static PlayerID local_player = NULL_PLAYER, view_player = NULL_PLAYER;
 
 static Surface* game_surface = NULL;
+
 static GekkoSession* game_session = NULL;
+static Uint8 game_session_sync[MAX_PEERS][2] = {0};
 
 GameContext queue_game_context = {0};
 static GameContext game_context = {0};
@@ -794,6 +796,7 @@ void start_game(const GameContext* ctx) {
     // Session
     const Bool spectating = i_am_spectating();
     gekko_create(&game_session, spectating ? GekkoSpectateSession : GekkoGameSession);
+    SDL_zeroa(game_session_sync);
 
     GekkoConfig cfg = {0};
     cfg.num_players = game_context.num_players;
@@ -1336,28 +1339,42 @@ void tick_game() {
         switch (event->type) {
         case GekkoDesyncDetected: {
             struct GekkoDesynced desync = event->data.desynced;
-
-            boot_to_menu(
-                LFMT("message.player_desynced", 's', get_peer_name(player_to_peer((PlayerID)desync.remote_handle))));
-
             WTF("Tick: %i", desync.frame);
             WTF("Local Checksum: %i", desync.local_checksum);
             WTF("Remote Checksum: %i", desync.remote_checksum);
+
+            boot_to_menu(
+                LFMT("message.player_desynced", 's', get_peer_name(player_to_peer((PlayerID)desync.remote_handle))));
             return;
+        }
+
+        case GekkoPlayerSyncing: {
+            struct GekkoSyncing sync = event->data.syncing;
+            game_session_sync[sync.handle][0] = sync.current;
+            game_session_sync[sync.handle][1] = sync.max;
+
+            break;
         }
 
         case GekkoPlayerConnected: {
             struct GekkoConnected cn = event->data.connected;
-            INFO("%s %i connected", (cn.handle >= MAX_PLAYERS) ? "Spectator" : "Player", cn.handle + 1);
+            game_session_sync[cn.handle][0] = game_session_sync[cn.handle][1] = SDL_MAX_UINT8;
+
+            const Uint8 n = get_game_player_count();
+            if (cn.handle >= n)
+                INFO("Spectator %i connected (%s)", cn.handle + 1, get_peer_name(spectator_to_peer(cn.handle - n)));
+            else
+                INFO("Player %i connected (%s)", cn.handle + 1, get_peer_name(player_to_peer(cn.handle)));
+
             break;
         }
 
         case GekkoPlayerDisconnected: {
             struct GekkoDisconnected dc = event->data.disconnected;
-            if (dc.handle >= get_game_player_count()) {
-                const PlayerID handle = (PlayerID)(dc.handle - get_game_player_count());
-                nuke_spectator_peer(spectator_to_peer(handle));
-                WARN("Spectator %i disconnected", handle + 1);
+
+            const Uint8 n = get_game_player_count();
+            if (dc.handle >= n) {
+                nuke_spectator_peer(spectator_to_peer((PlayerID)(dc.handle - n)));
                 break;
             }
 
@@ -1394,6 +1411,9 @@ void tick_game() {
         }
 
         case GekkoAdvanceEvent: {
+            if (event->data.adv.frame <= 1)
+                SDL_memset(game_session_sync, 255, sizeof(game_session_sync));
+
             tick_game_state((GameInput*)event->data.adv.inputs);
             tick_video_state();
             tick_audio_state(event->data.adv.rolling_back);
@@ -1674,6 +1694,35 @@ void draw_game() {
     batch_surface(game_surface);
     batch_sprite("ui/bezel_l");
     batch_sprite("ui/bezel_r");
+
+    if (!is_connected() || topui() != NULL)
+        return;
+
+    const Uint8 num_players = get_game_player_count(), num_gamers = num_players + get_game_spectator_count();
+    for (Uint8 i = 0; i < num_gamers; i++) {
+        const Uint8 max = game_session_sync[i][1];
+        if (max <= 0 || game_session_sync[i][0] < max)
+            goto waiting_for_peers;
+    }
+
+    return;
+
+waiting_for_peers:
+    batch_reset();
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 80.f));
+    batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+    batch_string("main", 24.f, LFMT("hud.waiting_for_peers"));
+
+    for (Uint8 i = 0; i < num_gamers; i++) {
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 112.f + (i * 24.f)));
+        const Uint8 current = game_session_sync[i][0], max = game_session_sync[i][1];
+        batch_color((max > 0 && current >= max) ? B_U4_GREEN : B_U4_WHITE);
+        batch_string("main", 24.f,
+            fmt("%u. %s%s%s", i + 1, (i >= num_players) ? "*SPEC* " : "",
+                get_peer_name(
+                    (i >= num_players) ? spectator_to_peer((PlayerID)(i - num_players)) : player_to_peer((PlayerID)i)),
+                (max <= 0) ? "" : fmt(" (%u%%)", (Uint8)(((float)current / (float)max) * 100.f))));
+    }
 }
 
 const GameContext* gamecontext() {

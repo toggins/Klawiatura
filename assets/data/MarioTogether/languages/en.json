@@ -141,6 +141,7 @@
     "hud.end.lost_map": "ui/end/en/lost_map",
     "hud.end.remix": "ui/end/en/remix",
     "hud.spectating": "Spectating",
+    "hud.waiting_for_peers": "Waiting for peers...",
 
     "bind.up": "Up",
     "bind.left": "Left",
