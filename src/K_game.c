@@ -1446,6 +1446,25 @@ void tick_game() {
             break;
         }
     }
+
+    if (local_player == view_player || topui() != NULL || (!kb_pressed(KB_LEFT) && !kb_pressed(KB_RIGHT)))
+        return;
+
+    PlayerID try_view = view_player;
+    const PlayerID change = (PlayerID)((PlayerID)kb_pressed(KB_RIGHT) - (PlayerID)kb_pressed(KB_LEFT));
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        try_view = (PlayerID)(try_view + change);
+        while (try_view < 0)
+            try_view = (PlayerID)(try_view + game_context.num_players);
+        while (try_view >= game_context.num_players)
+            try_view = (PlayerID)(try_view - game_context.num_players);
+
+        const GamePlayer* player = get_player(try_view);
+        if (player != NULL && player->lives >= 0) {
+            set_view_player(player);
+            break;
+        }
+    }
 }
 
 void pre_interp_game() {
