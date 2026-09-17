@@ -1043,10 +1043,8 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         if (game_state->clock <= 0) {
             for (PlayerID i = 0; i < game_context.num_players; i++) {
                 GamePlayer* player = get_player(i);
-                if (player == NULL)
-                    continue;
-
-                kill_player(get_actor(player->actor));
+                if (player != NULL)
+                    kill_player(get_actor(player->actor));
             }
         }
 
