@@ -67,7 +67,7 @@ You can adjust Klawiatura with these launch options:
 
 In order to build this, you will need a C/C++ compiler and [CMake](https://cmake.org/download) installed on your computer, as well as the libraries listed below. Make sure to download, install, and familiarize yourself with the aforementioned tools before you proceed.
 
-### [Discord Social SDK 1.9.15332](https://discord.com/developers/social-sdk) (Optional)
+### [Discord Social SDK 1.10.19337](https://discord.com/developers/social-sdk) (Optional)
 
 > [!NOTE]
 > If the SDK is not present, Discord integration will be disabled.
