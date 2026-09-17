@@ -151,13 +151,18 @@ jobs:
           pattern: build-*
           path: artifacts
 
+      - name: Shove binaries into a single folder
+        run: |
+          mkdir -p releases
+          cp -v artifacts/build-*/Klawiatura-*.zip releases/
+
       - name: Release binaries
         uses: softprops/action-gh-release@v3
         with:
           draft: ${{ github.ref_name != 'master' }}
           tag_name: ${{ github.ref_name == 'master' && 'dev' || github.ref_name }}
           prerelease: ${{ github.ref_name == 'master' }}
-          files: artifacts/build-*/Klawiatura-*.zip
+          files: releases/Klawiatura-*.zip
 
       - name: Prepare for HTML5 distibution
         run: cp -vr artifacts/build-HTML5/Klawiatura.{js,wasm,data} www
