@@ -106,7 +106,7 @@ This is a free, open-source project not created for any sort of profit. We do no
 
 Mario, related characters and original assets belong to Nintendo. Mario Forever is an unofficial fangame created by Buziol, and all of the custom assets that form Mario Together, which is built on top of Mario Forever, are created by people listed in the main menu's credits.
 
-Copying, modifying, and/or porting this project does not make the materials mentioned above your work.
+Copying, modifying, and/or porting this project does not make the aforementioned materials your work.
 
 - [SDL](https://github.com/libsdl-org/SDL), [SDL_GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB), [SDL_mixer](https://github.com/libsdl-org/SDL_mixer) © Sam Lantinga ([Zlib License](https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt))
 - [GLAD](https://github.com/Dav1dde/glad) © David Herberth ([MIT License](https://github.com/Dav1dde/glad/blob/glad2/LICENSE))
@@ -117,3 +117,5 @@ Copying, modifying, and/or porting this project does not make the materials ment
 - [JSZip](https://github.com/Stuk/jszip) © Stuart Knightley ([MIT License](https://github.com/Stuk/jszip/blob/main/LICENSE.markdown))
 
 Tracker modules provided by [mirsoft.info](http://www.mirsoft.info) and [modarchive.org](https://modarchive.org). MIDIs provided by [vgmusic.com](https://vgmusic.com/).
+
+For credits, see the in-game main menu.
