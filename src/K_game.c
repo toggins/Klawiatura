@@ -1322,12 +1322,8 @@ void tick_game() {
                 input |= kb_down(KB_RIGHT) * GI_RIGHT;
                 input |= kb_down(KB_JUMP) * GI_JUMP;
                 input |= kb_down(KB_FIRE) * GI_FIRE;
-                input |= ((CLIENT.always_run <= 0 && kb_down(KB_RUN)) || (CLIENT.always_run == 1 && !kb_down(KB_RUN)))
-                         * GI_RUN;
+                input |= (CLIENT.always_run || kb_down(KB_RUN)) * GI_RUN;
             }
-
-            if (CLIENT.always_run >= 2)
-                input |= GI_RUN;
 
             gekko_add_local_input(game_session, local_player, &input);
         }

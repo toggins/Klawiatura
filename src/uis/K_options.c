@@ -213,20 +213,13 @@ static void tickrate_cycle(Sint8 cycle) {
 static const char* fmt_always_run(size_t idx) {
     (void)idx;
 
-    return fmt("%s: %s", LFMT("option.always_run"),
-        LFMT((CLIENT.always_run <= 0) ? "value.no"
-                                      : ((CLIENT.always_run == 1) ? "value.hold_run_to_walk" : "value.yes")));
+    return fmt("%s: %s", LFMT("option.always_run"), LFMT(CLIENT.always_run ? "value.yes" : "value.no"));
 }
 
 static void always_run_cycle(Sint8 cycle) {
-    if (cycle > 0) {
-        CLIENT.always_run = (CLIENT.always_run + 1) % 3;
-    } else if (cycle < 0) {
-        if (CLIENT.always_run <= 0)
-            CLIENT.always_run = 2;
-        else
-            --CLIENT.always_run;
-    }
+    (void)cycle;
+
+    CLIENT.always_run = !CLIENT.always_run;
 }
 
 static const char* fmt_server(size_t idx) {

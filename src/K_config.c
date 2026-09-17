@@ -60,7 +60,7 @@ static void set_server(const char* ip) {
 
 CVAR(input_delay, int)
 
-CVAR(always_run, int);
+CVAR(always_run, Bool);
 
 static int cfg_width = 0, cfg_height = 0;
 static int get_width() {
@@ -109,7 +109,7 @@ static const ConfigOption OPTIONS[] = {
     CVAR(music_volume, float),
     CVAR(audio_in_background, bool),
     CVAR(input_delay, int),
-    CVAR(always_run, int),
+    CVAR(always_run, bool),
     CVAR(show_user_messages, bool),
     CVAR(server, string),
     CVAR(seen_online_notice, bool),
