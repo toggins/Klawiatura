@@ -62,6 +62,7 @@ void interface_init() {
         load_sprite_num(get_character_cursor(i), 12, AKL_ALWAYS);
     load_font("main", AKL_ALWAYS);
     load_font("header", AKL_ALWAYS);
+    load_font("footer", AKL_ALWAYS);
     load_sound("ui/switch", AKL_ALWAYS);
     load_sound("ui/select", AKL_ALWAYS);
     load_sound("ui/toggle", AKL_ALWAYS);
@@ -583,19 +584,41 @@ void draw_catalog(const Catalog* catalog) {
         batch_string("header", 32.f, mstr);
     }
 
-    draw_options(catalog->options[catalog->current], menu->option, 56.f);
+    const Option* options = catalog->options[catalog->current];
+    draw_options(options, menu->option, 56.f);
 
     if (menu->from > 0 || topui() != NULL) {
         batch_reset();
         batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 16.f));
-        batch_colors(B_U4X4_BLUE);
+        batch_color(B_U4_WHITE);
         batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-        batch_string("header", 32.f,
-            (typing_what() == NULL || typing_in_chat())
-                ? fmt("[%s] %s", kb_label(KB_PAUSE),
-                      LFMT((scanning_what() == NULL_KEYBIND) ? "menu.back" : "menu.cancel"))
-                : fmt("[%s] %s\n[%s] %s", SDL_GetScancodeName(SDL_SCANCODE_RETURN), LFMT("menu.submit"),
-                      SDL_GetScancodeName(SDL_SCANCODE_ESCAPE), LFMT("menu.cancel")));
+
+        const Option* option = &options[menu->option];
+        const char *cycles = "", *selects = "", *backs = "";
+
+        if (scanning_what() != NULL_KEYBIND) {
+            backs = fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("menu.cancel"));
+        } else if (typing_what() != NULL && !typing_in_chat()) {
+            selects = fmt("[%s] %s", kb_label(KB_UI_ENTER), LFMT("menu.submit"));
+            backs = fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("menu.cancel"));
+        } else {
+            if (option->cycle != NULL)
+                cycles = fmt("[%s/%s] %s", kb_label(KB_UI_LEFT), kb_label(KB_UI_RIGHT), LFMT("menu.cycle"));
+
+            if ((option->callback != NULL || option->cycle != NULL) || option->menu > 0 || option->prompt != NULL) {
+                selects = fmt("[%s] %s", kb_label(KB_UI_ENTER),
+                    LFMT((option->prompt != NULL)                              ? "menu.input"
+                         : (option->callback == NULL && option->cycle != NULL) ? "menu.cycle"
+                                                                               : "menu.select"));
+            }
+
+            backs = fmt("[%s] %s", kb_label(KB_PAUSE), LFMT((menu->from > 0) ? "menu.back" : "menu.close"));
+        }
+
+        batch_string_wrap("footer", 16.f,
+            fmt("%s%s%s%s%s", cycles, (cycles[0] != '\0' && (selects[0] != '\0' || backs[0] != '\0')) ? "   " : "",
+                selects, ((selects[0] != '\0' || cycles[0] != '\0') && backs[0] != '\0') ? "   " : "", backs),
+            SCREEN_WIDTH - 32.f);
     }
 }
 

@@ -742,7 +742,6 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite("ui/menu/icons/game", AKL_NEVER);
     load_sprite("ui/menu/icons/editor", AKL_NEVER);
     load_font("menu", AKL_NEVER);
-    load_font("footer", AKL_NEVER);
     load_sound("ui/enter", AKL_ONCE);
     load_sound("ui/connect", AKL_NEVER);
     load_sound("ui/disconnect", AKL_NEVER);

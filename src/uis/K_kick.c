@@ -75,9 +75,10 @@ static void draw(const UI* ui) {
 
     batch_reset();
     batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 16.f));
-    batch_colors(B_U4X4_BLUE);
+    batch_color(B_U4_WHITE);
     batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-    batch_string("header", 32.f, fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("menu.back")));
+    batch_string("footer", 16.f,
+        fmt("[%s] %s   [%s] %s", kb_label(KB_UI_ENTER), LFMT("menu.kick"), kb_label(KB_PAUSE), LFMT("menu.back")));
 }
 
 static void cleanup(UI* ui) {
