@@ -50,7 +50,9 @@
 Multiplayer is the main kicker of this project. You can host and find lobbies through NutBlast servers. Lobbies can hold up to 8 players. For custom servers, host a [NutBlaster](https://nutblast.schwung.us) and set your server address to it in the settings.
 
 > [!IMPORTANT]
-> Make sure your game's version and checksum match with other players you want to play with. Your checksum is only affected by mods that have level and/or world files and the order in which they are loaded. Lobbies are filtered based on your game's version and checksum.
+> **Make sure your game's version and checksum match with other players you want to play with.** Your checksum is only affected by mods that have level and/or world files and the order in which they are loaded. Lobbies are filtered based on your game's version and checksum.
+>
+> **Before you update Klawiatura, clear your older build's data folder first** so you don't get any incorrect checksums.
 
 ## Launch options
 
