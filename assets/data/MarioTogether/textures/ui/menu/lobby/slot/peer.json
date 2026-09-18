@@ -1,0 +1,6 @@
+{
+    "texture": "ui/menu/lobby/slot",
+    "size": [370, 58],
+    "offset": [2, 2],
+    "uvs": [1, 61, 371, 119]
+}

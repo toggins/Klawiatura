@@ -1,0 +1,6 @@
+{
+    "texture": "ui/menu/lobby/en",
+    "size": [104, 24],
+    "offset": [52, 5],
+    "uvs": [159, 1, 263, 25]
+}

@@ -7,7 +7,6 @@
 #include "K_input.h"
 #include "K_interface.h"
 #include "K_levels.h"
-#include "K_locale.h"
 #include "K_net.h"
 #include "K_replay.h"
 #include "K_string.h"
@@ -50,8 +49,7 @@ static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_menu(), kick_playe
     character_disabled();
 
 static const char *fmt_max_peers(size_t), *fmt_visibility(size_t), *fmt_lobby(), *fmt_character(size_t),
-    *fmt_powerup(size_t), *fmt_enter_as(size_t), *fmt_world(size_t), *fmt_start(size_t), *fmt_kick_player(size_t),
-    *fmt_test_level(size_t);
+    *fmt_powerup(size_t), *fmt_world(size_t), *fmt_test_level(size_t);
 static void multiplayer_option(), options_option(), exit_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8),
     host_option(), character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option(),
     world_cycle(Sint8), start_option(), go_to_editor_option(), test_level_cycle(Sint8), test_level_option();
@@ -129,7 +127,7 @@ static Catalog CATALOG = {
             {.fmt = fmt_character, .cycle = character_cycle},
             {.fmt = fmt_powerup, .cycle = powerup_cycle},
             {},
-            {.fmt = fmt_start, .disabled = start_disabled, .callback = start_option},
+            {.name = "option.start", .disabled = start_disabled, .callback = start_option},
         },
 
 		[MEN_MULTIPLAYER] = {
@@ -145,13 +143,13 @@ static Catalog CATALOG = {
 		},
 
         [MEN_LOBBY] = {
-            {.fmt = fmt_world, .disabled = is_client, .cycle = world_cycle},
-            {.fmt = fmt_enter_as, .cycle = enter_as_cycle},
-            {.fmt = fmt_character, .disabled = character_disabled, .cycle = character_cycle},
-            {.fmt = fmt_powerup, .disabled = character_disabled, .cycle = powerup_cycle},
+            {.name = "option.world", .disabled = is_client, .cycle = world_cycle},
+            {.name = "option.enter_as", .cycle = enter_as_cycle},
+            {.name = "option.characer", .disabled = character_disabled, .cycle = character_cycle},
+            {.name = "option.powerup", .disabled = character_disabled, .cycle = powerup_cycle},
             {.name = "option.options", .callback = options_option},
-            {.fmt = fmt_kick_player, .disabled = kick_player_disabled, .callback = kick_player_option},
-            {.fmt = fmt_start, .disabled = start_disabled, .callback = start_option},
+            {.name = "option.kick", .disabled = kick_player_disabled, .callback = kick_player_option},
+            {.name = "option.start", .disabled = start_disabled, .callback = start_option},
         },
 
         [MEN_EDITOR] = {
@@ -364,63 +362,172 @@ static void tick_lobby_menu() {
     }
 }
 
+static void draw_lobby_cycle(float* y, size_t idx, const char* label, const char* value, Bool disabled) {
+    const float y1 = *y;
+
+    batch_pos(B_F3_XY(125.f, *y));
+    batch_color(B_U4_ALPHA(disabled ? 160 : 255));
+    batch_sprite(LFMT(label));
+
+    *y += 24.f;
+    batch_pos(B_F3_XY(125.f, *y));
+    batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+    batch_string_wrap("footer", 16.f, value, 186.f);
+
+    if (!disabled) {
+        const float hw = string_width_wrap("footer", 16.f, value, 186.f) * 0.5f;
+        batch_pos(B_F3_XY(115.f - hw, *y));
+        batch_flip(B_B2(TRUE, FALSE));
+        batch_sprite("ui/menu/lobby/arrow");
+        batch_pos(B_F3_XY(135.f + hw, *y));
+        batch_flip(B_B2_FALSE);
+        batch_sprite("ui/menu/lobby/arrow");
+    }
+
+    *y += string_height_wrap("footer", 16.f, value, 186.f) + 8.f;
+
+    if (CATALOG.menus[MEN_LOBBY].option == idx && !disabled) {
+        batch_pos(B_F3_XY(-240.f, y1 - 4.f));
+        batch_colors(B_U4X4({0, 0, 0, 255}, {40, 40, 40, 255}, {0, 0, 0, 255}, {40, 40, 40, 255}));
+        batch_blend(BM_ADD);
+        batch_rectangle(NULL, B_F2(490.f, *y - y1));
+        batch_blend(BM_NORMAL);
+    }
+
+    *y += 4.f;
+}
+
+static const char* fmt_lobby_world(size_t idx) {
+    (void)idx;
+
+    const World* world = get_world(is_connected() ? get_lobby_string("world") : CLIENT.world);
+    return (world == NULL) ? NULL : LFMT(fmt("world.%s", world->name));
+}
+
+static const char* fmt_lobby_powerup(size_t idx) {
+    (void)idx;
+
+    const Sint8 cost = get_powerup_cost(CLIENT.powerup);
+    return fmt("%s%s", get_powerup_name(CLIENT.powerup), (cost > 0) ? fmt(" (-%i)", cost) : "");
+}
+
+static void draw_lobby_button(float* y, size_t idx, const char* sprite, Bool disabled) {
+    batch_pos(B_F3_XY(125.f, *y));
+    batch_color(B_U4_ALPHA(disabled ? 128 : 255));
+    batch_sprite(sprite);
+
+    if (CATALOG.menus[MEN_LOBBY].option == idx && !disabled) {
+        batch_blend(BM_ADD);
+        batch_color(B_U4_VALUE(80));
+        batch_sprite(sprite);
+        batch_blend(BM_NORMAL);
+    }
+
+    *y += 48.f;
+}
+
 static Bool draw_lobby_menu() {
     batch_reset();
 
-    float py = HALF_SCREEN_HEIGHT + 40.f;
-    static const float PEER_SIZE = 16.f;
+    // LEFT
+    batch_pos(B_F3_XY(-240.f, 11.f));
+    batch_colors(B_U4X4({0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 128}, {0, 0, 0, 128}));
+    batch_rectangle(NULL, B_F2(490.f, 2.f));
+    batch_pos(B_F3_XY(-240.f, 13.f));
+    batch_colors(B_U4X4({115, 156, 115, 255}, {115, 156, 115, 255}, {189, 231, 189, 255}, {189, 231, 189, 255}));
+    const char* lname = fmt("%s (%s)", get_lobby_name(), LFMT(in_private_lobby() ? "value.private" : "value.public"));
+    const float lh = string_height_wrap("footer", 16.f, lname, 218.f);
+    batch_rectangle(NULL, B_F2(490.f, 6.f + lh));
+    batch_pos(B_F3_XY(-240.f, 19.f + lh));
+    batch_colors(B_U4X4({0, 0, 0, 128}, {0, 0, 0, 128}, {0, 0, 0, 0}, {0, 0, 0, 0}));
+    batch_rectangle(NULL, B_F2(490.f, 2.f));
+    batch_pos(B_F3_XY(125.f, 16.f));
+    batch_color(B_U4_WHITE);
+    batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+    batch_string_wrap("footer", 16.f, lname, 218.f);
 
-    batch_pos(B_F3_XY(16.f, py));
-    batch_string("main", PEER_SIZE, LFMT("option.peer"));
-    batch_pos(B_F3_XY(168.f, py));
-    batch_string("main", PEER_SIZE, LFMT("option.character"));
-    batch_pos(B_F3_XY(320.f, py));
-    batch_string("main", PEER_SIZE, LFMT("option.powerup"));
-    batch_pos(B_F3_XY(472.f, py));
-    batch_string("main", PEER_SIZE, LFMT("option.ping"));
+    float ly = lh + 30.f;
 
-    py += PEER_SIZE;
+    draw_lobby_cycle(&ly, 0, "menu.lobby.label.world", fmt_lobby_world(0), is_client());
+    draw_lobby_cycle(&ly, 1, "menu.lobby.label.enter_as",
+        LFMT(get_peer_bool(get_local_peer(), "spectator") ? "value.spectator" : "value.player"), FALSE);
+    draw_lobby_cycle(&ly, 2, "menu.lobby.label.character", get_character_name(CLIENT.character), character_disabled());
+    draw_lobby_cycle(&ly, 3, "menu.lobby.label.powerup", fmt_lobby_powerup(0), character_disabled());
 
+    draw_lobby_button(&ly, 4, LFMT("menu.lobby.button.options"), FALSE);
+    if (is_host())
+        draw_lobby_button(&ly, 5, LFMT("menu.lobby.button.kick"), kick_player_disabled());
+    draw_lobby_button(&ly, 6,
+        LFMT(get_lobby_player_count() >= 1
+                 ? (is_client() ? "menu.lobby.button.waiting_for_host" : "menu.lobby.button.start")
+                 : "menu.lobby.button.not_enough_players"),
+        start_disabled());
+
+    batch_pos(B_F3_XY(125.f, SCREEN_HEIGHT - 16.f));
+    batch_color(B_U4_WHITE);
+    batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+    batch_string_wrap("footer", 16.f, fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("menu.disconnect")), 218.f);
+
+    // RIGHT
     Uint8 line = 0;
     for (const NetID* pids = get_peers(); *pids > 0; pids++) {
         const NetID pid = *pids;
-        const Bool is_master = get_master_peer() == pid;
-        batch_color((get_local_peer() == pid) ? (is_master ? B_U4_RGB(255, 144, 80) : B_U4_YELLOW)
-                                              : (is_master ? B_U4_RGB(255, 160, 160) : B_U4_WHITE));
 
-        batch_pos(B_F3_XY(16.f, py));
-        batch_string("main", PEER_SIZE, get_peer_name(pid));
+        const float ly = 6.f + ((float)line * 59.f);
 
-        batch_pos(B_F3_XY(168.f, py));
-        batch_string("main", PEER_SIZE,
-            (get_peer_bool(pid, "spectator")) ? LFMT("value.spectator")
-                                              : get_character_name(get_peer_number(pid, "character")));
+        batch_pos(B_F3_XY(265.f, ly));
+        batch_color(B_U4_WHITE);
+        batch_sprite("ui/menu/lobby/slot/peer");
+        if (get_local_peer() == pid) {
+            batch_blend(BM_ADD);
+            batch_pos(B_F3_XY(266.f, ly + 1.f));
+            batch_colors(B_U4X4({255, 255, 255, 255}, {128, 128, 128, 255}, {64, 64, 64, 255}, {32, 32, 32, 255}));
+            batch_rectangle(NULL, B_F2(364.f, 52.f));
+            batch_blend(BM_NORMAL);
 
-        batch_pos(B_F3_XY(320.f, py));
-        batch_string("main", PEER_SIZE, get_powerup_name(get_peer_number(pid, "powerup")));
+            batch_color(B_U4_WHITE);
+        }
 
-        batch_pos(B_F3_XY(472.f, py));
-        batch_string("main", PEER_SIZE, fmt("%i ms", get_peer_ping(pid)));
+        batch_pos(B_F3_XY(295.f, ly + 27.f));
+        const Bool spectating = get_peer_bool(pid, "spectator");
+        batch_color(B_U4_ALPHA(spectating ? 100 : 255));
+        batch_sprite(fmt(get_character_cursor(get_peer_number(pid, "character")), 0));
 
-        py += PEER_SIZE;
+        batch_pos(B_F3_XY(317.f, ly + 8.f));
+        batch_color((get_master_peer() == pid) ? B_U4_YELLOW : B_U4_WHITE);
+        batch_align(B_ALIGN_TOP_LEFT);
+        const char* name = get_peer_name(pid);
+        batch_string("footer", 16.f, name);
+
+        batch_pos(B_F3_XY(322.f + string_width("footer", 16.f, name), ly + 8.f));
+        batch_color(B_U4_ALPHA(200));
+        if (spectating) {
+            batch_pos(B_F3_XY(317.f, ly + 28.f));
+            batch_string("footer", 16.f, LFMT("value.spectator"));
+        } else {
+            const PlayerPowerup powerup = get_peer_number(pid, "powerup");
+            batch_string("footer", 16.f, fmt("x %i", DEFAULT_LIVES - get_powerup_cost(powerup)));
+
+            batch_pos(B_F3_XY(317.f, ly + 28.f));
+            batch_color((powerup == POW_NONE) ? B_U4_ALPHA(128) : B_U4_WHITE);
+            batch_string("footer", 16.f, LFMT((powerup == POW_NONE) ? "value.no_powerup" : get_powerup_name(powerup)));
+        }
+
+        batch_pos(B_F3_XY(610.f, ly + 28.f));
+        batch_color(B_U4_WHITE);
+        batch_align(B_ALIGN(FA_RIGHT, FA_MIDDLE));
+        batch_string("footer", 16.f, fmt("%i ms", get_peer_ping(pid)));
+
         ++line;
     }
 
-    batch_color(B_U4_WHITE);
+    batch_color(B_U4_ALPHA(128));
     for (const Uint8 n = get_peer_limit(); line < n; line++) {
-        batch_pos(B_F3_XY(16.f, py));
-        batch_string("main", PEER_SIZE, "-");
-        batch_pos(B_F3_XY(168.f, py));
-        batch_string("main", PEER_SIZE, "-");
-        batch_pos(B_F3_XY(320.f, py));
-        batch_string("main", PEER_SIZE, "-");
-        batch_pos(B_F3_XY(472.f, py));
-        batch_string("main", PEER_SIZE, "-");
-
-        py += PEER_SIZE;
+        batch_pos(B_F3_XY(265.f, 6.f + ((float)line * 59.f)));
+        batch_sprite("ui/menu/lobby/slot/empty");
     }
 
-    return TRUE;
+    return FALSE;
 }
 
 // =======
@@ -430,8 +537,7 @@ static Bool draw_lobby_menu() {
 static const char* fmt_world(size_t idx) {
     (void)idx;
 
-    const World* world = get_world(is_connected() ? get_lobby_string("world") : CLIENT.world);
-    return fmt("%s: %s", LFMT("option.world"), (world == NULL) ? NULL : LFMT(fmt("world.%s", world->name)));
+    return fmt("%s: %s", LFMT("option.world"), fmt_lobby_world(idx));
 }
 
 static void world_cycle(Sint8 cycle) {
@@ -479,9 +585,7 @@ static void character_cycle(Sint8 cycle) {
 static const char* fmt_powerup(size_t idx) {
     (void)idx;
 
-    const Sint8 cost = get_powerup_cost(CLIENT.powerup);
-    return fmt(
-        "%s: %s%s", LFMT("option.powerup"), get_powerup_name(CLIENT.powerup), (cost > 0) ? fmt(" (-%i)", cost) : "");
+    return fmt("%s: %s", LFMT("option.powerup"), fmt_lobby_powerup(idx));
 }
 
 static void powerup_cycle(Sint8 cycle) {
@@ -498,21 +602,6 @@ static void powerup_cycle(Sint8 cycle) {
     }
 
     update_peer_data();
-}
-
-static const char* fmt_start(size_t idx) {
-    (void)idx;
-
-    if (get_world(CLIENT.world) == NULL)
-        return LFMT("option.invalid_world");
-
-    if (get_lobby_player_count() < 1)
-        return LFMT("option.not_enough_players");
-
-    if (is_client())
-        return LFMT("option.waiting_for_host");
-
-    return LFMT("option.start");
 }
 
 static Bool start_disabled() {
@@ -647,23 +736,10 @@ static void lobby_option() {
     prompt_connect();
 }
 
-static const char* fmt_enter_as(size_t idx) {
-    (void)idx;
-
-    return fmt("%s: %s", LFMT("option.enter_as"),
-        LFMT((get_peer_bool(get_local_peer(), "spectator")) ? "value.spectator" : "value.player"));
-}
-
 static void enter_as_cycle(Sint8 cycle) {
     (void)cycle;
 
     toggle_spectator();
-}
-
-static const char* fmt_kick_player(size_t idx) {
-    (void)idx;
-
-    return is_client() ? NULL : LFMT("option.kick_player");
 }
 
 static Bool kick_player_disabled() {
@@ -732,6 +808,7 @@ static void go_to_editor_option() {
 static void start(const void* secret, size_t secret_size) {
     load_sprite("ui/backgrounds/main", AKL_NEVER);
     load_sprite("ui/backgrounds/options", AKL_NEVER);
+    load_sprite("ui/backgrounds/lobby", AKL_NEVER);
     load_sprite("logos/mario_together", AKL_NEVER);
     load_sprite("ui/menu/buttons/singleplayer", AKL_NEVER);
     load_sprite("ui/menu/buttons/multiplayer", AKL_NEVER);
@@ -741,11 +818,24 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite("ui/menu/buttons/exit", AKL_NEVER);
     load_sprite("ui/menu/icons/game", AKL_NEVER);
     load_sprite("ui/menu/icons/editor", AKL_NEVER);
+    load_localized_sprite("menu.lobby.label.world", AKL_NEVER);
+    load_localized_sprite("menu.lobby.label.enter_as", AKL_NEVER);
+    load_localized_sprite("menu.lobby.label.character", AKL_NEVER);
+    load_localized_sprite("menu.lobby.label.powerup", AKL_NEVER);
+    load_sprite("ui/menu/lobby/arrow", AKL_NEVER);
+    load_localized_sprite("menu.lobby.button.options", AKL_NEVER);
+    load_localized_sprite("menu.lobby.button.kick", AKL_NEVER);
+    load_localized_sprite("menu.lobby.button.start", AKL_NEVER);
+    load_localized_sprite("menu.lobby.button.not_enough_players", AKL_NEVER);
+    load_localized_sprite("menu.lobby.button.waiting_for_host", AKL_NEVER);
+    load_sprite("ui/menu/lobby/slot/empty", AKL_NEVER);
+    load_sprite("ui/menu/lobby/slot/peer", AKL_NEVER);
+    load_sprite("ui/menu/lobby/slot/you", AKL_NEVER);
     load_font("menu", AKL_NEVER);
     load_sound("ui/enter", AKL_ONCE);
     load_sound("ui/connect", AKL_NEVER);
     load_sound("ui/disconnect", AKL_NEVER);
-    load_track("doxeh_remix", AKL_NEVER);
+    load_track("title", AKL_NEVER);
 
     // Handle invite JSON
     Bool got_invite = FALSE;
@@ -790,7 +880,7 @@ no_secret:
             menu->enter(menu->from);
     }
 
-    play_generic_track("doxeh_remix", PLAY_LOOPING, 0);
+    play_generic_track("title", PLAY_LOOPING, 0);
     fade_generic_track(1.f, 100.f);
 }
 
@@ -815,7 +905,7 @@ static void draw_ui() {
         batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 60.f + SDL_roundf(SDL_sinf(screenticks() * 0.03f) * 7.f)));
         batch_sprite("logos/mario_together");
     } else {
-        batch_sprite("ui/backgrounds/options");
+        batch_sprite((CATALOG.current == MEN_LOBBY && ui == NULL) ? "ui/backgrounds/lobby" : "ui/backgrounds/options");
     }
 
     if (ui != NULL)
