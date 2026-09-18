@@ -1,6 +1,6 @@
 #pragma once
 
-#include "K_memory.h" // IWYU pragma: export
+#include "K_locale.h"
 
 typedef Uint8 AssetKeepLevel;
 enum {
@@ -17,6 +17,8 @@ typedef struct {
 #define ASSET_HEAD(M, T, A)                                                                                            \
     void load_##A(const char*, AssetKeepLevel);                                                                        \
     void load_##A##_num(const char*, Uint32, AssetKeepLevel);                                                          \
+    void load_localized_##A(const char*, AssetKeepLevel);                                                              \
+    void load_localized_##A##_num(const char*, Sint32, AssetKeepLevel);                                                \
     const T* get_##A(const char*);                                                                                     \
     const T* get_##A##_key(TinyHash);                                                                                  \
     const T* fetch_##A(const char*, AssetKeepLevel);                                                                   \
@@ -26,6 +28,15 @@ typedef struct {
     void load_##A##_num(const char* pattern, Uint32 n, AssetKeepLevel keep) {                                          \
         for (Uint32 i = 0; i < n; i++)                                                                                 \
             load_##A(fmt(pattern, i), keep);                                                                           \
+    }                                                                                                                  \
+                                                                                                                       \
+    void load_localized_##A(const char* name, AssetKeepLevel keep) {                                                   \
+        load_##A(LFMT(name), keep);                                                                                    \
+    }                                                                                                                  \
+                                                                                                                       \
+    void load_localized_##A##_num(const char* name, Sint32 n, AssetKeepLevel keep) {                                   \
+        for (Sint32 i = 0; i < n; i++)                                                                                 \
+            load_##A(LFMT(name, 'd', i), keep);                                                                        \
     }                                                                                                                  \
                                                                                                                        \
     const T* get_##A(const char* name) {                                                                               \

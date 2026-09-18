@@ -1,7 +1,6 @@
 #include "K_game.h"
 #include "K_input.h"
 #include "K_interface.h"
-#include "K_locale.h"
 #include "K_tick.h"
 #include "K_video.h"
 

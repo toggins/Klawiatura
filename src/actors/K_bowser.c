@@ -1,5 +1,4 @@
 #include "K_audio.h"
-#include "K_locale.h"
 #include "K_string.h"
 #include "K_video.h"
 
@@ -61,7 +60,7 @@ static void load_special(const GameActor* actor) {
     if (ANY_FLAG(actor, FLG_BOWSER_SECRET)) {
         const char* secret = get_game_secret(VAL(actor, BOWSER_SECRET));
         if (secret != NULL && secret[0] != '$')
-            load_sprite(LFMT(secret), AKL_NEVER);
+            load_localized_sprite(secret, AKL_NEVER);
     }
 }
 

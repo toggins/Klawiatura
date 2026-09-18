@@ -1,4 +1,3 @@
-#include "K_locale.h"
 #include "K_video.h"
 
 #include "actors/K_screen.h"

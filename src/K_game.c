@@ -5,7 +5,6 @@
 #include "K_input.h"
 #include "K_interface.h"
 #include "K_levels.h"
-#include "K_locale.h"
 #include "K_net.h"
 #include "K_replay.h"
 #include "K_string.h"
@@ -595,11 +594,8 @@ static void load_level(TinyHash key) {
     if (yyjson_is_str(jval)) {
         const char* label = SDL_strdup(yyjson_get_str(jval));
         EXPECT(label, "Failed to allocate level \"%s\" label", level->name);
-        if ((label[0] != '@' && label[0] != '$')) {
-            // FIXME: This only loads the sprite for the current language.
-            //        The label sprite will "disappear" when changing to another language.
-            load_sprite(LFMT((label[0] == '%') ? (label + 1) : label), AKL_NEVER);
-        }
+        if ((label[0] != '@' && label[0] != '$'))
+            load_localized_sprite((label[0] == '%') ? (label + 1) : label, AKL_NEVER);
 
         level_info->strings[GSTR_LABEL] = label;
     }

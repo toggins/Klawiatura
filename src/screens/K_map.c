@@ -2,7 +2,6 @@
 #include "K_input.h"
 #include "K_interface.h"
 #include "K_levels.h"
-#include "K_locale.h"
 #include "K_net.h"
 #include "K_string.h"
 #include "K_tick.h"
@@ -188,7 +187,7 @@ static void start(const void* secret, size_t secret_size) {
 
     load_sprite(map_state->title, AKL_NEVER);
     if (map_state->path == NULL) {
-        load_sprite_num(LFMT("map.completed", 's', "%u"), 16, AKL_NEVER);
+        load_localized_sprite_num("map.completed", 16, AKL_NEVER);
         if (wctx->num_players > 1) {
             load_sound("kick", AKL_NEVER);
             load_sound("score", AKL_NEVER);

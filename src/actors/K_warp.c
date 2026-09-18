@@ -1,5 +1,4 @@
 #include "K_audio.h"
-#include "K_locale.h"
 #include "K_video.h"
 
 #include "actors/K_player.h"
@@ -14,7 +13,7 @@ static void load_special(const GameActor* actor) {
     if (ANY_FLAG(actor, FLG_WARP_CALAMITY | FLG_WARP_SECRET | FLG_WARP_WORLD | FLG_WARP_LEVEL)) {
         const char* secret = get_game_secret(VAL(actor, WARP_SECRET));
         if (secret != NULL && secret[0] != '$')
-            load_sprite(LFMT(secret), AKL_NEVER);
+            load_localized_sprite(secret, AKL_NEVER);
     }
     if (ANY_FLAG(actor, FLG_WARP_CALAMITY))
         load_sound("vo/clone/a_dead", AKL_NEVER);

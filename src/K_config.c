@@ -4,7 +4,6 @@
 #include "K_cmd.h"
 #include "K_config.h"
 #include "K_input.h"
-#include "K_locale.h"
 #include "K_log.h"
 #include "K_net.h"
 #include "K_tick.h"

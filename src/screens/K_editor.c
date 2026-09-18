@@ -11,7 +11,6 @@
 #include <dcimgui_impl_sdl3.h>
 
 #include "K_game.h"
-#include "K_locale.h"
 #include "K_string.h"
 #include "K_video.h"
 

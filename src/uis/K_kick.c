@@ -1,7 +1,6 @@
 #include "K_audio.h"
 #include "K_input.h"
 #include "K_interface.h"
-#include "K_locale.h"
 #include "K_net.h"
 #include "K_string.h"
 #include "K_video.h"
