@@ -12,7 +12,7 @@ static void create(UI* ui) {
 
     UI_ALLOC_DATA(ui, UIMessageData);
     UIMessageData* userdata = ui->userdata;
-    userdata->verb = "close";
+    userdata->verb = "menu.close";
     userdata->size = 32.f;
 }
 

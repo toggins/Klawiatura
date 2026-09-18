@@ -645,7 +645,7 @@ static void multiplayer_option() {
     userdata->title = "message.notice";
     userdata->text = "message.online_notice";
     userdata->size = 24.f;
-    userdata->verb = "continue";
+    userdata->verb = "menu.continue";
     userdata->cancel = saw_online_notice;
 }
 
@@ -681,6 +681,12 @@ static void visibility_cycle(Sint8 cycle) {
     CLIENT.private_lobby = !CLIENT.private_lobby;
 }
 
+static const char* fmt_connection_failed() {
+    const char* error = net_error();
+    return (error == NULL) ? LFMT("message.connection_failed")
+                           : fmt("%s\n(%s)", LFMT("message.connection_failed"), error);
+}
+
 static Bool wait_connecting() {
     switch (get_connect_state()) {
     default:
@@ -692,7 +698,7 @@ static Bool wait_connecting() {
             return TRUE;
 
         UIMessageData* userdata = message->userdata;
-        userdata->text = "message.connection_failed";
+        userdata->fmt = fmt_connection_failed;
 
         return TRUE;
     }
@@ -716,7 +722,7 @@ static void prompt_connect() {
 
     UIMessageData* userdata = message->userdata;
     userdata->text = "message.connecting";
-    userdata->verb = "cancel";
+    userdata->verb = "menu.cancel";
     userdata->wait = wait_connecting;
     userdata->finish = finish_connecting;
     userdata->cancel = disconnect;
