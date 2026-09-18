@@ -1273,21 +1273,22 @@ static float string_width_wrap_fast(const Font* font, float size, const char* st
             if (glyph == NULL)
                 glyph = (Glyph*)TinyMapGet(&font->glyphs, '?');
         }
-        float gadv = (glyph == NULL) ? 0.f : (glyph->advance * xscale);
+        float gwidth = (glyph == NULL) ? 0.f : (glyph->advance * xscale);
 
-        i += (Sint32)(last_advbytes - advbytes) - 1;
+        const Sint32 step = (Sint32)(last_advbytes - advbytes);
+        i += step - 1;
 
         if (measure) {
-            if (space)
+            if (space || gid == '\n')
                 end_pos = i;
 
-            if ((cx + gadv) > wrap) {
-                if (end_pos <= 0)
+            if ((cx + gwidth) > wrap) {
+                if (end_pos <= start_pos)
                     end_pos = i;
                 if (i == end_pos)
-                    end_pos -= 1;
+                    end_pos -= step;
                 if ((start_pos + 1) == end_pos)
-                    end_pos = i - 1;
+                    end_pos = i - step;
                 measure = FALSE;
             } else if ((i + 1) == bytes) {
                 end_pos = i;
@@ -1297,23 +1298,27 @@ static float string_width_wrap_fast(const Font* font, float size, const char* st
             }
 
             if (!measure) {
-                cx = 0.f;
+                cx = gwidth = 0.f;
                 i = start_pos;
-                gadv = 0.f;
             }
-        } else if (i == end_pos) {
-            cx = 0.f;
-            start_pos = end_pos;
-            end_pos = 0;
-            measure = TRUE;
+        } else {
+            if (gid != '\n' && (cx > 0.f || !space))
+                cx += gwidth;
+
+            if (cx > width)
+                width = cx;
+
+            if (i == end_pos) {
+                cx = gwidth = 0.f;
+
+                start_pos = end_pos;
+                end_pos = -1;
+                measure = TRUE;
+            }
         }
 
-        const float extend = (glyph == NULL) ? 0.f : (glyph->bounds[2] * xscale);
-        const float should_extend = cx + SDL_max(gadv, extend);
-        width = SDL_max(width, should_extend);
-
-        if (cx > 0.f || !space)
-            cx += gadv;
+        if (measure && (cx > 0.f || !space))
+            cx += gwidth;
     }
 
     return width;
@@ -1352,19 +1357,20 @@ static float string_height_wrap_fast(const Font* font, float size, const char* s
         }
         float gwidth = (glyph == NULL) ? 0.f : (glyph->advance * xscale);
 
-        i += (Sint32)(last_advbytes - advbytes) - 1;
+        const Sint32 step = (Sint32)(last_advbytes - advbytes);
+        i += step - 1;
 
         if (measure) {
-            if (space)
+            if (space || gid == '\n')
                 end_pos = i;
 
             if ((cx + gwidth) > wrap) {
-                if (end_pos <= 0)
+                if (end_pos <= start_pos)
                     end_pos = i;
                 if (i == end_pos)
-                    end_pos -= 1;
+                    end_pos -= step;
                 if ((start_pos + 1) == end_pos)
-                    end_pos = i - 1;
+                    end_pos = i - step;
                 measure = FALSE;
             } else if ((i + 1) == bytes) {
                 end_pos = i;
@@ -1374,19 +1380,24 @@ static float string_height_wrap_fast(const Font* font, float size, const char* s
             }
 
             if (!measure) {
-                cx = 0.f;
+                cx = gwidth = 0.f;
                 i = start_pos;
-                gwidth = 0.f;
             }
-        } else if (i == end_pos) {
-            cx = 0.f;
-            cy += yscale;
-            start_pos = end_pos;
-            end_pos = 0;
-            measure = TRUE;
+        } else {
+            if (gid != '\n' && (cx > 0.f || !space))
+                cx += gwidth;
+
+            if (i == end_pos) {
+                cx = gwidth = 0.f;
+                cy += yscale;
+
+                start_pos = end_pos;
+                end_pos = -1;
+                measure = TRUE;
+            }
         }
 
-        if (cx > 0.f || !space)
+        if (measure && (cx > 0.f || !space))
             cx += gwidth;
     }
 
@@ -1463,19 +1474,20 @@ void batch_string_wrap(const char* name, float size, const char* str, float wrap
             batch_texture((texture == NULL) ? blank_texture : *(GLuint*)texture->internal);
         }
 
-        i += (Sint32)(last_advbytes - advbytes) - 1;
+        const Sint32 step = (Sint32)(last_advbytes - advbytes);
+        i += step - 1;
 
         if (measure) {
-            if (space)
+            if (space || gid == '\n')
                 end_pos = i;
 
             if ((cx + gwidth) > wrap) {
-                if (end_pos <= 0)
+                if (end_pos <= start_pos)
                     end_pos = i;
                 if (i == end_pos)
-                    end_pos -= 1;
+                    end_pos -= step;
                 if ((start_pos + 1) == end_pos)
-                    end_pos = i - 1;
+                    end_pos = i - step;
                 measure = FALSE;
             } else if ((i + 1) == bytes) {
                 end_pos = i;
@@ -1485,33 +1497,38 @@ void batch_string_wrap(const char* name, float size, const char* str, float wrap
             }
 
             if (!measure) {
-                cx = 0.f;
+                cx = gwidth = 0.f;
                 i = start_pos;
-                gwidth = 0.f;
             }
         } else {
-            if (glyph != NULL) {
-                const float acx = ox + cx, acy = oy + cy;
-                const float x1 = acx + (glyph->bounds[0] * xscale), y1 = acy + (glyph->bounds[1] * yscale);
-                const float x2 = acx + (glyph->bounds[2] * xscale), y2 = acy + (glyph->bounds[3] * yscale);
-                batch_vertex(B_F3(x1, y2, oz), batch.color[2], B_F2(glyph->uvs[0], glyph->uvs[3]));
-                batch_vertex(B_F3(x1, y1, oz), batch.color[0], B_F2(glyph->uvs[0], glyph->uvs[1]));
-                batch_vertex(B_F3(x2, y1, oz), batch.color[1], B_F2(glyph->uvs[2], glyph->uvs[1]));
-                batch_vertex(B_F3(x2, y1, oz), batch.color[1], B_F2(glyph->uvs[2], glyph->uvs[1]));
-                batch_vertex(B_F3(x2, y2, oz), batch.color[3], B_F2(glyph->uvs[2], glyph->uvs[3]));
-                batch_vertex(B_F3(x1, y2, oz), batch.color[2], B_F2(glyph->uvs[0], glyph->uvs[3]));
+            if (gid != '\n') {
+                if (glyph != NULL) {
+                    const float acx = ox + cx, acy = oy + cy;
+                    const float x1 = acx + (glyph->bounds[0] * xscale), y1 = acy + (glyph->bounds[1] * yscale);
+                    const float x2 = acx + (glyph->bounds[2] * xscale), y2 = acy + (glyph->bounds[3] * yscale);
+                    batch_vertex(B_F3(x1, y2, oz), batch.color[2], B_F2(glyph->uvs[0], glyph->uvs[3]));
+                    batch_vertex(B_F3(x1, y1, oz), batch.color[0], B_F2(glyph->uvs[0], glyph->uvs[1]));
+                    batch_vertex(B_F3(x2, y1, oz), batch.color[1], B_F2(glyph->uvs[2], glyph->uvs[1]));
+                    batch_vertex(B_F3(x2, y1, oz), batch.color[1], B_F2(glyph->uvs[2], glyph->uvs[1]));
+                    batch_vertex(B_F3(x2, y2, oz), batch.color[3], B_F2(glyph->uvs[2], glyph->uvs[3]));
+                    batch_vertex(B_F3(x1, y2, oz), batch.color[2], B_F2(glyph->uvs[0], glyph->uvs[3]));
+                }
+
+                if (cx > 0.f || !space)
+                    cx += gwidth;
             }
 
             if (i == end_pos) {
-                cx = 0.f;
+                cx = gwidth = 0.f;
                 cy += yscale;
+
                 start_pos = end_pos;
-                end_pos = 0;
+                end_pos = -1;
                 measure = TRUE;
             }
         }
 
-        if (cx > 0.f || !space)
+        if (measure && (cx > 0.f || !space))
             cx += gwidth;
     }
 }
