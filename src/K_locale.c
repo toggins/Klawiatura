@@ -70,25 +70,19 @@ void apply_language(const char* name) {
     INFO("Applied language \"%s\"", current_language->name);
 }
 
-static const char* localized(const char* key) {
-    const char* str = NULL;
-
-    const TinyHash hash = StHashStr(key);
-    if (current_language != NULL) {
-        str = TinyMapGet(&current_language->strings, hash);
-        if (str != NULL)
-            return str;
-    }
-    if (default_language != NULL)
-        str = TinyMapGet(&default_language->strings, hash);
-
-    return (str == NULL) ? key : str;
-}
-
-const char* handle_lfmt(const char* key, ...) {
+const char* handle_lfmt(const Language* language, const char* key, ...) {
     static char buf[1024], abuf[1024];
 
-    const char* template = localized(key);
+    const char* template = NULL;
+    if (language == NULL) {
+        if (current_language != NULL)
+            template = TinyMapGet(&current_language->strings, StHashStr(key));
+        if (template == NULL && default_language != NULL)
+            template = TinyMapGet(&default_language->strings, StHashStr(key));
+    } else {
+        template = TinyMapGet(&language->strings, StHashStr(key));
+    }
+
     if (template == NULL)
         return NULL;
 

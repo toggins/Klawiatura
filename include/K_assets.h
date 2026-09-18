@@ -1,6 +1,6 @@
 #pragma once
 
-#include "K_locale.h"
+#include "K_locale.h" // IWYU pragma: export
 
 typedef Uint8 AssetKeepLevel;
 enum {
@@ -31,12 +31,18 @@ typedef struct {
     }                                                                                                                  \
                                                                                                                        \
     void load_localized_##A(const char* name, AssetKeepLevel keep) {                                                   \
-        load_##A(LFMT(name), keep);                                                                                    \
+        const Language* language = NULL;                                                                               \
+        language_iterate_start();                                                                                      \
+        while ((language = language_iterate_next()))                                                                   \
+            load_##A(handle_lfmt(language, name), keep);                                                               \
     }                                                                                                                  \
                                                                                                                        \
     void load_localized_##A##_num(const char* name, Sint32 n, AssetKeepLevel keep) {                                   \
-        for (Sint32 i = 0; i < n; i++)                                                                                 \
-            load_##A(LFMT(name, 'd', i), keep);                                                                        \
+        const Language* language = NULL;                                                                               \
+        language_iterate_start();                                                                                      \
+        while ((language = language_iterate_next()))                                                                   \
+            for (Sint32 i = 0; i < n; i++)                                                                             \
+                load_##A(handle_lfmt(language, name, 'd', i), keep);                                                   \
     }                                                                                                                  \
                                                                                                                        \
     const T* get_##A(const char* name) {                                                                               \
