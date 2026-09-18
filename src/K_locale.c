@@ -84,7 +84,7 @@ const char* handle_lfmt(const Language* language, const char* key, ...) {
     }
 
     if (template == NULL)
-        return NULL;
+        return key;
 
     // Parse arguments
     va_list args = {0};
