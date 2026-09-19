@@ -623,7 +623,7 @@ static void draw_ui() {
         const Sprite* tspr = get_sprite(map_state->title);
         const float tb = (tspr == NULL) ? 0.f : (tspr->size[1] - tspr->offset[1]);
         batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y + tb));
-        batch_sprite(LFMT("map.completed", 'd', (int)(screenticks() * 0.5f) % 16));
+        batch_sprite(LFMT("map.completed", 'i', (int)(screenticks() * 0.5f) % 16));
     }
 
     batch_pos(B_F3_SCREEN);
@@ -679,7 +679,7 @@ static void draw_ui() {
                 const PlayerID pid = gamers[i];
                 const char* name = get_peer_name(player_to_peer(pid));
                 if (name == NULL)
-                    name = LFMT("map.player", 'd', pid + 1);
+                    name = LFMT("map.player", 'i', pid + 1);
 
                 const WorldPlayerContext* wplayer = &wctx->players[pid];
                 const char* str = fmt("%i. %s x%i, %u pts", i + 1, name, SDL_max(wplayer->lives, 0), wplayer->score);
@@ -702,7 +702,7 @@ static void draw_ui() {
                 const PlayerID pid = gamers[i];
                 const char* name = get_peer_name(player_to_peer(pid));
                 if (name == NULL)
-                    name = LFMT("map.player", 'd', pid + 1);
+                    name = LFMT("map.player", 'i', pid + 1);
 
                 const WorldPlayerContext* wplayer = &wctx->players[pid];
                 const char* str = fmt("%i. %s x%i, %u pts", i + 1, name, SDL_max(wplayer->lives, 0), wplayer->score);

@@ -18,7 +18,7 @@ typedef struct {
     void load_##A(const char*, AssetKeepLevel);                                                                        \
     void load_##A##_num(const char*, Uint32, AssetKeepLevel);                                                          \
     void load_localized_##A(const char*, AssetKeepLevel);                                                              \
-    void load_localized_##A##_num(const char*, Sint32, AssetKeepLevel);                                                \
+    void load_localized_##A##_num(const char*, Uint32, AssetKeepLevel);                                                \
     const T* get_##A(const char*);                                                                                     \
     const T* get_##A##_key(TinyHash);                                                                                  \
     const T* fetch_##A(const char*, AssetKeepLevel);                                                                   \
@@ -37,12 +37,12 @@ typedef struct {
             load_##A(handle_lfmt(language, name), keep);                                                               \
     }                                                                                                                  \
                                                                                                                        \
-    void load_localized_##A##_num(const char* name, Sint32 n, AssetKeepLevel keep) {                                   \
+    void load_localized_##A##_num(const char* name, Uint32 n, AssetKeepLevel keep) {                                   \
         const Language* language = NULL;                                                                               \
         language_iterate_start();                                                                                      \
         while ((language = language_iterate_next()))                                                                   \
-            for (Sint32 i = 0; i < n; i++)                                                                             \
-                load_##A(handle_lfmt(language, name, 'd', i), keep);                                                   \
+            for (Uint32 i = 0; i < n; i++)                                                                             \
+                load_##A(handle_lfmt(language, name, 'u', i), keep);                                                   \
     }                                                                                                                  \
                                                                                                                        \
     const T* get_##A(const char* name) {                                                                               \

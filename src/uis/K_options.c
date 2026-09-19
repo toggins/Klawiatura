@@ -407,7 +407,7 @@ static const char* fmt_input_delay(size_t idx) {
     (void)idx;
 
     return fmt("%s: %s", LFMT("option.input_delay"),
-        LFMT((CLIENT.input_delay == 1) ? "value.frame" : "value.frames", 'd', CLIENT.input_delay));
+        LFMT((CLIENT.input_delay == 1) ? "value.frame" : "value.frames", 'u', CLIENT.input_delay));
 }
 
 static void input_delay_cycle(Sint8 cycle) {

@@ -108,15 +108,21 @@ const char* handle_lfmt(const Language* language, const char* key, ...) {
         default:
             goto end_parse;
 
-        case 'f': {
-            const double val = va_arg(args, double);
-            written = SDL_snprintf(rpos, remaining, "%g", val);
+        case 'u': {
+            const Uint64 val = va_arg(args, Uint64);
+            written = SDL_snprintf(rpos, remaining, "%" SDL_PRIu64, val);
             break;
         }
 
-        case 'd': {
-            const int val = va_arg(args, int);
-            written = SDL_snprintf(rpos, remaining, "%d", val);
+        case 'i': {
+            const Sint64 val = va_arg(args, Sint64);
+            written = SDL_snprintf(rpos, remaining, "%" SDL_PRIs64, val);
+            break;
+        }
+
+        case 'f': {
+            const double val = va_arg(args, double);
+            written = SDL_snprintf(rpos, remaining, "%g", val);
             break;
         }
 

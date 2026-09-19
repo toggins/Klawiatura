@@ -1540,7 +1540,7 @@ static void draw_ui() {
                 if (ImGui_TreeNode(LFMT("editor.tracks"))) {
                     for (size_t i = 0; i < SDL_arraysize(elevel->tracks); i++) {
                         ImGui_InputText(
-                            LFMT("editor.track", 'd', i + 1), elevel->tracks[i], sizeof(elevel->tracks[i]), 0);
+                            LFMT("editor.track", 'u', i + 1), elevel->tracks[i], sizeof(elevel->tracks[i]), 0);
                         ImGui_InputInt(fmt("%s##o%zu", LFMT("editor.offset"), i), &elevel->track_offsets[i]);
 
                         if (i < (SDL_arraysize(elevel->tracks) - 1))
@@ -1553,7 +1553,7 @@ static void draw_ui() {
 
                 if (ImGui_TreeNode(LFMT("editor.warps"))) {
                     for (size_t i = 0; i < SDL_arraysize(elevel->warps); i++)
-                        ImGui_InputText(LFMT("editor.warp", 'd', i + 1), elevel->warps[i], sizeof(elevel->warps[i]), 0);
+                        ImGui_InputText(LFMT("editor.warp", 'u', i + 1), elevel->warps[i], sizeof(elevel->warps[i]), 0);
 
                     ImGui_TreePop();
                     ImGui_Spacing();
@@ -1562,7 +1562,7 @@ static void draw_ui() {
                 if (ImGui_TreeNode(LFMT("editor.secrets"))) {
                     for (size_t i = 0; i < SDL_arraysize(elevel->secrets); i++) {
                         ImGui_InputText(
-                            LFMT("editor.secret", 'd', i + 1), elevel->secrets[i], sizeof(elevel->secrets[i]), 0);
+                            LFMT("editor.secret", 'u', i + 1), elevel->secrets[i], sizeof(elevel->secrets[i]), 0);
                     }
 
                     ImGui_TreePop();
