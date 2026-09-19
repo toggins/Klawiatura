@@ -52,7 +52,7 @@ Multiplayer is the main kicker of this project. You can host and find lobbies th
 > [!IMPORTANT]
 > **Make sure your game's version and checksum match with other players you want to play with.** Your checksum is only affected by mods that have level and/or world files and the order in which they are loaded. Lobbies are filtered based on your game's version and checksum.
 >
-> **Before you update Klawiatura, clear your older build's data folder first** so you don't get any incorrect checksums.
+> If you're going to update Klawiatura by overwriting your older build, **clear your data folder first** so you don't get any incorrect checksums.
 
 ## Launch options
 
