@@ -19,6 +19,7 @@ static const char* last_error = NULL;
 
 static ConnectState connect_state = CONN_NONE;
 
+static LobbyListState lobby_list_state = 0;
 static LobbyInfo* lobby_list = NULL;
 static size_t lobby_list_count = 0;
 
@@ -87,6 +88,7 @@ static void clear_lobby_list() {
 static void on_lobbies_found(const NutBlast_Lobby* lobbies, size_t count) {
     clear_lobby_list();
 
+    lobby_list_state = LLS_READY;
     lobby_list_count = count;
     lobby_list = SDL_calloc(lobby_list_count, sizeof(*lobby_list));
     if (lobby_list == NULL) {
@@ -661,6 +663,11 @@ void find_lobbies() {
     set_last_error(NULL);
     clear_lobby_list();
     NutBlast_FindLobbies(20);
+    lobby_list_state = LLS_SEARCHING;
+}
+
+LobbyListState get_lobby_list_state() {
+    return lobby_list_state;
 }
 
 const LobbyInfo* get_lobby_list(size_t idx) {

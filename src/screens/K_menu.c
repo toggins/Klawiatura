@@ -45,8 +45,8 @@ static const char* replay_error = NULL;
 
 static void enter_replays_menu(MenuType), leave_replays_menu(MenuType), enter_lobby_list_menu(MenuType),
     tick_lobby_list_menu(), enter_lobby_menu(MenuType), leave_lobby_menu(MenuType), tick_lobby_menu();
-static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_menu(), kick_player_disabled(), start_disabled(),
-    character_disabled();
+static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_list_menu(), draw_lobby_menu(), kick_player_disabled(),
+    start_disabled(), character_disabled();
 
 static const char *fmt_max_peers(size_t), *fmt_visibility(size_t), *fmt_lobby(), *fmt_character(size_t),
     *fmt_powerup(size_t), *fmt_world(size_t), *fmt_test_level(size_t);
@@ -92,6 +92,7 @@ static Catalog CATALOG = {
 			.name = "option.find_lobby",
 			.enter = enter_lobby_list_menu,
 			.tick = tick_lobby_list_menu,
+            .draw = draw_lobby_list_menu,
 		},
 
         [MEN_LOBBY] = {
@@ -247,34 +248,86 @@ static Bool draw_main_menu() {
     return FALSE;
 }
 
-static void enter_lobby_list_menu(MenuType from) {
-    (void)from;
-
-    find_lobbies();
-    SDL_zeroa(CATALOG.options[MEN_LOBBY_LIST]);
-}
+static LobbyListState lobby_list_last_state = LLS_READY;
+static Uint16 lobby_list_refresh = 0;
+static Bool lobby_list_hint = FALSE;
 
 static const char* fmt_lobby_list(size_t idx) {
     const LobbyInfo* lobby = get_lobby_list(idx);
-    if (lobby == NULL)
-        return NULL;
-
-    return fmt("%s (%u/%u)", lobby->name, lobby->peers, lobby->capacity);
+    return (lobby == NULL) ? NULL : fmt("%s (%u/%u)", lobby->name, lobby->peers, lobby->capacity);
 }
 
 static void lobby_option();
-static void tick_lobby_list_menu() {
+static Bool update_lobby_list() {
     SDL_zeroa(CATALOG.options[MEN_LOBBY_LIST]);
-    CATALOG.options[MEN_LOBBY_LIST][0].name = "option.no_lobbies";
 
-    for (Uint8 i = 0; i < MAX_OPTIONS; i++) {
+    if (get_lobby_list_state() == LLS_SEARCHING) {
+        CATALOG.options[MEN_LOBBY_LIST][0].name = "option.finding_lobbies";
+        CATALOG.options[MEN_LOBBY_LIST][0].disabled = always_disabled;
+
+        return FALSE;
+    }
+
+    if (get_lobby_list_count() <= 0) {
+        CATALOG.options[MEN_LOBBY_LIST][0].name = "option.no_lobbies";
+        CATALOG.options[MEN_LOBBY_LIST][0].disabled = always_disabled;
+
+        lobby_list_hint = TRUE;
+        return FALSE;
+    }
+
+    for (size_t i = 0; i < MAX_OPTIONS; i++) {
         const LobbyInfo* lobby = get_lobby_list(i);
         if (lobby == NULL)
-            continue;
+            break;
 
         CATALOG.options[MEN_LOBBY_LIST][i].fmt = fmt_lobby_list;
         CATALOG.options[MEN_LOBBY_LIST][i].callback = lobby_option;
     }
+
+    lobby_list_hint = FALSE;
+    return TRUE;
+}
+
+static void enter_lobby_list_menu(MenuType from) {
+    (void)from;
+
+    find_lobbies();
+    update_lobby_list();
+    lobby_list_last_state = get_lobby_list_state();
+    lobby_list_hint = FALSE;
+}
+
+static void tick_lobby_list_menu() {
+    const LobbyListState new_state = get_lobby_list_state();
+    if (lobby_list_last_state != new_state) {
+        lobby_list_refresh = (update_lobby_list() ? 24 : 8) * get_tickrate();
+        lobby_list_last_state = new_state;
+    }
+
+    if (lobby_list_last_state == LLS_READY && lobby_list_refresh > 0) {
+        if (--lobby_list_refresh <= 0) {
+            find_lobbies();
+            update_lobby_list();
+            lobby_list_last_state = get_lobby_list_state();
+
+            return;
+        }
+    }
+}
+
+static Bool draw_lobby_list_menu() {
+    if (!lobby_list_hint)
+        return TRUE;
+
+    batch_reset();
+    batch_pos(B_F3_HALF_SCREEN);
+    batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+    batch_string_wrap("footer", 16.f, LFMT("option.check_checksum"), SCREEN_WIDTH - 32.f);
+    batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+    batch_string_wrap("footer", 16.f, LFMT("option.your_checksum", 'u', get_game_hash()), SCREEN_WIDTH - 32.f);
+
+    return TRUE;
 }
 
 static void replay_option();

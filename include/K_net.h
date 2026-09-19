@@ -34,6 +34,12 @@ enum {
     CONN_DISCONNECTED,
 };
 
+typedef Uint8 LobbyListState;
+enum {
+    LLS_READY,
+    LLS_SEARCHING,
+};
+
 typedef Uint8 PacketChannel;
 enum {
     PCH_LOBBY,
@@ -85,6 +91,7 @@ void toggle_spectator();
 void kick_peer(NetID);
 
 void find_lobbies();
+LobbyListState get_lobby_list_state();
 const LobbyInfo* get_lobby_list(size_t);
 size_t get_lobby_list_count();
 
