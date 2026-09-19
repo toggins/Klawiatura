@@ -1321,6 +1321,9 @@ static float string_width_wrap_fast(const Font* font, float size, const char* st
             cx += gwidth;
     }
 
+    if (cx > width)
+        width = cx;
+
     return width;
 }
 
@@ -1400,6 +1403,9 @@ static float string_height_wrap_fast(const Font* font, float size, const char* s
         if (measure && (cx > 0.f || !space))
             cx += gwidth;
     }
+
+    if (bytes > 0 && !measure)
+        cy += yscale;
 
     return cy;
 }
