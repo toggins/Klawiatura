@@ -466,7 +466,12 @@ static Bool draw_lobby_menu() {
     batch_pos(B_F3_XY(125.f, SCREEN_HEIGHT - 16.f));
     batch_color(B_U4_WHITE);
     batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-    batch_string_wrap("footer", 16.f, fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("menu.disconnect")), 218.f);
+    const char* ind = fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("menu.disconnect"));
+    batch_string_wrap("footer", 16.f, ind, 218.f);
+
+    batch_pos(B_F3_XY(125.f, SCREEN_HEIGHT - 24.f - string_height_wrap("footer", 16.f, ind, 218.f)));
+    batch_color(B_U4_ALPHA(200));
+    batch_string_wrap("footer", 12.f, fmt("Checksum: %u", get_game_hash()), 218.f);
 
     // RIGHT
     Uint8 line = 0;
