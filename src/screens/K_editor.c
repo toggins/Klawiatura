@@ -1391,123 +1391,125 @@ static void draw_ui() {
 
     if (!io->WantCaptureMouse) {
         ImVec2 mpos = ImGui_GetMousePos();
-
-        if (ImGui_IsMouseClicked(ImGuiMouseButton_Middle)) {
-            ecamera->hold[0] = ecamera->pos[0] + (mpos.x * ecamera->zoom);
-            ecamera->hold[1] = ecamera->pos[1] + (mpos.y * ecamera->zoom);
-        }
-        if (ImGui_IsMouseDown(ImGuiMouseButton_Middle)) {
-            const float tx = ecamera->pos[0] + (mpos.x * ecamera->zoom),
-                        ty = ecamera->pos[1] + (mpos.y * ecamera->zoom);
-            ecamera->pos[0] += ecamera->hold[0] - tx;
-            ecamera->pos[1] += ecamera->hold[1] - ty;
-        }
-
-        const float wheel = io->MouseWheel;
-        if (wheel != 0.f) {
-            const float omx = ecamera->pos[0] + (mpos.x * ecamera->zoom),
-                        omy = ecamera->pos[1] + (mpos.y * ecamera->zoom);
-
-            ecamera->zoom -= wheel / ((ecamera->zoom > 1.f || (ecamera->zoom == 1.f && wheel < 0.f)) ? 4.f : 10.f);
-            ecamera->zoom = SDL_clamp(ecamera->zoom, 0.1f, 5.f);
-
-            ecamera->pos[0] -= (ecamera->pos[0] + (mpos.x * ecamera->zoom)) - omx;
-            ecamera->pos[1] -= (ecamera->pos[1] + (mpos.y * ecamera->zoom)) - omy;
-        }
-
-        move_cursor(
-            (Sint32[2]){
-                (Sint32)ecamera->pos[0] + (Sint32)(mpos.x * ecamera->zoom),
-                (Sint32)ecamera->pos[1] + (Sint32)(mpos.y * ecamera->zoom),
-            },
-            !ImGui_IsKeyDown(ImGuiKey_LeftShift), !ImGui_IsKeyDown(ImGuiKey_LeftAlt));
-
-        if (ecursor->has_scalable) {
-            EditorMarker* marker = &editor->level.markers[ecursor->scalable];
-
-            const EditorDef* def = (EditorDef*)TinyMapGet(&editor->defs, marker->def_key);
-            const Sprite* sprite = (def == NULL || marker->tile[0] || marker->tile[1]) ? NULL : get_sprite(def->sprite);
-
-            float sprite_width = 1.f, sprite_height = 1.f;
-            if (sprite != NULL) {
-                sprite_width = sprite->size[0];
-                sprite_height = sprite->size[1];
+        if (mpos.x > -32767.f && mpos.x < 32767.f && mpos.y > -32767.f && mpos.y < 32767.f) {
+            if (ImGui_IsMouseClicked(ImGuiMouseButton_Middle)) {
+                ecamera->hold[0] = ecamera->pos[0] + (mpos.x * ecamera->zoom);
+                ecamera->hold[1] = ecamera->pos[1] + (mpos.y * ecamera->zoom);
+            }
+            if (ImGui_IsMouseDown(ImGuiMouseButton_Middle)) {
+                const float tx = ecamera->pos[0] + (mpos.x * ecamera->zoom),
+                            ty = ecamera->pos[1] + (mpos.y * ecamera->zoom);
+                ecamera->pos[0] += ecamera->hold[0] - tx;
+                ecamera->pos[1] += ecamera->hold[1] - ty;
             }
 
-            float max_width = 1000000.f, max_height = 1000000.f;
-            if (def != NULL) {
-                max_width = def->max_scale[0] * sprite_width;
-                max_height = def->max_scale[1] * sprite_height;
+            const float wheel = io->MouseWheel;
+            if (wheel != 0.f) {
+                const float omx = ecamera->pos[0] + (mpos.x * ecamera->zoom),
+                            omy = ecamera->pos[1] + (mpos.y * ecamera->zoom);
+
+                ecamera->zoom -= wheel / ((ecamera->zoom > 1.f || (ecamera->zoom == 1.f && wheel < 0.f)) ? 4.f : 10.f);
+                ecamera->zoom = SDL_clamp(ecamera->zoom, 0.1f, 5.f);
+
+                ecamera->pos[0] -= (ecamera->pos[0] + (mpos.x * ecamera->zoom)) - omx;
+                ecamera->pos[1] -= (ecamera->pos[1] + (mpos.y * ecamera->zoom)) - omy;
             }
 
-            float sx = (float)ecursor->pos[0] - (float)marker->pos[0],
-                  sy = (float)ecursor->pos[1] - (float)marker->pos[1];
-            marker->scale[0] = SDL_clamp(sx, 16.f, max_width) / sprite_width;
-            marker->scale[1] = SDL_clamp(sy, 16.f, max_height) / sprite_height;
+            move_cursor(
+                (Sint32[2]){
+                    (Sint32)ecamera->pos[0] + (Sint32)(mpos.x * ecamera->zoom),
+                    (Sint32)ecamera->pos[1] + (Sint32)(mpos.y * ecamera->zoom),
+                },
+                !ImGui_IsKeyDown(ImGuiKey_LeftShift), !ImGui_IsKeyDown(ImGuiKey_LeftAlt));
 
-            if (!ImGui_IsMouseDown(ImGuiMouseButton_Left))
-                ecursor->has_scalable = FALSE;
-        } else {
-            if (ImGui_IsMouseClicked(ImGuiMouseButton_Left)
-                || (ImGui_IsKeyDown(ImGuiKey_LeftCtrl) && ImGui_IsMouseDown(ImGuiMouseButton_Left)
-                    && !ecursor->has_highlighted))
-            {
+            if (ecursor->has_scalable) {
+                EditorMarker* marker = &editor->level.markers[ecursor->scalable];
 
-                if (ecursor->has_highlighted) {
-                    ecursor->has_selected = TRUE;
-                    ecursor->selected = ecursor->highlighted;
-                    ecursor->has_highlighted = FALSE;
-                } else {
-                    const EditorDef* cdef = (EditorDef*)TinyMapGet(&editor->defs, editor->def_key);
-                    if (cdef != NULL) {
-                        EditorMarker marker = init_marker();
+                const EditorDef* def = (EditorDef*)TinyMapGet(&editor->defs, marker->def_key);
+                const Sprite* sprite
+                    = (def == NULL || marker->tile[0] || marker->tile[1]) ? NULL : get_sprite(def->sprite);
 
-                        marker.def_key = editor->def_key;
-                        marker.pos[0] = ecursor->pos[0];
-                        marker.pos[1] = ecursor->pos[1];
-                        marker.pos[2] = cdef->depth;
-                        marker.flip[0] = cdef->flip[0];
-                        marker.flip[1] = cdef->flip[1];
-                        marker.tile[0] = cdef->tile[0];
-                        marker.tile[1] = cdef->tile[1];
-                        SDL_memcpy(marker.colors, cdef->colors, sizeof(marker.colors));
+                float sprite_width = 1.f, sprite_height = 1.f;
+                if (sprite != NULL) {
+                    sprite_width = sprite->size[0];
+                    sprite_height = sprite->size[1];
+                }
 
-                        for (size_t i = 0, n = TinyDLength(cdef->values); i < n; i++) {
-                            const EditorDefValue* dvalue = &cdef->values[i];
-                            marker.values[dvalue->index] = dvalue->default_value;
-                        }
+                float max_width = 1000000.f, max_height = 1000000.f;
+                if (def != NULL) {
+                    max_width = def->max_scale[0] * sprite_width;
+                    max_height = def->max_scale[1] * sprite_height;
+                }
 
-                        for (size_t i = 0, n = TinyDLength(cdef->flags); i < n; i++) {
-                            const EditorDefFlag* dflag = &cdef->flags[i];
-                            marker.flags |= dflag->default_value << dflag->index;
-                        }
+                float sx = (float)ecursor->pos[0] - (float)marker->pos[0],
+                      sy = (float)ecursor->pos[1] - (float)marker->pos[1];
+                marker->scale[0] = SDL_clamp(sx, 16.f, max_width) / sprite_width;
+                marker->scale[1] = SDL_clamp(sy, 16.f, max_height) / sprite_height;
 
-                        if (editor->level.markers == NULL)
-                            editor->level.markers = MakeTinyDPro(1, sizeof(*editor->level.markers));
-                        editor->level.markers = TinyDPush(editor->level.markers, &marker);
+                if (!ImGui_IsMouseDown(ImGuiMouseButton_Left))
+                    ecursor->has_scalable = FALSE;
+            } else {
+                if (ImGui_IsMouseClicked(ImGuiMouseButton_Left)
+                    || (ImGui_IsKeyDown(ImGuiKey_LeftCtrl) && ImGui_IsMouseDown(ImGuiMouseButton_Left)
+                        && !ecursor->has_highlighted))
+                {
 
-                        if (cdef->scalable) {
-                            ecursor->has_scalable = TRUE;
-                            ecursor->scalable = TinyDLength(editor->level.markers) - 1;
-                        } else {
-                            ecursor->has_highlighted = TRUE;
-                            ecursor->highlighted = TinyDLength(editor->level.markers) - 1;
+                    if (ecursor->has_highlighted) {
+                        ecursor->has_selected = TRUE;
+                        ecursor->selected = ecursor->highlighted;
+                        ecursor->has_highlighted = FALSE;
+                    } else {
+                        const EditorDef* cdef = (EditorDef*)TinyMapGet(&editor->defs, editor->def_key);
+                        if (cdef != NULL) {
+                            EditorMarker marker = init_marker();
+
+                            marker.def_key = editor->def_key;
+                            marker.pos[0] = ecursor->pos[0];
+                            marker.pos[1] = ecursor->pos[1];
+                            marker.pos[2] = cdef->depth;
+                            marker.flip[0] = cdef->flip[0];
+                            marker.flip[1] = cdef->flip[1];
+                            marker.tile[0] = cdef->tile[0];
+                            marker.tile[1] = cdef->tile[1];
+                            SDL_memcpy(marker.colors, cdef->colors, sizeof(marker.colors));
+
+                            for (size_t i = 0, n = TinyDLength(cdef->values); i < n; i++) {
+                                const EditorDefValue* dvalue = &cdef->values[i];
+                                marker.values[dvalue->index] = dvalue->default_value;
+                            }
+
+                            for (size_t i = 0, n = TinyDLength(cdef->flags); i < n; i++) {
+                                const EditorDefFlag* dflag = &cdef->flags[i];
+                                marker.flags |= dflag->default_value << dflag->index;
+                            }
+
+                            if (editor->level.markers == NULL)
+                                editor->level.markers = MakeTinyDPro(1, sizeof(*editor->level.markers));
+                            editor->level.markers = TinyDPush(editor->level.markers, &marker);
+
+                            if (cdef->scalable) {
+                                ecursor->has_scalable = TRUE;
+                                ecursor->scalable = TinyDLength(editor->level.markers) - 1;
+                            } else {
+                                ecursor->has_highlighted = TRUE;
+                                ecursor->highlighted = TinyDLength(editor->level.markers) - 1;
+                            }
                         }
                     }
                 }
-            }
 
-            if (ImGui_IsMouseClicked(ImGuiMouseButton_Middle) && ecursor->has_highlighted)
-                editor->def_key = editor->level.markers[ecursor->highlighted].def_key;
+                if (ImGui_IsMouseClicked(ImGuiMouseButton_Middle) && ecursor->has_highlighted)
+                    editor->def_key = editor->level.markers[ecursor->highlighted].def_key;
 
-            if ((ImGui_IsMouseClicked(ImGuiMouseButton_Right)
-                    || (ImGui_IsKeyDown(ImGuiKey_LeftCtrl) && ImGui_IsMouseDown(ImGuiMouseButton_Right)))
-                && ecursor->has_highlighted)
-            {
-                editor->level.markers = TinyDErase(editor->level.markers, ecursor->highlighted);
-                if (ecursor->has_selected && ecursor->selected == ecursor->highlighted)
-                    ecursor->has_selected = FALSE;
-                ecursor->has_highlighted = FALSE;
+                if ((ImGui_IsMouseClicked(ImGuiMouseButton_Right)
+                        || (ImGui_IsKeyDown(ImGuiKey_LeftCtrl) && ImGui_IsMouseDown(ImGuiMouseButton_Right)))
+                    && ecursor->has_highlighted)
+                {
+                    editor->level.markers = TinyDErase(editor->level.markers, ecursor->highlighted);
+                    if (ecursor->has_selected && ecursor->selected == ecursor->highlighted)
+                        ecursor->has_selected = FALSE;
+                    ecursor->has_highlighted = FALSE;
+                }
             }
         }
     }
