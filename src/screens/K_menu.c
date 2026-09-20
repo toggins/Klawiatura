@@ -48,11 +48,12 @@ static void enter_replays_menu(MenuType), leave_replays_menu(MenuType), enter_lo
 static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_list_menu(), draw_lobby_menu(), kick_player_disabled(),
     start_disabled(), character_disabled();
 
-static const char *fmt_max_peers(size_t), *fmt_visibility(size_t), *fmt_lobby(), *fmt_character(size_t),
-    *fmt_powerup(size_t), *fmt_world(size_t), *fmt_test_level(size_t);
+static const char *fmt_join_code(size_t), *fmt_max_peers(size_t), *fmt_visibility(size_t), *fmt_lobby(),
+    *fmt_character(size_t), *fmt_powerup(size_t), *fmt_world(size_t), *fmt_test_level(size_t);
 static void multiplayer_option(), options_option(), exit_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8),
-    host_option(), character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8), kick_player_option(),
-    world_cycle(Sint8), start_option(), go_to_editor_option(), test_level_cycle(Sint8), test_level_option();
+    host_option(), submit_join_code(Bool), character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8),
+    kick_player_option(), world_cycle(Sint8), start_option(), copy_join_code_option(), go_to_editor_option(),
+    test_level_cycle(Sint8), test_level_option();
 
 static Catalog CATALOG = {
 	.current = MEN_MAIN,
@@ -97,7 +98,8 @@ static Catalog CATALOG = {
 
         [MEN_LOBBY] = {
 			.fmt = fmt_lobby,
-			.leave = leave_lobby_menu,
+			.enter = enter_lobby_menu,
+            .leave = leave_lobby_menu,
 			.tick = tick_lobby_menu,
 			.draw = draw_lobby_menu,
 		},
@@ -134,6 +136,7 @@ static Catalog CATALOG = {
 		[MEN_MULTIPLAYER] = {
 			{.name = "option.host_lobby", .menu = MEN_HOST_LOBBY},
 			{.name = "option.find_lobby", .menu = MEN_LOBBY_LIST},
+            {.fmt = fmt_join_code, .prompt = CLIENT.join_code, .prompt_size = sizeof(CLIENT.join_code), .submit = submit_join_code},
 		},
 
 		[MEN_HOST_LOBBY] = {
@@ -151,6 +154,7 @@ static Catalog CATALOG = {
             {.name = "option.options", .callback = options_option},
             {.name = "option.kick", .disabled = kick_player_disabled, .callback = kick_player_option},
             {.name = "option.start", .disabled = start_disabled, .callback = start_option},
+            {.name = "option.copy_join_code", .callback = copy_join_code_option},
         },
 
         [MEN_EDITOR] = {
@@ -384,13 +388,6 @@ static const char* fmt_lobby() {
         LFMT(in_private_lobby() ? "value.private" : "value.public"));
 }
 
-static void leave_lobby_menu(MenuType to) {
-    (void)to;
-
-    disconnect();
-    play_generic_sound("ui/disconnect", PLAY_SYSTEM);
-}
-
 static const char* fmt_disconnected() {
     const char* error = net_error();
     return (error == NULL) ? LFMT("message.disconnected") : fmt("%s\n(%s)", LFMT("message.disconnected"), error);
@@ -400,7 +397,25 @@ static void cancel_error() {
     previous_menu(&CATALOG);
 }
 
+static Uint8 lobby_copy_time = 0;
+
+static void enter_lobby_menu(MenuType from) {
+    (void)from;
+
+    lobby_copy_time = 0;
+}
+
+static void leave_lobby_menu(MenuType to) {
+    (void)to;
+
+    disconnect();
+    play_generic_sound("ui/disconnect", PLAY_SYSTEM);
+}
+
 static void tick_lobby_menu() {
+    if (lobby_copy_time > 0)
+        --lobby_copy_time;
+
     if (is_connected())
         return;
 
@@ -415,6 +430,27 @@ static void tick_lobby_menu() {
     }
 }
 
+static void draw_lobby_code(float* y) {
+    const float y1 = *y;
+
+    batch_pos(B_F3_XY(125.f, *y));
+    batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+    const char* str = LFMT((lobby_copy_time > 0) ? "option.copied" : "option.copy_join_code");
+    batch_string_wrap("footer", 16.f, str, 186.f);
+
+    *y += string_height_wrap("footer", 16.f, str, 186.f) + 6.f;
+
+    if (CATALOG.menus[MEN_LOBBY].option == 7) {
+        batch_pos(B_F3_XY(-240.f, y1 - 4.f));
+        batch_colors(B_U4X4({0, 0, 0, 255}, {40, 40, 40, 255}, {0, 0, 0, 255}, {40, 40, 40, 255}));
+        batch_blend(BM_ADD);
+        batch_rectangle(NULL, B_F2(490.f, *y - y1));
+        batch_blend(BM_NORMAL);
+    }
+
+    *y += 3.f;
+}
+
 static void draw_lobby_cycle(float* y, size_t idx, const char* label, const char* value, Bool disabled) {
     const float y1 = *y;
 
@@ -422,7 +458,7 @@ static void draw_lobby_cycle(float* y, size_t idx, const char* label, const char
     batch_color(B_U4_ALPHA(disabled ? 160 : 255));
     batch_sprite(LFMT(label));
 
-    *y += 24.f;
+    *y += 20.f;
     batch_pos(B_F3_XY(125.f, *y));
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
     batch_string_wrap("footer", 16.f, value, 186.f);
@@ -447,7 +483,7 @@ static void draw_lobby_cycle(float* y, size_t idx, const char* label, const char
         batch_blend(BM_NORMAL);
     }
 
-    *y += 4.f;
+    *y += 3.f;
 }
 
 static const char* fmt_lobby_world(size_t idx) {
@@ -499,7 +535,9 @@ static Bool draw_lobby_menu() {
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
     batch_string_wrap("footer", 16.f, lname, 218.f);
 
-    float ly = lh + 30.f;
+    float ly = lh + 24.f;
+
+    draw_lobby_code(&ly);
 
     draw_lobby_cycle(&ly, 0, "menu.lobby.label.world", fmt_lobby_world(0), is_client());
     draw_lobby_cycle(&ly, 1, "menu.lobby.label.enter_as",
@@ -522,7 +560,7 @@ static Bool draw_lobby_menu() {
     const char* ind = fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("menu.disconnect"));
     batch_string_wrap("footer", 16.f, ind, 218.f);
 
-    batch_pos(B_F3_XY(125.f, SCREEN_HEIGHT - 24.f - string_height_wrap("footer", 16.f, ind, 218.f)));
+    batch_pos(B_F3_XY(125.f, SCREEN_HEIGHT - 20.f - string_height_wrap("footer", 16.f, ind, 218.f)));
     batch_color(B_U4_ALPHA(200));
     batch_string_wrap("footer", 12.f, fmt("Checksum: %u", get_game_hash()), 218.f);
 
@@ -791,13 +829,31 @@ static void host_option() {
     prompt_connect();
 }
 
-static void lobby_option() {
-    const LobbyInfo* lobby = get_lobby_list(CATALOG.menus[MEN_LOBBY_LIST].option);
-    if (lobby == NULL)
+static const char* fmt_join_code(size_t idx) {
+    (void)idx;
+
+    return (typing_what() == CLIENT.join_code)
+               ? fmt("%s: %s%s", LFMT("option.join_code"), CLIENT.join_code, caret(TRUE))
+               : LFMT("option.join_via_code");
+}
+
+static void submit_join_code(Bool confirmed) {
+    if (!confirmed)
         return;
 
-    join_lobby(lobby->id);
-    prompt_connect();
+    const NetID lid = base32_to_u64(CLIENT.join_code);
+    if (lid > 0) {
+        join_lobby(lid);
+        prompt_connect();
+    }
+}
+
+static void lobby_option() {
+    const LobbyInfo* lobby = get_lobby_list(CATALOG.menus[MEN_LOBBY_LIST].option);
+    if (lobby != NULL) {
+        join_lobby(lobby->id);
+        prompt_connect();
+    }
 }
 
 static void enter_as_cycle(Sint8 cycle) {
@@ -812,6 +868,11 @@ static Bool kick_player_disabled() {
 
 static void kick_player_option() {
     create_ui(UI_KICK, NULL);
+}
+
+static void copy_join_code_option() {
+    if (copy_to_clipboard(u64_to_base32(get_lobby_id())))
+        lobby_copy_time = (3 * get_tickrate()) / 2;
 }
 
 static const char* fmt_replay_error() {

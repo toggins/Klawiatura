@@ -116,7 +116,7 @@ void input_keydown(SDL_KeyboardEvent event) {
 
         case SDL_SCANCODE_C: {
             if ((event.mod & SDL_KMOD_CTRL) && SDL_strnlen(typing.ptr, typing.size) > 0)
-                SDL_SetClipboardText(typing.ptr);
+                copy_to_clipboard(typing.ptr);
 
             break;
         }
@@ -323,6 +323,10 @@ void stop_typing() {
 
 const char* typing_what() {
     return (typing.ptr != NULL && typing.size > 0) ? typing.ptr : NULL;
+}
+
+Bool copy_to_clipboard(const char* str) {
+    return SDL_SetClipboardText(str);
 }
 
 void input_text_input(SDL_TextInputEvent event) {

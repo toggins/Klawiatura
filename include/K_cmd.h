@@ -1,6 +1,7 @@
 #pragma once
 
 #include "K_game.h"
+#include "K_string.h"
 
 #define DEFAULT_NAME "Player"
 #define DEFAULT_LANGUAGE "en"
@@ -36,6 +37,7 @@ typedef struct {
     Uint8 lobby_limit;
     Bool private_lobby;
     Bool show_user_messages;
+    char join_code[BASE32_STRING_SIZE];
 
     Uint8 input_delay;
     Bool always_run;

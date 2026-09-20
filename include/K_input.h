@@ -62,6 +62,7 @@ const char *kb_name(Keybind), *kb_label(Keybind);
 
 void start_typing(char*, size_t, void (*)(Bool)), stop_typing();
 const char* typing_what();
+Bool copy_to_clipboard(const char*);
 void input_text_input(SDL_TextInputEvent);
 
 void start_scanning(Keybind), stop_scanning();
