@@ -838,14 +838,15 @@ static const char* fmt_join_code(size_t idx) {
 }
 
 static void submit_join_code(Bool confirmed) {
-    if (!confirmed)
-        return;
-
-    const NetID lid = base32_to_u64(CLIENT.join_code);
-    if (lid > 0) {
-        join_lobby(lid);
-        prompt_connect();
+    if (confirmed) {
+        const NetID lid = base32_to_u64(CLIENT.join_code);
+        if (lid > 0) {
+            join_lobby(lid);
+            prompt_connect();
+        }
     }
+
+    CLIENT.join_code[0] = '\0';
 }
 
 static void lobby_option() {
