@@ -250,7 +250,7 @@ void load_track(const char* name, AssetKeepLevel keep) {
 
     track.internal = MIX_LoadAudioWithProperties(props);
     if (track.internal == NULL) {
-        WTF("Failed to load track \"%s\":", SDL_GetError());
+        WTF("Failed to load track \"%s\": %s", name, SDL_GetError());
         SDL_DestroyProperties(props);
         return;
     }
