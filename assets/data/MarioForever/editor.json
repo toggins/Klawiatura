@@ -893,6 +893,16 @@
                 {
                     "name": "Type",
                     "index": 0
+                },
+                {
+                    "name": "5-2 X Speed",
+                    "index": 1,
+                    "type": "fixed"
+                },
+                {
+                    "name": "5-2 Y Speed",
+                    "index": 2,
+                    "type": "fixed"
                 }
             ],
             "flags": [
