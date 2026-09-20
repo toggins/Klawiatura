@@ -109,13 +109,13 @@ const char* handle_lfmt(const Language* language, const char* key, ...) {
             goto end_parse;
 
         case 'u': {
-            const Uint32 val = va_arg(args, Uint32);
+            const unsigned int val = va_arg(args, unsigned int);
             written = SDL_snprintf(rpos, remaining, "%u", val);
             break;
         }
 
         case 'i': {
-            const Sint32 val = va_arg(args, Sint32);
+            const int val = va_arg(args, int);
             written = SDL_snprintf(rpos, remaining, "%d", val);
             break;
         }
