@@ -33,7 +33,7 @@ static void give_coin(GamePlayer* player) {
 static void load() {
     load_sprite_num("items/coin/%u", 3, AKL_NEVER);
     load_sound("coin", AKL_NEVER);
-    load_actor(ACT_POINTS);
+    load_actor(ACT_COIN_POP);
 }
 
 static void create(GameActor* actor) {
