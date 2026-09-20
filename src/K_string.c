@@ -46,15 +46,14 @@ const char* u64_to_base32(Uint64 num) {
     static const char base[32] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
     static char out[BASE32_STRING_SIZE] = "";
 
-    if (num <= 0) {
-        out[0] = base[0];
-        out[1] = '\0';
-
-        return out;
-    }
-
     char* i = out + sizeof(out) - 1;
     *i = '\0';
+
+    if (num <= 0) {
+        *(--i) = base[0];
+        return i;
+    }
+
     while (num > 0) {
         *(--i) = base[num % sizeof(base)];
         num /= sizeof(base);
@@ -130,14 +129,8 @@ Uint64 base32_to_u64(const char* str) {
         return 0;
 
     Uint64 result = 0;
-    while (*str) {
-        const Uint8 val = table[*str];
-        if (val > 31)
-            break;
-
-        result = (result << 5) | val;
-        ++str;
-    }
+    while (*str != '\0')
+        result = (result << 5) | table[*(str++)];
 
     return result;
 }
