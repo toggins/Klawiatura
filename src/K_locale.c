@@ -109,14 +109,14 @@ const char* handle_lfmt(const Language* language, const char* key, ...) {
             goto end_parse;
 
         case 'u': {
-            const Uint64 val = va_arg(args, Uint64);
-            written = SDL_snprintf(rpos, remaining, "%" SDL_PRIu64, val);
+            const Uint32 val = va_arg(args, Uint32);
+            written = SDL_snprintf(rpos, remaining, "%u", val);
             break;
         }
 
         case 'i': {
-            const Sint64 val = va_arg(args, Sint64);
-            written = SDL_snprintf(rpos, remaining, "%" SDL_PRIs64, val);
+            const Sint32 val = va_arg(args, Sint32);
+            written = SDL_snprintf(rpos, remaining, "%d", val);
             break;
         }
 
