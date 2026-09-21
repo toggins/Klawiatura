@@ -205,8 +205,10 @@ if(KLAW_DISCORD_FR)
 endif()
 
 # Dear Bindings/Dear ImGui (v1.92.9)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/imgui EXCLUDE_FROM_ALL SYSTEM)
-list(APPEND LIBS imgui)
+if(NOT EMSCRIPTEN)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/external/imgui EXCLUDE_FROM_ALL SYSTEM)
+    list(APPEND LIBS imgui)
+endif()
 
 # Build
 
