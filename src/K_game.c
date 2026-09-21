@@ -1017,7 +1017,8 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
 
             const GameActor* pawn = get_actor(player->actor);
             if (pawn != NULL && pawn->type == ACT_PLAYER && get_actor(VAL(pawn, PLAYER_WARP)) == NULL
-                && !ANY_FLAG(pawn, FLG_PLAYER_WARP_OUT))
+                && !ANY_FLAG(
+                    pawn, FLG_PLAYER_WARP_OUT | FLG_PLAYER_RESPAWNING | FLG_PLAYER_ASCEND | FLG_PLAYER_DESCEND))
             {
                 all_inactive = FALSE;
                 break;
