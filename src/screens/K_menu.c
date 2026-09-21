@@ -52,8 +52,8 @@ static const char *fmt_join_code(size_t), *fmt_max_peers(size_t), *fmt_visibilit
     *fmt_character(size_t), *fmt_powerup(size_t), *fmt_world(size_t), *fmt_test_level(size_t);
 static void multiplayer_option(), options_option(), exit_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8),
     host_option(), submit_join_code(Bool), character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8),
-    kick_player_option(), world_cycle(Sint8), start_option(), copy_join_code_option(), go_to_editor_option(),
-    test_level_cycle(Sint8), test_level_option();
+    kick_player_option(), world_cycle(Sint8), start_option(), show_copy_join_code_cycle(Sint8),
+    show_copy_join_code_option(), go_to_editor_option(), test_level_cycle(Sint8), test_level_option();
 
 static Catalog CATALOG = {
 	.current = MEN_MAIN,
@@ -154,7 +154,11 @@ static Catalog CATALOG = {
             {.name = "option.options", .callback = options_option},
             {.name = "option.kick", .disabled = kick_player_disabled, .callback = kick_player_option},
             {.name = "option.start", .disabled = start_disabled, .callback = start_option},
-            {.name = "option.copy_join_code", .callback = copy_join_code_option},
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+            {.name = "option.show_join_code", .cycle = show_copy_join_code_cycle},
+#else
+            {.name = "option.show_copy_join_code", .cycle = show_copy_join_code_cycle, .callback = show_copy_join_code_option},
+#endif
         },
 
         [MEN_EDITOR] = {
@@ -397,12 +401,17 @@ static void cancel_error() {
     previous_menu(&CATALOG);
 }
 
+#ifndef SDL_PLATFORM_EMSCRIPTEN
 static Uint8 lobby_copy_time = 0;
+#endif
 
 static void enter_lobby_menu(MenuType from) {
     (void)from;
 
+    CLIENT.show_join_code = FALSE;
+#ifndef SDL_PLATFORM_EMSCRIPTEN
     lobby_copy_time = 0;
+#endif
 }
 
 static void leave_lobby_menu(MenuType to) {
@@ -413,8 +422,10 @@ static void leave_lobby_menu(MenuType to) {
 }
 
 static void tick_lobby_menu() {
+#ifndef SDL_PLATFORM_EMSCRIPTEN
     if (lobby_copy_time > 0)
         --lobby_copy_time;
+#endif
 
     if (is_connected())
         return;
@@ -435,10 +446,42 @@ static void draw_lobby_code(float* y) {
 
     batch_pos(B_F3_XY(125.f, *y));
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
-    const char* str = LFMT((lobby_copy_time > 0) ? "option.copied" : "option.copy_join_code");
-    batch_string_wrap("footer", 16.f, str, 186.f);
 
-    *y += string_height_wrap("footer", 16.f, str, 186.f) + 6.f;
+    const char *font = "footer", *str = NULL;
+    float size = 16.f;
+
+#ifndef SDL_PLATFORM_EMSCRIPTEN
+    if (lobby_copy_time > 0) {
+        str = LFMT("option.copied");
+    } else
+#endif
+        if (CLIENT.show_join_code)
+    {
+        font = "header";
+        size = 20.f;
+        str = u64_to_base32(get_lobby_id());
+    } else {
+        str = LFMT(CATALOG.options[MEN_LOBBY][7].name);
+    }
+
+    if (size >= 17.f) {
+        batch_offset(B_F3_XY(0.f, 2.f));
+        batch_string_wrap(font, size, str, 186.f);
+        batch_string_wrap(font, size, str, 186.f);
+        batch_offset(B_F3_0);
+    } else {
+        batch_string_wrap(font, size, str, 186.f);
+    }
+
+    const float hw = string_width_wrap(font, size, str, 186.f) * 0.5f;
+    batch_pos(B_F3_XY(115.f - hw, *y));
+    batch_flip(B_B2(TRUE, FALSE));
+    batch_sprite("ui/menu/lobby/arrow");
+    batch_pos(B_F3_XY(135.f + hw, *y));
+    batch_flip(B_B2_FALSE);
+    batch_sprite("ui/menu/lobby/arrow");
+
+    *y += string_height_wrap(font, size, str, 186.f) + 22.f - size;
 
     if (CATALOG.menus[MEN_LOBBY].option == 7) {
         batch_pos(B_F3_XY(-240.f, y1 - 4.f));
@@ -871,9 +914,20 @@ static void kick_player_option() {
     create_ui(UI_KICK, NULL);
 }
 
-static void copy_join_code_option() {
+static void show_copy_join_code_cycle(Sint8 cycle) {
+    (void)cycle;
+
+    CLIENT.show_join_code = !CLIENT.show_join_code;
+#ifndef SDL_PLATFORM_EMSCRIPTEN
+    lobby_copy_time = 0;
+#endif
+}
+
+static void show_copy_join_code_option() {
+#ifndef SDL_PLATFORM_EMSCRIPTEN
     if (copy_to_clipboard(u64_to_base32(get_lobby_id())))
         lobby_copy_time = (3 * get_tickrate()) / 2;
+#endif
 }
 
 static const char* fmt_replay_error() {

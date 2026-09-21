@@ -38,6 +38,7 @@ typedef struct {
     Bool private_lobby;
     Bool show_user_messages;
     char join_code[BASE32_STRING_SIZE];
+    Bool show_join_code;
 
     Uint8 input_delay;
     Bool always_run;
