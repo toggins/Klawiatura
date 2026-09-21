@@ -448,7 +448,7 @@ static void draw_lobby_code(float* y) {
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
 
     const char *font = "footer", *str = NULL;
-    float size = 16.f;
+    float size = 16.f, wrap = 186.f;
 
 #ifndef SDL_PLATFORM_EMSCRIPTEN
     if (lobby_copy_time > 0) {
@@ -458,22 +458,23 @@ static void draw_lobby_code(float* y) {
         if (CLIENT.show_join_code)
     {
         font = "header";
-        size = 20.f;
+        size = 22.f;
         str = u64_to_base32(get_lobby_id());
+        wrap = 224.f;
     } else {
         str = LFMT(CATALOG.options[MEN_LOBBY][7].name);
     }
 
     if (size >= 17.f) {
-        batch_offset(B_F3_XY(0.f, 2.f));
-        batch_string_wrap(font, size, str, 186.f);
-        batch_string_wrap(font, size, str, 186.f);
+        batch_offset(B_F3_XY(0.f, 4.f));
+        batch_string_wrap(font, size, str, wrap);
+        batch_string_wrap(font, size, str, wrap);
         batch_offset(B_F3_0);
     } else {
-        batch_string_wrap(font, size, str, 186.f);
+        batch_string_wrap(font, size, str, wrap);
     }
 
-    const float hw = string_width_wrap(font, size, str, 186.f) * 0.5f;
+    const float hw = string_width_wrap(font, size, str, wrap) * 0.5f;
     batch_pos(B_F3_XY(115.f - hw, *y));
     batch_flip(B_B2(TRUE, FALSE));
     batch_sprite("ui/menu/lobby/arrow");
@@ -481,7 +482,7 @@ static void draw_lobby_code(float* y) {
     batch_flip(B_B2_FALSE);
     batch_sprite("ui/menu/lobby/arrow");
 
-    *y += string_height_wrap(font, size, str, 186.f) + 22.f - size;
+    *y += string_height_wrap(font, size, str, wrap) + 22.f - size;
 
     if (CATALOG.menus[MEN_LOBBY].option == 7) {
         batch_pos(B_F3_XY(-240.f, y1 - 4.f));
