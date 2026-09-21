@@ -3,6 +3,7 @@
 #include "actors/K_artillery.h"
 #include "actors/K_enemies.h"
 #include "actors/K_koopa.h"
+#include "actors/K_lakitu.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 #include "actors/K_projectiles.h"
@@ -108,6 +109,15 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
     if (dead != NULL) {
         VAL(dead, DEAD_TYPE) = actor->type;
         dead->flags = actor->flags & ~(FLG_DESTROY | FLG_FREEZE);
+
+        if (actor->type == ACT_LAKITU) {
+            VAL(dead, LAKITU_SPEED) = VAL(actor, LAKITU_SPEED);
+            VAL(dead, LAKITU_THROW_SPEED) = VAL(actor, LAKITU_THROW_SPEED);
+            VAL(dead, LAKITU_THROW_SPEED2) = VAL(actor, LAKITU_THROW_SPEED2);
+            VAL(dead, LAKITU_AGGRO) = VAL(actor, LAKITU_AGGRO);
+            VAL(dead, LAKITU_AGGRO_START) = VAL(actor, LAKITU_AGGRO_START);
+            VAL(dead, LAKITU_AGGRO_END) = VAL(actor, LAKITU_AGGRO_END);
+        }
 
         if (kick) {
             const Fixed r = Int2Fx(rng(5));
@@ -302,8 +312,44 @@ static void tick_dead(GameActor* actor) {
     move_actor(actor, Vadd(actor->pos, actor->vel));
     actor->vel.y += 13107;
 
-    if (below_nearest_bounds(actor->pos, Int2Fx(32)))
+    if (VAL(actor, DEAD_TYPE) == ACT_LAKITU) {
+        if (below_nearest_view(actor->pos, Int2Fx(50))) {
+            FLAG_OFF(actor, FLG_VISIBLE);
+            actor->vel.y = Fx0;
+            ++VAL(actor, DEAD_RESPAWN);
+        }
+
+        if (VAL(actor, DEAD_RESPAWN) > 300) {
+            const GamePlayer* nearest = NULL;
+            for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+                const GamePlayer* player = get_player(i);
+                if (player != NULL && (nearest == NULL || nearest->pos.x < player->pos.x))
+                    nearest = player;
+            }
+
+            if (nearest != NULL) {
+                FVec2 lpos = get_player_view(nearest);
+                lpos.x += F_SCREEN_WIDTH + Int2Fx(200);
+                lpos.y += Int2Fx(72) + Int2Fx(rng(16));
+                lpos.y -= Int2Fx(rng(16));
+
+                GameActor* lakitu = create_actor(ACT_LAKITU, lpos);
+                if (lakitu != NULL) {
+                    VAL(lakitu, LAKITU_SPEED) = VAL(actor, LAKITU_SPEED);
+                    VAL(lakitu, LAKITU_THROW_SPEED) = VAL(actor, LAKITU_THROW_SPEED);
+                    VAL(lakitu, LAKITU_THROW_SPEED2) = VAL(actor, LAKITU_THROW_SPEED2);
+                    VAL(lakitu, LAKITU_AGGRO) = VAL(actor, LAKITU_AGGRO);
+                    VAL(lakitu, LAKITU_AGGRO_START) = VAL(actor, LAKITU_AGGRO_START);
+                    VAL(lakitu, LAKITU_AGGRO_END) = VAL(actor, LAKITU_AGGRO_END);
+                    FLAG_ON(lakitu, actor->flags & FLG_LAKITU_FAST);
+                }
+            }
+
+            FLAG_ON(actor, FLG_DESTROY);
+        }
+    } else if (below_nearest_view(actor->pos, Int2Fx(128))) {
         FLAG_ON(actor, FLG_DESTROY);
+    }
 }
 
 const ActorTable TAB_DEAD = {

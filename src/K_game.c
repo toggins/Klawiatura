@@ -1962,8 +1962,8 @@ Fixed get_player_jump(const GamePlayer* player) {
     return (character == NULL) ? Fx1 : character->jump;
 }
 
-const FVec2 nearest_player_pos(const FVec2 pos) {
-    FVec2 ppos = {Fx0};
+GameActor* nearest_player_actor(const FVec2 pos) {
+    GameActor* nearest = NULL;
     Fixed score = FxUpper;
 
     for (PlayerID i = 0; i < game_context.num_players; i++) {
@@ -1971,18 +1971,23 @@ const FVec2 nearest_player_pos(const FVec2 pos) {
         if (player == NULL)
             continue;
 
-        const GameActor* pawn = get_actor(player->actor);
+        GameActor* pawn = get_actor(player->actor);
         if (pawn == NULL || pawn->type != ACT_PLAYER)
             continue;
 
         const Fixed dist = Vdist(pos, pawn->pos);
         if (dist < score) {
-            ppos = player->pos;
+            nearest = pawn;
             score = dist;
         }
     }
 
-    return ppos;
+    return nearest;
+}
+
+const FVec2 nearest_player_pos(const FVec2 pos) {
+    const GameActor* pawn = nearest_player_actor(pos);
+    return (pawn == NULL) ? (FVec2){Fx0, Fx0} : pawn->pos;
 }
 
 void set_player_track(GamePlayer* player, Uint8 track) {

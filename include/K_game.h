@@ -161,7 +161,7 @@ enum {
     ACT_CHEEP_GREEN,
     ACT_CENTIPEDE,
     ACT_THWOMP,
-    ACT_UNUSED_00,
+    ACT_BOUNCY_TREE,
     ACT_WHEEL_L,
     ACT_WHEEL,
     ACT_WHEEL_R,
@@ -186,7 +186,7 @@ enum {
     ACT_CODER_CLONE,
     ACT_CODER_CLONE_RUN,
     ACT_CODER_CLONE_KEYBOARD,
-    ACT_UNUSED_01,
+    ACT_ENEMY_RESPAWNER,
     ACT_CLONE_3A,
     ACT_JAWS_CLONE_HEAD,
     ACT_COMPUTER,
@@ -549,6 +549,7 @@ Bool in_blocking_sequence(), can_affect_track();
 GamePlayer* get_player(PlayerID);
 GameActor* respawn_player(GamePlayer*);
 Fixed get_player_jump(const GamePlayer*);
+GameActor* nearest_player_actor(const FVec2);
 const FVec2 nearest_player_pos(const FVec2);
 void set_player_track(GamePlayer*, Uint8), update_player_track(const GamePlayer*);
 Bool all_players_dead();

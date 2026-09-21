@@ -1532,6 +1532,58 @@
             "id": 78,
             "sprite": "enemies/fake_brick"
         },
+        "Lakitu": {
+            "type": "actor",
+            "id": 79,
+            "sprite": "enemies/lakitu",
+            "values": [
+                {
+                    "name": "Speed",
+                    "index": 0,
+                    "type": "fixed",
+                    "default": 589824
+                },
+                {
+                    "name": "Throw Speed",
+                    "index": 1,
+                    "default": 1
+                },
+                {
+                    "name": "Hardcore Throw Speed",
+                    "index": 2
+                },
+                {
+                    "name": "Aggro Throw Speed",
+                    "index": 3
+                },
+                {
+                    "name": "Aggro Start X",
+                    "index": 4,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Aggro End X",
+                    "index": 5,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Spawn Start X",
+                    "index": 6,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Spawn End X",
+                    "index": 7,
+                    "type": "fixed"
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Fast",
+                    "index": 5
+                }
+            ]
+        },
         "Bill Blaster": {
             "type": "actor",
             "id": 81,
@@ -1832,6 +1884,7 @@
                 "Roto-Disc",
                 "Bowser",
                 "Spiny",
+                "Lakitu",
                 "Thwomp"
             ]
         },

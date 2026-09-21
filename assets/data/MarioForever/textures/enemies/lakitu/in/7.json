@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/lakitu",
+    "size": [31, 40],
+    "offset": [15, 39],
+    "uvs": [100, 151, 131, 191]
+}

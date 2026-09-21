@@ -960,8 +960,7 @@ void batch_sprite(const char* name) {
     // Position
     const float w = sprite->size[0] * batch.scale[0], h = sprite->size[1] * batch.scale[1];
 
-    const float xoffs = (sprite->offset[0] + batch.offset[0]) * batch.scale[0],
-                yoffs = (sprite->offset[1] + batch.offset[1]) * batch.scale[1];
+    const float xoffs = sprite->offset[0] * batch.scale[0], yoffs = sprite->offset[1] * batch.scale[1];
 
     const float x1 = -(batch.flip[0] ? (w - xoffs) : xoffs), y1 = -(batch.flip[1] ? (h - yoffs) : yoffs);
     const float x2 = x1 + w, y2 = y1 + h;
@@ -978,6 +977,10 @@ void batch_sprite(const char* name) {
     glm_vec3_add(batch.pos, p2, p2);
     glm_vec3_add(batch.pos, p3, p3);
     glm_vec3_add(batch.pos, p4, p4);
+    glm_vec3_sub(p1, batch.offset, p1);
+    glm_vec3_sub(p2, batch.offset, p2);
+    glm_vec3_sub(p3, batch.offset, p3);
+    glm_vec3_sub(p4, batch.offset, p4);
 
     // UVs
     const float u1 = sprite->uvs[batch.flip[0] ? 2 : 0], v1 = sprite->uvs[batch.flip[1] ? 3 : 1];

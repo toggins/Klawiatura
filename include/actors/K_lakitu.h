@@ -1,0 +1,32 @@
+#pragma once
+
+#include "K_game.h"
+
+typedef Uint8 LakituAnimations;
+enum {
+    LA_IDLE,
+    LA_BLINK,
+    LA_CLOUD,
+    LA_IN,
+    LA_OUT,
+};
+
+enum {
+    VAL_LAKITU_SPEED,
+    VAL_LAKITU_THROW_SPEED,
+    VAL_LAKITU_THROW_SPEED2,
+    VAL_LAKITU_AGGRO,
+    VAL_LAKITU_AGGRO_START,
+    VAL_LAKITU_AGGRO_END,
+    VAL_LAKITU_SPAWN_START,
+    VAL_LAKITU_SPAWN_END,
+
+    VAL_LAKITU_THROW,
+    VAL_LAKITU_THROW_DELAY,
+
+    VAL_LAKITU_ANIMATION,
+    VAL_LAKITU_FRAME,
+};
+
+#define FLG_LAKITU_FAST CUSTOM_FLAG(0)
+#define FLG_LAKITU_SPAWNED CUSTOM_FLAG(1)
