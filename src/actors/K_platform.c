@@ -284,14 +284,16 @@ static void draw(const GameActor* actor) {
     }
 
     Bool antijitter = FALSE;
-    const GamePlayer* player = get_player(viewplayer());
-    if (player != NULL
-        && ((actor->vel.x != Fx0 && (player->bounds.end.x - player->bounds.start.x) > F_SCREEN_WIDTH)
-            || (actor->vel.y != Fx0 && (player->bounds.end.y - player->bounds.start.y) > F_SCREEN_HEIGHT)))
-    {
-        const GameActor* pawn = get_actor(player->actor);
-        if (pawn != NULL && pawn->platform == actor->id)
-            antijitter = TRUE;
+    if (get_actor(gamestate()->autoscroll) == NULL) {
+        const GamePlayer* player = get_player(viewplayer());
+        if (player != NULL
+            && ((actor->vel.x != Fx0 && (player->bounds.end.x - player->bounds.start.x) > F_SCREEN_WIDTH)
+                || (actor->vel.y != Fx0 && (player->bounds.end.y - player->bounds.start.y) > F_SCREEN_HEIGHT)))
+        {
+            const GameActor* pawn = get_actor(player->actor);
+            if (pawn != NULL && pawn->platform == actor->id)
+                antijitter = TRUE;
+        }
     }
 
     draw_actor(actor, sprite, antijitter);
