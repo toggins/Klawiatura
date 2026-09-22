@@ -16,6 +16,8 @@ enum {
     PLAT_BRICK_SMALL,
     PLAT_BRICK_BUTTONS,
     PLAT_BLOCK,
+    PLAT_BIG,
+    PLAT_CLOUD_BIG,
 };
 
 enum {

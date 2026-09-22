@@ -61,6 +61,12 @@ static void load_special(const GameActor* actor) {
     case PLAT_BLOCK:
         load_sprite("markers/platform/block", AKL_NEVER);
         break;
+    case PLAT_BIG:
+        load_sprite("markers/platform/big", AKL_NEVER);
+        break;
+    case PLAT_CLOUD_BIG:
+        load_sprite_num("markers/platform/cloud/big/%u", 4, AKL_NEVER);
+        break;
     }
 }
 
@@ -76,6 +82,7 @@ static void pre_tick(GameActor* actor) {
             actor->box.start.x = actor->box.start.y = Fx0;
             actor->box.end.x = Int2Fx(95);
             actor->box.end.y = Int2Fx(16);
+
             break;
         }
 
@@ -84,6 +91,7 @@ static void pre_tick(GameActor* actor) {
             actor->box.start.y = Fx0;
             actor->box.end.x = Int2Fx(60);
             actor->box.end.y = Int2Fx(16);
+
             break;
         }
 
@@ -91,6 +99,7 @@ static void pre_tick(GameActor* actor) {
             actor->box.start.x = actor->box.start.y = Fx0;
             actor->box.end.x = Int2Fx(127);
             actor->box.end.y = Int2Fx(32);
+
             break;
         }
 
@@ -98,6 +107,7 @@ static void pre_tick(GameActor* actor) {
             actor->box.start.x = actor->box.start.y = Fx0;
             actor->box.end.x = Int2Fx(96);
             actor->box.end.y = Int2Fx(18);
+
             break;
         }
 
@@ -105,6 +115,7 @@ static void pre_tick(GameActor* actor) {
             actor->box.start.x = actor->box.start.y = Fx0;
             actor->box.end.x = Int2Fx(64);
             actor->box.end.y = Int2Fx(32);
+
             break;
         }
 
@@ -113,6 +124,7 @@ static void pre_tick(GameActor* actor) {
             actor->box.start.y = Int2Fx(-190);
             actor->box.end.x = Int2Fx(98);
             actor->box.end.y = Int2Fx(2);
+
             break;
         }
 
@@ -121,6 +133,7 @@ static void pre_tick(GameActor* actor) {
             actor->box.start.y = Int2Fx(-191);
             actor->box.end.x = Int2Fx(33);
             actor->box.end.y = Fx1;
+
             break;
         }
 
@@ -128,6 +141,7 @@ static void pre_tick(GameActor* actor) {
             actor->box.start.x = actor->box.start.y = Fx0;
             actor->box.end.x = Int2Fx(120);
             actor->box.end.y = Int2Fx(32);
+
             break;
         }
 
@@ -135,6 +149,7 @@ static void pre_tick(GameActor* actor) {
             actor->box.start.x = actor->box.start.y = Fx0;
             actor->box.end.x = Int2Fx(32);
             actor->box.end.y = Int2Fx(64);
+
             break;
         }
 
@@ -142,6 +157,7 @@ static void pre_tick(GameActor* actor) {
         case PLAT_BLOCK: {
             actor->box.start.x = actor->box.start.y = Fx0;
             actor->box.end.x = actor->box.end.y = Int2Fx(32);
+
             break;
         }
 
@@ -149,6 +165,23 @@ static void pre_tick(GameActor* actor) {
             actor->box.start.x = actor->box.start.y = Fx0;
             actor->box.end.x = Int2Fx(76);
             actor->box.end.y = Int2Fx(32);
+
+            break;
+        }
+
+        case PLAT_BIG: {
+            actor->box.start.x = actor->box.start.y = Fx0;
+            actor->box.end.x = Int2Fx(128);
+            actor->box.end.y = Int2Fx(16);
+
+            break;
+        }
+
+        case PLAT_CLOUD_BIG: {
+            actor->box.start.x = actor->box.start.y = Fx0;
+            actor->box.end.x = Int2Fx(254);
+            actor->box.end.y = Int2Fx(32);
+
             break;
         }
         }
@@ -270,6 +303,12 @@ static void draw(const GameActor* actor) {
         break;
     case PLAT_BLOCK:
         sprite = "markers/platform/block";
+        break;
+    case PLAT_BIG:
+        sprite = "markers/platform/big";
+        break;
+    case PLAT_CLOUD_BIG:
+        sprite = fmt("markers/platform/cloud/big/%i", ((gamestate()->time * 2) / 25) % 4);
         break;
     }
 
