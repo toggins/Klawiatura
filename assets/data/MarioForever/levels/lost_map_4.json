@@ -9881,11 +9881,6 @@
             "pos": [0, 1216, 20]
         },
         {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
-            "pos": [0, -95, 20]
-        },
-        {
             "def": "Underwater Background",
             "sprite": "backgrounds/underwater",
             "pos": [-24, 1190, 190],
@@ -11948,7 +11943,7 @@
         },
         {
             "pos": [-32, -319],
-            "size": [2, 9],
+            "size": [1, 9],
             "cell_size": [32, 32],
             "cells": [
                 [0, 8, 1],
@@ -11959,8 +11954,7 @@
                 [0, 3, 1],
                 [0, 2, 1],
                 [0, 1, 1],
-                [0, 0, 1],
-                [1, 7, 1]
+                [0, 0, 1]
             ]
         },
         {

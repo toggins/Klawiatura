@@ -4733,11 +4733,6 @@
         {
             "def": "Brown Block",
             "sprite": "tiles/block/brown",
-            "pos": [0, -95, 20]
-        },
-        {
-            "def": "Brown Block",
-            "sprite": "tiles/block/brown",
             "pos": [-32, -127, 20]
         },
         {
@@ -5715,12 +5710,11 @@
         },
         {
             "pos": [-32, -319],
-            "size": [2, 9],
+            "size": [1, 9],
             "cell_size": [32, 32],
             "cells": [
                 [0, 8, 1],
                 [0, 7, 1],
-                [1, 7, 1],
                 [0, 6, 1],
                 [0, 5, 1],
                 [0, 4, 1],
@@ -5754,7 +5748,8 @@
         {
             "def": "Player Spawn",
             "id": 1,
-            "pos": [223, 415]
+            "pos": [223, 415],
+            "values": [[4, 0]]
         },
         {
             "def": "Checkpoint",
