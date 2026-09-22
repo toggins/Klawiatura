@@ -114,16 +114,13 @@ jobs:
         if: matrix.name != 'HTML5'
         run: cmake --build build --target package
 
-      # as seen in #48 (https://github.com/nonk123/Klawiatura/actions/runs/31945678763/job/95161148343)
-      - name: Nuke XCode junk that fails `upload-artifact` on Windows with EPERM
-        shell: bash
-        run: rm -rf build/_deps/**/XCode
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
           name: build-${{ matrix.name }}
-          path: build/**
+          path: |
+            build/${{ env.OUTNAME }}.zip
+            build/Klawiatura.*
 
   release:
     name: Release binaries
