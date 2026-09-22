@@ -282,6 +282,8 @@ static void tick() {
             return;
     }
 
+    const Bool can_control = topui() == NULL;
+
     map_state->label.y += map_state->label.y_speed;
     map_state->label.y_speed += 0.4f;
     if (map_state->label.y > 16.f) {
@@ -295,7 +297,7 @@ static void tick() {
 
         if (map_state->current_node < TinyDLength(map_state->path)) {
             if (player->appear_speed <= 1) {
-                if (kb_pressed(KB_JUMP) || kb_pressed(KB_FIRE) || kb_pressed(KB_UI_ENTER))
+                if (can_control && (kb_pressed(KB_JUMP) || kb_pressed(KB_FIRE) || kb_pressed(KB_UI_ENTER)))
                     player->appear_speed += 5;
             } else if (player->speed < 12.5f) {
                 player->speed += player->speed;
@@ -343,7 +345,7 @@ static void tick() {
             if (map_state->enter <= 0) {
                 can_move = TRUE;
 
-                if (kb_pressed(KB_JUMP) && is_leader()) {
+                if (can_control && kb_pressed(KB_JUMP) && is_leader()) {
                     fade_generic_track(0.f, 25.f);
                     ++map_state->enter;
                 }
@@ -465,13 +467,15 @@ static void tick() {
                 fade_generic_track(1.f, 150.f);
         }
 
-        if (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE))
+        if (can_control && (kb_pressed(KB_JUMP) || kb_pressed(KB_PAUSE)))
             set_screen(SCR_MENU, NULL, 0);
     }
 
     if (can_move) {
-        const float xmove = map_state->camera.pos[0] + (((float)kb_down(KB_RIGHT) - (float)kb_down(KB_LEFT)) * 5.f),
-                    ymove = map_state->camera.pos[1] + (((float)kb_down(KB_DOWN) - (float)kb_down(KB_UP)) * 5.f);
+        const float xmove = map_state->camera.pos[0]
+                            + (can_control ? (((float)kb_down(KB_RIGHT) - (float)kb_down(KB_LEFT)) * 5.f) : 0.f),
+                    ymove = map_state->camera.pos[1]
+                            + (can_control ? (((float)kb_down(KB_DOWN) - (float)kb_down(KB_UP)) * 5.f) : 0.f);
         const float xmax = (float)map_state->size[0] - (float)HALF_SCREEN_WIDTH,
                     ymax = (float)map_state->size[1] - (float)HALF_SCREEN_HEIGHT;
         map_state->camera.pos[0] = SDL_clamp(xmove, HALF_SCREEN_WIDTH, xmax);
