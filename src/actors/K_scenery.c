@@ -586,13 +586,20 @@ static void create_bouncy_tree(GameActor* actor) {
     actor->depth = Int2Fx(32);
 }
 
+static void tick_bouncy_tree(GameActor* actor) {
+    VAL(actor, SCENERY_FRAME) += 16;
+    while (VAL(actor, SCENERY_FRAME) >= 800)
+        VAL(actor, SCENERY_FRAME) -= 700;
+}
+
 static void draw_bouncy_tree(const GameActor* actor) {
     batch_reset();
-    draw_actor(actor, fmt("scenery/tree/bouncy/%i", ((gamestate()->time * 4) / 25) % 8), FALSE);
+    draw_actor(actor, fmt("scenery/tree/bouncy/%i", (VAL(actor, SCENERY_FRAME) / 100) % 8), FALSE);
 }
 
 const ActorTable TAB_BOUNCY_TREE = {
     .load = load_bouncy_tree,
     .create = create_bouncy_tree,
+    .tick = tick_bouncy_tree,
     .draw = draw_bouncy_tree,
 };
