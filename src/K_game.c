@@ -816,11 +816,13 @@ void start_game(const GameContext* ctx) {
     game_state->seed = game_context.seed;
     INFO("Game seed is %" SDL_PRIu64, game_state->seed);
 
-    game_state->flags |= game_context.flags;
+    game_state->flags |= game_context.flags & ~GF_RESTARTED;
 
     for (PlayerID i = 0; i < game_context.num_players; i++) {
         if (game_context.players[i].lives >= 0) {
             game_state->checkpoint = game_context.checkpoint;
+            game_state->flags |= game_context.flags & GF_RESTARTED;
+
             break;
         }
     }
