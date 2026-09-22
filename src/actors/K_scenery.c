@@ -573,3 +573,26 @@ const ActorTable TAB_FLOWER = {
     .tick = tick_flower,
     .draw = draw_flower,
 };
+
+/* ===========
+   BOUNCY TREE
+   =========== */
+
+static void load_bouncy_tree() {
+    load_sprite_num("scenery/tree/bouncy/%u", 8, AKL_NEVER);
+}
+
+static void create_bouncy_tree(GameActor* actor) {
+    actor->depth = Int2Fx(32);
+}
+
+static void draw_bouncy_tree(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("scenery/tree/bouncy/%i", ((gamestate()->time * 4) / 25) % 8), FALSE);
+}
+
+const ActorTable TAB_BOUNCY_TREE = {
+    .load = load_bouncy_tree,
+    .create = create_bouncy_tree,
+    .draw = draw_bouncy_tree,
+};

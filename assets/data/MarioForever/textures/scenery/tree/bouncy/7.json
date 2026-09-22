@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/tree/bouncy",
+    "size": [31, 91],
+    "offset": [-2, -8],
+    "uvs": [34, 1, 65, 92]
+}

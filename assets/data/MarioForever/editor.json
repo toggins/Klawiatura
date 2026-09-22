@@ -475,6 +475,11 @@
             "sprite": "scenery/tree/tall",
             "depth": 32
         },
+        "Tree Bouncy": {
+            "type": "actor",
+            "id": 90,
+            "sprite": "scenery/tree/bouncy/4"
+        },
         "Starland Tree Small": {
             "type": "background",
             "sprite": "scenery/tree/starland/small",
@@ -1769,7 +1774,8 @@
                         },
                         "Tree Small",
                         "Tree Big",
-                        "Tree Tall"
+                        "Tree Tall",
+                        "Tree Bouncy"
                     ]
                 },
                 {
