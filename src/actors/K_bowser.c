@@ -18,7 +18,7 @@ static const char* get_bowser_sprite(BowserAnimations animation, Uint8 frame) {
     case BA_FIRE_END:
         return fmt("enemies/bowser/fire/end/%i", frame % 2);
     case BA_CHARGE:
-        return fmt("enemies/bowser/charge/%i", frame % 65);
+        return fmt("enemies/bowser/charge/%i", ((frame >= 8) ? (5 + ((frame - 5) % 3)) : frame) % 8);
     }
 
     return NULL;
@@ -48,7 +48,7 @@ static void load() {
 
 static void load_special(const GameActor* actor) {
     if (ANY_FLAG(actor, FLG_BOWSER_CHARGE))
-        load_sprite_num("enemies/bowser/charge/%i", 65, AKL_NEVER);
+        load_sprite_num("enemies/bowser/charge/%i", 8, AKL_NEVER);
 
     if (ANY_FLAG(actor, FLG_BOWSER_GUN)) {
         load_sprite("enemies/bowser/gun", AKL_NEVER);
