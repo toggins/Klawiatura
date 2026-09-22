@@ -3482,21 +3482,6 @@
             "values": [[4, 1]]
         },
         {
-            "def": "Checkpoint",
-            "id": 7,
-            "pos": [6874, 105],
-            "values": [
-                [0, 0],
-                [1, 0],
-                [2, 0],
-                [3, 0],
-                [4, 0],
-                [5, 461570048],
-                [6, 21364736]
-            ],
-            "flags": 32
-        },
-        {
             "def": "Goal Bar",
             "id": 9,
             "pos": [10726, 143]
@@ -3516,6 +3501,7 @@
         {
             "def": "Platform",
             "id": 11,
+            "singleplayer": true,
             "pos": [928, 320],
             "values": [
                 [0, 2],
@@ -4359,6 +4345,136 @@
             "def": "Bush",
             "id": 17,
             "pos": [10592, 388]
+        },
+        {
+            "def": "Checkpoint",
+            "id": 7,
+            "multiplayer": true,
+            "pos": [3227, 73],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 220200960],
+                [6, 20971520]
+            ],
+            "flags": 32
+        },
+        {
+            "def": "Checkpoint",
+            "id": 7,
+            "pos": [6874, 105],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 461570048],
+                [6, 21364736]
+            ],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "multiplayer": true,
+            "pos": [8079, 127]
+        },
+        {
+            "def": "Platform",
+            "id": 11,
+            "multiplayer": true,
+            "pos": [896, 320],
+            "values": [
+                [0, 13],
+                [1, 131072],
+                [2, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "multiplayer": true,
+            "pos": [10144, 96]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "multiplayer": true,
+            "pos": [10176, 96]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "multiplayer": true,
+            "pos": [10208, 96]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [320, 256],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [352, 256],
+            "values": [[1, 28]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [384, 256],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [416, 256],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [384, 128],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [416, 128],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [448, 128],
+            "values": [[1, 28]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [480, 128],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [7200, 64],
+            "values": [[1, 28]]
         }
     ]
 }
