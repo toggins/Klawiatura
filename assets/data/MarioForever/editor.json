@@ -460,6 +460,13 @@
             "sprite": "scenery/forest",
             "depth": 60
         },
+        "Forest 2": {
+            "type": "background",
+            "sprite": "scenery/forest2",
+            "depth": 60,
+            "max_scale": [32767, 59],
+            "tile": [true, false]
+        },
         "Tree Small": {
             "type": "background",
             "sprite": "scenery/tree/small",
@@ -1787,6 +1794,10 @@
                     "items": ["Hill", "Hills", "Starland Hill"]
                 },
                 {
+                    "name": "Forests",
+                    "items": ["Forest", "Forest 2"]
+                },
+                {
                     "name": "Lamps",
                     "items": ["Lamp", "Lamp Light", "Broken Lamp"]
                 },
@@ -1822,7 +1833,6 @@
                     "name": "Stars",
                     "items": ["Star", "Shooting Star Spawner"]
                 },
-                "Forest",
                 "Bush",
                 "Waterfall",
                 "Portrait",
