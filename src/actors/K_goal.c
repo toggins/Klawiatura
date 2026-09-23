@@ -26,7 +26,7 @@ static void create(GameActor* actor) {
 
 static void tick(GameActor* actor) {
     if (ANY_FLAG(actor, FLG_BAR_FLY)) {
-        VAL(actor, BAR_ANGLE) += 25736;
+        VAL(actor, BAR_ANGLE) = Fmod(VAL(actor, BAR_ANGLE) + 25736, Fx2Pi);
 
         move_actor(actor, Vadd(actor->pos, actor->vel));
         actor->vel.y += 13107;

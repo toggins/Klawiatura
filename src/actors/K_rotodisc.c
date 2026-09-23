@@ -82,7 +82,7 @@ static void tick(GameActor* actor) {
                                            Fmul(Fcos(VAL(actor, ROTODISC_ANGLE)), VAL(actor, ROTODISC_LENGTH)),
                                            Fmul(-Fsin(VAL(actor, ROTODISC_ANGLE)), VAL(actor, ROTODISC_LENGTH)),
                                        }));
-    VAL(actor, ROTODISC_ANGLE) += VAL(actor, ROTODISC_SPEED);
+    VAL(actor, ROTODISC_ANGLE) = Fmod(VAL(actor, ROTODISC_ANGLE) + VAL(actor, ROTODISC_SPEED), Fx2Pi);
 
     if (ANY_FLAG(actor, FLG_ROTODISC_FLOWER)) {
         VAL(actor, ROTODISC_LENGTH) += ANY_FLAG(actor, FLG_ROTODISC_FLOWER2) ? Int2Fx(-5) : Int2Fx(5);

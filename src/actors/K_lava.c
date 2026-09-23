@@ -39,7 +39,7 @@ static void tick(GameActor* actor) {
 
     move_actor(
         actor, (FVec2){actor->pos.x, VAL(actor, LAVA_Y) + Fmul(VAL(actor, LAVA_WAVE), Fcos(VAL(actor, LAVA_ANGLE)))});
-    VAL(actor, LAVA_ANGLE) += 5719;
+    VAL(actor, LAVA_ANGLE) = Fmod(VAL(actor, LAVA_ANGLE) + 5719, Fx2Pi);
 
     if (VAL(actor, LAVA_WAVE) > Fx0) {
         VAL(actor, LAVA_WAVE) -= 6554;

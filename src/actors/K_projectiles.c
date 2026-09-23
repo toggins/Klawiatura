@@ -23,7 +23,7 @@ static void create_fireball(GameActor* actor) {
 }
 
 static void tick_fireball(GameActor* actor) {
-    VAL(actor, PROJECTILE_ANGLE) += 12868;
+    VAL(actor, PROJECTILE_ANGLE) = Fmod(VAL(actor, PROJECTILE_ANGLE) + 12868, Fx2Pi);
 
     if (ANY_FLAG(actor, FLG_PROJECTILE_ALT)) {
         move_actor(actor, Vadd(actor->pos, actor->vel));
@@ -299,7 +299,8 @@ static void tick_hammer(GameActor* actor) {
     const GamePlayer* player = get_player(actor->player);
 
     const Fixed spd = (player == NULL) ? 6434 : 11438;
-    VAL(actor, PROJECTILE_ANGLE) += ANY_FLAG(actor, FLG_X_FLIP) ? -spd : spd;
+    VAL(actor, PROJECTILE_ANGLE)
+        = Fmod(VAL(actor, PROJECTILE_ANGLE) + (ANY_FLAG(actor, FLG_X_FLIP) ? -spd : spd), Fx2Pi);
 
     move_actor(actor, Vadd(actor->pos, actor->vel));
     collide_actor(actor);

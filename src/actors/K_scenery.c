@@ -67,7 +67,7 @@ static void tick_cloud(GameActor* actor) {
     }
 
     move_actor(actor, (FVec2){actor->pos.x, VAL(actor, SCENERY_Y) + Fmul(Int2Fx(5), Fcos(VAL(actor, SCENERY_ANGLE)))});
-    VAL(actor, SCENERY_ANGLE) += 1144;
+    VAL(actor, SCENERY_ANGLE) = Fmod(VAL(actor, SCENERY_ANGLE) + 1144, Fx2Pi);
     move_actor(actor, (FVec2){VAL(actor, SCENERY_X) + Fmul(VAL(actor, SCENERY_SPEED), -Fsin(VAL(actor, SCENERY_ANGLE))),
                           actor->pos.y});
     VAL(actor, SCENERY_SPEED) = Fmin(VAL(actor, SCENERY_SPEED) + Int2Fx(rng(2)), Int2Fx(20));
@@ -518,7 +518,7 @@ static void create_shooting_star(GameActor* actor) {
 }
 
 static void tick_shooting_star(GameActor* actor) {
-    VAL(actor, SCENERY_ANGLE) += 12868;
+    VAL(actor, SCENERY_ANGLE) = Fmod(VAL(actor, SCENERY_ANGLE) + 12868, Fx2Pi);
     move_actor(actor, Vadd(actor->pos, actor->vel));
 
     if (below_nearest_view(actor->pos, Int2Fx(32)))
