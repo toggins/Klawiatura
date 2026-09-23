@@ -47,6 +47,9 @@ static void tick_super_mushroom(GameActor* actor) {
     if (ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
         return;
 
+    if (actor->sprout > 0 && ((gamestate()->time * 51) % 100) >= 51)
+        ++actor->sprout;
+
     if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
         FLAG_ON(actor, FLG_DESTROY);
         return;
@@ -105,8 +108,13 @@ static void create_fire_flower(GameActor* actor) {
 }
 
 static void tick_fire_flower(GameActor* actor) {
-    if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
-        VAL(actor, POWERUP_FRAME) += 27;
+    if (ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+        return;
+
+    VAL(actor, POWERUP_FRAME) += 27;
+
+    if (actor->sprout > 0 && ((gamestate()->time * 5) % 8) >= 5)
+        ++actor->sprout;
 }
 
 static void draw_fire_flower(const GameActor* actor) {
@@ -248,9 +256,25 @@ static void create_1up_mushroom(GameActor* actor) {
 }
 
 static void tick_1up_mushroom(GameActor* actor) {
-    if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY)) {
-        VAL_TICK(actor, POWERUP_OVERLAP);
-        tick_super_mushroom(actor);
+    if (ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+        return;
+
+    VAL_TICK(actor, POWERUP_OVERLAP);
+
+    if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    const Fixed xvel = Fabs(actor->vel.x);
+    actor->vel.y += 19005;
+
+    displace_actor(actor, Int2Fx(10), FALSE);
+    if (actor->vel.x == Fx0) {
+        if (TOUCHING(actor, TOUCH_LEFT))
+            actor->vel.x = xvel;
+        else if (TOUCHING(actor, TOUCH_RIGHT))
+            actor->vel.x = -xvel;
     }
 }
 
@@ -299,7 +323,12 @@ static void tick_poison_mushroom(GameActor* actor) {
     if (ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
         return;
 
-    VAL(actor, POWERUP_FRAME) += 9;
+    if (actor->sprout > 0) {
+        if (((gamestate()->time * 51) % 100) >= 51)
+            ++actor->sprout;
+    } else {
+        VAL(actor, POWERUP_FRAME) += 9;
+    }
 
     if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
         FLAG_ON(actor, FLG_DESTROY);
@@ -384,6 +413,9 @@ static void tick_green_lui(GameActor* actor) {
         ++VAL(actor, POWERUP_FRAME);
     }
 
+    if (actor->sprout > 0 && ((gamestate()->time * 5) % 8) >= 5)
+        ++actor->sprout;
+
     displace_actor(actor, Fx0, FALSE);
 
     if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
@@ -448,7 +480,13 @@ static void create_beetroot(GameActor* actor) {
 }
 
 static void tick_beetroot(GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_POWERUP_CALAMITY))
+        return;
+
     VAL(actor, POWERUP_FRAME) += 2;
+
+    if (actor->sprout > 0 && ((gamestate()->time * 5) % 8) >= 5)
+        ++actor->sprout;
 }
 
 static void draw_beetroot(const GameActor* actor) {
@@ -488,6 +526,11 @@ static void create_hammer_suit(GameActor* actor) {
     actor->box.end.y = Fx1;
 }
 
+static void tick_hammer_suit(GameActor* actor) {
+    if (!ANY_FLAG(actor, FLG_POWERUP_CALAMITY) && actor->sprout > 0 && ((gamestate()->time * 5) % 8) >= 5)
+        ++actor->sprout;
+}
+
 static void draw_hammer_suit(const GameActor* actor) {
     draw_powerup(actor, "items/hammer_suit");
 }
@@ -503,6 +546,7 @@ static void collide_hammer_suit(GameActor* actor, GameActor* from) {
 const ActorTable TAB_HAMMER_SUIT = {
     .load = load_hammer_suit,
     .create = create_hammer_suit,
+    .tick = tick_hammer_suit,
     .draw = draw_hammer_suit,
     .collide = collide_hammer_suit,
 };
