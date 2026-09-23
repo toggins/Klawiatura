@@ -85,9 +85,7 @@ jobs:
       - name: Cache deps
         uses: actions/cache@v6
         with:
-          path: |
-            build/CMakeCache.txt
-            build/CMakeFiles
+          path: build
           key: ${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
             ${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-
