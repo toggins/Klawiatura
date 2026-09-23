@@ -138,6 +138,7 @@ static void load_starman() {
     load_sound("grow", AKL_NEVER);
     load_track("smw/starman", AKL_NEVER);
     load_actor(ACT_EXPLODE);
+    load_actor(ACT_POINTS);
 }
 
 static void create_starman(GameActor* actor) {
@@ -356,7 +357,8 @@ static void load_green_lui() {
     load_sprite_num("items/green_lui/%u", 12, AKL_NEVER);
     load_sprite_num("items/green_lui/bounce/%u", 6, AKL_NEVER);
     load_sound("kick", AKL_NEVER);
-    load_sprite("grow", AKL_NEVER);
+    load_sound("grow", AKL_NEVER);
+    load_actor(ACT_POINTS);
 }
 
 static void create_green_lui(GameActor* actor) {
@@ -435,6 +437,7 @@ const ActorTable TAB_GREEN_LUI = {
 static void load_beetroot() {
     load_sprite_num("items/beetroot/%u", 4, AKL_NEVER);
     load_sound("grow", AKL_NEVER);
+    load_actor(ACT_POINTS);
 }
 
 static void create_beetroot(GameActor* actor) {
