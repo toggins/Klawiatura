@@ -746,6 +746,8 @@ static void load_level(TinyHash key) {
             actor->vel.y = (Fixed)yyjson_get_sint(yyjson_arr_get(jvel, 1));
         }
 
+        actor->sprout = yyjson_get_uint(yyjson_obj_get(jval2, "sprout"));
+
         yyjson_val* jvalues = yyjson_obj_get(jval2, "values");
         for (Uint64 j = 0, n = yyjson_arr_size(jvalues); j < n && j < MAX_VALUES; j++) {
             yyjson_val* jvalue = yyjson_arr_get(jvalues, j);

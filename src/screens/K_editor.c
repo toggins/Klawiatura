@@ -65,7 +65,7 @@ typedef struct {
 
 typedef struct {
     Bool spawn_once, spawn_singleplayer, spawn_multiplayer, flip[2], tile[2];
-    int pos[3];
+    int pos[3], sprout;
     float scale[2], colors[4][4], vel[2];
 
     int values[MAX_VALUES];
@@ -410,6 +410,8 @@ static void open_level(const char* filename) {
         marker.vel[0] = Fx2Float(yyjson_get_sint(yyjson_arr_get(jmval, 0)));
         marker.vel[1] = Fx2Float(yyjson_get_sint(yyjson_arr_get(jmval, 1)));
 
+        marker.sprout = (int)yyjson_get_uint(yyjson_obj_get(jmarker, "sprout"));
+
         jmval = yyjson_obj_get(jmarker, "values");
         for (size_t j = 0, n2 = yyjson_arr_size(jmval); j < n2; j++) {
             yyjson_val* jmval2 = yyjson_arr_get(jmval, j);
@@ -705,6 +707,9 @@ static void save_level(const char* filename) {
                 yyjson_mut_arr_add_sint(json, jvel, Float2Fx(marker->vel[0]));
                 yyjson_mut_arr_add_sint(json, jvel, Float2Fx(marker->vel[1]));
             }
+
+            if (marker->sprout != 0)
+                yyjson_mut_obj_add_uint(json, jmarker, "sprout", marker->sprout);
 
             const size_t num_values = TinyDLength(def->values);
             if (num_values > 0) {
@@ -1630,6 +1635,7 @@ static void draw_ui() {
                     marker->scale);
                 ImGui_Spacing();
                 if (def->type == DEFT_ACTOR) {
+                    ImGui_InputInt(LFMT("editor.sprout"), &marker->sprout);
                     ImGui_InputFloat2(LFMT("editor.velocity"), marker->vel);
                     ImGui_Checkbox(LFMT("editor.spawn_once"), (bool*)&marker->spawn_once);
                     ImGui_Checkbox(LFMT("editor.spawn_singleplayer"), (bool*)&marker->spawn_singleplayer);

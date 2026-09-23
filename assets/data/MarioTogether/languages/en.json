@@ -349,6 +349,7 @@
     "editor.bottom_left": "Bottom Left",
     "editor.bottom_right": "Bottom Right",
     "editor.velocity": "Velocity",
+    "editor.sprout": "Sprout",
     "editor.spawn_once": "Appear Once",
     "editor.spawn_singleplayer": "Singleplayer Only",
     "editor.spawn_multiplayer": "Multiplayer Only",
