@@ -873,10 +873,7 @@ static void tick(GameActor* actor) {
     if (ANY_INPUT(player, GI_JUMP) && actor->vel.y < Fx0 && (water == NULL || actor->pos.y < water->pos.y)
         && !ANY_INPUT(player, GI_DOWN))
     {
-        if (player->powerup != POW_GREEN_LUI && Fabs(actor->vel.x) < 40960)
-            actor->vel.y -= 26214;
-        else
-            actor->vel.y -= FxHalf;
+        actor->vel.y -= (player->powerup != POW_GREEN_LUI && Fabs(actor->vel.x) < 40960) ? 26214 : FxHalf;
     }
 
 skip_physics:
