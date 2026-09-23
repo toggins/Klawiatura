@@ -350,6 +350,8 @@ static void create_silver_hammer(GameActor* actor) {
     actor->box.end.x = Int2Fx(12);
     actor->box.end.y = Int2Fx(15);
 
+    actor->depth = -1;
+
     VAL(actor, PROJECTILE_HITS) = 2;
 }
 

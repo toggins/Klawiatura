@@ -132,7 +132,7 @@ static void load_explode() {
 }
 
 static void create_explode(GameActor* actor) {
-    actor->depth = -1;
+    actor->depth = -2;
 }
 
 static void tick_explode(GameActor* actor) {
