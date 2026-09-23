@@ -334,6 +334,85 @@ const ActorTable TAB_HAMMER_PROJECTILE = {
     .collide = collide_hammer,
 };
 
+/* =============
+   SILVER HAMMER
+   ============= */
+
+static void load_silver_hammer() {
+    load_sprite("projectiles/hammer/silver", AKL_NEVER);
+    load_sound("kick", AKL_NEVER);
+    load_actor(ACT_EXPLODE);
+}
+
+static void create_silver_hammer(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-12);
+    actor->box.start.y = Int2Fx(-18);
+    actor->box.end.x = Int2Fx(12);
+    actor->box.end.y = Int2Fx(15);
+
+    VAL(actor, PROJECTILE_HITS) = 2;
+}
+
+static void tick_silver_hammer(GameActor* actor) {
+    VAL(actor, PROJECTILE_ANGLE) = Fmod(VAL(actor, PROJECTILE_ANGLE) + 45753, Fx2Pi);
+    actor->vel.y += 26214;
+
+    const Bool dead = VAL(actor, PROJECTILE_HITS) <= 0;
+    if (dead) {
+        move_actor(actor, Vadd(actor->pos, actor->vel));
+    } else {
+        if (ANY_FLAG(actor, FLG_PROJECTILE_OVERLAP)) {
+            if (!touching_solid(Radd(actor->box, actor->pos), SOL_SOLID))
+                FLAG_OFF(actor, FLG_PROJECTILE_OVERLAP);
+
+            move_actor(actor, Vadd(actor->pos, actor->vel));
+            TOUCH_OFF(actor, TOUCH_SIDES);
+        } else {
+            displace_actor_soft(actor);
+        }
+
+        collide_actor(actor);
+    }
+
+    if (below_nearest_view(actor->pos, Int2Fx(64))) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    if (!dead && TOUCHING(actor, TOUCH_SIDES))
+        FLAG_ON(actor, FLG_PROJECTILE_HIT | FLG_PROJECTILE_OVERLAP);
+
+    if (!ANY_FLAG(actor, FLG_PROJECTILE_HIT))
+        return;
+
+    actor->vel.x = -actor->vel.x;
+    if (ANY_FLAG(actor, FLG_PROJECTILE_HIT_BLOCK)) {
+        actor->vel.y = -actor->vel.y;
+    } else {
+        actor->vel.y = Int2Fx(-5);
+        create_actor(ACT_EXPLODE, actor->pos);
+    }
+
+    VAL_TICK(actor, PROJECTILE_HITS);
+    FLAG_OFF(actor, FLG_PROJECTILE_HIT | FLG_PROJECTILE_HIT_BLOCK);
+
+    play_state_sound("kick", PLAY_POS, A_ACTOR(actor));
+}
+
+static void draw_silver_hammer(const GameActor* actor) {
+    batch_reset();
+    batch_angle(Fx2Float(VAL(actor, PROJECTILE_ANGLE)));
+    draw_actor(actor, "projectiles/hammer/silver", FALSE);
+}
+
+const ActorTable TAB_SILVER_HAMMER_PROJECTILE = {
+    .load = load_silver_hammer,
+    .create = create_silver_hammer,
+    .tick = tick_silver_hammer,
+    .draw = draw_silver_hammer,
+    .collide = collide_hammer,
+};
+
 /* ======
    BULLET
    ====== */

@@ -379,7 +379,8 @@ static void on_other_sides(GameActor* actor, GameActor* from) {
         break;
     }
 
-    case ACT_BEETROOT_PROJECTILE: {
+    case ACT_BEETROOT_PROJECTILE:
+    case ACT_SILVER_HAMMER_PROJECTILE: {
         const GamePlayer* player = get_player(from->player);
         if ((player != NULL || (VAL(actor, BLOCK_TYPE) == BLOCK_BRICK && VAL(actor, BLOCK_ITEM) == ACT_NULL))
             && bump_block(actor, from, TRUE))
@@ -416,6 +417,7 @@ static void on_bottom(GameActor* actor, GameActor* from) {
     }
 
     case ACT_BEETROOT_PROJECTILE:
+    case ACT_SILVER_HAMMER_PROJECTILE:
     case ACT_BULLET_PROJECTILE: {
         if (!ANY_FLAG(actor, FLG_BLOCK_HIDDEN))
             on_other_sides(actor, from);

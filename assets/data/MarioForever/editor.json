@@ -621,6 +621,21 @@
             "sprite": "scenery/sign/hardcore_near",
             "depth": 30
         },
+        "Up Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/up",
+            "depth": 30
+        },
+        "Right Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/right",
+            "depth": 30
+        },
+        "Down Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/down",
+            "depth": 30
+        },
         "Waterfall": {
             "type": "actor",
             "id": 45,
@@ -824,6 +839,44 @@
                 {
                     "name": "Goal",
                     "index": 10
+                }
+            ]
+        },
+        "Bounds": {
+            "type": "actor",
+            "id": 16,
+            "sprite": "editor/bounds",
+            "scalable": true,
+            "values": [
+                {
+                    "name": "Start X",
+                    "index": 0,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Start Y",
+                    "index": 1,
+                    "type": "fixed"
+                },
+                {
+                    "name": "End X",
+                    "index": 2,
+                    "type": "fixed"
+                },
+                {
+                    "name": "End Y",
+                    "index": 3,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Track",
+                    "index": 4
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Warp",
+                    "index": 5
                 }
             ]
         },
@@ -1807,7 +1860,7 @@
                 },
                 {
                     "name": "Signs",
-                    "items": ["Hardcore Near Sign"]
+                    "items": ["Hardcore Near Sign", "Up Sign", "Right Sign", "Down Sign"]
                 },
                 {
                     "name": "Castle",
@@ -1921,6 +1974,7 @@
                 },
                 "Player Spawn",
                 "Warp",
+                "Bounds",
                 "Checkpoint",
                 "Autoscroll",
                 "Goomba Party",

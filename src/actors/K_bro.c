@@ -273,6 +273,16 @@ static void tick(GameActor* actor) {
         }
 
         case ACT_SILVER_HAMMER_PROJECTILE: {
+            GameActor* hammer = create_actor(ACT_SILVER_HAMMER_PROJECTILE,
+                Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-9) : Int2Fx(9), Int2Fx(-20)}));
+            if (hammer != NULL) {
+                FLAG_ON(hammer, actor->flags & FLG_X_FLIP);
+                hammer->vel.x = Fx1 + Int2Fx(rng(10));
+                if (ANY_FLAG(hammer, FLG_X_FLIP))
+                    hammer->vel.x = -hammer->vel.x;
+                hammer->vel.y = Int2Fx(-6) - Int2Fx(rng(5));
+            }
+
             play_state_sound("hammer", PLAY_POS, A_ACTOR(actor));
             break;
         }
