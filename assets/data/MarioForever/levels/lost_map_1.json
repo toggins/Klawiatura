@@ -6621,21 +6621,25 @@
         {
             "def": "Paratroopa",
             "id": 84,
+            "singleplayer": true,
             "pos": [8526, 333]
         },
         {
             "def": "Paratroopa",
             "id": 84,
+            "singleplayer": true,
             "pos": [8590, 301]
         },
         {
             "def": "Paratroopa",
             "id": 84,
+            "singleplayer": true,
             "pos": [8654, 269]
         },
         {
             "def": "Paratroopa",
             "id": 84,
+            "singleplayer": true,
             "pos": [8718, 237]
         },
         {
@@ -6892,6 +6896,32 @@
             "def": "Cloud",
             "id": 18,
             "pos": [9696, 192]
+        },
+        {
+            "def": "Platform",
+            "id": 11,
+            "multiplayer": true,
+            "pos": [8352, 192],
+            "vel": [0, 65536],
+            "values": [
+                [0, 2],
+                [1, 0],
+                [2, 0]
+            ],
+            "flags": 64
+        },
+        {
+            "def": "Platform",
+            "id": 11,
+            "multiplayer": true,
+            "pos": [8544, 32],
+            "vel": [0, 65536],
+            "values": [
+                [0, 2],
+                [1, 0],
+                [2, 0]
+            ],
+            "flags": 64
         }
     ]
 }
