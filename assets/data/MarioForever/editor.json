@@ -636,6 +636,11 @@
             "sprite": "scenery/sign/down",
             "depth": 30
         },
+        "Hardcore 1-4 Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/hardcore_1_4",
+            "depth": 30
+        },
         "Waterfall": {
             "type": "actor",
             "id": 45,
@@ -1576,6 +1581,28 @@
                 }
             ]
         },
+        "Volcano": {
+            "type": "actor",
+            "id": 70,
+            "sprite": "enemies/podoboo/0",
+            "values": [
+                {
+                    "name": "Time",
+                    "index": 0,
+                    "default": 300
+                },
+                {
+                    "name": "Fire Time",
+                    "index": 1,
+                    "default": 15
+                },
+                {
+                    "name": "Fire Amount",
+                    "index": 2,
+                    "default": 8
+                }
+            ]
+        },
         "Spiny": {
             "type": "actor",
             "id": 74,
@@ -1860,7 +1887,7 @@
                 },
                 {
                     "name": "Signs",
-                    "items": ["Hardcore Near Sign", "Up Sign", "Right Sign", "Down Sign"]
+                    "items": ["Hardcore Near Sign", "Up Sign", "Right Sign", "Down Sign", "Hardcore 1-4 Sign"]
                 },
                 {
                     "name": "Castle",
