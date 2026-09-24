@@ -38,7 +38,7 @@ static const char* credits[8][2] = {
     {"menu.credits.levels",         "menu.credits.levels.text"        },
     {"menu.credits.beta_testing",   "menu.credits.beta_testing.text"  },
     {"menu.credits.special_thanks", "menu.credits.special_thanks.text"},
-    {NULL,                          "menu.credits.end"                },
+    {"menu.credits.end",            "menu.credits.end.text"           },
 };
 
 static const char* replay_error = NULL;
