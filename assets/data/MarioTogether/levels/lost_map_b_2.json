@@ -1,5 +1,5 @@
 {
-    "tracks": [{ "track": "smrpg_forest" }],
+    "tracks": [{ "track": "dkc2_brambles" }],
     "lost_map": true,
     "size": [14000, 480],
     "bounds": [0, 0, 14000, 480],

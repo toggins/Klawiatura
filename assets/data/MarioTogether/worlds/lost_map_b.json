@@ -1,7 +1,7 @@
 {
     "map": {
         "size": [1000, 480],
-        "track": "smrpg_nimbus_land",
+        "track": "mkds_rainbow_road",
         "backdrops": [
             {
                 "sprite": "maps/lost_map",
@@ -151,5 +151,5 @@
             }
         ]
     },
-    "levels": ["lost_map2_1", "lost_map2_2", "lost_map2_3", "lost_map2_4", "lost_map2_5"]
+    "levels": ["lost_map_b_1", "lost_map_b_2", "lost_map_b_3", "lost_map_b_4", "lost_map_b_5"]
 }
