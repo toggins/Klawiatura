@@ -1,7 +1,7 @@
 {
     "map": {
         "size": [1000, 480],
-        "track": "smrpg/nimbus_land",
+        "track": "smrpg_nimbus_land",
         "backdrops": [
             {
                 "sprite": "maps/lost_map",

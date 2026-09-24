@@ -1,0 +1,5 @@
+{
+    "texture": "scenery/tree/trunk",
+    "size": [30, 32],
+    "uvs": [0, 0, 30, 32]
+}

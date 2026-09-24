@@ -127,6 +127,23 @@
             "sprite": "scenery/hill/autumn",
             "depth": 61
         },
+        "Tree Trunk": {
+            "type": "background",
+            "sprite": "scenery/tree/trunk/0",
+            "depth": 40
+        },
+        "Tree Trunk Hole": {
+            "type": "background",
+            "sprite": "scenery/tree/trunk/1",
+            "depth": 40
+        },
+        "Forest Top 2": {
+            "type": "background",
+            "sprite": "scenery/forest_top",
+            "depth": 30,
+            "max_scale": [32767, 46],
+            "tile": [true, false]
+        },
         "Castle Bottom Alt": {
             "type": "background",
             "sprite": "scenery/castle/bottom2",
@@ -253,6 +270,10 @@
                     "items": ["Autumn Hill"]
                 },
                 {
+                    "name": "Forest",
+                    "items": ["Forest Top 2"]
+                },
+                {
                     "name": "Castle",
                     "items": ["Castle Bottom Alt"]
                 },
@@ -266,6 +287,10 @@
                         {
                             "name": "Sweden",
                             "items": ["Sweden Tree Back", "Sweden Tree Small", "Sweden Tree Big"]
+                        },
+                        {
+                            "name": "Trunk",
+                            "items": ["Tree Trunk", "Tree Trunk Hole"]
                         }
                     ]
                 },
