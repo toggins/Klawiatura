@@ -109,13 +109,18 @@ typedef struct {
 } EditorLevel;
 
 typedef struct {
+    Sint32 pos[2];
+    Surface* surface;
+} EditorBlueprint;
+
+typedef struct {
     EditorCursor cursor;
     EditorCamera camera;
     EditorLevel level;
 
+    EditorBlueprint blueprint;
     EditorAsync async[ASYNC_SIZE];
     const char* error;
-    Surface* blueprint;
 
     TinyMap defs;
     TinyHash def_key;
@@ -1134,7 +1139,7 @@ static void end() {
     for (AsyncID i = 0; i < (AsyncID)ASYNC_SIZE; i++)
         clear_async(i);
     clear_level();
-    destroy_surface(editor->blueprint);
+    destroy_surface(editor->blueprint.surface);
     FreeTinyMap(&editor->defs);
     destroy_folder(editor->folders);
     SDL_free(editor);
@@ -1176,8 +1181,10 @@ static void draw() {
     }
 
     if (has_async(ASYNC_BLUEPRINT)) {
-        destroy_surface(editor->blueprint);
-        editor->blueprint = create_surface_from_file(get_async(ASYNC_BLUEPRINT));
+        destroy_surface(editor->blueprint.surface);
+        EditorBlueprint* blueprint = &editor->blueprint;
+        blueprint->surface = create_surface_from_file(get_async(ASYNC_BLUEPRINT));
+        blueprint->pos[0] = blueprint->pos[1] = 0;
         clear_async(ASYNC_BLUEPRINT);
     }
 
@@ -1197,8 +1204,10 @@ static void draw() {
     batch_filter(FALSE);
 
     batch_reset();
+    const EditorBlueprint* blueprint = &editor->blueprint;
+    batch_pos(B_F3_XY(blueprint->pos[0], blueprint->pos[1]));
     batch_color(B_U4_ALPHA(128));
-    batch_surface(editor->blueprint);
+    batch_surface(blueprint->surface);
 
     TinyPq sorter = {0};
 
@@ -1365,6 +1374,11 @@ static void draw_ui() {
     if (!io->WantCaptureKeyboard) {
         if (ImGui_IsKeyPressed(ImGuiKey_F1))
             open_blueprint_dialog();
+
+        if (ImGui_IsKeyPressed(ImGuiKey_B)) {
+            editor->blueprint.pos[0] = ecursor->pos[0];
+            editor->blueprint.pos[1] = ecursor->pos[1];
+        }
 
         if (ImGui_IsKeyPressed(ImGuiKey_G))
             ecamera->show_grid = !ecamera->show_grid;
