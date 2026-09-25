@@ -2,12 +2,8 @@
 #include "K_string.h"
 #include "K_video.h"
 
-#include "actors/K_enemies.h"
 #include "actors/K_koopa.h"
-
-#define FLG_SPINY_GRAY CUSTOM_ENEMY_FLAG(0)
-#define FLG_SPINY_HATCH CUSTOM_ENEMY_FLAG(1)
-#define FLG_SPINY_OVERLAP CUSTOM_ENEMY_FLAG(2)
+#include "actors/K_spiny.h"
 
 /* =====
    SPINY
@@ -37,6 +33,11 @@ static void create(GameActor* actor) {
 }
 
 static void tick(GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_SPINY_TEMP) && !in_any_view(actor->pos, Int2Fx(-500), VEF_ALL)) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
     if (ANY_FLAG(actor, FLG_SPINY_HATCH)) {
         if (++VAL(actor, ENEMY_FRAME) >= ((gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP)) ? 1 : 6)) {
             FLAG_OFF(actor, FLG_SPINY_HATCH);
@@ -224,7 +225,7 @@ static void tick_egg(GameActor* actor) {
                 FLAG_ON(spiny, FLG_X_FLIP);
             }
 
-            FLAG_ON(spiny, FLG_ENEMY_ACTIVE | FLG_SPINY_HATCH);
+            FLAG_ON(spiny, FLG_ENEMY_ACTIVE | FLG_SPINY_HATCH | (actor->flags & (FLG_SPINY_GRAY | FLG_SPINY_TEMP)));
 
             align_interp(spiny, actor);
         }

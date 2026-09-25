@@ -1,0 +1,8 @@
+#pragma once
+
+#include "actors/K_enemies.h"
+
+#define FLG_SPINY_GRAY CUSTOM_ENEMY_FLAG(0)
+#define FLG_SPINY_HATCH CUSTOM_ENEMY_FLAG(1)
+#define FLG_SPINY_OVERLAP CUSTOM_ENEMY_FLAG(2)
+#define FLG_SPINY_TEMP CUSTOM_ENEMY_FLAG(3)

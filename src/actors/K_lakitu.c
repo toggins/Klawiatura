@@ -2,9 +2,9 @@
 #include "K_string.h"
 #include "K_video.h"
 
-#include "actors/K_enemies.h"
 #include "actors/K_lakitu.h"
 #include "actors/K_player.h"
+#include "actors/K_spiny.h"
 
 static void load() {
     load_sprite("enemies/lakitu", AKL_NEVER);
@@ -163,8 +163,11 @@ static void tick(GameActor* actor) {
 
         GameActor* egg = create_actor(
             ACT_SPINY_EGG, Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? -Fx1 : Fx1, Int2Fx(-38)}));
-        if (egg != NULL)
+        if (egg != NULL) {
             egg->vel.y = Int2Fx(-3);
+            if (ANY_FLAG(actor, FLG_LAKITU_SPAWNED))
+                FLAG_ON(egg, FLG_SPINY_TEMP);
+        }
 
         const Sint32 r = rng(3);
         // !!! CLIENT-SIDE !!!
@@ -226,7 +229,7 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
 
     case ACT_PLAYER: {
-        if (VAL(actor, PLAYER_STARMAN) > 0)
+        if (VAL(from, PLAYER_STARMAN) > 0)
             player_starman(from, actor);
         else if (check_stomp(actor, from, Int2Fx(-16), 100, FALSE))
             kill_enemy(actor, from, FALSE);
