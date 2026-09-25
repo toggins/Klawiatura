@@ -694,6 +694,11 @@
             "sprite": "scenery/sign/hardcore_1_4",
             "depth": 30
         },
+        "Lakitu Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/lakitu",
+            "depth": 30
+        },
         "Waterfall": {
             "type": "actor",
             "id": 45,
@@ -1950,7 +1955,14 @@
                 },
                 {
                     "name": "Signs",
-                    "items": ["Hardcore Near Sign", "Up Sign", "Right Sign", "Down Sign", "Hardcore 1-4 Sign"]
+                    "items": [
+                        "Hardcore Near Sign",
+                        "Up Sign",
+                        "Right Sign",
+                        "Down Sign",
+                        "Hardcore 1-4 Sign",
+                        "Lakitu Sign"
+                    ]
                 },
                 {
                     "name": "Castle",
