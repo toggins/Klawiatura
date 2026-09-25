@@ -538,6 +538,44 @@
                 }
             ]
         },
+        "Cloud Dark": {
+            "type": "actor",
+            "id": 18,
+            "sprite": "scenery/cloud/0",
+            "values": [
+                {
+                    "name": "Type",
+                    "index": 0,
+                    "default": 1,
+                    "hidden": true
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Sway",
+                    "index": 6
+                }
+            ]
+        },
+        "Cloud Tanks": {
+            "type": "actor",
+            "id": 18,
+            "sprite": "scenery/cloud/0",
+            "values": [
+                {
+                    "name": "Type",
+                    "index": 0,
+                    "default": 2,
+                    "hidden": true
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Sway",
+                    "index": 6
+                }
+            ]
+        },
         "Cloud Save": {
             "type": "actor",
             "id": 18,
@@ -1839,6 +1877,8 @@
                     "name": "Clouds",
                     "items": [
                         "Cloud",
+                        "Cloud Dark",
+                        "Cloud Tanks",
                         "Cloud Save",
                         "Clouds",
                         "Clouds Static",

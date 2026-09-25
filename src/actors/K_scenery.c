@@ -75,6 +75,16 @@ static void tick_cloud(GameActor* actor) {
 
 static void draw_cloud(const GameActor* actor) {
     batch_reset();
+    switch (VAL(actor, SCENERY_ANIMATION)) {
+    default:
+        break;
+    case 1:
+        batch_color(B_U4(181, 173, 173, 255));
+        break;
+    case 2:
+        batch_color(B_U4(123, 99, 99, 255));
+        break;
+    }
     draw_actor(actor, fmt("scenery/cloud/%i", ((gamestate()->time * 2) / 25) % 3), FALSE);
 }
 
