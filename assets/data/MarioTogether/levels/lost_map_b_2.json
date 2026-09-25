@@ -221,7 +221,7 @@
         },
         {
             "def": "Gradient Background",
-            "pos": [0, 0, 200],
+            "pos": [0, 0, 201],
             "size": [15009, 489],
             "colors": [
                 [0, 63, 163, 255],
@@ -232,7 +232,7 @@
         },
         {
             "def": "Gradient Background",
-            "pos": [0, 0, 200],
+            "pos": [0, 0, 198],
             "size": [15009, 489],
             "colors": [
                 [0, 63, 63, 65],
@@ -240,51 +240,6 @@
                 [8, 0, 0, 65],
                 [8, 0, 0, 65]
             ]
-        },
-        {
-            "def": "Swamp Top Left",
-            "sprite": "tiles/swamp/0",
-            "pos": [0, 352, 20]
-        },
-        {
-            "def": "Swamp Top",
-            "sprite": "tiles/swamp/1",
-            "pos": [32, 352, 20]
-        },
-        {
-            "def": "Swamp Top Right",
-            "sprite": "tiles/swamp/2",
-            "pos": [64, 352, 20]
-        },
-        {
-            "def": "Swamp Left",
-            "sprite": "tiles/swamp/3",
-            "pos": [0, 384, 20]
-        },
-        {
-            "def": "Swamp Left",
-            "sprite": "tiles/swamp/3",
-            "pos": [0, 416, 20]
-        },
-        {
-            "def": "Swamp Middle",
-            "sprite": "tiles/swamp/4",
-            "pos": [32, 384, 20]
-        },
-        {
-            "def": "Swamp Middle",
-            "sprite": "tiles/swamp/4",
-            "pos": [32, 416, 20]
-        },
-        {
-            "def": "Swamp Right",
-            "sprite": "tiles/swamp/5",
-            "pos": [64, 384, 20]
-        },
-        {
-            "def": "Swamp Right",
-            "sprite": "tiles/swamp/5",
-            "pos": [64, 416, 20]
         },
         {
             "def": "Swamp Right",
@@ -295,36 +250,6 @@
             "def": "Swamp Left",
             "sprite": "tiles/swamp/3",
             "pos": [128, 448, 20]
-        },
-        {
-            "def": "Swamp Top Left",
-            "sprite": "tiles/swamp/0",
-            "pos": [128, 384, 20]
-        },
-        {
-            "def": "Swamp Top",
-            "sprite": "tiles/swamp/1",
-            "pos": [160, 384, 20]
-        },
-        {
-            "def": "Swamp Top Right",
-            "sprite": "tiles/swamp/2",
-            "pos": [192, 384, 20]
-        },
-        {
-            "def": "Swamp Left",
-            "sprite": "tiles/swamp/3",
-            "pos": [128, 416, 20]
-        },
-        {
-            "def": "Swamp Middle",
-            "sprite": "tiles/swamp/4",
-            "pos": [160, 416, 20]
-        },
-        {
-            "def": "Swamp Right",
-            "sprite": "tiles/swamp/5",
-            "pos": [192, 416, 20]
         },
         {
             "def": "Swamp Top Right",
@@ -6105,6 +6030,156 @@
             "def": "Brown Block",
             "sprite": "tiles/block/brown",
             "pos": [4096, 288, 20]
+        },
+        {
+            "def": "Swamp Top Left",
+            "sprite": "tiles/swamp/0",
+            "pos": [128, 416, 20]
+        },
+        {
+            "def": "Swamp Top",
+            "sprite": "tiles/swamp/1",
+            "pos": [160, 416, 20]
+        },
+        {
+            "def": "Swamp Top Right",
+            "sprite": "tiles/swamp/2",
+            "pos": [192, 416, 20]
+        },
+        {
+            "def": "Swamp Top Right",
+            "sprite": "tiles/swamp/2",
+            "pos": [64, 416, 20]
+        },
+        {
+            "def": "Swamp Top",
+            "sprite": "tiles/swamp/1",
+            "pos": [32, 416, 20]
+        },
+        {
+            "def": "Swamp Top Left",
+            "sprite": "tiles/swamp/0",
+            "pos": [0, 416, 20]
+        },
+        {
+            "def": "Tree Trunk",
+            "sprite": "scenery/tree/trunk/0",
+            "pos": [64, 384, 40]
+        },
+        {
+            "def": "Tree Trunk",
+            "sprite": "scenery/tree/trunk/0",
+            "pos": [64, 416, 40]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [62, 160, 199],
+            "colors": [
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [1562, 160, 199],
+            "colors": [
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [3062, 160, 199],
+            "colors": [
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [4562, 160, 199],
+            "colors": [
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [6062, 160, 199],
+            "colors": [
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [7562, 160, 199],
+            "colors": [
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [9062, 160, 199],
+            "colors": [
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [10562, 160, 199],
+            "colors": [
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [12062, 160, 199],
+            "colors": [
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [13562, 160, 199],
+            "colors": [
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129],
+                [255, 255, 255, 129]
+            ]
         }
     ],
     "collisions": [
@@ -6126,23 +6201,8 @@
                 [10, 19, 1],
                 [16, 19, 1],
                 [17, 19, 1],
-                [0, 16, 1],
-                [1, 16, 1],
-                [2, 16, 1],
-                [0, 17, 1],
-                [0, 18, 1],
-                [1, 17, 1],
-                [1, 18, 1],
-                [2, 17, 1],
-                [2, 18, 1],
                 [2, 19, 1],
                 [4, 19, 1],
-                [4, 17, 1],
-                [5, 17, 1],
-                [6, 17, 1],
-                [4, 18, 1],
-                [5, 18, 1],
-                [6, 18, 1],
                 [11, 18, 1],
                 [11, 19, 1],
                 [15, 18, 1],
@@ -6883,7 +6943,13 @@
                 [407, 18, 1],
                 [407, 19, 1],
                 [127, 14, 1],
-                [128, 14, 1]
+                [128, 14, 1],
+                [4, 18, 1],
+                [5, 18, 1],
+                [6, 18, 1],
+                [2, 18, 1],
+                [1, 18, 1],
+                [0, 18, 1]
             ]
         },
         {
@@ -8565,6 +8631,198 @@
             "def": "Coin",
             "id": 20,
             "pos": [13056, 320]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [224, 96],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [512, 160],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [800, 160],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [1344, 96],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [2304, 96],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [2528, 256],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [2880, 192],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [3264, 96],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [3552, 256],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [4032, 96],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [4672, 288],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [4896, 128],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [5376, 128],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [6064, 189],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [6336, 128],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [7079, 112],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [6863, 316],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [7616, 160],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [8051, 104],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [8352, 224],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [8896, 160],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [9552, 276],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [10016, 160],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [10221, 111],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [10641, 117],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [10961, 224],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [11616, 128],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [12136, 217],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [12529, 116],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [12751, 186],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [13152, 128],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [13520, 151],
+            "values": [[0, 1]]
         }
     ]
 }
