@@ -156,6 +156,21 @@
             "sprite": "tiles/pipe/purple/v2",
             "depth": 20
         },
+        "Pipe Gray Top": {
+            "type": "tile",
+            "sprite": "tiles/pipe/gray/v0",
+            "depth": 20
+        },
+        "Pipe Gray Middle": {
+            "type": "tile",
+            "sprite": "tiles/pipe/gray/v1",
+            "depth": 20
+        },
+        "Pipe Gray Bottom": {
+            "type": "tile",
+            "sprite": "tiles/pipe/gray/v2",
+            "depth": 20
+        },
         "Tree Top Left": {
             "type": "tile",
             "sprite": "tiles/tree/0",
@@ -1346,6 +1361,10 @@
                 {
                     "name": "Red",
                     "index": 10
+                },
+                {
+                    "name": "Gray",
+                    "index": 11
                 }
             ]
         },
@@ -1798,6 +1817,10 @@
                         {
                             "name": "Purple",
                             "items": ["Pipe Purple Top", "Pipe Purple Middle", "Pipe Purple Bottom"]
+                        },
+                        {
+                            "name": "Gray",
+                            "items": ["Pipe Gray Top", "Pipe Gray Middle", "Pipe Gray Bottom"]
                         }
                     ]
                 },
