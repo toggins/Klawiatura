@@ -2,17 +2,8 @@
 #include "K_string.h"
 #include "K_video.h"
 
+#include "actors/K_hazards.h"
 #include "actors/K_player.h"
-
-enum {
-    VAL_HAZARD_STATE,
-    VAL_HAZARD_Y,
-    VAL_HAZARD_RESPAWN,
-    VAL_HAZARD_OVERLAP,
-    VAL_HAZARD_FRAME,
-};
-
-#define FLG_HAZARD_ACTIVE CUSTOM_FLAG(0)
 
 /* ====
    SINK
@@ -150,9 +141,127 @@ const ActorTable TAB_FAKE_BRICK = {
     .collide = collide_fake_brick,
 };
 
-/* =====
-   CORAL
-   ===== */
+/* =============
+   SPIKE CEILING
+   ============= */
+
+static void load_spike_ceiling() {
+    load_sprite("markers/spike_ceiling", AKL_NEVER);
+    load_sound("bang/2", AKL_NEVER);
+}
+
+static void create_spike_ceiling(GameActor* actor) {
+    actor->depth = Int2Fx(-10);
+
+    VAL(actor, HAZARD_Y) = actor->pos.y;
+}
+
+static void tick_spike_ceiling(GameActor* actor) {
+    const PlayerID n = gamecontext()->num_players;
+
+    if (!ANY_FLAG(actor, FLG_HAZARD_ACTIVE)) {
+        // 4
+        Bool past_start = FALSE, at_end = FALSE;
+
+        for (PlayerID i = 0; i < n; i++) {
+            const GamePlayer* player = get_player(i);
+            if (player != NULL && player->pos.x > Int2Fx(1000)) {
+                past_start = TRUE;
+                break;
+            }
+        }
+
+        const LevelInfo* level_info = levelinfo();
+        for (PlayerID i = 0; i < n; i++) {
+            const GamePlayer* player = get_player(i);
+            if (player != NULL && player->pos.x >= (level_info->size.x - Int2Fx(1800))) {
+                at_end = TRUE;
+                break;
+            }
+        }
+
+        if (past_start && !at_end)
+            ++VAL(actor, HAZARD_STATE);
+
+        // 5
+        if (VAL(actor, HAZARD_STATE) > 200 && VAL(actor, HAZARD_STATE) < 300) {
+            Fixed y = VAL(actor, HAZARD_Y) + Int2Fx(rng(2));
+            y -= Int2Fx(rng(2));
+            move_actor(actor, (FVec2){actor->pos.x, y});
+        }
+
+        // 6
+        if (VAL(actor, HAZARD_STATE) > 300 && VAL(actor, HAZARD_STATE) < 400) {
+            Fixed y = VAL(actor, HAZARD_Y) + Int2Fx(rng(5));
+            y -= Int2Fx(rng(5));
+            move_actor(actor, (FVec2){actor->pos.x, y});
+        }
+
+        // 7
+        const Fixed bottom = level_info->size.y - Int2Fx(80);
+        if (VAL(actor, HAZARD_STATE) > 400 && actor->pos.y < bottom) {
+            move_actor(actor, Vadd(actor->pos, actor->vel));
+            actor->vel.y += Fx1;
+        }
+
+        // 8
+        if (actor->pos.y > bottom) {
+            move_actor(actor, (FVec2){actor->pos.x, bottom});
+            FLAG_ON(actor, FLG_HAZARD_ACTIVE);
+            VAL(actor, HAZARD_STATE) = 0;
+            actor->vel.y = Fx0;
+            quake_actor(NULL, (FVec2){Int2Fx(10), 26214});
+
+            play_state_sound("bang/2", 0, NULL);
+        }
+    }
+
+    if (ANY_FLAG(actor, FLG_HAZARD_ACTIVE)) {
+        // 9
+        ++VAL(actor, HAZARD_STATE2);
+
+        // 10
+        if (VAL(actor, HAZARD_STATE2) > 100 && actor->pos.y > Int2Fx(64))
+            move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, Int2Fx(-2)}));
+
+        // 11
+        if (actor->pos.y <= Int2Fx(64)) {
+            VAL(actor, HAZARD_STATE2) = 0;
+            FLAG_OFF(actor, FLG_HAZARD_ACTIVE);
+        }
+    }
+
+    for (PlayerID i = 0; i < n; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        GameActor* pawn = get_actor(player->actor);
+        if (pawn != NULL && pawn->type == ACT_PLAYER && (pawn->pos.y + pawn->box.start.y) < (actor->pos.y + Fx1)
+            && (pawn->pos.y + pawn->box.end.y) > (actor->pos.y - Int2Fx(478)))
+        {
+            kill_player(pawn);
+        }
+    }
+}
+
+static void draw_spike_ceiling(const GameActor* actor) {
+    batch_reset();
+    batch_pos(B_F3(
+        Fx2Int(videostate()->camera.pos.x - F_HALF_SCREEN_WIDTH), Fx2Int(get_interp(actor).y), Fx2Float(actor->depth)));
+    batch_sprite("markers/spike_ceiling");
+}
+
+const ActorTable TAB_SPIKE_CEILING = {
+    .load = load_spike_ceiling,
+    .create = create_spike_ceiling,
+    .tick = tick_spike_ceiling,
+    .draw = draw_spike_ceiling,
+};
+
+/* ==============
+   ELECTRIC CORAL
+   ============== */
 
 static void load_coral() {
     load_sprite_num("enemies/coral/%u", 22, AKL_NEVER);

@@ -1,0 +1,14 @@
+#pragma once
+
+#include "K_game.h"
+
+enum {
+    VAL_HAZARD_STATE,
+    VAL_HAZARD_STATE2,
+    VAL_HAZARD_Y,
+    VAL_HAZARD_RESPAWN,
+    VAL_HAZARD_OVERLAP,
+    VAL_HAZARD_FRAME,
+};
+
+#define FLG_HAZARD_ACTIVE CUSTOM_FLAG(0)

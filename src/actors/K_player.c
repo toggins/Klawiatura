@@ -4,6 +4,7 @@
 #include "K_video.h"
 
 #include "actors/K_enemies.h"
+#include "actors/K_hazards.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 #include "actors/K_powerups.h"
@@ -1130,6 +1131,10 @@ static void load_dead() {
     load_track("smb/game_over", AKL_NEVER);
 }
 
+static void create_dead(GameActor* actor) {
+    actor->depth = Int2Fx(-20);
+}
+
 static void tick_dead(GameActor* actor) {
     switch (++VAL(actor, PLAYER_DEAD)) {
     default:
@@ -1143,9 +1148,27 @@ static void tick_dead(GameActor* actor) {
     }
 
     case 201: {
-        if (!in_blocking_sequence() && gamecontext()->num_players > 1 && !all_players_dead() && gamestate()->clock != 0)
-            respawn_player(get_player(actor->player));
+        if (in_blocking_sequence() || gamecontext()->num_players <= 1 || all_players_dead() || gamestate()->clock == 0)
+            break;
 
+        GamePlayer* player = get_player(actor->player);
+        if (player != NULL && player->lives >= 0) {
+            const GameActor* hazard = NULL;
+            FOR_EACH_ACTOR (hazard) {
+                if (hazard->type == ACT_SPIKE_CEILING
+                    && (VAL(hazard, HAZARD_STATE) >= 300 || VAL(hazard, HAZARD_STATE2) > 0))
+                {
+                    VAL(actor, PLAYER_DEAD) -= 10;
+                    FLAG_OFF(actor, FLG_VISIBLE);
+
+                    goto dont_respawn;
+                }
+            }
+        }
+
+        respawn_player(player);
+
+    dont_respawn:
         break;
     }
 
@@ -1155,7 +1178,7 @@ static void tick_dead(GameActor* actor) {
     }
     }
 
-    if (VAL(actor, PLAYER_DEAD) >= 25) {
+    if (VAL(actor, PLAYER_DEAD) >= 25 && ANY_FLAG(actor, FLG_VISIBLE)) {
         move_actor(actor, Vadd(actor->pos, actor->vel));
         actor->vel.y += 26214;
     }
@@ -1173,6 +1196,7 @@ static void draw_dead(const GameActor* actor) {
 const ActorTable TAB_PLAYER_DEAD = {
     .load = load_dead,
     .cleanup = cleanup,
+    .create = create_dead,
     .tick = tick_dead,
     .draw = draw_dead,
     .draw_hud = draw_hud,
