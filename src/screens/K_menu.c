@@ -256,7 +256,8 @@ static Bool draw_main_menu() {
     return FALSE;
 }
 
-static int until_lobby_list_refresh = 0;
+static LobbyListState lobby_list_last_state = LLS_READY;
+static Uint16 lobby_list_refresh = 0;
 static Bool lobby_list_hint = FALSE;
 
 static const char* fmt_lobby_list(size_t idx) {
@@ -268,18 +269,16 @@ static void lobby_option();
 static Bool update_lobby_list() {
     SDL_zeroa(CATALOG.options[MEN_LOBBY_LIST]);
 
-    if (get_lobby_list_state() == LLS_SEARCHING) {
-        CATALOG.options[MEN_LOBBY_LIST][0].name = "option.finding_lobbies";
-        CATALOG.options[MEN_LOBBY_LIST][0].disabled = always_disabled;
-
-        return FALSE;
-    }
-
     if (get_lobby_list_count() <= 0) {
-        CATALOG.options[MEN_LOBBY_LIST][0].name = "option.no_lobbies";
+        if (get_lobby_list_state() == LLS_SEARCHING) {
+            CATALOG.options[MEN_LOBBY_LIST][0].name = "option.finding_lobbies";
+        } else {
+            CATALOG.options[MEN_LOBBY_LIST][0].name = "option.no_lobbies";
+            lobby_list_hint = TRUE;
+        }
+
         CATALOG.options[MEN_LOBBY_LIST][0].disabled = always_disabled;
 
-        lobby_list_hint = TRUE;
         return FALSE;
     }
 
@@ -301,17 +300,24 @@ static void enter_lobby_list_menu(MenuType from) {
 
     find_lobbies();
     update_lobby_list();
-    until_lobby_list_refresh = 3 * get_tickrate();
+    lobby_list_last_state = get_lobby_list_state();
     lobby_list_hint = FALSE;
 }
 
 static void tick_lobby_list_menu() {
-    if (get_lobby_list_state() == LLS_READY) {
-        update_lobby_list();
+    const LobbyListState new_state = get_lobby_list_state();
+    if (lobby_list_last_state != new_state) {
+        lobby_list_refresh = (update_lobby_list() ? 10 : 4) * get_tickrate();
+        lobby_list_last_state = new_state;
+    }
 
-        if (until_lobby_list_refresh-- <= 0) {
+    if (lobby_list_last_state == LLS_READY && lobby_list_refresh > 0) {
+        if (--lobby_list_refresh <= 0) {
             find_lobbies();
-            until_lobby_list_refresh = 8 * get_tickrate();
+            update_lobby_list();
+            lobby_list_last_state = get_lobby_list_state();
+
+            return;
         }
     }
 }
