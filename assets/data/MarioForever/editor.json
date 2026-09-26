@@ -46,6 +46,13 @@
             "max_scale": [32767, 197],
             "tile": [true, false]
         },
+        "Block Background": {
+            "type": "background",
+            "sprite": "backgrounds/block",
+            "depth": 210,
+            "scalable": true,
+            "tile": [true, true]
+        },
         "Grass Top Left": {
             "type": "tile",
             "sprite": "tiles/grass/0",
@@ -1120,6 +1127,11 @@
             "id": 63,
             "sprite": "markers/spring"
         },
+        "Spike Ceiling": {
+            "type": "actor",
+            "id": 132,
+            "sprite": "markers/spike_ceiling"
+        },
         "Item Block": {
             "type": "actor",
             "id": 24,
@@ -1777,7 +1789,8 @@
                 "Cliff Background",
                 "Underwater Background",
                 "Castle Background",
-                "Starland Background"
+                "Starland Background",
+                "Block Background"
             ]
         },
         {
@@ -2081,7 +2094,8 @@
                 "Autoscroll",
                 "Goomba Party",
                 "Sink",
-                "Spring"
+                "Spring",
+                "Spike Ceiling"
             ]
         }
     ]
