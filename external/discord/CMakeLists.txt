@@ -1,5 +1,4 @@
 project(discord)
-add_library(discord SHARED IMPORTED GLOBAL)
 
 # TODO: Add support for ARM64 builds.
 # nonk: ^ no need to, nobody uses ARM on the desktop besides windose 11 pcs with a snapdragon cpu......
@@ -8,17 +7,21 @@ if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk")
     if(${CMAKE_SIZEOF_VOID_P} STREQUAL 4)
         message(NOTICE "32-bit environment detected; excluding Discord functionality")
     elseif(WIN32) # NOTE: use the debug libraries by default and override to release for release builds only. not setting a default fails at configure-time.
+        add_library(discord SHARED IMPORTED GLOBAL)
+        set(KLAW_DISCORD_FR TRUE PARENT_SCOPE)
+
         set_property(TARGET discord PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk/bin/debug/discord_partner_sdk.dll")
         set_property(TARGET discord PROPERTY IMPORTED_IMPLIB "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk/lib/debug/discord_partner_sdk.lib")
         set_property(TARGET discord PROPERTY IMPORTED_LOCATION_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk/bin/release/discord_partner_sdk.dll")
         set_property(TARGET discord PROPERTY IMPORTED_IMPLIB_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk/lib/release/discord_partner_sdk.lib")
         set_property(TARGET discord PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk/include")
-        set(KLAW_DISCORD_FR TRUE PARENT_SCOPE)
     elseif(LINUX)
+        add_library(discord SHARED IMPORTED GLOBAL)
+        set(KLAW_DISCORD_FR TRUE PARENT_SCOPE)
+
         set_property(TARGET discord PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk/lib/debug/libdiscord_partner_sdk.so")
         set_property(TARGET discord PROPERTY IMPORTED_LOCATION_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk/lib/release/libdiscord_partner_sdk.so")
         set_property(TARGET discord PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/discord_social_sdk/include")
-        set(KLAW_DISCORD_FR TRUE PARENT_SCOPE)
     else()
         message(NOTICE "Unrecognized OS; excluding Discord functionality")
     endif()
