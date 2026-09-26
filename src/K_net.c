@@ -661,7 +661,6 @@ void kick_peer(NetID pid) {
 
 void find_lobbies() {
     set_last_error(NULL);
-    clear_lobby_list();
     NutBlast_FindLobbies(20);
     lobby_list_state = LLS_SEARCHING;
 }

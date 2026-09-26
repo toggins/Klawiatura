@@ -256,8 +256,7 @@ static Bool draw_main_menu() {
     return FALSE;
 }
 
-static LobbyListState lobby_list_last_state = LLS_READY;
-static Uint16 lobby_list_refresh = 0;
+static int until_lobby_list_refresh = 0;
 static Bool lobby_list_hint = FALSE;
 
 static const char* fmt_lobby_list(size_t idx) {
@@ -302,24 +301,17 @@ static void enter_lobby_list_menu(MenuType from) {
 
     find_lobbies();
     update_lobby_list();
-    lobby_list_last_state = get_lobby_list_state();
+    until_lobby_list_refresh = 3 * get_tickrate();
     lobby_list_hint = FALSE;
 }
 
 static void tick_lobby_list_menu() {
-    const LobbyListState new_state = get_lobby_list_state();
-    if (lobby_list_last_state != new_state) {
-        lobby_list_refresh = (update_lobby_list() ? 24 : 8) * get_tickrate();
-        lobby_list_last_state = new_state;
-    }
+    if (get_lobby_list_state() == LLS_READY) {
+        update_lobby_list();
 
-    if (lobby_list_last_state == LLS_READY && lobby_list_refresh > 0) {
-        if (--lobby_list_refresh <= 0) {
+        if (until_lobby_list_refresh-- <= 0) {
             find_lobbies();
-            update_lobby_list();
-            lobby_list_last_state = get_lobby_list_state();
-
-            return;
+            until_lobby_list_refresh = 8 * get_tickrate();
         }
     }
 }
