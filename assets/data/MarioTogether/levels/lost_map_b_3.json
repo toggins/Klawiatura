@@ -258,26 +258,6 @@
         {
             "def": "Gray Block",
             "sprite": "tiles/block/gray",
-            "pos": [1344, 64, 20]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [1344, 96, 20]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [1376, 96, 20]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [1376, 64, 20]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
             "pos": [1376, 288, 20]
         },
         {
@@ -968,26 +948,6 @@
             "def": "Pipe Gray Middle",
             "sprite": "tiles/pipe/gray/v1",
             "pos": [2432, 384, 20]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [2912, 192, 20]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [2944, 192, 20]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [2976, 192, 20]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [3673, 192, 20]
         },
         {
             "def": "Lava Bottom",
@@ -2170,11 +2130,6 @@
         {
             "def": "Gray Block",
             "sprite": "tiles/block/gray",
-            "pos": [9469, 192, 20]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
             "pos": [9984, 256, 20]
         },
         {
@@ -2525,11 +2480,6 @@
         {
             "def": "Gray Block",
             "sprite": "tiles/block/gray",
-            "pos": [9789, 384, 20]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
             "pos": [9472, 384, 20]
         },
         {
@@ -2567,11 +2517,6 @@
             "def": "Rocks",
             "sprite": "scenery/rocks",
             "pos": [11200, 288, 61]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [3990, 192, 20]
         },
         {
             "def": "Gray Block",
@@ -2619,96 +2564,6 @@
             "pos": [2976, 224, 20]
         },
         {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [3673, 224, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [3008, 224, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [3103, 224, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [3388, 224, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [3483, 224, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [3578, 224, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [1056, 193, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [1151, 193, 20]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [1246, 192, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [9504, 384, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [9599, 384, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [9694, 384, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [9184, 192, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [9279, 192, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [9374, 192, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [3705, 192, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [3800, 192, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [3895, 192, 20]
-        },
-        {
             "def": "Rocks",
             "sprite": "scenery/rocks",
             "pos": [6080, 288, 61]
@@ -2722,16 +2577,6 @@
             "def": "Rocks",
             "sprite": "scenery/rocks",
             "pos": [1888, 384, 61]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [3198, 224, 20]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [3356, 224, 20]
         },
         {
             "def": "Gray Block",
@@ -2793,16 +2638,6 @@
             "def": "Rocks",
             "sprite": "scenery/rocks",
             "pos": [4256, 320, 61]
-        },
-        {
-            "def": "Gray Block",
-            "sprite": "tiles/block/gray",
-            "pos": [10367, 288, 20]
-        },
-        {
-            "def": "Bridge Gray",
-            "sprite": "tiles/bridge/gray",
-            "pos": [10272, 288, 20]
         },
         {
             "def": "Giant Cloud Back",
@@ -2891,18 +2726,344 @@
                 [127, 83, 83, 129],
                 [127, 83, 83, 129]
             ]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [10272, 288, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [10304, 288, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [10336, 288, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [10368, 288, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9504, 384, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9536, 384, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9568, 384, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9600, 384, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9632, 384, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9664, 384, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9696, 384, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9728, 384, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9760, 384, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9792, 384, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9472, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9184, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9216, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9248, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9280, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9312, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9344, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9376, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9408, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [9440, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3680, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3680, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3712, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3744, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3776, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3808, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3840, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3872, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3904, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3936, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3968, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3360, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3392, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3424, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3456, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3488, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3520, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3552, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3584, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3616, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3648, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3200, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3008, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3040, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3072, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3104, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3136, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [3168, 224, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [2912, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [2944, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [2976, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [4000, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [1056, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [1088, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [1120, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [1152, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [1184, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [1216, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [1248, 192, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [1344, 64, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [1376, 64, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [1376, 96, 20]
+        },
+        {
+            "def": "Gray Block",
+            "sprite": "tiles/block/gray",
+            "pos": [1344, 96, 20]
         }
     ],
     "collisions": [
-        {
-            "pos": [3673, 192],
-            "size": [1, 2],
-            "cell_size": [32, 32],
-            "cells": [
-                [0, 0, 1],
-                [0, 1, 1]
-            ]
-        },
         {
             "pos": [-32, -320],
             "size": [378, 25],
@@ -2957,10 +3118,6 @@
                 [33, 16, 1],
                 [33, 15, 1],
                 [33, 14, 1],
-                [43, 12, 1],
-                [43, 13, 1],
-                [44, 13, 1],
-                [44, 12, 1],
                 [44, 19, 1],
                 [45, 19, 1],
                 [44, 20, 1],
@@ -3082,9 +3239,6 @@
                 [83, 24, 1],
                 [84, 24, 1],
                 [85, 24, 1],
-                [92, 16, 1],
-                [93, 16, 1],
-                [94, 16, 1],
                 [135, 23, 1],
                 [144, 23, 1],
                 [145, 23, 1],
@@ -3364,42 +3518,74 @@
                 [143, 23, 1],
                 [143, 24, 1],
                 [136, 23, 1],
-                [136, 24, 1]
-            ]
-        },
-        {
-            "pos": [9184, 192],
-            "size": [3, 1],
-            "cell_size": [95, 16],
-            "cells": [
-                [0, 0, 1],
-                [1, 0, 1],
-                [2, 0, 1]
-            ]
-        },
-        {
-            "pos": [3705, 192],
-            "size": [3, 1],
-            "cell_size": [95, 16],
-            "cells": [
-                [0, 0, 1],
-                [1, 0, 1],
-                [2, 0, 1]
-            ]
-        },
-        {
-            "pos": [3356, 224],
-            "size": [1, 1],
-            "cell_size": [32, 32],
-            "cells": [[0, 0, 1]]
-        },
-        {
-            "pos": [9469, 192],
-            "size": [11, 7],
-            "cell_size": [32, 32],
-            "cells": [
-                [0, 0, 1],
-                [10, 6, 1]
+                [136, 24, 1],
+                [322, 19, 1],
+                [323, 19, 1],
+                [324, 19, 1],
+                [325, 19, 1],
+                [298, 22, 1],
+                [299, 22, 1],
+                [300, 22, 1],
+                [301, 22, 1],
+                [302, 22, 1],
+                [303, 22, 1],
+                [304, 22, 1],
+                [305, 22, 1],
+                [306, 22, 1],
+                [307, 22, 1],
+                [297, 16, 1],
+                [288, 16, 1],
+                [289, 16, 1],
+                [290, 16, 1],
+                [291, 16, 1],
+                [292, 16, 1],
+                [293, 16, 1],
+                [294, 16, 1],
+                [295, 16, 1],
+                [296, 16, 1],
+                [116, 16, 1],
+                [116, 17, 1],
+                [117, 16, 1],
+                [118, 16, 1],
+                [119, 16, 1],
+                [120, 16, 1],
+                [121, 16, 1],
+                [122, 16, 1],
+                [123, 16, 1],
+                [124, 16, 1],
+                [125, 16, 1],
+                [106, 17, 1],
+                [107, 17, 1],
+                [108, 17, 1],
+                [109, 17, 1],
+                [110, 17, 1],
+                [111, 17, 1],
+                [112, 17, 1],
+                [113, 17, 1],
+                [114, 17, 1],
+                [115, 17, 1],
+                [101, 17, 1],
+                [95, 17, 1],
+                [96, 17, 1],
+                [97, 17, 1],
+                [98, 17, 1],
+                [99, 17, 1],
+                [100, 17, 1],
+                [92, 16, 1],
+                [93, 16, 1],
+                [94, 16, 1],
+                [126, 16, 1],
+                [34, 16, 1],
+                [35, 16, 1],
+                [36, 16, 1],
+                [37, 16, 1],
+                [38, 16, 1],
+                [39, 16, 1],
+                [40, 16, 1],
+                [43, 12, 1],
+                [44, 12, 1],
+                [44, 13, 1],
+                [43, 13, 1]
             ]
         },
         {
@@ -3414,28 +3600,6 @@
                 [50, 0, 1],
                 [96, 2, 1]
             ]
-        },
-        {
-            "pos": [9504, 384],
-            "size": [3, 1],
-            "cell_size": [95, 16],
-            "cells": [
-                [0, 0, 1],
-                [1, 0, 1],
-                [2, 0, 1]
-            ]
-        },
-        {
-            "pos": [10272, 288],
-            "size": [1, 1],
-            "cell_size": [95, 16],
-            "cells": [[0, 0, 1]]
-        },
-        {
-            "pos": [3990, 192],
-            "size": [1, 1],
-            "cell_size": [32, 32],
-            "cells": [[0, 0, 1]]
         },
         {
             "pos": [7200, 352],
@@ -3468,27 +3632,6 @@
             ]
         },
         {
-            "pos": [3008, 224],
-            "size": [7, 1],
-            "cell_size": [95, 16],
-            "cells": [
-                [0, 0, 1],
-                [1, 0, 1],
-                [4, 0, 1],
-                [5, 0, 1],
-                [6, 0, 1]
-            ]
-        },
-        {
-            "pos": [1056, 193],
-            "size": [2, 1],
-            "cell_size": [95, 16],
-            "cells": [
-                [0, 0, 1],
-                [1, 0, 1]
-            ]
-        },
-        {
             "pos": [1600, 288],
             "size": [97, 9],
             "cell_size": [64, 32],
@@ -3518,21 +3661,6 @@
                 [96, 7, 1],
                 [96, 8, 1]
             ]
-        },
-        {
-            "pos": [1246, 192],
-            "size": [62, 2],
-            "cell_size": [32, 32],
-            "cells": [
-                [0, 0, 1],
-                [61, 1, 1]
-            ]
-        },
-        {
-            "pos": [10367, 288],
-            "size": [1, 1],
-            "cell_size": [32, 32],
-            "cells": [[0, 0, 1]]
         },
         {
             "pos": [6912, 256],
