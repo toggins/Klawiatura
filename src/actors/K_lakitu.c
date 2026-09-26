@@ -107,9 +107,9 @@ static void tick(GameActor* actor) {
             if (!ANY_FLAG(actor, FLG_LAKITU_FAST) && actor->pos.x < (nearest->pos.x + Int2Fx(100))
                 && actor->pos.x > (nearest->pos.x - Int2Fx(100)))
             {
-                if (actor->pos.x > nearest->pos.x && actor->vel.x < Int2Fx(-2))
+                if (actor->pos.x > nearest->pos.x && actor->vel.x < Int2Fx(-2) && nearest->vel.x >= Fx0)
                     actor->vel.x += Fx1;
-                if (actor->pos.x < nearest->pos.x && actor->vel.x > Int2Fx(4))
+                if (actor->pos.x < nearest->pos.x && actor->vel.x > Int2Fx(4) && nearest->vel.x <= Fx0)
                     actor->vel.x -= Fx1;
             }
         } else {
