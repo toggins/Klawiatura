@@ -217,15 +217,9 @@ static void tick_egg(GameActor* actor) {
     if (TOUCHING(actor, TOUCH_BOTTOM)) {
         GameActor* spiny = create_actor(ACT_SPINY, actor->pos);
         if (spiny != NULL) {
-            spiny->vel.x = ((gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP)) && !ANY_FLAG(actor, FLG_SPINY_GRAY))
-                               ? Int2Fx(2)
-                               : Fx1;
-            if (spiny->pos.x > nearest_player_pos(spiny->pos).x) {
-                spiny->vel.x = -spiny->vel.x;
+            if (spiny->pos.x > nearest_player_pos(spiny->pos).x)
                 FLAG_ON(spiny, FLG_X_FLIP);
-            }
-
-            FLAG_ON(spiny, FLG_ENEMY_ACTIVE | FLG_SPINY_HATCH | (actor->flags & (FLG_SPINY_GRAY | FLG_SPINY_TEMP)));
+            FLAG_ON(spiny, FLG_SPINY_HATCH | (actor->flags & (FLG_SPINY_GRAY | FLG_SPINY_TEMP)));
 
             align_interp(spiny, actor);
         }
