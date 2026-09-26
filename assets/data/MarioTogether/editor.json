@@ -75,21 +75,6 @@
             "sprite": "tiles/volcano/5",
             "depth": 20
         },
-        "Volcano Bottom Left": {
-            "type": "tile",
-            "sprite": "tiles/volcano/6",
-            "depth": 20
-        },
-        "Volcano Bottom": {
-            "type": "tile",
-            "sprite": "tiles/volcano/7",
-            "depth": 20
-        },
-        "Volcano Bottom Right": {
-            "type": "tile",
-            "sprite": "tiles/volcano/8",
-            "depth": 20
-        },
         "Gray Block": {
             "type": "tile",
             "sprite": "tiles/block/gray",
@@ -303,10 +288,7 @@
                         "Volcano Top Right",
                         "Volcano Left",
                         "Volcano Middle",
-                        "Volcano Right",
-                        "Volcano Bottom Left",
-                        "Volcano Bottom",
-                        "Volcano Bottom Right"
+                        "Volcano Right"
                     ]
                 },
                 {
