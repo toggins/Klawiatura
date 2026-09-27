@@ -2,12 +2,14 @@
 
 # Klawiatura
 
+[web]: https://mario.games.nonk.dev
+[blast]: https://nutblast.schwung.us
+
 <img align="right" src=".github/assets/icon-upscaled.png">
 
-> [!TIP]
-> Check out [the releases](https://github.com/toggins/Klawiatura/releases/latest) or [play in your browser](https://mario.games.nonk.dev) to get started.
-
 **Klawiatura** (a.k.a. **Mario Together**) is an enhanced port of Mario Forever 4.0, written in plain C.
+
+Check out [the releases](https://github.com/toggins/Klawiatura/releases/latest) or [**play in your browser**][web] to get started.
 
 ---
 
@@ -18,41 +20,42 @@
     <img src=".github/assets/screenshot4.png" width="48%" />
 </p>
 
----
+## Features
 
-### Features
-
-- Native support for Windows, Linux and Emscripten
+- **Online multiplayer with up to 8 players**
+- Native support for Windows, Linux, and [HTML5 in the browser][web]
 - Keyboard and gamepad support
+<!--
 - Customizable framerate
 - Basic mod system with custom worlds and levels
-- **Online multiplayer with up to 8 players**
+-->
+<!-- do we really need to mention ts^^?? -->
 
-### Changes
+## Restorations
 
-- Restorations:
-  - Original map screens (1.16.1 - 3.0)
-  - Checkpoints in main worlds (4.4+)
-  - Hammer Bro fights (5.08+)
-- Enhancements:
-  - Minor graphics and audio fixes
-  - Stereo sound panning
-  - Improved physics and interactions
+- Original map screens (1.16.1 - 3.0)
+- Checkpoints in main worlds (4.4+)
+- Hammer Bro fights (5.08+)
+
+## Enhancements
+
+- Stereo sound panning
+- Minor graphics and audio fixes
+- Improved physics and interactions
 
 ## Multiplayer
-
-> [!TIP]
-> **Discord integration is available for 64-bit binaries.** You can invite other players to your lobbies through Discord, as long as they can connect to the same server as you.
 
 > [!NOTE]
 > If you can't see other players in your lobby, check [NutBlast's troubleshooting section](https://nutblast.schwung.us/?tab=readme-ov-file#troubleshooting).
 
-Multiplayer is the main kicker of this project. You can host and find lobbies through NutBlast servers. Lobbies can hold up to 8 players. For custom servers, host a [NutBlaster](https://nutblast.schwung.us) and set your server address to it in the settings.
+Multiplayer is the main kicker of this project. You can host and find lobbies through NutBlast master-servers. Lobbies can hold up to 8 players. If you aren't satisfied with the public master-server instance, you can host your own [NutBlaster][blast] and set your server address to it in the settings.
 
-> [!IMPORTANT]
-> **Make sure your game's version and checksum match with other players you want to play with.** Your checksum is only affected by mods that have level and/or world files and the order in which they are loaded. Lobbies are filtered based on your game's version and checksum.
->
-> If you're going to update Klawiatura by overwriting your older build, **clear your data folder first** so you don't get any incorrect checksums.
+**Make sure your game's version and checksum match with other players you want to play with.** Your checksum is only affected by mods that have level and/or world files and the order in which they are loaded. Lobbies are filtered based on your game's version and checksum.
+
+If you're going to update Klawiatura by overwriting your older build, **clear your data folder first** so you don't get any incorrect checksums.
+
+> [!TIP]
+> **Discord integration is available for 64-bit Desktop builds.** You can invite other players to your lobbies through Discord, as long as they can connect to the same [NutBlaster][blast] as you.
 
 ## Launch options
 
@@ -95,8 +98,8 @@ The resulting binaries should now reside in `build` or `build/Release`, dependin
 
 Listing some of the things we learned the hard way that you should consider:
 
-1. On MSVC, only `RelWithDebInfo` and `Release` builds are available. CRT is also statically linked, so checking for memory leaks with [heob](https://github.com/ssbssa/heob) is not possible unless you build with GCC.
-2. On Emscripten, `Debug` and `RelWithDebInfo` builds may not work due to yyjson functions generating too many local variables.
+1. Under MSVC, only `RelWithDebInfo` and `Release` builds are available. CRT is also statically linked, so checking for memory leaks with [heob](https://github.com/ssbssa/heob) is not possible unless you build with GCC.
+2. Under Emscripten, `Debug` builds may be rejected by the browser due to yyjson functions generating too many local variables.
 
 ## Attribution
 
