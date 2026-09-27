@@ -79,8 +79,10 @@ static void tick(GameActor* actor) {
     }
 
     case LA_OUT: {
-        if (++VAL(actor, LAKITU_FRAME) >= 11)
+        if (++VAL(actor, LAKITU_FRAME) >= 11) {
             VAL(actor, LAKITU_ANIMATION) = LA_IDLE;
+            FLAG_ON(actor, FLG_LAKITU_CAME_OUT);
+        }
 
         break;
     }
@@ -196,8 +198,11 @@ static void tick(GameActor* actor) {
     {
         VAL(actor, LAKITU_ANIMATION) = LA_IN;
         VAL(actor, LAKITU_FRAME) = 0;
+        FLAG_OFF(actor, FLG_LAKITU_CAME_OUT);
     }
-    if (VAL(actor, LAKITU_THROW) >= throw_end && VAL(actor, LAKITU_ANIMATION) != LA_OUT) {
+    if (VAL(actor, LAKITU_THROW) >= throw_end && VAL(actor, LAKITU_ANIMATION) != LA_OUT
+        && !ANY_FLAG(actor, FLG_LAKITU_CAME_OUT))
+    {
         VAL(actor, LAKITU_ANIMATION) = LA_OUT;
         VAL(actor, LAKITU_FRAME) = 0;
     }
