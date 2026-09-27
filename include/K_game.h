@@ -577,6 +577,7 @@ const FVec2 get_player_view(const GamePlayer*);
 Bool in_any_view(const FVec2, Fixed, ViewEdgeFlags),
     in_player_view(const GamePlayer*, const FVec2, Fixed, ViewEdgeFlags);
 Bool below_nearest_bounds(const FVec2, Fixed), below_nearest_view(const FVec2, Fixed);
+Bool any_in_range(Fixed, Fixed);
 
 void collide_actor(GameActor*);
 SolidFlags touching_solid(const FRect, SolidFlags);

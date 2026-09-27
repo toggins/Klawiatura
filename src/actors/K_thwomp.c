@@ -66,9 +66,8 @@ static void tick(GameActor* actor) {
 
     VAL_TICK(actor, THWOMP_OVERLAP);
 
-    const FVec2 ppos = nearest_player_pos(actor->pos);
-    if (actor->pos.x < (ppos.x + Int2Fx(100)) && actor->pos.x > (ppos.x - Int2Fx(100))
-        && !ANY_FLAG(actor, FLG_THWOMP_FELL) && in_any_view(actor->pos, Int2Fx(-128), VEF_ALL))
+    if (any_in_range(actor->pos.x, Int2Fx(100)) && !ANY_FLAG(actor, FLG_THWOMP_FELL)
+        && in_any_view(actor->pos, Int2Fx(-128), VEF_ALL))
     {
         FLAG_ON(actor, FLG_THWOMP_FALL);
     }

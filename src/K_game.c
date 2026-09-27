@@ -2518,6 +2518,25 @@ Bool below_nearest_view(const FVec2 pos, Fixed edge) {
     return pos.y > (found ? (view.end.y + edge) : (level_info->bounds.end.y + edge));
 }
 
+Bool any_in_range(Fixed x, Fixed range) {
+    ActorID num_pawns = 0;
+    for (PlayerID i = 0; i < game_context.num_players; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn == NULL || pawn->type != ACT_PLAYER)
+            continue;
+
+        ++num_pawns;
+        if (x < (pawn->pos.x + range) && x > (pawn->pos.x - range))
+            return TRUE;
+    }
+
+    return (num_pawns > 0) ? FALSE : (x < range && x > -range);
+}
+
 void collide_actor(GameActor* actor) {
     if (actor == NULL || actor->sprout > 0)
         return;

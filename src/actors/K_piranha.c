@@ -79,9 +79,7 @@ static void tick(GameActor* actor) {
     }
 
     // 665
-    const FVec2 ppos = nearest_player_pos(actor->pos);
-    const Fixed range = ANY_FLAG(actor, FLG_PIRANHA_RED) ? Int2Fx(40) : Int2Fx(80);
-    if (actor->pos.x < (ppos.x + range) && actor->pos.x > (ppos.x - range))
+    if (any_in_range(actor->pos.x, ANY_FLAG(actor, FLG_PIRANHA_RED) ? Int2Fx(40) : Int2Fx(80)))
         FLAG_ON(actor, FLG_PIRANHA_BLOCKED);
 
     // 666
