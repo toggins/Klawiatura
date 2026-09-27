@@ -11,14 +11,10 @@
 
 Check out [the releases](https://github.com/toggins/Klawiatura/releases/latest) or [**play in your browser**][web] to get started.
 
----
-
-<p align="center">
-    <img src=".github/assets/screenshot1.png" width="48%" />
-    <img src=".github/assets/screenshot2.png" width="48%" />
-    <img src=".github/assets/screenshot3.png" width="48%" />
-    <img src=".github/assets/screenshot4.png" width="48%" />
-</p>
+|||
+|:-:|:-:|
+|<img src=".github/assets/screenshot1.png">|<img src=".github/assets/screenshot2.png">|
+|<img src=".github/assets/screenshot3.png">|<img src=".github/assets/screenshot4.png">|
 
 ## Features
 
