@@ -80,6 +80,7 @@ static void create(GameActor* actor) {
     VAL(actor, BOWSER_ATTACK_SPEED) = Fx1;
     VAL(actor, BOWSER_PROJECTILE_SPEED) = Fx1;
     VAL(actor, BOWSER_HURT_DURATION) = 100;
+    VAL(actor, BOWSER_GRAVITY) = 8738;
 
     VAL(actor, BOWSER_Y) = actor->pos.y;
 }
@@ -245,7 +246,7 @@ static void tick(GameActor* actor) {
 
     // 811 (modified)
     // Moved above 808 for full jump speed on the first frame.
-    actor->vel.y += 8738;
+    actor->vel.y += VAL(actor, BOWSER_GRAVITY);
 
     // 808 (modified)
     if (VAL(actor, BOWSER_JUMP) == 10 && TOUCHING(actor, TOUCH_BOTTOM)) {
@@ -260,7 +261,7 @@ static void tick(GameActor* actor) {
     if (actor->pos.x < ppos.x)
         FLAG_OFF(actor, FLG_X_FLIP);
 
-    // 817
+    // 817 (modified)
     if (ANY_FLAG(actor, FLG_BOWSER_ACTIVE)) {
         if (ANY_FLAG(actor, FLG_BOWSER_DEVASTATOR | FLG_BOWSER_CHARGE)) {
             if (VAL(actor, BOWSER_ATTACK) <= 150 && VAL(actor, BOWSER_ANIMATION) != BA_FIRE
@@ -269,7 +270,8 @@ static void tick(GameActor* actor) {
                 VAL(actor, BOWSER_ATTACK) += VAL(actor, BOWSER_ATTACK_CHANCE);
             }
         } else {
-            VAL(actor, BOWSER_ATTACK) += rng(VAL(actor, BOWSER_ATTACK_CHANCE));
+            if (VAL(actor, BOWSER_ATTACK_CHANCE) <= 5 || VAL(actor, BOWSER_ANIMATION) != BA_FIRE)
+                VAL(actor, BOWSER_ATTACK) += rng(VAL(actor, BOWSER_ATTACK_CHANCE));
         }
     }
 

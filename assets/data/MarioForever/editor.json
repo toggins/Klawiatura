@@ -1503,6 +1503,12 @@
                 {
                     "name": "Secret",
                     "index": 10
+                },
+                {
+                    "name": "Gravity",
+                    "type": "fixed",
+                    "index": 11,
+                    "default": 8738
                 }
             ],
             "flags": [
