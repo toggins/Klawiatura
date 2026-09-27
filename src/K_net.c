@@ -737,8 +737,11 @@ void peers_to_players() {
     spread_reliable_packet(PCH_LOBBY, buffer.data, buffer_tell(buffer));
 }
 
-static void net_send(GekkoNetAddress* gn_addr, const char* data, int len) {
-    NutBlast_SendTo(PCH_GAME, *(NetID*)gn_addr->data, data, len);
+static void net_send(GekkoNetAddress* gn_addr, const char* data, int size) {
+    if (size) {
+        const NetID to = *(NetID*)gn_addr->data;
+        NutBlast_Send((NutBlast_SendOptions){.channel = PCH_GAME, .to = to, .data = data, .size = size});
+    }
 }
 
 static GekkoNetResult** net_receive(int* pcount) {
@@ -861,11 +864,11 @@ Buffer net_buffer() {
 }
 
 void send_packet(PacketChannel channel, NetID pid, const Uint8* data, size_t size) {
-    NutBlast_SendTo(channel, pid, (char*)data, (int)size);
+    NutBlast_Send((NutBlast_SendOptions){.channel = channel, .to = pid, .data = data, .size = size});
 }
 
 void send_reliable_packet(PacketChannel channel, NetID pid, const Uint8* data, size_t size) {
-    NutBlast_SendReliablyTo(channel, pid, (char*)data, (int)size);
+    NutBlast_Send((NutBlast_SendOptions){.channel = channel, .to = pid, .data = data, .size = size, .reliable = true});
 }
 
 void spread_packet(PacketChannel channel, const Uint8* data, size_t size) {
