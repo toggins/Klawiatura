@@ -94,9 +94,24 @@ static void tick(GameActor* actor) {
         return;
     }
 
-    const GameActor* nearest = nearest_player_actor(actor->pos);
+    const Fixed lend = level_info->size.x - Int2Fx(1000);
+
+    const GameActor* nearest = NULL;
+    for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn != NULL && pawn->type == ACT_PLAYER
+            && (nearest == NULL || nearest->pos.x >= lend || nearest->pos.x < pawn->pos.x))
+        {
+            nearest = pawn;
+        }
+    }
+
     if (nearest != NULL) {
-        if (nearest->pos.x < (level_info->size.x - Int2Fx(1000))) {
+        if (nearest->pos.x < lend) {
             if ((gamestate()->time % 5) == 0) {
                 if (actor->pos.x > (nearest->pos.x + Int2Fx(50)) && actor->vel.x > -VAL(actor, LAKITU_SPEED))
                     actor->vel.x -= Fx1;
@@ -139,7 +154,7 @@ static void tick(GameActor* actor) {
         }
     }
 
-    if (((nearest == NULL) ? Fx0 : nearest->pos.x) < (level_info->size.x - Int2Fx(1000))) {
+    if (((nearest == NULL) ? Fx0 : nearest->pos.x) < lend) {
         if (in_any_view(actor->pos, Fx0, VEF_ALL)) {
             if (VAL(actor, LAKITU_THROW_SPEED) > 0)
                 VAL(actor, LAKITU_THROW) += VAL(actor, LAKITU_THROW_SPEED);
