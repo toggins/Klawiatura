@@ -140,6 +140,64 @@ const ActorTable TAB_FAKE_BRICK = {
     .collide = collide_fake_brick,
 };
 
+/* =======
+   SPAWNER
+   ======= */
+
+static void load_spawner_special(const GameActor* actor) {
+    load_actor(VAL(actor, HAZARD_STATE));
+}
+
+static void create_spawner(GameActor* actor) {
+    actor->box.end.x = actor->box.end.y = Int2Fx(40);
+
+    VAL(actor, HAZARD_STATE) = ACT_SPINY;
+    VAL(actor, HAZARD_STATE2) = VAL(actor, HAZARD_OVERLAP) = 2;
+    FLAG_ON(actor, FLG_HAZARD_ACTIVE);
+    FLAG_OFF(actor, FLG_VISIBLE);
+}
+
+static void tick_spawner(GameActor* actor) {
+    VAL_TICK(actor, HAZARD_OVERLAP);
+
+    const FVec2 center = Vadd(actor->pos, (FVec2){Fmul(30882, actor->box.end.x), Fmul(62259, actor->box.end.y)});
+    if (!in_any_view(center, Int2Fx(-300), VEF_ALL) && VAL(actor, HAZARD_OVERLAP) <= 0 && (gamestate()->time % 50) == 0)
+        create_actor(VAL(actor, HAZARD_STATE), center);
+}
+
+static void collide_spawner(GameActor* actor, GameActor* from) {
+    if (from->type == VAL(actor, HAZARD_STATE))
+        VAL(actor, HAZARD_OVERLAP) = VAL(actor, HAZARD_STATE2);
+}
+
+const ActorTable TAB_SPAWNER = {
+    .load_special = load_spawner_special,
+    .create = create_spawner,
+    .tick = tick_spawner,
+    .collide = collide_spawner,
+};
+
+/* ====
+   LOOP
+   ==== */
+
+static void create_loop(GameActor* actor) {
+    actor->box.end.x = actor->box.end.y = Int2Fx(32);
+
+    VAL(actor, HAZARD_STATE) = Int2Fx(640);
+    FLAG_OFF(actor, FLG_VISIBLE);
+}
+
+static void collide_loop(GameActor* actor, GameActor* from) {
+    if (from->type == ACT_PLAYER)
+        move_actor(from, Vsub(from->pos, (FVec2){VAL(actor, HAZARD_STATE), Fx0}));
+}
+
+const ActorTable TAB_LOOP = {
+    .create = create_loop,
+    .collide = collide_loop,
+};
+
 /* =============
    SPIKE CEILING
    ============= */
