@@ -2420,7 +2420,16 @@ Bool in_any_view(const FVec2 pos, Fixed edge, ViewEdgeFlags flags) {
 
     for (PlayerID i = 0; i < game_context.num_players; i++) {
         const GamePlayer* player = get_player(i);
-        if (player != NULL && cbox_in_view(pos, get_player_cbox(player, edge), flags))
+        if (player == NULL)
+            continue;
+
+        if (game_context.num_players > 1 && get_actor(player->actor) == NULL
+            && (!in_blocking_sequence() || get_sequence()->activator != player->id))
+        {
+            continue;
+        }
+
+        if (cbox_in_view(pos, get_player_cbox(player, edge), flags))
             return TRUE;
     }
 
@@ -2430,6 +2439,12 @@ Bool in_any_view(const FVec2 pos, Fixed edge, ViewEdgeFlags flags) {
 Bool in_player_view(const GamePlayer* player, const FVec2 pos, Fixed edge, ViewEdgeFlags flags) {
     if (player == NULL)
         return FALSE;
+
+    if (game_context.num_players > 1 && get_actor(player->actor) == NULL
+        && (!in_blocking_sequence() || get_sequence()->activator != player->id))
+    {
+        return FALSE;
+    }
 
     const GameActor* autoscroll = get_actor(game_state->autoscroll);
     return cbox_in_view(
