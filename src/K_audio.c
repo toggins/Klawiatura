@@ -462,6 +462,8 @@ void tick_audio_state(Bool rollback) {
         }
     }
 
+    const float inc = 1000.f / (float)get_tickrate();
+
     for (size_t i = 0; i < MAX_STATE_SOUNDS; i++) {
         SoundChannel* dschan = &desired_audio_state->sounds[i];
 
@@ -469,7 +471,6 @@ void tick_audio_state(Bool rollback) {
         if (sound == NULL)
             continue;
 
-        const float inc = 1000.f / (float)get_tickrate();
         dschan->offset += inc;
         if (dschan->offset > ((float)sound->length + inc))
             dschan->sound_key = 0;
@@ -490,11 +491,11 @@ void tick_audio_state(Bool rollback) {
             dtchan->volume[0] = glm_lerp(dtchan->volume[1], dtchan->volume[2], dtchan->time[0] / dtchan->time[1]);
         }
 
-        dtchan->offset += 1000.f / (float)get_tickrate();
+        dtchan->offset += inc;
         if (dtchan->flags & PLAY_LOOPING)
             while (dtchan->offset >= (float)track->loop[1])
                 dtchan->offset = (float)track->loop[0] + (dtchan->offset - (float)track->loop[1]);
-        else if (dtchan->offset >= (float)track->length)
+        else if (dtchan->offset >= ((float)track->length + inc))
             dtchan->track_key = 0;
     }
 }
