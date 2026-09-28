@@ -18,6 +18,13 @@
             "max_scale": [32767, 480],
             "tile": [true, true]
         },
+        "Cave Background 2": {
+            "type": "background",
+            "sprite": "backgrounds/cave2",
+            "depth": 190,
+            "scalable": true,
+            "tile": [true, true]
+        },
         "Cliff Background": {
             "type": "background",
             "sprite": "backgrounds/cliff",
@@ -146,6 +153,26 @@
         "Pipe Green Right": {
             "type": "tile",
             "sprite": "tiles/pipe/green/h2",
+            "depth": 20
+        },
+        "Fat Pipe Green Left": {
+            "type": "tile",
+            "sprite": "tiles/pipe/green/fat/h0",
+            "depth": 20
+        },
+        "Fat Pipe Green Middle 2": {
+            "type": "tile",
+            "sprite": "tiles/pipe/green/fat/h1",
+            "depth": 20
+        },
+        "Fat Pipe Green Right": {
+            "type": "tile",
+            "sprite": "tiles/pipe/green/fat/h2",
+            "depth": 20
+        },
+        "Fat Pipe Green Left Connected": {
+            "type": "tile",
+            "sprite": "tiles/pipe/green/fat/hc0",
             "depth": 20
         },
         "Pipe Purple Top": {
@@ -1779,6 +1806,25 @@
             "id": 89,
             "sprite": "enemies/thwomp"
         },
+        "Spawner": {
+            "type": "actor",
+            "id": 115,
+            "sprite": "editor/spawner",
+            "scalable": true,
+            "values": [
+                {
+                    "name": "Type",
+                    "index": 0,
+                    "type": "actor",
+                    "default": 74
+                },
+                {
+                    "name": "Cooldown",
+                    "index": 1,
+                    "default": 2
+                }
+            ]
+        },
         "Electric Coral": {
             "type": "actor",
             "id": 133,
@@ -1792,6 +1838,7 @@
             "items": [
                 "Gradient Background",
                 "Cave Background",
+                "Cave Background 2",
                 "Cliff Background",
                 "Underwater Background",
                 "Castle Background",
@@ -1835,7 +1882,8 @@
                                 "Pipe Green Connect Left",
                                 "Fat Pipe Green Left",
                                 "Fat Pipe Green Middle 2",
-                                "Fat Pipe Green Right"
+                                "Fat Pipe Green Right",
+                                "Fat Pipe Green Left Connected"
                             ]
                         },
                         {
@@ -2075,7 +2123,8 @@
                 "Bowser",
                 "Spiny",
                 "Lakitu",
-                "Thwomp"
+                "Thwomp",
+                "Spawner"
             ]
         },
         {
