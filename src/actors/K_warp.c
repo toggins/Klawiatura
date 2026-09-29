@@ -90,7 +90,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
     switch (VAL(actor, WARP_ANGLE)) {
     default: {
-        if (!TOUCHING(from, TOUCH_RIGHT) || !ANY_INPUT(player, GI_RIGHT) || from->pos.y > (actor->pos.y + Fx1))
+        if (!ANY_INPUT(player, GI_RIGHT) || from->pos.y >= (actor->pos.y + Fx1))
             return;
 
         move_actor(from, Vadd(actor->pos, (FVec2){actor->box.end.x - from->box.end.x, Fx0}));
@@ -98,7 +98,7 @@ static void collide(GameActor* actor, GameActor* from) {
     }
 
     case 1: {
-        if (!TOUCHING(from, TOUCH_TOP) || !ANY_INPUT(player, GI_UP))
+        if (!ANY_INPUT(player, GI_UP))
             return;
 
         move_actor(from, Vadd(actor->pos, (FVec2){Fx0, actor->box.start.y - from->box.start.y}));
@@ -106,7 +106,7 @@ static void collide(GameActor* actor, GameActor* from) {
     }
 
     case 2: {
-        if (!TOUCHING(from, TOUCH_LEFT) || !ANY_INPUT(player, GI_LEFT) || from->pos.y > (actor->pos.y + Fx1))
+        if (!ANY_INPUT(player, GI_LEFT) || from->pos.y >= (actor->pos.y + Fx1))
             return;
 
         move_actor(from, Vadd(actor->pos, (FVec2){actor->box.start.x - from->box.start.x, Fx0}));
@@ -114,7 +114,7 @@ static void collide(GameActor* actor, GameActor* from) {
     }
 
     case 3: {
-        if (!TOUCHING(from, TOUCH_BOTTOM) || !ANY_INPUT(player, GI_DOWN))
+        if (!ANY_INPUT(player, GI_DOWN))
             return;
 
         move_actor(from, Vadd(actor->pos, (FVec2){Fx0, actor->box.end.y - from->box.end.y}));
