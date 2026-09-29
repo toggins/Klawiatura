@@ -189,8 +189,11 @@ static void create_loop(GameActor* actor) {
 }
 
 static void collide_loop(GameActor* actor, GameActor* from) {
-    if (from->type == ACT_PLAYER)
+    if (from->type == ACT_PLAYER) {
         move_actor(from, Vsub(from->pos, (FVec2){VAL(actor, HAZARD_STATE), Fx0}));
+
+        skip_interp(from);
+    }
 }
 
 const ActorTable TAB_LOOP = {
