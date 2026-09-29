@@ -46,6 +46,13 @@
             "max_scale": [32767, 480],
             "tile": [true, false]
         },
+        "Castle Loop Background": {
+            "type": "background",
+            "sprite": "backgrounds/castle_loop",
+            "depth": 189,
+            "max_scale": [32767, 480],
+            "tile": [true, false]
+        },
         "Starland Background": {
             "type": "background",
             "sprite": "backgrounds/starland",
@@ -1154,6 +1161,20 @@
             "id": 63,
             "sprite": "markers/spring"
         },
+        "Loop": {
+            "type": "actor",
+            "id": 85,
+            "sprite": "editor/loop",
+            "scalable": true,
+            "values": [
+                {
+                    "name": "Offset",
+                    "index": 0,
+                    "type": "fixed",
+                    "default": 41943040
+                }
+            ]
+        },
         "Spike Ceiling": {
             "type": "actor",
             "id": 132,
@@ -1842,6 +1863,7 @@
                 "Cliff Background",
                 "Underwater Background",
                 "Castle Background",
+                "Castle Loop Background",
                 "Starland Background",
                 "Block Background"
             ]
@@ -2150,6 +2172,7 @@
                 "Goomba Party",
                 "Sink",
                 "Spring",
+                "Loop",
                 "Spike Ceiling"
             ]
         }
