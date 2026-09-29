@@ -1837,8 +1837,8 @@ void set_view_player(const GamePlayer* player) {
     view_player = player->id;
 
     if (get_actor(game_state->autoscroll) == NULL) {
-        videostate()->camera.pos
-            = Vclamp(player->pos, Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
+        videostate()->camera.pos = Vclamp(Vadd(player->pos, (FVec2){player->xscroll + player->current_quake, Fx0}),
+            Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
     }
 }
 /// !!! CLIENT-SIDE !!!
