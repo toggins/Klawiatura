@@ -3923,7 +3923,7 @@
         {
             "def": "Hill",
             "sprite": "scenery/hill",
-            "pos": [5856, 320, 61]
+            "pos": [5851, 320, 61]
         },
         {
             "def": "Hill",
@@ -4026,6 +4026,11 @@
             "def": "Castle Top",
             "sprite": "scenery/castle/top",
             "pos": [10856, 64, 35]
+        },
+        {
+            "def": "Hill",
+            "sprite": "scenery/hill",
+            "pos": [5243, 320, 61]
         }
     ],
     "collisions": [
