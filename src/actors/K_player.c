@@ -332,13 +332,22 @@ static void update_animation(GameActor* actor) {
         return;
     }
 
-    if (Fabs(actor->vel.x) >= 8192 || get_actor(VAL(actor, PLAYER_WARP)) != NULL
-        || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT))
-    {
+    if (Fabs(actor->vel.x) >= 8192) {
         VAL(actor, PLAYER_ANIMATION) = PF_WALK;
         VAL(actor, PLAYER_FRAME) += Fclamp(Fdiv(Fabs(actor->vel.x), 819200), 7864, 31457);
 
         return;
+    } else {
+        const GameActor* warp = get_actor(VAL(actor, PLAYER_WARP));
+        if ((warp != NULL && (VAL(warp, WARP_ANGLE) == 0 || VAL(warp, WARP_ANGLE) == 2))
+            || (ANY_FLAG(actor, FLG_PLAYER_WARP_OUT)
+                && (VAL(actor, PLAYER_WARP_OUT_ANGLE) == 0 || VAL(actor, PLAYER_WARP_OUT_ANGLE) == 2)))
+        {
+            VAL(actor, PLAYER_ANIMATION) = PF_WALK;
+            VAL(actor, PLAYER_FRAME) += 7864;
+
+            return;
+        }
     }
 
     VAL(actor, PLAYER_ANIMATION) = PF_IDLE;
@@ -389,7 +398,7 @@ static void tick(GameActor* actor) {
         return;
     }
 
-    // DECLARE HERE TO BE USED AFTER `t_skip_physics`
+    // DECLARE HERE TO BE USED AFTER `skip_physics`
     const GameState* game_state = gamestate();
     const GameActor *warp = get_actor(VAL(actor, PLAYER_WARP)), *autoscroll = get_actor(game_state->autoscroll),
                     *water = get_actor(game_state->water);
