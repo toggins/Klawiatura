@@ -2537,7 +2537,7 @@ Bool below_nearest_view(const FVec2 pos, Fixed edge) {
     return pos.y > (found ? (view.end.y + edge) : (level_info->bounds.end.y + edge));
 }
 
-Bool any_in_range(Fixed x, Fixed range) {
+Bool any_in_range(const FVec2 range) {
     ActorID num_pawns = 0;
     for (PlayerID i = 0; i < game_context.num_players; i++) {
         const GamePlayer* player = get_player(i);
@@ -2549,11 +2549,11 @@ Bool any_in_range(Fixed x, Fixed range) {
             continue;
 
         ++num_pawns;
-        if (x < (pawn->pos.x + range) && x > (pawn->pos.x - range))
+        if (range.x < (pawn->pos.x + range.y) && range.x > (pawn->pos.x - range.y))
             return TRUE;
     }
 
-    return (num_pawns > 0) ? FALSE : (x < range && x > -range);
+    return (num_pawns > 0) ? FALSE : (range.x < range.y && range.x > -range.y);
 }
 
 void collide_actor(GameActor* actor) {

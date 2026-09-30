@@ -79,7 +79,7 @@ static void tick(GameActor* actor) {
     }
 
     // 665
-    if (any_in_range(actor->pos.x, ANY_FLAG(actor, FLG_PIRANHA_RED) ? Int2Fx(40) : Int2Fx(80)))
+    if (any_in_range((FVec2){actor->pos.x, ANY_FLAG(actor, FLG_PIRANHA_RED) ? Int2Fx(40) : Int2Fx(80)}))
         FLAG_ON(actor, FLG_PIRANHA_BLOCKED);
 
     // 666

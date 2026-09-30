@@ -89,7 +89,7 @@ static void create_fake_brick(GameActor* actor) {
 
 static void tick_fake_brick(GameActor* actor) {
     if (!ANY_FLAG(actor, FLG_HAZARD_ACTIVE)) {
-        if (any_in_range(actor->pos.x, Int2Fx(80))) {
+        if (any_in_range((FVec2){actor->pos.x, Int2Fx(80)})) {
             FLAG_ON(actor, FLG_HAZARD_ACTIVE);
 
             play_state_sound("stun", PLAY_POS, A_ACTOR(actor));

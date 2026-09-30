@@ -118,7 +118,7 @@ static void tick_bill_blaster(GameActor* actor) {
     if ((game_state->time % 10) == 0)
         FLAG_OFF(actor, FLG_ARTILLERY_BLOCKED);
 
-    if (any_in_range(actor->pos.x, Int2Fx(80)))
+    if (any_in_range((FVec2){actor->pos.x, Int2Fx(80)}))
         FLAG_ON(actor, FLG_ARTILLERY_BLOCKED);
 
     if (!ANY_FLAG(actor, FLG_ARTILLERY_BLOCKED) && in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))

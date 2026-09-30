@@ -66,7 +66,7 @@ static void tick(GameActor* actor) {
 
     VAL_TICK(actor, THWOMP_OVERLAP);
 
-    if (any_in_range(actor->pos.x, Int2Fx(100)) && !ANY_FLAG(actor, FLG_THWOMP_FELL)
+    if (any_in_range((FVec2){actor->pos.x, Int2Fx(100)}) && !ANY_FLAG(actor, FLG_THWOMP_FELL)
         && in_any_view(actor->pos, Int2Fx(-128), VEF_ALL))
     {
         FLAG_ON(actor, FLG_THWOMP_FALL);
