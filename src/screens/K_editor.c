@@ -1255,11 +1255,11 @@ static void draw() {
             const float cx1 = ecamera->pos[0], cy1 = ecamera->pos[1], cx2 = cx1 + cw, cy2 = cy1 + ch;
 
             batch_color(B_U4(0, 0, 0, 64));
-            for (float i = SDL_floorf(cx1 / gsize) * gsize; i <= cx2; i += gsize) {
+            for (Sint32 i = (Sint32)(SDL_floorf(cx1 / gsize) * gsize); i <= (Sint32)cx2; i += (Sint32)gsize) {
                 batch_pos(B_F3_XY(i, cy1 - gsize));
                 batch_rectangle(NULL, B_F2(ecamera->zoom, ch + gsize));
             }
-            for (float i = SDL_floorf(cy1 / gsize) * gsize; i <= cy2; i += gsize) {
+            for (Sint32 i = (Sint32)(SDL_floorf(cy1 / gsize) * gsize); i <= (Sint32)cy2; i += (Sint32)gsize) {
                 batch_pos(B_F3_XY(cx1 - gsize, i));
                 batch_rectangle(NULL, B_F2(cw + gsize, ecamera->zoom));
             }

@@ -27,7 +27,7 @@
 
 #define HARD_BATCH_FUNC(type, state)                                                                                   \
     void batch_##state(type state) {                                                                                   \
-        if (batch.state != state)                                                                                      \
+        if (batch.state != (state))                                                                                    \
             submit_batch();                                                                                            \
                                                                                                                        \
         batch.state = state;                                                                                           \

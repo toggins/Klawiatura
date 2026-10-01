@@ -10,8 +10,8 @@
 
 #define A_PAN(pan) ((float[2]){pan, 0.f})
 #define A_XY(x, y) ((float[2]){x, y})
-#define A_FVEC2(fvec) A_XY(Fx2Float(fvec.x), Fx2Float(fvec.y))
-#define A_ACTOR(actor) A_FVEC2(actor->pos)
+#define A_FVEC2(fvec) A_XY(Fx2Float((fvec).x), Fx2Float((fvec).y))
+#define A_ACTOR(actor) A_FVEC2((actor)->pos)
 
 typedef struct {
     AssetBase base;
