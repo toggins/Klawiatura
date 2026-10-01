@@ -1,3 +1,4 @@
+#include "K_cmd.h"
 #include "K_game.h"
 #include "K_string.h"
 #include "K_tick.h"
@@ -47,6 +48,7 @@ const ActorTable TAB_BUSH = {
 
 static void load_cloud() {
     load_sprite_num("scenery/cloud/%u", 3, AKL_NEVER);
+    load_sprite("effects/glow", AKL_NEVER);
 }
 
 static void create_cloud(GameActor* actor) {
@@ -75,6 +77,13 @@ static void tick_cloud(GameActor* actor) {
 
 static void draw_cloud(const GameActor* actor) {
     batch_reset();
+
+    if (CLIENT.extra_effects) {
+        batch_offset(B_F3_XY(-31.f, -25.f));
+        draw_actor(actor, "effects/glow", FALSE);
+        batch_offset(B_F3_0);
+    }
+
     switch (VAL(actor, SCENERY_ANIMATION)) {
     default:
         break;
@@ -101,6 +110,7 @@ const ActorTable TAB_CLOUD = {
 
 static void load_clouds() {
     load_sprite("scenery/clouds", AKL_NEVER);
+    load_sprite("effects/clouds_glow", AKL_NEVER);
 }
 
 static void draw_clouds(const GameActor* actor) {
@@ -110,6 +120,10 @@ static void draw_clouds(const GameActor* actor) {
     batch_pos(B_F3(ax, ay, Fx2Float(actor->depth)));
     batch_tile(B_B2(TRUE, FALSE));
     const Sint32 w = Fx2Int(levelinfo()->size.x) + 128;
+
+    if (CLIENT.extra_effects)
+        batch_rectangle("effects/clouds_glow", B_F2(w, 74.f));
+
     batch_rectangle("scenery/clouds", B_F2(w, 64.f));
     batch_tile(B_B2_FALSE);
 }

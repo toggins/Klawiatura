@@ -84,6 +84,7 @@ static void set_height(int height) {
 }
 
 CVAR(texture_filter, Bool)
+CVAR(extra_effects, Bool)
 CVAR(audio_in_background, Bool)
 
 #undef CVAR
@@ -103,6 +104,7 @@ static const ConfigOption OPTIONS[] = {
     CVAR(vsync, bool),
 #endif
     CVAR(texture_filter, bool),
+    CVAR(extra_effects, bool),
     CVAR(volume, float),
     CVAR(sound_volume, float),
     CVAR(music_volume, float),
