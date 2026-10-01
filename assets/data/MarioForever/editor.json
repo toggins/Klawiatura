@@ -257,6 +257,11 @@
             "sprite": "tiles/brick/small",
             "depth": 20
         },
+        "Bridge Red": {
+            "type": "tile",
+            "sprite": "tiles/bridge/red",
+            "depth": 20
+        },
         "Bridge Gray": {
             "type": "tile",
             "sprite": "tiles/bridge/gray",
@@ -1151,6 +1156,25 @@
                 }
             ]
         },
+        "Water Trigger": {
+            "type": "actor",
+            "id": 14,
+            "sprite": "editor/water_trigger",
+            "scalable": true,
+            "values": [
+                {
+                    "name": "Target Y",
+                    "index": 0,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Target Speed",
+                    "index": 1,
+                    "type": "fixed",
+                    "default": 65536
+                }
+            ]
+        },
         "Sink": {
             "type": "actor",
             "id": 58,
@@ -1641,6 +1665,10 @@
                 {
                     "name": "Jump",
                     "index": 8
+                },
+                {
+                    "name": "7-3 Spawner",
+                    "index": 9
                 }
             ]
         },
@@ -1660,6 +1688,26 @@
             "type": "actor",
             "id": 86,
             "sprite": "enemies/cheep/spiky/0"
+        },
+        "Cheep Green": {
+            "type": "actor",
+            "id": 87,
+            "sprite": "enemies/cheep/green/0",
+            "values": [
+                {
+                    "name": "Speed",
+                    "index": 0,
+                    "type": "fixed",
+                    "default": 122880
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2,
+                    "default": true
+                }
+            ]
         },
         "Bro": {
             "type": "actor",
@@ -1932,7 +1980,7 @@
                 },
                 {
                     "name": "Bridge",
-                    "items": ["Bridge Gray", "Bridge Purple"]
+                    "items": ["Bridge Red", "Bridge Gray", "Bridge Purple"]
                 },
                 {
                     "name": "Sand",

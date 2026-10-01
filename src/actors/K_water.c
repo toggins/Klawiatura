@@ -20,7 +20,7 @@ static void load() {
 static void create(GameActor* actor) {
     actor->depth = Int2Fx(-100);
 
-    VAL(actor, WATER_TO) = actor->pos.y;
+    VAL(actor, WATER_TO) = VAL(actor, WATER_Y) = actor->pos.y;
 
     GameState* game_state = gamestate();
     GameActor* water = get_actor(game_state->water);
@@ -39,7 +39,7 @@ static void tick(GameActor* actor) {
     if (actor->pos.y == VAL(actor, WATER_TO))
         return;
 
-    const Fixed move = ((actor->pos.y < VAL(actor, WATER_TO)) ? -VAL(actor, WATER_SPEED) : VAL(actor, WATER_SPEED));
+    const Fixed move = ((actor->pos.y > VAL(actor, WATER_TO)) ? -VAL(actor, WATER_SPEED) : VAL(actor, WATER_SPEED));
     move_actor(actor, (Fabs((actor->pos.y + move) - VAL(actor, WATER_TO)) <= VAL(actor, WATER_SPEED))
                           ? (FVec2){actor->pos.x, VAL(actor, WATER_TO)}
                           : Vadd(actor->pos, (FVec2){Fx0, move}));
@@ -88,26 +88,57 @@ static void load_trigger() {
 
 static void create_trigger(GameActor* actor) {
     actor->box.end.x = actor->box.end.y = Int2Fx(32);
+
+    VAL(actor, WATER_TO) = actor->pos.y;
+    VAL(actor, WATER_SPEED) = Fx1;
 }
 
-static void collide_trigger(GameActor* actor, GameActor* other) {
-    if (other->type != ACT_PLAYER)
+static void tick_trigger(GameActor* actor) {
+    VAL_TICK(actor, WATER_OVERLAP);
+
+    if (!in_any_view(Rcenter(Radd(actor->box, actor->pos)), Int2Fx(-32), VEF_ALL))
         return;
 
-    GameActor* water = get_actor(gamestate()->water);
-    if (water == NULL
-        || (VAL(water, WATER_TO) == VAL(actor, WATER_TO) && VAL(water, WATER_SPEED) == VAL(actor, WATER_SPEED)))
-    {
-        return;
+    const PlayerID n = gamecontext()->num_players;
+    for (PlayerID i = 0; i < n; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn == NULL || pawn->type != ACT_PLAYER || pawn->pos.x <= (actor->pos.x + actor->box.start.x)
+            || pawn->pos.x >= (actor->pos.x + actor->box.end.x))
+        {
+            continue;
+        }
+
+        if (VAL(actor, WATER_OVERLAP) > 0) {
+            VAL(actor, WATER_OVERLAP) = 2;
+            break;
+        }
+
+        GameActor* water = get_actor(gamestate()->water);
+        if (water == NULL)
+            break;
+
+        if (VAL(water, WATER_TO) != VAL(actor, WATER_TO) || VAL(water, WATER_SPEED) != VAL(actor, WATER_SPEED)) {
+            VAL(water, WATER_TO) = VAL(actor, WATER_TO);
+            VAL(water, WATER_SPEED) = VAL(actor, WATER_SPEED);
+
+            play_state_sound("water", 0, NULL);
+        }
+
+        VAL(actor, WATER_OVERLAP) = 2;
+
+        if (n <= 1)
+            FLAG_ON(actor, FLG_DESTROY);
+
+        break;
     }
-
-    VAL(water, WATER_TO) = VAL(actor, WATER_TO);
-    VAL(water, WATER_SPEED) = VAL(actor, WATER_SPEED);
-    play_state_sound("water", 0, NULL);
 }
 
 const ActorTable TAB_WATER_TRIGGER = {
     .load = load_trigger,
     .create = create_trigger,
-    .collide = collide_trigger,
+    .tick = tick_trigger,
 };
