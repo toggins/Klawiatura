@@ -1,0 +1,6665 @@
+{
+    "label": "@7-2",
+    "tracks": [{ "track": "smb/underwater" }, { "track": "smw/overworld" }],
+    "size": [8000, 1440],
+    "bounds": [0, 960, 8000, 1440],
+    "time": 360,
+    "backdrops": [
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 0, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 480, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 512, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 544, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 576, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 608, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 640, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 672, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 704, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 736, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 768, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 800, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 832, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 864, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 896, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 928, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 960, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 992, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 1024, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -63, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -95, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -127, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -159, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -191, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -223, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -255, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -287, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -319, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [0, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [0, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [0, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [0, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [0, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [0, 1216, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [0, 1248, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [0, 1280, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [0, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [0, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [352, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [352, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [352, 1280, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [384, 1280, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [480, 1280, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [480, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [480, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 480, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 480, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 480, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 512, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 512, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 512, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 544, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 544, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 544, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 576, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 576, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 576, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 608, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 608, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 608, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 640, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 640, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 640, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 672, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 672, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 672, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 704, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 704, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 704, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 736, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 736, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 736, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 768, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 768, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 768, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 800, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 800, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 800, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 832, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 832, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 832, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 864, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 864, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 864, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 896, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 896, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 896, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 928, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 928, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 928, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7520, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 928, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 896, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 864, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 832, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 800, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [8000, 960, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [8000, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [8000, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [8000, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [8000, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [8000, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [8000, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [8000, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 1216, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 1216, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 1216, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 1216, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 1216, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 1216, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 1216, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 1216, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 1216, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 1216, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 1216, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 1216, 19]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 1216, 19]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 1216, 19]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7520, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7520, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7520, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 992, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7520, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 1024, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7520, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 1056, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7520, 1088, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 1152, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 1184, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 1120, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7520, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 1312, 19]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 1312, 19]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 1312, 19]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7520, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7456, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7424, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7488, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7520, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 1408, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7968, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7936, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7904, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7872, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7840, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7808, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7776, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7744, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7712, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7680, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7648, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7616, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7584, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7552, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [7520, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [8000, 1312, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [8000, 1344, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [8000, 1376, 20]
+        },
+        {
+            "def": "Coral Block",
+            "sprite": "tiles/block/coral",
+            "pos": [8000, 1408, 20]
+        },
+        {
+            "def": "Pipe Green Left",
+            "sprite": "tiles/pipe/green/h0",
+            "pos": [7552, 1248, 19]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [7616, 1248, 19]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [7648, 1248, 20]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [7680, 1248, 20]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [7712, 1248, 20]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [7744, 1248, 20]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [7776, 1248, 20]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [7808, 1248, 20]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [7840, 1248, 20]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [7872, 1248, 20]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [7904, 1248, 20]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [7936, 1248, 20]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [7968, 1248, 20]
+        },
+        {
+            "def": "Pipe Green Middle 2",
+            "sprite": "tiles/pipe/green/h1",
+            "pos": [8000, 1248, 20]
+        },
+        {
+            "def": "Pipe Green Top",
+            "sprite": "tiles/pipe/green/v0",
+            "pos": [7104, 320, 19]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [7104, 384, 19]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [7104, 416, 20]
+        },
+        {
+            "def": "Pipe Green Middle",
+            "sprite": "tiles/pipe/green/v1",
+            "pos": [7104, 448, 20]
+        },
+        {
+            "def": "Pipe Green Right",
+            "sprite": "tiles/pipe/green/h2",
+            "pos": [7163, 352, 19]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [631, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [631, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [631, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [631, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [631, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [864, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [864, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1088, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1088, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1088, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 736, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 768, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 800, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 832, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 864, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 896, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 928, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 960, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 992, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1376, 1024, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1824, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1824, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1824, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1824, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1824, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1824, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1824, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 704, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 672, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 736, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 768, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 800, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 832, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 864, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 896, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 928, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 960, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 992, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 1024, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 1056, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 1088, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [1952, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2080, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2080, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2080, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2080, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2080, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2080, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2080, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 864, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 896, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 928, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 960, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 992, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 1024, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 1056, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 1088, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 1120, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2176, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2336, 1056, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2336, 1088, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2336, 1120, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2336, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2336, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2336, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2336, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2336, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2336, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2336, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 864, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 896, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 928, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 960, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 992, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 1024, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 1056, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 1088, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 1120, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2496, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2656, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [2656, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 864, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 896, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 928, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 960, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 992, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 1024, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 1056, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 1088, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 1120, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3321, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1088, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1120, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1376, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1408, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1440, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1472, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3552, 1504, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3776, 960, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3776, 992, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3776, 1024, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3776, 1056, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3776, 1088, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3776, 1120, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3776, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3776, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3776, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3776, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3776, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [3776, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1376, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1408, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1440, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1472, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1504, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1536, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1568, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4000, 1600, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4256, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4256, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4256, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4256, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4384, 1088, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4384, 1120, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4384, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4384, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4384, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4384, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4384, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4544, 960, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4544, 992, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4544, 1024, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4544, 1056, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4544, 1088, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4544, 1120, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4544, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4768, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4768, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4768, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4768, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4768, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4768, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [4768, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6080, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6080, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6080, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6080, 928, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6080, 960, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6080, 992, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6080, 1024, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6080, 1056, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6272, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6272, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6272, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6272, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6272, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6272, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6272, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6464, 960, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6464, 992, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6464, 1024, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6464, 1056, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6464, 1088, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6464, 1120, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6464, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6624, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6624, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6624, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6624, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6624, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6624, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6624, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6912, 1152, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6912, 1184, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6912, 1216, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6912, 1248, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6912, 1280, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6912, 1312, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6912, 1344, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6912, 928, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6912, 960, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6912, 992, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [6912, 1024, 20]
+        },
+        {
+            "def": "Coral",
+            "sprite": "tiles/coral",
+            "pos": [7040, 1088, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 0, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [0, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [32, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [64, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [96, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [128, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [160, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [192, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [224, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [256, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [288, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [320, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [352, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [384, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [416, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [448, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [480, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [512, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [544, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [576, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [608, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [631, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [663, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [695, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [727, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [759, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [791, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [823, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [855, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [887, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [919, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [951, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [983, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1015, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1047, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1079, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1111, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1143, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1175, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1207, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1239, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1271, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1303, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1335, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1367, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1399, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1431, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1463, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1495, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1527, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1559, 1376, 20]
+        },
+        {
+            "def": "Sand Top Right",
+            "sprite": "tiles/sand/2",
+            "pos": [1591, 1376, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [0, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [32, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [64, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [96, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [128, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [160, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [192, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [224, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [256, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [288, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [320, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [352, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [384, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [416, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [448, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [480, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [512, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [544, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [576, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [631, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [608, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [663, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [695, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [727, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [759, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [791, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [823, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [855, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [887, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [919, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [951, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [983, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1015, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1047, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1079, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1111, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1143, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1175, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1207, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1239, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1271, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1303, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1335, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1367, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1399, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1431, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1463, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1495, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1527, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1559, 1408, 20]
+        },
+        {
+            "def": "Sand Right",
+            "sprite": "tiles/sand/5",
+            "pos": [1591, 1408, 20]
+        },
+        {
+            "def": "Sand Top Left",
+            "sprite": "tiles/sand/0",
+            "pos": [1815, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1847, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1879, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1911, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1943, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [1975, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2007, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2039, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2071, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2103, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2135, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2167, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2199, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2231, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2263, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2295, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2327, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2359, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2391, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2423, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2455, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2487, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2519, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2551, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2583, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2615, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2647, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2679, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2711, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2743, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2775, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2807, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2839, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2871, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2903, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2935, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2967, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [2999, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [3031, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [3063, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [3095, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [3127, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [3159, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [3191, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [3223, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [3255, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [3287, 1376, 20]
+        },
+        {
+            "def": "Sand Top Right",
+            "sprite": "tiles/sand/2",
+            "pos": [3319, 1376, 20]
+        },
+        {
+            "def": "Sand Left",
+            "sprite": "tiles/sand/3",
+            "pos": [1815, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1847, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1879, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1911, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1943, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [1975, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2007, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2039, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2071, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2103, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2135, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2167, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2199, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2231, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2263, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2295, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2327, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2359, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2391, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2423, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2455, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2487, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2519, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2551, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2583, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2615, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2647, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2679, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2711, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2743, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2775, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2807, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2839, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2871, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2903, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2935, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2967, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [2999, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [3031, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [3063, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [3095, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [3127, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [3159, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [3191, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [3223, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [3255, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [3287, 1408, 20]
+        },
+        {
+            "def": "Sand Right",
+            "sprite": "tiles/sand/5",
+            "pos": [3319, 1408, 20]
+        },
+        {
+            "def": "Sand Top Left",
+            "sprite": "tiles/sand/0",
+            "pos": [4256, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4288, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4320, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4352, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4375, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4407, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4439, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4471, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4503, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4535, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4567, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4599, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4631, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4663, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4695, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4727, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4759, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4791, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4823, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4855, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [4887, 1376, 20]
+        },
+        {
+            "def": "Sand Top Right",
+            "sprite": "tiles/sand/2",
+            "pos": [4919, 1376, 20]
+        },
+        {
+            "def": "Sand Left",
+            "sprite": "tiles/sand/3",
+            "pos": [4256, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4288, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4320, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4352, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4375, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4407, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4439, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4471, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4503, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4535, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4567, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4599, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4631, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4663, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4695, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4727, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4759, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4791, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4823, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4855, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [4887, 1408, 20]
+        },
+        {
+            "def": "Sand Right",
+            "sprite": "tiles/sand/5",
+            "pos": [4919, 1408, 20]
+        },
+        {
+            "def": "Sand Top Left",
+            "sprite": "tiles/sand/0",
+            "pos": [5431, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5463, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5495, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5527, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5559, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5591, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5623, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5655, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5687, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5719, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5751, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5783, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5815, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5847, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5879, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5911, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5943, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [5975, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6007, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6039, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6071, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6103, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6135, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6167, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6199, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6231, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6263, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6295, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6327, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6359, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6391, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6423, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6455, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6487, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6519, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6551, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6583, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6615, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6647, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6679, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6711, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6743, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6775, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6807, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6839, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6871, 1376, 20]
+        },
+        {
+            "def": "Sand Top",
+            "sprite": "tiles/sand/1",
+            "pos": [6903, 1376, 20]
+        },
+        {
+            "def": "Sand Top Right",
+            "sprite": "tiles/sand/2",
+            "pos": [6935, 1376, 20]
+        },
+        {
+            "def": "Sand Left",
+            "sprite": "tiles/sand/3",
+            "pos": [5431, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5463, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5495, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5527, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5559, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5591, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5623, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5655, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5687, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5719, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5751, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5783, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5815, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5847, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5879, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5911, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5943, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [5975, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6007, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6039, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6071, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6103, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6135, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6167, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6199, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6231, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6263, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6295, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6327, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6359, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6391, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6423, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6455, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6487, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6519, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6551, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6583, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6615, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6647, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6679, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6711, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6743, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6775, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6807, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6839, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6871, 1408, 20]
+        },
+        {
+            "def": "Sand Middle",
+            "sprite": "tiles/sand/4",
+            "pos": [6903, 1408, 20]
+        },
+        {
+            "def": "Sand Right",
+            "sprite": "tiles/sand/5",
+            "pos": [6935, 1408, 20]
+        },
+        {
+            "def": "Grass Top Left",
+            "sprite": "tiles/grass/0",
+            "pos": [6048, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6080, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6112, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6144, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6176, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6199, 416, 20]
+        },
+        {
+            "def": "Grass Top Right",
+            "sprite": "tiles/grass/2",
+            "pos": [6231, 416, 20]
+        },
+        {
+            "def": "Grass Left",
+            "sprite": "tiles/grass/3",
+            "pos": [6048, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [6080, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [6112, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [6144, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [6176, 448, 20]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [6208, 448, 20]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [6231, 448, 20]
+        },
+        {
+            "def": "Grass Top Left",
+            "sprite": "tiles/grass/0",
+            "pos": [6400, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6432, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6464, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6496, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6528, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6551, 416, 20]
+        },
+        {
+            "def": "Grass Top Right",
+            "sprite": "tiles/grass/2",
+            "pos": [6583, 416, 20]
+        },
+        {
+            "def": "Grass Left",
+            "sprite": "tiles/grass/3",
+            "pos": [6400, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [6432, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [6464, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [6496, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [6528, 448, 20]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [6560, 448, 20]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [6583, 448, 20]
+        },
+        {
+            "def": "Grass Top Left",
+            "sprite": "tiles/grass/0",
+            "pos": [6734, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6766, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6798, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6830, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6862, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [6885, 416, 20]
+        },
+        {
+            "def": "Grass Top Right",
+            "sprite": "tiles/grass/2",
+            "pos": [6917, 416, 20]
+        },
+        {
+            "def": "Grass Left",
+            "sprite": "tiles/grass/3",
+            "pos": [6734, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [6766, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [6798, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [6830, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [6862, 448, 20]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [6894, 448, 20]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [6917, 448, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7136, 416, 21]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7168, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7200, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7232, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7264, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7296, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7328, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7360, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7392, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7424, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7456, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7488, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7520, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7561, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7552, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7593, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7625, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7657, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7689, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7721, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7753, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7785, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7817, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7849, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7881, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7913, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7945, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [7977, 416, 20]
+        },
+        {
+            "def": "Grass Top Right",
+            "sprite": "tiles/grass/2",
+            "pos": [8000, 416, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7136, 448, 21]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7168, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7200, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7232, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7264, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7296, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7328, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7360, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7392, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7424, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7456, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7488, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7520, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7561, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7552, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7593, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7625, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7657, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7689, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7721, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7753, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7785, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7817, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7849, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7881, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7913, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [7945, 448, 20]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [7977, 448, 20]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [8000, 448, 20]
+        },
+        {
+            "def": "Goal",
+            "sprite": "markers/goal",
+            "pos": [7744, 128, 23]
+        },
+        {
+            "def": "Goal Mark",
+            "sprite": "markers/goal/mark",
+            "pos": [7584, 384, 23]
+        },
+        {
+            "def": "Tree Small",
+            "sprite": "scenery/tree/small",
+            "pos": [7328, 352, 32]
+        },
+        {
+            "def": "Tree Small",
+            "sprite": "scenery/tree/small",
+            "pos": [7904, 352, 32]
+        },
+        {
+            "def": "Hill",
+            "sprite": "scenery/hill",
+            "pos": [5696, 352, 61]
+        },
+        {
+            "def": "Hill",
+            "sprite": "scenery/hill",
+            "pos": [6727, 348, 61]
+        },
+        {
+            "def": "Hill",
+            "sprite": "scenery/hill",
+            "pos": [7232, 288, 61]
+        },
+        {
+            "def": "Gradient Background",
+            "pos": [0, 0, 200],
+            "size": [8002, 479],
+            "colors": [
+                [59, 123, 163, 255],
+                [59, 123, 163, 255],
+                [242, 253, 252, 255],
+                [242, 253, 252, 255]
+            ]
+        },
+        {
+            "def": "Gradient Background",
+            "pos": [0, 479, 200],
+            "size": [8000, 476]
+        },
+        {
+            "def": "Underwater Background",
+            "sprite": "backgrounds/underwater",
+            "pos": [-4, 1280, 190],
+            "size": [8012, 162],
+            "tile": [true, false]
+        },
+        {
+            "def": "Underwater Background",
+            "sprite": "backgrounds/underwater",
+            "pos": [-319, 1259, 191],
+            "size": [7552, 162],
+            "tile": [true, false],
+            "colors": [
+                [255, 255, 255, 155],
+                [255, 255, 255, 155],
+                [255, 255, 255, 155],
+                [255, 255, 255, 155]
+            ]
+        },
+        {
+            "def": "Corals",
+            "sprite": "scenery/corals",
+            "pos": [0, 1173, 192],
+            "size": [8124, 256],
+            "tile": [true, false],
+            "colors": [
+                [255, 255, 255, 109],
+                [255, 255, 255, 109],
+                [255, 255, 255, 109],
+                [255, 255, 255, 109]
+            ]
+        },
+        {
+            "def": "Corals 2",
+            "sprite": "scenery/corals2",
+            "pos": [2608, 1073, 193],
+            "size": [5118, 352],
+            "tile": [true, false],
+            "colors": [
+                [255, 255, 255, 53],
+                [255, 255, 255, 53],
+                [255, 255, 255, 53],
+                [255, 255, 255, 53]
+            ]
+        },
+        {
+            "def": "Gradient Background",
+            "pos": [0, 955, 200],
+            "size": [8002, 479],
+            "colors": [
+                [59, 123, 163, 255],
+                [59, 123, 163, 255],
+                [242, 253, 252, 255],
+                [242, 253, 252, 255]
+            ]
+        },
+        {
+            "def": "Gradient Background",
+            "pos": [7580, 1246, 20],
+            "size": [44, 67],
+            "colors": [
+                [171, 202, 217, 255],
+                [171, 202, 217, 255],
+                [196, 220, 229, 255],
+                [196, 220, 229, 255]
+            ]
+        },
+        {
+            "def": "Gradient Background",
+            "pos": [7164, 352, 20],
+            "size": [35, 64],
+            "colors": [
+                [194, 219, 228, 255],
+                [194, 219, 228, 255],
+                [218, 236, 240, 255],
+                [218, 236, 240, 255]
+            ]
+        }
+    ],
+    "collisions": [
+        {
+            "pos": [3321, 864],
+            "size": [1, 14],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 0, 1],
+                [0, 1, 1],
+                [0, 2, 1],
+                [0, 3, 1],
+                [0, 4, 1],
+                [0, 5, 1],
+                [0, 6, 1],
+                [0, 7, 1],
+                [0, 8, 1],
+                [0, 9, 1],
+                [0, 10, 1],
+                [0, 11, 1],
+                [0, 12, 1],
+                [0, 13, 1]
+            ]
+        },
+        {
+            "pos": [-32, -32],
+            "size": [253, 52],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 1, 1],
+                [0, 2, 1],
+                [0, 3, 1],
+                [0, 4, 1],
+                [0, 5, 1],
+                [0, 6, 1],
+                [0, 7, 1],
+                [0, 8, 1],
+                [0, 9, 1],
+                [0, 10, 1],
+                [0, 11, 1],
+                [0, 12, 1],
+                [0, 13, 1],
+                [0, 14, 1],
+                [0, 15, 1],
+                [0, 16, 1],
+                [0, 17, 1],
+                [0, 18, 1],
+                [0, 19, 1],
+                [0, 20, 1],
+                [0, 21, 1],
+                [0, 22, 1],
+                [0, 23, 1],
+                [0, 24, 1],
+                [0, 25, 1],
+                [0, 26, 1],
+                [0, 27, 1],
+                [0, 28, 1],
+                [0, 29, 1],
+                [0, 30, 1],
+                [0, 31, 1],
+                [0, 32, 1],
+                [0, 33, 1],
+                [0, 0, 1],
+                [1, 34, 1],
+                [1, 35, 1],
+                [1, 36, 1],
+                [1, 37, 1],
+                [1, 38, 1],
+                [1, 39, 1],
+                [1, 40, 1],
+                [1, 41, 1],
+                [1, 42, 1],
+                [1, 43, 1],
+                [12, 43, 1],
+                [12, 42, 1],
+                [12, 41, 1],
+                [13, 41, 1],
+                [16, 41, 1],
+                [16, 42, 1],
+                [16, 43, 1],
+                [233, 16, 1],
+                [234, 16, 1],
+                [235, 16, 1],
+                [235, 17, 1],
+                [234, 17, 1],
+                [233, 17, 1],
+                [233, 18, 1],
+                [234, 18, 1],
+                [235, 18, 1],
+                [235, 19, 1],
+                [234, 19, 1],
+                [233, 19, 1],
+                [233, 20, 1],
+                [234, 20, 1],
+                [235, 20, 1],
+                [235, 21, 1],
+                [234, 21, 1],
+                [233, 21, 1],
+                [233, 22, 1],
+                [234, 22, 1],
+                [235, 22, 1],
+                [235, 23, 1],
+                [234, 23, 1],
+                [233, 23, 1],
+                [233, 24, 1],
+                [234, 24, 1],
+                [235, 24, 1],
+                [233, 25, 1],
+                [234, 25, 1],
+                [235, 25, 1],
+                [235, 26, 1],
+                [234, 26, 1],
+                [233, 26, 1],
+                [233, 27, 1],
+                [234, 27, 1],
+                [235, 27, 1],
+                [235, 28, 1],
+                [234, 28, 1],
+                [233, 28, 1],
+                [233, 29, 1],
+                [234, 29, 1],
+                [235, 29, 1],
+                [235, 30, 1],
+                [234, 30, 1],
+                [233, 30, 1],
+                [233, 31, 1],
+                [234, 31, 1],
+                [235, 31, 1],
+                [236, 31, 1],
+                [237, 31, 1],
+                [238, 31, 1],
+                [239, 31, 1],
+                [240, 31, 1],
+                [241, 31, 1],
+                [242, 31, 1],
+                [243, 31, 1],
+                [244, 31, 1],
+                [245, 31, 1],
+                [246, 31, 1],
+                [247, 31, 1],
+                [248, 31, 1],
+                [249, 31, 1],
+                [250, 31, 1],
+                [250, 30, 1],
+                [250, 29, 1],
+                [250, 28, 1],
+                [250, 27, 1],
+                [250, 26, 1],
+                [251, 31, 1],
+                [251, 32, 1],
+                [251, 33, 1],
+                [251, 34, 1],
+                [251, 35, 1],
+                [251, 36, 1],
+                [251, 37, 1],
+                [251, 38, 1],
+                [250, 39, 1],
+                [249, 39, 1],
+                [248, 39, 1],
+                [247, 39, 1],
+                [246, 39, 1],
+                [245, 39, 1],
+                [244, 39, 1],
+                [243, 39, 1],
+                [242, 39, 1],
+                [241, 39, 1],
+                [240, 39, 1],
+                [239, 39, 1],
+                [238, 39, 1],
+                [237, 39, 1],
+                [237, 38, 1],
+                [237, 37, 1],
+                [236, 37, 1],
+                [236, 36, 1],
+                [235, 36, 1],
+                [235, 35, 1],
+                [234, 35, 1],
+                [234, 34, 1],
+                [233, 34, 1],
+                [233, 33, 1],
+                [233, 32, 1],
+                [234, 32, 1],
+                [235, 32, 1],
+                [236, 32, 1],
+                [237, 32, 1],
+                [238, 32, 1],
+                [239, 32, 1],
+                [240, 32, 1],
+                [241, 32, 1],
+                [242, 32, 1],
+                [243, 32, 1],
+                [244, 32, 1],
+                [245, 32, 1],
+                [246, 32, 1],
+                [247, 32, 1],
+                [248, 32, 1],
+                [249, 32, 1],
+                [250, 32, 1],
+                [250, 33, 1],
+                [249, 33, 1],
+                [248, 33, 1],
+                [247, 33, 1],
+                [246, 33, 1],
+                [245, 33, 1],
+                [244, 33, 1],
+                [243, 33, 1],
+                [242, 33, 1],
+                [241, 33, 1],
+                [240, 33, 1],
+                [239, 33, 1],
+                [238, 33, 1],
+                [237, 33, 1],
+                [236, 33, 1],
+                [235, 33, 1],
+                [234, 33, 1],
+                [235, 34, 1],
+                [236, 34, 1],
+                [237, 34, 1],
+                [238, 34, 1],
+                [239, 34, 1],
+                [240, 34, 1],
+                [241, 34, 1],
+                [242, 34, 1],
+                [243, 34, 1],
+                [244, 34, 1],
+                [245, 34, 1],
+                [246, 34, 1],
+                [247, 34, 1],
+                [248, 34, 1],
+                [249, 34, 1],
+                [250, 34, 1],
+                [250, 35, 1],
+                [249, 35, 1],
+                [248, 35, 1],
+                [247, 35, 1],
+                [246, 35, 1],
+                [245, 35, 1],
+                [244, 35, 1],
+                [243, 35, 1],
+                [242, 35, 1],
+                [241, 35, 1],
+                [240, 35, 1],
+                [239, 35, 1],
+                [238, 35, 1],
+                [237, 35, 1],
+                [236, 35, 1],
+                [237, 36, 1],
+                [238, 36, 1],
+                [239, 36, 1],
+                [240, 36, 1],
+                [241, 36, 1],
+                [242, 36, 1],
+                [243, 36, 1],
+                [245, 36, 1],
+                [246, 36, 1],
+                [247, 36, 1],
+                [248, 36, 1],
+                [249, 36, 1],
+                [250, 36, 1],
+                [250, 37, 1],
+                [249, 37, 1],
+                [248, 37, 1],
+                [247, 37, 1],
+                [246, 37, 1],
+                [245, 37, 1],
+                [244, 37, 1],
+                [243, 37, 1],
+                [242, 37, 1],
+                [241, 37, 1],
+                [240, 37, 1],
+                [239, 37, 1],
+                [238, 37, 1],
+                [243, 38, 1],
+                [244, 38, 1],
+                [245, 38, 1],
+                [246, 38, 1],
+                [247, 38, 1],
+                [248, 38, 1],
+                [249, 38, 1],
+                [250, 38, 1],
+                [242, 38, 1],
+                [241, 38, 1],
+                [240, 38, 1],
+                [239, 38, 1],
+                [238, 38, 1],
+                [244, 36, 1],
+                [236, 42, 1],
+                [237, 42, 1],
+                [238, 42, 1],
+                [239, 42, 1],
+                [240, 42, 1],
+                [241, 42, 1],
+                [242, 42, 1],
+                [243, 42, 1],
+                [244, 42, 1],
+                [245, 42, 1],
+                [246, 42, 1],
+                [247, 42, 1],
+                [248, 42, 1],
+                [249, 42, 1],
+                [250, 42, 1],
+                [250, 43, 1],
+                [249, 43, 1],
+                [248, 43, 1],
+                [247, 43, 1],
+                [246, 43, 1],
+                [245, 43, 1],
+                [244, 43, 1],
+                [243, 43, 1],
+                [242, 43, 1],
+                [241, 43, 1],
+                [240, 43, 1],
+                [239, 43, 1],
+                [238, 43, 1],
+                [237, 43, 1],
+                [236, 43, 1],
+                [235, 43, 1],
+                [235, 44, 1],
+                [234, 44, 1],
+                [234, 45, 1],
+                [233, 45, 1],
+                [235, 45, 1],
+                [236, 45, 1],
+                [237, 45, 1],
+                [238, 45, 1],
+                [239, 45, 1],
+                [240, 45, 1],
+                [241, 45, 1],
+                [242, 45, 1],
+                [243, 45, 1],
+                [244, 45, 1],
+                [245, 45, 1],
+                [246, 45, 1],
+                [247, 45, 1],
+                [248, 45, 1],
+                [249, 45, 1],
+                [250, 45, 1],
+                [250, 44, 1],
+                [249, 44, 1],
+                [248, 44, 1],
+                [247, 44, 1],
+                [246, 44, 1],
+                [245, 44, 1],
+                [244, 44, 1],
+                [243, 44, 1],
+                [242, 44, 1],
+                [241, 44, 1],
+                [240, 44, 1],
+                [239, 44, 1],
+                [238, 44, 1],
+                [237, 44, 1],
+                [236, 44, 1],
+                [251, 42, 1],
+                [251, 43, 1],
+                [251, 44, 1],
+                [251, 45, 1],
+                [28, 42, 1],
+                [28, 43, 1],
+                [35, 41, 1],
+                [35, 42, 1],
+                [35, 43, 1],
+                [44, 39, 1],
+                [44, 40, 1],
+                [44, 41, 1],
+                [44, 42, 1],
+                [44, 43, 1],
+                [44, 24, 1],
+                [44, 25, 1],
+                [44, 26, 1],
+                [44, 27, 1],
+                [44, 28, 1],
+                [44, 29, 1],
+                [44, 30, 1],
+                [44, 31, 1],
+                [44, 32, 1],
+                [44, 33, 1],
+                [58, 37, 1],
+                [58, 38, 1],
+                [58, 39, 1],
+                [58, 40, 1],
+                [58, 41, 1],
+                [58, 42, 1],
+                [58, 43, 1],
+                [62, 23, 1],
+                [62, 22, 1],
+                [62, 24, 1],
+                [62, 25, 1],
+                [62, 26, 1],
+                [62, 27, 1],
+                [62, 28, 1],
+                [62, 29, 1],
+                [62, 30, 1],
+                [62, 31, 1],
+                [62, 32, 1],
+                [62, 33, 1],
+                [62, 34, 1],
+                [62, 35, 1],
+                [62, 39, 1],
+                [62, 40, 1],
+                [62, 41, 1],
+                [62, 42, 1],
+                [62, 43, 1],
+                [66, 37, 1],
+                [66, 38, 1],
+                [66, 39, 1],
+                [66, 40, 1],
+                [66, 41, 1],
+                [66, 42, 1],
+                [66, 43, 1],
+                [69, 28, 1],
+                [69, 29, 1],
+                [69, 30, 1],
+                [69, 31, 1],
+                [69, 32, 1],
+                [69, 33, 1],
+                [69, 34, 1],
+                [69, 35, 1],
+                [69, 36, 1],
+                [69, 37, 1],
+                [69, 38, 1],
+                [69, 39, 1],
+                [69, 40, 1],
+                [69, 41, 1],
+                [74, 34, 1],
+                [74, 35, 1],
+                [74, 36, 1],
+                [74, 37, 1],
+                [74, 38, 1],
+                [74, 39, 1],
+                [74, 40, 1],
+                [74, 41, 1],
+                [74, 42, 1],
+                [74, 43, 1],
+                [79, 28, 1],
+                [79, 29, 1],
+                [79, 30, 1],
+                [79, 31, 1],
+                [79, 32, 1],
+                [79, 33, 1],
+                [79, 34, 1],
+                [79, 35, 1],
+                [79, 36, 1],
+                [79, 37, 1],
+                [79, 38, 1],
+                [79, 39, 1],
+                [79, 40, 1],
+                [79, 41, 1],
+                [84, 42, 1],
+                [84, 43, 1],
+                [112, 35, 1],
+                [112, 36, 1],
+                [112, 37, 1],
+                [112, 38, 1],
+                [112, 39, 1],
+                [112, 40, 1],
+                [112, 41, 1],
+                [112, 42, 1],
+                [112, 43, 1],
+                [112, 44, 1],
+                [112, 45, 1],
+                [112, 46, 1],
+                [112, 47, 1],
+                [112, 48, 1],
+                [119, 31, 1],
+                [119, 32, 1],
+                [119, 33, 1],
+                [119, 34, 1],
+                [119, 35, 1],
+                [119, 36, 1],
+                [119, 37, 1],
+                [119, 38, 1],
+                [119, 39, 1],
+                [119, 40, 1],
+                [119, 41, 1],
+                [119, 42, 1],
+                [126, 38, 1],
+                [126, 39, 1],
+                [126, 40, 1],
+                [126, 41, 1],
+                [126, 42, 1],
+                [126, 43, 1],
+                [126, 44, 1],
+                [126, 45, 1],
+                [126, 46, 1],
+                [126, 47, 1],
+                [126, 48, 1],
+                [126, 49, 1],
+                [126, 50, 1],
+                [126, 51, 1],
+                [134, 37, 1],
+                [134, 38, 1],
+                [134, 39, 1],
+                [134, 40, 1],
+                [138, 35, 1],
+                [138, 36, 1],
+                [138, 37, 1],
+                [138, 38, 1],
+                [138, 39, 1],
+                [138, 40, 1],
+                [138, 41, 1],
+                [143, 31, 1],
+                [143, 32, 1],
+                [143, 33, 1],
+                [143, 34, 1],
+                [143, 35, 1],
+                [143, 36, 1],
+                [143, 37, 1],
+                [150, 37, 1],
+                [150, 38, 1],
+                [150, 39, 1],
+                [150, 40, 1],
+                [150, 41, 1],
+                [150, 42, 1],
+                [150, 43, 1],
+                [191, 38, 1],
+                [191, 39, 1],
+                [191, 40, 1],
+                [191, 30, 1],
+                [191, 31, 1],
+                [191, 32, 1],
+                [191, 33, 1],
+                [191, 34, 1],
+                [197, 37, 1],
+                [197, 38, 1],
+                [197, 39, 1],
+                [197, 40, 1],
+                [197, 41, 1],
+                [197, 42, 1],
+                [197, 43, 1],
+                [203, 31, 1],
+                [203, 32, 1],
+                [203, 33, 1],
+                [203, 34, 1],
+                [203, 35, 1],
+                [203, 36, 1],
+                [203, 37, 1],
+                [208, 37, 1],
+                [208, 38, 1],
+                [208, 39, 1],
+                [208, 40, 1],
+                [208, 41, 1],
+                [208, 42, 1],
+                [208, 43, 1],
+                [217, 37, 1],
+                [217, 38, 1],
+                [217, 39, 1],
+                [217, 40, 1],
+                [217, 41, 1],
+                [217, 42, 1],
+                [217, 43, 1],
+                [217, 30, 1],
+                [217, 31, 1],
+                [217, 32, 1],
+                [217, 33, 1],
+                [221, 35, 1],
+                [252, 14, 1],
+                [252, 13, 1],
+                [252, 12, 1],
+                [252, 11, 1],
+                [252, 10, 1],
+                [252, 9, 1],
+                [252, 8, 1],
+                [252, 7, 1],
+                [252, 6, 1],
+                [252, 5, 1],
+                [252, 4, 1],
+                [252, 3, 1],
+                [252, 2, 1],
+                [252, 1, 1],
+                [1, 44, 1],
+                [2, 44, 1],
+                [3, 44, 1],
+                [4, 44, 1],
+                [5, 44, 1],
+                [6, 44, 1],
+                [7, 44, 1],
+                [8, 44, 1],
+                [9, 44, 1],
+                [10, 44, 1],
+                [11, 44, 1],
+                [12, 44, 1],
+                [13, 44, 1],
+                [14, 44, 1],
+                [15, 44, 1],
+                [16, 44, 1],
+                [17, 44, 1],
+                [18, 44, 1],
+                [19, 44, 1],
+                [20, 44, 1],
+                [1, 45, 1],
+                [2, 45, 1],
+                [3, 45, 1],
+                [4, 45, 1],
+                [5, 45, 1],
+                [6, 45, 1],
+                [7, 45, 1],
+                [8, 45, 1],
+                [9, 45, 1],
+                [10, 45, 1],
+                [11, 45, 1],
+                [12, 45, 1],
+                [13, 45, 1],
+                [14, 45, 1],
+                [15, 45, 1],
+                [16, 45, 1],
+                [17, 45, 1],
+                [18, 45, 1],
+                [19, 45, 1],
+                [20, 45, 1],
+                [134, 44, 1],
+                [135, 44, 1],
+                [136, 44, 1],
+                [137, 44, 1],
+                [134, 45, 1],
+                [135, 45, 1],
+                [136, 45, 1],
+                [137, 45, 1],
+                [190, 14, 1],
+                [191, 14, 1],
+                [192, 14, 1],
+                [193, 14, 1],
+                [194, 14, 1],
+                [190, 15, 1],
+                [191, 15, 1],
+                [192, 15, 1],
+                [193, 15, 1],
+                [194, 15, 1],
+                [195, 15, 1],
+                [201, 14, 1],
+                [202, 14, 1],
+                [203, 14, 1],
+                [204, 14, 1],
+                [205, 14, 1],
+                [201, 15, 1],
+                [202, 15, 1],
+                [203, 15, 1],
+                [204, 15, 1],
+                [205, 15, 1],
+                [206, 15, 1],
+                [224, 14, 1],
+                [225, 14, 1],
+                [226, 14, 1],
+                [227, 14, 1],
+                [228, 14, 1],
+                [229, 14, 1],
+                [230, 14, 1],
+                [231, 14, 1],
+                [232, 14, 1],
+                [233, 14, 1],
+                [234, 14, 1],
+                [235, 14, 1],
+                [236, 14, 1],
+                [237, 14, 1],
+                [251, 14, 1],
+                [224, 15, 1],
+                [225, 15, 1],
+                [226, 15, 1],
+                [227, 15, 1],
+                [228, 15, 1],
+                [229, 15, 1],
+                [230, 15, 1],
+                [231, 15, 1],
+                [232, 15, 1],
+                [233, 15, 1],
+                [234, 15, 1],
+                [235, 15, 1],
+                [236, 15, 1],
+                [237, 15, 1],
+                [251, 15, 1]
+            ]
+        },
+        {
+            "pos": [7552, 1248],
+            "size": [1, 1],
+            "cell_size": [64, 64],
+            "cells": [[0, 0, 1]]
+        },
+        {
+            "pos": [6734, 416],
+            "size": [6, 2],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 0, 1],
+                [1, 0, 1],
+                [2, 0, 1],
+                [3, 0, 1],
+                [4, 0, 1],
+                [0, 1, 1],
+                [1, 1, 1],
+                [2, 1, 1],
+                [3, 1, 1],
+                [4, 1, 1],
+                [5, 1, 1]
+            ]
+        },
+        {
+            "pos": [-32, -319],
+            "size": [1, 9],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 8, 1],
+                [0, 7, 1],
+                [0, 6, 1],
+                [0, 5, 1],
+                [0, 4, 1],
+                [0, 3, 1],
+                [0, 2, 1],
+                [0, 1, 1],
+                [0, 0, 1]
+            ]
+        },
+        {
+            "pos": [6885, 416],
+            "size": [2, 2],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 0, 1],
+                [1, 0, 1],
+                [1, 1, 1]
+            ]
+        },
+        {
+            "pos": [7104, 384],
+            "size": [1, 3],
+            "cell_size": [64, 32],
+            "cells": [
+                [0, 0, 1],
+                [0, 1, 1],
+                [0, 2, 1]
+            ]
+        },
+        {
+            "pos": [631, 416],
+            "size": [198, 32],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 25, 1],
+                [0, 26, 1],
+                [0, 27, 1],
+                [0, 28, 1],
+                [0, 29, 1],
+                [0, 30, 1],
+                [1, 30, 1],
+                [2, 30, 1],
+                [3, 30, 1],
+                [4, 30, 1],
+                [5, 30, 1],
+                [6, 30, 1],
+                [7, 30, 1],
+                [8, 30, 1],
+                [9, 30, 1],
+                [10, 30, 1],
+                [11, 30, 1],
+                [12, 30, 1],
+                [13, 30, 1],
+                [14, 30, 1],
+                [15, 30, 1],
+                [16, 30, 1],
+                [17, 30, 1],
+                [18, 30, 1],
+                [19, 30, 1],
+                [20, 30, 1],
+                [21, 30, 1],
+                [22, 30, 1],
+                [23, 30, 1],
+                [24, 30, 1],
+                [25, 30, 1],
+                [26, 30, 1],
+                [27, 30, 1],
+                [28, 30, 1],
+                [29, 30, 1],
+                [30, 30, 1],
+                [0, 31, 1],
+                [1, 31, 1],
+                [2, 31, 1],
+                [3, 31, 1],
+                [4, 31, 1],
+                [5, 31, 1],
+                [6, 31, 1],
+                [7, 31, 1],
+                [8, 31, 1],
+                [9, 31, 1],
+                [10, 31, 1],
+                [11, 31, 1],
+                [12, 31, 1],
+                [13, 31, 1],
+                [14, 31, 1],
+                [15, 31, 1],
+                [16, 31, 1],
+                [17, 31, 1],
+                [18, 31, 1],
+                [19, 31, 1],
+                [20, 31, 1],
+                [21, 31, 1],
+                [22, 31, 1],
+                [23, 31, 1],
+                [24, 31, 1],
+                [25, 31, 1],
+                [26, 31, 1],
+                [27, 31, 1],
+                [28, 31, 1],
+                [29, 31, 1],
+                [30, 31, 1],
+                [37, 30, 1],
+                [38, 30, 1],
+                [39, 30, 1],
+                [40, 30, 1],
+                [41, 30, 1],
+                [42, 30, 1],
+                [43, 30, 1],
+                [44, 30, 1],
+                [45, 30, 1],
+                [46, 30, 1],
+                [47, 30, 1],
+                [48, 30, 1],
+                [49, 30, 1],
+                [50, 30, 1],
+                [51, 30, 1],
+                [52, 30, 1],
+                [53, 30, 1],
+                [54, 30, 1],
+                [55, 30, 1],
+                [56, 30, 1],
+                [57, 30, 1],
+                [58, 30, 1],
+                [59, 30, 1],
+                [60, 30, 1],
+                [61, 30, 1],
+                [62, 30, 1],
+                [63, 30, 1],
+                [64, 30, 1],
+                [65, 30, 1],
+                [66, 30, 1],
+                [67, 30, 1],
+                [68, 30, 1],
+                [69, 30, 1],
+                [70, 30, 1],
+                [71, 30, 1],
+                [72, 30, 1],
+                [73, 30, 1],
+                [74, 30, 1],
+                [75, 30, 1],
+                [76, 30, 1],
+                [77, 30, 1],
+                [78, 30, 1],
+                [79, 30, 1],
+                [80, 30, 1],
+                [81, 30, 1],
+                [82, 30, 1],
+                [83, 30, 1],
+                [84, 30, 1],
+                [37, 31, 1],
+                [38, 31, 1],
+                [39, 31, 1],
+                [40, 31, 1],
+                [41, 31, 1],
+                [42, 31, 1],
+                [43, 31, 1],
+                [44, 31, 1],
+                [45, 31, 1],
+                [46, 31, 1],
+                [47, 31, 1],
+                [48, 31, 1],
+                [49, 31, 1],
+                [50, 31, 1],
+                [51, 31, 1],
+                [52, 31, 1],
+                [53, 31, 1],
+                [54, 31, 1],
+                [55, 31, 1],
+                [56, 31, 1],
+                [57, 31, 1],
+                [58, 31, 1],
+                [59, 31, 1],
+                [60, 31, 1],
+                [61, 31, 1],
+                [62, 31, 1],
+                [63, 31, 1],
+                [64, 31, 1],
+                [65, 31, 1],
+                [66, 31, 1],
+                [67, 31, 1],
+                [68, 31, 1],
+                [69, 31, 1],
+                [70, 31, 1],
+                [71, 31, 1],
+                [72, 31, 1],
+                [73, 31, 1],
+                [74, 31, 1],
+                [75, 31, 1],
+                [76, 31, 1],
+                [77, 31, 1],
+                [78, 31, 1],
+                [79, 31, 1],
+                [80, 31, 1],
+                [81, 31, 1],
+                [82, 31, 1],
+                [83, 31, 1],
+                [84, 31, 1],
+                [117, 30, 1],
+                [118, 30, 1],
+                [119, 30, 1],
+                [120, 30, 1],
+                [121, 30, 1],
+                [122, 30, 1],
+                [123, 30, 1],
+                [124, 30, 1],
+                [125, 30, 1],
+                [126, 30, 1],
+                [127, 30, 1],
+                [128, 30, 1],
+                [129, 30, 1],
+                [130, 30, 1],
+                [131, 30, 1],
+                [132, 30, 1],
+                [133, 30, 1],
+                [134, 30, 1],
+                [117, 31, 1],
+                [118, 31, 1],
+                [119, 31, 1],
+                [120, 31, 1],
+                [121, 31, 1],
+                [122, 31, 1],
+                [123, 31, 1],
+                [124, 31, 1],
+                [125, 31, 1],
+                [126, 31, 1],
+                [127, 31, 1],
+                [128, 31, 1],
+                [129, 31, 1],
+                [130, 31, 1],
+                [131, 31, 1],
+                [132, 31, 1],
+                [133, 31, 1],
+                [134, 31, 1],
+                [150, 30, 1],
+                [151, 30, 1],
+                [152, 30, 1],
+                [153, 30, 1],
+                [154, 30, 1],
+                [155, 30, 1],
+                [156, 30, 1],
+                [157, 30, 1],
+                [158, 30, 1],
+                [159, 30, 1],
+                [160, 30, 1],
+                [161, 30, 1],
+                [162, 30, 1],
+                [163, 30, 1],
+                [164, 30, 1],
+                [165, 30, 1],
+                [166, 30, 1],
+                [167, 30, 1],
+                [168, 30, 1],
+                [169, 30, 1],
+                [170, 30, 1],
+                [171, 30, 1],
+                [172, 30, 1],
+                [173, 30, 1],
+                [174, 30, 1],
+                [175, 30, 1],
+                [176, 30, 1],
+                [177, 30, 1],
+                [178, 30, 1],
+                [179, 30, 1],
+                [180, 30, 1],
+                [181, 30, 1],
+                [182, 30, 1],
+                [183, 30, 1],
+                [184, 30, 1],
+                [185, 30, 1],
+                [186, 30, 1],
+                [187, 30, 1],
+                [188, 30, 1],
+                [189, 30, 1],
+                [190, 30, 1],
+                [191, 30, 1],
+                [192, 30, 1],
+                [193, 30, 1],
+                [194, 30, 1],
+                [195, 30, 1],
+                [196, 30, 1],
+                [197, 30, 1],
+                [150, 31, 1],
+                [151, 31, 1],
+                [152, 31, 1],
+                [153, 31, 1],
+                [154, 31, 1],
+                [155, 31, 1],
+                [156, 31, 1],
+                [157, 31, 1],
+                [158, 31, 1],
+                [159, 31, 1],
+                [160, 31, 1],
+                [161, 31, 1],
+                [162, 31, 1],
+                [163, 31, 1],
+                [164, 31, 1],
+                [165, 31, 1],
+                [166, 31, 1],
+                [167, 31, 1],
+                [168, 31, 1],
+                [169, 31, 1],
+                [170, 31, 1],
+                [171, 31, 1],
+                [172, 31, 1],
+                [173, 31, 1],
+                [174, 31, 1],
+                [175, 31, 1],
+                [176, 31, 1],
+                [177, 31, 1],
+                [178, 31, 1],
+                [179, 31, 1],
+                [180, 31, 1],
+                [181, 31, 1],
+                [182, 31, 1],
+                [183, 31, 1],
+                [184, 31, 1],
+                [185, 31, 1],
+                [186, 31, 1],
+                [187, 31, 1],
+                [188, 31, 1],
+                [189, 31, 1],
+                [190, 31, 1],
+                [191, 31, 1],
+                [192, 31, 1],
+                [193, 31, 1],
+                [194, 31, 1],
+                [195, 31, 1],
+                [196, 31, 1],
+                [197, 31, 1],
+                [174, 0, 1],
+                [175, 0, 1],
+                [175, 1, 1],
+                [185, 0, 1],
+                [186, 0, 1],
+                [186, 1, 1]
+            ]
+        },
+        {
+            "pos": [7616, 1248],
+            "size": [13, 1],
+            "cell_size": [32, 64],
+            "cells": [
+                [0, 0, 1],
+                [1, 0, 1],
+                [2, 0, 1],
+                [3, 0, 1],
+                [4, 0, 1],
+                [5, 0, 1],
+                [6, 0, 1],
+                [7, 0, 1],
+                [8, 0, 1],
+                [9, 0, 1],
+                [10, 0, 1],
+                [11, 0, 1],
+                [12, 0, 1]
+            ]
+        },
+        {
+            "pos": [7561, 416],
+            "size": [14, 2],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 0, 1],
+                [1, 0, 1],
+                [2, 0, 1],
+                [3, 0, 1],
+                [4, 0, 1],
+                [5, 0, 1],
+                [6, 0, 1],
+                [7, 0, 1],
+                [8, 0, 1],
+                [9, 0, 1],
+                [10, 0, 1],
+                [11, 0, 1],
+                [12, 0, 1],
+                [13, 0, 1],
+                [0, 1, 1],
+                [1, 1, 1],
+                [2, 1, 1],
+                [3, 1, 1],
+                [4, 1, 1],
+                [5, 1, 1],
+                [6, 1, 1],
+                [7, 1, 1],
+                [8, 1, 1],
+                [9, 1, 1],
+                [10, 1, 1],
+                [11, 1, 1],
+                [12, 1, 1],
+                [13, 1, 1]
+            ]
+        },
+        {
+            "pos": [7163, 352],
+            "size": [1, 1],
+            "cell_size": [64, 64],
+            "cells": [[0, 0, 1]]
+        },
+        {
+            "pos": [7104, 320],
+            "size": [1, 1],
+            "cell_size": [64, 64],
+            "cells": [[0, 0, 1]]
+        }
+    ],
+    "actors": [
+        {
+            "def": "Sink",
+            "id": 58,
+            "pos": [1727, 1455]
+        },
+        {
+            "def": "Sink",
+            "id": 58,
+            "pos": [3479, 1455]
+        },
+        {
+            "def": "Sink",
+            "id": 58,
+            "pos": [3702, 1455]
+        },
+        {
+            "def": "Sink",
+            "id": 58,
+            "pos": [3919, 1455]
+        },
+        {
+            "def": "Sink",
+            "id": 58,
+            "pos": [4111, 1455]
+        },
+        {
+            "def": "Sink",
+            "id": 58,
+            "pos": [5094, 1455]
+        },
+        {
+            "def": "Sink",
+            "id": 58,
+            "pos": [5279, 1456]
+        },
+        {
+            "def": "Player Spawn",
+            "id": 1,
+            "pos": [137, 1118],
+            "values": [[4, 1]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [448, 1280],
+            "values": [[1, 28]]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [6080, 320]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [6112, 320]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [6144, 320]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [6176, 320]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [6784, 320]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [6816, 320]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [6848, 320]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [6880, 320]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [6737, 388]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [5888, 160]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [6176, 32]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [6496, 160]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [7808, 32]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [7904, 0]
+        },
+        {
+            "def": "Goal Bar",
+            "id": 9,
+            "pos": [7787, 143]
+        },
+        {
+            "def": "Goal Line",
+            "id": 10,
+            "pos": [7617, 384],
+            "scale": [524288, 65536]
+        },
+        {
+            "def": "Goal Line",
+            "id": 10,
+            "pos": [7873, 384],
+            "scale": [524288, 65536]
+        },
+        {
+            "def": "Water",
+            "id": 13,
+            "pos": [0, 1056]
+        },
+        {
+            "def": "Cheep Spawner",
+            "id": 60,
+            "singleplayer": true,
+            "pos": [674, 1094],
+            "vel": [-73728, 0],
+            "values": [
+                [0, 100],
+                [1, 0],
+                [2, 39976960],
+                [3, 0],
+                [4, 104857600]
+            ]
+        },
+        {
+            "def": "Cheep Spiky",
+            "id": 86,
+            "pos": [1232, 1113]
+        },
+        {
+            "def": "Cheep Spiky",
+            "id": 86,
+            "pos": [5074, 1280]
+        },
+        {
+            "def": "Cheep Spiky",
+            "id": 86,
+            "pos": [5392, 1305]
+        },
+        {
+            "def": "Cheep Spiky",
+            "id": 86,
+            "pos": [5648, 1081]
+        },
+        {
+            "def": "Cheep Spiky",
+            "id": 86,
+            "pos": [5872, 1305]
+        },
+        {
+            "def": "Cheep Blue",
+            "id": 62,
+            "pos": [1967, 1183],
+            "flags": 4
+        },
+        {
+            "def": "Cheep Blue",
+            "id": 62,
+            "pos": [2496, 1355],
+            "flags": 4
+        },
+        {
+            "def": "Cheep Blue",
+            "id": 62,
+            "pos": [3471, 1151],
+            "flags": 4
+        },
+        {
+            "def": "Cheep Blue",
+            "id": 62,
+            "pos": [4687, 1183],
+            "flags": 4
+        },
+        {
+            "def": "Cheep Blue",
+            "id": 62,
+            "pos": [6575, 1183],
+            "flags": 4
+        },
+        {
+            "def": "Cheep Blue",
+            "id": 62,
+            "pos": [6767, 1343],
+            "flags": 4
+        },
+        {
+            "def": "Cheep Blue",
+            "id": 62,
+            "pos": [6959, 1119],
+            "flags": 4
+        },
+        {
+            "def": "Cheep Green",
+            "id": 87,
+            "pos": [4306, 1087],
+            "values": [[0, 122880]],
+            "flags": 4
+        },
+        {
+            "def": "Cheep Green",
+            "id": 87,
+            "pos": [4352, 1210],
+            "values": [[0, 122880]],
+            "flags": 4
+        },
+        {
+            "def": "Cheep Green",
+            "id": 87,
+            "pos": [4512, 1300],
+            "values": [[0, 122880]],
+            "flags": 4
+        },
+        {
+            "def": "Cheep Green",
+            "id": 87,
+            "pos": [5138, 1153],
+            "values": [[0, 122880]],
+            "flags": 4
+        },
+        {
+            "def": "Warp",
+            "id": 6,
+            "pos": [7544, 1311],
+            "values": [
+                [0, 472711168],
+                [1, 27197440],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0],
+                [6, 524288000],
+                [7, 31457280],
+                [8, 1],
+                [9, 0],
+                [10, 0]
+            ]
+        },
+        {
+            "def": "Checkpoint",
+            "id": 7,
+            "pos": [4536, 1257],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0],
+                [6, 0]
+            ]
+        },
+        {
+            "def": "Cheep Spawner",
+            "id": 60,
+            "multiplayer": true,
+            "pos": [674, 1094],
+            "vel": [-73728, 0],
+            "values": [
+                [0, 50],
+                [1, 0],
+                [2, 39976960],
+                [3, 0],
+                [4, 104857600]
+            ]
+        }
+    ]
+}
