@@ -149,7 +149,7 @@ set(S_FIXED_BUILD_TEST OFF CACHE INTERNAL "")
 
 FetchContent_Declare(S_fixed
     GIT_REPOSITORY https://github.com/Schwungus/S_fixed.git
-    GIT_TAG 8667493230501d7d1b1ba5e3454b263c228035df
+    GIT_TAG 07af41f51f68da8bd2b60a5dff7544959fdbca91
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(S_fixed)
