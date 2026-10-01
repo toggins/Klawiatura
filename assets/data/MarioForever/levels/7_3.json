@@ -2773,7 +2773,7 @@
             "def": "Water Trigger",
             "id": 14,
             "pos": [5500, 0],
-            "scale": [262144, 524288],
+            "scale": [524288, 524288],
             "values": [
                 [0, 27721728],
                 [1, 65536]
@@ -2841,6 +2841,39 @@
                 [4, 0]
             ],
             "flags": 768
+        },
+        {
+            "def": "Water Trigger",
+            "id": 14,
+            "multiplayer": true,
+            "pos": [4416, 0],
+            "scale": [524288, 524288],
+            "values": [
+                [0, 8060928],
+                [1, 65536]
+            ]
+        },
+        {
+            "def": "Water Trigger",
+            "id": 14,
+            "multiplayer": true,
+            "pos": [4960, 0],
+            "scale": [524288, 524288],
+            "values": [
+                [0, 8060928],
+                [1, 65536]
+            ]
+        },
+        {
+            "def": "Water Trigger",
+            "id": 14,
+            "multiplayer": true,
+            "pos": [4690, 0],
+            "scale": [524288, 524288],
+            "values": [
+                [0, 8060928],
+                [1, 65536]
+            ]
         }
     ]
 }
