@@ -2024,28 +2024,32 @@
         {
             "def": "Cheep Spawner",
             "id": 60,
-            "pos": [674, 502],
+            "singleplayer": true,
+            "pos": [623, 479],
             "vel": [-65536, 0],
             "values": [
                 [0, 5],
                 [1, 26214400],
-                [3, 471859200]
+                [2, 0],
+                [3, 471859200],
+                [4, 0]
             ],
-            "flags": 256,
-            "singleplayer": true
+            "flags": 256
         },
         {
             "def": "Cheep Spawner",
             "id": 60,
-            "pos": [674, 502],
+            "multiplayer": true,
+            "pos": [623, 479],
             "vel": [-65536, 0],
             "values": [
                 [0, 2],
                 [1, 26214400],
-                [3, 471859200]
+                [2, 0],
+                [3, 471859200],
+                [4, 0]
             ],
-            "flags": 256,
-            "multiplayer": true
+            "flags": 256
         },
         {
             "def": "Bush",
@@ -2165,7 +2169,8 @@
         {
             "def": "Player Spawn",
             "id": 1,
-            "pos": [169, 415]
+            "pos": [169, 415],
+            "values": [[4, 0]]
         },
         {
             "def": "Goal Bar",

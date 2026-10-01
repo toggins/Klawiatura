@@ -7017,7 +7017,8 @@
         {
             "def": "Player Spawn",
             "id": 1,
-            "pos": [137, 1118]
+            "pos": [137, 1118],
+            "values": [[4, 0]]
         },
         {
             "def": "Bush",
@@ -7302,18 +7303,30 @@
         {
             "def": "Cheep Spawner",
             "id": 60,
+            "singleplayer": true,
             "pos": [674, 1094],
             "vel": [-73728, 0],
-            "values": [[0, 100]],
-            "singleplayer": true
+            "values": [
+                [0, 100],
+                [1, 0],
+                [2, 39976960],
+                [3, 0],
+                [4, 104857600]
+            ]
         },
         {
             "def": "Cheep Spawner",
             "id": 60,
+            "multiplayer": true,
             "pos": [674, 1094],
             "vel": [-73728, 0],
-            "values": [[0, 75]],
-            "multiplayer": true
+            "values": [
+                [0, 75],
+                [1, 0],
+                [2, 39976960],
+                [3, 0],
+                [4, 104857600]
+            ]
         },
         {
             "def": "Cheep Blue",
