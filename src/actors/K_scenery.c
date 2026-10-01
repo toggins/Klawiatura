@@ -78,7 +78,7 @@ static void tick_cloud(GameActor* actor) {
 static void draw_cloud(const GameActor* actor) {
     batch_reset();
 
-    if (CLIENT.extra_effects) {
+    if (CLIENT.extra_effects && VAL(actor, SCENERY_ANIMATION) <= 0) {
         batch_offset(B_F3_XY(-31.f, -25.f));
         draw_actor(actor, "effects/glow", FALSE);
         batch_offset(B_F3_0);
@@ -94,6 +94,7 @@ static void draw_cloud(const GameActor* actor) {
         batch_color(B_U4(123, 99, 99, 255));
         break;
     }
+
     draw_actor(actor, fmt("scenery/cloud/%i", ((gamestate()->time * 2) / 25) % 3), FALSE);
 }
 
