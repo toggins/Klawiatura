@@ -94,13 +94,11 @@ static Catalog CATALOG = {
 			{.fmt = fmt_resolution, .cycle = resolution_cycle},
 #ifndef SDL_PLATFORM_EMSCRIPTEN
             {.fmt = fmt_framerate, .cycle = framerate_cycle},
-            {},
 			{.fmt = fmt_fullscreen, .cycle = fullscreen_cycle},
 			{.fmt = fmt_vsync, .cycle = vsync_cycle},
 #endif
             {},
             {.fmt = fmt_texture_filter, .cycle = texture_filter_cycle},
-            {},
             {.fmt = fmt_extra_effects, .cycle = extra_effects_cycle},
 		},
 
