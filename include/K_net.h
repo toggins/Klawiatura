@@ -70,7 +70,7 @@ int get_peer_ping(NetID);
 const char* get_peer_string(NetID, const char*);
 Sint64 get_peer_number(NetID, const char*);
 Bool get_peer_bool(NetID, const char*);
-Bool peer_exists(NetID);
+Bool peer_exists(NetID), peer_is_relayed(NetID);
 Uint8 get_peer_count(), get_peer_limit();
 
 void bail_from_game();

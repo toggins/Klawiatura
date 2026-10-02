@@ -651,8 +651,17 @@ static Bool draw_lobby_menu() {
             batch_string("footer", 16.f, LFMT((powerup == POW_NONE) ? "value.no_powerup" : get_powerup_name(powerup)));
         }
 
-        batch_pos(B_F3_XY(610.f, ly + 28.f));
         batch_color(B_U4_WHITE);
+
+        if (peer_is_relayed(pid)) {
+            batch_pos(B_F3_XY(610.f, ly + 28.f));
+            batch_sprite("ui/menu/lobby/relay");
+
+            batch_pos(B_F3_XY(590.f, ly + 28.f));
+        } else {
+            batch_pos(B_F3_XY(610.f, ly + 28.f));
+        }
+
         batch_align(B_ALIGN(FA_RIGHT, FA_MIDDLE));
         batch_string("footer", 16.f, fmt("%i ms", get_peer_ping(pid)));
 
@@ -1010,6 +1019,7 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite("ui/menu/lobby/slot/empty", AKL_NEVER);
     load_sprite("ui/menu/lobby/slot/peer", AKL_NEVER);
     load_sprite("ui/menu/lobby/slot/you", AKL_NEVER);
+    load_sprite("ui/menu/lobby/relay", AKL_NEVER);
     load_font("menu", AKL_NEVER);
     load_sound("ui/enter", AKL_ONCE);
     load_sound("ui/connect", AKL_NEVER);

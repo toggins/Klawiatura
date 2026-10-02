@@ -484,6 +484,10 @@ Bool peer_exists(NetID pid) {
     return NutBlast_IsPlayerAlive(pid);
 }
 
+Bool peer_is_relayed(NetID pid) {
+    return NutBlast_IsPlayerRelayed(pid);
+}
+
 Uint8 get_peer_count() {
     return NutBlast_GetPlayerCount();
 }
