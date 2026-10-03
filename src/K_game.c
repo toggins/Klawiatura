@@ -1448,8 +1448,11 @@ void tick_game() {
         }
     }
 
-    if (local_player == view_player || topui() != NULL || (!kb_pressed(KB_LEFT) && !kb_pressed(KB_RIGHT)))
+    if (local_player == view_player || topui() != NULL || (!kb_pressed(KB_LEFT) && !kb_pressed(KB_RIGHT))
+        || in_blocking_sequence())
+    {
         return;
+    }
 
     PlayerID try_view = view_player;
     const PlayerID change = (PlayerID)((PlayerID)kb_pressed(KB_RIGHT) - (PlayerID)kb_pressed(KB_LEFT));
