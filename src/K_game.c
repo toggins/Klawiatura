@@ -1466,7 +1466,7 @@ void tick_game() {
             try_view = (PlayerID)(try_view - game_context.num_players);
 
         const GamePlayer* player = get_player(try_view);
-        if (player != NULL && player->lives >= 0) {
+        if (player != NULL && get_actor(player->actor) != NULL) {
             set_view_player(player);
             break;
         }
@@ -1869,6 +1869,10 @@ GameActor* respawn_player(GamePlayer* player) {
     if (player->lives < 0)
         goto spectate;
 
+    const GameActor* hazard = get_actor(game_state->hazard);
+    if (hazard != NULL && hazard->type == ACT_RISING_LAVA && hazard->vel.y < Fx0 && game_state->time > 0)
+        goto spectate;
+
     const GameActor* spawn = get_actor(game_state->autoscroll);
     if (spawn == NULL)
         spawn = get_actor(game_state->checkpoint);
@@ -1966,9 +1970,14 @@ spectate:
     /// !!! CLIENT-SIDE !!!
     if (player->id == view_player) {
         for (PlayerID i = 0; i < game_context.num_players; i++) {
+            if (i == view_player)
+                continue;
+
             const GamePlayer* oplayer = get_player(i);
-            if (oplayer != NULL && oplayer->lives >= 0 && get_actor(oplayer->actor) != NULL)
+            if (oplayer != NULL && get_actor(oplayer->actor) != NULL) {
                 set_view_player(oplayer);
+                break;
+            }
         }
     }
     /// !!! CLIENT-SIDE !!!

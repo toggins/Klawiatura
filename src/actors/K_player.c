@@ -1184,36 +1184,21 @@ static void tick_dead(GameActor* actor) {
         if (gamestate()->clock == 0)
             break;
 
-        Bool hazard_block = FALSE;
-
         GamePlayer* player = get_player(actor->player);
-        if (player != NULL && player->lives >= 0) {
-            const GameActor* hazard = get_actor(game_state->hazard);
-            switch (hazard->type) {
-            default:
-                break;
+        if (player == NULL || player->lives < 0)
+            break;
 
-            case ACT_RISING_LAVA: {
-                if (hazard->vel.y < Fx0)
-                    hazard_block = TRUE;
+        const GameActor* hazard = get_actor(game_state->hazard);
+        if (hazard != NULL && hazard->type == ACT_SPIKE_CEILING
+            && (VAL(hazard, HAZARD_STATE) >= 300 || VAL(hazard, HAZARD_STATE2) > 0))
+        {
+            VAL(actor, PLAYER_DEAD) -= 10;
+            FLAG_OFF(actor, FLG_VISIBLE);
 
-                break;
-            }
-
-            case ACT_SPIKE_CEILING: {
-                if (VAL(hazard, HAZARD_STATE) >= 300 || VAL(hazard, HAZARD_STATE2) > 0) {
-                    VAL(actor, PLAYER_DEAD) -= 10;
-                    FLAG_OFF(actor, FLG_VISIBLE);
-                    hazard_block = TRUE;
-                }
-
-                break;
-            }
-            }
+            break;
         }
 
-        if (!hazard_block)
-            respawn_player(player);
+        respawn_player(player);
 
         break;
     }
