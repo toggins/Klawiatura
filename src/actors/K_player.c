@@ -96,7 +96,7 @@ void kill_player(GameActor* actor) {
 
     const GameState* game_state = gamestate();
     const GameActor* hazard = get_actor(gamestate()->hazard);
-    if (hazard->type == ACT_RISING_LAVA && hazard->vel.y < Fx0) {
+    if (hazard != NULL && hazard->type == ACT_RISING_LAVA && hazard->vel.y < Fx0) {
         force_lose = TRUE;
         for (PlayerID i = 0; i < n; i++) {
             const GamePlayer* oplayer = get_player(i);
