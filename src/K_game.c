@@ -15,6 +15,7 @@
 #include "actors/K_checkpoint.h"
 #include "actors/K_enemies.h"
 #include "actors/K_goal.h"
+#include "actors/K_lava.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 #include "actors/K_projectiles.h"
@@ -566,7 +567,8 @@ static void start_game_state() {
     for (Sint32 i = 0; i < GRID_SIZE; i++)
         game_state->grid[i] = NULL_ACTOR;
 
-    game_state->spawn = game_state->checkpoint = game_state->autoscroll = game_state->water = NULL_ACTOR;
+    game_state->spawn = game_state->checkpoint = game_state->autoscroll = game_state->water = game_state->hazard
+        = NULL_ACTOR;
 
     game_state->clock = -1;
 
@@ -1655,10 +1657,19 @@ static void draw_game_state() {
         if (player != NULL) {
             const GameActor* pawn = get_actor(player->actor);
             if (pawn != NULL && pawn->type == ACT_PLAYER) {
-                camera->pos
-                    = Vclamp(Vadd(get_interp(pawn),
-                                 (FVec2){interp_state->players[player->id].current + player->current_quake, Fx0}),
-                        Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
+                FVec2 ppos = get_interp(pawn);
+                Fixed yoffs = Fx0;
+
+                const GameActor* hazard = get_actor(game_state->hazard);
+                if (hazard != NULL && hazard->type == ACT_RISING_LAVA
+                    && pawn->pos.y >= (VAL(hazard, RISING_LIMIT) + Int2Fx(300)))
+                {
+                    yoffs += Int2Fx(50) - Fdiv(get_interp(hazard).y - ppos.y, Int2Fx(30));
+                }
+
+                camera->pos = Vclamp(
+                    Vadd(ppos, (FVec2){interp_state->players[player->id].current + player->current_quake, yoffs}),
+                    Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
             }
         }
     } else {
@@ -2113,6 +2124,7 @@ void win_player(GamePlayer* player) {
         }
     }
 
+    player->bounds.end.y = get_player_view(player).y + F_SCREEN_HEIGHT;
     set_sequence(GS_WIN, player, 0);
 
     set_view_player(player);
@@ -2382,6 +2394,17 @@ void quake_actor(const GameActor* actor, FVec2 quake) {
     }
 }
 
+const Fixed get_view_y_offset(const GamePlayer* player) {
+    if (player == NULL)
+        return Fx0;
+
+    const GameActor* hazard = get_actor(gamestate()->hazard);
+    if (hazard == NULL || hazard->type != ACT_RISING_LAVA || player->pos.y < (VAL(hazard, RISING_LIMIT) + Int2Fx(300)))
+        return Fx0;
+
+    return Int2Fx(50) - Fdiv(hazard->pos.y - player->pos.y, Int2Fx(30));
+}
+
 const FVec2 get_player_view(const GamePlayer* player) {
     const GameActor* autoscroll = get_actor(game_state->autoscroll);
     if (autoscroll != NULL)
@@ -2389,7 +2412,8 @@ const FVec2 get_player_view(const GamePlayer* player) {
 
     return (player == NULL)
                ? (FVec2){Fx0, Fx0}
-               : Vsub(Vclamp(Vadd(player->pos, (FVec2){player->xscroll + player->current_quake, Fx0}),
+               : Vsub(Vclamp(Vadd(player->pos,
+                                 (FVec2){player->xscroll + player->current_quake, get_view_y_offset(player)}),
                           Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN)),
                      F_HALF_SCREEN);
 }
@@ -2403,8 +2427,9 @@ static FRect get_autoscroll_cbox(const GameActor* autoscroll, Fixed edge) {
 }
 
 static FRect get_player_cbox(const GamePlayer* player, Fixed edge) {
-    const FVec2 cpos = Vclamp(Vadd(player->pos, (FVec2){player->xscroll + player->current_quake, Fx0}),
-        Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
+    const FVec2 cpos
+        = Vclamp(Vadd(player->pos, (FVec2){player->xscroll + player->current_quake, get_view_y_offset(player)}),
+            Vadd(player->bounds.start, F_HALF_SCREEN), Vsub(player->bounds.end, F_HALF_SCREEN));
     return (FRect){
         {cpos.x - F_HALF_SCREEN_WIDTH + edge, cpos.y - F_HALF_SCREEN_HEIGHT + edge},
         {cpos.x + F_HALF_SCREEN_WIDTH - edge, cpos.y + F_HALF_SCREEN_HEIGHT - edge},

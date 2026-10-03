@@ -53,6 +53,13 @@
             "max_scale": [32767, 480],
             "tile": [true, false]
         },
+        "Castle Background 2": {
+            "type": "background",
+            "sprite": "backgrounds/castle2",
+            "depth": 190,
+            "scalable": true,
+            "tile": [true, true]
+        },
         "Starland Background": {
             "type": "background",
             "sprite": "backgrounds/starland",
@@ -256,6 +263,12 @@
             "type": "tile",
             "sprite": "tiles/brick/small",
             "depth": 20
+        },
+        "Brick Spike": {
+            "type": "tile",
+            "sprite": "tiles/spike/brick",
+            "depth": 20,
+            "solid": "hurt"
         },
         "Bridge Red": {
             "type": "tile",
@@ -829,6 +842,12 @@
             "sprite": "scenery/portrait",
             "depth": 189
         },
+        "Portrait Eyes": {
+            "type": "actor",
+            "sprite": "scenery/portrait/eyes/0",
+            "depth": 188,
+            "id": 97
+        },
         "Star": {
             "type": "actor",
             "id": 75,
@@ -1196,6 +1215,24 @@
                     "index": 0,
                     "type": "fixed",
                     "default": 41943040
+                }
+            ]
+        },
+        "Rising Lava": {
+            "type": "actor",
+            "id": 98,
+            "sprite": "enemies/lava/0",
+            "values": [
+                {
+                    "name": "Limit",
+                    "index": 0,
+                    "type": "fixed",
+                    "default": 131072000
+                },
+                {
+                    "name": "Speed-Up Time",
+                    "index": 1,
+                    "default": 900
                 }
             ]
         },
@@ -1912,6 +1949,8 @@
                 "Underwater Background",
                 "Castle Background",
                 "Castle Loop Background",
+                "Castle Background 2",
+                "Castle Background 3",
                 "Starland Background",
                 "Block Background"
             ]
@@ -1972,7 +2011,7 @@
                 },
                 {
                     "name": "Brick",
-                    "items": ["Brick", "Brick 2", "Brick Small"]
+                    "items": ["Brick", "Brick 2", "Brick Small", "Brick Spike"]
                 },
                 {
                     "name": "Lava Glow",
@@ -2125,9 +2164,12 @@
                     "name": "Stars",
                     "items": ["Star", "Shooting Star Spawner"]
                 },
+                {
+                    "name": "Portraits",
+                    "items": ["Portrait", "Portrait Eyes", "Portrait Tank"]
+                },
                 "Bush",
                 "Waterfall",
-                "Portrait",
                 "Cobweb"
             ]
         },
@@ -2221,6 +2263,7 @@
                 "Sink",
                 "Spring",
                 "Loop",
+                "Rising Lava",
                 "Spike Ceiling"
             ]
         }

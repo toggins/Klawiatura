@@ -203,6 +203,8 @@ typedef struct {
 
 typedef struct {
     Uint8 hurry;
+    float hazard_fade;
+
     VideoBowser bowser;
     VideoCamera camera;
     TileMap* tilemap;

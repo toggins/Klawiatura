@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/portrait/eyes",
+    "size": [44, 31],
+    "offset": [-36, 50],
+    "uvs": [47, 1, 91, 32]
+}

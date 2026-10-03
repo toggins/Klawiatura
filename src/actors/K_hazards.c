@@ -214,6 +214,18 @@ static void create_spike_ceiling(GameActor* actor) {
     actor->depth = Int2Fx(-10);
 
     VAL(actor, HAZARD_Y) = actor->pos.y;
+
+    GameState* game_state = gamestate();
+    GameActor* hazard = get_actor(game_state->hazard);
+    if (hazard != NULL)
+        FLAG_ON(hazard, FLG_DESTROY);
+    game_state->hazard = actor->id;
+}
+
+static void cleanup_spike_ceiling(GameActor* actor) {
+    GameState* game_state = gamestate();
+    if (game_state->hazard == actor->id)
+        game_state->hazard = NULL_ACTOR;
 }
 
 static void tick_spike_ceiling(GameActor* actor) {
@@ -315,6 +327,7 @@ static void draw_spike_ceiling(const GameActor* actor) {
 const ActorTable TAB_SPIKE_CEILING = {
     .load = load_spike_ceiling,
     .create = create_spike_ceiling,
+    .cleanup = cleanup_spike_ceiling,
     .tick = tick_spike_ceiling,
     .draw = draw_spike_ceiling,
 };

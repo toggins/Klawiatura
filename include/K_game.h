@@ -401,13 +401,13 @@ typedef struct {
 
 #define BOX_OUTLINE_LEFT(actor)                                                                                        \
     ((FRect){                                                                                                          \
-        {(actor)->pos.x + (actor)->box.start.x,       (actor)->pos.y + (actor)->box.start.y},                                \
-        {(actor)->pos.x + (actor)->box.start.x + Fx1, (actor)->pos.y + (actor)->box.end.y  },                            \
+        {(actor)->pos.x + (actor)->box.start.x,       (actor)->pos.y + (actor)->box.start.y},                          \
+        {(actor)->pos.x + (actor)->box.start.x + Fx1, (actor)->pos.y + (actor)->box.end.y  },                          \
     })
 #define BOX_OUTLINE_RIGHT(actor)                                                                                       \
     ((FRect){                                                                                                          \
         {(actor)->pos.x + (actor)->box.end.x - Fx1, (actor)->pos.y + (actor)->box.start.y},                            \
-        {(actor)->pos.x + (actor)->box.end.x,       (actor)->pos.y + (actor)->box.end.y  },                                    \
+        {(actor)->pos.x + (actor)->box.end.x,       (actor)->pos.y + (actor)->box.end.y  },                            \
     })
 
 typedef Uint32 ActorFlags;
@@ -443,7 +443,7 @@ typedef struct {
 typedef struct {
     GameFlags flags;
 
-    ActorID spawn, checkpoint, autoscroll, water;
+    ActorID spawn, checkpoint, autoscroll, water, hazard;
     ActorID live_actors, next_actor;
     ActorID grid[GRID_SIZE];
 

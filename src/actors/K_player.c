@@ -78,9 +78,11 @@ void kill_player(GameActor* actor) {
     dead->player = actor->player;
     align_interp(dead, actor);
 
+    const PlayerID n = gamecontext()->num_players;
+
     GamePlayer* player = get_player(actor->player);
     if (player != NULL) {
-        if (gamecontext()->num_players > 1)
+        if (n > 1)
             --player->lives;
         player->powerup = POW_NONE;
         player->actor = dead->id;
@@ -90,8 +92,26 @@ void kill_player(GameActor* actor) {
 
     FLAG_ON(actor, FLG_DESTROY);
 
+    Bool force_lose = FALSE;
+
     const GameState* game_state = gamestate();
-    if (in_blocking_sequence() || gamecontext()->num_players <= 1 || all_players_dead() || game_state->clock == 0)
+    const GameActor* hazard = get_actor(gamestate()->hazard);
+    if (hazard->type == ACT_RISING_LAVA && hazard->vel.y < Fx0) {
+        force_lose = TRUE;
+        for (PlayerID i = 0; i < n; i++) {
+            const GamePlayer* oplayer = get_player(i);
+            if (oplayer == NULL)
+                continue;
+
+            const GameActor* opawn = get_actor(oplayer->actor);
+            if (opawn != NULL && opawn->type == ACT_PLAYER) {
+                force_lose = FALSE;
+                break;
+            }
+        }
+    }
+
+    if (in_blocking_sequence() || n <= 1 || all_players_dead() || game_state->clock == 0 || force_lose)
         set_sequence(GS_LOSE, player, 0);
     else
         play_state_sound((player == NULL || player->lives >= 0) ? "lose" : "dead", PLAY_POS, A_ACTOR(dead));
@@ -1157,27 +1177,44 @@ static void tick_dead(GameActor* actor) {
     }
 
     case 201: {
-        if (in_blocking_sequence() || gamecontext()->num_players <= 1 || all_players_dead() || gamestate()->clock == 0)
+        if (in_blocking_sequence() || gamecontext()->num_players <= 1 || all_players_dead())
             break;
+
+        const GameState* game_state = gamestate();
+        if (gamestate()->clock == 0)
+            break;
+
+        Bool hazard_block = FALSE;
 
         GamePlayer* player = get_player(actor->player);
         if (player != NULL && player->lives >= 0) {
-            const GameActor* hazard = NULL;
-            FOR_EACH_ACTOR (hazard) {
-                if (hazard->type == ACT_SPIKE_CEILING
-                    && (VAL(hazard, HAZARD_STATE) >= 300 || VAL(hazard, HAZARD_STATE2) > 0))
-                {
+            const GameActor* hazard = get_actor(game_state->hazard);
+            switch (hazard->type) {
+            default:
+                break;
+
+            case ACT_RISING_LAVA: {
+                if (hazard->vel.y < Fx0)
+                    hazard_block = TRUE;
+
+                break;
+            }
+
+            case ACT_SPIKE_CEILING: {
+                if (VAL(hazard, HAZARD_STATE) >= 300 || VAL(hazard, HAZARD_STATE2) > 0) {
                     VAL(actor, PLAYER_DEAD) -= 10;
                     FLAG_OFF(actor, FLG_VISIBLE);
-
-                    goto dont_respawn;
+                    hazard_block = TRUE;
                 }
+
+                break;
+            }
             }
         }
 
-        respawn_player(player);
+        if (!hazard_block)
+            respawn_player(player);
 
-    dont_respawn:
         break;
     }
 
