@@ -1185,17 +1185,16 @@ static void tick_dead(GameActor* actor) {
             break;
 
         GamePlayer* player = get_player(actor->player);
-        if (player == NULL || player->lives < 0)
-            break;
+        if (player != NULL && player->lives >= 0) {
+            const GameActor* hazard = get_actor(game_state->hazard);
+            if (hazard != NULL && hazard->type == ACT_SPIKE_CEILING
+                && (VAL(hazard, HAZARD_STATE) >= 300 || VAL(hazard, HAZARD_STATE2) > 0))
+            {
+                VAL(actor, PLAYER_DEAD) -= 10;
+                FLAG_OFF(actor, FLG_VISIBLE);
 
-        const GameActor* hazard = get_actor(game_state->hazard);
-        if (hazard != NULL && hazard->type == ACT_SPIKE_CEILING
-            && (VAL(hazard, HAZARD_STATE) >= 300 || VAL(hazard, HAZARD_STATE2) > 0))
-        {
-            VAL(actor, PLAYER_DEAD) -= 10;
-            FLAG_OFF(actor, FLG_VISIBLE);
-
-            break;
+                break;
+            }
         }
 
         respawn_player(player);
