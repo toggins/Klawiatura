@@ -4475,6 +4475,46 @@
             "multiplayer": true,
             "pos": [7200, 64],
             "values": [[1, 28]]
+        },
+        {
+            "def": "Platform",
+            "id": 11,
+            "multiplayer": true,
+            "pos": [7104, 448],
+            "vel": [393216, 0],
+            "values": [
+                [0, 13],
+                [1, 0],
+                [2, 0]
+            ]
+        },
+        {
+            "def": "Platform",
+            "id": 11,
+            "multiplayer": true,
+            "pos": [8672, 352],
+            "values": [
+                [0, 2],
+                [1, 0],
+                [2, 0]
+            ],
+            "flags": 32
+        },
+        {
+            "def": "Platform Turn",
+            "id": 12,
+            "multiplayer": true,
+            "pos": [7008, 448],
+            "vel": [13107, 0],
+            "flags": 32
+        },
+        {
+            "def": "Platform Turn",
+            "id": 12,
+            "multiplayer": true,
+            "pos": [8768, 448],
+            "vel": [-13107, 0],
+            "flags": 32
         }
     ]
 }
