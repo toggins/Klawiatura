@@ -8,10 +8,11 @@
 #define MAX_STATE_TRACKS MAX_PLAYERS
 #define ALL_TRACKS MAX_STATE_TRACKS
 
-#define A_PAN(pan) ((float[2]){pan, 0.f})
+#define A_PAN(pan) (&(float){pan})
 #define A_XY(x, y) ((float[2]){x, y})
 #define A_FVEC2(fvec) A_XY(Fx2Float((fvec).x), Fx2Float((fvec).y))
 #define A_ACTOR(actor) A_FVEC2((actor)->pos)
+#define A_ATTACH(actor) (&(SoundActor){(actor)->id, (actor)->type})
 
 typedef struct {
     AssetBase base;
@@ -34,10 +35,20 @@ typedef Uint8 PlayFlags;
 #define PLAY_PAN (PlayFlags)(1U << 1)
 #define PLAY_POS (PlayFlags)(1U << 2)
 #define PLAY_SYSTEM (PlayFlags)(1U << 3)
+#define PLAY_ACTOR (PlayFlags)(1U << 4)
+
+typedef struct {
+    ActorID id;
+    ActorType type;
+} SoundActor;
 
 typedef struct {
     PlayFlags flags;
-    float offset, pos[2];
+    float offset;
+    union {
+        float pos[2];
+        SoundActor actor;
+    } at;
 
     TinyHash sound_key;
 } SoundChannel;
@@ -81,7 +92,7 @@ void start_audio_state(), tick_audio_state(Bool), nuke_audio_state();
 void save_audio_state(AudioState*), load_audio_state(const AudioState*);
 void pause_audio_state(Bool);
 
-void play_state_sound(const char*, PlayFlags, const float[2]);
+void play_state_sound(const char*, PlayFlags, const void*);
 
 void play_state_track(PlayerID, const char*, PlayFlags, Uint32);
 void fade_state_track(PlayerID, float, float);
