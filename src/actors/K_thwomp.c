@@ -74,6 +74,7 @@ static void tick(GameActor* actor) {
 
     if (ANY_FLAG(actor, FLG_THWOMP_FALL)) {
         displace_actor(actor, Fx0, FALSE);
+        TOUCH_OFF(actor, TOUCH_DISPLACEABLE);
         actor->vel.y += Fx1;
     }
 
