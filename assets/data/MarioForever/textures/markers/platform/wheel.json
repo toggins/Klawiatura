@@ -1,0 +1,6 @@
+{
+    "texture": "markers/platform",
+    "size": [24, 25],
+    "offset": [11, 11],
+    "uvs": [223, 189, 247, 214]
+}

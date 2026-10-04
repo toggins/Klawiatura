@@ -1101,6 +1101,10 @@
                     "name": "5-2 Y Speed",
                     "index": 2,
                     "type": "fixed"
+                },
+                {
+                    "name": "Mask",
+                    "index": 3
                 }
             ],
             "flags": [
@@ -1123,10 +1127,48 @@
             "id": 12,
             "sprite": "editor/platform_turn",
             "scalable": true,
+            "values": [
+                {
+                    "name": "Mask",
+                    "index": 2
+                },
+                {
+                    "name": "Set Mask",
+                    "index": 3
+                }
+            ],
             "flags": [
                 {
                     "name": "Add",
                     "index": 5
+                }
+            ]
+        },
+        "Centipede": {
+            "type": "actor",
+            "id": 88,
+            "sprite": "markers/platform/brick/small",
+            "values": [
+                {
+                    "name": "Start X Speed",
+                    "index": 0,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Start Y Speed",
+                    "index": 1,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Delay",
+                    "index": 2,
+                    "default": 16
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Create Platform On Turn",
+                    "index": 7
                 }
             ]
         },
@@ -2248,7 +2290,7 @@
                 },
                 {
                     "name": "Platforms",
-                    "items": ["Platform", "Platform Turn"]
+                    "items": ["Platform", "Platform Turn", "Centipede"]
                 },
                 {
                     "name": "Water",
