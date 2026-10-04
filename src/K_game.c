@@ -2356,23 +2356,18 @@ void push_actors(GameActor* actor) {
                 if (actor == other || !TOUCHING(other, TOUCH_DISPLACEABLE) || ANY_FLAG(other, FLG_DESTROY))
                     continue;
 
-                FRect obox = Radd(other->box, other->pos);
-                if (!Rcollide(abox, obox))
+                const FRect obox = Radd(other->box, other->pos);
+                const FVec2 overlap = {Fmin(obox.end.x, abox.end.x) - Fmax(obox.start.x, abox.start.x),
+                    Fmin(obox.end.y, abox.end.y) - Fmax(obox.start.y, abox.start.y)};
+
+                if (overlap.x <= Fx0 || overlap.y <= Fx0)
                     continue;
 
                 FVec2 push = other->pos;
-                if (obox.start.x < abox.start.x && obox.end.x > abox.start.x)
-                    push.x = actor->pos.x + actor->box.start.x - other->box.end.x;
-                else if (obox.end.x > abox.end.x && obox.start.x < abox.end.x)
-                    push.x = actor->pos.x + actor->box.end.x - other->box.start.x;
-
-                obox = Radd(other->box, push);
-                if (Rcollide(abox, obox)) {
-                    if (obox.start.y < abox.start.y && obox.end.y > abox.start.y)
-                        push.y = actor->pos.y + actor->box.start.y - other->box.end.y;
-                    else if (obox.end.y > abox.end.y && obox.start.y < abox.end.y)
-                        push.y = actor->pos.y + actor->box.end.y - other->box.start.y;
-                }
+                if (overlap.x < overlap.y)
+                    push.x += (Rcenter(obox).x < Rcenter(abox).x) ? -overlap.x : overlap.x;
+                else
+                    push.y += (Rcenter(obox).y < Rcenter(abox).y) ? -overlap.y : overlap.y;
 
                 if (!touching_solid(Radd(other->box, push), SOL_SOLID))
                     move_actor(other, push);
@@ -2723,7 +2718,13 @@ SolidFlags displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
         actor->platform = NULL_ACTOR;
 
         const FVec2 avel = actor->vel;
-        const FVec2 pvel = Vsub(platform->pos, platform->last_pos);
+        FVec2 pvel = Vsub(platform->pos, platform->last_pos);
+
+        // GROSS HACK: Don't apply platform Y delta if it's a solid block.
+        //             The block will likely push the displacing actor by
+        //             itself anyway.
+        if (pvel.y < Fx0 && ACTOR_IS_SOLID(platform, SOL_SOLID))
+            pvel.y = Fx0;
 
         actor->vel = pvel;
         result |= displace_actor(actor, Fx0, FALSE);
