@@ -869,6 +869,26 @@
             "sprite": "editor/player_spawn",
             "values": [
                 {
+                    "name": "Bounds Start X",
+                    "index": 0,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Bounds Start Y",
+                    "index": 1,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Bounds End X",
+                    "index": 2,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Bounds End Y",
+                    "index": 3,
+                    "type": "fixed"
+                },
+                {
                     "name": "Warp Out Angle",
                     "index": 4,
                     "default": 1

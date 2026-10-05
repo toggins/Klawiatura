@@ -1886,21 +1886,34 @@ GameActor* respawn_player(GamePlayer* player) {
     default: {
         player->bounds = level_info->bounds;
         set_player_track(player, 0);
+
+        break;
+    }
+
+    case ACT_PLAYER_SPAWN: {
+        player->bounds = (VAL(spawn, PLAYER_SPAWN_BOUNDS_X1) == VAL(spawn, PLAYER_SPAWN_BOUNDS_X2)
+                             && VAL(spawn, PLAYER_SPAWN_BOUNDS_Y1) == VAL(spawn, PLAYER_SPAWN_BOUNDS_Y2))
+                             ? level_info->bounds
+                             : (FRect){
+                                   {VAL(spawn, PLAYER_SPAWN_BOUNDS_X1), VAL(spawn, PLAYER_SPAWN_BOUNDS_Y1)},
+                                   {VAL(spawn, PLAYER_SPAWN_BOUNDS_X2), VAL(spawn, PLAYER_SPAWN_BOUNDS_Y2)}
+        };
+        set_player_track(player, 0);
+
         break;
     }
 
     case ACT_CHECKPOINT: {
         spos = Vadd(spos, (FVec2){Int2Fx(53), Int2Fx(118)});
-
-        const Fixed bx1 = VAL(spawn, CHECKPOINT_BOUNDS_X1), by1 = VAL(spawn, CHECKPOINT_BOUNDS_Y1),
-                    bx2 = VAL(spawn, CHECKPOINT_BOUNDS_X2), by2 = VAL(spawn, CHECKPOINT_BOUNDS_Y2);
-        player->bounds = (bx1 == bx2 && by1 == by2) ? level_info->bounds
-                                                    : (FRect){
-                                                          {bx1, by1},
-                                                          {bx2, by2}
+        player->bounds = (VAL(spawn, CHECKPOINT_BOUNDS_X1) == VAL(spawn, CHECKPOINT_BOUNDS_X2)
+                             && VAL(spawn, CHECKPOINT_BOUNDS_Y1) == VAL(spawn, CHECKPOINT_BOUNDS_Y2))
+                             ? level_info->bounds
+                             : (FRect){
+                                   {VAL(spawn, CHECKPOINT_BOUNDS_X1), VAL(spawn, CHECKPOINT_BOUNDS_Y1)},
+                                   {VAL(spawn, CHECKPOINT_BOUNDS_X2), VAL(spawn, CHECKPOINT_BOUNDS_Y2)}
         };
-
         set_player_track(player, VAL(spawn, CHECKPOINT_TRACK));
+
         break;
     }
 
@@ -1908,6 +1921,7 @@ GameActor* respawn_player(GamePlayer* player) {
         spos = Vadd(spos, (FVec2){F_HALF_SCREEN_WIDTH, Fx1});
         player->bounds = level_info->bounds;
         set_player_track(player, VAL(spawn, SCROLL_TRACK));
+
         break;
     }
     }
@@ -1932,10 +1946,10 @@ GameActor* respawn_player(GamePlayer* player) {
         break;
 
     case ACT_PLAYER_SPAWN: {
-        if (!ANY_FLAG(spawn, FLG_PLAYER_WARP_OUT))
+        if (!ANY_FLAG(spawn, FLG_PLAYER_SPAWN_WARP_OUT))
             break;
 
-        VAL(pawn, PLAYER_WARP_OUT_ANGLE) = VAL(spawn, PLAYER_WARP_OUT_ANGLE);
+        VAL(pawn, PLAYER_WARP_OUT_ANGLE) = VAL(spawn, PLAYER_SPAWN_WARP_OUT_ANGLE);
         FLAG_ON(pawn, FLG_PLAYER_WARP_OUT);
 
         play_state_sound("warp", PLAY_POS, A_ACTOR(pawn));
@@ -1943,11 +1957,9 @@ GameActor* respawn_player(GamePlayer* player) {
     }
 
     case ACT_AUTOSCROLL: {
-        if (!touching_solid(Radd(pawn->box, pawn->pos), SOL_SOLID))
-            break;
+        if (touching_solid(Radd(pawn->box, pawn->pos), SOL_SOLID))
+            FLAG_ON(pawn, FLG_PLAYER_RESPAWNING);
 
-        VAL(pawn, PLAYER_FLASH) = 100;
-        FLAG_ON(pawn, FLG_PLAYER_RESPAWNING);
         break;
     }
     }
