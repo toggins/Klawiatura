@@ -42,7 +42,7 @@ static void pre_tick_autoscroll(GameActor* actor) {
         if (ANY_FLAG(actor, FLG_SCROLL_BOWSER)) {
             if (player->pos.x > actor->pos.x)
                 break;
-        } else if (in_player_view(player, actor->pos, Fx0, VEF_ALL)) {
+        } else if (in_player_view(player, actor->pos, -1, VEF_ALL)) {
             break;
         }
 
