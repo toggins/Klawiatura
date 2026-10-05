@@ -289,3 +289,51 @@ const ActorTable TAB_SPIKE_BALL_CANNON = {
     .tick = tick_spike_ball_cannon,
     .draw = draw_spike_ball_cannon,
 };
+
+/* ============
+   FLAMETHROWER
+   ============ */
+
+static void load_flamethrower() {
+    load_sound("flame", AKL_NEVER);
+    load_actor(ACT_FLAME_PROJECTILE);
+}
+
+static void create_flamethrower(GameActor* actor) {
+    VAL(actor, ARTILLERY_FIRE) = 100;
+    VAL(actor, ARTILLERY_ANGLE) = FxPi;
+
+    FLAG_OFF(actor, FLG_VISIBLE);
+}
+
+static void tick_flamethrower(GameActor* actor) {
+    if (VAL(actor, ARTILLERY_FIRE) >= 4) {
+        VAL(actor, ARTILLERY_FIRE) = 0;
+        VAL(actor, ARTILLERY_FIRE2) = 20;
+    }
+
+    if (in_any_view(actor->pos, Int2Fx(-32), VEF_ALL)) {
+        const GameState* game_state = gamestate();
+        if ((game_state->time % 50) == 0)
+            ++VAL(actor, ARTILLERY_FIRE);
+
+        if (VAL(actor, ARTILLERY_FIRE2) > 0 && ((game_state->time * 2) % 5) <= 1) {
+            --VAL(actor, ARTILLERY_FIRE2);
+
+            GameActor* flame = create_actor(ACT_FLAME_PROJECTILE, actor->pos);
+            if (flame != NULL) {
+                flame->vel.x = Fmul(Int2Fx(6), Fcos(VAL(actor, ARTILLERY_ANGLE)));
+                flame->vel.y = Fmul(Int2Fx(6), -Fsin(VAL(actor, ARTILLERY_ANGLE)));
+            }
+        }
+
+        if (VAL(actor, ARTILLERY_FIRE2) > 0 && (game_state->time % 10) == 0)
+            play_state_sound("flame", PLAY_POS, A_ACTOR(actor));
+    }
+}
+
+const ActorTable TAB_FLAMETHROWER = {
+    .load = load_flamethrower,
+    .create = create_flamethrower,
+    .tick = tick_flamethrower,
+};

@@ -226,6 +226,16 @@
             "sprite": "tiles/pipe/gray/v2",
             "depth": 20
         },
+        "Pipe Tank Top": {
+            "type": "tile",
+            "sprite": "tiles/pipe/tank/v0",
+            "depth": 20
+        },
+        "Pipe Tank Middle": {
+            "type": "tile",
+            "sprite": "tiles/pipe/tank/v1",
+            "depth": 20
+        },
         "Tree Top Left": {
             "type": "tile",
             "sprite": "tiles/tree/0",
@@ -521,6 +531,21 @@
             "depth": 20,
             "box": [0, 0, 32, 64]
         },
+        "Flamethrower Left": {
+            "type": "tile",
+            "sprite": "tiles/flamethrower/0",
+            "depth": 18
+        },
+        "Flamethrower Middle": {
+            "type": "tile",
+            "sprite": "tiles/flamethrower/1",
+            "depth": 20
+        },
+        "Flamethrower Right": {
+            "type": "tile",
+            "sprite": "tiles/flamethrower/2",
+            "depth": 20
+        },
         "Tank Left": {
             "type": "tile",
             "sprite": "tiles/tank/h/0",
@@ -592,6 +617,16 @@
             "sprite": "tiles/tank/spike/left",
             "depth": 20,
             "solid": "hurt"
+        },
+        "Tank Bowser Left": {
+            "type": "tile",
+            "sprite": "tiles/tank/bowser/0",
+            "depth": 20
+        },
+        "Tank Bowser Right": {
+            "type": "tile",
+            "sprite": "tiles/tank/bowser/1",
+            "depth": 20
         },
         "Wheel Left": {
             "type": "actor",
@@ -942,6 +977,11 @@
             "sprite": "scenery/portrait/eyes/0",
             "depth": 188,
             "id": 97
+        },
+        "Portrait Tank": {
+            "type": "background",
+            "sprite": "scenery/portrait/tank",
+            "depth": 29
         },
         "Star": {
             "type": "actor",
@@ -2069,6 +2109,19 @@
             "id": 94,
             "sprite": "enemies/spike_ball_cannon"
         },
+        "Flamethrower": {
+            "type": "actor",
+            "id": 99,
+            "sprite": "editor/flamethrower",
+            "values": [
+                {
+                    "name": "Angle",
+                    "index": 4,
+                    "type": "fixed",
+                    "default": 205887
+                }
+            ]
+        },
         "Thwomp": {
             "type": "actor",
             "id": 89,
@@ -2165,6 +2218,10 @@
                         {
                             "name": "Gray",
                             "items": ["Pipe Gray Top", "Pipe Gray Middle", "Pipe Gray Bottom"]
+                        },
+                        {
+                            "name": "Tank",
+                            "items": ["Pipe Tank Top", "Pipe Tank Middle"]
                         }
                     ]
                 },
@@ -2236,6 +2293,10 @@
                     ]
                 },
                 {
+                    "name": "Flamethrower",
+                    "items": ["Flamethrower Left", "Flamethrower Middle", "Flamethrower Right"]
+                },
+                {
                     "name": "Tank",
                     "items": [
                         "Tank Left",
@@ -2251,7 +2312,9 @@
                         "Tank Middle Back",
                         "Tank Lid",
                         "Tank Chain",
-                        "Tank Spike Left"
+                        "Tank Spike Left",
+                        "Tank Bowser Left",
+                        "Tank Bowser Right"
                     ]
                 },
                 {
@@ -2414,7 +2477,7 @@
                 },
                 {
                     "name": "Artillery",
-                    "items": ["Bill Blaster", "Spike Ball Cannon"]
+                    "items": ["Bill Blaster", "Spike Ball Cannon", "Flamethrower"]
                 },
                 "Goomba",
                 "Roto-Disc",

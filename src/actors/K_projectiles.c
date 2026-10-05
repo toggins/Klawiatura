@@ -419,6 +419,52 @@ const ActorTable TAB_SPIKE_BALL_EFFECT = {
     .draw = draw_spike_ball_effect,
 };
 
+/* =====
+   FLAME
+   ===== */
+
+static void load_flame() {
+    load_sprite("projectiles/flame", AKL_NEVER);
+}
+
+static void create_flame(GameActor* actor) {
+    actor->box.start.x = actor->box.start.y = Int2Fx(-11);
+    actor->box.end.x = Int2Fx(12);
+    actor->box.end.y = Int2Fx(13);
+
+    actor->depth = 1245183;
+}
+
+static void tick_flame(GameActor* actor) {
+    VAL(actor, PROJECTILE_ANGLE) = Fmod(VAL(actor, PROJECTILE_ANGLE) + 25736, Fx2Pi);
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    actor->vel.y += 13107;
+
+    if (!in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_flame(const GameActor* actor) {
+    batch_reset();
+    batch_angle(Fx2Float(VAL(actor, PROJECTILE_ANGLE)));
+    draw_actor(actor, "projectiles/flame", FALSE);
+}
+
+static void collide_flame(GameActor* actor, GameActor* from) {
+    (void)actor;
+
+    hit_player(from);
+}
+
+const ActorTable TAB_FLAME_PROJECTILE = {
+    .load = load_flame,
+    .create = create_flame,
+    .tick = tick_flame,
+    .draw = draw_flame,
+    .collide = collide_flame,
+};
+
 /* =============
    SILVER HAMMER
    ============= */
