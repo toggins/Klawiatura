@@ -12,6 +12,15 @@ static void cleanup_autoscroll(GameActor* actor) {
         game_state->autoscroll = NULL_ACTOR;
 }
 
+static void load_autoscroll_special(const GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_SCROLL_TANKS))
+        load_sprite("markers/tanks_ground", AKL_NEVER);
+}
+
+static void create_autoscroll(GameActor* actor) {
+    actor->depth = Int2Fx(20);
+}
+
 static void pre_tick_autoscroll(GameActor* actor) {
     GameState* game_state = gamestate();
 
@@ -79,8 +88,23 @@ static void pre_tick_autoscroll(GameActor* actor) {
     }
 }
 
+static void draw_autoscroll(const GameActor* actor) {
+    if (!ANY_FLAG(actor, FLG_SCROLL_TANKS))
+        return;
+
+    batch_reset();
+    const FVec2 pos = Vsub(videostate()->camera.pos, F_HALF_SCREEN);
+    batch_pos(B_F3_XY(Fx2Int(pos.x), Fx2Int(pos.y) + SCREEN_HEIGHT - 64.f));
+    batch_tile(B_B2(TRUE, FALSE));
+    batch_rectangle("markers/tanks_ground", B_F2(SCREEN_WIDTH, 64.f));
+    batch_tile(B_B2_FALSE);
+}
+
 const ActorTable TAB_AUTOSCROLL = {
+    .create = create_autoscroll,
+    .load_special = load_autoscroll_special,
     .pre_tick = pre_tick_autoscroll,
+    .draw = draw_autoscroll,
 };
 
 /* ===========

@@ -334,6 +334,91 @@ const ActorTable TAB_HAMMER_PROJECTILE = {
     .collide = collide_hammer,
 };
 
+/* ==========
+   SPIKE BALL
+   ========== */
+
+static void load_spike_ball() {
+    load_sprite("projectiles/spike_ball", AKL_NEVER);
+    load_actor(ACT_SPIKE_BALL_EFFECT);
+}
+
+static void create_spike_ball(GameActor* actor) {
+    actor->box.start.x = actor->box.start.y = Int2Fx(-20);
+    actor->box.end.x = actor->box.end.y = Int2Fx(21);
+}
+
+static void tick_spike_ball(GameActor* actor) {
+    VAL(actor, PROJECTILE_ANGLE) = Fmod(VAL(actor, PROJECTILE_ANGLE) + 137258, Fx2Pi);
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    actor->vel.y += 6554;
+
+    if ((gamestate()->time % 3) == 0 && in_any_view(actor->pos, Int2Fx(-32), VEF_ALL)) {
+        GameActor* effect = create_actor(ACT_SPIKE_BALL_EFFECT, actor->pos);
+        if (effect != NULL)
+            align_interp(effect, actor);
+    }
+
+    if (below_nearest_view(actor->pos, Int2Fx(320)))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_spike_ball(const GameActor* actor) {
+    batch_reset();
+    batch_angle(Fx2Float(VAL(actor, PROJECTILE_ANGLE)));
+    draw_actor(actor, "projectiles/spike_ball", FALSE);
+}
+
+static void collide_spike_ball(GameActor* actor, GameActor* from) {
+    (void)actor;
+
+    hit_player(from);
+}
+
+const ActorTable TAB_SPIKE_BALL_PROJECTILE = {
+    .load = load_spike_ball,
+    .create = create_spike_ball,
+    .tick = tick_spike_ball,
+    .draw = draw_spike_ball,
+    .collide = collide_spike_ball,
+};
+
+/* =================
+   SPIKE BALL EFFECT
+   ================= */
+
+static void load_spike_ball_effect() {
+    load_sprite("projectiles/spike_ball", AKL_NEVER);
+}
+
+static void create_spike_ball_effect(GameActor* actor) {
+    VAL(actor, PROJECTILE_FRAME) = Fx1;
+}
+
+static void tick_spike_ball_effect(GameActor* actor) {
+    ++actor->depth;
+    VAL(actor, PROJECTILE_ANGLE) = Fmod(VAL(actor, PROJECTILE_ANGLE) + 137258, Fx2Pi);
+
+    VAL(actor, PROJECTILE_FRAME) -= 2560;
+    if (VAL(actor, PROJECTILE_FRAME) <= 4096)
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_spike_ball_effect(const GameActor* actor) {
+    batch_reset();
+    batch_color(B_U4_ALPHA(Fx2Float(VAL(actor, PROJECTILE_FRAME)) * 255.f));
+    batch_angle(Fx2Float(VAL(actor, PROJECTILE_ANGLE)));
+    draw_actor(actor, "projectiles/spike_ball", FALSE);
+}
+
+const ActorTable TAB_SPIKE_BALL_EFFECT = {
+    .load = load_spike_ball_effect,
+    .create = create_spike_ball_effect,
+    .tick = tick_spike_ball_effect,
+    .draw = draw_spike_ball_effect,
+};
+
 /* =============
    SILVER HAMMER
    ============= */

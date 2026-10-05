@@ -9,6 +9,7 @@
 #include "actors/K_points.h"
 #include "actors/K_powerups.h"
 #include "actors/K_projectiles.h"
+#include "actors/K_screen.h"
 #include "actors/K_warp.h"
 #include "actors/K_water.h"
 
@@ -849,7 +850,19 @@ static void tick(GameActor* actor) {
     if (ANY_PRESSED(player, GI_JUMP))
         VAL(actor, PLAYER_SPRING) = 7;
 
-    if (displace_actor(actor, Int2Fx(10), TRUE) & SOL_HURT)
+    SolidFlags displace = 0;
+    if (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS)
+        && ((actor->pos.y + actor->box.end.y) >= (get_player_view(player).y + F_SCREEN_HEIGHT - 4194305)
+            || !TOUCHING(actor, TOUCH_BOTTOM)))
+    {
+        const FVec2 ovel = actor->vel;
+        actor->vel = Vsub(autoscroll->pos, autoscroll->last_pos);
+        displace |= displace_actor(actor, Fx0, FALSE);
+        actor->vel = ovel;
+    }
+
+    displace |= displace_actor(actor, Int2Fx(10), TRUE);
+    if (displace & SOL_HURT)
         hit_player(actor);
 
     if ((autoscroll != NULL && get_sequence()->type != GS_WIN) || get_sequence()->type == GS_AMBUSH) {
@@ -978,10 +991,38 @@ static void post_tick(GameActor* actor) {
     }
 }
 
+static void draw_name(const GameActor* actor) {
+    const GamePlayer* player = get_player(actor->player);
+    if (player == NULL || player->id == viewplayer())
+        return;
+
+    const char* name = get_peer_name(player_to_peer(player->id));
+    if (name == NULL)
+        return;
+
+    batch_offset(B_F3_XY(0.f, Fx2Float(actor->box.end.y - actor->box.start.y) + 16.f));
+    batch_color(B_U4_ALPHA(192));
+    batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+    batch_filter(TRUE);
+    batch_string("main", 16.f, name);
+    batch_filter(FALSE);
+}
+
 static void draw(const GameActor* actor) {
     const GamePlayer* player = get_player(actor->player);
     if (player == NULL)
         return;
+
+    Bool antijitter = FALSE;
+
+    const GameState* game_state = gamestate();
+    const GameActor* autoscroll = get_actor(game_state->autoscroll);
+    if (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS) && autoscroll->pos.x != autoscroll->last_pos.x
+        && ((actor->pos.y + actor->box.end.y) >= (get_player_view(player).y + F_SCREEN_HEIGHT - 4194305)
+            || !TOUCHING(actor, TOUCH_BOTTOM)))
+    {
+        antijitter = TRUE;
+    }
 
     batch_reset();
     batch_color(B_U4_ALPHA((player->id == localplayer()) ? 255 : 192));
@@ -989,7 +1030,7 @@ static void draw(const GameActor* actor) {
         draw_actor(actor,
             get_character_sprite(
                 gamecontext()->players[player->id].character, player->powerup, get_player_frame(actor)),
-            FALSE);
+            antijitter);
     }
     if (VAL(actor, PLAYER_STARMAN) > 0) {
         batch_blend(BM_ADD);
@@ -997,25 +1038,11 @@ static void draw(const GameActor* actor) {
             fmt((player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? "effects/shield/%i"
                                                                                   : "effects/shield/super/%i",
                 (500 - VAL(actor, PLAYER_STARMAN)) % 4),
-            FALSE);
+            antijitter);
         batch_blend(BM_NORMAL);
     }
 
-    if (player->id == viewplayer())
-        return;
-
-    const char* name = get_peer_name(player_to_peer(player->id));
-    if (name == NULL)
-        return;
-
-    const FVec2 ipos = get_interp(actor);
-    const Sint32 nx = Fx2Int(ipos.x), ny = Fx2Int(ipos.y + actor->box.start.y) - 16;
-    batch_pos(B_F3(nx, ny, Fx2Float(actor->depth)));
-    batch_color(B_U4_ALPHA(192));
-    batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-    batch_filter(TRUE);
-    batch_string("main", 16.f, name);
-    batch_filter(FALSE);
+    draw_name(actor);
 }
 
 static void draw_hud(const GameActor* actor) {
@@ -1161,10 +1188,19 @@ static void load_dead() {
 }
 
 static void create_dead(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-15);
+    actor->box.start.y = Int2Fx(-30);
+    actor->box.end.x = Int2Fx(16);
+    actor->box.end.y = Fx1;
+
     actor->depth = Int2Fx(-20);
 }
 
 static void tick_dead(GameActor* actor) {
+    const GameActor* autoscroll = get_actor(gamestate()->autoscroll);
+    if (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS))
+        move_actor(actor, Vadd(actor->pos, Vsub(autoscroll->pos, autoscroll->last_pos)));
+
     switch (++VAL(actor, PLAYER_DEAD)) {
     default:
         break;
@@ -1219,8 +1255,16 @@ static void draw_dead(const GameActor* actor) {
     if (player == NULL)
         return;
 
+    Bool antijitter = FALSE;
+
+    const GameActor* autoscroll = get_actor(gamestate()->autoscroll);
+    if (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS) && autoscroll->pos.x != autoscroll->last_pos.x)
+        antijitter = TRUE;
+
     batch_reset();
-    draw_actor(actor, get_character_sprite(gamecontext()->players[player->id].character, POW_NONE, PF_DEAD), FALSE);
+    draw_actor(
+        actor, get_character_sprite(gamecontext()->players[player->id].character, POW_NONE, PF_DEAD), antijitter);
+    draw_name(actor);
 }
 
 const ActorTable TAB_PLAYER_DEAD = {

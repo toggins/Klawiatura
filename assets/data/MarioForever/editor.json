@@ -67,6 +67,13 @@
             "max_scale": [32767, 197],
             "tile": [true, false]
         },
+        "Tanks Background": {
+            "type": "background",
+            "sprite": "backgrounds/tanks",
+            "depth": 200,
+            "max_scale": [32767, 420],
+            "tile": [true, false]
+        },
         "Block Background": {
             "type": "background",
             "sprite": "backgrounds/block",
@@ -513,6 +520,94 @@
             "sprite": "tiles/blaster/4",
             "depth": 20,
             "box": [0, 0, 32, 64]
+        },
+        "Tank Left": {
+            "type": "tile",
+            "sprite": "tiles/tank/h/0",
+            "depth": 20
+        },
+        "Tank Middle": {
+            "type": "tile",
+            "sprite": "tiles/tank/h/1",
+            "depth": 20
+        },
+        "Tank Right": {
+            "type": "tile",
+            "sprite": "tiles/tank/h/2",
+            "depth": 20
+        },
+        "Tank Block": {
+            "type": "tile",
+            "sprite": "tiles/tank/block",
+            "depth": 20
+        },
+        "Tank Slope Left": {
+            "type": "tile",
+            "sprite": "tiles/tank/slope/0",
+            "depth": 20,
+            "solid": "slope_left"
+        },
+        "Tank Buttons": {
+            "type": "tile",
+            "sprite": "tiles/tank/buttons",
+            "depth": 20
+        },
+        "Tank Screws": {
+            "type": "tile",
+            "sprite": "tiles/tank/screws",
+            "depth": 20
+        },
+        "Tank Crushed": {
+            "type": "tile",
+            "sprite": "tiles/tank/crushed",
+            "depth": 20
+        },
+        "Tank Top": {
+            "type": "tile",
+            "sprite": "tiles/tank/v/0",
+            "depth": 20
+        },
+        "Tank Middle 2": {
+            "type": "tile",
+            "sprite": "tiles/tank/v/1",
+            "depth": 20
+        },
+        "Tank Middle Back": {
+            "type": "background",
+            "sprite": "tiles/tank/v/back",
+            "depth": 30
+        },
+        "Tank Lid": {
+            "type": "background",
+            "sprite": "tiles/tank/lid",
+            "depth": 21
+        },
+        "Tank Chain": {
+            "type": "tile",
+            "sprite": "tiles/tank/chain",
+            "depth": 20
+        },
+        "Tank Spike Left": {
+            "type": "tile",
+            "sprite": "tiles/tank/spike/left",
+            "depth": 20,
+            "solid": "hurt"
+        },
+        "Wheel Left": {
+            "type": "actor",
+            "sprite": "tiles/wheel/0/0",
+            "id": 91
+        },
+        "Wheel Middle": {
+            "type": "actor",
+            "sprite": "tiles/wheel/1/0",
+            "id": 92,
+            "max_scale": [8, 1]
+        },
+        "Wheel Right": {
+            "type": "actor",
+            "sprite": "tiles/wheel/2/0",
+            "id": 93
         },
         "Hill": {
             "type": "background",
@@ -1969,6 +2064,11 @@
                 }
             ]
         },
+        "Spike Ball Cannon": {
+            "type": "actor",
+            "id": 94,
+            "sprite": "enemies/spike_ball_cannon"
+        },
         "Thwomp": {
             "type": "actor",
             "id": 89,
@@ -2014,6 +2114,7 @@
                 "Castle Background 2",
                 "Castle Background 3",
                 "Starland Background",
+                "Tanks Background",
                 "Block Background"
             ]
         },
@@ -2133,6 +2234,29 @@
                         "Blaster Tower 2",
                         "Blaster Down"
                     ]
+                },
+                {
+                    "name": "Tank",
+                    "items": [
+                        "Tank Left",
+                        "Tank Middle",
+                        "Tank Right",
+                        "Tank Block",
+                        "Tank Slope Left",
+                        "Tank Buttons",
+                        "Tank Screws",
+                        "Tank Crushed",
+                        "Tank Top",
+                        "Tank Middle 2",
+                        "Tank Middle Back",
+                        "Tank Lid",
+                        "Tank Chain",
+                        "Tank Spike Left"
+                    ]
+                },
+                {
+                    "name": "Wheel",
+                    "items": ["Wheel Left", "Wheel Middle", "Wheel Right"]
                 }
             ]
         },
@@ -2290,7 +2414,7 @@
                 },
                 {
                     "name": "Artillery",
-                    "items": ["Bill Blaster"]
+                    "items": ["Bill Blaster", "Spike Ball Cannon"]
                 },
                 "Goomba",
                 "Roto-Disc",

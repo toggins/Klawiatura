@@ -1,0 +1,6 @@
+{
+    "texture": "tiles/tank",
+    "size": [33, 6],
+    "offset": [0, -26],
+    "uvs": [35, 107, 68, 113]
+}

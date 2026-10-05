@@ -1,0 +1,5 @@
+{
+    "texture": "tiles/wheel",
+    "size": [32, 32],
+    "uvs": [39, 69, 71, 101]
+}
