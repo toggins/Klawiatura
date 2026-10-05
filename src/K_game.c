@@ -802,7 +802,7 @@ void start_game(const GameContext* ctx) {
     cfg.num_players = game_context.num_players;
     cfg.input_size = sizeof(GameInput);
     cfg.state_size = sizeof(SaveState);
-    cfg.input_prediction_window = MAX_INPUT_DELAY;
+    cfg.max_input_prediction_window = MAX_INPUT_DELAY;
     cfg.desync_detection = TRUE;
     if (spectating)
         cfg.spectator_delay = MAX_INPUT_DELAY;
