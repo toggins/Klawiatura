@@ -865,7 +865,9 @@ static void tick(GameActor* actor) {
     if (displace & SOL_HURT)
         hit_player(actor);
 
-    if ((autoscroll != NULL && get_sequence()->type != GS_WIN) || get_sequence()->type == GS_AMBUSH) {
+    const GameSequence* sequence = get_sequence();
+    if ((autoscroll != NULL && sequence->type != GS_WIN && sequence->type != GS_RESCUE) || sequence->type == GS_AMBUSH)
+    {
         Fixed sx = (autoscroll == NULL) ? player->bounds.start.x : autoscroll->pos.x;
         if ((actor->pos.x + actor->box.start.x) < sx) {
             if (actor->vel.x <= Fx0) {

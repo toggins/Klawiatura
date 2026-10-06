@@ -137,6 +137,7 @@
     "hud.world.remix_secret_4": "ui/world/en/remix_secret_4",
     "hud.time": "Time",
     "hud.game_over": "Game Over",
+    "hud.help": "HELP!",
     "hud.secret.green_mushroom_calamity": "ui/secret/en/green_mushroom_calamity",
     "hud.secret.4": "ui/secret/en/4",
     "hud.secret.hardcore_1": "ui/secret/en/hardcore_1",

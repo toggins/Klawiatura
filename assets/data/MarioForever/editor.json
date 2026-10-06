@@ -1497,6 +1497,16 @@
                 }
             ]
         },
+        "Peach": {
+            "type": "actor",
+            "id": 103,
+            "sprite": "markers/peach/0"
+        },
+        "Peach Cage": {
+            "type": "actor",
+            "id": 104,
+            "sprite": "markers/cage"
+        },
         "Spike Ceiling": {
             "type": "actor",
             "id": 132,

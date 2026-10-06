@@ -1,0 +1,6 @@
+{
+    "texture": "markers/cage",
+    "size": [4, 37],
+    "offset": [2, 20],
+    "uvs": [73, 101, 77, 138]
+}

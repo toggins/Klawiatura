@@ -1,0 +1,6 @@
+{
+    "texture": "markers/peach",
+    "size": [32, 62],
+    "offset": [15, 61],
+    "uvs": [36, 1, 68, 63]
+}

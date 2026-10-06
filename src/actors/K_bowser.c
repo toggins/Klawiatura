@@ -758,6 +758,11 @@ static void tick_dead(GameActor* actor) {
             }
 
             ++VAL(actor, BOWSER_DEAD_LAVA);
+            if (VAL(actor, BOWSER_DEAD_LAVA) == 50) {
+                GameSequence* sequence = get_sequence();
+                if (sequence->type == GS_BOWSER_END && get_num_actors(ACT_PEACH_CAGE) > 0)
+                    set_sequence(GS_RESCUE, get_player(sequence->activator), 0);
+            }
         } else {
             VAL(actor, BOWSER_DEAD_LAVA) = 0;
         }

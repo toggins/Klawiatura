@@ -1256,7 +1256,8 @@ void tick_game() {
                 return;
             }
 
-            case GS_WIN: {
+            case GS_WIN:
+            case GS_RESCUE: {
                 WorldContext ctx = *worldcontext();
                 ++ctx.level;
                 ctx.winner = sequence->activator;
@@ -1799,6 +1800,7 @@ Bool in_blocking_sequence() {
     case GS_LOSE:
     case GS_WIN:
     case GS_WARP:
+    case GS_RESCUE:
         return TRUE;
     }
 
@@ -1814,7 +1816,8 @@ Bool can_affect_track() {
 
     case GS_LOSE:
     case GS_WIN:
-    case GS_BOWSER_END: {
+    case GS_BOWSER_END:
+    case GS_RESCUE: {
         return FALSE;
     }
 
@@ -1869,8 +1872,14 @@ GamePlayer* get_player(PlayerID pid) {
 }
 
 GameActor* respawn_player(GamePlayer* player) {
-    if (player == NULL || in_blocking_sequence())
+    if (player == NULL)
         return NULL;
+
+    if (in_blocking_sequence()) {
+        const GameSequence* sequence = get_sequence();
+        if (sequence->type != GS_RESCUE || sequence->activator != player->id)
+            return NULL;
+    }
 
     if (player->lives < 0)
         goto spectate;
