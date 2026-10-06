@@ -296,6 +296,19 @@ static void create_hammer(GameActor* actor) {
 }
 
 static void tick_hammer(GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_PROJECTILE_ALT)) {
+        VAL(actor, PROJECTILE_ANGLE)
+            = Fmod(VAL(actor, PROJECTILE_ANGLE) + (ANY_FLAG(actor, FLG_X_FLIP) ? -6434 : 6434), Fx2Pi);
+
+        move_actor(actor, Vadd(actor->pos, actor->vel));
+        actor->vel.y += 13107;
+
+        if (!in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
+            FLAG_ON(actor, FLG_DESTROY);
+
+        return;
+    }
+
     const GamePlayer* player = get_player(actor->player);
 
     const Fixed spd = (player == NULL) ? 6434 : 11438;
@@ -463,6 +476,98 @@ const ActorTable TAB_FLAME_PROJECTILE = {
     .tick = tick_flame,
     .draw = draw_flame,
     .collide = collide_flame,
+};
+
+/* =====
+   VOMIT
+   ===== */
+
+static void load_vomit() {
+    load_sprite_num("projectiles/vomit/%u", 5, AKL_NEVER);
+    load_actor(ACT_VOMIT_EFFECT);
+}
+
+static void create_vomit(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-13);
+    actor->box.start.y = Int2Fx(-15);
+    actor->box.end.x = Int2Fx(14);
+    actor->box.end.y = Int2Fx(16);
+}
+
+static void tick_vomit(GameActor* actor) {
+    if (VAL(actor, PROJECTILE_FRAME) < 4)
+        ++VAL(actor, PROJECTILE_FRAME);
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    actor->vel.y += 13107;
+
+    if (!in_any_view(actor->pos, Int2Fx(-64), VEF_ALL)) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    if (in_any_view(actor->pos, Int2Fx(-32), VEF_ALL)) {
+        GameActor* effect = create_actor(ACT_VOMIT_EFFECT, actor->pos);
+        if (effect != NULL)
+            align_interp(effect, actor);
+    }
+
+    ++actor->depth;
+}
+
+static void draw_vomit(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("projectiles/vomit/%i", VAL(actor, PROJECTILE_FRAME) % 5), FALSE);
+}
+
+static void collide_vomit(GameActor* actor, GameActor* from) {
+    (void)actor;
+
+    hit_player(from);
+}
+
+const ActorTable TAB_VOMIT_PROJECTILE = {
+    .load = load_vomit,
+    .create = create_vomit,
+    .tick = tick_vomit,
+    .draw = draw_vomit,
+    .collide = collide_vomit,
+};
+
+/* ============
+   VOMIT EFFECT
+   ============ */
+
+static void load_vomit_effect() {
+    load_sprite_num("projectiles/vomit/%u", 5, AKL_NEVER);
+}
+
+static void create_vomit_effect(GameActor* actor) {
+    VAL(actor, PROJECTILE_ANGLE) = Fx1;
+}
+
+static void tick_vomit_effect(GameActor* actor) {
+    ++actor->depth;
+
+    if (VAL(actor, PROJECTILE_FRAME) < 4)
+        ++VAL(actor, PROJECTILE_FRAME);
+
+    VAL(actor, PROJECTILE_ANGLE) -= 2560;
+    if (VAL(actor, PROJECTILE_ANGLE) <= 4096)
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_vomit_effect(const GameActor* actor) {
+    batch_reset();
+    batch_color(B_U4_ALPHA(Fx2Float(VAL(actor, PROJECTILE_ANGLE)) * 255.f));
+    draw_actor(actor, fmt("projectiles/vomit/%i", VAL(actor, PROJECTILE_FRAME) % 5), FALSE);
+}
+
+const ActorTable TAB_VOMIT_EFFECT = {
+    .load = load_vomit_effect,
+    .create = create_vomit_effect,
+    .tick = tick_vomit_effect,
+    .draw = draw_vomit_effect,
 };
 
 /* =============

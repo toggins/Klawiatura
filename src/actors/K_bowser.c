@@ -19,6 +19,14 @@ static const char* get_bowser_sprite(BowserAnimations animation, Uint8 frame) {
         return fmt("enemies/bowser/fire/end/%i", frame % 2);
     case BA_CHARGE:
         return fmt("enemies/bowser/charge/%i", ((frame >= 8) ? (5 + ((frame - 5) % 3)) : frame) % 8);
+    case BA_HAMMER_START:
+        return fmt("enemies/bowser/hammer/start/%i", frame % 2);
+    case BA_HAMMER:
+        return fmt("enemies/bowser/hammer/%i", frame % 3);
+    case BA_VOMIT:
+        return fmt("enemies/bowser/vomit/%i", frame % 9);
+    case BA_VOMIT_START:
+        return "enemies/bowser/vomit/start";
     }
 
     return NULL;
@@ -48,7 +56,20 @@ static void load() {
 
 static void load_special(const GameActor* actor) {
     if (ANY_FLAG(actor, FLG_BOWSER_CHARGE))
-        load_sprite_num("enemies/bowser/charge/%i", 8, AKL_NEVER);
+        load_sprite_num("enemies/bowser/charge/%u", 8, AKL_NEVER);
+
+    if (ANY_FLAG(actor, FLG_BOWSER_HAMMER)) {
+        load_sprite_num("enemies/bowser/hammer/start/%u", 2, AKL_NEVER);
+        load_sprite_num("enemies/bowser/hammer/%u", 3, AKL_NEVER);
+        load_actor(ACT_HAMMER_PROJECTILE);
+    }
+
+    if (ANY_FLAG(actor, FLG_BOWSER_VOMIT)) {
+        load_sprite("enemies/bowser/vomit/start", AKL_NEVER);
+        load_sprite_num("enemies/bowser/vomit/%u", 9, AKL_NEVER);
+        load_sound("flame", AKL_NEVER);
+        load_actor(ACT_VOMIT_PROJECTILE);
+    }
 
     if (ANY_FLAG(actor, FLG_BOWSER_GUN)) {
         load_sprite("enemies/bowser/gun", AKL_NEVER);
@@ -120,8 +141,13 @@ static void pre_tick(GameActor* actor) {
             }
         }
 
-        if (ANY_FLAG(actor, FLG_BOWSER_CHARGE))
+        if (ANY_FLAG(actor, FLG_BOWSER_CHARGE | FLG_BOWSER_VOMIT | FLG_BOWSER_HAMMER)) {
             ++VAL(actor, BOWSER_CHARGE);
+            if (ANY_FLAG(actor, FLG_BOWSER_HAMMER) && VAL(actor, BOWSER_CHARGE) == 6) {
+                VAL(actor, BOWSER_HAMMERING) = Int2Fx(100);
+                VAL(actor, BOWSER_HAMMER_WAVES) = 3;
+            }
+        }
 
         play_state_sound("bowser/fire", PLAY_POS, A_ACTOR(actor));
         return;
@@ -161,9 +187,32 @@ static void pre_tick(GameActor* actor) {
             }
         }
 
-        VAL(actor, BOWSER_CHARGE) = 0;
+        if (ANY_FLAG(actor, FLG_BOWSER_VOMIT | FLG_BOWSER_HAMMER)) {
+            ++VAL(actor, BOWSER_CHARGE);
+            if (ANY_FLAG(actor, FLG_BOWSER_HAMMER) && VAL(actor, BOWSER_CHARGE) == 6) {
+                VAL(actor, BOWSER_HAMMERING) = Int2Fx(100);
+                VAL(actor, BOWSER_HAMMER_WAVES) = 3;
+            }
+        } else {
+            VAL(actor, BOWSER_CHARGE) = 0;
+        }
 
         play_state_sound("bowser/fire", PLAY_POS, A_ACTOR(actor));
+        return;
+    }
+
+    case BA_HAMMER_START: {
+        VAL(actor, BOWSER_FRAME) = Fmin(VAL(actor, BOWSER_FRAME) + 19661, Fx1);
+        return;
+    }
+
+    case BA_HAMMER:
+    case BA_VOMIT: {
+        VAL(actor, BOWSER_FRAME) += Fx1;
+        return;
+    }
+
+    case BA_VOMIT_START: {
         return;
     }
     }
@@ -201,10 +250,17 @@ static void pre_tick(GameActor* actor) {
 }
 
 static void tick(GameActor* actor) {
+    GameState* game_state = gamestate();
+    if (game_state->time == 0) {
+        if (ANY_FLAG(actor, FLG_BOWSER_VOMIT))
+            VAL(actor, BOWSER_CHARGE) = 5;
+        if (ANY_FLAG(actor, FLG_BOWSER_HAMMER))
+            VAL(actor, BOWSER_HAMMER_WAVES) = 22;
+    }
+
     // EVENTS FROM "Level 1 - 4"
 
     // 800
-    GameState* game_state = gamestate();
     if ((game_state->time % 50) == 0 && ANY_FLAG(actor, FLG_BOWSER_ACTIVE))
         VAL(actor, BOWSER_MOVE) = rng(64);
 
@@ -222,7 +278,10 @@ static void tick(GameActor* actor) {
         VAL(actor, BOWSER_MOVE) = rng(128);
 
     // 803, 804 (modified)
-    if (VAL(actor, BOWSER_MOVE) > 0) {
+    if (VAL(actor, BOWSER_MOVE) > 0 && VAL(actor, BOWSER_ANIMATION) != BA_HAMMER_START
+        && VAL(actor, BOWSER_ANIMATION) != BA_HAMMER && VAL(actor, BOWSER_ANIMATION) != BA_VOMIT
+        && VAL(actor, BOWSER_ANIMATION) != BA_VOMIT_START)
+    {
         actor->vel.x = ANY_FLAG(actor, FLG_BOWSER_RIGHT) ? VAL(actor, BOWSER_SPEED) : -VAL(actor, BOWSER_SPEED);
         --VAL(actor, BOWSER_MOVE);
     } else {
@@ -249,37 +308,181 @@ static void tick(GameActor* actor) {
     actor->vel.y += VAL(actor, BOWSER_GRAVITY);
 
     // 808 (modified)
-    if (VAL(actor, BOWSER_JUMP) == 10 && TOUCHING(actor, TOUCH_BOTTOM)) {
+    if (VAL(actor, BOWSER_JUMP) == 10 && TOUCHING(actor, TOUCH_BOTTOM) && VAL(actor, BOWSER_ANIMATION) != BA_VOMIT) {
         actor->vel.y = VAL(actor, BOWSER_JUMP_SPEED);
         TOUCH_OFF(actor, TOUCH_BOTTOM);
     }
 
     // 813, 814
-    const FVec2 ppos = nearest_player_pos(actor->pos);
-    if (actor->pos.x > ppos.x)
-        FLAG_ON(actor, FLG_X_FLIP);
-    if (actor->pos.x < ppos.x)
-        FLAG_OFF(actor, FLG_X_FLIP);
+    if (VAL(actor, BOWSER_ANIMATION) != BA_VOMIT && VAL(actor, BOWSER_ANIMATION) != BA_VOMIT_START) {
+        const FVec2 ppos = nearest_player_pos(actor->pos);
+        if (actor->pos.x > ppos.x)
+            FLAG_ON(actor, FLG_X_FLIP);
+        if (actor->pos.x < ppos.x)
+            FLAG_OFF(actor, FLG_X_FLIP);
+    }
 
     // 817 (modified)
     if (ANY_FLAG(actor, FLG_BOWSER_ACTIVE)) {
+        const Bool neutral = VAL(actor, BOWSER_ANIMATION) != BA_FIRE && VAL(actor, BOWSER_ANIMATION) != BA_CHARGE
+                             && VAL(actor, BOWSER_ANIMATION) != BA_HAMMER_START
+                             && VAL(actor, BOWSER_ANIMATION) != BA_HAMMER && VAL(actor, BOWSER_ANIMATION) != BA_VOMIT
+                             && VAL(actor, BOWSER_ANIMATION) != BA_VOMIT_START;
         if (ANY_FLAG(actor, FLG_BOWSER_DEVASTATOR | FLG_BOWSER_CHARGE)) {
-            if (VAL(actor, BOWSER_ATTACK) <= 150 && VAL(actor, BOWSER_ANIMATION) != BA_FIRE
-                && VAL(actor, BOWSER_ANIMATION) != BA_CHARGE)
-            {
+            if (VAL(actor, BOWSER_ATTACK) <= 150 && neutral)
                 VAL(actor, BOWSER_ATTACK) += VAL(actor, BOWSER_ATTACK_CHANCE);
-            }
         } else {
-            if (VAL(actor, BOWSER_ATTACK_CHANCE) <= 5 || VAL(actor, BOWSER_ANIMATION) != BA_FIRE)
+            if (VAL(actor, BOWSER_ATTACK_CHANCE) <= 5 || neutral)
                 VAL(actor, BOWSER_ATTACK) += rng(VAL(actor, BOWSER_ATTACK_CHANCE));
         }
     }
 
     // 818
     if (VAL(actor, BOWSER_ATTACK) > 150) {
-        VAL(actor, BOWSER_ATTACK) = 0;
-        VAL(actor, BOWSER_ANIMATION) = (VAL(actor, BOWSER_CHARGE) >= 5) ? BA_CHARGE : BA_FIRE;
-        VAL(actor, BOWSER_FRAME) = Fx0;
+        switch (VAL(actor, BOWSER_CHARGE)) {
+        default: {
+            VAL(actor, BOWSER_ATTACK) = 0;
+            VAL(actor, BOWSER_ANIMATION) = BA_FIRE;
+            VAL(actor, BOWSER_FRAME) = Fx0;
+
+            break;
+        }
+
+        case 5: {
+            VAL(actor, BOWSER_ATTACK) = 0;
+            VAL(actor, BOWSER_ANIMATION) = ANY_FLAG(actor, FLG_BOWSER_CHARGE) ? BA_CHARGE : BA_FIRE;
+            VAL(actor, BOWSER_FRAME) = Fx0;
+
+            break;
+        }
+
+        case 6: {
+            VAL(actor, BOWSER_ATTACK) = 0;
+
+            if (!ANY_FLAG(actor, FLG_BOWSER_HAMMER)) {
+                VAL(actor, BOWSER_ANIMATION) = ANY_FLAG(actor, FLG_BOWSER_CHARGE) ? BA_CHARGE : BA_FIRE;
+                VAL(actor, BOWSER_FRAME) = Fx0;
+
+                break;
+            }
+
+            VAL(actor, BOWSER_HAMMERING) = Int2Fx(100);
+            VAL(actor, BOWSER_HAMMER_WAVES) = 3;
+            VAL(actor, BOWSER_ANIMATION) = BA_HAMMER_START;
+            VAL(actor, BOWSER_FRAME) = Fx0;
+
+            break;
+        }
+
+        case 9: {
+            if (!ANY_FLAG(actor, FLG_BOWSER_VOMIT)) {
+                VAL(actor, BOWSER_ATTACK) = 0;
+                VAL(actor, BOWSER_ANIMATION) = ANY_FLAG(actor, FLG_BOWSER_CHARGE) ? BA_CHARGE : BA_FIRE;
+                VAL(actor, BOWSER_FRAME) = Fx0;
+
+                break;
+            }
+
+            if (actor->pos.x <= (VAL(actor, BOWSER_START_X) + Int2Fx(100))
+                || actor->pos.x >= (VAL(actor, BOWSER_END_X) - Int2Fx(148)))
+            {
+                break;
+            }
+
+            VAL(actor, BOWSER_ATTACK) = 0;
+            VAL(actor, BOWSER_VOMIT) = VAL(actor, BOWSER_ATTACK_SPEED);
+            VAL(actor, BOWSER_ANIMATION) = BA_VOMIT_START;
+            VAL(actor, BOWSER_FRAME) = Fx0;
+
+            break;
+        }
+        }
+    }
+
+    if (VAL(actor, BOWSER_CHARGE) == 9 && VAL(actor, BOWSER_VOMIT) > Fx0)
+        VAL(actor, BOWSER_VOMIT) += VAL(actor, BOWSER_ATTACK_SPEED);
+
+    if (VAL(actor, BOWSER_VOMIT) >= Int2Fx(150)) {
+        if (VAL(actor, BOWSER_ANIMATION) == BA_VOMIT_START) {
+            VAL(actor, BOWSER_ANIMATION) = BA_VOMIT;
+            VAL(actor, BOWSER_FRAME) = Fx0;
+        }
+
+        if (((game_state->time * 2) % 15) <= 1) {
+            GameActor* vomit = create_actor(ACT_VOMIT_PROJECTILE,
+                Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-17) : Int2Fx(17), Int2Fx(-38)}));
+            if (vomit != NULL) {
+                vomit->vel.x = Int2Fx(5) + Int2Fx(rng(10));
+                vomit->vel.y = Int2Fx(-3) - Int2Fx(rng(4));
+                if (ANY_FLAG(actor, FLG_X_FLIP))
+                    vomit->vel.x = -vomit->vel.x;
+            }
+
+            play_state_sound("flame", PLAY_POS, A_ACTOR(actor));
+        }
+
+        if (VAL(actor, BOWSER_VOMIT) >= Int2Fx(400)) {
+            VAL(actor, BOWSER_CHARGE) = 0;
+            VAL(actor, BOWSER_VOMIT) = Fx0;
+            VAL(actor, BOWSER_ANIMATION) = BA_IDLE;
+            VAL(actor, BOWSER_FRAME) = Fx0;
+        }
+    }
+
+    if (VAL(actor, BOWSER_CHARGE) == 6) {
+        if (VAL(actor, BOWSER_ANIMATION) != BA_HAMMER_START && VAL(actor, BOWSER_ANIMATION) != BA_HAMMER) {
+            VAL(actor, BOWSER_ANIMATION) = BA_HAMMER_START;
+            VAL(actor, BOWSER_FRAME) = Fx0;
+        }
+
+        if (VAL(actor, BOWSER_HAMMERS) <= 0) {
+            if (VAL(actor, BOWSER_HAMMERING) > Fx0)
+                VAL(actor, BOWSER_HAMMERING) -= VAL(actor, BOWSER_ATTACK_SPEED);
+
+            if (VAL(actor, BOWSER_HAMMERING) <= Fx0 && VAL(actor, BOWSER_HAMMER_WAVES) > 0) {
+                VAL(actor, BOWSER_HAMMERING) = Int2Fx(100);
+                VAL(actor, BOWSER_HAMMERS) = 10;
+                --VAL(actor, BOWSER_HAMMER_WAVES);
+            }
+        }
+
+        if (VAL(actor, BOWSER_HAMMERS) > 0) {
+            if (((game_state->time * 2) % 15) <= 1) {
+                GameActor* hammer = create_actor(ACT_HAMMER_PROJECTILE,
+                    Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-21) : Int2Fx(21), Int2Fx(-30)}));
+                if (hammer != NULL) {
+                    hammer->vel.x = Fx1 + Int2Fx(rng(6));
+                    hammer->vel.y = Int2Fx(-8) - Int2Fx(rng(5));
+
+                    if (ANY_FLAG(actor, FLG_X_FLIP)) {
+                        hammer->vel.x = -hammer->vel.x;
+                        FLAG_ON(hammer, FLG_X_FLIP);
+                    }
+
+                    FLAG_ON(hammer, FLG_PROJECTILE_ALT);
+                }
+
+                --VAL(actor, BOWSER_HAMMERS);
+            }
+
+            if (VAL(actor, BOWSER_ANIMATION) == BA_HAMMER_START) {
+                VAL(actor, BOWSER_ANIMATION) = BA_HAMMER;
+                VAL(actor, BOWSER_FRAME) = Fx0;
+            }
+        }
+
+        if (VAL(actor, BOWSER_HAMMERS) <= 0) {
+            if (VAL(actor, BOWSER_ANIMATION) == BA_HAMMER) {
+                VAL(actor, BOWSER_ANIMATION) = BA_HAMMER_START;
+                VAL(actor, BOWSER_FRAME) = Fx0;
+            }
+
+            if (VAL(actor, BOWSER_HAMMER_WAVES) <= 0 && get_num_actors(ACT_HAMMER_PROJECTILE) <= 0) {
+                VAL(actor, BOWSER_CHARGE) = 7;
+                VAL(actor, BOWSER_ANIMATION) = BA_IDLE;
+                VAL(actor, BOWSER_FRAME) = Fx0;
+            }
+        }
     }
 
     // 835
@@ -412,7 +615,7 @@ static void collide(GameActor* actor, GameActor* from) {
         if (VAL(from, PLAYER_STARMAN) > 0)
             break;
 
-        if (from->pos.y < (actor->pos.y - Int2Fx(40))) {
+        if (from->pos.y < (actor->pos.y - Int2Fx(45))) {
             if (VAL(actor, BOWSER_HURT) > 0 || (from->vel.y < Fx0 && !ANY_FLAG(from, FLG_PLAYER_STOMP)))
                 break;
 

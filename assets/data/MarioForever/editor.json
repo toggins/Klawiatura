@@ -628,6 +628,66 @@
             "sprite": "tiles/tank/bowser/1",
             "depth": 20
         },
+        "Tank Interior Bowser Left": {
+            "type": "background",
+            "sprite": "tiles/tank/bowser/0",
+            "depth": 30,
+            "colors": [
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255]
+            ]
+        },
+        "Tank Interior Bowser Right": {
+            "type": "background",
+            "sprite": "tiles/tank/bowser/1",
+            "depth": 30,
+            "colors": [
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255]
+            ]
+        },
+        "Tank Interior Brick": {
+            "type": "background",
+            "sprite": "tiles/brick/0",
+            "depth": 31,
+            "colors": [
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255]
+            ]
+        },
+        "Tank Interior Back": {
+            "type": "background",
+            "sprite": "tiles/tank/v/back",
+            "depth": 40
+        },
+        "Tank Interior Back 2": {
+            "type": "background",
+            "sprite": "tiles/tank/v/back",
+            "depth": 41,
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        "Tank Interior Back 3": {
+            "type": "background",
+            "sprite": "tiles/tank/v/back",
+            "depth": 42,
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
         "Wheel Left": {
             "type": "actor",
             "sprite": "tiles/wheel/0/0",
@@ -982,6 +1042,17 @@
             "type": "background",
             "sprite": "scenery/portrait/tank",
             "depth": 29
+        },
+        "Portrait Tank 2": {
+            "type": "background",
+            "sprite": "scenery/portrait/tank",
+            "depth": 39,
+            "colors": [
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255]
+            ]
         },
         "Star": {
             "type": "actor",
@@ -2299,6 +2370,17 @@
                 {
                     "name": "Tank",
                     "items": [
+                        {
+                            "name": "Interior",
+                            "items": [
+                                "Tank Interior Bowser Left",
+                                "Tank Interior Bowser Right",
+                                "Tank Interior Brick",
+                                "Tank Interior Back",
+                                "Tank Interior Back 2",
+                                "Tank Interior Back 3"
+                            ]
+                        },
                         "Tank Left",
                         "Tank Middle",
                         "Tank Right",
@@ -2415,7 +2497,7 @@
                 },
                 {
                     "name": "Portraits",
-                    "items": ["Portrait", "Portrait Eyes", "Portrait Tank"]
+                    "items": ["Portrait", "Portrait Eyes", "Portrait Tank", "Portrait Tank 2"]
                 },
                 "Bush",
                 "Waterfall",

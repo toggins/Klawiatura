@@ -1,0 +1,3724 @@
+{
+    "label": "@8-4",
+    "tracks": [
+        {
+            "track": "yi/bowser",
+            "offset": 16000
+        }
+    ],
+    "time": 440,
+    "backdrops": [
+        {
+            "def": "Lava Bottom",
+            "sprite": "enemies/lava/bottom",
+            "pos": [0, 460, 20],
+            "size": [668, 225]
+        },
+        {
+            "def": "Bridge Gray",
+            "sprite": "tiles/bridge/gray",
+            "pos": [0, 352, 20]
+        },
+        {
+            "def": "Bridge Gray",
+            "sprite": "tiles/bridge/gray",
+            "pos": [95, 352, 20]
+        },
+        {
+            "def": "Bridge Gray",
+            "sprite": "tiles/bridge/gray",
+            "pos": [190, 352, 20]
+        },
+        {
+            "def": "Bridge Gray",
+            "sprite": "tiles/bridge/gray",
+            "pos": [285, 352, 20]
+        },
+        {
+            "def": "Bridge Gray",
+            "sprite": "tiles/bridge/gray",
+            "pos": [380, 352, 20]
+        },
+        {
+            "def": "Bridge Gray",
+            "sprite": "tiles/bridge/gray",
+            "pos": [475, 352, 20]
+        },
+        {
+            "def": "Bridge Gray",
+            "sprite": "tiles/bridge/gray",
+            "pos": [570, 352, 20]
+        },
+        {
+            "def": "Bridge Gray",
+            "sprite": "tiles/bridge/gray",
+            "pos": [664, 352, 20]
+        },
+        {
+            "def": "Brick",
+            "sprite": "tiles/brick/0",
+            "pos": [736, 128, 20]
+        },
+        {
+            "def": "Brick",
+            "sprite": "tiles/brick/0",
+            "pos": [736, 160, 20]
+        },
+        {
+            "def": "Brick",
+            "sprite": "tiles/brick/0",
+            "pos": [736, 192, 20]
+        },
+        {
+            "def": "Brick",
+            "sprite": "tiles/brick/0",
+            "pos": [736, 224, 20]
+        },
+        {
+            "def": "Brick",
+            "sprite": "tiles/brick/0",
+            "pos": [736, 256, 20]
+        },
+        {
+            "def": "Brick",
+            "sprite": "tiles/brick/0",
+            "pos": [736, 288, 20]
+        },
+        {
+            "def": "Brick",
+            "sprite": "tiles/brick/0",
+            "pos": [736, 320, 20]
+        },
+        {
+            "def": "Brick Small",
+            "sprite": "tiles/brick/small",
+            "pos": [768, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 0, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 480, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 512, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -63, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -95, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -127, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -159, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -191, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -223, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -255, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -287, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -319, 20]
+        },
+        {
+            "def": "Portrait Tank 2",
+            "sprite": "scenery/portrait/tank",
+            "pos": [102, 83, 39],
+            "colors": [
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255]
+            ]
+        },
+        {
+            "def": "Portrait Tank 2",
+            "sprite": "scenery/portrait/tank",
+            "pos": [433, 84, 39],
+            "colors": [
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Brick",
+            "sprite": "tiles/brick/0",
+            "pos": [0, 160, 31],
+            "colors": [
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Brick",
+            "sprite": "tiles/brick/0",
+            "pos": [-32, 192, 31],
+            "colors": [
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Brick",
+            "sprite": "tiles/brick/0",
+            "pos": [584, 160, 31],
+            "colors": [
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Brick",
+            "sprite": "tiles/brick/0",
+            "pos": [616, 192, 31],
+            "colors": [
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Bowser Right",
+            "sprite": "tiles/tank/bowser/1",
+            "pos": [15, 90, 30],
+            "colors": [
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Bowser Left",
+            "sprite": "tiles/tank/bowser/0",
+            "pos": [572, 90, 30],
+            "colors": [
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255],
+                [132, 123, 123, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 0, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 32, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 64, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 96, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 128, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 160, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 192, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 224, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 256, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 288, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 320, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 352, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 384, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 416, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [301, 448, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 0, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 32, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 64, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 192, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 224, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 256, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 288, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 320, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 352, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 384, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 416, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 448, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 160, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 128, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [32, 96, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 0, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 32, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 64, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 96, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 128, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 160, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 192, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 224, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 256, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 288, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 320, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 352, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 384, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 416, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [192, 448, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 0, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 32, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 64, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 96, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 128, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 160, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 192, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 224, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 256, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 288, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 320, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 352, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 384, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 416, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [416, 448, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 0, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 32, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 64, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 96, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 128, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 160, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 192, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 224, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 256, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 288, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 320, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 352, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 384, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 416, 40]
+        },
+        {
+            "def": "Tank Interior Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [576, 448, 40]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 0, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 32, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 64, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 96, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 128, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 160, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 192, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 224, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 256, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 288, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 320, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 352, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 384, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 416, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [0, 448, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 0, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 32, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 64, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 96, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 128, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 160, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 192, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 224, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 256, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 288, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 320, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 352, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 384, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 416, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [64, 448, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 0, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 32, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 64, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 96, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 128, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 160, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 192, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 224, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 256, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 288, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 320, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 352, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 384, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 416, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [160, 448, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 0, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 32, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 64, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 96, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 128, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 160, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 192, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 224, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 256, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 288, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 320, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 352, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 384, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 416, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [224, 448, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 0, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 32, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 64, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 96, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 128, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 160, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 192, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 224, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 256, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 288, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 320, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 352, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 384, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 416, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [384, 448, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 0, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 32, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 64, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 96, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 128, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 160, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 192, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 224, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 256, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 288, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 320, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 352, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 384, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 416, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [448, 448, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 0, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 32, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 64, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 96, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 128, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 160, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 192, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 224, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 256, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 288, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 320, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 352, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 384, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 416, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [544, 448, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 0, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 32, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 64, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 96, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 128, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 160, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 192, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 224, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 256, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 288, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 320, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 352, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 384, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 416, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 2",
+            "sprite": "tiles/tank/v/back",
+            "pos": [608, 448, 41],
+            "colors": [
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255],
+                [164, 164, 164, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 0, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 32, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 64, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 96, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 128, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 160, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 192, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 224, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 256, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 288, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 320, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 352, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 384, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 416, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [96, 448, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 0, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 32, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 64, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 96, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 128, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 160, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 192, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 224, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 256, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 288, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 320, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 352, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 384, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 416, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [128, 448, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 0, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 32, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 64, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 96, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 128, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 160, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 192, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 224, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 256, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 288, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 320, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 352, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 384, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 416, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [256, 448, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 0, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 32, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 64, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 96, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 128, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 160, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 192, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 224, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 256, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 288, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 320, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 352, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 384, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 416, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [288, 448, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 0, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 32, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 64, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 96, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 128, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 160, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 192, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 224, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 256, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 288, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 320, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 352, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 384, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 416, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [320, 448, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 0, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 32, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 64, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 96, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 128, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 160, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 192, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 224, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 256, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 288, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 320, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 352, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 384, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 416, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [352, 448, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 0, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 32, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 64, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 96, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 128, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 160, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 192, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 224, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 256, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 288, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 320, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 352, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 384, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 416, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [480, 448, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 0, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 32, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 64, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 96, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 128, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 160, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 192, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 224, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 256, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 288, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 320, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 352, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 384, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 416, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [512, 448, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 0, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 32, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 64, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 96, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 128, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 160, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 224, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 256, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 288, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 320, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 352, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 384, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 416, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 448, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        },
+        {
+            "def": "Tank Interior Back 3",
+            "sprite": "tiles/tank/v/back",
+            "pos": [640, 192, 42],
+            "colors": [
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255],
+                [104, 104, 104, 255]
+            ]
+        }
+    ],
+    "collisions": [
+        {
+            "pos": [-32, -32],
+            "size": [26, 18],
+            "cell_size": [32, 32],
+            "cells": [
+                [25, 12, 1],
+                [0, 1, 1],
+                [0, 2, 1],
+                [0, 3, 1],
+                [0, 4, 1],
+                [0, 5, 1],
+                [0, 6, 1],
+                [0, 7, 1],
+                [0, 8, 1],
+                [0, 9, 1],
+                [0, 10, 1],
+                [0, 11, 1],
+                [0, 12, 1],
+                [0, 13, 1],
+                [0, 14, 1],
+                [0, 15, 1],
+                [0, 16, 1],
+                [0, 17, 1],
+                [0, 0, 1]
+            ]
+        },
+        {
+            "pos": [0, 352],
+            "size": [7, 1],
+            "cell_size": [95, 16],
+            "cells": [
+                [0, 0, 1],
+                [1, 0, 1],
+                [2, 0, 1],
+                [3, 0, 1],
+                [4, 0, 1],
+                [5, 0, 1],
+                [6, 0, 1]
+            ]
+        },
+        {
+            "pos": [664, 352],
+            "size": [1, 1],
+            "cell_size": [95, 16],
+            "cells": [[0, 0, 1]]
+        },
+        {
+            "pos": [736, 128],
+            "size": [1, 7],
+            "cell_size": [64, 32],
+            "cells": [
+                [0, 0, 1],
+                [0, 1, 1],
+                [0, 2, 1],
+                [0, 3, 1],
+                [0, 4, 1],
+                [0, 5, 1],
+                [0, 6, 1]
+            ]
+        },
+        {
+            "pos": [-32, -319],
+            "size": [1, 9],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 8, 1],
+                [0, 7, 1],
+                [0, 6, 1],
+                [0, 5, 1],
+                [0, 4, 1],
+                [0, 3, 1],
+                [0, 2, 1],
+                [0, 1, 1],
+                [0, 0, 1]
+            ]
+        }
+    ],
+    "actors": [
+        {
+            "def": "Autoscroll",
+            "id": 15,
+            "pos": [288, 160],
+            "values": [[0, 0]]
+        },
+        {
+            "def": "Player Spawn",
+            "id": 1,
+            "pos": [233, 275],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 1]
+            ]
+        },
+        {
+            "def": "Bowser",
+            "id": 53,
+            "pos": [579, 350],
+            "values": [
+                [0, 20],
+                [1, 196608],
+                [2, 8],
+                [3, -393216],
+                [4, 1],
+                [5, 65536],
+                [6, 65536],
+                [7, 100],
+                [8, 0],
+                [9, 42467328],
+                [10, 0],
+                [11, 8738]
+            ],
+            "flags": 224
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [0, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [32, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [64, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [96, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [128, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [160, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [192, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [224, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [256, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [288, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [320, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [352, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [384, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [476, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [445, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [416, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [508, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [540, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [572, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [604, 444]
+        },
+        {
+            "def": "Lava",
+            "id": 47,
+            "pos": [636, 444]
+        }
+    ]
+}

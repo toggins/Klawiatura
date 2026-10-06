@@ -1,0 +1,6 @@
+{
+    "texture": "projectiles/vomit",
+    "size": [25, 28],
+    "offset": [12, 13],
+    "uvs": [30, 1, 55, 29]
+}
