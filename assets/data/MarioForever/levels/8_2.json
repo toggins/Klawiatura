@@ -1296,13 +1296,6 @@
             "pos": [7868, 312, 20]
         },
         {
-            "def": "Tanks Background",
-            "sprite": "backgrounds/tanks",
-            "pos": [0, 0, 200],
-            "size": [10556, 420],
-            "tile": [true, false]
-        },
-        {
             "def": "Gradient Background",
             "pos": [0, 420, 200],
             "size": [7800, 60]
@@ -3606,6 +3599,17 @@
             "def": "Brown Block",
             "sprite": "tiles/block/brown",
             "pos": [11008, 416, 20]
+        },
+        {
+            "def": "Gradient Background",
+            "pos": [0, 0, 200],
+            "size": [10556, 420],
+            "colors": [
+                [8, 8, 8, 255],
+                [8, 8, 8, 255],
+                [49, 49, 49, 255],
+                [49, 49, 49, 255]
+            ]
         }
     ],
     "collisions": [

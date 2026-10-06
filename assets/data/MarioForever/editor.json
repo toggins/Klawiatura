@@ -67,13 +67,6 @@
             "max_scale": [32767, 197],
             "tile": [true, false]
         },
-        "Tanks Background": {
-            "type": "background",
-            "sprite": "backgrounds/tanks",
-            "depth": 200,
-            "max_scale": [32767, 420],
-            "tile": [true, false]
-        },
         "Block Background": {
             "type": "background",
             "sprite": "backgrounds/block",
@@ -2238,7 +2231,6 @@
                 "Castle Background 2",
                 "Castle Background 3",
                 "Starland Background",
-                "Tanks Background",
                 "Block Background"
             ]
         },

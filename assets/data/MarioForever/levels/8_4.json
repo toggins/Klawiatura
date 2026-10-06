@@ -3727,13 +3727,6 @@
             "pos": [4672, 320, 20]
         },
         {
-            "def": "Tanks Background",
-            "sprite": "backgrounds/tanks",
-            "pos": [0, 0, 200],
-            "size": [10556, 420],
-            "tile": [true, false]
-        },
-        {
             "def": "Gradient Background",
             "pos": [0, 420, 200],
             "size": [7800, 60]
@@ -3839,6 +3832,17 @@
             "def": "Flamethrower Right",
             "sprite": "tiles/flamethrower/2",
             "pos": [7232, 128, 20]
+        },
+        {
+            "def": "Gradient Background",
+            "pos": [0, 0, 200],
+            "size": [10556, 420],
+            "colors": [
+                [8, 8, 8, 255],
+                [8, 8, 8, 255],
+                [49, 49, 49, 255],
+                [49, 49, 49, 255]
+            ]
         }
     ],
     "collisions": [
