@@ -1087,6 +1087,9 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
 
     case ACT_PLAYER: {
+        if (get_sequence()->type == GS_RESCUE)
+            break;
+
         if (check_stomp(actor, from, Int2Fx(-16) - Fmin(actor->vel.y, Fx0), 0, FALSE)) {
             if (actor->vel.y < Fx0)
                 actor->vel.y = Fx0;
