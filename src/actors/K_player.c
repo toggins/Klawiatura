@@ -200,6 +200,9 @@ void player_starman(GameActor* actor, GameActor* from) {
    ============ */
 
 static void load_spawn() {
+    if (gamecontext()->num_players > 1)
+        load_sprite("markers/no_respawns", AKL_NEVER);
+
     load_actor(ACT_PLAYER);
 }
 
@@ -209,13 +212,17 @@ static void load_spawn_special(const GameActor* actor) {
 }
 
 static void create_spawn(GameActor* actor) {
+    actor->depth = Int2Fx(29);
+
+    VAL(actor, PLAYER_WARP_OUT_ANGLE) = 1;
+    if (gamecontext()->num_players <= 1)
+        FLAG_OFF(actor, FLG_VISIBLE);
+
     GameState* game_state = gamestate();
     GameActor* spawn = get_actor(game_state->spawn);
     if (spawn != NULL)
         FLAG_ON(spawn, FLG_DESTROY);
     game_state->spawn = actor->id;
-
-    VAL(actor, PLAYER_WARP_OUT_ANGLE) = 1;
 }
 
 static void cleanup_spawn(GameActor* actor) {
@@ -224,11 +231,23 @@ static void cleanup_spawn(GameActor* actor) {
         game_state->spawn = NULL_ACTOR;
 }
 
+static void draw_spawn(const GameActor* actor) {
+    const GameActor* hazard = get_actor(gamestate()->hazard);
+    if (hazard == NULL || hazard->type != ACT_RISING_LAVA)
+        return;
+
+    batch_reset();
+    const FVec2 pos = get_interp(actor);
+    batch_pos(B_F3_XY(Fx2Int(pos.x), Fx2Int(pos.y)));
+    batch_sprite("markers/no_respawns");
+}
+
 const ActorTable TAB_PLAYER_SPAWN = {
     .load = load_spawn,
     .load_special = load_spawn_special,
     .create = create_spawn,
     .cleanup = cleanup_spawn,
+    .draw = draw_spawn,
 };
 
 /* ======
