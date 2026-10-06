@@ -18,7 +18,7 @@ static void load_autoscroll_special(const GameActor* actor) {
 }
 
 static void create_autoscroll(GameActor* actor) {
-    actor->depth = Int2Fx(20);
+    actor->depth = 1310719;
 }
 
 static void pre_tick_autoscroll(GameActor* actor) {
@@ -89,7 +89,7 @@ static void pre_tick_autoscroll(GameActor* actor) {
 }
 
 static void draw_autoscroll(const GameActor* actor) {
-    if (!ANY_FLAG(actor, FLG_SCROLL_TANKS))
+    if (gamestate()->autoscroll != actor->id || !ANY_FLAG(actor, FLG_SCROLL_TANKS))
         return;
 
     batch_reset();
