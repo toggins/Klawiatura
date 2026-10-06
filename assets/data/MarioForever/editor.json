@@ -697,6 +697,11 @@
             "sprite": "tiles/wheel/2/0",
             "id": 93
         },
+        "Tanks Ground": {
+            "type": "tile",
+            "sprite": "markers/tanks_ground",
+            "depth": 20
+        },
         "Hill": {
             "type": "background",
             "sprite": "scenery/hill",
@@ -2398,7 +2403,8 @@
                         "Tank Chain",
                         "Tank Spike Left",
                         "Tank Bowser Left",
-                        "Tank Bowser Right"
+                        "Tank Bowser Right",
+                        "Tanks Ground"
                     ]
                 },
                 {
