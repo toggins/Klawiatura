@@ -1549,9 +1549,15 @@ static void draw_hud() {
 
         batch_pos(B_F3_XY(SCREEN_WIDTH - 75.f, video_state->bowser.y));
         batch_sprite("ui/bowser");
+
+        float bx = 0.f;
         for (Uint8 i = 0; i < video_state->bowser.health; i++) {
-            batch_pos(B_F3_XY(SCREEN_WIDTH - 75.f - ((float)i * 9.f), video_state->bowser.y));
-            batch_sprite("ui/bowser/bar");
+            if (i == 10)
+                bx = 0.f;
+
+            batch_pos(B_F3_XY(SCREEN_WIDTH - 75.f + bx, video_state->bowser.y));
+            batch_sprite((i >= 10) ? "ui/bowser/bar2" : "ui/bowser/bar");
+            bx -= 9.f;
         }
     }
 

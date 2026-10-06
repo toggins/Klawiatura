@@ -43,6 +43,7 @@ static void load() {
     load_sprite_num("enemies/bowser/fire/end/%u", 2, AKL_NEVER);
     load_sprite("ui/bowser", AKL_NEVER);
     load_sprite("ui/bowser/bar", AKL_NEVER);
+    load_sprite("ui/bowser/bar2", AKL_NEVER);
     load_sound("bowser/fire", AKL_NEVER);
     load_sound("bowser/hurt", AKL_NEVER);
     load_sound("bowser/dead", AKL_NEVER);
