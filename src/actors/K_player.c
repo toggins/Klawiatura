@@ -130,7 +130,8 @@ void grow_player(GameActor* actor, GameActor* from, PlayerPowerup powerup) {
 
     const PlayerPowerup last_powerup = player->powerup;
     if (powerup != POW_SUPER_MUSHROOM && last_powerup == POW_NONE && from != NULL
-        && ANY_FLAG(from, FLG_POWERUP_SPROUTED) && (get_player(from->player) == NULL || from->player == player->id))
+        && ANY_FLAG(from, FLG_POWERUP_SPROUTED | FLG_POWERUP_DROPPED)
+        && (get_player(from->player) == NULL || from->player == player->id))
     {
         powerup = POW_SUPER_MUSHROOM;
     }

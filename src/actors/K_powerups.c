@@ -116,8 +116,10 @@ static void tick_fire_flower(GameActor* actor) {
     if (actor->sprout > 0 && ((gamestate()->time * 5) % 8) >= 5)
         ++actor->sprout;
 
-    displace_actor(actor, Fx0, FALSE);
-    actor->vel.y += 13107;
+    if (ANY_FLAG(actor, FLG_POWERUP_DROPPED)) {
+        displace_actor(actor, Fx0, FALSE);
+        actor->vel.y += 13107;
+    }
 }
 
 static void draw_fire_flower(const GameActor* actor) {

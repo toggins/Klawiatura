@@ -1,8 +1,9 @@
 #include "K_audio.h"
-#include "K_game.h"
 #include "K_locale.h"
 #include "K_string.h"
 #include "K_video.h"
+
+#include "actors/K_powerups.h"
 
 typedef Uint8 PeachAnimations;
 enum {
@@ -76,7 +77,7 @@ static void tick(GameActor* actor) {
     if (actor->pos.x > (levelinfo()->size.x + Int2Fx(360)) && sequence->type == GS_RESCUE)
         gamestate()->flags |= GF_END;
 
-    if (VAL(actor, PEACH_THROWS) < 4) {
+    if (VAL(actor, PEACH_THROWS) < ((ActorValue)(gamecontext()->num_players) * 4)) {
         const GameState* game_state = gamestate();
         if (game_state->time > 150 && (game_state->time % 250) == 0 && get_num_actors(ACT_FIRE_FLOWER) <= 0) {
             for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
@@ -89,8 +90,10 @@ static void tick(GameActor* actor) {
                     continue;
 
                 GameActor* flower = create_actor(ACT_FIRE_FLOWER, Vadd(actor->pos, (FVec2){Int2Fx(12), Int2Fx(-45)}));
-                if (flower != NULL)
-                    flower->player = i;
+                if (flower != NULL) {
+                    flower->player = player->id;
+                    FLAG_ON(flower, FLG_POWERUP_DROPPED);
+                }
 
                 VAL(actor, PEACH_ANIMATION) = PA_THROW;
                 VAL(actor, PEACH_FRAME) = 0;
