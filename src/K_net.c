@@ -480,12 +480,16 @@ Bool get_peer_bool(NetID pid, const char* key) {
     return get_peer_number(pid, key) > 0;
 }
 
-Bool peer_exists(NetID pid) {
-    return NutBlast_IsPlayerAlive(pid);
+Bool all_peers_ready() {
+    return !is_connected() || NutBlast_IsReady();
+}
+
+Bool peer_is_ready(NetID pid) {
+    return NutBlast_IsConnectedToPlayer(pid);
 }
 
 Bool peer_is_relayed(NetID pid) {
-    return NutBlast_IsPlayerRelayed(pid);
+    return NutBlast_IsPlayerConnectionRelayed(pid);
 }
 
 Uint8 get_peer_count() {

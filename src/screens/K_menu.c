@@ -591,9 +591,10 @@ static Bool draw_lobby_menu() {
     if (is_host())
         draw_lobby_button(&ly, 5, LFMT("menu.lobby.button.kick"), kick_player_disabled());
     draw_lobby_button(&ly, 6,
-        LFMT(get_lobby_player_count() >= 1
-                 ? (is_client() ? "menu.lobby.button.waiting_for_host" : "menu.lobby.button.start")
-                 : "menu.lobby.button.not_enough_players"),
+        LFMT(get_lobby_player_count() >= 1 ? (is_client() ? "menu.lobby.button.waiting_for_host"
+                                                          : (all_peers_ready() ? "menu.lobby.button.start"
+                                                                               : "menu.lobby.button.waiting_for_peers"))
+                                           : "menu.lobby.button.not_enough_players"),
         start_disabled());
 
     batch_pos(B_F3_XY(125.f, SCREEN_HEIGHT - 16.f));
@@ -626,9 +627,9 @@ static Bool draw_lobby_menu() {
             batch_color(B_U4_WHITE);
         }
 
+        const Bool connected = peer_is_ready(pid), spectating = get_peer_bool(pid, "spectator");
         batch_pos(B_F3_XY(295.f, ly + 27.f));
-        const Bool spectating = get_peer_bool(pid, "spectator");
-        batch_color(B_U4_ALPHA(spectating ? 100 : 255));
+        batch_color(B_U4_ALPHA((!connected || spectating) ? 100 : 255));
         batch_sprite(fmt(get_character_cursor(get_peer_number(pid, "character")), 0));
 
         batch_pos(B_F3_XY(317.f, ly + 8.f));
@@ -637,13 +638,18 @@ static Bool draw_lobby_menu() {
         const char* name = get_peer_name(pid);
         batch_string("footer", 16.f, name);
 
-        batch_pos(B_F3_XY(322.f + string_width("footer", 16.f, name), ly + 8.f));
-        batch_color(B_U4_ALPHA(200));
-        if (spectating) {
+        if (!connected) {
             batch_pos(B_F3_XY(317.f, ly + 28.f));
+            batch_color(B_U4_ALPHA(128));
+            batch_string("footer", 16.f, LFMT("value.connecting"));
+        } else if (spectating) {
+            batch_pos(B_F3_XY(317.f, ly + 28.f));
+            batch_color(B_U4_ALPHA(200));
             batch_string("footer", 16.f, LFMT("value.spectator"));
         } else {
             const PlayerPowerup powerup = get_peer_number(pid, "powerup");
+            batch_pos(B_F3_XY(322.f + string_width("footer", 16.f, name), ly + 8.f));
+            batch_color(B_U4_ALPHA(200));
             batch_string("footer", 16.f, fmt("x %i", DEFAULT_LIVES - get_powerup_cost(powerup)));
 
             batch_pos(B_F3_XY(317.f, ly + 28.f));
@@ -663,7 +669,7 @@ static Bool draw_lobby_menu() {
         }
 
         batch_align(B_ALIGN(FA_RIGHT, FA_MIDDLE));
-        batch_string("footer", 16.f, fmt("%i ms", get_peer_ping(pid)));
+        batch_string("footer", 16.f, connected ? fmt("%i ms", get_peer_ping(pid)) : "...");
 
         ++line;
     }
@@ -752,7 +758,7 @@ static void powerup_cycle(Sint8 cycle) {
 }
 
 static Bool start_disabled() {
-    return is_client() || get_world(CLIENT.world) == NULL || get_lobby_player_count() < 1;
+    return is_client() || get_world(CLIENT.world) == NULL || get_lobby_player_count() < 1 || !all_peers_ready();
 }
 
 static void start_option() {
@@ -1016,6 +1022,7 @@ static void start(const void* secret, size_t secret_size) {
     load_localized_sprite("menu.lobby.button.start", AKL_NEVER);
     load_localized_sprite("menu.lobby.button.not_enough_players", AKL_NEVER);
     load_localized_sprite("menu.lobby.button.waiting_for_host", AKL_NEVER);
+    load_localized_sprite("menu.lobby.button.waiting_for_peers", AKL_NEVER);
     load_sprite("ui/menu/lobby/slot/empty", AKL_NEVER);
     load_sprite("ui/menu/lobby/slot/peer", AKL_NEVER);
     load_sprite("ui/menu/lobby/slot/you", AKL_NEVER);

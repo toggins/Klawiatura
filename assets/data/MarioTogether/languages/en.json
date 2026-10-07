@@ -246,6 +246,7 @@
     "value.beetroot": "Beetroot",
     "value.green_lui": "Green Lui",
     "value.hammer_suit": "Hammer Suit",
+    "value.connecting": "Connecting",
 
     "message.notice": "Notice",
     "message.xscroll_notice": "\"XScroll\" will be applied in the next level.",
@@ -294,6 +295,7 @@
     "menu.lobby.button.start": "ui/menu/lobby/en/buttons/start",
     "menu.lobby.button.not_enough_players": "ui/menu/lobby/en/buttons/not_enough_players",
     "menu.lobby.button.waiting_for_host": "ui/menu/lobby/en/buttons/waiting_for_host",
+    "menu.lobby.button.waiting_for_peers": "ui/menu/lobby/en/buttons/waiting_for_peers",
     "menu.cycle": "Cycle",
     "menu.select": "Select",
     "menu.input": "Input",
