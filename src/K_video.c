@@ -830,14 +830,6 @@ void batch_logic(BlendLogic logic) {
         break;
     }
 
-    case BL_OR: {
-        glEnable(GL_COLOR_LOGIC_OP);
-        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-        glLogicOp(GL_OR);
-
-        break;
-    }
-
     case BL_XOR: {
         glEnable(GL_COLOR_LOGIC_OP);
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);

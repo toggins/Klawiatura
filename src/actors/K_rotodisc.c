@@ -95,9 +95,7 @@ static void tick(GameActor* actor) {
 
 static void draw(const GameActor* actor) {
     batch_reset();
-    batch_logic(BL_OR);
     draw_actor(actor, fmt("enemies/rotodisc/%i", gamestate()->time % 26), FALSE);
-    batch_logic(BL_NORMAL);
 }
 
 static void collide(GameActor* actor, GameActor* from) {

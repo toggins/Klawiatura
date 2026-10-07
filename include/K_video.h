@@ -159,7 +159,6 @@ enum {
 typedef Uint8 BlendLogic;
 enum {
     BL_NORMAL,
-    BL_OR,
     BL_XOR,
 };
 
