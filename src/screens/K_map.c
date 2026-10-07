@@ -8,6 +8,11 @@
 #include "K_tick.h"
 #include "K_video.h"
 
+typedef Uint8 MapBossType;
+enum {
+    MBT_BOWSER,
+};
+
 typedef struct {
     PlayerID players[MAX_PLAYERS];
     Uint16 state;
@@ -56,6 +61,12 @@ typedef struct {
 } MapPathNode;
 
 typedef struct {
+    MapBossType type;
+    Uint8 level;
+    Sint32 pos[2];
+} MapBoss;
+
+typedef struct {
     Uint8 enter, ambush;
     Uint16 size[2];
     Sint32 water[4];
@@ -73,6 +84,7 @@ typedef struct {
     TileMap* tilemap;
     MapPoint* points;
     MapPathNode* path;
+    MapBoss* bosses;
 } MapState;
 
 static MapState* map_state = NULL;
@@ -166,6 +178,30 @@ static void start(const void* secret, size_t secret_size) {
             point.cross = yyjson_get_bool(yyjson_arr_get(jpoint, 2));
 
             map_state->points = TinyDPush(map_state->points, &point);
+        }
+
+        jarray = yyjson_obj_get(jmap, "bosses");
+        for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
+            yyjson_val* jboss = yyjson_arr_get(jarray, i);
+            if (!yyjson_is_arr(jboss))
+                continue;
+
+            MapBoss boss = {0};
+
+            const char* btype = yyjson_get_str(yyjson_arr_get(jboss, 0));
+            if (btype != NULL) {
+                // TODO: Parse different boss types
+                load_sprite("ui/map/bowser", AKL_NEVER);
+            }
+
+            if (map_state->bosses == NULL)
+                map_state->bosses = MakeTinyDPro(1, sizeof(MapBoss));
+
+            boss.level = yyjson_get_uint(yyjson_arr_get(jboss, 1));
+            boss.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jboss, 2));
+            boss.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jboss, 3));
+
+            map_state->bosses = TinyDPush(map_state->bosses, &boss);
         }
     }
 
@@ -588,6 +624,16 @@ static void draw_ui() {
             batch_sprite(point->cross ? fmt("ui/map/cross/%u", t % 11)
                                       : (CLIENT.extra_effects ? fmt("ui/map/point/extra/%u", t % 10)
                                                               : fmt("ui/map/point/%u", t % 6)));
+        }
+
+        for (size_t i = 0, n = TinyDLength(map_state->bosses); i < n; i++) {
+            const MapBoss* boss = &map_state->bosses[i];
+            if (boss->level < worldcontext()->level)
+                continue;
+
+            batch_pos(B_F3(boss->pos[0],
+                boss->pos[1] - SDL_fabsf(SDL_sinf(screenticks() * 2.4f * (SDL_PI_F / 180.f)) * 10.f), 8.f));
+            batch_sprite("ui/map/bowser");
         }
 
         const MapPlayer* player = &map_state->player;
