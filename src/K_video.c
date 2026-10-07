@@ -69,6 +69,7 @@ typedef struct {
     Uint8 color[4][4];
     FontAlignment align[2];
     BlendMode blend;
+    BlendLogic logic;
     Uint8 stencil_mask;
     StencilFunction stencil_func;
     Uint8 stencil_func_ref, stencil_func_mask;
@@ -811,6 +812,41 @@ void batch_blend(BlendMode blend) {
         glBlendFuncSeparate(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE);
         break;
     }
+}
+
+void batch_logic(BlendLogic logic) {
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    batch.logic = logic;
+#else
+    if (batch.logic != logic)
+        submit_batch();
+
+    batch.logic = logic;
+    switch (batch.logic) {
+    default: {
+        glDisable(GL_COLOR_LOGIC_OP);
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+        break;
+    }
+
+    case BL_OR: {
+        glEnable(GL_COLOR_LOGIC_OP);
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        glLogicOp(GL_OR);
+
+        break;
+    }
+
+    case BL_XOR: {
+        glEnable(GL_COLOR_LOGIC_OP);
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
+        glLogicOp(GL_XOR);
+
+        break;
+    }
+    }
+#endif
 }
 
 void batch_write_color(Bool r, Bool g, Bool b, Bool a) {

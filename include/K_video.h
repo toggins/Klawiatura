@@ -156,6 +156,13 @@ enum {
     BM_MULTIPLY,
 };
 
+typedef Uint8 BlendLogic;
+enum {
+    BL_NORMAL,
+    BL_OR,
+    BL_XOR,
+};
+
 typedef Uint8 StencilFunction;
 enum {
     STF_NEVER,
@@ -248,7 +255,7 @@ void batch_pos(const float[3]), batch_offset(const float[3]), batch_scale(const 
 void batch_color(const Uint8[4]), batch_colors(const Uint8[4][4]);
 void batch_flip(const Bool[2]), batch_tile(const Bool[2]), batch_align(const FontAlignment[2]);
 void batch_filter(Bool), batch_alpha_test(float);
-void batch_blend(BlendMode);
+void batch_blend(BlendMode), batch_logic(BlendLogic);
 void batch_write_color(Bool, Bool, Bool, Bool);
 void batch_test_depth(Bool), batch_write_depth(Bool);
 void batch_test_stencil(Bool), batch_stencil_mask(Uint8), batch_stencil_func(StencilFunction, Uint8, Uint8),

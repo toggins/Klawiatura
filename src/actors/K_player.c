@@ -1055,13 +1055,13 @@ static void draw(const GameActor* actor) {
             antijitter);
     }
     if (VAL(actor, PLAYER_STARMAN) > 0) {
-        batch_blend(BM_ADD);
+        batch_logic(BL_XOR);
         draw_actor(actor,
             fmt((player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? "effects/shield/%i"
                                                                                   : "effects/shield/super/%i",
                 (500 - VAL(actor, PLAYER_STARMAN)) % 4),
             antijitter);
-        batch_blend(BM_NORMAL);
+        batch_logic(BL_NORMAL);
     }
 
     draw_name(actor);
