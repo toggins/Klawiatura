@@ -212,7 +212,7 @@ static void load_spawn_special(const GameActor* actor) {
 }
 
 static void create_spawn(GameActor* actor) {
-    actor->depth = Int2Fx(29);
+    actor->depth = Int2Fx(23);
 
     VAL(actor, PLAYER_WARP_OUT_ANGLE) = 1;
     if (gamecontext()->num_players <= 1)
