@@ -1,4 +1,5 @@
 #include "K_audio.h"
+#include "K_cmd.h"
 #include "K_input.h"
 #include "K_interface.h"
 #include "K_levels.h"
@@ -183,6 +184,7 @@ static void start(const void* secret, size_t secret_size) {
     // ===========
 
     load_sprite_num("ui/map/point/%u", 6, AKL_NEVER);
+    load_sprite_num("ui/map/point/extra/%u", 10, AKL_NEVER);
     load_sprite_num("ui/map/cross/%u", 11, AKL_NEVER);
 
     load_sprite(map_state->title, AKL_NEVER);
@@ -583,7 +585,9 @@ static void draw_ui() {
                 continue;
 
             batch_pos(B_F3(point->pos[0], point->pos[1], 10.f));
-            batch_sprite(point->cross ? fmt("ui/map/cross/%u", t % 11) : fmt("ui/map/point/%u", t % 6));
+            batch_sprite(point->cross ? fmt("ui/map/cross/%u", t % 11)
+                                      : (CLIENT.extra_effects ? fmt("ui/map/point/extra/%u", t % 10)
+                                                              : fmt("ui/map/point/%u", t % 6)));
         }
 
         const MapPlayer* player = &map_state->player;
