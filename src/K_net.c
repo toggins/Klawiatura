@@ -291,7 +291,7 @@ void net_update() {
                 read_buffer32(&mbuf, (Uint32*)&ctx.players[i].score);
             }
 
-            if (world->has_map) {
+            if (world->has_map || (!world->has_map && ctx.level >= world->num_levels && ctx.num_players > 1)) {
                 if (get_screen() == SCR_MENU)
                     play_generic_sound("ui/enter", PLAY_SYSTEM);
                 set_screen(SCR_MAP, &ctx, sizeof(ctx));

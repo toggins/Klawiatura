@@ -39,6 +39,8 @@ static void iterate_world_file(const char* filename, const void* buffer, size_t 
         world.hash += ((Uint8*)buffer)[i];
 
     world.has_map = yyjson_is_obj(yyjson_obj_get(root, "map"));
+    const size_t num_levels = yyjson_arr_size(yyjson_obj_get(root, "levels"));
+    world.num_levels = SDL_min(num_levels, SDL_MAX_UINT8);
 
     yyjson_doc_free(json);
 
@@ -200,7 +202,7 @@ void jump_to_world(const WorldContext* wctx, Bool as_host) {
     }
 
     spread_world_packet(wctx);
-    if (world->has_map) {
+    if (world->has_map || (!world->has_map && wctx->level >= world->num_levels && wctx->num_players > 1)) {
         set_screen(SCR_MAP, wctx, sizeof(*wctx));
         return;
     }

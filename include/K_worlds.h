@@ -6,9 +6,11 @@ struct WorldContext;
 #include "K_game.h"
 
 typedef struct {
+    Bool has_map;
+    Uint8 num_levels;
+
     const char* name;
     Uint32 hash;
-    Bool has_map;
 } World;
 
 typedef struct {

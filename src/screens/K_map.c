@@ -111,8 +111,10 @@ static void start(const void* secret, size_t secret_size) {
         yyjson_get_type_desc(root));
 
     yyjson_val* jmap = yyjson_obj_get(root, "map");
-    EXPECT(yyjson_is_obj(jmap), "Expected world \"%s\" map data as object, got %s", world->name,
-        yyjson_get_type_desc(jmap));
+    if (world->has_map) {
+        EXPECT(yyjson_is_obj(jmap), "Expected world \"%s\" map data as object, got %s", world->name,
+            yyjson_get_type_desc(jmap));
+    }
 
     map_state = SDL_calloc(1, sizeof(*map_state));
     EXPECT(map_state, "Failed to allocate map state");
@@ -122,90 +124,95 @@ static void start(const void* secret, size_t secret_size) {
         gamers[i] = (i < wctx->num_players) ? i : NULL_PLAYER;
     SDL_qsort(gamers, wctx->num_players, sizeof(*gamers), qsort_callback);
 
-    map_state->title = SDL_strdup(LFMT(fmt("map.world.%s", world->name)));
-    EXPECT(map_state->title, "Failed to allocate map title");
-
-    yyjson_val* jarray = yyjson_obj_get(jmap, "size");
-    map_state->size[0] = yyjson_get_uint(yyjson_arr_get(jarray, 0));
-    map_state->size[1] = yyjson_get_uint(yyjson_arr_get(jarray, 1));
-
-    map_state->tilemap = create_tilemap();
-    read_tilemap(map_state->tilemap, yyjson_obj_get(jmap, "backdrops"));
-
-    yyjson_val* jpath = yyjson_arr_get(yyjson_obj_get(jmap, "paths"), wctx->level);
     Uint32 offset = 0;
-    if (yyjson_is_obj(jpath)) {
-        map_state->ambush = yyjson_get_bool(yyjson_obj_get(jpath, "ambush"));
+    if (world->has_map) {
+        map_state->title = SDL_strdup(LFMT(fmt("map.world.%s", world->name)));
+        EXPECT(map_state->title, "Failed to allocate map title");
 
-        jarray = yyjson_obj_get(jpath, "nodes");
-        for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
-            yyjson_val* jnode = yyjson_arr_get(jarray, i);
-            if (!yyjson_is_arr(jnode))
-                continue;
+        yyjson_val* jarray = yyjson_obj_get(jmap, "size");
+        map_state->size[0] = yyjson_get_uint(yyjson_arr_get(jarray, 0));
+        map_state->size[1] = yyjson_get_uint(yyjson_arr_get(jarray, 1));
 
-            if (map_state->path == NULL)
-                map_state->path = MakeTinyDPro(8, sizeof(MapPathNode));
+        map_state->tilemap = create_tilemap();
+        read_tilemap(map_state->tilemap, yyjson_obj_get(jmap, "backdrops"));
 
-            MapPathNode node = {0};
-            node.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jnode, 0));
-            node.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jnode, 1));
+        yyjson_val* jpath = yyjson_arr_get(yyjson_obj_get(jmap, "paths"), wctx->level);
+        if (yyjson_is_obj(jpath)) {
+            map_state->ambush = yyjson_get_bool(yyjson_obj_get(jpath, "ambush"));
 
-            map_state->path = TinyDPush(map_state->path, &node);
-        }
+            jarray = yyjson_obj_get(jpath, "nodes");
+            for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
+                yyjson_val* jnode = yyjson_arr_get(jarray, i);
+                if (!yyjson_is_arr(jnode))
+                    continue;
 
-        jarray = yyjson_obj_get(jpath, "water");
-        map_state->water[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 0));
-        map_state->water[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 1));
-        map_state->water[2] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 2));
-        map_state->water[3] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 3));
+                if (map_state->path == NULL)
+                    map_state->path = MakeTinyDPro(8, sizeof(MapPathNode));
 
-        offset = yyjson_get_uint(yyjson_obj_get(jpath, "offset"));
-    }
+                MapPathNode node = {0};
+                node.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jnode, 0));
+                node.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jnode, 1));
 
-    if (map_state->path != NULL) {
-        jarray = yyjson_obj_get(jmap, "points");
-        for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
-            yyjson_val* jpoint = yyjson_arr_get(jarray, i);
-            if (!yyjson_is_arr(jpoint))
-                continue;
-
-            if (map_state->points == NULL)
-                map_state->points = MakeTinyDPro(16, sizeof(MapPoint));
-
-            MapPoint point = {0};
-            point.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jpoint, 0));
-            point.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jpoint, 1));
-            point.cross = yyjson_get_bool(yyjson_arr_get(jpoint, 2));
-
-            map_state->points = TinyDPush(map_state->points, &point);
-        }
-
-        jarray = yyjson_obj_get(jmap, "bosses");
-        for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
-            yyjson_val* jboss = yyjson_arr_get(jarray, i);
-            if (!yyjson_is_arr(jboss))
-                continue;
-
-            MapBoss boss = {0};
-
-            const char* btype = yyjson_get_str(yyjson_arr_get(jboss, 0));
-            if (btype != NULL) {
-                // TODO: Parse different boss types
-                load_sprite("ui/map/bowser", AKL_NEVER);
+                map_state->path = TinyDPush(map_state->path, &node);
             }
 
-            if (map_state->bosses == NULL)
-                map_state->bosses = MakeTinyDPro(1, sizeof(MapBoss));
+            jarray = yyjson_obj_get(jpath, "water");
+            map_state->water[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 0));
+            map_state->water[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 1));
+            map_state->water[2] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 2));
+            map_state->water[3] = (Sint32)yyjson_get_sint(yyjson_arr_get(jarray, 3));
 
-            boss.level = yyjson_get_uint(yyjson_arr_get(jboss, 1));
-            boss.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jboss, 2));
-            boss.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jboss, 3));
-
-            map_state->bosses = TinyDPush(map_state->bosses, &boss);
+            offset = yyjson_get_uint(yyjson_obj_get(jpath, "offset"));
         }
-    }
 
-    map_state->level = StHashStr(yyjson_get_str(yyjson_arr_get(yyjson_obj_get(root, "levels"), wctx->level)));
+        if (map_state->path != NULL) {
+            jarray = yyjson_obj_get(jmap, "points");
+            for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
+                yyjson_val* jpoint = yyjson_arr_get(jarray, i);
+                if (!yyjson_is_arr(jpoint))
+                    continue;
+
+                if (map_state->points == NULL)
+                    map_state->points = MakeTinyDPro(16, sizeof(MapPoint));
+
+                MapPoint point = {0};
+                point.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jpoint, 0));
+                point.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jpoint, 1));
+                point.cross = yyjson_get_bool(yyjson_arr_get(jpoint, 2));
+
+                map_state->points = TinyDPush(map_state->points, &point);
+            }
+
+            jarray = yyjson_obj_get(jmap, "bosses");
+            for (size_t i = 0, n = yyjson_arr_size(jarray); i < n; i++) {
+                yyjson_val* jboss = yyjson_arr_get(jarray, i);
+                if (!yyjson_is_arr(jboss))
+                    continue;
+
+                MapBoss boss = {0};
+
+                const char* btype = yyjson_get_str(yyjson_arr_get(jboss, 0));
+                if (btype != NULL) {
+                    // TODO: Parse different boss types
+                    load_sprite("ui/map/bowser", AKL_NEVER);
+                }
+
+                if (map_state->bosses == NULL)
+                    map_state->bosses = MakeTinyDPro(1, sizeof(MapBoss));
+
+                boss.level = yyjson_get_uint(yyjson_arr_get(jboss, 1));
+                boss.pos[0] = (Sint32)yyjson_get_sint(yyjson_arr_get(jboss, 2));
+                boss.pos[1] = (Sint32)yyjson_get_sint(yyjson_arr_get(jboss, 3));
+
+                map_state->bosses = TinyDPush(map_state->bosses, &boss);
+            }
+        }
+
+        map_state->level = StHashStr(yyjson_get_str(yyjson_arr_get(yyjson_obj_get(root, "levels"), wctx->level)));
+    } else {
+        map_state->size[0] = SCREEN_WIDTH;
+        map_state->size[1] = SCREEN_HEIGHT;
+    }
 
     const char* track = (map_state->path == NULL) ? "yi/score" : yyjson_get_str(yyjson_obj_get(jmap, "track"));
     if (track != NULL) {
@@ -219,13 +226,18 @@ static void start(const void* secret, size_t secret_size) {
     // MAIN ASSETS
     // ===========
 
-    load_sprite_num("ui/map/point/%u", 6, AKL_NEVER);
-    load_sprite_num("ui/map/point/extra/%u", 10, AKL_NEVER);
-    load_sprite_num("ui/map/cross/%u", 11, AKL_NEVER);
+    if (world->has_map) {
+        load_sprite(map_state->title, AKL_NEVER);
+        load_sprite("ui/map/logo", AKL_NEVER);
+    } else {
+        load_sprite("ui/backgrounds/score", AKL_NEVER);
+        load_localized_sprite("map.congrats", AKL_NEVER);
+    }
 
-    load_sprite(map_state->title, AKL_NEVER);
     if (map_state->path == NULL) {
-        load_localized_sprite_num("map.completed", 16, AKL_NEVER);
+        if (world->has_map)
+            load_localized_sprite_num("map.completed", 16, AKL_NEVER);
+
         if (wctx->num_players > 1) {
             load_sound("kick", AKL_NEVER);
             load_sound("score", AKL_NEVER);
@@ -233,6 +245,10 @@ static void start(const void* secret, size_t secret_size) {
             load_sound(get_character_voice(wctx->players[map_state->score.players[0]].character, PV_READY), AKL_NEVER);
         }
     } else {
+        load_sprite_num("ui/map/point/%u", 6, AKL_NEVER);
+        load_sprite_num("ui/map/point/extra/%u", 10, AKL_NEVER);
+        load_sprite_num("ui/map/cross/%u", 11, AKL_NEVER);
+
         const WorldPlayerContext* pctx = &wctx->players[wctx->winner];
         for (PlayerFrame i = PF_WALK1; i <= (PlayerFrame)PF_WALK3; i++)
             load_sprite(get_character_sprite(pctx->character, pctx->powerup, i), AKL_NEVER);
@@ -253,7 +269,6 @@ static void start(const void* secret, size_t secret_size) {
         load_sound("ui/enter", AKL_ONCE);
     }
 
-    load_sprite("ui/map/logo", AKL_NEVER);
     load_sprite("ui/bezel_l", AKL_NEVER);
     load_sprite("ui/bezel_r", AKL_NEVER);
     load_track(map_state->track, AKL_NEVER);
@@ -670,20 +685,29 @@ static void draw_ui() {
     apply_matrices();
 
     batch_reset();
-    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y));
-
-    batch_sprite(map_state->title);
-    if (map_state->path == NULL) {
-        const Sprite* tspr = get_sprite(map_state->title);
-        const float tb = (tspr == NULL) ? 0.f : (tspr->size[1] - tspr->offset[1]);
-        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y + tb));
-        batch_sprite(LFMT("map.completed", 'i', (int)(screenticks() * 0.5f) % 16));
-    }
-
-    batch_pos(B_F3_SCREEN);
-    batch_sprite("ui/map/logo");
 
     const WorldContext* wctx = worldcontext();
+    const World* world = get_world_key(wctx->world);
+
+    if (world->has_map) {
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y));
+        batch_sprite(map_state->title);
+        if (map_state->path == NULL) {
+            const Sprite* tspr = get_sprite(map_state->title);
+            const float tb = (tspr == NULL) ? 0.f : (tspr->size[1] - tspr->offset[1]);
+            batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y + tb));
+            batch_sprite(LFMT("map.completed", 'i', (int)(screenticks() * 0.5f) % 16));
+        }
+
+        batch_pos(B_F3_SCREEN);
+        batch_sprite("ui/map/logo");
+    } else {
+        batch_sprite("ui/backgrounds/score");
+
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y));
+        batch_sprite(LFMT("map.congrats"));
+    }
+
     if (wctx->num_players > 1) {
         if (map_state->path == NULL) {
             const float w = (float)wctx->num_players * 32.f;
@@ -775,12 +799,14 @@ static void draw_ui() {
         }
     }
 
-    if (map_state->enter <= 0 && map_state->path != NULL && map_state->current_node >= TinyDLength(map_state->path)
+    if (map_state->enter <= 0
+        && ((map_state->path != NULL && map_state->current_node >= TinyDLength(map_state->path))
+            || (map_state->path == NULL && map_state->score.state >= (200 + (wctx->num_players * 25))))
         && SDL_fmodf(screenticks(), 25.f) < 12.5f)
     {
         batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 24.f));
         batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-        if (is_leader()) {
+        if (is_leader() || map_state->path == NULL) {
             batch_colors(B_U4X4_GREEN);
             batch_string("header", 32.f, LFMT("map.press", 's', kb_label(KB_JUMP)));
         } else {
