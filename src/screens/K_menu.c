@@ -5,14 +5,13 @@
 #include "K_cmd.h"
 #include "K_config.h"
 #include "K_input.h"
-#include "K_interface.h"
 #include "K_levels.h"
-#include "K_net.h"
 #include "K_replay.h"
 #include "K_string.h"
 #include "K_tick.h"
 #include "K_video.h"
 
+#include "uis/K_kick.h"
 #include "uis/K_message.h"
 
 enum {
@@ -52,7 +51,7 @@ static const char *fmt_join_code(size_t), *fmt_max_peers(size_t), *fmt_visibilit
     *fmt_character(size_t), *fmt_powerup(size_t), *fmt_world(size_t), *fmt_test_level(size_t);
 static void multiplayer_option(), options_option(), exit_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8),
     host_option(), submit_join_code(Bool), character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8),
-    kick_player_option(), world_cycle(Sint8), start_option(), show_copy_join_code_cycle(Sint8),
+    kick_player_option(), promote_player_option(), world_cycle(Sint8), start_option(), show_copy_join_code_cycle(Sint8),
     show_copy_join_code_option(), go_to_editor_option(), test_level_cycle(Sint8), test_level_option();
 
 static Catalog CATALOG = {
@@ -153,6 +152,7 @@ static Catalog CATALOG = {
             {.name = "option.powerup", .disabled = character_disabled, .cycle = powerup_cycle},
             {.name = "option.options", .callback = options_option},
             {.name = "option.kick", .disabled = kick_player_disabled, .callback = kick_player_option},
+            {.name = "option.promote", .disabled = kick_player_disabled, .callback = promote_player_option},
             {.name = "option.start", .disabled = start_disabled, .callback = start_option},
 #ifdef SDL_PLATFORM_EMSCRIPTEN
             {.name = "option.show_join_code", .cycle = show_copy_join_code_cycle},
@@ -460,7 +460,7 @@ static void draw_lobby_code(float* y) {
         str = u64_to_base32(get_lobby_id());
         wrap = 224.f;
     } else {
-        str = LFMT(CATALOG.options[MEN_LOBBY][7].name);
+        str = LFMT(CATALOG.options[MEN_LOBBY][8].name);
     }
 
     if (size >= 17.f) {
@@ -482,7 +482,7 @@ static void draw_lobby_code(float* y) {
 
     *y += string_height_wrap(font, size, str, wrap) + 22.f - size;
 
-    if (CATALOG.menus[MEN_LOBBY].option == 7) {
+    if (CATALOG.menus[MEN_LOBBY].option == 8) {
         batch_pos(B_F3_XY(-240.f, y1 - 4.f));
         batch_colors(B_U4X4({0, 0, 0, 255}, {40, 40, 40, 255}, {0, 0, 0, 255}, {40, 40, 40, 255}));
         batch_blend(BM_ADD);
@@ -490,7 +490,7 @@ static void draw_lobby_code(float* y) {
         batch_blend(BM_NORMAL);
     }
 
-    *y += 3.f;
+    *y += 1.f;
 }
 
 static void draw_lobby_cycle(float* y, size_t idx, const char* label, const char* value, Bool disabled) {
@@ -500,7 +500,7 @@ static void draw_lobby_cycle(float* y, size_t idx, const char* label, const char
     batch_color(B_U4_ALPHA(disabled ? 160 : 255));
     batch_sprite(LFMT(label));
 
-    *y += 20.f;
+    *y += 19.f;
     batch_pos(B_F3_XY(125.f, *y));
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
     batch_string_wrap("footer", 16.f, value, 186.f);
@@ -525,7 +525,7 @@ static void draw_lobby_cycle(float* y, size_t idx, const char* label, const char
         batch_blend(BM_NORMAL);
     }
 
-    *y += 3.f;
+    *y += 1.f;
 }
 
 static const char* fmt_lobby_world(size_t idx) {
@@ -554,30 +554,27 @@ static void draw_lobby_button(float* y, size_t idx, const char* sprite, Bool dis
         batch_blend(BM_NORMAL);
     }
 
-    *y += 48.f;
+    *y += 47.f;
 }
 
 static Bool draw_lobby_menu() {
     batch_reset();
 
     // LEFT
-    batch_pos(B_F3_XY(-240.f, 11.f));
-    batch_colors(B_U4X4({0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 128}, {0, 0, 0, 128}));
-    batch_rectangle(NULL, B_F2(490.f, 2.f));
-    batch_pos(B_F3_XY(-240.f, 13.f));
+    batch_pos(B_F3_XY(-240.f, 0.f));
     batch_colors(B_U4X4({115, 156, 115, 255}, {115, 156, 115, 255}, {189, 231, 189, 255}, {189, 231, 189, 255}));
     const char* lname = fmt("%s (%s)", get_lobby_name(), LFMT(in_private_lobby() ? "value.private" : "value.public"));
     const float lh = string_height_wrap("footer", 16.f, lname, 218.f);
     batch_rectangle(NULL, B_F2(490.f, 6.f + lh));
-    batch_pos(B_F3_XY(-240.f, 19.f + lh));
+    batch_pos(B_F3_XY(-240.f, 6.f + lh));
     batch_colors(B_U4X4({0, 0, 0, 128}, {0, 0, 0, 128}, {0, 0, 0, 0}, {0, 0, 0, 0}));
     batch_rectangle(NULL, B_F2(490.f, 2.f));
-    batch_pos(B_F3_XY(125.f, 16.f));
+    batch_pos(B_F3_XY(125.f, 3.f));
     batch_color(B_U4_WHITE);
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
-    batch_string_wrap("footer", 16.f, lname, 218.f);
+    batch_string_wrap("footer", 16.f, lname, 230.f);
 
-    float ly = lh + 24.f;
+    float ly = lh + 12.f;
 
     draw_lobby_code(&ly);
 
@@ -588,22 +585,25 @@ static Bool draw_lobby_menu() {
     draw_lobby_cycle(&ly, 3, "menu.lobby.label.powerup", fmt_lobby_powerup(0), character_disabled());
 
     draw_lobby_button(&ly, 4, LFMT("menu.lobby.button.options"), FALSE);
-    if (is_host())
-        draw_lobby_button(&ly, 5, LFMT("menu.lobby.button.kick"), kick_player_disabled());
-    draw_lobby_button(&ly, 6,
+    if (is_host()) {
+        const Bool disabled = kick_player_disabled();
+        draw_lobby_button(&ly, 5, LFMT("menu.lobby.button.kick"), disabled);
+        draw_lobby_button(&ly, 6, LFMT("menu.lobby.button.promote"), disabled);
+    }
+    draw_lobby_button(&ly, 7,
         LFMT(get_lobby_player_count() >= 1 ? (is_client() ? "menu.lobby.button.waiting_for_host"
                                                           : (all_peers_ready() ? "menu.lobby.button.start"
                                                                                : "menu.lobby.button.waiting_for_peers"))
                                            : "menu.lobby.button.not_enough_players"),
         start_disabled());
 
-    batch_pos(B_F3_XY(125.f, SCREEN_HEIGHT - 16.f));
+    batch_pos(B_F3_XY(125.f, SCREEN_HEIGHT - 6.f));
     batch_color(B_U4_WHITE);
     batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
     const char* ind = fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("menu.disconnect"));
     batch_string_wrap("footer", 16.f, ind, 218.f);
 
-    batch_pos(B_F3_XY(125.f, SCREEN_HEIGHT - 20.f - string_height_wrap("footer", 16.f, ind, 218.f)));
+    batch_pos(B_F3_XY(125.f, SCREEN_HEIGHT - 9.f - string_height_wrap("footer", 16.f, ind, 218.f)));
     batch_color(B_U4_ALPHA(200));
     batch_string_wrap("footer", 12.f, fmt("Checksum: %u", get_game_hash()), 218.f);
 
@@ -928,6 +928,12 @@ static void kick_player_option() {
     create_ui(UI_KICK, NULL);
 }
 
+static void promote_player_option() {
+    UI* promote = create_ui(UI_KICK, NULL);
+    if (promote != NULL)
+        ((UIKickData*)promote->userdata)->promote = TRUE;
+}
+
 static void show_copy_join_code_cycle(Sint8 cycle) {
     (void)cycle;
 
@@ -1019,6 +1025,7 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite("ui/menu/lobby/arrow", AKL_NEVER);
     load_localized_sprite("menu.lobby.button.options", AKL_NEVER);
     load_localized_sprite("menu.lobby.button.kick", AKL_NEVER);
+    load_localized_sprite("menu.lobby.button.promote", AKL_NEVER);
     load_localized_sprite("menu.lobby.button.start", AKL_NEVER);
     load_localized_sprite("menu.lobby.button.not_enough_players", AKL_NEVER);
     load_localized_sprite("menu.lobby.button.waiting_for_host", AKL_NEVER);

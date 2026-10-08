@@ -88,7 +88,7 @@ Sint64 get_lobby_number(const char*);
 Bool get_lobby_bool(const char*);
 Bool in_private_lobby();
 void toggle_spectator();
-void kick_peer(NetID);
+void kick_peer(NetID), promote_peer(NetID);
 
 void find_lobbies();
 LobbyListState get_lobby_list_state();

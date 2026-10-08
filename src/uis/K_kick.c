@@ -1,15 +1,9 @@
 #include "K_audio.h"
 #include "K_input.h"
-#include "K_interface.h"
-#include "K_net.h"
 #include "K_string.h"
 #include "K_video.h"
 
-typedef struct {
-    NetID peers[MAX_PEERS];
-    Option options[MAX_OPTIONS];
-    size_t option;
-} UIKickData;
+#include "uis/K_kick.h"
 
 static const char* fmt_peer(size_t idx) {
     return get_peer_name(((UIKickData*)topui()->userdata)->peers[idx]);
@@ -17,8 +11,13 @@ static const char* fmt_peer(size_t idx) {
 
 static void peer_option() {
     UI* ui = topui();
+
     UIKickData* userdata = ui->userdata;
-    kick_peer(userdata->peers[userdata->option]);
+    if (userdata->promote)
+        promote_peer(userdata->peers[userdata->option]);
+    else
+        kick_peer(userdata->peers[userdata->option]);
+
     ui->flags |= UIF_DESTROY;
 }
 
@@ -64,12 +63,13 @@ static void draw(const UI* ui) {
         batch_rectangle(NULL, B_F2_S(3000.f));
     }
 
+    const UIKickData* userdata = ui->userdata;
+
     batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 16.f));
     batch_colors(B_U4X4_YELLOW);
     batch_align(B_ALIGN(FA_CENTER, FA_TOP));
-    batch_string("header", 32.f, LFMT("option.kick_player"));
+    batch_string("header", 32.f, LFMT(userdata->promote ? "option.promote_player" : "option.kick_player"));
 
-    const UIKickData* userdata = ui->userdata;
     draw_options(userdata->options, userdata->option, 64.f);
 
     batch_reset();
@@ -77,7 +77,8 @@ static void draw(const UI* ui) {
     batch_color(B_U4_WHITE);
     batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
     batch_string("footer", 16.f,
-        fmt("[%s] %s   [%s] %s", kb_label(KB_UI_ENTER), LFMT("menu.kick"), kb_label(KB_PAUSE), LFMT("menu.back")));
+        fmt("[%s] %s   [%s] %s", kb_label(KB_UI_ENTER), LFMT(userdata->promote ? "menu.promote" : "menu.kick"),
+            kb_label(KB_PAUSE), LFMT("menu.back")));
 }
 
 static void cleanup(UI* ui) {

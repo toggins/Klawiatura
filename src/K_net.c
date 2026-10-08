@@ -667,6 +667,10 @@ void kick_peer(NetID pid) {
     NutBlast_Kick(pid);
 }
 
+void promote_peer(NetID pid) {
+    NutBlast_SetMaster(pid);
+}
+
 void find_lobbies() {
     set_last_error(NULL);
     NutBlast_FindLobbies(20);
