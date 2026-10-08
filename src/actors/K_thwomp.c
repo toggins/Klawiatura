@@ -66,10 +66,13 @@ static void tick(GameActor* actor) {
 
     VAL_TICK(actor, THWOMP_OVERLAP);
 
-    if (any_in_range((FVec2){actor->pos.x, Int2Fx(100)}) && !ANY_FLAG(actor, FLG_THWOMP_FELL)
-        && in_any_view(actor->pos, Int2Fx(-128), VEF_ALL))
-    {
-        FLAG_ON(actor, FLG_THWOMP_FALL);
+    if (any_in_range((FVec2){actor->pos.x, Int2Fx(100)}) && !ANY_FLAG(actor, FLG_THWOMP_FELL)) {
+        const LevelInfo* level_info = levelinfo();
+        if ((level_info->bounds.end.y - level_info->bounds.start.y) <= F_SCREEN_HEIGHT
+            || in_any_view(actor->pos, Int2Fx(-128), VEF_ALL))
+        {
+            FLAG_ON(actor, FLG_THWOMP_FALL);
+        }
     }
 
     if (ANY_FLAG(actor, FLG_THWOMP_FALL)) {
