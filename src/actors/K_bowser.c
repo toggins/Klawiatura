@@ -53,6 +53,9 @@ static void load() {
 
     if (gamestate()->flags & GF_LOST_MAP)
         load_track("smb3/boss_clear", AKL_NEVER);
+
+    if (gamecontext()->num_players > 1)
+        load_sprite("effects/spark", AKL_NEVER);
 }
 
 static void load_special(const GameActor* actor) {

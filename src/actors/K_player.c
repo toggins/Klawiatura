@@ -1064,6 +1064,20 @@ static void draw(const GameActor* actor) {
         batch_logic(BL_NORMAL);
     }
 
+    if (gamecontext()->num_players > 1) {
+        const GameSequence* sequence = get_sequence();
+        if (sequence->type == GS_BOWSER_END && sequence->activator == player->id) {
+            batch_blend(BM_ADD);
+            for (Uint8 i = 0; i < 8; i++) {
+                const float dir = ((float)(gamestate()->time) * 0.02f) + ((float)i * (SDL_PI_F * 0.25f));
+                batch_offset(B_F3_XY((Sint32)(SDL_cosf(dir) * -45.f),
+                    (Sint32)(Fx2Float(Fhalf(actor->box.end.y - actor->box.start.y)) + (SDL_sinf(dir) * 45.f))));
+                batch_sprite("effects/spark");
+            }
+            batch_blend(BM_NORMAL);
+        }
+    }
+
     draw_name(actor);
 }
 
