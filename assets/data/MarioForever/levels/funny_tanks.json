@@ -1,0 +1,6536 @@
+{
+    "label": "hud.world.funny_tanks",
+    "tracks": [{ "track": "dream_off" }],
+    "funny_tanks": true,
+    "size": [11800, 480],
+    "bounds": [0, 0, 11800, 480],
+    "time": 360,
+    "backdrops": [
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [0, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [32, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [64, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [96, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [128, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [160, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [192, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [224, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [256, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [288, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [320, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [352, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [384, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [416, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [448, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [480, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [512, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [544, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [576, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [608, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [640, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [672, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [704, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [736, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [768, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [800, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [832, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [864, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [896, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [928, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [960, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [992, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1024, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1056, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1088, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1120, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1152, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1184, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1216, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1248, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1280, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1312, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1344, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1376, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1408, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1440, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1472, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1504, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1536, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1568, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1600, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1632, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1664, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1696, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1728, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1760, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1792, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1824, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1856, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1888, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1920, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1952, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [1984, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2016, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2048, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2080, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2112, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2144, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2176, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2208, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2240, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2272, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2304, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2336, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2368, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2400, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2432, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2464, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2496, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2528, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2560, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2592, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2624, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2656, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2688, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2720, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2752, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2784, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2816, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2848, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2880, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2912, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2944, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [2976, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3008, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3040, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3072, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3104, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3136, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3168, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3200, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3232, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3264, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3296, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3328, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3360, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3392, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3424, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3456, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3488, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3520, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3552, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3584, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3616, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3648, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3680, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3712, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3744, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3776, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3808, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3840, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3872, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3904, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3936, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [3968, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4000, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4032, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4064, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4096, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4128, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4160, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4192, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4224, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4256, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4288, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4320, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4352, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4384, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4416, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4448, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4480, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4512, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4544, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4576, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4608, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4640, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4672, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4704, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4736, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4768, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4800, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4832, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4864, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4896, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4928, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4960, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [4992, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5024, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5056, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5088, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5120, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5152, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5184, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5216, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5248, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5280, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5312, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5344, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5376, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5408, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5440, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5472, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5504, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5536, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5568, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5600, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5632, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5664, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5696, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5728, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5760, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5792, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5824, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5856, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5888, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5920, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5952, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [5984, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6016, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6048, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6080, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6112, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6144, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6176, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6208, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6240, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6272, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6304, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6336, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6368, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6400, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6432, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6464, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6496, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6528, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6560, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6592, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6624, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6656, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6688, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6720, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6752, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6784, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6816, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6848, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6880, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6912, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6944, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [6976, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7008, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7040, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7072, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7104, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7136, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7168, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7200, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7232, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7264, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7296, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7328, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7360, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7392, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7424, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7456, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7488, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7520, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7552, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7584, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7616, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7648, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7680, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7712, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7744, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7776, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7808, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7840, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7872, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7904, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7936, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [7968, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8000, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8032, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8064, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8096, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8128, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8160, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8192, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8224, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8256, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8288, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8320, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8352, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8384, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8416, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8448, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8480, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8512, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8544, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8576, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8608, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8640, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8672, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8704, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8736, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8768, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8800, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8832, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8864, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8896, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8928, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8960, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [8992, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9024, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9056, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9088, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9120, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9152, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9184, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9216, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9248, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9280, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9312, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9344, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9376, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9408, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9440, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9472, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9504, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9536, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9568, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9600, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9632, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9664, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9696, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9728, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9760, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9792, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9824, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9856, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9888, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9920, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9952, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [9984, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10016, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10048, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10080, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10112, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10144, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10176, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10208, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10240, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10272, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10304, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10336, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10368, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10400, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10432, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10464, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10496, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10528, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10560, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10592, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10624, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10656, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10688, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10720, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10752, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10784, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10816, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10848, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10880, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10912, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10944, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [10976, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11008, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11040, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11072, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11104, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11136, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11168, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11200, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11232, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11264, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11296, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11328, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11360, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11392, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11424, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11456, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11488, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11520, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11552, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11584, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11616, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11648, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11680, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11712, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11744, 416, 20]
+        },
+        {
+            "def": "Tanks Ground",
+            "sprite": "markers/tanks_ground",
+            "pos": [11772, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 0, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 448, 20]
+        },
+        {
+            "def": "Goal",
+            "sprite": "markers/goal",
+            "pos": [11488, 64, 23]
+        },
+        {
+            "def": "Goal Mark",
+            "sprite": "markers/goal/mark",
+            "pos": [11328, 320, 23]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [704, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [736, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [768, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [800, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [832, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [864, 352, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [800, 320, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [832, 320, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [1088, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1120, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1152, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1184, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1216, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [1248, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [1216, 288, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [1184, 288, 20]
+        },
+        {
+            "def": "Tank Middle 2",
+            "sprite": "tiles/tank/v/1",
+            "pos": [1184, 320, 20]
+        },
+        {
+            "def": "Tank Middle 2",
+            "sprite": "tiles/tank/v/1",
+            "pos": [1216, 320, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [1344, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1376, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1408, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1440, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1472, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [1504, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [1504, 320, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [1472, 320, 20]
+        },
+        {
+            "def": "Tank Middle 2",
+            "sprite": "tiles/tank/v/1",
+            "pos": [1504, 256, 20]
+        },
+        {
+            "def": "Tank Middle 2",
+            "sprite": "tiles/tank/v/1",
+            "pos": [1504, 224, 20]
+        },
+        {
+            "def": "Tank Middle 2",
+            "sprite": "tiles/tank/v/1",
+            "pos": [1504, 192, 20]
+        },
+        {
+            "def": "Tank Top",
+            "sprite": "tiles/tank/v/0",
+            "pos": [1504, 160, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [1472, 224, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [1440, 224, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [1600, 352, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [1632, 320, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [1664, 288, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1664, 320, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1632, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1696, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1728, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1728, 320, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1728, 288, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1792, 288, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [1824, 288, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [1856, 288, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [1760, 352, 20]
+        },
+        {
+            "def": "Tank Middle 2",
+            "sprite": "tiles/tank/v/1",
+            "pos": [1696, 320, 20]
+        },
+        {
+            "def": "Tank Top",
+            "sprite": "tiles/tank/v/0",
+            "pos": [1696, 288, 20]
+        },
+        {
+            "def": "Tank Top",
+            "sprite": "tiles/tank/v/0",
+            "pos": [1760, 224, 20]
+        },
+        {
+            "def": "Tank Middle 2",
+            "sprite": "tiles/tank/v/1",
+            "pos": [1760, 256, 20]
+        },
+        {
+            "def": "Tank Middle 2",
+            "sprite": "tiles/tank/v/1",
+            "pos": [1760, 288, 20]
+        },
+        {
+            "def": "Tank Middle 2",
+            "sprite": "tiles/tank/v/1",
+            "pos": [1760, 320, 20]
+        },
+        {
+            "def": "Tank Buttons",
+            "sprite": "tiles/tank/buttons",
+            "pos": [1664, 352, 20]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [768, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [768, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [768, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [768, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [768, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [768, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [768, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [768, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [768, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [768, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [768, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [864, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [864, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [864, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [864, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [864, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [864, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [864, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [864, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [864, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [864, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [864, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1152, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1152, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1152, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1152, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1152, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1152, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1152, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1152, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1152, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1152, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1152, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1376, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1376, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1376, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1376, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1376, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1376, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1376, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1376, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1376, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1376, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [1376, 0, 30]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [2016, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2048, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2080, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2112, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2144, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2176, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2208, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2240, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2272, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2304, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2336, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2368, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2400, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [2432, 352, 20]
+        },
+        {
+            "def": "Tank Top",
+            "sprite": "tiles/tank/v/0",
+            "pos": [2208, 320, 20]
+        },
+        {
+            "def": "Tank Top",
+            "sprite": "tiles/tank/v/0",
+            "pos": [2240, 288, 20]
+        },
+        {
+            "def": "Tank Middle 2",
+            "sprite": "tiles/tank/v/1",
+            "pos": [2240, 320, 20]
+        },
+        {
+            "def": "Tank Lid",
+            "sprite": "tiles/tank/lid",
+            "pos": [1408, 320, 21]
+        },
+        {
+            "def": "Tank Lid",
+            "sprite": "tiles/tank/lid",
+            "pos": [2144, 320, 21]
+        },
+        {
+            "def": "Tank Lid",
+            "sprite": "tiles/tank/lid",
+            "pos": [2336, 320, 21]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [736, 320, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [832, 288, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [1120, 320, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [1216, 256, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [1440, 320, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [1504, 288, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [1504, 128, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [1696, 256, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [1760, 192, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [2208, 288, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [2240, 256, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [2784, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2816, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2848, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [2880, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [3008, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [3040, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [3072, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [3104, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [3136, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [3168, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [3200, 352, 20]
+        },
+        {
+            "def": "Tank Buttons",
+            "sprite": "tiles/tank/buttons",
+            "pos": [2912, 352, 20]
+        },
+        {
+            "def": "Tank Buttons",
+            "sprite": "tiles/tank/buttons",
+            "pos": [2944, 352, 20]
+        },
+        {
+            "def": "Tank Buttons",
+            "sprite": "tiles/tank/buttons",
+            "pos": [2976, 352, 20]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [2944, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [2944, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [2944, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [2944, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [2944, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [2944, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [2944, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [2944, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [2944, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [2944, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [2944, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [3104, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [3104, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [3104, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [3104, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [3104, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [3104, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [3104, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [3104, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [3104, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [3104, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [3104, 0, 30]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [3392, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [3552, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [3424, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [3456, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [3488, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [3520, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [3808, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [3936, 352, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [3776, 352, 20]
+        },
+        {
+            "def": "Tank Crushed",
+            "sprite": "tiles/tank/crushed",
+            "pos": [3840, 352, 20]
+        },
+        {
+            "def": "Tank Crushed",
+            "sprite": "tiles/tank/crushed",
+            "pos": [3872, 352, 20]
+        },
+        {
+            "def": "Tank Crushed",
+            "sprite": "tiles/tank/crushed",
+            "pos": [3904, 352, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [4192, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4224, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4256, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4288, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4320, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4352, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4384, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4416, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4448, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4480, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4512, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4544, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4576, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4608, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4640, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4672, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4704, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4736, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4768, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4800, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4832, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4864, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4896, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4928, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4960, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [4992, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [5024, 352, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [3424, 128, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [3456, 128, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [3520, 128, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [3552, 128, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [3424, 320, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [3456, 320, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [3520, 320, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [3552, 320, 20]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4320, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4320, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4320, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4320, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4320, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4320, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4320, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4320, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4320, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4320, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4320, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4480, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4480, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4480, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4480, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4480, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4480, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4480, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4480, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4480, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4480, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4480, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4768, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4768, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4768, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4768, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4768, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4768, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4768, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4768, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4768, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4768, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4768, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4992, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4992, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4992, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4992, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4992, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4992, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4992, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4992, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4992, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4992, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [4992, 0, 30]
+        },
+        {
+            "def": "Tank Lid",
+            "sprite": "tiles/tank/lid",
+            "pos": [4640, 320, 21]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [5312, 160, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [5344, 160, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [5376, 160, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [2592, 256, 20]
+        },
+        {
+            "def": "Tank Block",
+            "sprite": "tiles/tank/block",
+            "pos": [2624, 256, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [2656, 256, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [5312, 224, 20]
+        },
+        {
+            "def": "Tank Block",
+            "sprite": "tiles/tank/block",
+            "pos": [5344, 224, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [5376, 224, 20]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5344, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5344, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5344, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5344, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5344, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5344, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5344, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5344, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5344, 320, 30]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [5120, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5152, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5184, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5216, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5248, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5280, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5312, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5344, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5376, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5408, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5440, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5472, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5504, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5536, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5568, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5600, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5632, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5664, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5696, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5728, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5760, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5792, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5824, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5856, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5888, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [5920, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [5952, 352, 20]
+        },
+        {
+            "def": "Pipe Gray Top",
+            "sprite": "tiles/pipe/gray/v0",
+            "pos": [5472, 256, 20]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [5472, 320, 20]
+        },
+        {
+            "def": "Pipe Gray Top",
+            "sprite": "tiles/pipe/gray/v0",
+            "pos": [5856, 96, 20]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [5856, 160, 20]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [5856, 192, 20]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [5856, 224, 20]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [5856, 256, 20]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [5856, 288, 20]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [5856, 320, 20]
+        },
+        {
+            "def": "Pipe Gray Top",
+            "sprite": "tiles/pipe/gray/v0",
+            "pos": [6432, 256, 20]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [6432, 320, 20]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5664, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5664, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5664, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5664, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5664, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5664, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5664, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5664, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5664, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5664, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5664, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5920, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5920, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5920, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5920, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5920, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5920, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5920, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5920, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5920, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5920, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [5920, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6112, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6112, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6112, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6112, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6112, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6112, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6112, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6112, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6112, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6112, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6112, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6368, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6368, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6368, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6368, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6368, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6368, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6368, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6368, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6368, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6368, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6368, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6592, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6592, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6592, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6592, 0, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6592, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6592, 192, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6592, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6592, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6592, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6592, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6816, 320, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6816, 288, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6816, 256, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6816, 224, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6816, 160, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6816, 128, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6816, 96, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6816, 64, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6816, 32, 30]
+        },
+        {
+            "def": "Tank Middle Back",
+            "sprite": "tiles/tank/v/back",
+            "pos": [6816, 0, 30]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [5984, 192, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [6048, 192, 20]
+        },
+        {
+            "def": "Tank Block",
+            "sprite": "tiles/tank/block",
+            "pos": [6016, 192, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [6048, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6080, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6112, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6144, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6176, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6208, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6240, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6272, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6304, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6336, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6368, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6400, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6432, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6464, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6496, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6528, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6560, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6592, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6624, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6656, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6688, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6720, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6752, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6784, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6816, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [6848, 352, 20]
+        },
+        {
+            "def": "Tank Crushed",
+            "sprite": "tiles/tank/crushed",
+            "pos": [6880, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [6912, 352, 20]
+        },
+        {
+            "def": "Tank Block",
+            "sprite": "tiles/tank/block",
+            "pos": [6944, 352, 20]
+        },
+        {
+            "def": "Tank Block",
+            "sprite": "tiles/tank/block",
+            "pos": [6976, 352, 20]
+        },
+        {
+            "def": "Tank Block",
+            "sprite": "tiles/tank/block",
+            "pos": [7008, 352, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [7040, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [7072, 352, 20]
+        },
+        {
+            "def": "Tank Crushed",
+            "sprite": "tiles/tank/crushed",
+            "pos": [7104, 352, 20]
+        },
+        {
+            "def": "Tank Crushed",
+            "sprite": "tiles/tank/crushed",
+            "pos": [7136, 352, 20]
+        },
+        {
+            "def": "Tank Crushed",
+            "sprite": "tiles/tank/crushed",
+            "pos": [7168, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [7200, 352, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [7200, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7232, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7264, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7296, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7328, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7360, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7392, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7424, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7456, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7488, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7520, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7552, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7584, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7616, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7648, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7680, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7712, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7744, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7776, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7808, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7840, 320, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [7872, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7904, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7936, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [7968, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8000, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8032, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8064, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8096, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8128, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8160, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8192, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8224, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8256, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8288, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8320, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8352, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8384, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8416, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8448, 320, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [8480, 320, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [8512, 320, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [8512, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [8544, 352, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [8672, 352, 20]
+        },
+        {
+            "def": "Tank Crushed",
+            "sprite": "tiles/tank/crushed",
+            "pos": [8576, 352, 20]
+        },
+        {
+            "def": "Tank Crushed",
+            "sprite": "tiles/tank/crushed",
+            "pos": [8608, 352, 20]
+        },
+        {
+            "def": "Tank Crushed",
+            "sprite": "tiles/tank/crushed",
+            "pos": [8640, 352, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [8576, 160, 20]
+        },
+        {
+            "def": "Tank Block",
+            "sprite": "tiles/tank/block",
+            "pos": [8608, 160, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [8640, 160, 20]
+        },
+        {
+            "def": "Tank Slope Left",
+            "sprite": "tiles/tank/slope/0",
+            "pos": [11200, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11232, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11264, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11296, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11328, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11360, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11392, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11424, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11456, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11488, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11520, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11552, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11584, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11616, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11648, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11680, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11712, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11744, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11776, 352, 20]
+        },
+        {
+            "def": "Tank Middle",
+            "sprite": "tiles/tank/h/1",
+            "pos": [11808, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11840, 391, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [6560, 128, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [6592, 128, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [6624, 128, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [6784, 192, 20]
+        },
+        {
+            "def": "Tank Screws",
+            "sprite": "tiles/tank/screws",
+            "pos": [6816, 192, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [6848, 192, 20]
+        },
+        {
+            "def": "Tank Left",
+            "sprite": "tiles/tank/h/0",
+            "pos": [6976, 192, 20]
+        },
+        {
+            "def": "Tank Block",
+            "sprite": "tiles/tank/block",
+            "pos": [7008, 192, 20]
+        },
+        {
+            "def": "Tank Right",
+            "sprite": "tiles/tank/h/2",
+            "pos": [7040, 192, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [6624, 96, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [6848, 160, 20]
+        },
+        {
+            "def": "Blaster",
+            "sprite": "tiles/blaster/0",
+            "pos": [7168, 320, 20]
+        },
+        {
+            "def": "Gradient Background",
+            "pos": [0, 0, 200],
+            "size": [11815, 420],
+            "colors": [
+                [8, 8, 8, 255],
+                [8, 8, 8, 255],
+                [49, 49, 49, 255],
+                [49, 49, 49, 255]
+            ]
+        }
+    ],
+    "collisions": [
+        {
+            "pos": [-32, 0],
+            "size": [372, 15],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 0, 1],
+                [0, 1, 1],
+                [0, 2, 1],
+                [0, 3, 1],
+                [0, 4, 1],
+                [0, 5, 1],
+                [0, 6, 1],
+                [0, 7, 1],
+                [0, 8, 1],
+                [0, 9, 1],
+                [0, 10, 1],
+                [0, 11, 1],
+                [0, 12, 1],
+                [0, 13, 1],
+                [0, 14, 1],
+                [23, 11, 52],
+                [24, 11, 1],
+                [25, 11, 1],
+                [26, 11, 1],
+                [27, 11, 1],
+                [28, 11, 1],
+                [26, 10, 52],
+                [27, 10, 1],
+                [35, 11, 52],
+                [36, 11, 1],
+                [37, 11, 1],
+                [38, 11, 1],
+                [39, 11, 1],
+                [40, 11, 1],
+                [39, 9, 1],
+                [38, 9, 52],
+                [38, 10, 1],
+                [39, 10, 1],
+                [43, 11, 52],
+                [44, 11, 1],
+                [45, 11, 1],
+                [46, 11, 1],
+                [47, 11, 1],
+                [48, 11, 1],
+                [48, 10, 1],
+                [47, 10, 52],
+                [48, 8, 1],
+                [48, 7, 1],
+                [48, 6, 1],
+                [48, 5, 1],
+                [47, 7, 1],
+                [46, 7, 52],
+                [51, 11, 52],
+                [52, 10, 52],
+                [53, 9, 52],
+                [53, 10, 1],
+                [52, 11, 1],
+                [54, 11, 1],
+                [55, 11, 1],
+                [55, 10, 1],
+                [55, 9, 1],
+                [57, 9, 1],
+                [58, 9, 1],
+                [59, 9, 1],
+                [56, 11, 1],
+                [54, 10, 1],
+                [54, 9, 1],
+                [56, 7, 1],
+                [56, 8, 1],
+                [56, 9, 1],
+                [56, 10, 1],
+                [53, 11, 1],
+                [64, 11, 52],
+                [65, 11, 1],
+                [66, 11, 1],
+                [67, 11, 1],
+                [68, 11, 1],
+                [69, 11, 1],
+                [70, 11, 1],
+                [71, 11, 1],
+                [72, 11, 1],
+                [73, 11, 1],
+                [74, 11, 1],
+                [75, 11, 1],
+                [76, 11, 1],
+                [77, 11, 1],
+                [70, 10, 1],
+                [71, 9, 1],
+                [71, 10, 1],
+                [24, 10, 1],
+                [27, 9, 1],
+                [36, 10, 1],
+                [39, 8, 1],
+                [46, 10, 1],
+                [48, 9, 1],
+                [48, 4, 1],
+                [54, 8, 1],
+                [56, 6, 1],
+                [70, 9, 1],
+                [71, 8, 1],
+                [88, 11, 52],
+                [89, 11, 1],
+                [90, 11, 1],
+                [91, 11, 1],
+                [95, 11, 1],
+                [96, 11, 1],
+                [97, 11, 1],
+                [98, 11, 1],
+                [99, 11, 1],
+                [100, 11, 1],
+                [101, 11, 1],
+                [92, 11, 1],
+                [93, 11, 1],
+                [94, 11, 1],
+                [107, 11, 52],
+                [112, 11, 1],
+                [108, 11, 1],
+                [109, 11, 1],
+                [110, 11, 1],
+                [111, 11, 1],
+                [120, 11, 1],
+                [124, 11, 1],
+                [119, 11, 52],
+                [121, 11, 1],
+                [122, 11, 1],
+                [123, 11, 1],
+                [132, 11, 52],
+                [133, 11, 1],
+                [134, 11, 1],
+                [135, 11, 1],
+                [136, 11, 1],
+                [137, 11, 1],
+                [138, 11, 1],
+                [139, 11, 1],
+                [140, 11, 1],
+                [141, 11, 1],
+                [142, 11, 1],
+                [143, 11, 1],
+                [144, 11, 1],
+                [145, 11, 1],
+                [146, 11, 1],
+                [147, 11, 1],
+                [148, 11, 1],
+                [149, 11, 1],
+                [150, 11, 1],
+                [151, 11, 1],
+                [152, 11, 1],
+                [153, 11, 1],
+                [154, 11, 1],
+                [155, 11, 1],
+                [156, 11, 1],
+                [157, 11, 1],
+                [158, 11, 1],
+                [108, 4, 1],
+                [109, 4, 1],
+                [111, 4, 1],
+                [112, 4, 1],
+                [108, 10, 1],
+                [109, 10, 1],
+                [111, 10, 1],
+                [112, 10, 1],
+                [167, 5, 1],
+                [168, 5, 1],
+                [169, 5, 1],
+                [82, 8, 1],
+                [83, 8, 1],
+                [84, 8, 1],
+                [167, 7, 1],
+                [168, 7, 1],
+                [169, 7, 1],
+                [161, 11, 52],
+                [162, 11, 1],
+                [163, 11, 1],
+                [164, 11, 1],
+                [165, 11, 1],
+                [166, 11, 1],
+                [167, 11, 1],
+                [168, 11, 1],
+                [169, 11, 1],
+                [170, 11, 1],
+                [171, 11, 1],
+                [172, 11, 1],
+                [173, 11, 1],
+                [174, 11, 1],
+                [175, 11, 1],
+                [176, 11, 1],
+                [177, 11, 1],
+                [178, 11, 1],
+                [179, 11, 1],
+                [180, 11, 1],
+                [181, 11, 1],
+                [182, 11, 1],
+                [183, 11, 1],
+                [184, 11, 1],
+                [185, 11, 1],
+                [186, 11, 1],
+                [187, 11, 1],
+                [188, 6, 1],
+                [190, 6, 1],
+                [189, 6, 1],
+                [190, 11, 52],
+                [191, 11, 1],
+                [192, 11, 1],
+                [193, 11, 1],
+                [194, 11, 1],
+                [195, 11, 1],
+                [196, 11, 1],
+                [197, 11, 1],
+                [198, 11, 1],
+                [199, 11, 1],
+                [200, 11, 1],
+                [201, 11, 1],
+                [202, 11, 1],
+                [203, 11, 1],
+                [204, 11, 1],
+                [205, 11, 1],
+                [206, 11, 1],
+                [207, 11, 1],
+                [208, 11, 1],
+                [209, 11, 1],
+                [210, 11, 1],
+                [211, 11, 1],
+                [212, 11, 1],
+                [213, 11, 1],
+                [214, 11, 1],
+                [215, 11, 1],
+                [216, 11, 1],
+                [217, 11, 1],
+                [218, 11, 1],
+                [219, 11, 1],
+                [220, 11, 1],
+                [221, 11, 1],
+                [222, 11, 1],
+                [223, 11, 1],
+                [224, 11, 1],
+                [225, 11, 1],
+                [226, 11, 1],
+                [226, 10, 1],
+                [227, 10, 1],
+                [228, 10, 1],
+                [229, 10, 1],
+                [230, 10, 1],
+                [231, 10, 1],
+                [232, 10, 1],
+                [233, 10, 1],
+                [234, 10, 1],
+                [235, 10, 1],
+                [236, 10, 1],
+                [237, 10, 1],
+                [238, 10, 1],
+                [239, 10, 1],
+                [240, 10, 1],
+                [241, 10, 1],
+                [242, 10, 1],
+                [243, 10, 1],
+                [244, 10, 1],
+                [245, 10, 1],
+                [246, 10, 1],
+                [247, 10, 1],
+                [248, 10, 1],
+                [249, 10, 1],
+                [250, 10, 1],
+                [251, 10, 1],
+                [252, 10, 1],
+                [253, 10, 1],
+                [254, 10, 1],
+                [255, 10, 1],
+                [256, 10, 1],
+                [257, 10, 1],
+                [258, 10, 1],
+                [259, 10, 1],
+                [260, 10, 1],
+                [261, 10, 1],
+                [262, 10, 1],
+                [263, 10, 1],
+                [264, 10, 1],
+                [265, 10, 1],
+                [266, 10, 1],
+                [267, 10, 1],
+                [267, 11, 1],
+                [268, 11, 1],
+                [272, 11, 1],
+                [269, 11, 1],
+                [270, 11, 1],
+                [271, 11, 1],
+                [269, 5, 1],
+                [270, 5, 1],
+                [271, 5, 1],
+                [351, 11, 52],
+                [352, 11, 1],
+                [353, 11, 1],
+                [354, 11, 1],
+                [355, 11, 1],
+                [356, 11, 1],
+                [357, 11, 1],
+                [358, 11, 1],
+                [359, 11, 1],
+                [360, 11, 1],
+                [361, 11, 1],
+                [362, 11, 1],
+                [363, 11, 1],
+                [364, 11, 1],
+                [365, 11, 1],
+                [366, 11, 1],
+                [367, 11, 1],
+                [368, 11, 1],
+                [369, 11, 1],
+                [370, 11, 1],
+                [371, 1, 1],
+                [371, 2, 1],
+                [371, 3, 1],
+                [371, 4, 1],
+                [371, 5, 1],
+                [371, 6, 1],
+                [371, 7, 1],
+                [371, 8, 1],
+                [371, 9, 1],
+                [371, 10, 1],
+                [371, 11, 1],
+                [371, 12, 1],
+                [206, 4, 1],
+                [207, 4, 1],
+                [208, 4, 1],
+                [213, 6, 1],
+                [214, 6, 1],
+                [215, 6, 1],
+                [219, 6, 1],
+                [220, 6, 1],
+                [221, 6, 1],
+                [208, 3, 1],
+                [215, 5, 1],
+                [225, 10, 1]
+            ]
+        },
+        {
+            "pos": [11772, 416],
+            "size": [1, 1],
+            "cell_size": [32, 64],
+            "cells": [[0, 0, 1]]
+        },
+        {
+            "pos": [5472, 256],
+            "size": [16, 1],
+            "cell_size": [64, 64],
+            "cells": [
+                [0, 0, 1],
+                [15, 0, 1]
+            ]
+        },
+        {
+            "pos": [11840, 391],
+            "size": [1, 1],
+            "cell_size": [32, 32],
+            "cells": [[0, 0, 1]]
+        },
+        {
+            "pos": [5472, 160],
+            "size": [16, 6],
+            "cell_size": [64, 32],
+            "cells": [
+                [0, 5, 1],
+                [6, 0, 1],
+                [6, 1, 1],
+                [6, 2, 1],
+                [6, 3, 1],
+                [6, 4, 1],
+                [6, 5, 1],
+                [15, 5, 1]
+            ]
+        },
+        {
+            "pos": [5856, 96],
+            "size": [1, 1],
+            "cell_size": [64, 64],
+            "cells": [[0, 0, 1]]
+        },
+        {
+            "pos": [0, 416],
+            "size": [368, 1],
+            "cell_size": [32, 64],
+            "cells": [
+                [0, 0, 1],
+                [1, 0, 1],
+                [2, 0, 1],
+                [3, 0, 1],
+                [4, 0, 1],
+                [5, 0, 1],
+                [6, 0, 1],
+                [7, 0, 1],
+                [8, 0, 1],
+                [9, 0, 1],
+                [10, 0, 1],
+                [11, 0, 1],
+                [12, 0, 1],
+                [13, 0, 1],
+                [14, 0, 1],
+                [15, 0, 1],
+                [16, 0, 1],
+                [17, 0, 1],
+                [18, 0, 1],
+                [19, 0, 1],
+                [20, 0, 1],
+                [21, 0, 1],
+                [22, 0, 1],
+                [23, 0, 1],
+                [24, 0, 1],
+                [25, 0, 1],
+                [26, 0, 1],
+                [27, 0, 1],
+                [28, 0, 1],
+                [29, 0, 1],
+                [30, 0, 1],
+                [31, 0, 1],
+                [32, 0, 1],
+                [33, 0, 1],
+                [34, 0, 1],
+                [35, 0, 1],
+                [36, 0, 1],
+                [37, 0, 1],
+                [38, 0, 1],
+                [39, 0, 1],
+                [40, 0, 1],
+                [41, 0, 1],
+                [42, 0, 1],
+                [43, 0, 1],
+                [44, 0, 1],
+                [45, 0, 1],
+                [46, 0, 1],
+                [47, 0, 1],
+                [48, 0, 1],
+                [49, 0, 1],
+                [50, 0, 1],
+                [51, 0, 1],
+                [52, 0, 1],
+                [53, 0, 1],
+                [54, 0, 1],
+                [55, 0, 1],
+                [56, 0, 1],
+                [57, 0, 1],
+                [58, 0, 1],
+                [59, 0, 1],
+                [60, 0, 1],
+                [61, 0, 1],
+                [62, 0, 1],
+                [63, 0, 1],
+                [64, 0, 1],
+                [65, 0, 1],
+                [66, 0, 1],
+                [67, 0, 1],
+                [68, 0, 1],
+                [69, 0, 1],
+                [70, 0, 1],
+                [71, 0, 1],
+                [72, 0, 1],
+                [73, 0, 1],
+                [74, 0, 1],
+                [75, 0, 1],
+                [76, 0, 1],
+                [77, 0, 1],
+                [78, 0, 1],
+                [79, 0, 1],
+                [80, 0, 1],
+                [81, 0, 1],
+                [82, 0, 1],
+                [83, 0, 1],
+                [84, 0, 1],
+                [85, 0, 1],
+                [86, 0, 1],
+                [87, 0, 1],
+                [88, 0, 1],
+                [89, 0, 1],
+                [90, 0, 1],
+                [91, 0, 1],
+                [92, 0, 1],
+                [93, 0, 1],
+                [94, 0, 1],
+                [95, 0, 1],
+                [96, 0, 1],
+                [97, 0, 1],
+                [98, 0, 1],
+                [99, 0, 1],
+                [100, 0, 1],
+                [101, 0, 1],
+                [102, 0, 1],
+                [103, 0, 1],
+                [104, 0, 1],
+                [105, 0, 1],
+                [106, 0, 1],
+                [107, 0, 1],
+                [108, 0, 1],
+                [109, 0, 1],
+                [110, 0, 1],
+                [111, 0, 1],
+                [112, 0, 1],
+                [113, 0, 1],
+                [114, 0, 1],
+                [115, 0, 1],
+                [116, 0, 1],
+                [117, 0, 1],
+                [118, 0, 1],
+                [119, 0, 1],
+                [120, 0, 1],
+                [121, 0, 1],
+                [122, 0, 1],
+                [123, 0, 1],
+                [124, 0, 1],
+                [125, 0, 1],
+                [126, 0, 1],
+                [127, 0, 1],
+                [128, 0, 1],
+                [129, 0, 1],
+                [130, 0, 1],
+                [131, 0, 1],
+                [132, 0, 1],
+                [133, 0, 1],
+                [134, 0, 1],
+                [135, 0, 1],
+                [136, 0, 1],
+                [137, 0, 1],
+                [138, 0, 1],
+                [139, 0, 1],
+                [140, 0, 1],
+                [141, 0, 1],
+                [142, 0, 1],
+                [143, 0, 1],
+                [144, 0, 1],
+                [145, 0, 1],
+                [146, 0, 1],
+                [147, 0, 1],
+                [148, 0, 1],
+                [149, 0, 1],
+                [150, 0, 1],
+                [151, 0, 1],
+                [152, 0, 1],
+                [153, 0, 1],
+                [154, 0, 1],
+                [155, 0, 1],
+                [156, 0, 1],
+                [157, 0, 1],
+                [158, 0, 1],
+                [159, 0, 1],
+                [160, 0, 1],
+                [161, 0, 1],
+                [162, 0, 1],
+                [163, 0, 1],
+                [164, 0, 1],
+                [165, 0, 1],
+                [166, 0, 1],
+                [167, 0, 1],
+                [168, 0, 1],
+                [169, 0, 1],
+                [170, 0, 1],
+                [171, 0, 1],
+                [172, 0, 1],
+                [173, 0, 1],
+                [174, 0, 1],
+                [175, 0, 1],
+                [176, 0, 1],
+                [177, 0, 1],
+                [178, 0, 1],
+                [179, 0, 1],
+                [180, 0, 1],
+                [181, 0, 1],
+                [182, 0, 1],
+                [183, 0, 1],
+                [184, 0, 1],
+                [185, 0, 1],
+                [186, 0, 1],
+                [187, 0, 1],
+                [188, 0, 1],
+                [189, 0, 1],
+                [190, 0, 1],
+                [191, 0, 1],
+                [192, 0, 1],
+                [193, 0, 1],
+                [194, 0, 1],
+                [195, 0, 1],
+                [196, 0, 1],
+                [197, 0, 1],
+                [198, 0, 1],
+                [199, 0, 1],
+                [200, 0, 1],
+                [201, 0, 1],
+                [202, 0, 1],
+                [203, 0, 1],
+                [204, 0, 1],
+                [205, 0, 1],
+                [206, 0, 1],
+                [207, 0, 1],
+                [208, 0, 1],
+                [209, 0, 1],
+                [210, 0, 1],
+                [211, 0, 1],
+                [212, 0, 1],
+                [213, 0, 1],
+                [214, 0, 1],
+                [215, 0, 1],
+                [216, 0, 1],
+                [217, 0, 1],
+                [218, 0, 1],
+                [219, 0, 1],
+                [220, 0, 1],
+                [221, 0, 1],
+                [222, 0, 1],
+                [223, 0, 1],
+                [224, 0, 1],
+                [225, 0, 1],
+                [226, 0, 1],
+                [227, 0, 1],
+                [228, 0, 1],
+                [229, 0, 1],
+                [230, 0, 1],
+                [231, 0, 1],
+                [232, 0, 1],
+                [233, 0, 1],
+                [234, 0, 1],
+                [235, 0, 1],
+                [236, 0, 1],
+                [237, 0, 1],
+                [238, 0, 1],
+                [239, 0, 1],
+                [240, 0, 1],
+                [241, 0, 1],
+                [242, 0, 1],
+                [243, 0, 1],
+                [244, 0, 1],
+                [245, 0, 1],
+                [246, 0, 1],
+                [247, 0, 1],
+                [248, 0, 1],
+                [249, 0, 1],
+                [250, 0, 1],
+                [251, 0, 1],
+                [252, 0, 1],
+                [253, 0, 1],
+                [254, 0, 1],
+                [255, 0, 1],
+                [256, 0, 1],
+                [257, 0, 1],
+                [258, 0, 1],
+                [259, 0, 1],
+                [260, 0, 1],
+                [261, 0, 1],
+                [262, 0, 1],
+                [263, 0, 1],
+                [264, 0, 1],
+                [265, 0, 1],
+                [266, 0, 1],
+                [267, 0, 1],
+                [268, 0, 1],
+                [269, 0, 1],
+                [270, 0, 1],
+                [271, 0, 1],
+                [272, 0, 1],
+                [273, 0, 1],
+                [274, 0, 1],
+                [275, 0, 1],
+                [276, 0, 1],
+                [277, 0, 1],
+                [278, 0, 1],
+                [279, 0, 1],
+                [280, 0, 1],
+                [281, 0, 1],
+                [282, 0, 1],
+                [283, 0, 1],
+                [284, 0, 1],
+                [285, 0, 1],
+                [286, 0, 1],
+                [287, 0, 1],
+                [288, 0, 1],
+                [289, 0, 1],
+                [290, 0, 1],
+                [291, 0, 1],
+                [292, 0, 1],
+                [293, 0, 1],
+                [294, 0, 1],
+                [295, 0, 1],
+                [296, 0, 1],
+                [297, 0, 1],
+                [298, 0, 1],
+                [299, 0, 1],
+                [300, 0, 1],
+                [301, 0, 1],
+                [302, 0, 1],
+                [303, 0, 1],
+                [304, 0, 1],
+                [305, 0, 1],
+                [306, 0, 1],
+                [307, 0, 1],
+                [308, 0, 1],
+                [309, 0, 1],
+                [310, 0, 1],
+                [311, 0, 1],
+                [312, 0, 1],
+                [313, 0, 1],
+                [314, 0, 1],
+                [315, 0, 1],
+                [316, 0, 1],
+                [317, 0, 1],
+                [318, 0, 1],
+                [319, 0, 1],
+                [320, 0, 1],
+                [321, 0, 1],
+                [322, 0, 1],
+                [323, 0, 1],
+                [324, 0, 1],
+                [325, 0, 1],
+                [326, 0, 1],
+                [327, 0, 1],
+                [328, 0, 1],
+                [329, 0, 1],
+                [330, 0, 1],
+                [331, 0, 1],
+                [332, 0, 1],
+                [333, 0, 1],
+                [334, 0, 1],
+                [335, 0, 1],
+                [336, 0, 1],
+                [337, 0, 1],
+                [338, 0, 1],
+                [339, 0, 1],
+                [340, 0, 1],
+                [341, 0, 1],
+                [342, 0, 1],
+                [343, 0, 1],
+                [344, 0, 1],
+                [345, 0, 1],
+                [346, 0, 1],
+                [347, 0, 1],
+                [348, 0, 1],
+                [349, 0, 1],
+                [350, 0, 1],
+                [351, 0, 1],
+                [352, 0, 1],
+                [353, 0, 1],
+                [354, 0, 1],
+                [355, 0, 1],
+                [356, 0, 1],
+                [357, 0, 1],
+                [358, 0, 1],
+                [359, 0, 1],
+                [360, 0, 1],
+                [361, 0, 1],
+                [362, 0, 1],
+                [363, 0, 1],
+                [364, 0, 1],
+                [365, 0, 1],
+                [366, 0, 1],
+                [367, 0, 1]
+            ]
+        }
+    ],
+    "actors": [
+        {
+            "def": "Autoscroll",
+            "id": 15,
+            "vel": [131072, 0],
+            "values": [[0, 0]],
+            "flags": 64
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [704, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [736, 384],
+            "scale": [262144, 65536]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [864, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [1088, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [1120, 384],
+            "scale": [262144, 65536]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [1248, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [1344, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [1376, 384],
+            "scale": [262144, 65536]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [1504, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [1600, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [1632, 384],
+            "scale": [262144, 65536]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [1760, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [2016, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [2048, 384],
+            "scale": [524288, 65536]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [2304, 384],
+            "scale": [262144, 65536]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [2432, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [2784, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [2816, 384],
+            "scale": [524288, 65536]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [3072, 384],
+            "scale": [262144, 65536]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [3200, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [3392, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [3424, 384],
+            "scale": [262144, 65536]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [3552, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [3776, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [3808, 384],
+            "scale": [262144, 65536]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [3936, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [4192, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [4224, 384],
+            "scale": [131072, 65536]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [4288, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [4928, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [4960, 384],
+            "scale": [131072, 65536]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [5024, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [5120, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [5152, 384]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [5184, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [5888, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [5920, 384]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [5952, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [6048, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [6080, 384]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [6112, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [6400, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [6432, 384]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [6464, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [6592, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [6624, 384]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [6656, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [6848, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [6880, 384]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [6912, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [7104, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [7136, 384]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [7168, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [8576, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [8608, 384]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [8640, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [11200, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [11232, 384]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [11264, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [11552, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [11584, 384]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [11616, 384]
+        },
+        {
+            "def": "Wheel Left",
+            "id": 91,
+            "pos": [11744, 384]
+        },
+        {
+            "def": "Wheel Middle",
+            "id": 92,
+            "pos": [11776, 384]
+        },
+        {
+            "def": "Wheel Right",
+            "id": 93,
+            "pos": [11808, 384]
+        },
+        {
+            "def": "Player Spawn",
+            "id": 1,
+            "pos": [139, 415],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 1]
+            ]
+        },
+        {
+            "def": "Goal Bar",
+            "id": 9,
+            "pos": [11531, 79]
+        },
+        {
+            "def": "Goal Line",
+            "id": 10,
+            "pos": [11361, 320],
+            "scale": [524288, 65536]
+        },
+        {
+            "def": "Goal Line",
+            "id": 10,
+            "pos": [11617, 320],
+            "scale": [524288, 65536]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [1824, 288],
+            "values": [[1, 28]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [2624, 256],
+            "values": [[1, 28]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [5344, 224],
+            "values": [[1, 28]]
+        },
+        {
+            "def": "Hidden Block",
+            "id": 24,
+            "pos": [5824, 224],
+            "values": [
+                [0, 0],
+                [1, 21]
+            ],
+            "flags": 64
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [6016, 192],
+            "values": [[1, 28]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [7008, 192],
+            "values": [[1, 28]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [8608, 160],
+            "values": [[1, 28]]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4224, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4256, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4288, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4320, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4352, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4384, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4416, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4448, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4480, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4512, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4736, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4768, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4800, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4832, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4864, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4896, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4928, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4960, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4992, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [5024, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ],
+            "flags": 128
+        },
+        {
+            "def": "Roto-Disc",
+            "id": 51,
+            "pos": [3457, 145],
+            "values": [
+                [0, 9830400],
+                [1, 0],
+                [2, 1144]
+            ]
+        },
+        {
+            "def": "Roto-Disc",
+            "id": 51,
+            "pos": [3551, 146],
+            "values": [
+                [0, 9830400],
+                [1, 0],
+                [2, 1144]
+            ]
+        },
+        {
+            "def": "Roto-Disc",
+            "id": 51,
+            "pos": [3454, 337],
+            "values": [
+                [0, 9830400],
+                [1, 308831],
+                [2, 4575]
+            ]
+        },
+        {
+            "def": "Roto-Disc",
+            "id": 51,
+            "pos": [3551, 337],
+            "values": [
+                [0, 9830400],
+                [1, 0],
+                [2, 4575]
+            ]
+        },
+        {
+            "def": "Bro",
+            "id": 64,
+            "pos": [4333, 167],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Bro",
+            "id": 64,
+            "pos": [4396, 131],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Bro",
+            "id": 64,
+            "pos": [4437, 191],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Bro",
+            "id": 64,
+            "pos": [4373, 351],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Bro",
+            "id": 64,
+            "pos": [4839, 141],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Bro",
+            "id": 64,
+            "pos": [4885, 103],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Bro",
+            "id": 64,
+            "pos": [4917, 183],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Bro",
+            "id": 64,
+            "pos": [4853, 351],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "pos": [4256, 160],
+            "scale": [466033, 72810],
+            "flags": 32
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "pos": [4512, 160],
+            "scale": [63715, 72817],
+            "flags": 32
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "pos": [4224, 320],
+            "scale": [466033, 72810]
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "pos": [4480, 320],
+            "scale": [63715, 72810]
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "pos": [4736, 160],
+            "scale": [466033, 72810],
+            "flags": 32
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "pos": [4992, 160],
+            "scale": [63715, 72810],
+            "flags": 32
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "pos": [4768, 320],
+            "scale": [466033, 72810]
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "pos": [5024, 320],
+            "scale": [63715, 72817]
+        },
+        {
+            "def": "Piranha Plant",
+            "id": 41,
+            "pos": [5504, 257],
+            "flags": 256
+        },
+        {
+            "def": "Piranha Plant",
+            "id": 41,
+            "pos": [6463, 257],
+            "flags": 256
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [5230, 205]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [5614, 237]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [5678, 173]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [5774, 109]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [6158, 141]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [6222, 173]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [6286, 205]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [6350, 237]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [6734, 237]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [7404, 297]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [7454, 310]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [7584, 61]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [7615, 212]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [7603, 176]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [7715, 134]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [7823, 227]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [7534, 208]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [7515, 266]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [7891, 115]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [7869, 168]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [8010, 278]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [7990, 190]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [8075, 196]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [8112, 122]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [8243, 178]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [8218, 276]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [8301, 71]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [8343, 127]
+        },
+        {
+            "def": "Paratroopa",
+            "id": 84,
+            "pos": [8441, 274]
+        },
+        {
+            "def": "Spike Ball Cannon",
+            "id": 94,
+            "pos": [2048, 288]
+        },
+        {
+            "def": "Spike Ball Cannon",
+            "id": 94,
+            "pos": [2400, 288]
+        },
+        {
+            "def": "Spike Ball Cannon",
+            "id": 94,
+            "pos": [3168, 288]
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [2896, 351],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [2992, 351],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [3088, 351],
+            "flags": 4
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [6800, 349],
+            "flags": 4
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [6907, 33]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [7158, 33]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [8859, 129]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [8955, 193]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [9083, 129]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [9179, 225]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [9307, 97]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [9467, 161]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [9563, 161]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [9745, 244]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [9891, 146]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [10011, 130]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [10153, 217]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [10292, 173]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3867, -509]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3931, -509]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3867, -446]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3931, -446]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3867, -381]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3931, -381]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3867, -318]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3931, -318]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3867, -253]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3931, -253]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3867, -190]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3931, -190]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3867, -125]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3931, -125]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3867, -62]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3931, -62]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3867, 2]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3931, 2]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3867, 65]
+        },
+        {
+            "def": "Thwomp",
+            "id": 89,
+            "pos": [3931, 65]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [752, 337],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [848, 305],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [1136, 337],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [1232, 273],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [1456, 337],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [1520, 305],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [1520, 145],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [1712, 273],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [1776, 209],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [2224, 305],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [2256, 273],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [6640, 113],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [6864, 177],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        },
+        {
+            "def": "Bill Blaster",
+            "id": 81,
+            "pos": [7184, 337],
+            "values": [
+                [0, 1],
+                [1, 212992]
+            ]
+        }
+    ]
+}
