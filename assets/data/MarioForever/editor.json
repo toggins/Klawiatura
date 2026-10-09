@@ -702,6 +702,21 @@
             "sprite": "markers/tanks_ground",
             "depth": 20
         },
+        "Test Tube": {
+            "type": "tile",
+            "sprite": "tiles/test_tube",
+            "depth": 20
+        },
+        "Test Tube Broken": {
+            "type": "tile",
+            "sprite": "tiles/test_tube/broken",
+            "depth": 20
+        },
+        "Test Tube Support": {
+            "type": "background",
+            "sprite": "tiles/test_tube/support",
+            "depth": 17
+        },
         "Hill": {
             "type": "background",
             "sprite": "scenery/hill",
@@ -921,6 +936,61 @@
             "sprite": "scenery/sign/hardcore_near",
             "depth": 30
         },
+        "Human Laboratory Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/human_laboratory",
+            "depth": 30
+        },
+        "Ceiling Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/ceiling",
+            "depth": 30
+        },
+        "Broken Ceiling Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/ceiling_broken",
+            "depth": 30
+        },
+        "Label Clone": {
+            "type": "background",
+            "sprite": "scenery/sign/clones/clone",
+            "depth": 29
+        },
+        "Label Coder Clone": {
+            "type": "background",
+            "sprite": "scenery/sign/clones/coder",
+            "depth": 29
+        },
+        "Label Jaws Clone": {
+            "type": "background",
+            "sprite": "scenery/sign/clones/jaws",
+            "depth": 29
+        },
+        "Label Mutant": {
+            "type": "background",
+            "sprite": "scenery/sign/clones/mutant",
+            "depth": 29
+        },
+        "Label Zorro Clone": {
+            "type": "background",
+            "sprite": "scenery/sign/clones/zorro",
+            "depth": 29
+        },
+        "Label Star Closed Clone": {
+            "type": "background",
+            "sprite": "scenery/sign/clones/star_closed",
+            "depth": 29
+        },
+        "Label Clone 3A": {
+            "type": "background",
+            "sprite": "scenery/sign/clones/3a",
+            "depth": 29
+        },
+        "Label Big Clone": {
+            "type": "background",
+            "sprite": "scenery/sign/clones/big",
+            "depth": 29
+        },
         "Up Sign": {
             "type": "background",
             "sprite": "scenery/sign/up",
@@ -1066,6 +1136,115 @@
             "type": "background",
             "sprite": "scenery/cobweb",
             "depth": 30
+        },
+        "Test Tube Clone": {
+            "type": "actor",
+            "id": 106,
+            "sprite": "scenery/clone",
+            "values": [
+                {
+                    "index": 1,
+                    "default": 0,
+                    "hidden": true
+                }
+            ]
+        },
+        "Test Tube Coder Clone": {
+            "type": "actor",
+            "id": 106,
+            "sprite": "scenery/clone/coder",
+            "values": [
+                {
+                    "index": 1,
+                    "default": 1,
+                    "hidden": true
+                }
+            ]
+        },
+        "Test Tube Jaws Clone": {
+            "type": "actor",
+            "id": 106,
+            "sprite": "scenery/clone/jaws",
+            "values": [
+                {
+                    "index": 1,
+                    "default": 2,
+                    "hidden": true
+                }
+            ]
+        },
+        "Test Tube Mutant": {
+            "type": "actor",
+            "id": 106,
+            "sprite": "scenery/clone/mutant",
+            "values": [
+                {
+                    "index": 1,
+                    "default": 3,
+                    "hidden": true
+                }
+            ]
+        },
+        "Test Tube Zorro Clone": {
+            "type": "actor",
+            "id": 106,
+            "sprite": "scenery/clone/zorro",
+            "values": [
+                {
+                    "index": 1,
+                    "default": 4,
+                    "hidden": true
+                }
+            ]
+        },
+        "Test Tube Star Closed Clone": {
+            "type": "actor",
+            "id": 106,
+            "sprite": "scenery/clone/star_closed",
+            "values": [
+                {
+                    "index": 1,
+                    "default": 5,
+                    "hidden": true
+                }
+            ]
+        },
+        "Test Tube Clone 3A": {
+            "type": "actor",
+            "id": 106,
+            "sprite": "scenery/clone/3a",
+            "values": [
+                {
+                    "index": 1,
+                    "default": 6,
+                    "hidden": true
+                }
+            ]
+        },
+        "Test Tube Big Clone": {
+            "type": "actor",
+            "id": 106,
+            "sprite": "scenery/clone/big",
+            "values": [
+                {
+                    "index": 1,
+                    "default": 7,
+                    "hidden": true
+                }
+            ]
+        },
+        "Test Tube Bubbles": {
+            "type": "actor",
+            "id": 107,
+            "sprite": "editor/test_tube_bubbles",
+            "values": [
+                {
+                    "name": "Despawn Offset",
+                    "index": 7,
+                    "type": "fixed",
+                    "default": -4784128
+                }
+            ]
         },
         "Player Spawn": {
             "type": "actor",
@@ -2225,6 +2404,59 @@
                 }
             ]
         },
+        "Clone": {
+            "type": "actor",
+            "id": 109,
+            "sprite": "enemies/clone/a/0",
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2,
+                    "default": true
+                }
+            ]
+        },
+        "Jaws Clone": {
+            "type": "actor",
+            "id": 110,
+            "sprite": "enemies/clone/jaws/0",
+            "flags": [
+                {
+                    "name": "Flip Y",
+                    "index": 3
+                },
+                {
+                    "name": "Fire",
+                    "index": 8
+                },
+                {
+                    "name": "Red",
+                    "index": 10
+                },
+                {
+                    "name": "Gray",
+                    "index": 11
+                }
+            ]
+        },
+        "Big Clone": {
+            "type": "actor",
+            "id": 111,
+            "sprite": "enemies/clone/big/0",
+            "values": [
+                {
+                    "name": "Type",
+                    "index": 0,
+                    "type": "actor",
+                    "default": 66
+                },
+                {
+                    "name": "Throw Time",
+                    "index": 1,
+                    "default": 30
+                }
+            ]
+        },
         "Electric Coral": {
             "type": "actor",
             "id": 133,
@@ -2410,6 +2642,10 @@
                 {
                     "name": "Wheel",
                     "items": ["Wheel Left", "Wheel Middle", "Wheel Right"]
+                },
+                {
+                    "name": "Test Tube",
+                    "items": ["Test Tube", "Test Tube Broken", "Test Tube Support"]
                 }
             ]
         },
@@ -2471,7 +2707,23 @@
                 {
                     "name": "Signs",
                     "items": [
+                        {
+                            "name": "Clone Labels",
+                            "items": [
+                                "Label Clone",
+                                "Label Coder Clone",
+                                "Label Jaws Clone",
+                                "Label Mutant",
+                                "Label Zorro Clone",
+                                "Label Star Closed Clone",
+                                "Label Clone 3A",
+                                "Label Big Clone"
+                            ]
+                        },
                         "Hardcore Near Sign",
+                        "Human Laboratory Sign",
+                        "Ceiling Sign",
+                        "Broken Ceiling Sign",
                         "Up Sign",
                         "Right Sign",
                         "Down Sign",
@@ -2509,7 +2761,8 @@
                 },
                 "Bush",
                 "Waterfall",
-                "Cobweb"
+                "Cobweb",
+                "Test Tube Bubbles"
             ]
         },
         {
@@ -2568,6 +2821,10 @@
                 {
                     "name": "Artillery",
                     "items": ["Bill Blaster", "Spike Ball Cannon", "Flamethrower"]
+                },
+                {
+                    "name": "Clones",
+                    "items": ["Clone", "Jaws Clone", "Big Clone", "Coder Clone", "Clone 3A", "Jaws Clone Head"]
                 },
                 "Goomba",
                 "Roto-Disc",

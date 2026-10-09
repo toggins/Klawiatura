@@ -103,6 +103,15 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
 
         return actor;
     }
+
+    case ACT_JAWS_CLONE: {
+        FLAG_ON(actor, FLG_DESTROY);
+
+        if (kick)
+            play_state_sound("vo/clone/jaws_dead", PLAY_POS, A_ACTOR(actor));
+
+        return NULL;
+    }
     }
 
     GameActor* dead = create_actor(ACT_DEAD, actor->pos);
@@ -110,13 +119,25 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
         VAL(dead, DEAD_TYPE) = actor->type;
         dead->flags = actor->flags & ~(FLG_DESTROY | FLG_FREEZE);
 
-        if (actor->type == ACT_LAKITU) {
+        switch (actor->type) {
+        default:
+            break;
+
+        case ACT_LAKITU: {
             VAL(dead, LAKITU_SPEED) = VAL(actor, LAKITU_SPEED);
             VAL(dead, LAKITU_THROW_SPEED) = VAL(actor, LAKITU_THROW_SPEED);
             VAL(dead, LAKITU_THROW_SPEED2) = VAL(actor, LAKITU_THROW_SPEED2);
             VAL(dead, LAKITU_AGGRO) = VAL(actor, LAKITU_AGGRO);
             VAL(dead, LAKITU_AGGRO_START) = VAL(actor, LAKITU_AGGRO_START);
             VAL(dead, LAKITU_AGGRO_END) = VAL(actor, LAKITU_AGGRO_END);
+
+            break;
+        }
+
+        case ACT_CLONE: {
+            FLAG_OFF(dead, FLG_X_FLIP);
+            break;
+        }
         }
 
         if (kick) {
@@ -124,7 +145,18 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
             const Fixed dir = 77208 + Fmul(r, 12868);
             dead->vel.x = Fmul(Fcos(dir), Int2Fx(3));
             dead->vel.y = Fmul(Fsin(dir), Int2Fx(-3));
-            play_state_sound("kick", PLAY_POS, A_ACTOR(actor));
+
+            switch (actor->type) {
+            default:
+                play_state_sound("kick", PLAY_POS, A_ACTOR(actor));
+                break;
+            case ACT_CLONE:
+                play_state_sound("vo/clone/a_dead", PLAY_POS, A_ACTOR(actor));
+                break;
+            case ACT_BIG_CLONE:
+                play_state_sound("vo/clone/big_dead", PLAY_POS, A_ACTOR(actor));
+                break;
+            }
         }
 
         align_interp(dead, actor);
@@ -153,7 +185,18 @@ Bool check_stomp(GameActor* actor, GameActor* from, Fixed offset, Sint32 points,
         FLAG_ON(from, FLG_PLAYER_STOMP);
 
         give_points(actor, player, points);
-        play_state_sound("stomp", PLAY_POS, A_ACTOR(actor));
+
+        switch (actor->type) {
+        default:
+            play_state_sound("stomp", PLAY_POS, A_ACTOR(actor));
+            break;
+        case ACT_CLONE:
+            play_state_sound("vo/clone/a_stomp", PLAY_POS, A_ACTOR(actor));
+            break;
+        case ACT_BIG_CLONE:
+            play_state_sound("vo/clone/big_dead", PLAY_POS, A_ACTOR(actor));
+            break;
+        }
 
         return TRUE;
     }
@@ -309,6 +352,8 @@ static void create_dead(GameActor* actor) {
 }
 
 static void tick_dead(GameActor* actor) {
+    ++VAL(actor, DEAD_FRAME);
+
     move_actor(actor, Vadd(actor->pos, actor->vel));
     actor->vel.y += 13107;
 

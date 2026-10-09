@@ -316,3 +316,40 @@ const ActorTable TAB_EXPLODE2 = {
     .tick = tick_explode2,
     .draw = draw_explode2,
 };
+
+/* ================
+   TEST TUBE BUBBLE
+   ================ */
+
+static void load_test_tube_bubble() {
+    load_sprite_num("effects/bubble/%u", 5, AKL_NEVER);
+}
+
+static void create_test_tube_bubble(GameActor* actor) {
+    actor->box.start.x = actor->box.start.y = Int2Fx(-4);
+    actor->box.end.x = Int2Fx(5);
+    actor->box.end.y = Int2Fx(6);
+
+    actor->depth = Int2Fx(18);
+}
+
+static void tick_test_tube_bubble(GameActor* actor) {
+    ++VAL(actor, EFFECT_FRAME);
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    if ((actor->pos.y + actor->box.start.y) < VAL(actor, EFFECT_Y))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_test_tube_bubble(const GameActor* actor) {
+    batch_reset();
+    batch_color(B_U4_ALPHA(175));
+    draw_actor(actor, fmt("effects/bubble/%i", (VAL(actor, EFFECT_FRAME) / 2) % 5), FALSE);
+}
+
+const ActorTable TAB_TEST_TUBE_BUBBLE = {
+    .load = load_test_tube_bubble,
+    .create = create_test_tube_bubble,
+    .tick = tick_test_tube_bubble,
+    .draw = draw_test_tube_bubble,
+};

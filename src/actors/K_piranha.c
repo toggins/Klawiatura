@@ -21,45 +21,7 @@ enum {
 #define FLG_PIRANHA_RED CUSTOM_FLAG(5)
 #define FLG_PIRANHA_GRAY CUSTOM_FLAG(6)
 
-/* =============
-   PIRANHA PLANT
-   ============= */
-
-static void load() {
-    load_sprite_num("enemies/piranha/%u", 2, AKL_NEVER);
-    load_actor(ACT_POINTS);
-}
-
-static void load_special(const GameActor* actor) {
-    if (ANY_FLAG(actor, FLG_PIRANHA_FIRE)) {
-        load_sprite_num(
-            ANY_FLAG(actor, FLG_PIRANHA_GRAY)
-                ? "enemies/piranha/gray/fire/%u"
-                : (ANY_FLAG(actor, FLG_PIRANHA_RED) ? "enemies/piranha/red/fire/%u" : "enemies/piranha/fire/%u"),
-            2, AKL_NEVER);
-        load_sound("fire", AKL_NEVER);
-        load_actor(ACT_FIREBALL_PROJECTILE);
-    } else if (ANY_FLAG(actor, FLG_PIRANHA_GRAY)) {
-        load_sprite_num("enemies/piranha/gray/%u", 2, AKL_NEVER);
-    } else if (ANY_FLAG(actor, FLG_PIRANHA_RED)) {
-        load_sprite_num("enemies/piranha/red/%u", 2, AKL_NEVER);
-    }
-}
-
-static void create(GameActor* actor) {
-    actor->box.start.x = Int2Fx(-15);
-    actor->box.start.y = Int2Fx(-46);
-    actor->box.end.x = Int2Fx(16);
-    actor->box.end.y = Fx1;
-
-    actor->depth = Int2Fx(21);
-
-    FLAG_ON(actor, FLG_PIRANHA_SHOULD_FIRE);
-}
-
-static void tick(GameActor* actor) {
-    VAL(actor, PIRANHA_FRAME) += ANY_FLAG(actor, FLG_PIRANHA_FIRE) ? 24 : 14;
-
+static void tick_generic_plant(GameActor* actor) {
     // EVENTS FROM "Level 6 - 1"
 
     // 66
@@ -148,6 +110,47 @@ static void tick(GameActor* actor) {
         --VAL(actor, PIRANHA_FIRE);
         play_state_sound("fire", PLAY_POS, A_ACTOR(actor));
     }
+}
+
+/* =============
+   PIRANHA PLANT
+   ============= */
+
+static void load() {
+    load_sprite_num("enemies/piranha/%u", 2, AKL_NEVER);
+    load_actor(ACT_POINTS);
+}
+
+static void load_special(const GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_PIRANHA_FIRE)) {
+        load_sprite_num(
+            ANY_FLAG(actor, FLG_PIRANHA_GRAY)
+                ? "enemies/piranha/gray/fire/%u"
+                : (ANY_FLAG(actor, FLG_PIRANHA_RED) ? "enemies/piranha/red/fire/%u" : "enemies/piranha/fire/%u"),
+            2, AKL_NEVER);
+        load_sound("fire", AKL_NEVER);
+        load_actor(ACT_FIREBALL_PROJECTILE);
+    } else if (ANY_FLAG(actor, FLG_PIRANHA_GRAY)) {
+        load_sprite_num("enemies/piranha/gray/%u", 2, AKL_NEVER);
+    } else if (ANY_FLAG(actor, FLG_PIRANHA_RED)) {
+        load_sprite_num("enemies/piranha/red/%u", 2, AKL_NEVER);
+    }
+}
+
+static void create(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-15);
+    actor->box.start.y = Int2Fx(-46);
+    actor->box.end.x = Int2Fx(16);
+    actor->box.end.y = Fx1;
+
+    actor->depth = Int2Fx(21);
+
+    FLAG_ON(actor, FLG_PIRANHA_SHOULD_FIRE);
+}
+
+static void tick(GameActor* actor) {
+    VAL(actor, PIRANHA_FRAME) += ANY_FLAG(actor, FLG_PIRANHA_FIRE) ? 24 : 14;
+    tick_generic_plant(actor);
 }
 
 static void draw(const GameActor* actor) {
@@ -313,4 +316,47 @@ const ActorTable TAB_PIRANHA_HEAD = {
     .tick = tick_head,
     .draw = draw_head,
     .collide = collide_head,
+};
+
+/* ==========
+   JAWS CLONE
+   ========== */
+
+static void load_jaws_clone() {
+    load_sprite_num("enemies/clone/jaws/%u", 2, AKL_NEVER);
+    load_sound("vo/clone/jaws_dead", AKL_NEVER);
+    load_actor(ACT_POINTS);
+}
+
+static void create_jaws_clone(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-16);
+    actor->box.start.y = Int2Fx(-47);
+    actor->box.end.x = Int2Fx(17);
+    actor->box.end.y = Fx1;
+
+    actor->depth = Int2Fx(21);
+
+    FLAG_ON(actor, FLG_PIRANHA_SHOULD_FIRE);
+}
+
+static void tick_jaws_clone(GameActor* actor) {
+    VAL(actor, PIRANHA_FRAME) += ANY_FLAG(actor, FLG_PIRANHA_FIRE) ? 24 : 8;
+    tick_generic_plant(actor);
+}
+
+static void draw_jaws_clone(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor,
+        fmt("enemies/clone/jaws%s%s/%i",
+            ANY_FLAG(actor, FLG_PIRANHA_GRAY) ? "/gray" : (ANY_FLAG(actor, FLG_PIRANHA_RED) ? "/red" : ""),
+            ANY_FLAG(actor, FLG_PIRANHA_FIRE) ? "/fire" : "", (VAL(actor, PIRANHA_FRAME) / 100) % 2),
+        FALSE);
+}
+
+const ActorTable TAB_JAWS_CLONE = {
+    .load = load_jaws_clone,
+    .create = create_jaws_clone,
+    .tick = tick_jaws_clone,
+    .draw = draw_jaws_clone,
+    .collide = collide,
 };

@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/clone",
+    "size": [40, 48],
+    "offset": [-43, -28],
+    "uvs": [1, 68, 41, 116]
+}

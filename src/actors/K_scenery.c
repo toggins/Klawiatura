@@ -1,8 +1,10 @@
+#include "K_audio.h"
 #include "K_cmd.h"
-#include "K_game.h"
 #include "K_string.h"
 #include "K_tick.h"
 #include "K_video.h"
+
+#include "actors/K_effects.h"
 
 enum {
     VAL_SCENERY_ANIMATION,
@@ -609,6 +611,109 @@ static void draw_portrait_eyes(const GameActor* actor) {
 const ActorTable TAB_PORTRAIT_EYES = {
     .load = load_portrait_eyes,
     .draw = draw_portrait_eyes,
+};
+
+/* ===============
+   TEST TUBE CLONE
+   =============== */
+
+static void load_test_tube_clone() {
+    load_sprite("scenery/clone", AKL_NEVER);
+    load_sprite("scenery/clone/coder", AKL_NEVER);
+    load_sprite("scenery/clone/jaws", AKL_NEVER);
+    load_sprite("scenery/clone/mutant", AKL_NEVER);
+    load_sprite("scenery/clone/zorro", AKL_NEVER);
+    load_sprite("scenery/clone/star_closed", AKL_NEVER);
+    load_sprite("scenery/clone/3a", AKL_NEVER);
+    load_sprite("scenery/clone/big", AKL_NEVER);
+}
+
+static void create_test_tube_clone(GameActor* actor) {
+    actor->depth = Int2Fx(19);
+
+    VAL(actor, SCENERY_Y) = actor->pos.y;
+    VAL(actor, SCENERY_ANGLE) = rng(360) * 1144;
+}
+
+static void tick_test_tube_clone(GameActor* actor) {
+    VAL(actor, SCENERY_ANGLE) = Fmod(VAL(actor, SCENERY_ANGLE) + 1144, Fx2Pi);
+    move_actor(actor, (FVec2){actor->pos.x, VAL(actor, SCENERY_Y) + Fmul(Int2Fx(14), Fcos(VAL(actor, SCENERY_ANGLE)))});
+}
+
+static void draw_test_tube_clone(const GameActor* actor) {
+    batch_reset();
+
+    const char* sprite = NULL;
+    switch (VAL(actor, SCENERY_FRAME)) {
+    default:
+        sprite = "scenery/clone";
+        break;
+    case 1:
+        sprite = "scenery/clone/coder";
+        break;
+    case 2:
+        sprite = "scenery/clone/jaws";
+        break;
+    case 3:
+        sprite = "scenery/clone/mutant";
+        break;
+    case 4:
+        sprite = "scenery/clone/zorro";
+        break;
+    case 5:
+        sprite = "scenery/clone/star_closed";
+        break;
+    case 6:
+        sprite = "scenery/clone/3a";
+        break;
+    case 7:
+        sprite = "scenery/clone/big";
+        break;
+    }
+
+    draw_actor(actor, sprite, FALSE);
+}
+
+const ActorTable TAB_TEST_TUBE_CLONE = {
+    .load = load_test_tube_clone,
+    .create = create_test_tube_clone,
+    .tick = tick_test_tube_clone,
+    .draw = draw_test_tube_clone,
+};
+
+/* =================
+   TEST TUBE BUBBLES
+   ================= */
+
+static void load_test_tube_bubbles() {
+    load_sound("bubbles", AKL_NEVER);
+    load_actor(ACT_TEST_TUBE_BUBBLE);
+}
+
+static void tick_test_tube_bubbles(GameActor* actor) {
+    if (((gamestate()->time * 2) % 5) <= 1 && in_any_view(actor->pos, Int2Fx(-256), VEF_ALL) && rng(20) > 15) {
+        FVec2 bpos = actor->pos;
+        bpos.x += Int2Fx(rng(35));
+        bpos.x -= Int2Fx(rng(35));
+        bpos.y -= Int2Fx(10);
+
+        GameActor* bubble = create_actor(ACT_TEST_TUBE_BUBBLE, bpos);
+        if (bubble != NULL) {
+            bubble->vel.y = -8192 - (rng(24) * 8192);
+            VAL(bubble, EFFECT_Y) = actor->pos.y + VAL(actor, SCENERY_Y);
+        }
+    }
+
+    if (--VAL(actor, SCENERY_FRAME) <= 0) {
+        VAL(actor, SCENERY_FRAME) = 110;
+        if (in_any_view(actor->pos, Int2Fx(-256), VEF_ALL))
+            play_state_sound("bubbles", PLAY_POS, A_ACTOR(actor));
+    }
+}
+
+const ActorTable TAB_TEST_TUBE_BUBBLES = {
+    .load = load_test_tube_bubbles,
+    .tick = tick_test_tube_bubbles,
 };
 
 /* ======

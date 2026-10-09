@@ -934,7 +934,7 @@ static void tick(GameActor* actor) {
     }
 
     // 218 (modified), 219 (modified), 220 (modified)
-    // Moved below events 240, 241 to replicate Clickteam jump height and to prevent jump buffs against a wall.
+    // Moved below events 240, 241 to improve jump height and to prevent jump buffs against a wall.
     if (ANY_INPUT(player, GI_JUMP) && actor->vel.y < Fx0 && (water == NULL || actor->pos.y < water->pos.y)
         && !ANY_INPUT(player, GI_DOWN))
     {

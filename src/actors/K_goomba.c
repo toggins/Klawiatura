@@ -196,3 +196,156 @@ const ActorTable TAB_GOOMBA_PARTY = {
     .create = create_party,
     .tick = tick_party,
 };
+
+/* =====
+   CLONE
+   ===== */
+
+static void load_clone() {
+    load_sprite_num("enemies/clone/a/%u", 15, AKL_NEVER);
+    load_sprite_num("enemies/clone/a/flat/%u", 5, AKL_NEVER);
+    load_sprite("enemies/clone/a/dead", AKL_NEVER);
+    load_sound("vo/clone/a_stomp", AKL_NEVER);
+    load_sound("vo/clone/a_dead", AKL_NEVER);
+    load_actor(ACT_POINTS);
+}
+
+static void create_clone(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-19);
+    actor->box.start.y = Int2Fx(-31);
+    actor->box.end.x = Int2Fx(18);
+    actor->box.end.y = Int2Fx(23);
+
+    actor->depth = Fx1;
+
+    increase_ambush();
+}
+
+static void tick_clone(GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_ENEMY_FLAT)) {
+        if (++VAL(actor, ENEMY_FRAME) > 200) {
+            FLAG_ON(actor, FLG_DESTROY);
+        } else {
+            actor->vel.y += FxHalf;
+            displace_actor(actor, Fx0, FALSE);
+        }
+
+        return;
+    }
+
+    ++VAL(actor, ENEMY_FRAME);
+    move_enemy(actor, (FVec2){Fx1, 19005}, FALSE);
+}
+
+static void draw_clone(const GameActor* actor) {
+    batch_reset();
+
+    const char* sprite = NULL;
+    if (ANY_FLAG(actor, FLG_ENEMY_FLAT)) {
+        const ActorValue frame = VAL(actor, ENEMY_FRAME) * 70;
+        sprite = (frame >= 500) ? "enemies/clone/a/flat/4" : fmt("enemies/clone/a/flat/%i", frame / 100);
+    } else {
+        sprite = fmt("enemies/clone/a/%i", VAL(actor, ENEMY_FRAME) % 15);
+    }
+
+    draw_actor(actor, sprite, FALSE);
+}
+
+static void draw_dead_clone(const GameActor* actor) {
+    batch_reset();
+    batch_angle((float)VAL(actor, DEAD_FRAME) * 0.125f * SDL_PI_F);
+    draw_actor(actor, "enemies/clone/a/dead", FALSE);
+}
+
+static void collide_clone(GameActor* actor, GameActor* from) {
+    if (ANY_FLAG(actor, FLG_ENEMY_FLAT))
+        return;
+
+    switch (from->type) {
+    default:
+        break;
+
+    case ACT_PLAYER: {
+        if (!check_stomp(actor, from, Int2Fx(-16), 100, TRUE))
+            break;
+
+        ++actor->depth;
+        actor->vel.x = actor->vel.y = Fx0;
+        actor->box.start.y = Int2Fx(-32);
+        actor->box.end.y = Int2Fx(20);
+
+        VAL(actor, ENEMY_FRAME) = 0;
+        FLAG_ON(actor, FLG_ENEMY_FLAT);
+        FLAG_OFF(actor, FLG_X_FLIP);
+
+        decrease_ambush();
+        mark_ambush_winner(from);
+        break;
+    }
+
+    case ACT_GOOMBA:
+    case ACT_KOOPA:
+    case ACT_SPINY:
+    case ACT_CLONE:
+    case ACT_CODER_CLONE:
+    case ACT_CLONE_3A:
+    case ACT_BUZZY:
+    case ACT_SHY_GUY: {
+        turn_enemy(actor);
+        turn_enemy(from);
+        break;
+    }
+
+    case ACT_PARATROOPA: {
+        if (ANY_FLAG(from, FLG_KOOPA_BOUNCE)) {
+            turn_enemy(actor);
+            turn_enemy(from);
+        }
+
+        break;
+    }
+
+    case ACT_KOOPA_SHELL:
+    case ACT_CODER_CLONE_RUN:
+    case ACT_BUZZY_SHELL: {
+        if (!hit_shell(actor, from))
+            turn_enemy(actor);
+
+        break;
+    }
+
+    case ACT_BLOCK_BUMP: {
+        hit_bump(actor, from, 100);
+        break;
+    }
+
+    case ACT_FIREBALL_PROJECTILE: {
+        hit_fireball(actor, from, 100);
+        break;
+    }
+
+    case ACT_BEETROOT_PROJECTILE: {
+        hit_beetroot(actor, from, 100);
+        break;
+    }
+
+    case ACT_HAMMER_PROJECTILE: {
+        hit_hammer(actor, from, 100);
+        break;
+    }
+
+    case ACT_BULLET_PROJECTILE: {
+        hit_bullet(actor, from, 100);
+        break;
+    }
+    }
+}
+
+const ActorTable TAB_CLONE = {
+    .load = load_clone,
+    .create = create_clone,
+    .tick = tick_clone,
+    .draw = draw_clone,
+    .draw_dead = draw_dead_clone,
+    .collide = collide_clone,
+};

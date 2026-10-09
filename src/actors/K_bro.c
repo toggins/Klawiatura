@@ -258,7 +258,11 @@ static void tick(GameActor* actor) {
                 hammer->vel.y = Int2Fx(-6) - Int2Fx(rng(5));
             }
 
-            play_state_sound("hammer", PLAY_POS, A_ACTOR(actor));
+            if (actor->type == ACT_BIG_CLONE)
+                play_state_sound("vo/clone/big_hammer", PLAY_POS, A_ACTOR(actor));
+            else
+                play_state_sound("hammer", PLAY_POS, A_ACTOR(actor));
+
             break;
         }
 
@@ -283,7 +287,11 @@ static void tick(GameActor* actor) {
                 hammer->vel.y = Int2Fx(-6) - Int2Fx(rng(5));
             }
 
-            play_state_sound("hammer", PLAY_POS, A_ACTOR(actor));
+            if (actor->type == ACT_BIG_CLONE)
+                play_state_sound("vo/clone/big_hammer", PLAY_POS, A_ACTOR(actor));
+            else
+                play_state_sound("hammer", PLAY_POS, A_ACTOR(actor));
+
             break;
         }
 
@@ -403,14 +411,70 @@ static void create_layer(GameActor* actor) {
 }
 
 static void collide_layer(GameActor* actor, GameActor* from) {
-    if (from->type == ACT_BRO) {
+    switch (from->type) {
+    default:
+        break;
+
+    case ACT_BRO:
+    case ACT_BIG_CLONE: {
         if (ANY_FLAG(actor, FLG_BRO_LAYER_TOP))
             FLAG_ON(from, FLG_BRO_TOP);
         FLAG_ON(from, FLG_BRO_BOTTOM);
+
+        break;
+    }
     }
 }
 
 const ActorTable TAB_BRO_LAYER = {
     .create = create_layer,
     .collide = collide_layer,
+};
+
+/* =========
+   BIG CLONE
+   ========= */
+
+static void load_big_clone() {
+    load_sprite_num("enemies/clone/big/%u", 2, AKL_NEVER);
+    load_sprite_num("enemies/clone/big/hammer/%u", 2, AKL_NEVER);
+    load_sprite("enemies/clone/big/dead", AKL_NEVER);
+    load_sound("vo/clone/big_hammer", AKL_NEVER);
+    load_sound("vo/clone/big_dead", AKL_NEVER);
+    load_actor(ACT_HAMMER_PROJECTILE);
+}
+
+static void create_big_clone(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-16);
+    actor->box.start.y = Int2Fx(-57);
+    actor->box.end.x = Int2Fx(16);
+    actor->box.end.y = Fx1;
+
+    VAL(actor, BRO_TYPE) = ACT_HAMMER_PROJECTILE;
+    VAL(actor, BRO_THROW_TIME) = 30;
+
+    increase_ambush();
+}
+
+static void draw_big_clone(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor,
+        fmt((VAL(actor, BRO_THROW) > 0) ? "enemies/clone/big/hammer/%i" : "enemies/clone/big/%i",
+            (VAL(actor, BRO_FRAME) / 50) % 2),
+        FALSE);
+}
+
+static void draw_dead_big_clone(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, "enemies/clone/big/dead", FALSE);
+}
+
+const ActorTable TAB_BIG_CLONE = {
+    .load = load_big_clone,
+    .create = create_big_clone,
+    .cleanup = cleanup,
+    .tick = tick,
+    .draw = draw_big_clone,
+    .draw_dead = draw_dead_big_clone,
+    .collide = collide,
 };
