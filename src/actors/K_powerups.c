@@ -368,7 +368,7 @@ static void collide_poison_mushroom(GameActor* actor, GameActor* from) {
         VAL(actor, POWERUP_OVERLAP) = 2;
     }
 
-    if (actor->sprout <= 0) {
+    if (actor->sprout <= 0 && VAL(from, PLAYER_FLASH) <= 0 && VAL(from, PLAYER_STARMAN) <= 0) {
         kill_player(from);
         create_actor(ACT_EXPLODE, Vadd(actor->pos, (FVec2){Fx0, Int2Fx(-15)}));
         FLAG_ON(actor, FLG_DESTROY);
