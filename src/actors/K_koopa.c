@@ -453,9 +453,308 @@ const ActorTable TAB_PARATROOPA = {
     .collide = collide_paratroopa,
 };
 
-/* =====
-   BUZZY
-   ===== */
+/* ===========
+   CODER CLONE
+   =========== */
+
+static void load_coder_clone() {
+    load_sprite_num("enemies/clone/coder/%u", 2, AKL_NEVER);
+    load_localized_sound("vo.clone.coder_hurt", AKL_NEVER);
+    load_sound("kick", AKL_NEVER);
+    load_actor(ACT_CODER_CLONE_RUN);
+    load_actor(ACT_CODER_CLONE_KEYBOARD);
+    load_actor(ACT_POINTS);
+}
+
+static void create_coder_clone(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-16);
+    actor->box.start.y = Int2Fx(-64);
+    actor->box.end.x = Int2Fx(16);
+    actor->box.end.y = Fx1;
+
+    actor->depth = Fx1;
+
+    increase_ambush();
+}
+
+static void draw_coder_clone(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("enemies/clone/coder/%i", (VAL(actor, ENEMY_FRAME) / 100) % 2), FALSE);
+}
+
+static void draw_dead_coder_clone(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, "enemies/clone/coder/dead", FALSE);
+}
+
+static void collide_coder_clone(GameActor* actor, GameActor* from) {
+    switch (from->type) {
+    default:
+        break;
+
+    case ACT_PLAYER: {
+        if (VAL(actor, KOOPA_MAYDAY) <= 10 && VAL(from, PLAYER_STARMAN) <= 0)
+            break;
+
+        if (!check_stomp(actor, from, Int2Fx(-40), 100, TRUE))
+            break;
+
+        GameActor* run = create_actor(ACT_CODER_CLONE_RUN, actor->pos);
+        if (run != NULL) {
+            run->player = from->player;
+            run->vel.x = ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-6) : Int2Fx(6);
+            VAL(run, SHELL_NOISE) = 62;
+            FLAG_ON(run, actor->flags & (FLG_X_FLIP | FLG_KOOPA_RED));
+
+            align_interp(run, actor);
+        }
+
+        create_actor(ACT_CODER_CLONE_KEYBOARD, Vadd(actor->pos, (FVec2){98304, -753664}));
+        FLAG_ON(actor, FLG_DESTROY);
+
+        break;
+    }
+
+    case ACT_GOOMBA:
+    case ACT_KOOPA:
+    case ACT_SPINY:
+    case ACT_CLONE:
+    case ACT_CODER_CLONE:
+    case ACT_CLONE_3A:
+    case ACT_BUZZY:
+    case ACT_SHY_GUY: {
+        turn_enemy(actor);
+        turn_enemy(from);
+        break;
+    }
+
+    case ACT_PARATROOPA: {
+        if (ANY_FLAG(from, FLG_KOOPA_BOUNCE)) {
+            turn_enemy(actor);
+            turn_enemy(from);
+        }
+
+        break;
+    }
+
+    case ACT_KOOPA_SHELL:
+    case ACT_CODER_CLONE_RUN:
+    case ACT_BUZZY_SHELL: {
+        if (!hit_shell(actor, from))
+            turn_enemy(actor);
+
+        break;
+    }
+
+    case ACT_BLOCK_BUMP: {
+        hit_bump(actor, from, 100);
+        break;
+    }
+
+    case ACT_FIREBALL_PROJECTILE: {
+        hit_fireball(actor, from, 100);
+        break;
+    }
+
+    case ACT_BEETROOT_PROJECTILE: {
+        hit_beetroot(actor, from, 100);
+        break;
+    }
+
+    case ACT_HAMMER_PROJECTILE: {
+        hit_hammer(actor, from, 100);
+        break;
+    }
+
+    case ACT_BULLET_PROJECTILE: {
+        hit_bullet(actor, from, 100);
+        break;
+    }
+    }
+}
+
+const ActorTable TAB_CODER_CLONE = {
+    .load = load_coder_clone,
+    .create = create_coder_clone,
+    .cleanup = cleanup,
+    .tick = tick,
+    .draw = draw_coder_clone,
+    .draw_dead = draw_dead_coder_clone,
+    .collide = collide_coder_clone,
+};
+
+/* ===================
+   RUNNING CODER CLONE
+   =================== */
+
+static void load_coder_clone_run() {
+    load_sprite_num("enemies/clone/coder/run/%u", 3, AKL_NEVER);
+    load_sprite("enemies/clone/coder/dead", AKL_NEVER);
+    load_localized_sound("vo.clone.coder_active", AKL_NEVER);
+    load_sound("stomp", AKL_NEVER);
+    load_sound("kick", AKL_NEVER);
+    load_actor(ACT_POINTS);
+}
+
+static void tick_coder_clone_run(GameActor* actor) {
+    VAL_TICK(actor, SHELL_NOISE);
+
+    ++VAL(actor, SHELL_FRAME);
+    actor->vel.y += 19005;
+
+    const Fixed speed = Fabs(actor->vel.x);
+    displace_actor(actor, Int2Fx(10), FALSE);
+
+    if (VAL(actor, SHELL_COOLDOWN) <= 30)
+        ++VAL(actor, SHELL_COOLDOWN);
+
+    if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    if (actor->vel.x == Fx0) {
+        if (TOUCHING(actor, TOUCH_RIGHT)) {
+            actor->vel.x = -speed;
+            FLAG_ON(actor, FLG_X_FLIP);
+        } else if (TOUCHING(actor, TOUCH_LEFT)) {
+            actor->vel.x = speed;
+            FLAG_OFF(actor, FLG_X_FLIP);
+        }
+    }
+
+    if ((gamestate()->time % 10) == 0 && in_any_view(actor->pos, Int2Fx(-32), VEF_ALL) && rng(10) == 5
+        && VAL(actor, SHELL_NOISE) <= 0)
+    {
+        VAL(actor, SHELL_NOISE) = 65;
+
+        // !!! CLIENT SIDE !!!
+        play_state_sound(LFMT("vo.clone.coder_active"), PLAY_POS, A_ACTOR(actor));
+        // !!! CLIENT SIDE !!!
+    }
+
+    collide_actor(actor);
+}
+
+static void draw_coder_clone_run(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("enemies/clone/coder/run/%i", VAL(actor, SHELL_FRAME) % 3), FALSE);
+}
+
+static void collide_coder_clone_run(GameActor* actor, GameActor* from) {
+    switch (from->type) {
+    default:
+        break;
+
+    case ACT_PLAYER: {
+        if (VAL(from, PLAYER_STARMAN) > 0) {
+            player_starman(from, actor);
+            break;
+        }
+
+        if (from->pos.y < (actor->pos.y - Int2Fx(40))) {
+            if (VAL(actor, SHELL_COOLDOWN) <= 10)
+                break;
+
+            kill_enemy(actor, from, FALSE);
+
+            GamePlayer* player = get_player(from->player);
+            from->vel.y = Fmul(
+                (player != NULL && ANY_INPUT(player, GI_JUMP)) ? Int2Fx(-13) : Int2Fx(-8), get_player_jump(player));
+            FLAG_ON(from, FLG_PLAYER_STOMP);
+            give_points(actor, player, 100);
+
+            play_state_sound("stomp", PLAY_POS, A_ACTOR(actor));
+        } else if (VAL(actor, SHELL_COOLDOWN) > 30) {
+            maybe_hit_player(actor, from);
+        }
+
+        break;
+    }
+
+    case ACT_BLOCK_BUMP: {
+        hit_bump(actor, from, 100);
+        break;
+    }
+
+    case ACT_KOOPA_SHELL:
+    case ACT_CODER_CLONE_RUN:
+    case ACT_BUZZY_SHELL: {
+        hit_shell(actor, from);
+        break;
+    }
+
+    case ACT_FIREBALL_PROJECTILE: {
+        hit_fireball(actor, from, 100);
+        break;
+    }
+
+    case ACT_BEETROOT_PROJECTILE: {
+        hit_beetroot(actor, from, 100);
+        break;
+    }
+
+    case ACT_HAMMER_PROJECTILE: {
+        hit_hammer(actor, from, 100);
+        break;
+    }
+
+    case ACT_BULLET_PROJECTILE: {
+        hit_bullet(actor, from, 100);
+        break;
+    }
+    }
+}
+
+const ActorTable TAB_CODER_CLONE_RUN = {
+    .load = load_coder_clone_run,
+    .create = create_coder_clone,
+    .cleanup = cleanup,
+    .tick = tick_coder_clone_run,
+    .draw = draw_coder_clone_run,
+    .draw_dead = draw_dead_coder_clone,
+    .collide = collide_coder_clone_run,
+};
+
+/* ====================
+   CODER CLONE KEYBOARD
+   ==================== */
+
+static void load_coder_clone_keyboard() {
+    load_sprite("enemies/clone/coder/keyboard", AKL_NEVER);
+}
+
+static void create_coder_clone_keyboard(GameActor* actor) {
+    actor->depth = -2;
+
+    actor->vel.x = Int2Fx(rng(3));
+    actor->vel.x -= Int2Fx(rng(3));
+    actor->vel.y = Int2Fx(-4) - Int2Fx(rng(4));
+}
+
+static void tick_coder_clone_keyboard(GameActor* actor) {
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    actor->vel.y += 13107;
+
+    if (!in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_coder_clone_keyboard(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, "enemies/clone/coder/keyboard", FALSE);
+}
+
+const ActorTable TAB_CODER_CLONE_KEYBOARD = {
+    .load = load_coder_clone_keyboard,
+    .create = create_coder_clone_keyboard,
+    .tick = tick_coder_clone_keyboard,
+    .draw = draw_coder_clone_keyboard,
+};
+
+/* ============
+   BUZZY BEETLE
+   ============ */
 
 static void load_buzzy() {
     load_sprite_num("enemies/buzzy/%u", 2, AKL_NEVER);
@@ -577,9 +876,9 @@ const ActorTable TAB_BUZZY = {
     .collide = collide_buzzy,
 };
 
-/* ===========
-   BUZZY SHELL
-   =========== */
+/* ==================
+   BUZZY BEETLE SHELL
+   ================== */
 
 static void load_buzzy_shell() {
     load_sprite("enemies/buzzy/shell", AKL_NEVER);

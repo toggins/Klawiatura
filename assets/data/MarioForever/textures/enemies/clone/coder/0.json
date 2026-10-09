@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/clone/coder",
+    "size": [34, 65],
+    "offset": [15, 64],
+    "uvs": [1, 1, 35, 66]
+}

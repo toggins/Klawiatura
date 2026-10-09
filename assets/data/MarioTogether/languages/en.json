@@ -155,6 +155,9 @@
     "hud.spectating": "Spectating",
     "hud.waiting_for_peers": "Waiting for peers...",
 
+    "vo.clone.coder_hurt": "vo/clone/en/coder_hurt",
+    "vo.clone.coder_active": "vo/clone/en/coder_active",
+
     "bind.up": "Up",
     "bind.left": "Left",
     "bind.down": "Down",

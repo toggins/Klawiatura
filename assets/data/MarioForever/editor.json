@@ -2457,6 +2457,18 @@
                 }
             ]
         },
+        "Coder Clone": {
+            "type": "actor",
+            "id": 112,
+            "sprite": "enemies/clone/coder/0",
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2,
+                    "default": true
+                }
+            ]
+        },
         "Electric Coral": {
             "type": "actor",
             "id": 133,

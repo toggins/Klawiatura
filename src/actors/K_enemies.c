@@ -138,6 +138,11 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
             FLAG_OFF(dead, FLG_X_FLIP);
             break;
         }
+
+        case ACT_CODER_CLONE: {
+            create_actor(ACT_CODER_CLONE_KEYBOARD, Vadd(actor->pos, (FVec2){Int2Fx(2), Int2Fx(-15)}));
+            break;
+        }
         }
 
         if (kick) {
@@ -187,15 +192,28 @@ Bool check_stomp(GameActor* actor, GameActor* from, Fixed offset, Sint32 points,
         give_points(actor, player, points);
 
         switch (actor->type) {
-        default:
+        default: {
             play_state_sound("stomp", PLAY_POS, A_ACTOR(actor));
             break;
-        case ACT_CLONE:
+        }
+
+        case ACT_CLONE: {
             play_state_sound("vo/clone/a_stomp", PLAY_POS, A_ACTOR(actor));
             break;
-        case ACT_BIG_CLONE:
+        }
+
+        case ACT_BIG_CLONE: {
             play_state_sound("vo/clone/big_dead", PLAY_POS, A_ACTOR(actor));
             break;
+        }
+
+        case ACT_CODER_CLONE: {
+            // !!! CLIENT SIDE !!!
+            play_state_sound(LFMT("vo.clone.coder_hurt"), PLAY_POS, A_ACTOR(actor));
+            // !!! CLIENT SIDE !!!
+
+            break;
+        }
         }
 
         return TRUE;
@@ -229,14 +247,14 @@ void hit_bump(GameActor* actor, GameActor* from, Sint32 points) {
 }
 
 Bool hit_shell(GameActor* actor, GameActor* from) {
-    if (actor == NULL || from == NULL || from->vel.x == Fx0)
+    if (actor == NULL || from == NULL || (from->vel.x == Fx0 && from->type != ACT_CODER_CLONE_RUN))
         return FALSE;
 
     if (!in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
         return TRUE;
 
     if ((actor->type == ACT_KOOPA_SHELL || actor->type == ACT_CODER_CLONE_RUN || actor->type == ACT_BUZZY_SHELL)
-        && actor->vel.x != Fx0)
+        && (actor->vel.x != Fx0 || actor->type == ACT_CODER_CLONE_RUN))
     {
         VAL(actor, SHELL_COMBO) = VAL(from, SHELL_COMBO) = 0;
         give_points(from, get_player(from->player), 100);

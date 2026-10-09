@@ -372,10 +372,16 @@ static void on_other_sides(GameActor* actor, GameActor* from) {
     default:
         break;
 
-    case ACT_KOOPA_SHELL: {
+    case ACT_KOOPA_SHELL:
+    case ACT_BUZZY_SHELL: {
         if (from->vel.x != Fx0)
             bump_block(actor, from, TRUE);
 
+        break;
+    }
+
+    case ACT_CODER_CLONE_RUN: {
+        bump_block(actor, from, TRUE);
         break;
     }
 
@@ -399,7 +405,7 @@ static void on_other_sides(GameActor* actor, GameActor* from) {
 }
 
 static void on_top(GameActor* actor, GameActor* from) {
-    if (from->type != ACT_KOOPA_SHELL)
+    if (from->type != ACT_KOOPA_SHELL && from->type != ACT_CODER_CLONE_RUN && from->type != ACT_BUZZY_SHELL)
         on_other_sides(actor, from);
 }
 
