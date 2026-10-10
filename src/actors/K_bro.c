@@ -210,18 +210,11 @@ static void tick(GameActor* actor) {
         && (VAL(actor, BRO_JUMP) == 0 || (VAL(actor, BRO_JUMP) == 1 && actor->vel.y > Fx0)
             || (VAL(actor, BRO_JUMP) == 2 && actor->pos.y > VAL(actor, BRO_TO))))
     {
-        Fixed i = actor->vel.y;
-        while (i >= Fx1) {
-            const FVec2 move
-                = Vadd(actor->pos, (FVec2){Fx0, Int2Fx((Sint32)(actor->vel.y > Fx0) - (Sint32)(actor->vel.y < Fx0))});
-            if (touching_solid(Radd(actor->box, move), SOL_SOLID | SOL_TOP))
-                break;
+        const Fixed ox = actor->pos.x;
+        displace_actor(actor, Fx0, FALSE);
+        TOUCH_OFF(actor, TOUCH_DISPLACEABLE);
+        move_actor(actor, (FVec2){ox, actor->pos.y});
 
-            move_actor(actor, move);
-            i -= Fx1;
-        }
-
-        actor->vel.y = Fx0;
         VAL(actor, BRO_JUMP) = 0;
     } else {
         move_actor(actor, Vadd(actor->pos, actor->vel));
