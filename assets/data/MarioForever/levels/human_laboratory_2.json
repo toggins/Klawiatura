@@ -5279,6 +5279,97 @@
             "multiplayer": true,
             "pos": [7616, 384],
             "scale": [65536, 58254]
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "multiplayer": true,
+            "pos": [3712, 384],
+            "scale": [407779, 58254]
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "multiplayer": true,
+            "pos": [4032, 384],
+            "scale": [407779, 58254]
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "multiplayer": true,
+            "pos": [4352, 384],
+            "scale": [466033, 58254]
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "multiplayer": true,
+            "pos": [6688, 384],
+            "scale": [466033, 58254]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [9376, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [9376, 224],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [9376, 256],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Hidden Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [9408, 288],
+            "values": [
+                [0, 0],
+                [1, 21]
+            ],
+            "flags": 64
+        },
+        {
+            "def": "Hidden Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [9440, 288],
+            "values": [
+                [0, 0],
+                [1, 21]
+            ],
+            "flags": 64
+        },
+        {
+            "def": "Hidden Block",
+            "id": 24,
+            "multiplayer": true,
+            "pos": [9472, 288],
+            "values": [
+                [0, 0],
+                [1, 21]
+            ],
+            "flags": 64
         }
     ]
 }
