@@ -306,3 +306,47 @@ const ActorTable TAB_SPINY_EGG = {
     .draw_dead = draw_dead,
     .collide = collide_egg,
 };
+
+/* ========
+   CLONE 3A
+   ======== */
+
+static void load_clone_3a() {
+    load_sprite_num("enemies/clone/3a/%u", 3, AKL_NEVER);
+    load_sprite("enemies/clone/3a/dead", AKL_NEVER);
+    load_sound("vo/clone/3a_dead", AKL_NEVER);
+    load_actor(ACT_POINTS);
+}
+
+static void create_clone_3a(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-20);
+    actor->box.start.y = Int2Fx(-47);
+    actor->box.end.x = Int2Fx(20);
+    actor->box.end.y = Fx1;
+
+    actor->depth = Fx1;
+}
+
+static void tick_clone_3a(GameActor* actor) {
+    VAL(actor, ENEMY_FRAME) += 7;
+    move_enemy(actor, (FVec2){Fx1, 19005}, FALSE);
+}
+
+static void draw_clone_3a(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("enemies/clone/3a/%i", (VAL(actor, ENEMY_FRAME) / 50) % 3), FALSE);
+}
+
+static void draw_dead_clone_3a(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, "enemies/clone/3a/dead", FALSE);
+}
+
+const ActorTable TAB_CLONE_3A = {
+    .load = load_clone_3a,
+    .create = create_clone_3a,
+    .tick = tick_clone_3a,
+    .draw = draw_clone_3a,
+    .draw_dead = draw_dead_clone_3a,
+    .collide = collide,
+};

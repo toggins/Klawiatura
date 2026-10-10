@@ -2469,6 +2469,18 @@
                 }
             ]
         },
+        "Clone 3A": {
+            "type": "actor",
+            "id": 116,
+            "sprite": "enemies/clone/3a/0",
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2,
+                    "default": true
+                }
+            ]
+        },
         "Electric Coral": {
             "type": "actor",
             "id": 133,
@@ -2771,10 +2783,22 @@
                     "name": "Portraits",
                     "items": ["Portrait", "Portrait Eyes", "Portrait Tank", "Portrait Tank 2"]
                 },
+                {
+                    "name": "Test Tube",
+                    "items": [
+                        "Test Tube Bubbles",
+                        "Test Tube Clone",
+                        "Test Tube Coder Clone",
+                        "Test Tube Jaws Clone",
+                        "Test Tube Mutant",
+                        "Test Tube Zorro Clone",
+                        "Test Tube Star Closed Clone",
+                        "Test Tube Big Clone"
+                    ]
+                },
                 "Bush",
                 "Waterfall",
-                "Cobweb",
-                "Test Tube Bubbles"
+                "Cobweb"
             ]
         },
         {

@@ -161,6 +161,9 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
             case ACT_BIG_CLONE:
                 play_state_sound("vo/clone/big_dead", PLAY_POS, A_ACTOR(actor));
                 break;
+            case ACT_CLONE_3A:
+                play_state_sound("vo/clone/3a_dead", PLAY_POS, A_ACTOR(actor));
+                break;
             }
         }
 
