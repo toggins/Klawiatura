@@ -33,7 +33,9 @@ static void create(GameActor* actor) {
 }
 
 static void tick(GameActor* actor) {
-    if (ANY_FLAG(actor, FLG_SPINY_TEMP) && !in_any_view(actor->pos, Int2Fx(-500), VEF_ALL)) {
+    if (ANY_FLAG(actor, FLG_SPINY_TEMP)
+        && !in_any_view(actor->pos, (gamecontext()->num_players > 1) ? Int2Fx(-200) : Int2Fx(-500), VEF_ALL))
+    {
         FLAG_ON(actor, FLG_DESTROY);
         return;
     }

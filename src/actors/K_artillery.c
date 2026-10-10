@@ -34,7 +34,7 @@ static void tick_bullet_bill(GameActor* actor) {
         if (!in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
             FLAG_ON(actor, FLG_DESTROY);
     } else {
-        if (in_any_view(actor->pos, Int2Fx(-256), VEF_ALL))
+        if (in_any_view(actor->pos, (gamecontext()->num_players > 1) ? Int2Fx(-128) : Int2Fx(-256), VEF_ALL))
             move_actor(actor, Vadd(actor->pos, actor->vel));
         else
             FLAG_ON(actor, FLG_DESTROY);
