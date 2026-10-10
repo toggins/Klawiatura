@@ -608,6 +608,8 @@ static Bool draw_lobby_menu() {
     batch_string_wrap("footer", 12.f, fmt("Checksum: %u", get_game_hash()), 218.f);
 
     // RIGHT
+    const Sint32 lives = get_world_lives(get_world(get_lobby_string("world")));
+
     Uint8 line = 0;
     for (const NetID* pids = get_peers(); *pids > 0; pids++) {
         const NetID pid = *pids;
@@ -650,7 +652,7 @@ static Bool draw_lobby_menu() {
             const PlayerPowerup powerup = get_peer_number(pid, "powerup");
             batch_pos(B_F3_XY(322.f + string_width("footer", 16.f, name), ly + 8.f));
             batch_color(B_U4_ALPHA(200));
-            batch_string("footer", 16.f, fmt("x %i", DEFAULT_LIVES - get_powerup_cost(powerup)));
+            batch_string("footer", 16.f, fmt("x %i", lives - get_powerup_cost(powerup)));
 
             batch_pos(B_F3_XY(317.f, ly + 28.f));
             batch_color((powerup == POW_NONE) ? B_U4_ALPHA(128) : B_U4_WHITE);

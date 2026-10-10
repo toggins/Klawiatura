@@ -42,6 +42,11 @@ static void iterate_world_file(const char* filename, const void* buffer, size_t 
     const size_t num_levels = yyjson_arr_size(yyjson_obj_get(root, "levels"));
     world.num_levels = SDL_min(num_levels, SDL_MAX_UINT8);
 
+    world.lives = DEFAULT_LIVES;
+    yyjson_val* lives = yyjson_obj_get(root, "lives");
+    if (yyjson_is_int(lives))
+        world.lives = (Sint32)yyjson_get_sint(lives);
+
     yyjson_doc_free(json);
 
     const TinyHash key = StHashStr(name);
@@ -151,6 +156,10 @@ yyjson_doc* load_world_json(const char* name, const char** err) {
     return json;
 }
 
+Sint32 get_world_lives(const World* world) {
+    return (world == NULL) ? DEFAULT_LIVES : world->lives;
+}
+
 WorldContext empty_world_context() {
     WorldContext ctx = {0};
 
@@ -166,6 +175,7 @@ WorldContext init_world_context(TinyHash world) {
     WorldContext ctx = empty_world_context();
     ctx.world = world;
 
+    const Sint32 lives = get_world_lives(get_world_key(world));
     if (is_connected()) {
         ctx.num_players = (PlayerID)get_game_player_count();
         for (PlayerID i = 0; i < ctx.num_players; i++) {
@@ -174,13 +184,13 @@ WorldContext init_world_context(TinyHash world) {
 
             pctx->character = get_peer_number(pid, "character");
             pctx->powerup = get_peer_number(pid, "powerup");
-            pctx->lives = (Sint32)(pctx->lives - get_powerup_cost(pctx->powerup));
+            pctx->lives = (Sint32)(lives - get_powerup_cost(pctx->powerup));
         }
     } else {
         WorldPlayerContext* pctx = &ctx.players[0];
         pctx->character = CLIENT.character;
         pctx->powerup = CLIENT.powerup;
-        pctx->lives = (Sint32)(pctx->lives - get_powerup_cost(pctx->powerup));
+        pctx->lives = (Sint32)(lives - get_powerup_cost(pctx->powerup));
     }
 
     return ctx;
