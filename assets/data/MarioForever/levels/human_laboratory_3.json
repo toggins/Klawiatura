@@ -1,0 +1,4757 @@
+{
+    "tracks": [{ "track": "one_fine_day" }],
+    "size": [11000, 480],
+    "bounds": [0, 0, 11000, 480],
+    "backdrops": [
+        {
+            "def": "Goal",
+            "sprite": "markers/goal",
+            "pos": [10683, 128, 23]
+        },
+        {
+            "def": "Goal Mark",
+            "sprite": "markers/goal/mark",
+            "pos": [10523, 384, 23]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 0, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -63, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -95, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -127, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -159, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -191, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -223, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -255, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -287, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -319, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [608, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [640, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [672, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [928, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [928, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [992, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [992, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1056, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1056, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1152, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1120, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1120, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1120, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1120, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1120, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1120, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1120, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1152, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1184, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1216, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1248, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1280, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1280, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1280, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1248, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1248, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1312, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1344, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1376, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1408, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1440, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1472, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1504, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1536, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1568, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1600, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1632, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1664, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1696, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1728, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1760, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1792, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1824, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1856, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1888, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1920, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1952, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1984, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1696, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1696, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1696, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1696, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1696, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1664, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1664, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1664, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1664, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1664, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1632, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1600, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1568, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1536, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1504, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1472, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1440, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1408, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1376, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1376, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1376, 0, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1856, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1888, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1920, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1920, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1920, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1920, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1920, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1952, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [1984, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2016, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2048, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2080, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2080, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2080, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2080, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2080, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2048, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2016, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2112, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2272, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2304, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2336, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2368, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2400, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2432, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2464, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2592, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2624, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2656, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2688, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2720, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2752, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2784, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2976, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3008, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3072, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3104, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3040, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3136, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3168, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3328, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3360, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3392, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3424, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3456, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3488, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3616, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3680, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3712, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3744, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3776, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3808, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3840, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3872, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3904, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3936, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3968, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4000, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4064, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4096, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4128, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4160, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4192, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4224, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4256, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4288, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4320, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4352, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4384, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4416, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4448, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4544, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4576, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4608, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4640, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4672, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4704, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4736, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4768, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4800, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4832, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4864, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4896, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [4928, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5024, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5056, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5088, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5120, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5152, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5184, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5216, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5248, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5280, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5312, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5344, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5440, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5536, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5632, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5696, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5728, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5760, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5792, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5824, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5856, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5888, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5920, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5952, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [5984, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [6464, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [6528, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [6592, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [6656, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [6720, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [6880, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [6880, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [6976, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [6976, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7008, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7040, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7072, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7104, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7136, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7168, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7200, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7232, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7264, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7296, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7328, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7360, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7392, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7424, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7456, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7488, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7520, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7552, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7584, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7616, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7648, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7648, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7648, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7680, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7712, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7744, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7776, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7808, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7840, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7872, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7904, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7936, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [7968, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8000, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8032, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8064, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8096, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8128, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8160, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8192, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8224, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8256, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8288, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8320, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8352, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8352, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8352, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8384, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8416, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8448, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8480, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8512, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8544, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8576, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8608, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8640, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8672, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8704, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8736, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8768, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8800, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8832, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8864, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8896, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8928, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8960, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [8992, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9024, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9024, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9056, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9088, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9120, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9152, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9184, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9280, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9312, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9344, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9376, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9408, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9440, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9472, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9504, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9536, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9568, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9600, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9632, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9568, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9600, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9632, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9664, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9696, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9728, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9760, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9792, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9824, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9856, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9888, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9920, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9952, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9984, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10016, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10048, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10080, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10176, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10208, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10240, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10272, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, 0, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, -32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, -64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, -96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, -128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, -160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, -192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, -224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, -256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, -288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, -320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, -352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, -383, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, -382, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, -352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, -320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, -288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, -256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, -224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, -192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, -160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, -128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, -96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, -64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, -32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10592, 0, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10560, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10528, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10496, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10464, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10432, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10400, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10368, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10336, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9888, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9920, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9952, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9984, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10016, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10048, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10080, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10112, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10144, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10176, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10208, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10240, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10272, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9440, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9472, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9504, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9536, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9568, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9600, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9632, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9664, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9696, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9728, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9760, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9312, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9344, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9376, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9408, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9440, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9472, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9504, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9536, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9568, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9600, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9632, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9664, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9696, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9728, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9760, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9792, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9824, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9856, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9888, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9920, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9952, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [9984, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10016, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10048, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10080, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10112, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10144, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10176, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10208, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10240, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10272, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10304, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [10336, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11055, 35, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11055, 67, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11055, 99, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11055, 131, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11055, 163, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11055, 195, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11055, 227, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11055, 259, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11055, 291, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11055, 323, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11055, 355, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [11055, 385, 20]
+        },
+        {
+            "def": "Grass Top Left",
+            "sprite": "tiles/grass/0",
+            "pos": [0, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [32, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [64, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [96, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [128, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [160, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [192, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [224, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [256, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [288, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [320, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [352, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [384, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [416, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [448, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [480, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [512, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [544, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [576, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [608, 416, 20]
+        },
+        {
+            "def": "Grass Top Right",
+            "sprite": "tiles/grass/2",
+            "pos": [640, 416, 20]
+        },
+        {
+            "def": "Grass Left",
+            "sprite": "tiles/grass/3",
+            "pos": [0, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [32, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [64, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [96, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [128, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [160, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [192, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [224, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [256, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [288, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [320, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [352, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [384, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [416, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [448, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [480, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [512, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [544, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [576, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [608, 448, 20]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [640, 448, 20]
+        },
+        {
+            "def": "Grass Top Left",
+            "sprite": "tiles/grass/0",
+            "pos": [10368, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10400, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10445, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10432, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10477, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10509, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10541, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10573, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10605, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10637, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10669, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10701, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10733, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10765, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10797, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10829, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10861, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10893, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10925, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10957, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [10989, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [11021, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [11053, 416, 20]
+        },
+        {
+            "def": "Grass Left",
+            "sprite": "tiles/grass/3",
+            "pos": [10368, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10400, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10445, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10432, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10477, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10509, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10541, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10573, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10605, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10637, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10669, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10701, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10733, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10765, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10797, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10829, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10861, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10893, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10925, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10957, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [10989, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [11021, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [11053, 448, 20]
+        },
+        {
+            "def": "Tree Small",
+            "sprite": "scenery/tree/small",
+            "pos": [320, 352, 32]
+        },
+        {
+            "def": "Tree Small",
+            "sprite": "scenery/tree/small",
+            "pos": [608, 352, 32]
+        },
+        {
+            "def": "Tree Big",
+            "sprite": "scenery/tree/big",
+            "pos": [576, 318, 32]
+        },
+        {
+            "def": "Tree Small",
+            "sprite": "scenery/tree/small",
+            "pos": [10944, 352, 32]
+        },
+        {
+            "def": "Hill",
+            "sprite": "scenery/hill",
+            "pos": [32, 288, 61]
+        },
+        {
+            "def": "Hill",
+            "sprite": "scenery/hill",
+            "pos": [288, 320, 61]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [736, 448, 60]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [2112, 448, 60]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [2976, 448, 60]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [3808, 448, 60]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [5152, 448, 60]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [6112, 448, 60]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [6528, 448, 60]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [8032, 448, 60]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [8544, 448, 60]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [8800, 448, 60]
+        },
+        {
+            "def": "Hill",
+            "sprite": "scenery/hill",
+            "pos": [10624, 288, 61]
+        },
+        {
+            "def": "Clouds Static",
+            "sprite": "scenery/clouds2",
+            "pos": [-16, 19, 50],
+            "size": [11036, 28],
+            "tile": [true, false],
+            "colors": [
+                [181, 189, 189, 255],
+                [181, 189, 189, 255],
+                [181, 189, 189, 255],
+                [181, 189, 189, 255]
+            ]
+        },
+        {
+            "def": "Clouds Static",
+            "sprite": "scenery/clouds2",
+            "pos": [0, 0, 50],
+            "size": [11036, 28],
+            "tile": [true, false],
+            "colors": [
+                [181, 189, 189, 255],
+                [181, 189, 189, 255],
+                [181, 189, 189, 255],
+                [181, 189, 189, 255]
+            ]
+        },
+        {
+            "def": "Gradient Background",
+            "pos": [0, 0, 200],
+            "size": [11018, 484],
+            "colors": [
+                [0, 0, 63, 255],
+                [0, 0, 63, 255],
+                [255, 255, 255, 255],
+                [255, 255, 255, 255]
+            ]
+        }
+    ],
+    "collisions": [
+        {
+            "pos": [11055, 385],
+            "size": [1, 1],
+            "cell_size": [32, 32],
+            "cells": [[0, 0, 1]]
+        },
+        {
+            "pos": [10445, 416],
+            "size": [20, 2],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 0, 1],
+                [1, 0, 1],
+                [2, 0, 1],
+                [3, 0, 1],
+                [4, 0, 1],
+                [5, 0, 1],
+                [6, 0, 1],
+                [7, 0, 1],
+                [8, 0, 1],
+                [9, 0, 1],
+                [10, 0, 1],
+                [11, 0, 1],
+                [12, 0, 1],
+                [13, 0, 1],
+                [14, 0, 1],
+                [15, 0, 1],
+                [16, 0, 1],
+                [17, 0, 1],
+                [18, 0, 1],
+                [19, 0, 1],
+                [0, 1, 1],
+                [1, 1, 1],
+                [2, 1, 1],
+                [3, 1, 1],
+                [4, 1, 1],
+                [5, 1, 1],
+                [6, 1, 1],
+                [7, 1, 1],
+                [8, 1, 1],
+                [9, 1, 1],
+                [10, 1, 1],
+                [11, 1, 1],
+                [12, 1, 1],
+                [13, 1, 1],
+                [14, 1, 1],
+                [15, 1, 1],
+                [16, 1, 1],
+                [17, 1, 1],
+                [18, 1, 1],
+                [19, 1, 1]
+            ]
+        },
+        {
+            "pos": [-32, -352],
+            "size": [333, 26],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 11, 1],
+                [0, 12, 1],
+                [0, 13, 1],
+                [0, 14, 1],
+                [0, 15, 1],
+                [0, 16, 1],
+                [0, 17, 1],
+                [0, 18, 1],
+                [0, 19, 1],
+                [0, 20, 1],
+                [0, 21, 1],
+                [0, 22, 1],
+                [0, 23, 1],
+                [0, 24, 1],
+                [0, 25, 1],
+                [0, 10, 1],
+                [20, 20, 1],
+                [21, 16, 1],
+                [22, 12, 1],
+                [30, 19, 1],
+                [30, 20, 1],
+                [32, 19, 1],
+                [32, 20, 1],
+                [34, 19, 1],
+                [34, 20, 1],
+                [37, 19, 1],
+                [36, 19, 1],
+                [36, 20, 1],
+                [36, 21, 1],
+                [36, 22, 1],
+                [36, 23, 1],
+                [36, 24, 1],
+                [36, 25, 1],
+                [37, 25, 1],
+                [38, 25, 1],
+                [39, 25, 1],
+                [40, 25, 1],
+                [41, 25, 1],
+                [41, 21, 1],
+                [41, 20, 1],
+                [40, 20, 1],
+                [40, 19, 1],
+                [42, 25, 1],
+                [43, 25, 1],
+                [44, 25, 1],
+                [45, 25, 1],
+                [46, 25, 1],
+                [47, 25, 1],
+                [48, 25, 1],
+                [49, 25, 1],
+                [50, 25, 1],
+                [51, 25, 1],
+                [52, 25, 1],
+                [53, 25, 1],
+                [54, 25, 1],
+                [55, 25, 1],
+                [56, 25, 1],
+                [57, 25, 1],
+                [58, 25, 1],
+                [59, 25, 1],
+                [60, 25, 1],
+                [61, 25, 1],
+                [62, 25, 1],
+                [63, 25, 1],
+                [54, 21, 1],
+                [54, 20, 1],
+                [54, 19, 1],
+                [54, 18, 1],
+                [54, 17, 1],
+                [53, 17, 1],
+                [53, 16, 1],
+                [53, 15, 1],
+                [53, 14, 1],
+                [53, 13, 1],
+                [52, 13, 1],
+                [51, 13, 1],
+                [50, 13, 1],
+                [49, 13, 1],
+                [48, 13, 1],
+                [47, 13, 1],
+                [46, 13, 1],
+                [45, 13, 1],
+                [44, 13, 1],
+                [44, 12, 1],
+                [44, 11, 1],
+                [59, 21, 1],
+                [60, 21, 1],
+                [61, 21, 1],
+                [61, 20, 1],
+                [61, 19, 1],
+                [61, 18, 1],
+                [61, 17, 1],
+                [62, 17, 1],
+                [63, 17, 1],
+                [64, 17, 1],
+                [65, 17, 1],
+                [66, 17, 1],
+                [66, 18, 1],
+                [66, 19, 1],
+                [66, 20, 1],
+                [66, 21, 1],
+                [65, 21, 1],
+                [64, 21, 1],
+                [67, 20, 1],
+                [72, 20, 1],
+                [73, 20, 1],
+                [74, 21, 1],
+                [75, 21, 1],
+                [76, 21, 1],
+                [77, 20, 1],
+                [78, 20, 1],
+                [82, 18, 1],
+                [83, 18, 1],
+                [84, 19, 1],
+                [85, 19, 1],
+                [86, 19, 1],
+                [87, 18, 1],
+                [88, 18, 1],
+                [94, 22, 1],
+                [95, 22, 1],
+                [97, 23, 1],
+                [98, 23, 1],
+                [96, 23, 1],
+                [99, 22, 1],
+                [100, 22, 1],
+                [105, 22, 1],
+                [106, 22, 1],
+                [107, 22, 1],
+                [108, 22, 1],
+                [109, 22, 1],
+                [110, 22, 1],
+                [114, 19, 1],
+                [115, 19, 1],
+                [116, 19, 1],
+                [117, 20, 1],
+                [118, 20, 1],
+                [119, 20, 1],
+                [120, 20, 1],
+                [121, 20, 1],
+                [122, 20, 1],
+                [123, 20, 1],
+                [124, 19, 1],
+                [125, 19, 1],
+                [126, 19, 1],
+                [128, 23, 1],
+                [129, 23, 1],
+                [130, 23, 1],
+                [131, 24, 1],
+                [132, 24, 1],
+                [133, 24, 1],
+                [134, 24, 1],
+                [135, 24, 1],
+                [136, 24, 1],
+                [137, 24, 1],
+                [138, 23, 1],
+                [139, 23, 1],
+                [140, 23, 1],
+                [143, 20, 1],
+                [144, 20, 1],
+                [145, 20, 1],
+                [146, 21, 1],
+                [147, 21, 1],
+                [148, 21, 1],
+                [149, 21, 1],
+                [150, 21, 1],
+                [151, 21, 1],
+                [152, 21, 1],
+                [153, 20, 1],
+                [154, 20, 1],
+                [155, 20, 1],
+                [158, 18, 1],
+                [159, 18, 1],
+                [160, 18, 1],
+                [161, 19, 1],
+                [162, 19, 1],
+                [163, 19, 1],
+                [164, 19, 1],
+                [165, 19, 1],
+                [166, 19, 1],
+                [167, 19, 1],
+                [168, 18, 1],
+                [171, 18, 1],
+                [174, 18, 1],
+                [177, 18, 1],
+                [179, 22, 1],
+                [180, 23, 1],
+                [181, 23, 1],
+                [182, 23, 1],
+                [183, 23, 1],
+                [184, 23, 1],
+                [185, 23, 1],
+                [186, 23, 1],
+                [187, 22, 1],
+                [188, 22, 1],
+                [203, 16, 1],
+                [205, 18, 1],
+                [207, 20, 1],
+                [209, 22, 1],
+                [211, 24, 1],
+                [216, 24, 1],
+                [216, 25, 1],
+                [219, 24, 1],
+                [219, 25, 1],
+                [220, 25, 1],
+                [221, 25, 1],
+                [222, 25, 1],
+                [223, 25, 1],
+                [224, 25, 1],
+                [225, 25, 1],
+                [226, 25, 1],
+                [227, 25, 1],
+                [228, 25, 1],
+                [229, 25, 1],
+                [230, 25, 1],
+                [231, 25, 1],
+                [232, 25, 1],
+                [233, 25, 1],
+                [234, 25, 1],
+                [235, 25, 1],
+                [236, 25, 1],
+                [237, 25, 1],
+                [238, 25, 1],
+                [239, 25, 1],
+                [240, 25, 1],
+                [240, 23, 1],
+                [240, 24, 1],
+                [241, 24, 1],
+                [242, 24, 1],
+                [243, 24, 1],
+                [244, 24, 1],
+                [245, 24, 1],
+                [246, 24, 1],
+                [247, 24, 1],
+                [248, 24, 1],
+                [249, 24, 1],
+                [250, 24, 1],
+                [251, 24, 1],
+                [252, 24, 1],
+                [253, 24, 1],
+                [254, 24, 1],
+                [255, 24, 1],
+                [256, 24, 1],
+                [257, 24, 1],
+                [258, 24, 1],
+                [259, 24, 1],
+                [260, 24, 1],
+                [261, 24, 1],
+                [262, 24, 1],
+                [262, 23, 1],
+                [262, 22, 1],
+                [263, 23, 1],
+                [264, 23, 1],
+                [265, 23, 1],
+                [266, 23, 1],
+                [267, 23, 1],
+                [268, 23, 1],
+                [269, 23, 1],
+                [270, 23, 1],
+                [271, 23, 1],
+                [272, 23, 1],
+                [273, 23, 1],
+                [274, 23, 1],
+                [275, 23, 1],
+                [276, 23, 1],
+                [277, 23, 1],
+                [278, 23, 1],
+                [279, 23, 1],
+                [280, 23, 1],
+                [281, 23, 1],
+                [282, 23, 1],
+                [283, 23, 1],
+                [283, 22, 1],
+                [284, 23, 1],
+                [285, 23, 1],
+                [286, 23, 1],
+                [287, 24, 1],
+                [288, 25, 1],
+                [291, 25, 1],
+                [292, 24, 1],
+                [293, 23, 1],
+                [294, 22, 1],
+                [295, 21, 1],
+                [296, 20, 1],
+                [297, 19, 1],
+                [298, 18, 1],
+                [299, 17, 1],
+                [300, 16, 1],
+                [301, 15, 1],
+                [302, 14, 1],
+                [300, 17, 1],
+                [301, 17, 1],
+                [302, 17, 1],
+                [303, 17, 1],
+                [304, 17, 1],
+                [305, 17, 1],
+                [306, 17, 1],
+                [307, 17, 1],
+                [308, 17, 1],
+                [309, 17, 1],
+                [310, 17, 1],
+                [311, 17, 1],
+                [312, 17, 1],
+                [313, 17, 1],
+                [314, 17, 1],
+                [315, 17, 1],
+                [316, 17, 1],
+                [319, 17, 1],
+                [320, 17, 1],
+                [321, 16, 1],
+                [322, 15, 1],
+                [323, 14, 1],
+                [323, 13, 1],
+                [323, 12, 1],
+                [323, 11, 1],
+                [323, 10, 1],
+                [323, 9, 1],
+                [323, 8, 1],
+                [323, 7, 1],
+                [323, 6, 1],
+                [323, 5, 1],
+                [323, 4, 1],
+                [323, 3, 1],
+                [323, 2, 1],
+                [323, 1, 1],
+                [323, 0, 1],
+                [332, 0, 1],
+                [332, 1, 1],
+                [332, 2, 1],
+                [332, 3, 1],
+                [332, 4, 1],
+                [332, 5, 1],
+                [332, 6, 1],
+                [332, 7, 1],
+                [332, 8, 1],
+                [332, 9, 1],
+                [332, 10, 1],
+                [332, 11, 1],
+                [331, 12, 1],
+                [330, 13, 1],
+                [329, 14, 1],
+                [328, 15, 1],
+                [327, 16, 1],
+                [326, 17, 1],
+                [325, 18, 1],
+                [324, 19, 1],
+                [323, 20, 1],
+                [310, 21, 1],
+                [311, 21, 1],
+                [312, 21, 1],
+                [313, 21, 1],
+                [314, 21, 1],
+                [315, 21, 1],
+                [316, 21, 1],
+                [317, 21, 1],
+                [318, 21, 1],
+                [319, 21, 1],
+                [320, 21, 1],
+                [321, 21, 1],
+                [322, 21, 1],
+                [296, 21, 1],
+                [297, 21, 1],
+                [298, 21, 1],
+                [299, 21, 1],
+                [300, 21, 1],
+                [301, 21, 1],
+                [302, 21, 1],
+                [303, 21, 1],
+                [304, 21, 1],
+                [305, 21, 1],
+                [306, 21, 1],
+                [292, 25, 1],
+                [293, 25, 1],
+                [294, 25, 1],
+                [295, 25, 1],
+                [296, 25, 1],
+                [297, 25, 1],
+                [298, 25, 1],
+                [299, 25, 1],
+                [300, 25, 1],
+                [301, 25, 1],
+                [302, 25, 1],
+                [303, 25, 1],
+                [304, 25, 1],
+                [305, 25, 1],
+                [306, 25, 1],
+                [307, 25, 1],
+                [308, 25, 1],
+                [309, 25, 1],
+                [310, 25, 1],
+                [311, 25, 1],
+                [312, 25, 1],
+                [313, 25, 1],
+                [314, 25, 1],
+                [315, 25, 1],
+                [316, 25, 1],
+                [317, 25, 1],
+                [318, 25, 1],
+                [319, 25, 1],
+                [320, 25, 1],
+                [321, 25, 1],
+                [322, 25, 1],
+                [323, 25, 1],
+                [324, 25, 1],
+                [1, 24, 1],
+                [2, 24, 1],
+                [3, 24, 1],
+                [4, 24, 1],
+                [5, 24, 1],
+                [6, 24, 1],
+                [7, 24, 1],
+                [8, 24, 1],
+                [9, 24, 1],
+                [10, 24, 1],
+                [11, 24, 1],
+                [12, 24, 1],
+                [13, 24, 1],
+                [14, 24, 1],
+                [15, 24, 1],
+                [16, 24, 1],
+                [17, 24, 1],
+                [18, 24, 1],
+                [19, 24, 1],
+                [20, 24, 1],
+                [21, 24, 1],
+                [1, 25, 1],
+                [2, 25, 1],
+                [3, 25, 1],
+                [4, 25, 1],
+                [5, 25, 1],
+                [6, 25, 1],
+                [7, 25, 1],
+                [8, 25, 1],
+                [9, 25, 1],
+                [10, 25, 1],
+                [11, 25, 1],
+                [12, 25, 1],
+                [13, 25, 1],
+                [14, 25, 1],
+                [15, 25, 1],
+                [16, 25, 1],
+                [17, 25, 1],
+                [18, 25, 1],
+                [19, 25, 1],
+                [20, 25, 1],
+                [21, 25, 1],
+                [325, 24, 1],
+                [326, 24, 1],
+                [327, 24, 1],
+                [325, 25, 1],
+                [326, 25, 1],
+                [327, 25, 1]
+            ]
+        },
+        {
+            "pos": [11055, 35],
+            "size": [1, 11],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 0, 1],
+                [0, 1, 1],
+                [0, 2, 1],
+                [0, 3, 1],
+                [0, 4, 1],
+                [0, 5, 1],
+                [0, 6, 1],
+                [0, 7, 1],
+                [0, 8, 1],
+                [0, 9, 1],
+                [0, 10, 1]
+            ]
+        },
+        {
+            "pos": [-32, -383],
+            "size": [324, 11],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 10, 1],
+                [0, 9, 1],
+                [0, 8, 1],
+                [0, 7, 1],
+                [0, 6, 1],
+                [0, 5, 1],
+                [0, 4, 1],
+                [0, 3, 1],
+                [0, 2, 1],
+                [323, 0, 1]
+            ]
+        },
+        {
+            "pos": [10592, -382],
+            "size": [1, 1],
+            "cell_size": [32, 32],
+            "cells": [[0, 0, 1]]
+        }
+    ],
+    "actors": [
+        {
+            "def": "Player Spawn",
+            "id": 1,
+            "pos": [139, 415],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 1]
+            ]
+        },
+        {
+            "def": "Checkpoint",
+            "id": 7,
+            "multiplayer": true,
+            "pos": [5787, 265],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0],
+                [6, 0]
+            ]
+        },
+        {
+            "def": "Goal Bar",
+            "id": 9,
+            "pos": [10726, 143]
+        },
+        {
+            "def": "Goal Line",
+            "id": 10,
+            "pos": [10556, 384],
+            "scale": [524288, 65536]
+        },
+        {
+            "def": "Goal Line",
+            "id": 10,
+            "pos": [10812, 384],
+            "scale": [524288, 65536]
+        },
+        {
+            "def": "Spring",
+            "id": 63,
+            "pos": [3695, 255]
+        },
+        {
+            "def": "Spring",
+            "id": 63,
+            "pos": [3951, 254]
+        },
+        {
+            "def": "Spring",
+            "id": 63,
+            "pos": [4399, 383]
+        },
+        {
+            "def": "Spring",
+            "id": 63,
+            "pos": [6895, 415]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [96, -95],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [128, -63],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [160, -63],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [192, -63],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [224, -63],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [256, -63],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [288, -63],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [320, -63],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [352, -63],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [384, -63],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [416, -63],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [448, -63],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [480, -63],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1280, 352],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1280, 384],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1280, 416],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1376, 320],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1408, 320],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1440, 320],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1472, 320],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1504, 320],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1536, 320],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1568, 320],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1600, 320],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1632, 320],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1664, 320],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1472, 96],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1472, 128],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1472, 160],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1472, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1504, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1536, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1568, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1600, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1632, 192],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1952, 320],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [1984, 320],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Coin Block",
+            "id": 24,
+            "pos": [1728, 256],
+            "values": [
+                [0, 1],
+                [1, 21]
+            ],
+            "flags": 32
+        },
+        {
+            "def": "Coin Block",
+            "id": 24,
+            "pos": [1760, 256],
+            "values": [
+                [0, 1],
+                [1, 21]
+            ],
+            "flags": 32
+        },
+        {
+            "def": "Super Mushroom",
+            "id": 27,
+            "pos": [335, -64],
+            "vel": [131072, 0],
+            "sprout": 32
+        },
+        {
+            "def": "Super Mushroom",
+            "id": 27,
+            "pos": [1551, 191],
+            "vel": [131072, 0],
+            "sprout": 32
+        },
+        {
+            "def": "Super Mushroom",
+            "id": 27,
+            "pos": [1583, 191],
+            "vel": [131072, 0],
+            "sprout": 32
+        },
+        {
+            "def": "Super Mushroom",
+            "id": 27,
+            "pos": [1615, 191],
+            "vel": [131072, 0],
+            "sprout": 32
+        },
+        {
+            "def": "Super Mushroom",
+            "id": 27,
+            "pos": [5839, 383],
+            "vel": [131072, 0],
+            "sprout": 32
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [2388, 316],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [2708, 253],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [3092, 381],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [3508, 350],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [3796, 271],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [3860, 271],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [4311, 411],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [7060, 431],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [7124, 431],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [7188, 431],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [7252, 431],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [7316, 431],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [7774, 409],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [7838, 409],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [7902, 409],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [7966, 409],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [8030, 409],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [8480, 367],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [8544, 367],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [8608, 367],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [8672, 367],
+            "flags": 4
+        },
+        {
+            "def": "Clone 3A",
+            "id": 116,
+            "pos": [8736, 367],
+            "flags": 4
+        },
+        {
+            "def": "Big Clone",
+            "id": 111,
+            "pos": [1461, 317],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Big Clone",
+            "id": 111,
+            "pos": [1589, 317],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Big Clone",
+            "id": 111,
+            "pos": [4254, 411],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Big Clone",
+            "id": 111,
+            "pos": [4747, 314],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Big Clone",
+            "id": 111,
+            "pos": [5226, 251],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Big Clone",
+            "id": 111,
+            "pos": [9652, 319],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Big Clone",
+            "id": 111,
+            "pos": [9525, 447],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Coder Clone",
+            "id": 112,
+            "pos": [1999, 317],
+            "flags": 4
+        },
+        {
+            "def": "Coder Clone",
+            "id": 112,
+            "pos": [10503, 93],
+            "flags": 4
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [64, 128],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [384, 128],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [544, 224],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [894, 103],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [1247, 148],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [1928, 100],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [2399, 160],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [2857, 75],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [3288, 129],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [3616, 88],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [4177, 175],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [4486, 124],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [4956, 83],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [5041, 327],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [5561, 140],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [5798, 106],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [6069, 220],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [6334, 101],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Cloud Dark",
+            "id": 18,
+            "pos": [10816, 123],
+            "values": [[0, 1]]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [384, 388]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [10400, 388]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [1184, 256],
+            "values": [[1, 30]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [1216, 256],
+            "values": [[1, 30]]
+        },
+        {
+            "def": "Brick Block",
+            "id": 24,
+            "pos": [4384, 64],
+            "values": [
+                [0, 1],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [4352, 64],
+            "values": [[1, 33]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [5056, 64],
+            "values": [[1, 33]]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1408, 0]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1440, 0]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1472, 0]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1504, 0]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1536, 0]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1568, 0]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1600, 0]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [1632, 0]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [2624, 96]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [2656, 96]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [2688, 96]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [2720, 96]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [2752, 96]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3360, 192]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3392, 192]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3424, 192]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3456, 192]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3488, 192]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3680, 96]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3680, 64]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3680, 32]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3680, 1]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3680, -31]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3680, -63]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3680, -95]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3936, 96]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3936, 64]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3936, 32]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3936, 1]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3936, -31]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3936, -63]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [3936, -95]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [4128, 192]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [4128, 160]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [4128, 128]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [4128, 96]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [4128, 65]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [4128, 33]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [4128, 1]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [6880, 33]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [6880, 64]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [6880, 96]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [6880, 128]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [7648, 192]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [8352, 160]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9056, 128]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9088, 128]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9120, 128]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9152, 128]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9184, 128]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9216, 128]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9728, 256]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9792, 256]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9856, 256]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9920, 256]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9984, 256]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10048, 256]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10112, 256]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10176, 256]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10240, 256]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10240, 384]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10176, 384]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10112, 384]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10048, 384]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9984, 384]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9920, 384]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9856, 384]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9792, 384]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [9728, 384]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10336, -31]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10368, -31]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10400, -31]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10432, -31]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10464, -31]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10496, -31]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10528, -31]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10560, -31]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10336, -63]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10368, -63]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10400, -63]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10432, -63]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10464, -63]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10496, -63]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10528, -63]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10560, -63]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10336, -95]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10368, -95]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10400, -95]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10432, -95]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10464, -95]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10496, -95]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10528, -95]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10560, -95]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10336, -127]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10368, -127]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10400, -127]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10432, -127]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10464, -127]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10496, -127]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10528, -127]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10560, -127]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10336, -159]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10368, -159]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10400, -159]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10432, -159]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10464, -159]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10496, -159]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10528, -159]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10560, -159]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10336, -191]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10368, -191]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10400, -191]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10432, -191]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10464, -191]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10496, -191]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10528, -191]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [10560, -191]
+        },
+        {
+            "def": "Platform",
+            "id": 11,
+            "pos": [6080, 352],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0]
+            ],
+            "flags": 32
+        },
+        {
+            "def": "Platform",
+            "id": 11,
+            "pos": [6208, 256],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0]
+            ],
+            "flags": 32
+        },
+        {
+            "def": "Platform",
+            "id": 11,
+            "pos": [6304, 160],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0]
+            ],
+            "flags": 32
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "multiplayer": true,
+            "pos": [5120, 224],
+            "scale": [407779, 58254]
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "multiplayer": true,
+            "pos": [4640, 288],
+            "scale": [407779, 58254]
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "multiplayer": true,
+            "pos": [4160, 384],
+            "scale": [407779, 58254]
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "multiplayer": true,
+            "pos": [1920, 160],
+            "scale": [349525, 58254]
+        },
+        {
+            "def": "Big Clone",
+            "id": 111,
+            "multiplayer": true,
+            "pos": [2016, 185],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Big Clone",
+            "id": 111,
+            "multiplayer": true,
+            "pos": [10000, 185],
+            "values": [
+                [0, 66],
+                [1, 30]
+            ]
+        },
+        {
+            "def": "Bro Layer",
+            "id": 65,
+            "multiplayer": true,
+            "pos": [9856, 160],
+            "scale": [466033, 58254]
+        }
+    ]
+}
