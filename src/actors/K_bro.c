@@ -22,6 +22,7 @@ enum {
 };
 
 #define FLG_BRO_ACTIVE CUSTOM_FLAG(0)
+#define FLG_BRO_ALERT CUSTOM_FLAG(1)
 #define FLG_BRO_BOTTOM CUSTOM_FLAG(2)
 #define FLG_BRO_TOP CUSTOM_FLAG(3)
 
@@ -305,6 +306,11 @@ static void tick(GameActor* actor) {
             break;
         }
         }
+    }
+
+    if (ANY_FLAG(actor, FLG_BRO_ALERT) && in_any_view(actor->pos, Int2Fx(-16), VEF_ALL)) {
+        FLAG_OFF(actor, FLG_BRO_ALERT);
+        VAL(actor, BRO_THROW) = 1;
     }
 }
 
