@@ -174,13 +174,13 @@ WorldContext init_world_context(TinyHash world) {
 
             pctx->character = get_peer_number(pid, "character");
             pctx->powerup = get_peer_number(pid, "powerup");
-            pctx->lives = (Sint8)(pctx->lives - get_powerup_cost(pctx->powerup));
+            pctx->lives = (Sint32)(pctx->lives - get_powerup_cost(pctx->powerup));
         }
     } else {
         WorldPlayerContext* pctx = &ctx.players[0];
         pctx->character = CLIENT.character;
         pctx->powerup = CLIENT.powerup;
-        pctx->lives = (Sint8)(pctx->lives - get_powerup_cost(pctx->powerup));
+        pctx->lives = (Sint32)(pctx->lives - get_powerup_cost(pctx->powerup));
     }
 
     return ctx;

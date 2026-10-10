@@ -76,7 +76,7 @@ const char* load_replay(const char* file) {
         SDL_ReadU8(replay_io, &ctx.players[i].xscroll);
         SDL_ReadU8(replay_io, &ctx.players[i].character);
         SDL_ReadU8(replay_io, &ctx.players[i].powerup);
-        SDL_ReadS8(replay_io, &ctx.players[i].lives);
+        SDL_ReadS32LE(replay_io, &ctx.players[i].lives);
         SDL_ReadU8(replay_io, &ctx.players[i].coins);
         SDL_ReadU32LE(replay_io, &ctx.players[i].score);
     }
@@ -112,7 +112,7 @@ void start_replay() {
         SDL_WriteU8(replay_io, ctx->players[i].xscroll);
         SDL_WriteU8(replay_io, ctx->players[i].character);
         SDL_WriteU8(replay_io, ctx->players[i].powerup);
-        SDL_WriteS8(replay_io, ctx->players[i].lives);
+        SDL_WriteS32LE(replay_io, ctx->players[i].lives);
         SDL_WriteU8(replay_io, ctx->players[i].coins);
         SDL_WriteU32LE(replay_io, ctx->players[i].score);
     }

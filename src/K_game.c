@@ -440,7 +440,7 @@ const char* get_powerup_name(PlayerPowerup powerup) {
     }
 }
 
-Sint8 get_powerup_cost(PlayerPowerup powerup) {
+Sint32 get_powerup_cost(PlayerPowerup powerup) {
     switch (powerup) {
     default:
         return 0;
@@ -651,7 +651,7 @@ static void load_level(TinyHash key) {
 
     jval = yyjson_obj_get(root, "time");
     if (yyjson_is_int(jval))
-        game_state->clock = (Sint16)yyjson_get_sint(jval);
+        game_state->clock = (Sint32)yyjson_get_sint(jval);
 
     if (yyjson_get_bool(yyjson_obj_get(root, "hardcore")))
         game_state->flags |= GF_HARDCORE;

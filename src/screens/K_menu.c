@@ -538,7 +538,7 @@ static const char* fmt_lobby_world(size_t idx) {
 static const char* fmt_lobby_powerup(size_t idx) {
     (void)idx;
 
-    const Sint8 cost = get_powerup_cost(CLIENT.powerup);
+    const Sint32 cost = get_powerup_cost(CLIENT.powerup);
     return fmt("%s%s", get_powerup_name(CLIENT.powerup), (cost > 0) ? fmt(" (-%i)", cost) : "");
 }
 

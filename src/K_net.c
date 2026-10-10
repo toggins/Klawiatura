@@ -286,7 +286,7 @@ void net_update() {
             for (PlayerID i = 0; i < ctx.num_players; i++) {
                 read_buffer8(&mbuf, &ctx.players[i].character);
                 read_buffer8(&mbuf, &ctx.players[i].powerup);
-                read_buffer8(&mbuf, (Uint8*)&ctx.players[i].lives);
+                read_buffer32(&mbuf, (Uint32*)&ctx.players[i].lives);
                 read_buffer8(&mbuf, &ctx.players[i].coins);
                 read_buffer32(&mbuf, (Uint32*)&ctx.players[i].score);
             }
@@ -332,7 +332,7 @@ void net_update() {
                 read_buffer8(&mbuf, &ctx.players[i].xscroll);
                 read_buffer8(&mbuf, &ctx.players[i].character);
                 read_buffer8(&mbuf, &ctx.players[i].powerup);
-                read_buffer8(&mbuf, (Uint8*)&ctx.players[i].lives);
+                read_buffer32(&mbuf, (Uint32*)&ctx.players[i].lives);
                 read_buffer8(&mbuf, &ctx.players[i].coins);
                 read_buffer32(&mbuf, (Uint32*)&ctx.players[i].score);
             }
@@ -916,7 +916,7 @@ void spread_world_packet(const WorldContext* ctx) {
     for (PlayerID i = 0; i < ctx->num_players; i++) {
         write_buffer8(&buffer, &ctx->players[i].character);
         write_buffer8(&buffer, &ctx->players[i].powerup);
-        write_buffer8(&buffer, (Uint8*)&ctx->players[i].lives);
+        write_buffer32(&buffer, (Uint32*)&ctx->players[i].lives);
         write_buffer8(&buffer, &ctx->players[i].coins);
         write_buffer32(&buffer, (Uint32*)&ctx->players[i].score);
     }
@@ -941,7 +941,7 @@ void spread_game_packet(const GameContext* ctx) {
         write_buffer8(&buffer, &ctx->players[i].xscroll);
         write_buffer8(&buffer, &ctx->players[i].character);
         write_buffer8(&buffer, &ctx->players[i].powerup);
-        write_buffer8(&buffer, (Uint8*)&ctx->players[i].lives);
+        write_buffer32(&buffer, (Uint32*)&ctx->players[i].lives);
         write_buffer8(&buffer, &ctx->players[i].coins);
         write_buffer32(&buffer, (Uint32*)&ctx->players[i].score);
     }

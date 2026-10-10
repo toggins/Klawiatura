@@ -332,11 +332,11 @@ typedef struct {
 
 typedef struct {
     Bool xscroll;
-    Sint8 lives;
     Uint8 coins;
     PlayerCharacter character;
     PlayerPowerup powerup;
     Uint32 score;
+    Sint32 lives;
 } GamePlayerContext;
 
 typedef struct {
@@ -360,7 +360,6 @@ typedef struct {
     PlayerID id;
     GameInput input, last_input;
 
-    Sint8 lives;
     Uint8 coins;
     PlayerPowerup powerup;
 
@@ -371,6 +370,7 @@ typedef struct {
     FRect bounds;
 
     Uint32 score;
+    Sint32 lives;
 } GamePlayer;
 
 #define ANY_INPUT(player, inp) (((player)->input & (inp)) != 0)
@@ -448,8 +448,8 @@ typedef struct {
     ActorID live_actors, next_actor;
     ActorID grid[GRID_SIZE];
 
-    Sint16 clock;
     Uint16 pswitch;
+    Sint32 clock;
     Uint64 seed;
     Uint64 time;
 
@@ -523,7 +523,7 @@ const char *get_character_name(PlayerCharacter), *get_character_cursor(PlayerCha
     *get_character_voice(PlayerCharacter, PlayerVoice);
 
 const char* get_powerup_name(PlayerPowerup);
-Sint8 get_powerup_cost(PlayerPowerup);
+Sint32 get_powerup_cost(PlayerPowerup);
 
 GameContext empty_game_context(), init_game_context(const struct WorldContext*, TinyHash);
 

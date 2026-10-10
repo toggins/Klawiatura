@@ -14,11 +14,11 @@ typedef struct {
 } World;
 
 typedef struct {
-    Sint8 lives;
     Uint8 coins;
     PlayerCharacter character;
     PlayerPowerup powerup;
     Uint32 score;
+    Sint32 lives;
 } WorldPlayerContext;
 
 typedef struct WorldContext {
