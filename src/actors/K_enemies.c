@@ -152,18 +152,37 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
             dead->vel.y = Fmul(Fsin(dir), Int2Fx(-3));
 
             switch (actor->type) {
-            default:
+            default: {
                 play_state_sound("kick", PLAY_POS, A_ACTOR(actor));
                 break;
-            case ACT_CLONE:
+            }
+
+            case ACT_CLONE: {
                 play_state_sound("vo/clone/a_dead", PLAY_POS, A_ACTOR(actor));
                 break;
-            case ACT_BIG_CLONE:
+            }
+
+            case ACT_BIG_CLONE: {
                 play_state_sound("vo/clone/big_dead", PLAY_POS, A_ACTOR(actor));
                 break;
-            case ACT_CLONE_3A:
+            }
+
+            case ACT_CODER_CLONE: {
+                if (from != NULL && from->type == ACT_CODER_CLONE_RUN) {
+                    // !!! CLIENT-SIDE !!!
+                    play_state_sound(LFMT("vo.clone.coder_hurt"), PLAY_POS, A_ACTOR(actor));
+                    // !!! CLIENT-SIDE !!!
+                } else {
+                    play_state_sound("kick", PLAY_POS, A_ACTOR(actor));
+                }
+
+                break;
+            }
+
+            case ACT_CLONE_3A: {
                 play_state_sound("vo/clone/3a_dead", PLAY_POS, A_ACTOR(actor));
                 break;
+            }
             }
         }
 
