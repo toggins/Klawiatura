@@ -199,6 +199,9 @@ static void load_special(const GameActor* actor) {
 }
 
 static void create(GameActor* actor) {
+    VAL(actor, PLATFORM_MIN_SPEED) = Int2Fx(-3);
+    VAL(actor, PLATFORM_MAX_SPEED) = Int2Fx(3);
+
     actor->depth = Int2Fx(19);
 }
 
@@ -392,9 +395,20 @@ static void collide_turn(GameActor* actor, GameActor* from) {
         if (VAL(from, PLATFORM_MASK) != VAL(actor, PLATFORM_TURN_MASK))
             break;
 
-        if (ANY_FLAG(actor, FLG_PLATFORM_TURN_ADD)) {
-            from->vel.x += actor->vel.x;
-            from->vel.y += actor->vel.y;
+        if (VAL(actor, PLATFORM_TURN_ADD_TIME) > 0) {
+            if (VAL(actor, PLATFORM_TURN_ADD_TIME) <= 1
+                || (gamestate()->time % VAL(actor, PLATFORM_TURN_ADD_TIME)) == 0)
+            {
+                if (actor->vel.x < Fx0 && from->vel.x > VAL(from, PLATFORM_MIN_SPEED))
+                    from->vel.x = Fmax(from->vel.x + actor->vel.x, VAL(from, PLATFORM_MIN_SPEED));
+                else if (actor->vel.x > Fx0 && from->vel.x < VAL(from, PLATFORM_MAX_SPEED))
+                    from->vel.x = Fmin(from->vel.x + actor->vel.x, VAL(from, PLATFORM_MAX_SPEED));
+
+                if (actor->vel.y < Fx0 && from->vel.y > VAL(from, PLATFORM_MIN_SPEED))
+                    from->vel.y = Fmax(from->vel.y + actor->vel.y, VAL(from, PLATFORM_MIN_SPEED));
+                else if (actor->vel.y > Fx0 && from->vel.y < VAL(from, PLATFORM_MAX_SPEED))
+                    from->vel.y = Fmin(from->vel.y + actor->vel.y, VAL(from, PLATFORM_MAX_SPEED));
+            }
         } else {
             from->vel.x = actor->vel.x;
             from->vel.y = actor->vel.y;

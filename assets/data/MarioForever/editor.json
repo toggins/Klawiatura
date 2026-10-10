@@ -1508,6 +1508,18 @@
                 {
                     "name": "Mask",
                     "index": 3
+                },
+                {
+                    "name": "Min Speed",
+                    "index": 4,
+                    "type": "fixed",
+                    "default": -196608
+                },
+                {
+                    "name": "Max Speed",
+                    "index": 5,
+                    "type": "fixed",
+                    "default": 196608
                 }
             ],
             "flags": [
@@ -1538,12 +1550,10 @@
                 {
                     "name": "Set Mask",
                     "index": 3
-                }
-            ],
-            "flags": [
+                },
                 {
-                    "name": "Add",
-                    "index": 5
+                    "name": "Add Every n Ticks",
+                    "index": 4
                 }
             ]
         },
