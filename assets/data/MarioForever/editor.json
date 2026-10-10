@@ -60,6 +60,13 @@
             "scalable": true,
             "tile": [true, true]
         },
+        "Castle Background 3": {
+            "type": "background",
+            "sprite": "backgrounds/castle3",
+            "depth": 190,
+            "scalable": true,
+            "tile": [true, true]
+        },
         "Starland Background": {
             "type": "background",
             "sprite": "backgrounds/starland",
@@ -279,6 +286,17 @@
             "sprite": "tiles/spike/brick",
             "depth": 20,
             "solid": "hurt"
+        },
+        "Brick Back": {
+            "type": "background",
+            "sprite": "tiles/brick/0",
+            "depth": 22,
+            "colors": [
+                [255, 255, 255, 47],
+                [255, 255, 255, 47],
+                [255, 255, 255, 47],
+                [255, 255, 255, 47]
+            ]
         },
         "Bridge Red": {
             "type": "tile",
@@ -2227,6 +2245,12 @@
                     "index": 1,
                     "default": 30
                 }
+            ],
+            "flags": [
+                {
+                    "name": "Throw On Sight",
+                    "index": 6
+                }
             ]
         },
         "Bro Layer": {
@@ -2465,6 +2489,12 @@
                     "index": 1,
                     "default": 30
                 }
+            ],
+            "flags": [
+                {
+                    "name": "Throw On Sight",
+                    "index": 6
+                }
             ]
         },
         "Coder Clone": {
@@ -2490,6 +2520,11 @@
                     "default": true
                 }
             ]
+        },
+        "Jaws Clone Head": {
+            "type": "actor",
+            "id": 117,
+            "sprite": "enemies/clone/jaws/head/0"
         },
         "Electric Coral": {
             "type": "actor",
@@ -2575,7 +2610,7 @@
                 },
                 {
                     "name": "Brick",
-                    "items": ["Brick", "Brick 2", "Brick Small", "Brick Spike"]
+                    "items": ["Brick", "Brick 2", "Brick Small", "Brick Spike", "Brick Back"]
                 },
                 {
                     "name": "Lava Glow",
