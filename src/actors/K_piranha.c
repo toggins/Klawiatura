@@ -360,3 +360,33 @@ const ActorTable TAB_JAWS_CLONE = {
     .draw = draw_jaws_clone,
     .collide = collide,
 };
+
+/* ===============
+   JAWS CLONE HEAD
+   =============== */
+
+static void load_jaws_clone_head() {
+    load_sprite_num("enemies/clone/jaws/head/%u", 2, AKL_NEVER);
+}
+
+static void create_jaws_clone_head(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-12);
+    actor->box.start.y = Int2Fx(-26);
+    actor->box.end.x = Int2Fx(13);
+    actor->box.end.y = Fx1;
+
+    actor->depth = Int2Fx(3);
+}
+
+static void draw_jaws_clone_head(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("enemies/clone/jaws/head/%i", (VAL(actor, PIRANHA_FRAME) / 50) % 2), FALSE);
+}
+
+const ActorTable TAB_JAWS_CLONE_HEAD = {
+    .load = load_jaws_clone_head,
+    .create = create_jaws_clone_head,
+    .tick = tick_head,
+    .draw = draw_jaws_clone_head,
+    .collide = collide_head,
+};

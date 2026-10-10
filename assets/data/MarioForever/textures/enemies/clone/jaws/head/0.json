@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/clone/jaws",
+    "size": [25, 27],
+    "offset": [12, 26],
+    "uvs": [71, 1, 96, 28]
+}
