@@ -98,6 +98,7 @@ static void tick(GameActor* actor) {
 
     const Fixed lend = level_info->size.x - Int2Fx(1000);
 
+    Fixed nscore = FxUpper;
     const GameActor* nearest = NULL;
     for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
         const GamePlayer* player = get_player(i);
@@ -105,10 +106,13 @@ static void tick(GameActor* actor) {
             continue;
 
         const GameActor* pawn = get_actor(player->actor);
-        if (pawn != NULL && pawn->type == ACT_PLAYER
-            && (nearest == NULL || nearest->pos.x >= lend || nearest->pos.x < pawn->pos.x))
-        {
+        if (pawn == NULL || pawn->type != ACT_PLAYER)
+            continue;
+
+        const Fixed cscore = Vdist(actor->pos, pawn->pos);
+        if (nearest == NULL || nearest->pos.x >= lend || nscore > cscore) {
             nearest = pawn;
+            nscore = cscore;
         }
     }
 
