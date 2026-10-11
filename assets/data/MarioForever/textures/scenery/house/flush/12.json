@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/house",
+    "size": [6, 97],
+    "offset": [-11, 0],
+    "uvs": [104, 40, 110, 137]
+}

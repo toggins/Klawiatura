@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/clone/samochod",
+    "size": [116, 64],
+    "offset": [20, 20],
+    "uvs": [119, 1, 235, 65]
+}

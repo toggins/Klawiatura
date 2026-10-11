@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/house/clone/computer",
+    "size": [24, 16],
+    "offset": [24, -16],
+    "uvs": [190, 126, 214, 142]
+}

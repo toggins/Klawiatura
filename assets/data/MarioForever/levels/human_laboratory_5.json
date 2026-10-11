@@ -1,0 +1,4650 @@
+{
+    "tracks": [{ "track": "smw/overworld" }],
+    "size": [3600, 480],
+    "bounds": [0, 0, 3600, 480],
+    "backdrops": [
+        {
+            "def": "Grass Top Left",
+            "sprite": "tiles/grass/0",
+            "pos": [0, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [32, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [64, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [96, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [128, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [160, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [192, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [224, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [256, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [288, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [320, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [352, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [384, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [416, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [448, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [480, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [512, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [544, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [576, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [608, 416, 20]
+        },
+        {
+            "def": "Grass Top Right",
+            "sprite": "tiles/grass/2",
+            "pos": [640, 416, 20]
+        },
+        {
+            "def": "Grass Left",
+            "sprite": "tiles/grass/3",
+            "pos": [0, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [32, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [64, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [96, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [128, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [160, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [192, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [224, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [256, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [288, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [320, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [352, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [384, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [416, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [448, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [480, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [512, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [544, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [576, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [608, 448, 20]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [640, 448, 20]
+        },
+        {
+            "def": "Grass Top Left",
+            "sprite": "tiles/grass/0",
+            "pos": [2464, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2496, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2528, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2560, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2592, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2624, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2656, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2688, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2720, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2752, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2784, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2816, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2848, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2880, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [2912, 416, 20]
+        },
+        {
+            "def": "Grass Top Right",
+            "sprite": "tiles/grass/2",
+            "pos": [2944, 416, 20]
+        },
+        {
+            "def": "Grass Left",
+            "sprite": "tiles/grass/3",
+            "pos": [2464, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2496, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2528, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2560, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2592, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2624, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2656, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2688, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2720, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2752, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2784, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2816, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2848, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2880, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [2912, 448, 20]
+        },
+        {
+            "def": "Grass Right",
+            "sprite": "tiles/grass/5",
+            "pos": [2944, 448, 20]
+        },
+        {
+            "def": "Grass Top Left",
+            "sprite": "tiles/grass/0",
+            "pos": [3040, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3072, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3117, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3104, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3149, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3181, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3213, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3245, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3277, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3309, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3341, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3373, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3405, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3437, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3469, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3501, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3533, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3565, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3597, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3629, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3661, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3693, 416, 20]
+        },
+        {
+            "def": "Grass Top",
+            "sprite": "tiles/grass/1",
+            "pos": [3725, 416, 20]
+        },
+        {
+            "def": "Grass Left",
+            "sprite": "tiles/grass/3",
+            "pos": [3040, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3072, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3117, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3104, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3149, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3181, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3213, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3245, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3277, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3309, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3341, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3373, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3405, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3437, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3469, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3501, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3533, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3565, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3597, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3629, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3661, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3693, 448, 20]
+        },
+        {
+            "def": "Grass Middle",
+            "sprite": "tiles/grass/4",
+            "pos": [3725, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 0, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -63, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -95, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -127, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -159, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -191, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -223, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -255, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -287, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -319, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [3648, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [650, -173, 20],
+            "size": [31, 382],
+            "colors": [
+                [255, 255, 255, 0],
+                [255, 255, 255, 0],
+                [255, 255, 255, 0],
+                [255, 255, 255, 0]
+            ]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [2049, -15, 20],
+            "size": [31, 382],
+            "colors": [
+                [255, 255, 255, 0],
+                [255, 255, 255, 0],
+                [255, 255, 255, 0],
+                [255, 255, 255, 0]
+            ]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [160, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [192, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [224, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [256, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [256, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [256, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [288, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [320, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [320, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [320, 384, 20]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [64, 384, 60]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [3241, 384, 60]
+        },
+        {
+            "def": "Goal",
+            "sprite": "markers/goal",
+            "pos": [3355, 128, 23]
+        },
+        {
+            "def": "Goal Mark",
+            "sprite": "markers/goal/mark",
+            "pos": [3195, 384, 23]
+        },
+        {
+            "def": "Tree Big",
+            "sprite": "scenery/tree/big",
+            "pos": [448, 318, 32]
+        },
+        {
+            "def": "Tree Small",
+            "sprite": "scenery/tree/small",
+            "pos": [2944, 352, 32]
+        },
+        {
+            "def": "Hill",
+            "sprite": "scenery/hill",
+            "pos": [3040, 352, 61]
+        },
+        {
+            "def": "Hill",
+            "sprite": "scenery/hill",
+            "pos": [3296, 288, 61]
+        },
+        {
+            "def": "Tree Small",
+            "sprite": "scenery/tree/small",
+            "pos": [3616, 352, 32]
+        },
+        {
+            "def": "Gradient Background",
+            "pos": [0, 0, 200],
+            "size": [3732, 551],
+            "colors": [
+                [0, 111, 223, 255],
+                [0, 111, 223, 255],
+                [242, 253, 252, 255],
+                [242, 253, 252, 255]
+            ]
+        },
+        {
+            "def": "House of Clones Sign",
+            "sprite": "scenery/sign/house_of_clones",
+            "pos": [512, 269, 30]
+        },
+        {
+            "def": "House of Clones Sign",
+            "sprite": "scenery/sign/house_of_clones",
+            "pos": [2432, 269, 30]
+        },
+        {
+            "def": "Human Laboratory End Sign",
+            "sprite": "scenery/sign/human_laboratory_end",
+            "pos": [3145, -1, 30]
+        },
+        {
+            "def": "Asphalt Left",
+            "sprite": "tiles/asphalt/0",
+            "pos": [672, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [704, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [736, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [768, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [800, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [832, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [864, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [896, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [928, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [960, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [992, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1024, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1056, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1088, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1120, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1152, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1184, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1216, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1248, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1280, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1312, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1344, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1376, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1408, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1440, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1472, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1504, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1536, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1568, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1600, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1632, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1664, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1696, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1728, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1760, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1792, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1824, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1856, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1888, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1920, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1952, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [1984, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2016, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2048, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2080, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2112, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2144, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2176, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2208, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2240, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2272, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2304, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2336, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2368, 448, 20]
+        },
+        {
+            "def": "Asphalt Middle",
+            "sprite": "tiles/asphalt/1",
+            "pos": [2400, 448, 20]
+        },
+        {
+            "def": "Asphalt Right",
+            "sprite": "tiles/asphalt/2",
+            "pos": [2432, 448, 20]
+        },
+        {
+            "def": "Asphalt Left",
+            "sprite": "tiles/asphalt/0",
+            "pos": [2976, 416, 20]
+        },
+        {
+            "def": "Asphalt Right",
+            "sprite": "tiles/asphalt/2",
+            "pos": [3008, 416, 20]
+        },
+        {
+            "def": "House Left",
+            "sprite": "tiles/house/h/0",
+            "pos": [1152, 224, 20]
+        },
+        {
+            "def": "House Right",
+            "sprite": "tiles/house/h/2",
+            "pos": [1184, 224, 20]
+        },
+        {
+            "def": "House Middle Alt",
+            "sprite": "tiles/house/h/1a",
+            "pos": [736, 160, 20]
+        },
+        {
+            "def": "House Middle Alt",
+            "sprite": "tiles/house/h/1a",
+            "pos": [768, 160, 20]
+        },
+        {
+            "def": "House Middle Alt",
+            "sprite": "tiles/house/h/1a",
+            "pos": [800, 160, 20]
+        },
+        {
+            "def": "House Middle Alt",
+            "sprite": "tiles/house/h/1a",
+            "pos": [832, 160, 20]
+        },
+        {
+            "def": "House Middle Alt",
+            "sprite": "tiles/house/h/1a",
+            "pos": [864, 160, 20]
+        },
+        {
+            "def": "House Middle Alt",
+            "sprite": "tiles/house/h/1a",
+            "pos": [896, 160, 20]
+        },
+        {
+            "def": "House Middle Alt",
+            "sprite": "tiles/house/h/1a",
+            "pos": [928, 160, 20]
+        },
+        {
+            "def": "House Middle Alt",
+            "sprite": "tiles/house/h/1a",
+            "pos": [960, 160, 20]
+        },
+        {
+            "def": "House Middle Alt",
+            "sprite": "tiles/house/h/1a",
+            "pos": [992, 160, 20]
+        },
+        {
+            "def": "House Right",
+            "sprite": "tiles/house/h/2",
+            "pos": [1024, 160, 20]
+        },
+        {
+            "def": "House Right",
+            "sprite": "tiles/house/h/2",
+            "pos": [1056, 320, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1024, 320, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [992, 320, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [960, 320, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [928, 320, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [896, 320, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [864, 320, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [832, 320, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [800, 320, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [768, 320, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [736, 320, 20]
+        },
+        {
+            "def": "House Left",
+            "sprite": "tiles/house/h/0",
+            "pos": [1248, 224, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1280, 224, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1312, 224, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1344, 224, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1376, 224, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1408, 224, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1440, 224, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1472, 224, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1504, 224, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1536, 224, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1568, 224, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1600, 224, 20]
+        },
+        {
+            "def": "House Left",
+            "sprite": "tiles/house/h/0",
+            "pos": [1409, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1441, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1473, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1505, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1537, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1569, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1601, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1633, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1665, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1697, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1729, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1761, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1793, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1825, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1857, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1889, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1921, 352, 20]
+        },
+        {
+            "def": "House Middle",
+            "sprite": "tiles/house/h/1",
+            "pos": [1953, 352, 20]
+        },
+        {
+            "def": "House Middle Left Right",
+            "sprite": "tiles/house/v/lr",
+            "pos": [704, 160, 20]
+        },
+        {
+            "def": "House Middle 2",
+            "sprite": "tiles/house/v/0",
+            "pos": [704, 192, 20]
+        },
+        {
+            "def": "House Middle 2",
+            "sprite": "tiles/house/v/0",
+            "pos": [704, 224, 20]
+        },
+        {
+            "def": "House Middle 2",
+            "sprite": "tiles/house/v/0",
+            "pos": [704, 256, 20]
+        },
+        {
+            "def": "House Middle 2",
+            "sprite": "tiles/house/v/0",
+            "pos": [704, 288, 20]
+        },
+        {
+            "def": "House Middle 2",
+            "sprite": "tiles/house/v/0",
+            "pos": [704, 320, 20]
+        },
+        {
+            "def": "House Middle Right",
+            "sprite": "tiles/house/v/r",
+            "pos": [1632, 160, 20]
+        },
+        {
+            "def": "House Middle 2",
+            "sprite": "tiles/house/v/0",
+            "pos": [1632, 192, 20]
+        },
+        {
+            "def": "House Bottom",
+            "sprite": "tiles/house/v/1",
+            "pos": [1632, 224, 20]
+        },
+        {
+            "def": "House Middle 2",
+            "sprite": "tiles/house/v/0",
+            "pos": [1793, 254, 20]
+        },
+        {
+            "def": "House Middle 2",
+            "sprite": "tiles/house/v/0",
+            "pos": [704, 352, 20]
+        },
+        {
+            "def": "House Bottom",
+            "sprite": "tiles/house/v/1",
+            "pos": [1985, 352, 20]
+        },
+        {
+            "def": "House Middle Right",
+            "sprite": "tiles/house/v/r",
+            "pos": [1985, 320, 20]
+        },
+        {
+            "def": "House Middle 2",
+            "sprite": "tiles/house/v/0",
+            "pos": [1793, 318, 20]
+        },
+        {
+            "def": "House Roof Left",
+            "sprite": "tiles/house/roof/left",
+            "pos": [1120, 0, 20]
+        },
+        {
+            "def": "House Roof Left",
+            "sprite": "tiles/house/roof/left",
+            "pos": [1088, 0, 20]
+        },
+        {
+            "def": "House Roof Left",
+            "sprite": "tiles/house/roof/left",
+            "pos": [1056, 0, 20]
+        },
+        {
+            "def": "House Roof Left",
+            "sprite": "tiles/house/roof/left",
+            "pos": [1024, 0, 20]
+        },
+        {
+            "def": "House Roof Left",
+            "sprite": "tiles/house/roof/left",
+            "pos": [992, 0, 20]
+        },
+        {
+            "def": "House Roof Left",
+            "sprite": "tiles/house/roof/left",
+            "pos": [960, 0, 20]
+        },
+        {
+            "def": "House Roof Left",
+            "sprite": "tiles/house/roof/left",
+            "pos": [928, 0, 20]
+        },
+        {
+            "def": "House Roof Left",
+            "sprite": "tiles/house/roof/left",
+            "pos": [896, 0, 20]
+        },
+        {
+            "def": "House Roof Left",
+            "sprite": "tiles/house/roof/left",
+            "pos": [864, 0, 20]
+        },
+        {
+            "def": "House Roof Slope Left",
+            "sprite": "tiles/house/roof/left/slope",
+            "pos": [832, 0, 20]
+        },
+        {
+            "def": "House Roof Corner Left",
+            "sprite": "tiles/house/roof/left/corner",
+            "pos": [800, 0, 20]
+        },
+        {
+            "def": "House Roof Bottom Left",
+            "sprite": "tiles/house/roof/left/bottom",
+            "pos": [832, 32, 20]
+        },
+        {
+            "def": "House Roof Bottom Left",
+            "sprite": "tiles/house/roof/left/bottom",
+            "pos": [800, 64, 20]
+        },
+        {
+            "def": "House Roof Bottom Left",
+            "sprite": "tiles/house/roof/left/bottom",
+            "pos": [768, 96, 20]
+        },
+        {
+            "def": "House Roof Bottom Left",
+            "sprite": "tiles/house/roof/left/bottom",
+            "pos": [736, 128, 20]
+        },
+        {
+            "def": "House Roof Slope Left 2",
+            "sprite": "tiles/house/roof/left/slope2",
+            "pos": [800, 32, 20]
+        },
+        {
+            "def": "House Roof Slope Left 2",
+            "sprite": "tiles/house/roof/left/slope2",
+            "pos": [768, 64, 20]
+        },
+        {
+            "def": "House Roof Slope Left 2",
+            "sprite": "tiles/house/roof/left/slope2",
+            "pos": [736, 96, 20]
+        },
+        {
+            "def": "House Roof Slope Left 2",
+            "sprite": "tiles/house/roof/left/slope2",
+            "pos": [704, 128, 20]
+        },
+        {
+            "def": "House Roof Corner Left",
+            "sprite": "tiles/house/roof/left/corner",
+            "pos": [768, 32, 20]
+        },
+        {
+            "def": "House Roof Corner Left",
+            "sprite": "tiles/house/roof/left/corner",
+            "pos": [736, 64, 20]
+        },
+        {
+            "def": "House Roof Corner Left",
+            "sprite": "tiles/house/roof/left/corner",
+            "pos": [704, 96, 20]
+        },
+        {
+            "def": "House Roof Corner Left",
+            "sprite": "tiles/house/roof/left/corner",
+            "pos": [672, 128, 20]
+        },
+        {
+            "def": "House Roof Slope Left 3",
+            "sprite": "tiles/house/roof/left/slope3",
+            "pos": [672, 160, 20]
+        },
+        {
+            "def": "House Roof Ledge Left",
+            "sprite": "tiles/house/roof/left/ledge",
+            "pos": [650, 182, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1152, 0, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1184, 0, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1216, 0, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1248, 0, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1280, 0, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1312, 0, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1344, 0, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1376, 0, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1408, 0, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1440, 0, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1472, 0, 20]
+        },
+        {
+            "def": "House Roof Slope Right",
+            "sprite": "tiles/house/roof/right/slope",
+            "pos": [1504, 0, 20]
+        },
+        {
+            "def": "House Roof Corner Right",
+            "sprite": "tiles/house/roof/right/corner",
+            "pos": [1536, 0, 20]
+        },
+        {
+            "def": "House Roof Corner Right",
+            "sprite": "tiles/house/roof/right/corner",
+            "pos": [1568, 32, 20]
+        },
+        {
+            "def": "House Roof Corner Right",
+            "sprite": "tiles/house/roof/right/corner",
+            "pos": [1600, 64, 20]
+        },
+        {
+            "def": "House Roof Corner Right",
+            "sprite": "tiles/house/roof/right/corner",
+            "pos": [1632, 96, 20]
+        },
+        {
+            "def": "House Roof Corner Right",
+            "sprite": "tiles/house/roof/right/corner",
+            "pos": [1664, 128, 20]
+        },
+        {
+            "def": "House Roof Bottom Right",
+            "sprite": "tiles/house/roof/right/bottom",
+            "pos": [1504, 32, 20]
+        },
+        {
+            "def": "House Roof Bottom Right",
+            "sprite": "tiles/house/roof/right/bottom",
+            "pos": [1536, 64, 20]
+        },
+        {
+            "def": "House Roof Bottom Right",
+            "sprite": "tiles/house/roof/right/bottom",
+            "pos": [1568, 96, 20]
+        },
+        {
+            "def": "House Roof Bottom Right",
+            "sprite": "tiles/house/roof/right/bottom",
+            "pos": [1600, 128, 20]
+        },
+        {
+            "def": "House Roof Slope Right 2",
+            "sprite": "tiles/house/roof/right/slope2",
+            "pos": [1536, 32, 20]
+        },
+        {
+            "def": "House Roof Slope Right 2",
+            "sprite": "tiles/house/roof/right/slope2",
+            "pos": [1568, 64, 20]
+        },
+        {
+            "def": "House Roof Slope Right 2",
+            "sprite": "tiles/house/roof/right/slope2",
+            "pos": [1600, 96, 20]
+        },
+        {
+            "def": "House Roof Slope Right 2",
+            "sprite": "tiles/house/roof/right/slope2",
+            "pos": [1632, 128, 20]
+        },
+        {
+            "def": "House Roof Slope Right 3",
+            "sprite": "tiles/house/roof/right/slope3",
+            "pos": [1664, 160, 20]
+        },
+        {
+            "def": "House Roof Ledge Right",
+            "sprite": "tiles/house/roof/right/ledge",
+            "pos": [1681, 177, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1664, 224, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1696, 224, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1728, 224, 20]
+        },
+        {
+            "def": "House Middle 2",
+            "sprite": "tiles/house/v/0",
+            "pos": [1793, 286, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1760, 224, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1792, 224, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1824, 224, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1856, 224, 20]
+        },
+        {
+            "def": "House Roof Right",
+            "sprite": "tiles/house/roof/right",
+            "pos": [1888, 224, 20]
+        },
+        {
+            "def": "House Roof Slope Right",
+            "sprite": "tiles/house/roof/right/slope",
+            "pos": [1920, 224, 20]
+        },
+        {
+            "def": "House Roof Corner Right",
+            "sprite": "tiles/house/roof/right/corner",
+            "pos": [1952, 224, 20]
+        },
+        {
+            "def": "House Roof Corner Right",
+            "sprite": "tiles/house/roof/right/corner",
+            "pos": [1984, 256, 20]
+        },
+        {
+            "def": "House Roof Bottom Right",
+            "sprite": "tiles/house/roof/right/bottom",
+            "pos": [1920, 256, 20]
+        },
+        {
+            "def": "House Roof Bottom Right",
+            "sprite": "tiles/house/roof/right/bottom",
+            "pos": [1952, 288, 20]
+        },
+        {
+            "def": "House Roof Slope Right 2",
+            "sprite": "tiles/house/roof/right/slope2",
+            "pos": [1952, 256, 20]
+        },
+        {
+            "def": "House Roof Slope Right 2",
+            "sprite": "tiles/house/roof/right/slope2",
+            "pos": [1984, 288, 20]
+        },
+        {
+            "def": "House Roof Slope Right 3",
+            "sprite": "tiles/house/roof/right/slope3",
+            "pos": [2017, 320, 20]
+        },
+        {
+            "def": "House Roof Ledge Right",
+            "sprite": "tiles/house/roof/right/ledge",
+            "pos": [2048, 351, 20]
+        },
+        {
+            "def": "House Roof Corner Right",
+            "sprite": "tiles/house/roof/right/corner",
+            "pos": [2049, 320, 20]
+        },
+        {
+            "def": "House Roof Corner Right",
+            "sprite": "tiles/house/roof/right/corner",
+            "pos": [2016, 288, 20]
+        },
+        {
+            "def": "House Roof Corner Right",
+            "sprite": "tiles/house/roof/right/corner",
+            "pos": [2017, 288, 20]
+        },
+        {
+            "def": "House Entrance Top",
+            "sprite": "tiles/house/entrance/0",
+            "pos": [1985, 384, 25]
+        },
+        {
+            "def": "House Entrance",
+            "sprite": "tiles/house/entrance/1",
+            "pos": [1985, 416, 25]
+        },
+        {
+            "def": "House Entrance Top",
+            "sprite": "tiles/house/entrance/0",
+            "pos": [704, 384, 25]
+        },
+        {
+            "def": "House Entrance",
+            "sprite": "tiles/house/entrance/1",
+            "pos": [704, 416, 25]
+        },
+        {
+            "def": "House Wall Top Left",
+            "sprite": "tiles/house/wall/0",
+            "pos": [864, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [896, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [928, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [960, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [992, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1024, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1056, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1088, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1120, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1152, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1184, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1216, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1248, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1280, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1312, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1344, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1376, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1408, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1440, 32, 30]
+        },
+        {
+            "def": "House Wall Top Right",
+            "sprite": "tiles/house/wall/2",
+            "pos": [1472, 32, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [736, 192, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [768, 192, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [800, 192, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [832, 192, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [864, 192, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [896, 192, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [928, 192, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [960, 192, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [992, 192, 30]
+        },
+        {
+            "def": "House Wall Top Right",
+            "sprite": "tiles/house/wall/2",
+            "pos": [1024, 192, 30]
+        },
+        {
+            "def": "House Wall Top Left",
+            "sprite": "tiles/house/wall/0",
+            "pos": [1152, 256, 30]
+        },
+        {
+            "def": "House Wall Top Right",
+            "sprite": "tiles/house/wall/2",
+            "pos": [1184, 256, 30]
+        },
+        {
+            "def": "House Wall Top Left",
+            "sprite": "tiles/house/wall/0",
+            "pos": [1248, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1280, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1312, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1344, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1376, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1408, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1440, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1472, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1504, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1536, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1568, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1600, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1632, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1664, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1696, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1728, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1760, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1792, 256, 30]
+        },
+        {
+            "def": "House Wall Top Left",
+            "sprite": "tiles/house/wall/0",
+            "pos": [1824, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1856, 256, 30]
+        },
+        {
+            "def": "House Wall Top Right",
+            "sprite": "tiles/house/wall/2",
+            "pos": [1888, 256, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [736, 352, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [768, 352, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [800, 352, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [832, 352, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [864, 352, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [896, 352, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [928, 352, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [960, 352, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [992, 352, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1024, 352, 30]
+        },
+        {
+            "def": "House Wall Top Right",
+            "sprite": "tiles/house/wall/2",
+            "pos": [1056, 352, 30]
+        },
+        {
+            "def": "House Wall Top Left",
+            "sprite": "tiles/house/wall/0",
+            "pos": [1410, 384, 29]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1442, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1474, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1506, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1538, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1570, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1602, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1634, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1666, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1698, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1730, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1762, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1794, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1826, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1858, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1890, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1922, 384, 30]
+        },
+        {
+            "def": "House Wall Top",
+            "sprite": "tiles/house/wall/1",
+            "pos": [1954, 384, 30]
+        },
+        {
+            "def": "House Wall Crack",
+            "sprite": "tiles/house/wall/crack",
+            "pos": [1180, 95, 30]
+        },
+        {
+            "def": "House Wall Crack",
+            "sprite": "tiles/house/wall/crack",
+            "pos": [1547, 144, 30]
+        },
+        {
+            "def": "House Wall Crack",
+            "sprite": "tiles/house/wall/crack",
+            "pos": [898, 224, 30]
+        },
+        {
+            "def": "House Wall Crack",
+            "sprite": "tiles/house/wall/crack",
+            "pos": [1218, 291, 30]
+        },
+        {
+            "def": "House Wall Crack",
+            "sprite": "tiles/house/wall/crack",
+            "pos": [1613, 291, 30]
+        },
+        {
+            "def": "House Wall Crack",
+            "sprite": "tiles/house/wall/crack",
+            "pos": [1378, 323, 30]
+        },
+        {
+            "def": "House Wall Crack",
+            "sprite": "tiles/house/wall/crack",
+            "pos": [1315, 368, 30]
+        },
+        {
+            "def": "House Wall Crack",
+            "sprite": "tiles/house/wall/crack",
+            "pos": [1154, 419, 29]
+        },
+        {
+            "def": "House Wall Crack",
+            "sprite": "tiles/house/wall/crack",
+            "pos": [1026, 387, 30]
+        },
+        {
+            "def": "House Wall Mario Sux",
+            "sprite": "tiles/house/wall/mario_sux",
+            "pos": [1064, 67, 30]
+        },
+        {
+            "def": "House Wall WC",
+            "sprite": "tiles/house/wall/wc",
+            "pos": [1729, 288, 30]
+        },
+        {
+            "def": "House Wall Window",
+            "sprite": "tiles/house/wall/window",
+            "pos": [1055, 387, 30]
+        },
+        {
+            "def": "House Wall Window",
+            "sprite": "tiles/house/wall/window",
+            "pos": [779, 259, 30]
+        },
+        {
+            "def": "House Wall Window",
+            "sprite": "tiles/house/wall/window",
+            "pos": [865, 68, 30]
+        },
+        {
+            "def": "House Wall Window",
+            "sprite": "tiles/house/wall/window",
+            "pos": [1233, 162, 30]
+        },
+        {
+            "def": "House Wall Door",
+            "sprite": "tiles/house/wall/door",
+            "pos": [1248, 384, 30]
+        },
+        {
+            "def": "House Wall Door",
+            "sprite": "tiles/house/wall/door",
+            "pos": [1184, 160, 30]
+        },
+        {
+            "def": "House Wall Door",
+            "sprite": "tiles/house/wall/door",
+            "pos": [1312, 160, 30]
+        },
+        {
+            "def": "House Wall Door",
+            "sprite": "tiles/house/wall/door",
+            "pos": [1504, 288, 30]
+        },
+        {
+            "def": "House Wall Door",
+            "sprite": "tiles/house/wall/door",
+            "pos": [1568, 288, 30]
+        },
+        {
+            "def": "House Wall Stairs Left",
+            "sprite": "tiles/house/wall/stairs_left",
+            "pos": [1120, 224, 30]
+        },
+        {
+            "def": "House Wall Stairs Left",
+            "sprite": "tiles/house/wall/stairs_left",
+            "pos": [1088, 256, 30]
+        },
+        {
+            "def": "House Wall Stairs Left",
+            "sprite": "tiles/house/wall/stairs_left",
+            "pos": [1056, 288, 30]
+        },
+        {
+            "def": "House Wall Stairs Right",
+            "sprite": "tiles/house/wall/stairs_right",
+            "pos": [1088, 320, 30]
+        },
+        {
+            "def": "House Wall Stairs Right",
+            "sprite": "tiles/house/wall/stairs_right",
+            "pos": [1120, 352, 30]
+        },
+        {
+            "def": "House Wall Stairs Right",
+            "sprite": "tiles/house/wall/stairs_right",
+            "pos": [1152, 384, 30]
+        },
+        {
+            "def": "House Wall Stairs Right",
+            "sprite": "tiles/house/wall/stairs_right",
+            "pos": [1184, 416, 30]
+        },
+        {
+            "def": "House Wall Stairs Left",
+            "sprite": "tiles/house/wall/stairs_left",
+            "pos": [1312, 416, 30]
+        },
+        {
+            "def": "House Wall Stairs Left",
+            "sprite": "tiles/house/wall/stairs_left",
+            "pos": [1344, 384, 30]
+        },
+        {
+            "def": "House Wall Stairs Left",
+            "sprite": "tiles/house/wall/stairs_left",
+            "pos": [1376, 352, 30]
+        },
+        {
+            "def": "House Wall Stairs Right",
+            "sprite": "tiles/house/wall/stairs_right",
+            "pos": [1408, 352, 30]
+        },
+        {
+            "def": "Hill",
+            "sprite": "scenery/hill",
+            "pos": [2208, 352, 61]
+        },
+        {
+            "def": "House Door",
+            "sprite": "tiles/house/door",
+            "pos": [1793, 289, 19]
+        },
+        {
+            "def": "Door Light",
+            "sprite": "scenery/house/door_light",
+            "pos": [704, 384, 24],
+            "colors": [
+                [255, 255, 255, 135],
+                [255, 255, 255, 135],
+                [255, 255, 255, 135],
+                [255, 255, 255, 135]
+            ]
+        },
+        {
+            "def": "Table",
+            "sprite": "scenery/house/table",
+            "pos": [800, 134, 28]
+        },
+        {
+            "def": "Stool",
+            "sprite": "scenery/house/stool",
+            "pos": [832, 141, 28]
+        },
+        {
+            "def": "Table",
+            "sprite": "scenery/house/table",
+            "pos": [1019, 134, 28]
+        },
+        {
+            "def": "Stool",
+            "sprite": "scenery/house/stool",
+            "pos": [989, 141, 28]
+        },
+        {
+            "def": "Table",
+            "sprite": "scenery/house/table",
+            "pos": [1376, 198, 28]
+        },
+        {
+            "def": "Chair",
+            "sprite": "scenery/house/chair",
+            "pos": [1421, 187, 28]
+        },
+        {
+            "def": "Table",
+            "sprite": "scenery/house/table",
+            "pos": [1536, 198, 28]
+        },
+        {
+            "def": "Chair",
+            "sprite": "scenery/house/chair",
+            "pos": [1579, 188, 28]
+        },
+        {
+            "def": "Table",
+            "sprite": "scenery/house/table",
+            "pos": [742, 294, 28]
+        },
+        {
+            "def": "Table",
+            "sprite": "scenery/house/table",
+            "pos": [875, 294, 28]
+        },
+        {
+            "def": "Table",
+            "sprite": "scenery/house/table",
+            "pos": [956, 294, 28]
+        },
+        {
+            "def": "Stool",
+            "sprite": "scenery/house/stool",
+            "pos": [922, 302, 28]
+        },
+        {
+            "def": "Toilet",
+            "sprite": "scenery/house/toilet",
+            "pos": [1889, 303, 28]
+        },
+        {
+            "def": "House Mutant",
+            "sprite": "scenery/house/clone/mutant",
+            "pos": [872, 248, 26]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [832, 32, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [832, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [864, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [896, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [928, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [960, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [992, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1024, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1056, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1088, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1120, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1152, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1184, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1216, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1248, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1280, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1312, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1344, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1376, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1408, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1440, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1472, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1504, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1504, 32, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1536, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1568, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1536, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1504, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1472, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1440, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1408, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1376, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1344, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1312, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1280, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1248, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1216, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1184, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1152, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1120, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1088, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1056, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1024, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [992, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [960, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [928, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [896, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [832, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [864, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [864, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [832, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [768, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [800, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [800, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [800, 64, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [768, 96, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [736, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [896, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [928, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [960, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1056, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1024, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [992, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1088, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1120, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1152, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1184, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1216, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1248, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1280, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1312, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1344, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1376, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1408, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1440, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1472, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1504, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1536, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1568, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1600, 128, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1600, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1568, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1536, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1504, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1472, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1440, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1408, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1376, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1344, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1280, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1216, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1152, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1120, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1088, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1056, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1184, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1248, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1312, 160, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1600, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1504, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1472, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1440, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1344, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1280, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1216, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1152, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1120, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1088, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1056, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1248, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1376, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1408, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1536, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1568, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1216, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1216, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [736, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [768, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [800, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [832, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [864, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [896, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [928, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [960, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [992, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1024, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1056, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1088, 224, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1056, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1024, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [992, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [960, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [896, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [864, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [832, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [768, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [736, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [800, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [736, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [768, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [800, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [832, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [864, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [896, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [928, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [928, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [960, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [992, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1024, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1088, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1120, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1120, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1152, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1184, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1216, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1248, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1280, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1312, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1344, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1376, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1408, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1440, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1472, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1504, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1536, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1568, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1600, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1632, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1664, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1696, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1760, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1728, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1792, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1824, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1856, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1888, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1920, 256, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1920, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1952, 288, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1984, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1952, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1920, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1856, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1888, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1824, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1792, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1760, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1728, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1696, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1664, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1632, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1600, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1568, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1536, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1504, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1472, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1184, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1312, 192, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1440, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1408, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1376, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1344, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1312, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1280, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1248, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1216, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1184, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1152, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1120, 320, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1088, 352, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1024, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1024, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [992, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [992, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [960, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [960, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [896, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [896, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [864, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [864, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [832, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [832, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [800, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [800, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [768, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [768, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [736, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [736, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1056, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1088, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1056, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1088, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1120, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1120, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1152, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1152, 352, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1184, 352, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1216, 352, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1248, 352, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1248, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1248, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1216, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1216, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1184, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1280, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1280, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1280, 352, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1312, 352, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1344, 352, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1312, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1376, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1376, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1344, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1408, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1408, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1440, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1472, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1504, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1536, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1568, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1600, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1632, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1664, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1696, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1728, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1760, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1792, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1824, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1856, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1888, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1920, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1952, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [1984, 416, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [928, 384, 31]
+        },
+        {
+            "def": "House Wall",
+            "sprite": "tiles/house/wall/3",
+            "pos": [928, 416, 31]
+        }
+    ],
+    "collisions": [
+        {
+            "pos": [3117, 416],
+            "size": [20, 2],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 0, 1],
+                [1, 0, 1],
+                [2, 0, 1],
+                [3, 0, 1],
+                [4, 0, 1],
+                [5, 0, 1],
+                [6, 0, 1],
+                [7, 0, 1],
+                [8, 0, 1],
+                [9, 0, 1],
+                [10, 0, 1],
+                [11, 0, 1],
+                [12, 0, 1],
+                [13, 0, 1],
+                [14, 0, 1],
+                [15, 0, 1],
+                [16, 0, 1],
+                [17, 0, 1],
+                [18, 0, 1],
+                [19, 0, 1],
+                [0, 1, 1],
+                [1, 1, 1],
+                [2, 1, 1],
+                [3, 1, 1],
+                [4, 1, 1],
+                [5, 1, 1],
+                [6, 1, 1],
+                [7, 1, 1],
+                [8, 1, 1],
+                [9, 1, 1],
+                [10, 1, 1],
+                [11, 1, 1],
+                [12, 1, 1],
+                [13, 1, 1],
+                [14, 1, 1],
+                [15, 1, 1],
+                [16, 1, 1],
+                [17, 1, 1],
+                [18, 1, 1],
+                [19, 1, 1]
+            ]
+        },
+        {
+            "pos": [-32, -32],
+            "size": [116, 16],
+            "cell_size": [32, 32],
+            "cells": [
+                [1, 14, 1],
+                [2, 14, 1],
+                [3, 14, 1],
+                [4, 14, 1],
+                [5, 14, 1],
+                [6, 14, 1],
+                [7, 14, 1],
+                [8, 14, 1],
+                [9, 14, 1],
+                [10, 14, 1],
+                [11, 14, 1],
+                [12, 14, 1],
+                [13, 14, 1],
+                [14, 14, 1],
+                [15, 14, 1],
+                [16, 14, 1],
+                [17, 14, 1],
+                [18, 14, 1],
+                [19, 14, 1],
+                [20, 14, 1],
+                [21, 14, 1],
+                [1, 15, 1],
+                [2, 15, 1],
+                [3, 15, 1],
+                [4, 15, 1],
+                [5, 15, 1],
+                [6, 15, 1],
+                [7, 15, 1],
+                [8, 15, 1],
+                [9, 15, 1],
+                [10, 15, 1],
+                [11, 15, 1],
+                [12, 15, 1],
+                [13, 15, 1],
+                [14, 15, 1],
+                [15, 15, 1],
+                [16, 15, 1],
+                [17, 15, 1],
+                [18, 15, 1],
+                [19, 15, 1],
+                [20, 15, 1],
+                [21, 15, 1],
+                [78, 14, 1],
+                [79, 14, 1],
+                [80, 14, 1],
+                [81, 14, 1],
+                [82, 14, 1],
+                [83, 14, 1],
+                [84, 14, 1],
+                [85, 14, 1],
+                [86, 14, 1],
+                [87, 14, 1],
+                [88, 14, 1],
+                [89, 14, 1],
+                [90, 14, 1],
+                [91, 14, 1],
+                [92, 14, 1],
+                [93, 14, 1],
+                [78, 15, 1],
+                [79, 15, 1],
+                [80, 15, 1],
+                [81, 15, 1],
+                [82, 15, 1],
+                [83, 15, 1],
+                [84, 15, 1],
+                [85, 15, 1],
+                [86, 15, 1],
+                [87, 15, 1],
+                [88, 15, 1],
+                [89, 15, 1],
+                [90, 15, 1],
+                [91, 15, 1],
+                [92, 15, 1],
+                [93, 15, 1],
+                [96, 14, 1],
+                [97, 14, 1],
+                [98, 14, 1],
+                [96, 15, 1],
+                [97, 15, 1],
+                [98, 15, 1],
+                [0, 1, 1],
+                [0, 2, 1],
+                [0, 3, 1],
+                [0, 4, 1],
+                [0, 5, 1],
+                [0, 6, 1],
+                [0, 7, 1],
+                [0, 8, 1],
+                [0, 9, 1],
+                [0, 10, 1],
+                [0, 11, 1],
+                [0, 12, 1],
+                [0, 13, 1],
+                [0, 14, 1],
+                [0, 15, 1],
+                [0, 0, 1],
+                [115, 2, 1],
+                [115, 3, 1],
+                [115, 4, 1],
+                [115, 5, 1],
+                [115, 6, 1],
+                [115, 7, 1],
+                [115, 8, 1],
+                [115, 9, 1],
+                [115, 10, 1],
+                [115, 11, 1],
+                [115, 12, 1],
+                [115, 13, 1],
+                [6, 9, 1],
+                [7, 9, 1],
+                [8, 9, 1],
+                [9, 9, 1],
+                [9, 10, 1],
+                [9, 11, 1],
+                [10, 11, 1],
+                [11, 11, 1],
+                [11, 12, 1],
+                [11, 13, 1],
+                [22, 15, 1],
+                [23, 15, 1],
+                [24, 15, 1],
+                [25, 15, 1],
+                [26, 15, 1],
+                [27, 15, 1],
+                [28, 15, 1],
+                [29, 15, 1],
+                [30, 15, 1],
+                [31, 15, 1],
+                [32, 15, 1],
+                [33, 15, 1],
+                [34, 15, 1],
+                [35, 15, 1],
+                [36, 15, 1],
+                [37, 15, 1],
+                [38, 15, 1],
+                [39, 15, 1],
+                [40, 15, 1],
+                [41, 15, 1],
+                [42, 15, 1],
+                [43, 15, 1],
+                [44, 15, 1],
+                [45, 15, 1],
+                [46, 15, 1],
+                [47, 15, 1],
+                [48, 15, 1],
+                [49, 15, 1],
+                [50, 15, 1],
+                [51, 15, 1],
+                [52, 15, 1],
+                [53, 15, 1],
+                [54, 15, 1],
+                [55, 15, 1],
+                [56, 15, 1],
+                [57, 15, 1],
+                [58, 15, 1],
+                [59, 15, 1],
+                [60, 15, 1],
+                [61, 15, 1],
+                [62, 15, 1],
+                [63, 15, 1],
+                [64, 15, 1],
+                [65, 15, 1],
+                [66, 15, 1],
+                [67, 15, 1],
+                [68, 15, 1],
+                [69, 15, 1],
+                [70, 15, 1],
+                [71, 15, 1],
+                [72, 15, 1],
+                [73, 15, 1],
+                [74, 15, 1],
+                [75, 15, 1],
+                [76, 15, 1],
+                [77, 15, 1],
+                [94, 14, 1],
+                [95, 14, 1],
+                [37, 8, 1],
+                [38, 8, 1],
+                [24, 6, 1],
+                [25, 6, 1],
+                [26, 6, 1],
+                [27, 6, 1],
+                [28, 6, 1],
+                [29, 6, 1],
+                [30, 6, 1],
+                [31, 6, 1],
+                [32, 6, 1],
+                [33, 6, 1],
+                [34, 11, 1],
+                [33, 11, 1],
+                [32, 11, 1],
+                [31, 11, 1],
+                [30, 11, 1],
+                [29, 11, 1],
+                [28, 11, 1],
+                [27, 11, 1],
+                [26, 11, 1],
+                [25, 11, 1],
+                [24, 11, 1],
+                [40, 8, 1],
+                [41, 8, 1],
+                [42, 8, 1],
+                [43, 8, 1],
+                [44, 8, 1],
+                [45, 8, 1],
+                [46, 8, 1],
+                [47, 8, 1],
+                [48, 8, 1],
+                [49, 8, 1],
+                [50, 8, 1],
+                [51, 8, 1],
+                [23, 6, 1],
+                [23, 7, 1],
+                [23, 8, 1],
+                [23, 9, 1],
+                [23, 10, 1],
+                [23, 11, 1],
+                [52, 6, 1],
+                [52, 7, 1],
+                [52, 8, 1],
+                [23, 12, 1],
+                [36, 1, 1],
+                [35, 1, 1],
+                [34, 1, 1],
+                [33, 1, 1],
+                [32, 1, 1],
+                [31, 1, 1],
+                [30, 1, 1],
+                [29, 1, 1],
+                [28, 1, 1],
+                [27, 1, 52],
+                [27, 2, 1],
+                [26, 3, 1],
+                [25, 4, 1],
+                [24, 5, 1],
+                [26, 2, 52],
+                [25, 3, 52],
+                [24, 4, 52],
+                [23, 5, 52],
+                [22, 6, 52],
+                [37, 1, 1],
+                [38, 1, 1],
+                [39, 1, 1],
+                [40, 1, 1],
+                [41, 1, 1],
+                [42, 1, 1],
+                [43, 1, 1],
+                [44, 1, 1],
+                [45, 1, 1],
+                [46, 1, 1],
+                [47, 1, 1],
+                [48, 1, 44],
+                [48, 2, 1],
+                [49, 3, 1],
+                [50, 4, 1],
+                [51, 5, 1],
+                [49, 2, 44],
+                [50, 3, 44],
+                [51, 4, 44],
+                [52, 5, 44],
+                [53, 6, 44],
+                [53, 8, 1],
+                [54, 8, 1],
+                [55, 8, 1],
+                [56, 8, 1],
+                [57, 8, 1],
+                [58, 8, 1],
+                [59, 8, 1],
+                [60, 8, 1],
+                [61, 8, 44],
+                [61, 9, 1],
+                [62, 10, 1],
+                [62, 9, 44],
+                [63, 10, 44]
+            ]
+        },
+        {
+            "pos": [650, -173],
+            "size": [1, 1],
+            "cell_size": [31, 382],
+            "cells": [[0, 0, 1]]
+        },
+        {
+            "pos": [2049, -15],
+            "size": [1, 1],
+            "cell_size": [31, 382],
+            "cells": [[0, 0, 1]]
+        },
+        {
+            "pos": [1409, 320],
+            "size": [20, 2],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 1, 1],
+                [1, 1, 1],
+                [2, 1, 1],
+                [3, 1, 1],
+                [4, 1, 1],
+                [5, 1, 1],
+                [6, 1, 1],
+                [7, 1, 1],
+                [8, 1, 1],
+                [9, 1, 1],
+                [10, 1, 1],
+                [11, 1, 1],
+                [12, 1, 1],
+                [13, 1, 1],
+                [14, 1, 1],
+                [15, 1, 1],
+                [16, 1, 1],
+                [17, 1, 1],
+                [18, 1, 1],
+                [18, 0, 1],
+                [19, 0, 44]
+            ]
+        },
+        {
+            "pos": [1793, 254],
+            "size": [1, 3],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 0, 1],
+                [0, 2, 1],
+                [0, 1, 1]
+            ]
+        },
+        {
+            "pos": [-32, -319],
+            "size": [1, 9],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 8, 1],
+                [0, 7, 1],
+                [0, 6, 1],
+                [0, 5, 1],
+                [0, 4, 1],
+                [0, 3, 1],
+                [0, 2, 1],
+                [0, 1, 1],
+                [0, 0, 1]
+            ]
+        }
+    ],
+    "actors": [
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [416, 160]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [544, 64]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [1632, 13]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [1920, 32]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [1952, 160]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [2176, 96]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [2336, 64]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [2616, 146]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [2869, 31]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [2895, 202]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [3072, 64]
+        },
+        {
+            "def": "Cloud",
+            "id": 18,
+            "pos": [3569, 55]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [384, 388]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [2528, 388]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [2670, 388]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [2719, 388]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [2799, 388]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [2848, 388]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [3119, 388]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [3072, 388]
+        },
+        {
+            "def": "Player Spawn",
+            "id": 1,
+            "pos": [70, 415],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 1]
+            ]
+        },
+        {
+            "def": "Goal Bar",
+            "id": 9,
+            "pos": [3398, 143]
+        },
+        {
+            "def": "Goal Line",
+            "id": 10,
+            "pos": [3228, 384],
+            "scale": [524288, 65536]
+        },
+        {
+            "def": "Goal Line",
+            "id": 10,
+            "pos": [3484, 384],
+            "scale": [524288, 65536]
+        },
+        {
+            "def": "Computer",
+            "id": 118,
+            "pos": [792, 102]
+        },
+        {
+            "def": "Computer",
+            "id": 118,
+            "pos": [1071, 102],
+            "flags": 4
+        },
+        {
+            "def": "Computer",
+            "id": 118,
+            "pos": [736, 262]
+        },
+        {
+            "def": "Computer",
+            "id": 118,
+            "pos": [868, 262]
+        },
+        {
+            "def": "Computer",
+            "id": 118,
+            "pos": [1008, 262],
+            "flags": 4
+        },
+        {
+            "def": "Computer",
+            "id": 118,
+            "pos": [1368, 166],
+            "flags": 64
+        },
+        {
+            "def": "Computer",
+            "id": 118,
+            "pos": [1528, 166]
+        },
+        {
+            "def": "Keyboard",
+            "id": 119,
+            "pos": [820, 102],
+            "flags": 4
+        },
+        {
+            "def": "Keyboard",
+            "id": 119,
+            "pos": [1033, 110]
+        },
+        {
+            "def": "Keyboard",
+            "id": 119,
+            "pos": [1567, 178],
+            "flags": 4
+        },
+        {
+            "def": "Keyboard",
+            "id": 119,
+            "pos": [896, 263],
+            "flags": 4
+        },
+        {
+            "def": "Keyboard",
+            "id": 119,
+            "pos": [980, 263]
+        },
+        {
+            "def": "House Zorro Clone",
+            "id": 123,
+            "pos": [786, 71]
+        },
+        {
+            "def": "House Agent Clone",
+            "id": 124,
+            "pos": [937, 151]
+        },
+        {
+            "def": "House Werewolf Clone",
+            "id": 125,
+            "pos": [976, 149]
+        },
+        {
+            "def": "House Big Clone",
+            "id": 126,
+            "pos": [1336, 141]
+        },
+        {
+            "def": "House Clone 3A",
+            "id": 127,
+            "pos": [1515, 144]
+        },
+        {
+            "def": "House Coder Clone",
+            "id": 128,
+            "pos": [759, 250]
+        },
+        {
+            "def": "House Jaws Clone",
+            "id": 122,
+            "pos": [1532, 289]
+        },
+        {
+            "def": "Flush",
+            "id": 130,
+            "pos": [1826, 234]
+        },
+        {
+            "def": "House Star Closed Clone",
+            "id": 131,
+            "pos": [1769, 263]
+        },
+        {
+            "def": "Samochod",
+            "id": 120,
+            "pos": [2105, 404]
+        },
+        {
+            "def": "House Clone Yap",
+            "id": 121,
+            "pos": [944, 448]
+        },
+        {
+            "def": "Keyboard Noise",
+            "id": 129,
+            "pos": [736, 39],
+            "scale": [319488, 245760]
+        },
+        {
+            "def": "Keyboard Noise",
+            "id": 129,
+            "pos": [928, 42],
+            "scale": [319488, 245760]
+        },
+        {
+            "def": "Keyboard Noise",
+            "id": 129,
+            "pos": [1504, 104],
+            "scale": [319488, 245760]
+        },
+        {
+            "def": "Keyboard Noise",
+            "id": 129,
+            "pos": [869, 200],
+            "scale": [319488, 245760]
+        }
+    ]
+}

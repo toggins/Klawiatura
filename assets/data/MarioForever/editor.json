@@ -735,6 +735,207 @@
             "sprite": "tiles/test_tube/support",
             "depth": 17
         },
+        "Asphalt Left": {
+            "type": "tile",
+            "sprite": "tiles/asphalt/0",
+            "depth": 20
+        },
+        "Asphalt Middle": {
+            "type": "tile",
+            "sprite": "tiles/asphalt/1",
+            "depth": 20
+        },
+        "Asphalt Right": {
+            "type": "tile",
+            "sprite": "tiles/asphalt/2",
+            "depth": 20
+        },
+        "House Left": {
+            "type": "tile",
+            "sprite": "tiles/house/h/0",
+            "depth": 20
+        },
+        "House Middle": {
+            "type": "tile",
+            "sprite": "tiles/house/h/1",
+            "depth": 20
+        },
+        "House Middle Alt": {
+            "type": "tile",
+            "sprite": "tiles/house/h/1a",
+            "depth": 20
+        },
+        "House Right": {
+            "type": "tile",
+            "sprite": "tiles/house/h/2",
+            "depth": 20
+        },
+        "House Middle 2": {
+            "type": "tile",
+            "sprite": "tiles/house/v/0",
+            "depth": 20
+        },
+        "House Bottom": {
+            "type": "tile",
+            "sprite": "tiles/house/v/1",
+            "depth": 20
+        },
+        "House Middle Left Right": {
+            "type": "tile",
+            "sprite": "tiles/house/v/lr",
+            "depth": 20
+        },
+        "House Middle Right": {
+            "type": "tile",
+            "sprite": "tiles/house/v/r",
+            "depth": 20
+        },
+        "House Entrance Top": {
+            "type": "background",
+            "sprite": "tiles/house/entrance/0",
+            "depth": 25
+        },
+        "House Entrance": {
+            "type": "background",
+            "sprite": "tiles/house/entrance/1",
+            "depth": 25
+        },
+        "House Door": {
+            "type": "background",
+            "sprite": "tiles/house/door",
+            "depth": 19
+        },
+        "House Roof Left": {
+            "type": "tile",
+            "sprite": "tiles/house/roof/left",
+            "depth": 20
+        },
+        "House Roof Slope Left": {
+            "type": "tile",
+            "sprite": "tiles/house/roof/left/slope",
+            "depth": 20,
+            "solid": "slope_left"
+        },
+        "House Roof Corner Left": {
+            "type": "background",
+            "sprite": "tiles/house/roof/left/corner",
+            "depth": 20
+        },
+        "House Roof Bottom Left": {
+            "type": "tile",
+            "sprite": "tiles/house/roof/left/bottom",
+            "depth": 20
+        },
+        "House Roof Slope Left 2": {
+            "type": "tile",
+            "sprite": "tiles/house/roof/left/slope2",
+            "depth": 20,
+            "solid": "slope_left"
+        },
+        "House Roof Slope Left 3": {
+            "type": "tile",
+            "sprite": "tiles/house/roof/left/slope3",
+            "depth": 20,
+            "solid": "slope_left"
+        },
+        "House Roof Ledge Left": {
+            "type": "background",
+            "sprite": "tiles/house/roof/left/ledge",
+            "depth": 20
+        },
+        "House Roof Right": {
+            "type": "tile",
+            "sprite": "tiles/house/roof/right",
+            "depth": 20
+        },
+        "House Roof Slope Right": {
+            "type": "tile",
+            "sprite": "tiles/house/roof/right/slope",
+            "depth": 20,
+            "solid": "slope_right"
+        },
+        "House Roof Corner Right": {
+            "type": "background",
+            "sprite": "tiles/house/roof/right/corner",
+            "depth": 20
+        },
+        "House Roof Bottom Right": {
+            "type": "tile",
+            "sprite": "tiles/house/roof/right/bottom",
+            "depth": 20
+        },
+        "House Roof Slope Right 2": {
+            "type": "tile",
+            "sprite": "tiles/house/roof/right/slope2",
+            "depth": 20,
+            "solid": "slope_right"
+        },
+        "House Roof Slope Right 3": {
+            "type": "tile",
+            "sprite": "tiles/house/roof/right/slope3",
+            "depth": 20,
+            "solid": "slope_right"
+        },
+        "House Roof Ledge Right": {
+            "type": "background",
+            "sprite": "tiles/house/roof/right/ledge",
+            "depth": 20
+        },
+        "House Wall Top Left": {
+            "type": "background",
+            "sprite": "tiles/house/wall/0",
+            "depth": 30
+        },
+        "House Wall Top": {
+            "type": "background",
+            "sprite": "tiles/house/wall/1",
+            "depth": 30
+        },
+        "House Wall Top Right": {
+            "type": "background",
+            "sprite": "tiles/house/wall/2",
+            "depth": 30
+        },
+        "House Wall": {
+            "type": "background",
+            "sprite": "tiles/house/wall/3",
+            "depth": 31
+        },
+        "House Wall Door": {
+            "type": "background",
+            "sprite": "tiles/house/wall/door",
+            "depth": 30
+        },
+        "House Wall Window": {
+            "type": "background",
+            "sprite": "tiles/house/wall/window",
+            "depth": 30
+        },
+        "House Wall Crack": {
+            "type": "background",
+            "sprite": "tiles/house/wall/crack",
+            "depth": 30
+        },
+        "House Wall Mario Sux": {
+            "type": "background",
+            "sprite": "tiles/house/wall/mario_sux",
+            "depth": 30
+        },
+        "House Wall WC": {
+            "type": "background",
+            "sprite": "tiles/house/wall/wc",
+            "depth": 30
+        },
+        "House Wall Stairs Left": {
+            "type": "background",
+            "sprite": "tiles/house/wall/stairs_left",
+            "depth": 30
+        },
+        "House Wall Stairs Right": {
+            "type": "background",
+            "sprite": "tiles/house/wall/stairs_right",
+            "depth": 30
+        },
         "Hill": {
             "type": "background",
             "sprite": "scenery/hill",
@@ -967,6 +1168,16 @@
         "Broken Ceiling Sign": {
             "type": "background",
             "sprite": "scenery/sign/ceiling_broken",
+            "depth": 30
+        },
+        "House of Clones Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/house_of_clones",
+            "depth": 30
+        },
+        "Human Laboratory End Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/human_laboratory_end",
             "depth": 30
         },
         "Label Clone": {
@@ -1263,6 +1474,129 @@
                     "default": -4784128
                 }
             ]
+        },
+        "Door Light": {
+            "type": "background",
+            "sprite": "scenery/house/door_light",
+            "depth": 24,
+            "colors": [
+                [255, 255, 255, 135],
+                [255, 255, 255, 135],
+                [255, 255, 255, 135],
+                [255, 255, 255, 135]
+            ]
+        },
+        "Table": {
+            "type": "background",
+            "sprite": "scenery/house/table",
+            "depth": 28
+        },
+        "Stool": {
+            "type": "background",
+            "sprite": "scenery/house/stool",
+            "depth": 28
+        },
+        "Chair": {
+            "type": "background",
+            "sprite": "scenery/house/chair",
+            "depth": 28
+        },
+        "Toilet": {
+            "type": "background",
+            "sprite": "scenery/house/toilet",
+            "depth": 28
+        },
+        "Computer": {
+            "type": "actor",
+            "sprite": "scenery/house/computer/0",
+            "id": 118,
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2
+                },
+                {
+                    "name": "Flash",
+                    "index": 6
+                }
+            ]
+        },
+        "Keyboard": {
+            "type": "actor",
+            "sprite": "scenery/house/clone/keyboard/0",
+            "id": 119,
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2
+                }
+            ]
+        },
+        "Keyboard Noise": {
+            "type": "actor",
+            "sprite": "editor/keyboard",
+            "id": 129,
+            "scalable": true
+        },
+        "Flush": {
+            "type": "actor",
+            "sprite": "scenery/house/flush/0",
+            "id": 130
+        },
+        "House Clone Yap": {
+            "type": "actor",
+            "sprite": "scenery/house/clone/a",
+            "id": 121
+        },
+        "House Zorro Clone": {
+            "type": "actor",
+            "sprite": "scenery/house/clone/zorro/0",
+            "id": 123
+        },
+        "House Agent Clone": {
+            "type": "actor",
+            "sprite": "scenery/house/clone/agent/0",
+            "id": 124
+        },
+        "House Werewolf Clone": {
+            "type": "actor",
+            "sprite": "scenery/house/clone/werewolf/0",
+            "id": 125
+        },
+        "House Big Clone": {
+            "type": "actor",
+            "sprite": "scenery/house/clone/big/0",
+            "id": 126
+        },
+        "House Clone 3A": {
+            "type": "actor",
+            "sprite": "scenery/house/clone/3a/0",
+            "id": 127
+        },
+        "House Coder Clone": {
+            "type": "actor",
+            "sprite": "scenery/house/clone/coder/0",
+            "id": 128
+        },
+        "House Mutant": {
+            "type": "background",
+            "sprite": "scenery/house/clone/mutant",
+            "depth": 26
+        },
+        "House Jaws Clone": {
+            "type": "actor",
+            "sprite": "scenery/house/clone/jaws/0",
+            "id": 122
+        },
+        "House Star Closed Clone": {
+            "type": "actor",
+            "sprite": "scenery/house/clone/star_closed/0",
+            "id": 131
+        },
+        "Samochod": {
+            "type": "actor",
+            "sprite": "scenery/clone/samochod/0",
+            "id": 120
         },
         "Player Spawn": {
             "type": "actor",
@@ -2715,6 +3049,66 @@
                 {
                     "name": "Test Tube",
                     "items": ["Test Tube", "Test Tube Broken", "Test Tube Support"]
+                },
+                {
+                    "name": "Asphalt",
+                    "items": ["Asphalt Left", "Asphalt Middle", "Asphalt Right"]
+                },
+                {
+                    "name": "House",
+                    "items": [
+                        {
+                            "name": "Roof Left",
+                            "items": [
+                                "House Roof Left",
+                                "House Roof Slope Left",
+                                "House Roof Corner Left",
+                                "House Roof Bottom Left",
+                                "House Roof Slope Left 2",
+                                "House Roof Slope Left 3",
+                                "House Roof Ledge Left"
+                            ]
+                        },
+                        {
+                            "name": "Roof Right",
+                            "items": [
+                                "House Roof Right",
+                                "House Roof Slope Right",
+                                "House Roof Corner Right",
+                                "House Roof Bottom Right",
+                                "House Roof Slope Right 2",
+                                "House Roof Slope Right 3",
+                                "House Roof Ledge Right"
+                            ]
+                        },
+                        {
+                            "name": "Wall",
+                            "items": [
+                                "House Wall Top Left",
+                                "House Wall Top",
+                                "House Wall Top Right",
+                                "House Wall",
+                                "House Wall Door",
+                                "House Wall Window",
+                                "House Wall Crack",
+                                "House Wall Mario Sux",
+                                "House Wall WC",
+                                "House Wall Stairs Left",
+                                "House Wall Stairs Right"
+                            ]
+                        },
+                        "House Left",
+                        "House Middle",
+                        "House Middle Alt",
+                        "House Right",
+                        "House Middle 2",
+                        "House Bottom",
+                        "House Middle Left Right",
+                        "House Middle Right",
+                        "House Entrance Top",
+                        "House Entrance",
+                        "House Door"
+                    ]
                 }
             ]
         },
@@ -2793,6 +3187,8 @@
                         "Human Laboratory Sign",
                         "Ceiling Sign",
                         "Broken Ceiling Sign",
+                        "House of Clones Sign",
+                        "Human Laboratory End Sign",
                         "Up Sign",
                         "Right Sign",
                         "Down Sign",
@@ -2841,9 +3237,39 @@
                         "Test Tube Big Clone"
                     ]
                 },
+                {
+                    "name": "House",
+                    "items": [
+                        {
+                            "name": "Clones",
+                            "items": [
+                                "House Zorro Clone",
+                                "House Agent Clone",
+                                "House Werewolf Clone",
+                                "House Big Clone",
+                                "House Clone 3A",
+                                "House Coder Clone",
+                                "House Mutant",
+                                "House Jaws Clone",
+                                "House Star Closed Clone",
+                                "House Clone Yap"
+                            ]
+                        },
+                        "Door Light",
+                        "Table",
+                        "Stool",
+                        "Chair",
+                        "Toilet",
+                        "Computer",
+                        "Keyboard",
+                        "Keyboard Noise",
+                        "Flush"
+                    ]
+                },
                 "Bush",
                 "Waterfall",
-                "Cobweb"
+                "Cobweb",
+                "Samochod"
             ]
         },
         {

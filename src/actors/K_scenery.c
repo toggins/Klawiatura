@@ -716,6 +716,490 @@ const ActorTable TAB_TEST_TUBE_BUBBLES = {
     .tick = tick_test_tube_bubbles,
 };
 
+/* ========
+   COMPUTER
+   ======== */
+
+static void load_computer() {
+    load_sprite_num("scenery/house/computer/%u", 6, AKL_NEVER);
+}
+
+static void create_computer(GameActor* actor) {
+    actor->depth = Int2Fx(27);
+}
+
+static void draw_computer(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor,
+        fmt("scenery/house/computer/%i",
+            ANY_FLAG(actor, FLG_SCENERY_ALT) ? (gamestate()->time % 6) : (((gamestate()->time * 11) / 100) % 2)),
+        FALSE);
+}
+
+const ActorTable TAB_COMPUTER = {
+    .load = load_computer,
+    .create = create_computer,
+    .draw = draw_computer,
+};
+
+/* ========
+   KEYBOARD
+   ======== */
+
+static void load_keyboard() {
+    load_sprite_num("scenery/house/clone/keyboard/%u", 8, AKL_NEVER);
+}
+
+static void create_keyboard(GameActor* actor) {
+    actor->depth = Int2Fx(25);
+}
+
+static void draw_keyboard(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor,
+        fmt("scenery/house/clone/keyboard/%i",
+            ((gamestate()->time * 11) / (ANY_FLAG(actor, FLG_X_FLIP) ? 100 : 50)) % 8),
+        FALSE);
+}
+
+const ActorTable TAB_KEYBOARD = {
+    .load = load_keyboard,
+    .create = create_keyboard,
+    .draw = draw_keyboard,
+};
+
+/* =================
+   HOUSE ZORRO CLONE
+   ================= */
+
+static void load_house_zorro_clone() {
+    load_sprite_num("scenery/house/clone/zorro/%u", 2, AKL_NEVER);
+}
+
+static void create_house_zorro_clone(GameActor* actor) {
+    actor->depth = Int2Fx(26);
+}
+
+static void draw_house_zorro_clone(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("scenery/house/clone/zorro/%i", ((gamestate()->time * 2) / 100) % 2), FALSE);
+}
+
+const ActorTable TAB_HOUSE_ZORRO = {
+    .load = load_house_zorro_clone,
+    .create = create_house_zorro_clone,
+    .draw = draw_house_zorro_clone,
+};
+
+/* =================
+   HOUSE AGENT CLONE
+   ================= */
+
+static void load_house_agent_clone() {
+    load_sprite_num("scenery/house/clone/agent/%u", 2, AKL_NEVER);
+}
+
+static void draw_house_agent_clone(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("scenery/house/clone/agent/%i", ((gamestate()->time * 5) / 100) % 2), FALSE);
+}
+
+const ActorTable TAB_HOUSE_AGENT = {
+    .load = load_house_agent_clone,
+    .create = create_house_zorro_clone,
+    .draw = draw_house_agent_clone,
+};
+
+/* ====================
+   HOUSE WEREWOLF CLONE
+   ==================== */
+
+static void load_house_werewolf_clone() {
+    load_sprite_num("scenery/house/clone/werewolf/%u", 3, AKL_NEVER);
+}
+
+static void tick_house_werewolf_clone(GameActor* actor) {
+    if (VAL(actor, SCENERY_ANIMATION) == 1) {
+        VAL(actor, SCENERY_FRAME) += 2;
+        if (VAL(actor, SCENERY_FRAME) >= 200) {
+            VAL(actor, SCENERY_ANIMATION) = 0;
+            VAL(actor, SCENERY_FRAME) = 0;
+        }
+    }
+
+    if ((gamestate()->time % 6) == 0)
+        VAL(actor, SCENERY_ANGLE) = rng(10);
+
+    if (VAL(actor, SCENERY_ANGLE) == 5) {
+        VAL(actor, SCENERY_ANIMATION) = 1;
+        VAL(actor, SCENERY_FRAME) = 0;
+    }
+}
+
+static void draw_house_werewolf_clone(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor,
+        fmt("scenery/house/clone/werewolf/%i", VAL(actor, SCENERY_ANIMATION) + (VAL(actor, SCENERY_FRAME) / 100)),
+        FALSE);
+}
+
+const ActorTable TAB_HOUSE_WEREWOLF = {
+    .load = load_house_werewolf_clone,
+    .create = create_house_zorro_clone,
+    .tick = tick_house_werewolf_clone,
+    .draw = draw_house_werewolf_clone,
+};
+
+/* ===============
+   HOUSE BIG CLONE
+   =============== */
+
+static void load_house_big_clone() {
+    load_sprite_num("scenery/house/clone/big/%u", 13, AKL_NEVER);
+    load_sound_num("clone/game/%u", 5, AKL_NEVER);
+}
+
+static void create_house_big_clone(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-88);
+    actor->box.start.y = Int2Fx(-77);
+    actor->box.end.x = Int2Fx(134);
+    actor->box.end.y = Int2Fx(83);
+
+    actor->depth = Int2Fx(26);
+}
+
+static void tick_house_big_clone(GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_SCENERY_ACTIVE))
+        ++VAL(actor, SCENERY_FRAME);
+
+    if (VAL(actor, SCENERY_FRAME) > 5) {
+        VAL(actor, SCENERY_FRAME) = 0;
+
+        const Sint32 r = rng(10);
+        if (r >= 1 && r <= 5) {
+            const FVec2 center = Rcenter(Radd(actor->box, actor->pos));
+
+            // !!! CLIENT-SIDE !!!
+            play_state_sound(fmt("clone/game/%i", r - 1), PLAY_POS, A_FVEC2(center));
+            // !!! CLIENT-SIDE !!!
+        }
+    }
+
+    FLAG_OFF(actor, FLG_SCENERY_ACTIVE);
+}
+
+static void draw_house_big_clone(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("scenery/house/clone/big/%i", ((gamestate()->time * 11) / 100) % 13), FALSE);
+}
+
+static void collide_house_big_clone(GameActor* actor, GameActor* from) {
+    if (from->type == ACT_PLAYER)
+        FLAG_ON(actor, FLG_SCENERY_ACTIVE);
+}
+
+const ActorTable TAB_HOUSE_BIG = {
+    .load = load_house_big_clone,
+    .create = create_house_big_clone,
+    .tick = tick_house_big_clone,
+    .draw = draw_house_big_clone,
+    .collide = collide_house_big_clone,
+};
+
+/* ==============
+   HOUSE CLONE 3A
+   ============== */
+
+static void load_house_clone_3a() {
+    load_sprite_num("scenery/house/clone/3a/%u", 2, AKL_NEVER);
+}
+
+static void draw_house_clone_3a(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("scenery/house/clone/3a/%i", ((gamestate()->time * 3) / 50) % 2), FALSE);
+}
+
+const ActorTable TAB_HOUSE_3A = {
+    .load = load_house_clone_3a,
+    .create = create_house_zorro_clone,
+    .draw = draw_house_clone_3a,
+};
+
+/* =================
+   HOUSE CODER CLONE
+   ================= */
+
+static void load_house_coder_clone() {
+    load_sprite_num("scenery/house/clone/coder/%u", 2, AKL_NEVER);
+}
+
+static void draw_house_coder_clone(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("scenery/house/clone/coder/%i", (gamestate()->time / 25) % 2), FALSE);
+}
+
+const ActorTable TAB_HOUSE_CODER = {
+    .load = load_house_coder_clone,
+    .create = create_house_zorro_clone,
+    .draw = draw_house_coder_clone,
+};
+
+/* =================
+   HOUSE JAWS CLONE
+   ================= */
+
+static void load_house_jaws_clone() {
+    load_sprite_num("scenery/house/clone/jaws/%u", 4, AKL_NEVER);
+}
+
+static void draw_house_jaws_clone(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("scenery/house/clone/jaws/%i", ((gamestate()->time * 11) / 100) % 4), FALSE);
+}
+
+const ActorTable TAB_HOUSE_JAWS = {
+    .load = load_house_jaws_clone,
+    .create = create_house_zorro_clone,
+    .draw = draw_house_jaws_clone,
+};
+
+/* =====
+   FLUSH
+   ===== */
+
+static void load_flush() {
+    load_sprite_num("scenery/house/flush/%u", 20, AKL_NEVER);
+}
+
+static void create_flush(GameActor* actor) {
+    actor->depth = Int2Fx(27);
+}
+
+static void tick_flush(GameActor* actor) {
+    VAL(actor, SCENERY_FRAME) += 11;
+    while (VAL(actor, SCENERY_FRAME) >= 2000)
+        VAL(actor, SCENERY_FRAME) -= 1900;
+}
+
+static void draw_flush(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("scenery/house/flush/%i", VAL(actor, SCENERY_FRAME) / 100), FALSE);
+}
+
+const ActorTable TAB_HOUSE_FLUSH = {
+    .load = load_flush,
+    .create = create_flush,
+    .tick = tick_flush,
+    .draw = draw_flush,
+};
+
+/* =======================
+   HOUSE STAR CLOSED CLONE
+   ======================= */
+
+static void load_house_star_closed_clone() {
+    load_sprite_num("scenery/house/clone/star_closed/%u", 5, AKL_NEVER);
+}
+
+static void draw_house_star_closed_clone(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("scenery/house/clone/star_closed/%i", ((gamestate()->time * 2) / 25) % 5), FALSE);
+}
+
+const ActorTable TAB_HOUSE_STAR_CLOSED = {
+    .load = load_house_star_closed_clone,
+    .create = create_house_zorro_clone,
+    .draw = draw_house_star_closed_clone,
+};
+
+/* ===============
+   HOUSE CLONE YAP
+   =============== */
+
+static void load_house_clone_yap() {
+    load_sprite("scenery/house/clone/a", AKL_NEVER);
+    load_sprite_num("scenery/house/clone/a/%u", 9, AKL_NEVER);
+    load_sprite("scenery/house/clone/hat", AKL_NEVER);
+    load_sprite_num("scenery/house/clone/hat/%u", 8, AKL_NEVER);
+    load_sound_num("vo/clone/talk/%u", 5, AKL_NEVER);
+    load_sound_num("vo/clone/talk/%ub", 5, AKL_NEVER);
+}
+
+static void tick_house_clone_yap(GameActor* actor) {
+    if (VAL(actor, SCENERY_ANGLE) > 0) {
+        ++VAL(actor, SCENERY_FRAME);
+
+        if (--VAL(actor, SCENERY_ANGLE) <= 0) {
+            VAL(actor, SCENERY_ANIMATION) = VAL(actor, SCENERY_FRAME) = 0;
+            TOGGLE_FLAG(actor, FLG_SCENERY_ALT);
+        }
+    }
+
+    if (VAL(actor, SCENERY_ANGLE) <= 0) {
+        for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+            const GamePlayer* player = get_player(i);
+            if (player == NULL)
+                continue;
+
+            const GameActor* pawn = get_actor(player->actor);
+            if (pawn != NULL && pawn->type == ACT_PLAYER
+                && Rcollide(Radd(
+                                (FRect){
+                                    {Int2Fx(-240), Int2Fx(-96)},
+                                    {Int2Fx(145),  Int2Fx(6)  }
+            },
+                                actor->pos),
+                    Radd(pawn->box, pawn->pos)))
+            {
+                ++VAL(actor, SCENERY_ALPHA);
+                break;
+            }
+        }
+    }
+
+    if (VAL(actor, SCENERY_ALPHA) > 20) {
+        VAL(actor, SCENERY_ALPHA) = 0;
+        VAL(actor, SCENERY_ANIMATION) = 1;
+
+        const Sint32 r = rng(5);
+        switch (r) {
+        default:
+            VAL(actor, SCENERY_ANGLE) = ANY_FLAG(actor, FLG_SCENERY_ALT) ? 44 : 37;
+            break;
+        case 1:
+            VAL(actor, SCENERY_ANGLE) = ANY_FLAG(actor, FLG_SCENERY_ALT) ? 94 : 68;
+            break;
+        case 2:
+            VAL(actor, SCENERY_ANGLE) = ANY_FLAG(actor, FLG_SCENERY_ALT) ? 46 : 59;
+            break;
+        case 3:
+            VAL(actor, SCENERY_ANGLE) = ANY_FLAG(actor, FLG_SCENERY_ALT) ? 146 : 48;
+            break;
+        case 4:
+            VAL(actor, SCENERY_ANGLE) = ANY_FLAG(actor, FLG_SCENERY_ALT) ? 98 : 30;
+            break;
+        }
+
+        // !!! CLIENT-SIDE !!!
+        play_state_sound(
+            fmt("vo/clone/talk/%i%s", r, ANY_FLAG(actor, FLG_SCENERY_ALT) ? "b" : ""), PLAY_POS, A_ACTOR(actor));
+        // !!! CLIENT-SIDE !!!
+    }
+}
+
+static void draw_house_clone_yap(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor,
+        (!ANY_FLAG(actor, FLG_SCENERY_ALT) && VAL(actor, SCENERY_ANIMATION) > 0)
+            ? fmt("scenery/house/clone/a/%i", (VAL(actor, SCENERY_FRAME) / 2) % 9)
+            : "scenery/house/clone/a",
+        FALSE);
+
+    batch_offset(B_F3_XY(-10.f, 20.f));
+    draw_actor(actor,
+        (ANY_FLAG(actor, FLG_SCENERY_ALT) && VAL(actor, SCENERY_ANIMATION) > 0)
+            ? fmt("scenery/house/clone/hat/%i", (VAL(actor, SCENERY_FRAME) / 2) % 8)
+            : "scenery/house/clone/hat",
+        FALSE);
+}
+
+const ActorTable TAB_HOUSE_TALK = {
+    .load = load_house_clone_yap,
+    .create = create_house_zorro_clone,
+    .tick = tick_house_clone_yap,
+    .draw = draw_house_clone_yap,
+};
+
+/* ========
+   SAMOCHOD
+   ======== */
+
+static void load_samochod() {
+    load_sprite_num("scenery/clone/samochod/%u", 2, AKL_NEVER);
+    load_sound("clone/car", AKL_NEVER);
+}
+
+static void create_samochod(GameActor* actor) {
+    actor->depth = Int2Fx(26);
+
+    VAL(actor, SCENERY_FRAME) = 99999;
+}
+
+static void tick_samochod(GameActor* actor) {
+    for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn != NULL && pawn->type == ACT_PLAYER
+            && Rcollide(Radd(
+                            (FRect){
+                                {Int2Fx(-153), Int2Fx(-52)},
+                                {Int2Fx(334),  Int2Fx(50) }
+        },
+                            actor->pos),
+                Radd(pawn->box, pawn->pos)))
+        {
+            if (++VAL(actor, SCENERY_FRAME) > 70) {
+                VAL(actor, SCENERY_FRAME) = 0;
+
+                play_state_sound("clone/car", PLAY_POS, A_ACTOR(actor));
+            }
+
+            break;
+        }
+    }
+}
+
+static void draw_samochod(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, fmt("scenery/clone/samochod/%i", (gamestate()->time / 2) % 2), FALSE);
+}
+
+const ActorTable TAB_SAMOCHOD = {
+    .load = load_samochod,
+    .create = create_samochod,
+    .tick = tick_samochod,
+    .draw = draw_samochod,
+};
+
+/* ==============
+   KEYBOARD NOISE
+   ============== */
+
+static void load_keyboard_noise() {
+    load_sound_num("clone/keyboard/%u", 4, AKL_NEVER);
+}
+
+static void create_keyboard_noise(GameActor* actor) {
+    actor->box.end.x = actor->box.end.y = Int2Fx(32);
+
+    FLAG_OFF(actor, FLG_VISIBLE);
+}
+
+static void tick_keyboard_noise(GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_SCENERY_ACTIVE) && (gamestate()->time % 5) == 0) {
+        const Sint32 r = rng(10);
+        if (r >= 1 && r <= 4) {
+            const FVec2 center = Rcenter(Radd(actor->box, actor->pos));
+
+            // !!! CLIENT-SIDE !!!
+            play_state_sound(fmt("clone/keyboard/%i", r - 1), PLAY_POS, A_FVEC2(center));
+            // !!! CLIENT-SIDE !!!
+        }
+    }
+
+    FLAG_OFF(actor, FLG_SCENERY_ACTIVE);
+}
+
+const ActorTable TAB_KEYBOARD_NOISE = {
+    .load = load_keyboard_noise,
+    .create = create_keyboard_noise,
+    .tick = tick_keyboard_noise,
+    .collide = collide_house_big_clone,
+};
+
 /* ======
    FLOWER
    ====== */

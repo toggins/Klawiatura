@@ -1,0 +1,6 @@
+{
+    "texture": "scenery/house/clone/idle",
+    "size": [48, 59],
+    "offset": [-95, -24],
+    "uvs": [101, 182, 149, 241]
+}
