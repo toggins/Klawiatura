@@ -17,8 +17,14 @@ static void create_water_splash(GameActor* actor) {
 
 static void tick_water_splash(GameActor* actor) {
     VAL(actor, EFFECT_FRAME) += 7;
-    if (VAL(actor, EFFECT_FRAME) >= 150)
+    if (VAL(actor, EFFECT_FRAME) >= 150) {
         FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    const GameActor* hazard = get_actor(gamestate()->hazard);
+    if (hazard != NULL && hazard->type == ACT_WAVING_LEVEL)
+        move_actor(actor, Vadd(actor->pos, Vsub(hazard->pos, hazard->last_pos)));
 }
 
 static void draw_water_splash(const GameActor* actor) {

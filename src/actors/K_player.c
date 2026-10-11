@@ -881,6 +881,14 @@ static void tick(GameActor* actor) {
         actor->vel = ovel;
     }
 
+    const GameActor* hazard = get_actor(gamestate()->hazard);
+    if (hazard != NULL && hazard->type == ACT_WAVING_LEVEL && !TOUCHING(actor, TOUCH_BOTTOM)) {
+        const FVec2 ovel = actor->vel;
+        actor->vel = Vsub(hazard->pos, hazard->last_pos);
+        displace |= displace_actor(actor, Fx0, FALSE);
+        actor->vel = ovel;
+    }
+
     displace |= displace_actor(actor, Int2Fx(10), TRUE);
     if (displace & SOL_HURT)
         hit_player(actor);
@@ -1236,9 +1244,13 @@ static void create_dead(GameActor* actor) {
 }
 
 static void tick_dead(GameActor* actor) {
-    const GameActor* autoscroll = get_actor(gamestate()->autoscroll);
-    if (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS))
-        move_actor(actor, Vadd(actor->pos, Vsub(autoscroll->pos, autoscroll->last_pos)));
+    const GameActor* hazard = get_actor(gamestate()->autoscroll);
+    if (hazard != NULL && ANY_FLAG(hazard, FLG_SCROLL_TANKS))
+        move_actor(actor, Vadd(actor->pos, Vsub(hazard->pos, hazard->last_pos)));
+
+    hazard = get_actor(gamestate()->hazard);
+    if (hazard != NULL && hazard->type == ACT_WAVING_LEVEL)
+        move_actor(actor, Vadd(actor->pos, Vsub(hazard->pos, hazard->last_pos)));
 
     switch (++VAL(actor, PLAYER_DEAD)) {
     default:

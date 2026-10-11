@@ -231,6 +231,7 @@ enum {
     ACT_SHOTGUN,
     ACT_FLOWER,
     ACT_BULLET_PROJECTILE,
+    ACT_WAVING_LEVEL,
 
     ACT_SIZE,
 };

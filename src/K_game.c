@@ -1685,6 +1685,10 @@ static void draw_game_state() {
                 F_HALF_SCREEN);
     }
 
+    const GameActor* hazard = get_actor(game_state->hazard);
+    if (hazard != NULL && hazard->type == ACT_WAVING_LEVEL)
+        camera->pos.y = get_interp(hazard).y + F_HALF_SCREEN_HEIGHT;
+
     const Sint32 cx = Fx2Int(camera->pos.x), cy = Fx2Int(camera->pos.y);
     glm_look((vec3){(float)(cx - HALF_SCREEN_WIDTH), (float)(cy - HALF_SCREEN_HEIGHT), 0.f}, GLM_ZUP, GLM_YUP, view);
     set_view_matrix(view);

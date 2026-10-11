@@ -116,6 +116,12 @@ static void load_clouds() {
     load_sprite("effects/clouds_glow", AKL_NEVER);
 }
 
+static void tick_clouds(GameActor* actor) {
+    const GameActor* hazard = get_actor(gamestate()->hazard);
+    if (hazard != NULL && hazard->type == ACT_WAVING_LEVEL)
+        move_actor(actor, Vadd(actor->pos, Vsub(hazard->pos, hazard->last_pos)));
+}
+
 static void draw_clouds(const GameActor* actor) {
     batch_reset();
     const FVec2 ipos = get_interp(actor);
@@ -134,6 +140,7 @@ static void draw_clouds(const GameActor* actor) {
 const ActorTable TAB_CLOUDS = {
     .load = load_clouds,
     .create = create_cloud,
+    .tick = tick_clouds,
     .draw = draw_clouds,
 };
 

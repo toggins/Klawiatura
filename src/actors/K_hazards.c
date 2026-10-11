@@ -4,6 +4,7 @@
 
 #include "actors/K_hazards.h"
 #include "actors/K_player.h"
+#include "actors/K_water.h"
 
 /* ====
    SINK
@@ -376,4 +377,54 @@ const ActorTable TAB_ELECTRIC_CORAL = {
     .tick = tick_coral,
     .draw = draw_coral,
     .collide = collide_coral,
+};
+
+/* ============
+   WAVING LEVEL
+   ============ */
+
+static void create_waving_level(GameActor* actor) {
+    VAL(actor, WAVE_LENGTH) = Int2Fx(64);
+    VAL(actor, WAVE_SPEED) = 1144;
+    VAL(actor, WAVE_Y) = actor->pos.y;
+
+    FLAG_OFF(actor, FLG_VISIBLE);
+
+    GameState* game_state = gamestate();
+    GameActor* hazard = get_actor(game_state->hazard);
+    if (hazard != NULL)
+        FLAG_ON(hazard, FLG_DESTROY);
+    game_state->hazard = actor->id;
+}
+
+static void cleanup_waving_level(GameActor* actor) {
+    GameState* game_state = gamestate();
+    if (game_state->hazard == actor->id)
+        game_state->hazard = NULL_ACTOR;
+}
+
+static void pre_tick_waving_level(GameActor* actor) {
+    move_actor(
+        actor, (FVec2){actor->pos.x, VAL(actor, WAVE_Y) - Fmul(VAL(actor, WAVE_LENGTH), Fsin(VAL(actor, WAVE_ANGLE)))});
+    VAL(actor, WAVE_ANGLE) = Fmod(VAL(actor, WAVE_ANGLE) + VAL(actor, WAVE_SPEED), Fx2Pi);
+
+    GameActor* water = get_actor(gamestate()->water);
+    if (water != NULL) {
+        move_actor(water, Vadd(water->pos, Vsub(actor->pos, actor->last_pos)));
+        VAL(water, WATER_Y) = water->pos.y;
+    }
+
+    for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+        GamePlayer* player = get_player(i);
+        if (player != NULL) {
+            player->bounds.start.y = actor->pos.y;
+            player->bounds.end.y = actor->pos.y + F_SCREEN_HEIGHT;
+        }
+    }
+}
+
+const ActorTable TAB_WAVING_LEVEL = {
+    .create = create_waving_level,
+    .cleanup = cleanup_waving_level,
+    .pre_tick = pre_tick_waving_level,
 };
