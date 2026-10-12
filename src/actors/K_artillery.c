@@ -254,6 +254,9 @@ static void create_spike_ball_cannon(GameActor* actor) {
 
 static void tick_spike_ball_cannon(GameActor* actor) {
     const GameState* game_state = gamestate();
+    if (game_state->time == 0 && ANY_FLAG(actor, FLG_Y_FLIP))
+        actor->box = Ryflip(actor->box);
+
     if (in_any_view(actor->pos, Int2Fx(-64), VEF_ALL)
         && ((game_state->time % 50) == 0 || (game_state->flags & GF_FUNNY_TANKS)))
     {
@@ -261,13 +264,17 @@ static void tick_spike_ball_cannon(GameActor* actor) {
     }
 
     if (VAL(actor, ARTILLERY_FIRE) > ((game_state->flags & GF_FUNNY_TANKS) ? 40 : 2)) {
-        const FVec2 spos = Vadd(actor->pos, (FVec2){Int2Fx(31), Int2Fx(22)});
+        const FVec2 spos
+            = Vadd(actor->pos, (FVec2){Int2Fx(31), ANY_FLAG(actor, FLG_Y_FLIP) ? Int2Fx(-22) : Int2Fx(22)});
 
         GameActor* spike = create_actor(ACT_SPIKE_BALL_PROJECTILE, spos);
         if (spike != NULL) {
             spike->vel.x = Int2Fx(rng(3));
             spike->vel.x -= Int2Fx(rng(3));
-            spike->vel.y = Int2Fx(-7) - Int2Fx(rng(5));
+            if (ANY_FLAG(actor, FLG_Y_FLIP))
+                spike->vel.y = Int2Fx(rng(5));
+            else
+                spike->vel.y = Int2Fx(-7) - Int2Fx(rng(5));
         }
 
         create_actor(ACT_EXPLODE, spos);
@@ -336,4 +343,148 @@ const ActorTable TAB_FLAMETHROWER = {
     .load = load_flamethrower,
     .create = create_flamethrower,
     .tick = tick_flamethrower,
+};
+
+/* ======
+   CANNON
+   ====== */
+
+static void load_cannon() {
+    load_sprite("enemies/cannon", AKL_NEVER);
+    load_sound("bang/0", AKL_NEVER);
+    load_actor(ACT_EXPLODE);
+    load_actor(ACT_CANNON_BALL);
+}
+
+static void create_cannon(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-16);
+    actor->box.start.y = Int2Fx(-30);
+    actor->box.end.x = Int2Fx(16);
+    actor->box.end.y = Fx1;
+
+    actor->depth = 1310719;
+
+    VAL(actor, ARTILLERY_FIRE_SPEED) = 1;
+    VAL(actor, ARTILLERY_BULLET_SPEED) = Int2Fx(3);
+}
+
+static void tick_cannon(GameActor* actor) {
+    const GameState* game_state = gamestate();
+    if (game_state->time == 0) {
+        if (ANY_FLAG(actor, FLG_X_FLIP))
+            actor->box = Rxflip(actor->box);
+        if (ANY_FLAG(actor, FLG_Y_FLIP))
+            actor->box = Ryflip(actor->box);
+    }
+
+    if (in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
+        VAL(actor, ARTILLERY_FIRE) += VAL(actor, ARTILLERY_FIRE_SPEED);
+
+    if (VAL(actor, ARTILLERY_FIRE) > ((game_state->flags & GF_FUNNY_TANKS) ? 0 : 25)) {
+        VAL(actor, ARTILLERY_FIRE) = -50 - rng(150);
+
+        const FVec2 bpos = Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-11) : Int2Fx(11),
+                                                ANY_FLAG(actor, FLG_Y_FLIP) ? Int2Fx(25) : Int2Fx(-25)});
+        GameActor* ball = create_actor(ACT_CANNON_BALL, bpos);
+        if (ball != NULL) {
+            const Fixed spd
+                = Fmul(VAL(actor, ARTILLERY_BULLET_SPEED), (game_state->flags & GF_FUNNY_TANKS) ? Int2Fx(2) : Fx1);
+            ball->vel.x = ANY_FLAG(actor, FLG_X_FLIP) ? -spd : spd;
+            ball->vel.y = ANY_FLAG(actor, FLG_Y_FLIP) ? spd : -spd;
+        }
+
+        create_actor(ACT_EXPLODE, bpos);
+
+        play_state_sound("bang/0", PLAY_POS, A_ACTOR(actor));
+    }
+}
+
+static void draw_cannon(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, "enemies/cannon", FALSE);
+}
+
+const ActorTable TAB_CANNON = {
+    .is_solid = always_solid,
+    .load = load_cannon,
+    .create = create_cannon,
+    .tick = tick_cannon,
+    .draw = draw_cannon,
+};
+
+/* ===========
+   CANNON BALL
+   =========== */
+
+static void load_cannon_ball() {
+    load_sprite("enemies/cannon_ball", AKL_NEVER);
+    load_sound("stomp", AKL_NEVER);
+    load_sound("kick", AKL_NEVER);
+    load_actor(ACT_POINTS);
+}
+
+static void create_cannon_ball(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-11);
+    actor->box.start.y = Int2Fx(-12);
+    actor->box.end.x = Int2Fx(12);
+    actor->box.end.y = Int2Fx(12);
+
+    actor->depth = Fx1;
+}
+
+static void draw_cannon_ball(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, "enemies/cannon_ball", FALSE);
+}
+
+static void collide_cannon_ball(GameActor* actor, GameActor* from) {
+    if (ANY_FLAG(actor, FLG_ARTILLERY_DEAD))
+        return;
+
+    switch (from->type) {
+    default:
+        break;
+
+    case ACT_PLAYER: {
+        if (check_stomp(actor, from, -Fmin(actor->vel.y, Fx0), 100, TRUE))
+            kill_enemy(actor, from, FALSE);
+
+        break;
+    }
+
+    case ACT_FIREBALL_PROJECTILE: {
+        block_fireball(from);
+        break;
+    }
+
+    case ACT_BEETROOT_PROJECTILE: {
+        hit_beetroot(actor, from, 100);
+        break;
+    }
+
+    case ACT_HAMMER_PROJECTILE: {
+        hit_hammer(actor, from, 100);
+        break;
+    }
+
+    case ACT_BULLET_PROJECTILE: {
+        block_bullet(from);
+        break;
+    }
+
+    case ACT_KOOPA_SHELL:
+    case ACT_CODER_CLONE_RUN:
+    case ACT_BUZZY_SHELL: {
+        hit_shell(actor, from);
+        break;
+    }
+    }
+}
+
+const ActorTable TAB_CANNON_BALL = {
+    .load = load_cannon_ball,
+    .create = create_cannon_ball,
+    .tick = tick_bullet_bill,
+    .draw = draw_cannon_ball,
+    .collide = collide_cannon_ball,
 };

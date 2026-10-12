@@ -112,7 +112,8 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
         return NULL;
     }
 
-    case ACT_BULLET_BILL: {
+    case ACT_BULLET_BILL:
+    case ACT_CANNON_BALL: {
         if (ANY_FLAG(actor, FLG_ARTILLERY_DEAD))
             return actor;
 
@@ -120,6 +121,8 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
             actor->vel.x = 147456;
         else if (actor->vel.x < Fx0)
             actor->vel.x = -147456;
+        actor->vel.y = Fx0;
+
         FLAG_ON(actor, FLG_ARTILLERY_DEAD);
 
         if (kick)
