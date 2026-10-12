@@ -2733,7 +2733,13 @@
         "Spike Ball Cannon": {
             "type": "actor",
             "id": 94,
-            "sprite": "enemies/spike_ball_cannon"
+            "sprite": "enemies/spike_ball_cannon",
+            "flags": [
+                {
+                    "name": "Flip Y",
+                    "index": 3
+                }
+            ]
         },
         "Flamethrower": {
             "type": "actor",

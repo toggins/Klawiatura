@@ -45,6 +45,11 @@
             "sprite": "tiles/swamp/8",
             "depth": 20
         },
+        "Stage Block": {
+            "type": "tile",
+            "sprite": "tiles/block/stage",
+            "depth": 20
+        },
         "Volcano Top Left": {
             "type": "tile",
             "sprite": "tiles/volcano/0",
@@ -163,6 +168,11 @@
             "sprite": "tiles/block/old",
             "depth": 20
         },
+        "Flamethrower Angled": {
+            "type": "tile",
+            "sprite": "tiles/flamethrower/angled",
+            "depth": 18
+        },
         "Rocks": {
             "type": "background",
             "sprite": "scenery/rocks",
@@ -200,9 +210,19 @@
             "sprite": "scenery/sign/left",
             "depth": 30
         },
+        "Bass Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/bass",
+            "depth": 30
+        },
         "Shotgun Up Sign": {
             "type": "background",
             "sprite": "scenery/sign/shotgun_up",
+            "depth": 30
+        },
+        "Jump Sign": {
+            "type": "background",
+            "sprite": "scenery/sign/jump",
             "depth": 30
         },
         "Flower": {
@@ -232,6 +252,23 @@
             "sprite": "scenery/tree/sweden/big",
             "depth": 33
         },
+        "Heat Bubbles": {
+            "type": "actor",
+            "id": 159,
+            "sprite": "editor/heat_bubbles",
+            "values": [
+                {
+                    "name": "Start X",
+                    "index": 0,
+                    "type": "fixed"
+                },
+                {
+                    "name": "End X",
+                    "index": 1,
+                    "type": "fixed"
+                }
+            ]
+        },
         "P-Switch": {
             "type": "actor",
             "id": 149,
@@ -240,6 +277,25 @@
                 {
                     "name": "Once",
                     "index": 5
+                }
+            ]
+        },
+        "Waving Level": {
+            "type": "actor",
+            "id": 158,
+            "sprite": "editor/wave",
+            "values": [
+                {
+                    "name": "Length",
+                    "index": 0,
+                    "type": "fixed",
+                    "default": 4194304
+                },
+                {
+                    "name": "Speed",
+                    "index": 1,
+                    "type": "fixed",
+                    "default": 1144
                 }
             ]
         },
@@ -257,6 +313,35 @@
                     "name": "Flip X",
                     "index": 2,
                     "default": true
+                }
+            ]
+        },
+        "Cannon": {
+            "type": "actor",
+            "id": 152,
+            "sprite": "enemies/cannon",
+            "values": [
+                {
+                    "name": "Fire Speed",
+                    "index": 0,
+                    "default": 1
+                },
+                {
+                    "name": "Bullet Speed",
+                    "index": 1,
+                    "type": "fixed",
+                    "default": 196608
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2,
+                    "default": true
+                },
+                {
+                    "name": "Flip Y",
+                    "index": 3
                 }
             ]
         }
@@ -311,11 +396,15 @@
                 },
                 {
                     "name": "Blocks",
-                    "items": ["Gray Block", "Old Block", "Red Brick Block"]
+                    "items": ["Stage Block", "Gray Block", "Old Block", "Red Brick Block"]
                 },
                 {
                     "name": "Spikes",
                     "items": ["Brown Spike", "Blue Spike", "Gray Block"]
+                },
+                {
+                    "name": "Flamethrower",
+                    "items": ["Flamethrower Angled"]
                 }
             ]
         },
@@ -336,7 +425,7 @@
                 },
                 {
                     "name": "Signs",
-                    "items": ["Left Sign", "Shotgun Up Sign"]
+                    "items": ["Left Sign", "Bass Sign", "Shotgun Up Sign", "Jump Sign"]
                 },
                 {
                     "name": "Trees",
@@ -352,12 +441,13 @@
                     ]
                 },
                 "Flower",
-                "Rocks"
+                "Rocks",
+                "Heat Bubbles"
             ]
         },
         {
             "name": "Markers",
-            "items": ["P-Switch"]
+            "items": ["P-Switch", "Waving Level"]
         },
         {
             "name": "Items",
@@ -365,7 +455,13 @@
         },
         {
             "name": "Enemies",
-            "items": ["Buzzy"]
+            "items": [
+                {
+                    "name": "Artillery",
+                    "items": ["Cannon"]
+                },
+                "Buzzy"
+            ]
         }
     ]
 }

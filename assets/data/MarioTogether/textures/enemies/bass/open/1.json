@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/bass",
+    "size": [47, 64],
+    "offset": [23, 32],
+    "uvs": [148, 1, 195, 65]
+}

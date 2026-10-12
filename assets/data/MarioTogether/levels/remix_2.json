@@ -1,0 +1,1483 @@
+{
+    "label": "hud.world.remix_2",
+    "tracks": [{ "track": "jj2_diamondus_remix" }],
+    "size": [11000, 608],
+    "bounds": [0, 64, 11000, 544],
+    "time": 360,
+    "backdrops": [
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 0, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 32, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 64, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 96, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 128, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 160, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 192, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 224, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 256, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 288, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 320, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 608, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, 640, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, -32, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, -64, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, -96, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, -128, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, -160, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, -192, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, -224, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, -256, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, -288, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [-32, -320, 20]
+        },
+        {
+            "def": "Gradient Background",
+            "pos": [0, 0, 200],
+            "size": [11000, 608],
+            "colors": [
+                [0, 111, 223, 255],
+                [0, 111, 223, 255],
+                [242, 253, 252, 255],
+                [242, 253, 252, 255]
+            ]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [128, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [160, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [192, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [224, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [224, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [224, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [224, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [224, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [224, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [224, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [224, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [192, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [160, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [128, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [128, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [128, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [128, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [128, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [128, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [128, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [160, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [160, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [160, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [160, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [160, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [160, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [192, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [192, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [192, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [192, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [192, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [192, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [256, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [288, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [320, 352, 20]
+        },
+        {
+            "def": "Bass Sign",
+            "sprite": "scenery/sign/bass",
+            "pos": [288, 241, 30]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [672, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [672, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [672, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [672, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [672, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [704, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [704, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [704, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [704, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [704, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [736, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [736, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [736, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [736, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [736, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [640, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [608, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [608, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [608, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [608, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [608, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [640, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [640, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [640, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [640, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [576, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [576, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [576, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [576, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [576, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [320, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [320, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [320, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [320, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [320, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [320, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [320, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [288, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [256, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [256, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [256, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [256, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [256, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [256, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [256, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [288, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [288, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [288, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [288, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [288, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [288, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [928, 288, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [928, 320, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [928, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [928, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [928, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [928, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [928, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [928, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [928, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [960, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [960, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [960, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [960, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [960, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [960, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [960, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [960, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [960, 320, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [960, 288, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [928, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1472, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1472, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1472, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1472, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1472, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1472, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1504, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1504, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1504, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1504, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1504, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1504, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1504, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1472, 576, 20]
+        },
+        {
+            "def": "Bridge Purple",
+            "sprite": "tiles/bridge/purple",
+            "pos": [1184, 352, 20]
+        },
+        {
+            "def": "Bridge Purple",
+            "sprite": "tiles/bridge/purple",
+            "pos": [1280, 352, 20]
+        },
+        {
+            "def": "Bridge Purple",
+            "sprite": "tiles/bridge/purple",
+            "pos": [1376, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1472, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1504, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1056, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1024, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [992, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1120, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1088, 352, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 160, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 128, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 96, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 64, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 32, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 0, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, -32, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, -64, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, -96, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, -128, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, -160, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, -192, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, -224, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, -256, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, -288, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, -320, 20]
+        },
+        {
+            "def": "Forest",
+            "sprite": "scenery/forest",
+            "pos": [927, 320, 60]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [992, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1024, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1056, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1088, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1120, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 384, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [992, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [992, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [992, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [992, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [992, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [992, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1024, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1024, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1024, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1024, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1024, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1024, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1056, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1056, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1056, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1056, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1056, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1056, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1088, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1088, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1088, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1088, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1088, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1088, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1120, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1120, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1120, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1120, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1120, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1120, 576, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 544, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 512, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 480, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 448, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 416, 20]
+        },
+        {
+            "def": "Stage Block",
+            "sprite": "tiles/block/stage",
+            "pos": [1152, 576, 20]
+        }
+    ],
+    "collisions": [
+        {
+            "pos": [-32, -320],
+            "size": [49, 31],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 10, 1],
+                [0, 11, 1],
+                [0, 12, 1],
+                [0, 13, 1],
+                [0, 14, 1],
+                [0, 15, 1],
+                [0, 16, 1],
+                [0, 17, 1],
+                [0, 18, 1],
+                [0, 19, 1],
+                [0, 20, 1],
+                [0, 21, 1],
+                [0, 22, 1],
+                [0, 23, 1],
+                [0, 24, 1],
+                [0, 25, 1],
+                [0, 26, 1],
+                [0, 27, 1],
+                [0, 28, 1],
+                [0, 29, 1],
+                [0, 30, 1],
+                [0, 9, 1],
+                [0, 8, 1],
+                [0, 7, 1],
+                [0, 6, 1],
+                [0, 5, 1],
+                [0, 4, 1],
+                [0, 3, 1],
+                [0, 2, 1],
+                [0, 1, 1],
+                [0, 0, 1],
+                [5, 21, 1],
+                [6, 21, 1],
+                [7, 21, 1],
+                [8, 21, 1],
+                [8, 22, 1],
+                [8, 23, 1],
+                [8, 24, 1],
+                [8, 25, 1],
+                [8, 26, 1],
+                [8, 27, 1],
+                [8, 28, 1],
+                [7, 28, 1],
+                [6, 28, 1],
+                [5, 28, 1],
+                [5, 27, 1],
+                [5, 26, 1],
+                [5, 25, 1],
+                [5, 24, 1],
+                [5, 23, 1],
+                [5, 22, 1],
+                [6, 22, 1],
+                [6, 23, 1],
+                [6, 24, 1],
+                [6, 25, 1],
+                [6, 26, 1],
+                [6, 27, 1],
+                [7, 27, 1],
+                [7, 26, 1],
+                [7, 25, 1],
+                [7, 24, 1],
+                [7, 23, 1],
+                [7, 22, 1],
+                [9, 21, 1],
+                [10, 21, 1],
+                [11, 21, 1],
+                [22, 24, 1],
+                [22, 25, 1],
+                [22, 26, 1],
+                [22, 27, 1],
+                [22, 28, 1],
+                [23, 28, 1],
+                [23, 27, 1],
+                [23, 26, 1],
+                [23, 25, 1],
+                [23, 24, 1],
+                [24, 24, 1],
+                [24, 25, 1],
+                [24, 26, 1],
+                [24, 27, 1],
+                [24, 28, 1],
+                [21, 24, 1],
+                [20, 24, 1],
+                [20, 25, 1],
+                [20, 26, 1],
+                [20, 27, 1],
+                [20, 28, 1],
+                [21, 28, 1],
+                [21, 27, 1],
+                [21, 26, 1],
+                [21, 25, 1],
+                [19, 24, 1],
+                [19, 25, 1],
+                [19, 26, 1],
+                [19, 27, 1],
+                [19, 28, 1],
+                [11, 22, 1],
+                [11, 23, 1],
+                [11, 24, 1],
+                [11, 25, 1],
+                [11, 26, 1],
+                [11, 27, 1],
+                [11, 28, 1],
+                [10, 28, 1],
+                [9, 28, 1],
+                [9, 27, 1],
+                [9, 26, 1],
+                [9, 25, 1],
+                [9, 24, 1],
+                [9, 23, 1],
+                [9, 22, 1],
+                [10, 22, 1],
+                [10, 23, 1],
+                [10, 24, 1],
+                [10, 25, 1],
+                [10, 26, 1],
+                [10, 27, 1],
+                [30, 19, 1],
+                [30, 20, 1],
+                [30, 21, 1],
+                [30, 22, 1],
+                [30, 23, 1],
+                [30, 24, 1],
+                [30, 25, 1],
+                [30, 26, 1],
+                [30, 27, 1],
+                [31, 28, 1],
+                [31, 27, 1],
+                [31, 26, 1],
+                [31, 25, 1],
+                [31, 24, 1],
+                [31, 23, 1],
+                [31, 22, 1],
+                [31, 21, 1],
+                [31, 20, 1],
+                [31, 19, 1],
+                [30, 28, 1],
+                [47, 22, 1],
+                [47, 23, 1],
+                [47, 24, 1],
+                [47, 25, 1],
+                [47, 26, 1],
+                [47, 27, 1],
+                [48, 27, 1],
+                [48, 28, 1],
+                [48, 22, 1],
+                [48, 23, 1],
+                [48, 24, 1],
+                [48, 25, 1],
+                [48, 26, 1],
+                [47, 28, 1],
+                [47, 21, 1],
+                [48, 21, 1],
+                [34, 21, 1],
+                [33, 21, 1],
+                [32, 21, 1],
+                [37, 21, 1],
+                [36, 21, 1],
+                [35, 21, 1],
+                [37, 15, 1],
+                [37, 14, 1],
+                [37, 13, 1],
+                [37, 12, 1],
+                [37, 11, 1],
+                [37, 10, 1],
+                [37, 9, 1],
+                [37, 8, 1],
+                [37, 7, 1],
+                [37, 6, 1],
+                [37, 5, 1],
+                [37, 4, 1],
+                [37, 3, 1],
+                [37, 2, 1],
+                [37, 1, 1],
+                [37, 0, 1],
+                [32, 22, 1],
+                [33, 22, 1],
+                [34, 22, 1],
+                [35, 22, 1],
+                [36, 22, 1],
+                [37, 22, 1],
+                [32, 23, 1],
+                [32, 24, 1],
+                [32, 25, 1],
+                [32, 26, 1],
+                [32, 27, 1],
+                [32, 28, 1],
+                [33, 28, 1],
+                [33, 27, 1],
+                [33, 26, 1],
+                [33, 25, 1],
+                [33, 24, 1],
+                [33, 23, 1],
+                [34, 23, 1],
+                [34, 24, 1],
+                [34, 25, 1],
+                [34, 26, 1],
+                [34, 27, 1],
+                [34, 28, 1],
+                [35, 23, 1],
+                [35, 24, 1],
+                [35, 25, 1],
+                [35, 26, 1],
+                [35, 27, 1],
+                [35, 28, 1],
+                [36, 23, 1],
+                [36, 24, 1],
+                [36, 25, 1],
+                [36, 26, 1],
+                [36, 27, 1],
+                [36, 28, 1],
+                [37, 27, 1],
+                [37, 26, 1],
+                [37, 25, 1],
+                [37, 24, 1],
+                [37, 23, 1],
+                [37, 28, 1]
+            ]
+        },
+        {
+            "pos": [1184, 352],
+            "size": [3, 1],
+            "cell_size": [96, 18],
+            "cells": [
+                [0, 0, 1],
+                [1, 0, 1],
+                [2, 0, 1]
+            ]
+        }
+    ],
+    "actors": [
+        {
+            "def": "Water",
+            "id": 13,
+            "pos": [0, 416]
+        },
+        {
+            "def": "Player Spawn",
+            "id": 1,
+            "pos": [192, 351],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 1]
+            ]
+        },
+        {
+            "def": "Waving Level",
+            "id": 158,
+            "pos": [0, 64],
+            "values": [
+                [0, 4128768],
+                [1, 1144]
+            ]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [192, 325]
+        },
+        {
+            "def": "Clouds",
+            "id": 19,
+            "pos": [-64, 36, -50],
+            "vel": [-131072, 0]
+        },
+        {
+            "def": "Clouds",
+            "id": 19,
+            "pos": [-64, 56, 50],
+            "vel": [-65536, 0]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [928, 261]
+        },
+        {
+            "def": "Koopa",
+            "id": 39,
+            "pos": [1517, 351],
+            "flags": 132
+        },
+        {
+            "def": "Koopa",
+            "id": 39,
+            "pos": [1453, 351],
+            "flags": 132
+        },
+        {
+            "def": "Koopa",
+            "id": 39,
+            "pos": [1389, 351],
+            "flags": 132
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [1056, 160],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [1088, 160],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [1120, 160],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Item Block",
+            "id": 24,
+            "pos": [1056, 160],
+            "values": [[1, 21]]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [656, 352]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [656, 320]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [656, 288]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "pos": [656, 256]
+        },
+        {
+            "def": "Bush",
+            "id": 17,
+            "pos": [1120, 325]
+        }
+    ]
+}
