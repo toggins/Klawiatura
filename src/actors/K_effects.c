@@ -2,6 +2,7 @@
 #include "K_video.h"
 
 #include "actors/K_effects.h"
+#include "actors/K_screen.h"
 
 /* ============
    WATER SPLASH
@@ -358,4 +359,48 @@ const ActorTable TAB_TEST_TUBE_BUBBLE = {
     .create = create_test_tube_bubble,
     .tick = tick_test_tube_bubble,
     .draw = draw_test_tube_bubble,
+};
+
+/* ===========
+   HEAT BUBBLE
+   =========== */
+
+static void load_heat_bubble() {
+    load_sprite("effects/lava_bubble", AKL_NEVER);
+}
+
+static void create_heat_bubble(GameActor* actor) {
+    actor->depth = Int2Fx(-200);
+
+    VAL(actor, EFFECT_X) = actor->pos.x;
+}
+
+static void tick_heat_bubble(GameActor* actor) {
+    if (++VAL(actor, EFFECT_FRAME) >= 84) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    const GameActor* autoscroll = get_actor(gamestate()->autoscroll);
+    if (autoscroll != NULL && ANY_FLAG(autoscroll, FLG_SCROLL_TANKS))
+        VAL(actor, EFFECT_X) += autoscroll->pos.x - autoscroll->last_pos.x;
+
+    move_actor(
+        actor, Vadd((FVec2){VAL(actor, EFFECT_X) - Fmul(Int2Fx(50), Fsin(VAL(actor, EFFECT_ANGLE))), actor->pos.y},
+                   actor->vel));
+    VAL(actor, EFFECT_ANGLE) = Fmod(VAL(actor, EFFECT_ANGLE) + 4575, Fx2Pi);
+}
+
+static void draw_heat_bubble(const GameActor* actor) {
+    batch_reset();
+    const float scale = 1.f - ((float)VAL(actor, EFFECT_FRAME) / 84.f);
+    batch_scale(B_F2_S(scale));
+    draw_actor(actor, "effects/lava_bubble", AKL_NEVER);
+}
+
+const ActorTable TAB_HEAT_BUBBLE = {
+    .load = load_heat_bubble,
+    .create = create_heat_bubble,
+    .tick = tick_heat_bubble,
+    .draw = draw_heat_bubble,
 };

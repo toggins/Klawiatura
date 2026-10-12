@@ -15,6 +15,9 @@ enum {
     VAL_SCENERY_SPEED,
     VAL_SCENERY_X,
     VAL_SCENERY_Y,
+
+    VAL_HEAT_START_X = 0,
+    VAL_HEAT_END_X,
 };
 
 #define FLG_SCENERY_ACTIVE CUSTOM_FLAG(0)
@@ -1241,4 +1244,68 @@ const ActorTable TAB_FLOWER = {
     .create = create_flower,
     .tick = tick_flower,
     .draw = draw_flower,
+};
+
+/* ============
+   HEAT BUBBLES
+   ============ */
+
+static void load_heat_bubbles() {
+    load_actor(ACT_HEAT_BUBBLE);
+}
+
+static void tick_heat_bubbles(GameActor* actor) {
+    const GameState* game_state = gamestate();
+    if ((game_state->time % 12) > 0)
+        return;
+
+    Bool valid = FALSE;
+    Fixed xmin = FxUpper, xmax = FxLower, ymax = FxLower;
+
+    const GameActor* autoscroll = get_actor(game_state->autoscroll);
+    if (autoscroll == NULL) {
+        for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+            const GamePlayer* player = get_player(i);
+            if (player == NULL)
+                continue;
+
+            if (VAL(actor, HEAT_START_X) != VAL(actor, HEAT_END_X)) {
+                const GameActor* pawn = get_actor(player->actor);
+                if (pawn == NULL || pawn->type != ACT_PLAYER || pawn->pos.x <= VAL(actor, HEAT_START_X)
+                    || pawn->pos.x >= VAL(actor, HEAT_END_X))
+                {
+                    continue;
+                }
+            }
+
+            const FVec2 view = get_player_view(player);
+            xmin = Fmin(xmin, view.x);
+            xmax = Fmax(xmax, view.x + F_SCREEN_WIDTH);
+            ymax = Fmax(ymax, view.y + F_SCREEN_HEIGHT);
+            valid = TRUE;
+        }
+    } else if (VAL(actor, HEAT_START_X) == VAL(actor, HEAT_END_X)
+               || (autoscroll->pos.x > VAL(actor, HEAT_START_X) && autoscroll->pos.x < VAL(actor, HEAT_END_X)))
+    {
+        xmin = autoscroll->pos.x;
+        xmax = autoscroll->pos.x + F_SCREEN_WIDTH;
+        ymax = autoscroll->pos.y + F_SCREEN_HEIGHT;
+        valid = TRUE;
+    }
+
+    if (!valid)
+        return;
+
+    FVec2 bpos = (FVec2){xmin, ymax};
+    bpos.x += Ffloor(rng(xmax - xmin));
+    bpos.y += Int2Fx(10);
+
+    GameActor* bubble = create_actor(ACT_HEAT_BUBBLE, bpos);
+    if (bubble != NULL)
+        bubble->vel.y = -163840 - (rng(20) * 8192);
+}
+
+const ActorTable TAB_HEAT_BUBBLES = {
+    .load = load_heat_bubbles,
+    .tick = tick_heat_bubbles,
 };
