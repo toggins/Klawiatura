@@ -46,17 +46,17 @@ static void tick(GameActor* actor) {
         break;
 
     case 1: {
-        VAL(actor, CHECKPOINT_FRAME) += FxHalf;
-        if (VAL(actor, CHECKPOINT_FRAME) >= Int2Fx(20)) {
+        VAL(actor, CHECKPOINT_FRAME) += 50;
+        if (VAL(actor, CHECKPOINT_FRAME) >= 2000) {
             VAL(actor, CHECKPOINT_ANIMATION) = 2;
-            VAL(actor, CHECKPOINT_FRAME) = Fx0;
+            VAL(actor, CHECKPOINT_FRAME) = 0;
         }
 
         break;
     }
 
     case 2: {
-        VAL(actor, CHECKPOINT_FRAME) = Fmod(VAL(actor, CHECKPOINT_FRAME) + 6554, Int2Fx(2));
+        VAL(actor, CHECKPOINT_FRAME) = (VAL(actor, CHECKPOINT_FRAME) + 10) % 200;
         break;
     }
     }
@@ -95,10 +95,10 @@ static void draw(const GameActor* actor) {
     default:
         break;
     case 1:
-        sprite = fmt("markers/checkpoint/%i", Fx2Int(VAL(actor, CHECKPOINT_FRAME)) % 2);
+        sprite = fmt("markers/checkpoint/%i", (VAL(actor, CHECKPOINT_FRAME) / 100) % 2);
         break;
     case 2:
-        sprite = fmt("markers/checkpoint/%i", 1 + Fx2Int(VAL(actor, CHECKPOINT_FRAME)));
+        sprite = fmt("markers/checkpoint/%i", 1 + (VAL(actor, CHECKPOINT_FRAME) / 100));
         break;
     }
 
@@ -115,7 +115,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
     actor->player = from->player;
     VAL(actor, CHECKPOINT_ANIMATION) = 1;
-    VAL(actor, CHECKPOINT_FRAME) = Fx0;
+    VAL(actor, CHECKPOINT_FRAME) = 0;
     ++VAL(actor, CHECKPOINT_STATE);
 
     GameActor* effect = create_actor(ACT_CHECKPOINT_EFFECT, Vadd(actor->pos, (FVec2){Int2Fx(54), Int2Fx(33)}));
