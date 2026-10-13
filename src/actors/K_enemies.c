@@ -464,7 +464,7 @@ static void tick_dead(GameActor* actor) {
                     VAL(lakitu, LAKITU_AGGRO) = VAL(actor, LAKITU_AGGRO);
                     VAL(lakitu, LAKITU_AGGRO_START) = VAL(actor, LAKITU_AGGRO_START);
                     VAL(lakitu, LAKITU_AGGRO_END) = VAL(actor, LAKITU_AGGRO_END);
-                    FLAG_ON(lakitu, actor->flags & FLG_LAKITU_FAST);
+                    FLAG_ON(lakitu, actor->flags & (FLG_LAKITU_FAST | FLG_LAKITU_SPAWNED));
                 }
             }
 
