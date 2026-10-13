@@ -190,6 +190,10 @@ void player_starman(GameActor* actor, GameActor* from) {
     }
     }
 
+    GameState* game_state = gamestate();
+    if (game_state->flags & GF_STARMAN_RUNNING)
+        game_state->clock += 2000;
+
     create_actor(ACT_EXPLODE, Rcenter(Radd(from->box, from->pos)));
     give_points(from, get_player(actor->player), points);
     kill_enemy(from, actor, TRUE);
@@ -265,6 +269,11 @@ static void load() {
     load_sprite_num("ui/coins/%u", 3, AKL_NEVER);
     load_sprite_num("effects/shield/%u", 4, AKL_NEVER);
     load_sprite_num("effects/shield/super/%u", 4, AKL_NEVER);
+
+    const GameState* game_state = gamestate();
+    if (game_state->flags & GF_STARMAN_RUNNING)
+        load_sprite("ui/starman_gauge", AKL_NEVER);
+
     load_font("hud", AKL_NEVER);
     load_sound("jump", AKL_NEVER);
     load_sound("fire", AKL_NEVER);
@@ -274,7 +283,7 @@ static void load() {
     load_sound("bump", AKL_NEVER);
     load_sound("stomp", AKL_NEVER);
 
-    if (gamestate()->clock >= 0) {
+    if (game_state->clock >= 0) {
         load_sound("hurry", AKL_NEVER);
         load_sound("tick", AKL_NEVER);
     }
@@ -285,7 +294,8 @@ static void load() {
         load_sound("respawn", AKL_NEVER);
     }
 
-    load_track((gamestate()->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", AKL_NEVER);
+    load_track(
+        (game_state->flags & (GF_LOST_MAP | GF_STARMAN_RUNNING)) ? "smw/bonus_clear" : "smw/castle_clear", AKL_NEVER);
     load_actor(ACT_PLAYER_DEAD);
     load_actor(ACT_FIREBALL_PROJECTILE);
     load_actor(ACT_BEETROOT_PROJECTILE);
@@ -976,7 +986,7 @@ static void post_tick(GameActor* actor) {
     if (VAL(actor, PLAYER_STARMAN) > 0) {
         --VAL(actor, PLAYER_STARMAN);
         if (VAL(actor, PLAYER_STARMAN) == 99) {
-            if (can_affect_track())
+            if (can_affect_track() && !(gamestate()->flags & GF_STARMAN_RUNNING))
                 fade_state_track(actor->player, 0.f, 100.f);
         } else if (VAL(actor, PLAYER_STARMAN) <= 0) {
             VAL(actor, PLAYER_STARMAN_COMBO) = 0;
@@ -1224,7 +1234,7 @@ const ActorTable TAB_PLAYER_EFFECT = {
 
 static void load_dead() {
     const GameFlags flags = gamestate()->flags;
-    if (flags & GF_LOST_MAP)
+    if (flags & (GF_LOST_MAP | GF_STARMAN_RUNNING))
         load_track("smw/lose2", AKL_NEVER);
     else if (flags & GF_HARDCORE)
         load_track("smw/lose_hardcore", AKL_NEVER);

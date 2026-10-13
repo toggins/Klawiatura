@@ -146,8 +146,14 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
         }
     }
 
-    if (!ANY_FLAG(actor, FLG_BLOCK_REPEAT) || VAL(actor, BLOCK_TIME) > 301)
+    if (!ANY_FLAG(actor, FLG_BLOCK_REPEAT) || VAL(actor, BLOCK_TIME) > 301) {
         FLAG_ON(actor, FLG_BLOCK_EMPTY);
+        if ((gamestate()->flags & GF_STARMAN_RUNNING) && gamecontext()->num_players > 1) {
+            const Fixed refill = Fmax(Fmul(500, Fsqr(Fdiv(actor->pos.x, levelinfo()->size.x))), 10);
+            VAL(actor, BLOCK_REFILL) = refill + VAL(actor, BLOCK_PENALTY);
+            VAL(actor, BLOCK_PENALTY) += Fhalf(refill);
+        }
+    }
 
     return TRUE;
 }
@@ -217,6 +223,14 @@ static void pre_tick(GameActor* actor) {
 
     if (VAL(actor, BLOCK_TIME) >= 1 && VAL(actor, BLOCK_TIME) <= 301)
         ++VAL(actor, BLOCK_TIME);
+
+    if (VAL(actor, BLOCK_REFILL) > 0) {
+        if (--VAL(actor, BLOCK_REFILL) <= 0)
+            FLAG_OFF(actor, FLG_BLOCK_EMPTY);
+
+        if (VAL(actor, BLOCK_PENALTY) > 0 && !in_any_view(actor->pos, Int2Fx(-200), VEF_ALL))
+            --VAL(actor, BLOCK_PENALTY);
+    }
 }
 
 static void draw(const GameActor* actor) {
@@ -354,7 +368,7 @@ static void draw(const GameActor* actor) {
     batch_offset(B_F3_XY(0.f, bump));
 
     const char* sprite = "items/block/empty";
-    if (!ANY_FLAG(actor, FLG_BLOCK_EMPTY)) {
+    if (!ANY_FLAG(actor, FLG_BLOCK_EMPTY) || VAL(actor, BLOCK_REFILL) > 0) {
         switch (VAL(actor, BLOCK_TYPE)) {
         default:
             sprite = fmt("items/block/%i", ((gamestate()->time * 9) / 100) % 3);
@@ -364,6 +378,9 @@ static void draw(const GameActor* actor) {
             break;
         }
     }
+
+    if (VAL(actor, BLOCK_REFILL) > 0)
+        batch_color(B_U4_GRAY);
     draw_actor(actor, sprite, FALSE);
 }
 

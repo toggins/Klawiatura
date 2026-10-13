@@ -659,6 +659,8 @@ static void load_level(TinyHash key) {
         game_state->flags |= GF_LOST_MAP;
     if (yyjson_get_bool(yyjson_obj_get(root, "funny_tanks")))
         game_state->flags |= GF_FUNNY_TANKS;
+    if (yyjson_get_bool(yyjson_obj_get(root, "starman_running")))
+        game_state->flags |= GF_STARMAN_RUNNING;
     if (yyjson_get_bool(yyjson_obj_get(root, "ambush")))
         set_sequence(GS_AMBUSH, NULL, 0);
 
@@ -1012,8 +1014,11 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
     }
 
     case GS_NONE: {
-        if (game_state->clock <= 0 || game_state->time <= 0 || (game_state->time % 25) > 0)
+        if (game_state->clock <= 0 || game_state->time <= 0
+            || (!(game_state->flags & GF_STARMAN_RUNNING) && (game_state->time % 25) > 0))
+        {
             break;
+        }
 
         Bool all_inactive = TRUE;
         for (PlayerID i = 0; i < game_context.num_players; i++) {
@@ -1034,14 +1039,22 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         if (all_inactive)
             break;
 
-        --game_state->clock;
+        if (game_state->flags & GF_STARMAN_RUNNING) {
+            game_state->clock -= 111;
+            if (game_state->clock < 0)
+                game_state->clock = 0;
+        } else {
+            --game_state->clock;
+        }
 
         if (game_state->clock <= 100 && !(game_state->flags & GF_HURRY)) {
             game_state->flags |= GF_HURRY;
 
-            // !!! CLIENT-SIDE !!!
-            videostate()->hurry = 1;
-            // !!! CLIENT-SIDE !!!
+            if (!(game_state->flags & GF_STARMAN_RUNNING)) {
+                // !!! CLIENT-SIDE !!!
+                videostate()->hurry = 1;
+                // !!! CLIENT-SIDE !!!
+            }
 
             play_state_sound("hurry", 0, NULL);
         }
@@ -1082,7 +1095,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
             if (autoscroll != NULL && !ANY_FLAG(autoscroll, FLG_SCROLL_BOWSER | FLG_SCROLL_TANKS))
                 autoscroll->vel.x = autoscroll->vel.y = Fx0;
 
-            if (game_state->flags & GF_LOST_MAP)
+            if (game_state->flags & (GF_LOST_MAP | GF_STARMAN_RUNNING))
                 play_state_track(sequence->activator, "smw/lose2", 0, 0);
             else if (game_state->flags & GF_HARDCORE)
                 play_state_track(sequence->activator, "smw/lose_hardcore", 0, 0);
@@ -1140,7 +1153,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         if (sequence->time < 400)
             ++sequence->time;
 
-        if (sequence->time >= 400 || (game_state->flags & GF_LOST_MAP)) {
+        if (sequence->time >= 400 || (game_state->flags & (GF_LOST_MAP | GF_STARMAN_RUNNING))) {
             if (game_state->clock > 0) {
                 GamePlayer* player = get_player(sequence->activator);
 
@@ -1154,8 +1167,15 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
                         player->score += 100;
                 }
 
+                if (game_state->flags & GF_STARMAN_RUNNING) {
+                    if (game_state->clock >= 100)
+                        game_state->clock -= 100;
+                    if (game_state->clock >= 1000)
+                        game_state->clock -= 1000;
+                }
+
                 if ((game_state->time % 5) == 0) {
-                    if ((game_state->flags & GF_LOST_MAP) && game_state->clock > 0) {
+                    if ((game_state->flags & (GF_LOST_MAP | GF_STARMAN_RUNNING)) && game_state->clock > 0) {
                         --game_state->clock;
                         if (player != NULL)
                             ++player->score;
@@ -1165,12 +1185,15 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
                 }
             }
 
-            if (game_state->clock <= 0 && sequence->state < 50)
+            if (game_state->clock <= 0 && sequence->state < 1000)
                 ++sequence->state;
         }
 
-        if (sequence->state >= 50 && (!(game_state->flags & GF_LOST_MAP) || sequence->time >= 140))
+        if (sequence->state >= (((game_state->flags & GF_STARMAN_RUNNING) && game_context.num_players > 1) ? 180 : 50)
+            && (!(game_state->flags & (GF_LOST_MAP | GF_STARMAN_RUNNING)) || sequence->time >= 140))
+        {
             game_state->flags |= GF_END;
+        }
 
         break;
     }
@@ -1528,6 +1551,8 @@ void interp_game() {
     }
 }
 
+// static ActorID debug_num_actors = 0;
+
 static void draw_hud() {
     const GamePlayer* player = get_player(view_player);
     if (player == NULL)
@@ -1615,7 +1640,8 @@ static void draw_hud() {
     }
 
     if (game_state->clock >= 0) {
-        batch_pos(B_F3_XY(SCREEN_WIDTH - 32.f, 24.f));
+        const char* lstr = LFMT("hud.time");
+        batch_pos(B_F3_XY(SCREEN_WIDTH - 32.f - (string_width("hud", 16.f, lstr) * 0.5f), 24.f));
 
         if (video_state->hurry > 0 && video_state->hurry <= 120) {
             const float hurry = (float)((video_state->hurry - 1) % 12);
@@ -1623,12 +1649,36 @@ static void draw_hud() {
                 1.f, (hurry < 6.f) ? (1.f - ((hurry / 6.f) * 0.375f)) : (0.625f + (((hurry - 6.f) / 6.f) * 0.375f))));
         }
 
-        batch_align(B_ALIGN(FA_RIGHT, FA_MIDDLE));
-        batch_string("hud", 16.f, LFMT("hud.time"));
+        float size = 16.f;
+        if (game_state->flags & GF_STARMAN_RUNNING) {
+            const Uint64 pulse = game_state->time % 16;
+            size = (pulse <= 9) ? glm_lerp(16.f, 10.f, (float)pulse / 9.f)
+                                : glm_lerp(10.f, 16.f, (float)(pulse - 9) / 7.f);
+        }
+
+        batch_align(B_ALIGN_CENTER);
+        batch_string("hud", size, lstr);
         batch_pos(B_F3_XY(SCREEN_WIDTH - 32.f, 34.f));
         batch_scale(B_F2_1);
         batch_align(B_ALIGN_TOP_RIGHT);
         batch_string("hud", 16.f, fmt("%i", game_state->clock));
+    }
+
+    if (game_state->flags & GF_STARMAN_RUNNING) {
+        batch_pos(B_F3_XY(SCREEN_WIDTH - 32.f, 56.f));
+        batch_sprite("ui/starman_gauge");
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn != NULL && pawn->type == ACT_PLAYER && VAL(pawn, PLAYER_STARMAN) > 0) {
+            float am = (float)VAL(pawn, PLAYER_STARMAN) / 500.f;
+            am = SDL_clamp(am, 0.f, 1.f);
+
+            const float r = glm_lerp(255.f, 255.f, am), g = glm_lerp(67.f, 0.f, am), b = glm_lerp(143.f, 59.f, am);
+            batch_pos(B_F3_XY(SCREEN_WIDTH - 63.f, 93.f + ((1.f - am) * 96.f)));
+            batch_colors(B_U4X4({r, g, b, 255}, {r, g, b, 255}, {255, 0, 59, 255}, {255, 0, 59, 255}));
+            batch_rectangle(NULL, B_F2(26.f, am * 96.f));
+            batch_color(B_U4_WHITE);
+        }
     }
 
     if (view_player != local_player && get_replay_state() != RPS_PLAYING) {
@@ -1646,6 +1696,10 @@ static void draw_hud() {
         batch_align(B_ALIGN_CENTER);
         batch_string("hud", 16.f, LFMT("hud.game_over"));
     }
+
+    // batch_pos(B_F3_XY(0.f, SCREEN_HEIGHT));
+    // batch_align(B_ALIGN_BOTTOM_LEFT);
+    // batch_string("hud", 16.f, fmt("%i", debug_num_actors));
 }
 
 static void draw_game_state() {
@@ -1702,8 +1756,12 @@ static void draw_game_state() {
     while ((layer = tilemap_iterate_next(tilemap)))
         TinyPqInsert(&sorter, layer->depth, (const void*)&(SortedItem){FALSE, layer}, sizeof(SortedItem));
 
+    // debug_num_actors = 0;
+
     const GameActor* actor = NULL;
     FOR_EACH_ACTOR (actor) {
+        // ++debug_num_actors;
+
         if (ANY_FLAG(actor, FLG_VISIBLE)) {
             TinyPqInsert(&sorter, (actor->sprout > 0) ? Fmax(actor->depth, Int2Fx(21)) : actor->depth,
                 (const void*)&(SortedItem){TRUE, actor}, sizeof(SortedItem));
@@ -2063,7 +2121,9 @@ void update_player_track(const GamePlayer* player) {
     }
 
     const GameActor* pawn = get_actor(player->actor);
-    if (pawn != NULL && pawn->type == ACT_PLAYER && VAL(pawn, PLAYER_STARMAN) > 0) {
+    if (pawn != NULL && pawn->type == ACT_PLAYER && VAL(pawn, PLAYER_STARMAN) > 0
+        && !(game_state->flags & GF_STARMAN_RUNNING))
+    {
         play_state_track(player->id, "smw/starman", PLAY_LOOPING, 0);
         return;
     }
@@ -2164,12 +2224,23 @@ void win_player(GamePlayer* player) {
         }
     }
 
+    if ((game_state->flags & GF_STARMAN_RUNNING) && game_context.num_players > 1) {
+        GameActor* text = create_actor(ACT_SECRET_TEXT, (FVec2){Fx0, Int2Fx(-73)});
+        if (text != NULL) {
+            VAL(text, TEXT_ANIMATION) = TXTA_SMOOTH;
+            VAL(text, TEXT_SCORE) = game_state->clock;
+            FLAG_ON(text, FLG_TEXT_STARMAN);
+        }
+    }
+
     player->bounds.end.y = get_player_view(player).y + F_SCREEN_HEIGHT;
     set_sequence(GS_WIN, player, 0);
 
     set_view_player(player);
-    if (!(game_state->flags & GF_LOST_MAP_END))
-        play_state_track(player->id, (game_state->flags & GF_LOST_MAP) ? "smw/bonus_clear" : "smw/castle_clear", 0, 0);
+    if (!(game_state->flags & GF_LOST_MAP_END)) {
+        play_state_track(player->id,
+            (game_state->flags & (GF_LOST_MAP | GF_STARMAN_RUNNING)) ? "smw/bonus_clear" : "smw/castle_clear", 0, 0);
+    }
 }
 
 // ======
@@ -2433,7 +2504,7 @@ const Fixed get_view_y_offset(const GamePlayer* player) {
     if (player == NULL)
         return Fx0;
 
-    const GameActor* hazard = get_actor(gamestate()->hazard);
+    const GameActor* hazard = get_actor(game_state->hazard);
     if (hazard == NULL || hazard->type != ACT_RISING_LAVA || player->pos.y < (VAL(hazard, RISING_LIMIT) + Int2Fx(300)))
         return Fx0;
 

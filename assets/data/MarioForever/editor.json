@@ -1598,6 +1598,11 @@
             "sprite": "scenery/clone/samochod/0",
             "id": 120
         },
+        "Starman Statue": {
+            "type": "background",
+            "sprite": "scenery/starman_statue",
+            "depth": 62
+        },
         "Player Spawn": {
             "type": "actor",
             "id": 1,
@@ -3275,7 +3280,8 @@
                 "Bush",
                 "Waterfall",
                 "Cobweb",
-                "Samochod"
+                "Samochod",
+                "Starman Statue"
             ]
         },
         {

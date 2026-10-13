@@ -33,13 +33,17 @@ static void create(GameActor* actor) {
 }
 
 static void tick(GameActor* actor) {
-    if (ANY_FLAG(actor, FLG_SPINY_TEMP) && !in_any_view(actor->pos, Int2Fx(-500), VEF_ALL)) {
+    if (ANY_FLAG(actor, FLG_SPINY_TEMP)
+        && !in_any_view(actor->pos, (gamestate()->flags & GF_STARMAN_RUNNING) ? Int2Fx(-100) : Int2Fx(-500), VEF_ALL))
+    {
         FLAG_ON(actor, FLG_DESTROY);
         return;
     }
 
     if (ANY_FLAG(actor, FLG_SPINY_HATCH)) {
-        if (++VAL(actor, ENEMY_FRAME) >= ((gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP)) ? 1 : 6)) {
+        if (++VAL(actor, ENEMY_FRAME)
+            >= ((gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP | GF_STARMAN_RUNNING)) ? 1 : 6))
+        {
             FLAG_OFF(actor, FLG_SPINY_HATCH);
             VAL(actor, ENEMY_FRAME) = 0;
         }
@@ -48,8 +52,10 @@ static void tick(GameActor* actor) {
     }
 
     move_enemy(actor,
-        (FVec2){
-            ((gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP)) && !ANY_FLAG(actor, FLG_SPINY_GRAY)) ? Int2Fx(2) : Fx1,
+        (FVec2){((gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP | GF_STARMAN_RUNNING))
+                    && !ANY_FLAG(actor, FLG_SPINY_GRAY))
+                    ? Int2Fx(2)
+                    : Fx1,
             19005},
         FALSE);
 }
@@ -58,7 +64,7 @@ static void draw(const GameActor* actor) {
     batch_reset();
     draw_actor(actor,
         ANY_FLAG(actor, FLG_SPINY_HATCH)
-            ? ((gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP))
+            ? ((gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP | GF_STARMAN_RUNNING))
                       ? "enemies/spiny/0"
                       : fmt("enemies/spiny/hatch/%i", VAL(actor, ENEMY_FRAME) % 6))
             : fmt(ANY_FLAG(actor, FLG_SPINY_GRAY) ? "enemies/spiny/gray/%i" : "enemies/spiny/%i",
@@ -166,7 +172,7 @@ const ActorTable TAB_SPINY = {
    ========= */
 
 static void load_egg() {
-    if (gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP)) {
+    if (gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP | GF_STARMAN_RUNNING)) {
         load_sprite("enemies/spiny/egg2", AKL_NEVER);
     } else {
         load_sprite("enemies/spiny/egg", AKL_NEVER);
@@ -182,7 +188,7 @@ static void load_egg() {
 static void create_egg(GameActor* actor) {
     actor->box.start.x = Int2Fx(-16);
     actor->box.end.x = Int2Fx(16);
-    if (gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP)) {
+    if (gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP | GF_STARMAN_RUNNING)) {
         actor->box.start.y = Int2Fx(-18);
         actor->box.end.y = Int2Fx(20);
     } else {
@@ -230,7 +236,7 @@ static void tick_egg(GameActor* actor) {
 
 static void draw_egg(const GameActor* actor) {
     batch_reset();
-    if (gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP)) {
+    if (gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP | GF_STARMAN_RUNNING)) {
         batch_angle(((float)VAL(actor, ENEMY_FRAME) / 32.f) * 2.f * SDL_PI_F);
         draw_actor(actor, "enemies/spiny/egg2", FALSE);
     } else {

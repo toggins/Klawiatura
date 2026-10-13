@@ -305,6 +305,7 @@ static void open_level(const char* filename) {
     elevel->flags |= yyjson_get_bool(yyjson_obj_get(root, "hardcore")) * GF_HARDCORE;
     elevel->flags |= yyjson_get_bool(yyjson_obj_get(root, "lost_map")) * GF_LOST_MAP;
     elevel->flags |= yyjson_get_bool(yyjson_obj_get(root, "funny_tanks")) * GF_FUNNY_TANKS;
+    elevel->flags |= yyjson_get_bool(yyjson_obj_get(root, "starman_running")) * GF_STARMAN_RUNNING;
 
     jval = yyjson_obj_get(root, "size");
     if (yyjson_is_arr(jval)) {
@@ -527,6 +528,8 @@ static void save_level(const char* filename) {
         yyjson_mut_obj_add_bool(json, root, "lost_map", TRUE);
     if (elevel->flags & GF_FUNNY_TANKS)
         yyjson_mut_obj_add_bool(json, root, "funny_tanks", TRUE);
+    if (elevel->flags & GF_STARMAN_RUNNING)
+        yyjson_mut_obj_add_bool(json, root, "starman_running", TRUE);
     if (elevel->ambush)
         yyjson_mut_obj_add_bool(json, root, "ambush", TRUE);
 
@@ -1595,6 +1598,7 @@ static void draw_ui() {
                 ImGui_CheckboxFlagsUintPtr(LFMT("editor.hardcore"), &elevel->flags, GF_HARDCORE);
                 ImGui_CheckboxFlagsUintPtr(LFMT("editor.lost_map"), &elevel->flags, GF_LOST_MAP);
                 ImGui_CheckboxFlagsUintPtr(LFMT("editor.funny_tanks"), &elevel->flags, GF_FUNNY_TANKS);
+                ImGui_CheckboxFlagsUintPtr(LFMT("editor.starman_running"), &elevel->flags, GF_STARMAN_RUNNING);
                 ImGui_Checkbox(LFMT("editor.ambush"), (bool*)&elevel->ambush);
             }
 

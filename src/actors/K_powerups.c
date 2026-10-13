@@ -173,11 +173,14 @@ static void tick_starman(GameActor* actor) {
         return;
     }
 
-    if (actor->sprout > 0)
-        --actor->sprout;
+    if (actor->sprout > 0) {
+        for (Uint8 i = 0, n = (gamestate()->flags & GF_STARMAN_RUNNING) ? 7 : 1; i < n; i++)
+            if (--actor->sprout <= 0)
+                break;
+    }
 
     if (ANY_FLAG(actor, FLG_POWERUP_SPROUTED)) {
-        VAL(actor, POWERUP_FRAME) += 14;
+        VAL(actor, POWERUP_FRAME) += (gamestate()->flags & GF_STARMAN_RUNNING) ? 50 : 14;
         if (VAL(actor, POWERUP_FRAME) < 1200) {
             return;
         } else {

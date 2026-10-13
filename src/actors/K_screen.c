@@ -1,3 +1,4 @@
+#include "K_string.h"
 #include "K_video.h"
 
 #include "actors/K_screen.h"
@@ -140,13 +141,23 @@ static void tick_secret_text(GameActor* actor) {
 }
 
 static void draw_secret_text_hud(const GameActor* actor) {
-    const char* secret = get_game_secret(VAL(actor, TEXT_SECRET));
-    if (secret == NULL)
-        return;
+    const char* secret = NULL;
+    if (!ANY_FLAG(actor, FLG_TEXT_STARMAN)) {
+        secret = get_game_secret(VAL(actor, TEXT_SECRET));
+        if (secret == NULL)
+            return;
+    }
 
     batch_reset();
-    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, Fx2Int(get_interp(actor).y)));
-    if (secret[0] == '$') {
+    const float y = Fx2Int(get_interp(actor).y);
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, y));
+    if (ANY_FLAG(actor, FLG_TEXT_STARMAN)) {
+        batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+        batch_string("main", 24.f, LFMT("hud.team_score"));
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, y + 8.f));
+        batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+        batch_string("hud", 16.f, fmt("%i", VAL(actor, TEXT_SCORE)));
+    } else if (secret[0] == '$') {
         batch_align(B_ALIGN_CENTER);
         batch_string("main", 24.f, LFMT(secret));
     } else {
