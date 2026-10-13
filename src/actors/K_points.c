@@ -10,14 +10,12 @@ void give_points(GameActor* actor, GamePlayer* player, Sint32 points) {
     if (actor == NULL)
         actor = get_actor(player->actor);
 
-    if (points > 0) {
+    if (points > 0)
         player->score += points;
-    } else if (points < 0) {
-        if (player->lives < 100)
-            ++player->lives;
-    } else {
+    else if (points < 0)
+        ++player->lives;
+    else
         return;
-    }
 
     if (actor == NULL)
         return;
