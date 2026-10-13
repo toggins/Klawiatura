@@ -718,7 +718,6 @@ static void draw_ui() {
                 batch_color(B_U4_ALPHA(a * 160.f));
                 batch_rectangle(NULL, B_F2(SCREEN_WIDTH, w + 16.f));
 
-                batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, y));
                 Uint8 colors[4][4] = {0};
                 SDL_memcpy(colors, B_U4X4_WHITE, sizeof(colors));
                 colors[0][3] = (Uint8)((float)colors[0][3] * a);
@@ -727,6 +726,15 @@ static void draw_ui() {
                 colors[3][3] = (Uint8)((float)colors[3][3] * a);
                 batch_colors(colors);
                 batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+
+                if (!world->has_map) {
+                    batch_filter(TRUE);
+                    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, y - 32.f));
+                    batch_string("header", 20.f, LFMT(fmt("world.%s", world->name)));
+                    batch_filter(FALSE);
+                }
+
+                batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, y));
                 batch_string("header", 32.f, LFMT("map.scoreboard"));
             }
 
