@@ -11972,7 +11972,13 @@
             "def": "Player Spawn",
             "id": 1,
             "pos": [30, 1276],
-            "values": [[4, 3]],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 3]
+            ],
             "flags": 256
         },
         {
@@ -12952,6 +12958,57 @@
             "def": "Water",
             "id": 13,
             "pos": [0, -63]
+        },
+        {
+            "def": "Checkpoint",
+            "id": 7,
+            "multiplayer": true,
+            "pos": [3192, 1225],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0],
+                [6, 0]
+            ]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "multiplayer": true,
+            "pos": [3232, 1184]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "multiplayer": true,
+            "pos": [3232, 1152]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "multiplayer": true,
+            "pos": [3232, 1120]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "multiplayer": true,
+            "pos": [3232, 992]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "multiplayer": true,
+            "pos": [3232, 960]
+        },
+        {
+            "def": "Coin",
+            "id": 20,
+            "multiplayer": true,
+            "pos": [3232, 928]
         }
     ]
 }
