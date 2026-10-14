@@ -43,6 +43,7 @@ enum {
 #define FLG_PLAYER_ASCEND CUSTOM_FLAG(6)
 #define FLG_PLAYER_DESCEND CUSTOM_FLAG(7)
 #define FLG_PLAYER_WEAPON CUSTOM_FLAG(8)
+#define FLG_PLAYER_DUCK_STUCK CUSTOM_FLAG(9)
 
 Bool hit_player(GameActor*);
 void kill_player(GameActor*);

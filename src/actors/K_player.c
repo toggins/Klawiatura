@@ -685,6 +685,25 @@ static void tick(GameActor* actor) {
     if (ANY_INPUT(player, GI_LEFT) && actor->vel.x < Fx0)
         FLAG_ON(actor, FLG_X_FLIP);
 
+    // 209, 210, 211, 212, 213 (modified)
+    if (ANY_INPUT(player, GI_DOWN) && !ANY_INPUT(player, GI_LEFT | GI_RIGHT) && TOUCHING(actor, TOUCH_BOTTOM)
+        && player->powerup != POW_NONE)
+    {
+        FLAG_ON(actor, FLG_PLAYER_DUCK);
+    }
+    if (ANY_FLAG(actor, FLG_PLAYER_DUCK)
+        && (!TOUCHING(actor, TOUCH_BOTTOM) || !ANY_INPUT(player, GI_DOWN) || player->powerup == POW_NONE))
+    {
+        FLAG_OFF(actor, FLG_PLAYER_DUCK);
+        if (player->powerup != POW_NONE && !TOUCHING(actor, TOUCH_BOTTOM)) {
+            actor->box.start.y = Int2Fx(-51);
+            if (touching_solid(Radd(actor->box, actor->pos), SOL_SOLID)) {
+                actor->box.start.y = Int2Fx(-25);
+                FLAG_ON(actor, FLG_PLAYER_DUCK_STUCK);
+            }
+        }
+    }
+
     // 242, 243
     // Moved here to replicate jump buffer while sinking underwater, like in Clickteam.
     if (!ANY_INPUT(player, GI_JUMP) && (water == NULL || actor->pos.y < water->pos.y) && !ANY_INPUT(player, GI_DOWN)
@@ -865,7 +884,9 @@ static void tick(GameActor* actor) {
             actor->vel.x += 24576;
     }
 
-    actor->box.start.y = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK)) ? Int2Fx(-25) : Int2Fx(-51);
+    actor->box.start.y = (player->powerup == POW_NONE || ANY_FLAG(actor, FLG_PLAYER_DUCK | FLG_PLAYER_DUCK_STUCK))
+                             ? Int2Fx(-25)
+                             : Int2Fx(-51);
 
     if (VAL(actor, PLAYER_SLIP) != 0
         && (autoscroll == NULL
@@ -910,6 +931,18 @@ static void tick(GameActor* actor) {
     if (displace & SOL_HURT)
         hit_player(actor);
 
+    if (ANY_FLAG(actor, FLG_PLAYER_DUCK_STUCK)) {
+        if (player->powerup == POW_NONE) {
+            FLAG_OFF(actor, FLG_PLAYER_DUCK_STUCK);
+        } else {
+            actor->box.start.y = Int2Fx(-51);
+            if (touching_solid(Radd(actor->box, actor->pos), SOL_SOLID))
+                actor->box.start.y = Int2Fx(-25);
+            else
+                FLAG_OFF(actor, FLG_PLAYER_DUCK_STUCK);
+        }
+    }
+
     const GameSequence* sequence = get_sequence();
     if ((autoscroll != NULL && sequence->type != GS_WIN && sequence->type != GS_RESCUE) || sequence->type == GS_AMBUSH)
     {
@@ -944,19 +977,6 @@ static void tick(GameActor* actor) {
 
     collide_actor(actor);
     FLAG_OFF(actor, FLG_PLAYER_STOMP);
-
-    // 209, 210, 211, 212, 213 (modified)
-    // Moved below displacement/collision to fix a single frame of not being crouched.
-    if (ANY_INPUT(player, GI_DOWN) && !ANY_INPUT(player, GI_LEFT | GI_RIGHT) && TOUCHING(actor, TOUCH_BOTTOM)
-        && player->powerup != POW_NONE)
-    {
-        FLAG_ON(actor, FLG_PLAYER_DUCK);
-    }
-    if (ANY_FLAG(actor, FLG_PLAYER_DUCK)
-        && (!TOUCHING(actor, TOUCH_BOTTOM) || !ANY_INPUT(player, GI_DOWN) || player->powerup == POW_NONE))
-    {
-        FLAG_OFF(actor, FLG_PLAYER_DUCK);
-    }
 
     // 218 (modified), 219 (modified), 220 (modified)
     // Moved below events 240, 241 to improve jump height and to prevent jump buffs against a wall.
