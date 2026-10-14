@@ -2,6 +2,7 @@
 #include "K_string.h"
 #include "K_video.h"
 
+#include "actors/K_blocks.h"
 #include "actors/K_checkpoint.h"
 #include "actors/K_player.h"
 
@@ -115,6 +116,15 @@ static void post_tick(GameActor* actor) {
         VAL(actor, CHECKPOINT_ANIMATION) = 1;
         VAL(actor, CHECKPOINT_FRAME) = 0;
         ++VAL(actor, CHECKPOINT_STATE);
+
+        GameActor* block = NULL;
+        FOR_EACH_ACTOR (block) {
+            if (block->type == ACT_BLOCK) {
+                VAL(actor, BLOCK_REFILL) = 400;
+                VAL(actor, BLOCK_PENALTY) = 0;
+                FLAG_ON(actor, FLG_BLOCK_EMPTY);
+            }
+        }
 
         for (PlayerID j = 0; j < n; j++) {
             GamePlayer* oplayer = get_player(j);
