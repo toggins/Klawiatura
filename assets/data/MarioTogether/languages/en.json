@@ -169,7 +169,8 @@
     "hud.end.remix": "ui/end/en/remix",
     "hud.spectating": "Spectating",
     "hud.waiting_for_peers": "Waiting for peers...",
-    "hud.team_score": "Well done!!! Your team score is:",
+    "hud.starman.sudden_death": "ui/starman/en/sudden_death",
+    "hud.starman.score": "ui/starman/en/score",
 
     "vo.clone.coder_hurt": "vo/clone/en/coder_hurt",
     "vo.clone.coder_active": "vo/clone/en/coder_active",

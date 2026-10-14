@@ -64,6 +64,7 @@ Bool hit_player(GameActor* actor) {
     VAL(actor, PLAYER_FLASH) = 100;
     VAL(actor, PLAYER_ANIMATION) = PF_GROW;
     VAL(actor, PLAYER_FRAME) = Fx0;
+
     play_state_sound("warp", PLAY_POS, A_ACTOR(actor));
 
     return TRUE;
@@ -80,11 +81,15 @@ void kill_player(GameActor* actor) {
     align_interp(dead, actor);
 
     const PlayerID n = gamecontext()->num_players;
+    const GameState* game_state = gamestate();
 
     GamePlayer* player = get_player(actor->player);
     if (player != NULL) {
-        if (n > 1)
-            --player->lives;
+        if (n > 1) {
+            player->lives -= (game_state->flags & GF_STARMAN_RUNNING)
+                                 ? ((get_actor(game_state->checkpoint) == NULL) ? 4 : 20)
+                                 : 1;
+        }
         player->powerup = POW_NONE;
         player->actor = dead->id;
 
@@ -95,8 +100,7 @@ void kill_player(GameActor* actor) {
 
     Bool force_lose = FALSE;
 
-    const GameState* game_state = gamestate();
-    const GameActor* hazard = get_actor(gamestate()->hazard);
+    const GameActor* hazard = get_actor(game_state->hazard);
     if (hazard != NULL && hazard->type == ACT_RISING_LAVA && hazard->vel.y < Fx0) {
         force_lose = TRUE;
         for (PlayerID i = 0; i < n; i++) {
@@ -271,8 +275,11 @@ static void load() {
     load_sprite_num("effects/shield/super/%u", 4, AKL_NEVER);
 
     const GameState* game_state = gamestate();
-    if (game_state->flags & GF_STARMAN_RUNNING)
-        load_sprite("ui/starman_gauge", AKL_NEVER);
+    if (game_state->flags & GF_STARMAN_RUNNING) {
+        load_sprite("ui/starman/gauge", AKL_NEVER);
+        if (game_context->num_players > 1)
+            load_localized_sprite("hud.starman.score", AKL_NEVER);
+    }
 
     load_font("hud", AKL_NEVER);
     load_sound("jump", AKL_NEVER);

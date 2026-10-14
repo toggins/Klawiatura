@@ -3,6 +3,7 @@
 #include "K_video.h"
 
 #include "actors/K_checkpoint.h"
+#include "actors/K_player.h"
 
 /* ==========
    CHECKPOINT
@@ -20,6 +21,11 @@ static void load() {
         load_sound(get_character_voice(character, PV_CHECKPOINT1), AKL_NEVER);
         load_sound(get_character_voice(character, PV_CHECKPOINT2), AKL_NEVER);
         load_sound(get_character_voice(character, PV_CHECKPOINT3), AKL_NEVER);
+    }
+
+    if (gamestate()->flags & GF_STARMAN_RUNNING) {
+        load_localized_sprite("hud.starman.sudden_death", AKL_NEVER);
+        load_sound("sudden_death", AKL_NEVER);
     }
 }
 
@@ -86,6 +92,60 @@ static void tick(GameActor* actor) {
     }
 }
 
+static void post_tick(GameActor* actor) {
+    GameState* game_state = gamestate();
+    if (!(game_state->flags & GF_STARMAN_RUNNING) || get_actor(game_state->checkpoint) != NULL)
+        return;
+
+    for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn == NULL || pawn->type != ACT_PLAYER || (pawn->pos.x + pawn->box.end.x) <= (actor->pos.x + Int2Fx(37))
+            || (pawn->pos.x + pawn->box.start.x) >= (actor->pos.x + Int2Fx(69)))
+        {
+            continue;
+        }
+
+        game_state->checkpoint = actor->id;
+        actor->player = player->id;
+
+        VAL(actor, CHECKPOINT_ANIMATION) = 1;
+        VAL(actor, CHECKPOINT_FRAME) = 0;
+        ++VAL(actor, CHECKPOINT_STATE);
+
+        for (PlayerID j = 0; j < n; j++) {
+            GamePlayer* oplayer = get_player(j);
+            if (oplayer == NULL)
+                continue;
+
+            if (oplayer->lives < 20)
+                oplayer->lives = 20;
+
+            if (j == i)
+                continue;
+
+            GameActor* opawn = get_actor(oplayer->actor);
+            if (opawn == NULL || opawn->type != ACT_PLAYER || !in_player_view(oplayer, pawn->pos, Int2Fx(-64), VEF_ALL))
+                opawn = respawn_player(oplayer);
+
+            if (opawn != NULL) {
+                move_actor(opawn, pawn->pos);
+                VAL(opawn, PLAYER_STARMAN) = 700;
+
+                skip_interp(opawn);
+            }
+        }
+
+        create_actor(ACT_CHECKPOINT_EFFECT, actor->pos);
+
+        play_state_sound("sudden_death", 0, NULL);
+        break;
+    }
+}
+
 static void draw(const GameActor* actor) {
     batch_reset();
     batch_color(B_U4_ALPHA((gamestate()->checkpoint <= actor->id) ? 255 : 128));
@@ -110,7 +170,7 @@ static void collide(GameActor* actor, GameActor* from) {
         return;
 
     GameState* game_state = gamestate();
-    if (game_state->checkpoint >= actor->id)
+    if ((game_state->flags & GF_STARMAN_RUNNING) || game_state->checkpoint >= actor->id)
         return;
 
     actor->player = from->player;
@@ -136,6 +196,7 @@ const ActorTable TAB_CHECKPOINT = {
     .create = create,
     .cleanup = cleanup,
     .tick = tick,
+    .post_tick = post_tick,
     .draw = draw,
     .collide = collide,
 };
@@ -155,6 +216,14 @@ static void create_effect(GameActor* actor) {
 }
 
 static void tick_effect(GameActor* actor) {
+    if (gamestate()->flags & GF_STARMAN_RUNNING) {
+        VAL(actor, CHECKPOINT_EFFECT_ALPHA) -= 328;
+        if (VAL(actor, CHECKPOINT_EFFECT_ALPHA) <= Fx0)
+            FLAG_ON(actor, FLG_DESTROY);
+
+        return;
+    }
+
     if (ANY_FLAG(actor, FLG_CHECKPOINT_EFFECT_TRAIL)) {
         ++actor->depth;
 
@@ -196,10 +265,25 @@ static void tick_effect(GameActor* actor) {
 }
 
 static void draw_effect(const GameActor* actor) {
+    if (gamestate()->flags & GF_STARMAN_RUNNING)
+        return;
+
     batch_reset();
     batch_angle(((float)SDL_min(VAL(actor, CHECKPOINT_EFFECT_FRAME), 20) / 20.f) * 2.f * SDL_PI_F);
     batch_color(B_U4_ALPHA(Fx2Float(VAL(actor, CHECKPOINT_EFFECT_ALPHA)) * 255.f));
     draw_actor(actor, "markers/checkpoint/effect", FALSE);
+}
+
+static void draw_effect_hud(const GameActor* actor) {
+    if (!(gamestate()->flags & GF_STARMAN_RUNNING))
+        return;
+
+    batch_reset();
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 64.f));
+    batch_color(B_U4_ALPHA(
+        ((VAL(actor, CHECKPOINT_EFFECT_ALPHA) < 16384) ? ((float)VAL(actor, CHECKPOINT_EFFECT_ALPHA) / 16384.f) : 1.f)
+        * 255.f));
+    batch_sprite(LFMT("hud.starman.sudden_death"));
 }
 
 const ActorTable TAB_CHECKPOINT_EFFECT = {
@@ -207,4 +291,5 @@ const ActorTable TAB_CHECKPOINT_EFFECT = {
     .create = create_effect,
     .tick = tick_effect,
     .draw = draw_effect,
+    .draw_hud = draw_effect_hud,
 };

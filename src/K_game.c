@@ -1060,10 +1060,15 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         }
 
         if (game_state->clock <= 0) {
+            const Bool mp_starman = (game_state->flags & GF_STARMAN_RUNNING) && game_context.num_players > 1;
             for (PlayerID i = 0; i < game_context.num_players; i++) {
                 GamePlayer* player = get_player(i);
-                if (player != NULL)
+                if (player != NULL) {
+                    if (mp_starman)
+                        player->lives = -1;
+
                     kill_player(get_actor(player->actor));
+                }
             }
         }
 
@@ -1666,7 +1671,7 @@ static void draw_hud() {
 
     if (game_state->flags & GF_STARMAN_RUNNING) {
         batch_pos(B_F3_XY(SCREEN_WIDTH - 32.f, 56.f));
-        batch_sprite("ui/starman_gauge");
+        batch_sprite("ui/starman/gauge");
 
         const GameActor* pawn = get_actor(player->actor);
         if (pawn != NULL && pawn->type == ACT_PLAYER && VAL(pawn, PLAYER_STARMAN) > 0) {
@@ -2009,7 +2014,7 @@ GameActor* respawn_player(GamePlayer* player) {
 
     GameActor* old_pawn = get_actor(player->actor);
     if (old_pawn != NULL) {
-        VAL(pawn, PLAYER_FLASH) = 100;
+        VAL(pawn, PLAYER_FLASH) = (game_state->flags & GF_STARMAN_RUNNING) ? 200 : 100;
         FLAG_ON(old_pawn, FLG_DESTROY);
 
         play_state_sound("respawn", PLAY_POS, A_ACTOR(pawn));
