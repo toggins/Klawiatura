@@ -389,7 +389,14 @@ static void draw(const GameActor* actor) {
 
     if (VAL(actor, BLOCK_REFILL) > 0)
         batch_color(B_U4_GRAY);
+
     draw_actor(actor, sprite, FALSE);
+    if (VAL(actor, BLOCK_REFILL) >= 50) {
+        batch_offset(B_F3_XY(-16.f, -16.f + bump));
+        batch_color(B_U4_WHITE);
+        batch_align(B_ALIGN_CENTER);
+        batch_string("hud", 16.f, fmt("%i", VAL(actor, BLOCK_REFILL) / 50));
+    }
 }
 
 static void on_other_sides(GameActor* actor, GameActor* from) {
