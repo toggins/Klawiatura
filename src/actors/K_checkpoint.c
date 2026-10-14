@@ -134,6 +134,10 @@ static void post_tick(GameActor* actor) {
             if (opawn != NULL) {
                 move_actor(opawn, pawn->pos);
                 VAL(opawn, PLAYER_STARMAN) = 700;
+                if (VAL(opawn, PLAYER_FLASH) > 0) {
+                    VAL(opawn, PLAYER_FLASH) = 0;
+                    FLAG_ON(opawn, FLG_VISIBLE);
+                }
 
                 skip_interp(opawn);
             }

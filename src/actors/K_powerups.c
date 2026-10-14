@@ -233,6 +233,11 @@ static void collide_starman(GameActor* actor, GameActor* from) {
         return;
 
     VAL(from, PLAYER_STARMAN) = 500;
+    if (VAL(from, PLAYER_FLASH) > 0) {
+        VAL(from, PLAYER_FLASH) = 0;
+        FLAG_ON(from, FLG_VISIBLE);
+    }
+
     update_player_track(get_player(from->player));
 
     play_state_sound("grow", PLAY_POS, A_ACTOR(from));
