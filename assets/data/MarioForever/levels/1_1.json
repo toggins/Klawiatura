@@ -6435,6 +6435,7 @@
             "id": 30,
             "multiplayer": true,
             "pos": [5066, 55],
+            "vel": [131072, 0],
             "flags": 32
         },
         {
@@ -6442,6 +6443,7 @@
             "id": 30,
             "multiplayer": true,
             "pos": [5168, 54],
+            "vel": [131072, 0],
             "flags": 32
         },
         {
@@ -6449,6 +6451,7 @@
             "id": 30,
             "multiplayer": true,
             "pos": [5139, 182],
+            "vel": [131072, 0],
             "flags": 32
         },
         {
@@ -6456,6 +6459,7 @@
             "id": 30,
             "multiplayer": true,
             "pos": [5073, 243],
+            "vel": [131072, 0],
             "flags": 32
         },
         {
@@ -6463,6 +6467,7 @@
             "id": 30,
             "multiplayer": true,
             "pos": [5010, 311],
+            "vel": [131072, 0],
             "flags": 32
         }
     ]
