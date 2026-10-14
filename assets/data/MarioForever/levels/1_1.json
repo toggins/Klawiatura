@@ -6281,6 +6281,7 @@
         {
             "def": "1UP Mushroom",
             "id": 30,
+            "singleplayer": true,
             "pos": [5985, 410],
             "vel": [131072, 0],
             "flags": 32
@@ -6288,6 +6289,7 @@
         {
             "def": "1UP Mushroom",
             "id": 30,
+            "singleplayer": true,
             "pos": [6090, 413],
             "vel": [131072, 0],
             "flags": 32
@@ -6295,6 +6297,7 @@
         {
             "def": "1UP Mushroom",
             "id": 30,
+            "singleplayer": true,
             "pos": [6124, 283],
             "vel": [131072, 0],
             "flags": 32
@@ -6302,6 +6305,7 @@
         {
             "def": "1UP Mushroom",
             "id": 30,
+            "singleplayer": true,
             "pos": [6256, 286],
             "vel": [131072, 0],
             "flags": 32
@@ -6309,6 +6313,7 @@
         {
             "def": "1UP Mushroom",
             "id": 30,
+            "singleplayer": true,
             "pos": [6309, 412],
             "vel": [131072, 0],
             "flags": 32
@@ -6316,6 +6321,7 @@
         {
             "def": "Goomba",
             "id": 37,
+            "singleplayer": true,
             "pos": [1455, 415],
             "flags": 4
         },
@@ -6415,6 +6421,48 @@
                 [9, 0],
                 [10, 0]
             ],
+            "flags": 32
+        },
+        {
+            "def": "Goomba",
+            "id": 37,
+            "multiplayer": true,
+            "pos": [1583, 415],
+            "flags": 4
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "multiplayer": true,
+            "pos": [5066, 55],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "multiplayer": true,
+            "pos": [5168, 54],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "multiplayer": true,
+            "pos": [5139, 182],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "multiplayer": true,
+            "pos": [5073, 243],
+            "flags": 32
+        },
+        {
+            "def": "1UP Mushroom",
+            "id": 30,
+            "multiplayer": true,
+            "pos": [5010, 311],
             "flags": 32
         }
     ]
