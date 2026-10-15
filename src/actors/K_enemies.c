@@ -10,7 +10,10 @@
 
 void move_enemy(GameActor* actor, FVec2 speed, Bool edge) {
     const LevelInfo* level_info = levelinfo();
-    if (actor->pos.y > (level_info->size.y + Int2Fx(32))) {
+    if (actor->pos.y
+        > (level_info->size.y
+            + ((actor->type == ACT_KOOPA && (gamestate()->flags & GF_LIBERATION)) ? Int2Fx(100) : Int2Fx(32))))
+    {
         FLAG_ON(actor, FLG_DESTROY);
         return;
     }
@@ -149,6 +152,13 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
         switch (actor->type) {
         default:
             break;
+
+        case ACT_KOOPA: {
+            if (gamestate()->flags & GF_LIBERATION)
+                create_actor(ACT_KOOPA_SIGN, Vadd(actor->pos, (FVec2){Fx0, Int2Fx(-19)}));
+
+            break;
+        }
 
         case ACT_LAKITU: {
             VAL(dead, LAKITU_SPEED) = VAL(actor, LAKITU_SPEED);

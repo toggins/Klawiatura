@@ -2293,6 +2293,30 @@
                 }
             ]
         },
+        "Koopa Bro": {
+            "type": "actor",
+            "id": 138,
+            "sprite": "enemies/koopa/bro/0",
+            "values": [
+                {
+                    "name": "Type",
+                    "index": 0,
+                    "type": "actor",
+                    "default": 161
+                },
+                {
+                    "name": "Throw Time",
+                    "index": 1,
+                    "default": 30
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Throw On Sight",
+                    "index": 6
+                }
+            ]
+        },
         "Piranha Plant": {
             "type": "actor",
             "id": 41,
@@ -3311,7 +3335,7 @@
             "items": [
                 {
                     "name": "Koopas",
-                    "items": ["Koopa", "Paratroopa"]
+                    "items": ["Koopa", "Paratroopa", "Koopa Bro"]
                 },
                 {
                     "name": "Piranha Plants",

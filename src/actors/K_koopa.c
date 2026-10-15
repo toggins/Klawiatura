@@ -57,6 +57,11 @@ static void load() {
     load_sound("kick", AKL_NEVER);
     load_actor(ACT_KOOPA_SHELL);
     load_actor(ACT_POINTS);
+
+    if (gamestate()->flags & GF_LIBERATION) {
+        load_sprite("enemies/koopa/sign", AKL_NEVER);
+        load_actor(ACT_KOOPA_SIGN);
+    }
 }
 
 static void create(GameActor* actor) {
@@ -88,6 +93,13 @@ static void tick(GameActor* actor) {
 
 static void draw(const GameActor* actor) {
     batch_reset();
+
+    if (gamestate()->flags & GF_LIBERATION) {
+        const FVec2 pos = get_interp(actor);
+        batch_pos(B_F3(Fx2Int(pos.x) + 6.f, Fx2Int(pos.y) - 20.f, Fx2Float(actor->depth)));
+        batch_sprite("enemies/koopa/sign");
+    }
+
     draw_actor(actor,
         fmt(ANY_FLAG(actor, FLG_KOOPA_RED) ? "enemies/koopa/red/%i" : "enemies/koopa/%i",
             (VAL(actor, ENEMY_FRAME) / 100) % 2),
@@ -116,6 +128,9 @@ static void collide(GameActor* actor, GameActor* from) {
             FLAG_ON(shell, actor->flags & FLG_KOOPA_RED);
             align_interp(shell, actor);
         }
+
+        if (gamestate()->flags & GF_LIBERATION)
+            create_actor(ACT_KOOPA_SIGN, Vadd(actor->pos, (FVec2){Fx1, Int2Fx(-22)}));
 
         FLAG_ON(actor, FLG_DESTROY);
         break;
@@ -750,6 +765,38 @@ const ActorTable TAB_CODER_CLONE_KEYBOARD = {
     .create = create_coder_clone_keyboard,
     .tick = tick_coder_clone_keyboard,
     .draw = draw_coder_clone_keyboard,
+};
+
+/* ==========
+   KOOPA SIGN
+   ========== */
+
+static void load_sign() {
+    load_sprite("enemies/koopa/sign", AKL_NEVER);
+}
+
+static void create_sign(GameActor* actor) {
+    actor->depth = 2;
+}
+
+static void tick_sign(GameActor* actor) {
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    actor->vel.y += 13107;
+
+    if (!in_any_view(actor->pos, Int2Fx(-100), VEF_ALL))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_sign(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, "enemies/koopa/sign", FALSE);
+}
+
+const ActorTable TAB_KOOPA_SIGN = {
+    .load = load_sign,
+    .create = create_sign,
+    .tick = tick_sign,
+    .draw = draw_sign,
 };
 
 /* ============

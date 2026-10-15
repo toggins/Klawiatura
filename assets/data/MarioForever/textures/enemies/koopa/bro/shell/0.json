@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/koopa",
+    "size": [48, 45],
+    "offset": [13, 44],
+    "uvs": [1, 117, 49, 162]
+}

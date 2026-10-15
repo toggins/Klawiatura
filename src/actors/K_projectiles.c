@@ -651,6 +651,66 @@ const ActorTable TAB_SILVER_HAMMER_PROJECTILE = {
     .collide = collide_hammer,
 };
 
+/* =====
+   SHELL
+   ===== */
+
+static void load_shell() {
+    load_sprite("projectiles/shell", AKL_NEVER);
+    load_sound("swim", AKL_NEVER);
+    load_actor(ACT_EXPLODE);
+}
+
+static void create_shell(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-16);
+    actor->box.start.y = Int2Fx(-14);
+    actor->box.end.x = Int2Fx(17);
+    actor->box.end.y = Int2Fx(14);
+
+    actor->depth = -1;
+}
+
+static void tick_shell(GameActor* actor) {
+    VAL(actor, PROJECTILE_ANGLE) = Fmod(VAL(actor, PROJECTILE_ANGLE) + 13725, Fx2Pi);
+
+    if (ANY_FLAG(actor, FLG_PROJECTILE_HIT))
+        move_actor(actor, Vadd(actor->pos, actor->vel));
+    else
+        displace_actor_soft(actor);
+    collide_actor(actor);
+
+    if (below_nearest_view(actor->pos, Int2Fx(64))) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    actor->vel.y += 18725;
+
+    if (!ANY_FLAG(actor, FLG_PROJECTILE_HIT) && TOUCHING(actor, TOUCH_SIDES)) {
+        actor->touch = 0;
+        actor->vel.y = Int2Fx(-8);
+        FLAG_ON(actor, FLG_PROJECTILE_HIT);
+
+        create_actor(ACT_EXPLODE, actor->pos);
+
+        play_state_sound("swim", PLAY_POS, A_ACTOR(actor));
+    }
+}
+
+static void draw_shell(const GameActor* actor) {
+    batch_reset();
+    batch_angle(Fx2Float(VAL(actor, PROJECTILE_ANGLE)));
+    draw_actor(actor, "projectiles/shell", FALSE);
+}
+
+const ActorTable TAB_SHELL_PROJECTILE = {
+    .load = load_shell,
+    .create = create_shell,
+    .tick = tick_shell,
+    .draw = draw_shell,
+    .collide = collide_hammer,
+};
+
 /* ======
    BULLET
    ====== */

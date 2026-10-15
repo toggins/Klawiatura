@@ -289,6 +289,24 @@ static void tick(GameActor* actor) {
             break;
         }
 
+        case ACT_SHELL_PROJECTILE: {
+            GameActor* shell = create_actor(ACT_SHELL_PROJECTILE,
+                Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-9) : Int2Fx(9), Int2Fx(-26)}));
+            if (shell != NULL) {
+                shell->vel.x = Fx1 + Int2Fx(rng(5));
+                if (ANY_FLAG(actor, FLG_X_FLIP))
+                    shell->vel.x = -shell->vel.x;
+                shell->vel.y = Int2Fx(-6) - Int2Fx(rng(5));
+            }
+
+            if (actor->type == ACT_BIG_CLONE)
+                play_state_sound("vo/clone/big_hammer", PLAY_POS, A_ACTOR(actor));
+            else
+                play_state_sound("hammer", PLAY_POS, A_ACTOR(actor));
+
+            break;
+        }
+
         case ACT_SHOTGUN: {
             const FVec2 bpos
                 = Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-47) : Int2Fx(47), Int2Fx(-27)});
@@ -475,5 +493,52 @@ const ActorTable TAB_BIG_CLONE = {
     .tick = tick,
     .draw = draw_big_clone,
     .draw_dead = draw_dead_big_clone,
+    .collide = collide,
+};
+
+/* =========
+   KOOPA BRO
+   ========= */
+
+static void load_koopa() {
+    load_sprite_num("enemies/koopa/bro/%u", 2, AKL_NEVER);
+    load_sprite_num("enemies/koopa/bro/shell/%u", 2, AKL_NEVER);
+    load_sprite("enemies/koopa/bro/dead", AKL_NEVER);
+    load_sound("hammer", AKL_NEVER);
+    load_actor(ACT_SHELL_PROJECTILE);
+}
+
+static void create_koopa(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-16);
+    actor->box.start.y = Int2Fx(-44);
+    actor->box.end.x = Int2Fx(16);
+    actor->box.end.y = Fx1;
+
+    VAL(actor, BRO_TYPE) = ACT_SHELL_PROJECTILE;
+    VAL(actor, BRO_THROW_TIME) = 30;
+
+    increase_ambush();
+}
+
+static void draw_koopa(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor,
+        fmt((VAL(actor, BRO_THROW) > 0) ? "enemies/koopa/bro/shell/%i" : "enemies/koopa/bro/%i",
+            (VAL(actor, BRO_FRAME) / 50) % 2),
+        FALSE);
+}
+
+static void draw_dead_koopa(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, "enemies/koopa/bro/dead", FALSE);
+}
+
+const ActorTable TAB_KOOPA_BRO = {
+    .load = load_koopa,
+    .create = create_koopa,
+    .cleanup = cleanup,
+    .tick = tick,
+    .draw = draw_koopa,
+    .draw_dead = draw_dead_koopa,
     .collide = collide,
 };
