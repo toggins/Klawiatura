@@ -306,6 +306,8 @@ static void open_level(const char* filename) {
     elevel->flags |= yyjson_get_bool(yyjson_obj_get(root, "lost_map")) * GF_LOST_MAP;
     elevel->flags |= yyjson_get_bool(yyjson_obj_get(root, "funny_tanks")) * GF_FUNNY_TANKS;
     elevel->flags |= yyjson_get_bool(yyjson_obj_get(root, "starman_running")) * GF_STARMAN_RUNNING;
+    elevel->flags |= yyjson_get_bool(yyjson_obj_get(root, "liberation")) * GF_LIBERATION;
+    elevel->flags |= yyjson_get_bool(yyjson_obj_get(root, "stupidity")) * GF_STUPIDITY;
 
     jval = yyjson_obj_get(root, "size");
     if (yyjson_is_arr(jval)) {
@@ -530,6 +532,10 @@ static void save_level(const char* filename) {
         yyjson_mut_obj_add_bool(json, root, "funny_tanks", TRUE);
     if (elevel->flags & GF_STARMAN_RUNNING)
         yyjson_mut_obj_add_bool(json, root, "starman_running", TRUE);
+    if (elevel->flags & GF_LIBERATION)
+        yyjson_mut_obj_add_bool(json, root, "liberation", TRUE);
+    if (elevel->flags & GF_STUPIDITY)
+        yyjson_mut_obj_add_bool(json, root, "stupidity", TRUE);
     if (elevel->ambush)
         yyjson_mut_obj_add_bool(json, root, "ambush", TRUE);
 
@@ -1599,6 +1605,8 @@ static void draw_ui() {
                 ImGui_CheckboxFlagsUintPtr(LFMT("editor.lost_map"), &elevel->flags, GF_LOST_MAP);
                 ImGui_CheckboxFlagsUintPtr(LFMT("editor.funny_tanks"), &elevel->flags, GF_FUNNY_TANKS);
                 ImGui_CheckboxFlagsUintPtr(LFMT("editor.starman_running"), &elevel->flags, GF_STARMAN_RUNNING);
+                ImGui_CheckboxFlagsUintPtr(LFMT("editor.liberation"), &elevel->flags, GF_LIBERATION);
+                ImGui_CheckboxFlagsUintPtr(LFMT("editor.stupidity"), &elevel->flags, GF_STUPIDITY);
                 ImGui_Checkbox(LFMT("editor.ambush"), (bool*)&elevel->ambush);
             }
 

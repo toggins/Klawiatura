@@ -661,6 +661,10 @@ static void load_level(TinyHash key) {
         game_state->flags |= GF_FUNNY_TANKS;
     if (yyjson_get_bool(yyjson_obj_get(root, "starman_running")))
         game_state->flags |= GF_STARMAN_RUNNING;
+    if (yyjson_get_bool(yyjson_obj_get(root, "liberation")))
+        game_state->flags |= GF_LIBERATION;
+    if (yyjson_get_bool(yyjson_obj_get(root, "stupidity")))
+        game_state->flags |= GF_STUPIDITY;
     if (yyjson_get_bool(yyjson_obj_get(root, "ambush")))
         set_sequence(GS_AMBUSH, NULL, 0);
 

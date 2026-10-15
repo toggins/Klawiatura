@@ -58,6 +58,9 @@ typedef Uint16 GameFlags;
 #define GF_1UP (GameFlags)(1U << 6)             // Free 1UPs
 #define GF_LOST_MAP_END (GameFlags)(1U << 7)    // Lost Map Completed
 #define GF_STARMAN_RUNNING (GameFlags)(1U << 8) // Starman Running Level
+#define GF_LIBERATION (GameFlags)(1U << 9)      // Koopa Troopa Liberation Level
+#define GF_STUPIDITY (GameFlags)(1U << 10)      // World of Stupidity Level
+#define GF_STUPIDITY_END (GameFlags)(1U << 11)  // World of Stupidity Completed
 
 typedef Uint8 GameSequenceType;
 enum {
@@ -74,6 +77,7 @@ typedef Uint8 ActorType;
 enum {
     ACT_NULL,
 
+    // Mario Forever
     ACT_PLAYER_SPAWN,
     ACT_PLAYER,
     ACT_PLAYER_EFFECT,
@@ -211,11 +215,12 @@ enum {
     ACT_SMOKE,
     ACT_CENTIPEDE_WHEEL,
     ACT_SECRET_TEXT,
-    ACT_UNUSED_03,
+    ACT_KOOPA_BRO,
     ACT_STUPID_CLOUD,
     ACT_STUPID_CLOUD_TONGUE,
     ACT_FAKE_BLOCK,
 
+    // Mario Together
     ACT_BUZZY,
     ACT_BUZZY_SHELL,
     ACT_BLOOPER,
@@ -235,6 +240,10 @@ enum {
     ACT_WAVING_LEVEL,
     ACT_HEAT_BUBBLES,
     ACT_HEAT_BUBBLE,
+
+    // Mario Forever
+    ACT_SHELL_PROJECTILE,
+    ACT_KOOPA_SIGN,
 
     ACT_SIZE,
 };
