@@ -5,7 +5,7 @@ on:
 
   pull_request:
     paths: &pat
-      - .github/workflows/release.yaml
+      - .github/workflows/release.yml
       - src/**
       - external/**
       - assets/**
