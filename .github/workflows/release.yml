@@ -44,7 +44,7 @@ jobs:
             name: HTML5
 
     env:
-      CACHE_BUST: 8
+      CACHE_BUST: 9
       SCCACHE_GHA_ENABLED: true
       OUTNAME: Klawiatura-${{ github.ref_name == 'master' && 'dev' || github.ref_name }}-${{ matrix.name }}
 
@@ -92,11 +92,20 @@ jobs:
             ${{ env.CACHE_BUST }}-${{ matrix.name }}-${{ github.ref_name }}-
             ${{ env.CACHE_BUST }}-${{ matrix.name }}-
 
+      - name: Making sure Git works (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          which git
+          git --version
+
       - name: Configure
         shell: bash
         run: |
           [[ "${{ matrix.name == 'HTML5' && '1' || '0' }}" == "1" ]] && \
             source "${{ github.workspace }}/emsdk-cache/emsdk-main/emsdk_env.sh"
+
+          GIT_PATH="$(command -v git)"
 
           ${{ matrix.name == 'HTML5' && 'emcmake ' || '' }}cmake \
             -G Ninja -S . -B build \
