@@ -92,6 +92,7 @@ static Bool vsync = FALSE;
 #define SHD(idx, nm) [idx] = {.name = (nm), -1}
 static Shader SHADERS[SH_SIZE] = {
     SHD(SH_MAIN, "main"),
+    SHD(SH_REDUCE, "reduce"),
 };
 #undef SHD
 static Shader* current_shader = NULL;

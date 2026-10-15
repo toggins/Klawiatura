@@ -1799,7 +1799,15 @@ void draw_game() {
     pop_surface();
 
     batch_reset();
-    batch_surface(game_surface);
+
+    if (CLIENT.reduce_colors) {
+        set_shader(SH_REDUCE);
+        batch_surface(game_surface);
+        set_shader(SH_MAIN);
+    } else {
+        batch_surface(game_surface);
+    }
+
     batch_sprite("ui/bezel_l");
     batch_sprite("ui/bezel_r");
 

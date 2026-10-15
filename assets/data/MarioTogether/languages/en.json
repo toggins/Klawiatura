@@ -234,6 +234,7 @@
     "option.vsync": "VSync",
     "option.texture_filter": "Texture Filter",
     "option.extra_effects": "Extra Effects",
+    "option.reduce_colors": "Reduce Colors",
     "option.master_volume": "Master Volume",
     "option.sound_volume": "Sound Volume",
     "option.music_volume": "Music Volume",

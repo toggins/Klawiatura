@@ -82,6 +82,7 @@ typedef struct {
 typedef Uint8 ShaderType;
 enum {
     SH_MAIN,
+    SH_REDUCE,
     SH_SIZE,
 };
 

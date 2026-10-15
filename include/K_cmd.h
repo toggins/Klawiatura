@@ -46,6 +46,7 @@ typedef struct {
     Bool texture_filter;
     Bool show_hud;
     Bool extra_effects;
+    Bool reduce_colors;
 
     Bool audio_in_background;
 } ClientInfo;

@@ -828,7 +828,15 @@ static void draw_ui() {
     pop_surface();
 
     batch_reset();
-    batch_surface(map_state->surface);
+
+    if (CLIENT.reduce_colors) {
+        set_shader(SH_REDUCE);
+        batch_surface(map_state->surface);
+        set_shader(SH_MAIN);
+    } else {
+        batch_surface(map_state->surface);
+    }
+
     batch_sprite("ui/bezel_l");
     batch_sprite("ui/bezel_r");
 }

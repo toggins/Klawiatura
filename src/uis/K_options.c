@@ -33,13 +33,14 @@ static const char *fmt_language(size_t), *fmt_name(size_t), *fmt_server(size_t),
     *fmt_input_delay(size_t), *fmt_device(size_t), *fmt_up(size_t), *fmt_left(size_t), *fmt_down(size_t),
     *fmt_right(size_t), *fmt_jump(size_t), *fmt_run(size_t), *fmt_fire(size_t), *fmt_chat(size_t),
     *fmt_record_replay(size_t), *fmt_framerate(size_t), *fmt_texture_filter(size_t), *fmt_extra_effects(size_t),
-    *fmt_xscroll(size_t), *fmt_tickrate(size_t), *fmt_always_run(size_t);
+    *fmt_reduce_colors(size_t), *fmt_xscroll(size_t), *fmt_tickrate(size_t), *fmt_always_run(size_t);
 static void enter_language_menu(MenuType), submit_name(Bool), submit_server(Bool), show_user_messages_cycle(Sint8),
     language_option(), resolution_cycle(Sint8), fullscreen_cycle(Sint8), master_volume_cycle(Sint8),
     sound_volume_cycle(Sint8), music_volume_cycle(Sint8), audio_in_background_cycle(Sint8), vsync_cycle(Sint8),
     input_delay_cycle(Sint8), up_option(), left_option(), down_option(), right_option(), jump_option(), run_option(),
     fire_option(), chat_option(), record_replay_option(), framerate_cycle(Sint8), texture_filter_cycle(Sint8),
-    extra_effects_cycle(Sint8), xscroll_cycle(Sint8), tickrate_cycle(Sint8), always_run_cycle(Sint8);
+    extra_effects_cycle(Sint8), reduce_colors_cycle(Sint8), xscroll_cycle(Sint8), tickrate_cycle(Sint8),
+    always_run_cycle(Sint8);
 
 static Catalog CATALOG = {
 	.current = MEN_MAIN,
@@ -100,6 +101,7 @@ static Catalog CATALOG = {
             {},
             {.fmt = fmt_texture_filter, .cycle = texture_filter_cycle},
             {.fmt = fmt_extra_effects, .cycle = extra_effects_cycle},
+            {.fmt = fmt_reduce_colors, .cycle = reduce_colors_cycle},
 		},
 
 		[MEN_AUDIO] = {
@@ -479,6 +481,18 @@ static void extra_effects_cycle(Sint8 cycle) {
     (void)cycle;
 
     CLIENT.extra_effects = !CLIENT.extra_effects;
+}
+
+static const char* fmt_reduce_colors(size_t idx) {
+    (void)idx;
+
+    return fmt("%s: %s", LFMT("option.reduce_colors"), LFMT(CLIENT.reduce_colors ? "value.yes" : "value.no"));
+}
+
+static void reduce_colors_cycle(Sint8 cycle) {
+    (void)cycle;
+
+    CLIENT.reduce_colors = !CLIENT.reduce_colors;
 }
 
 // ==
