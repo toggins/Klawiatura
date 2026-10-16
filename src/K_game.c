@@ -2250,7 +2250,8 @@ void win_player(GamePlayer* player) {
         }
     }
 
-    player->bounds.end.y = get_player_view(player).y + F_SCREEN_HEIGHT;
+    player->bounds.start = get_player_view(player);
+    player->bounds.end = Vadd(player->bounds.start, F_SCREEN);
     set_sequence(GS_WIN, player, 0);
 
     set_view_player(player);
