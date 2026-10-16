@@ -2550,6 +2550,131 @@
             "sprite": "enemies/lava/bottom",
             "pos": [11711, 438, 19],
             "size": [477, 52]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 0, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 64, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 96, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 128, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 160, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 192, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 224, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 256, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 288, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 320, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 352, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 384, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 416, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, 448, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -32, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -63, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -95, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -127, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -159, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -191, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -223, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -255, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -287, 20]
+        },
+        {
+            "def": "Brown Block",
+            "sprite": "tiles/block/brown",
+            "pos": [-32, -319, 20]
         }
     ],
     "collisions": [
@@ -2576,17 +2701,33 @@
             ]
         },
         {
-            "pos": [0, 32],
-            "size": [366, 14],
+            "pos": [-32, -32],
+            "size": [367, 16],
             "cell_size": [32, 32],
             "cells": [
+                [1, 13, 1],
+                [1, 15, 1],
+                [260, 2, 1],
+                [289, 2, 1],
+                [366, 15, 1],
+                [366, 13, 1],
+                [366, 11, 1],
+                [0, 1, 1],
+                [0, 2, 1],
+                [0, 3, 1],
+                [0, 4, 1],
+                [0, 5, 1],
+                [0, 6, 1],
+                [0, 7, 1],
+                [0, 8, 1],
+                [0, 9, 1],
+                [0, 10, 1],
                 [0, 11, 1],
+                [0, 12, 1],
                 [0, 13, 1],
-                [259, 0, 1],
-                [288, 0, 1],
-                [365, 13, 1],
-                [365, 11, 1],
-                [365, 9, 1]
+                [0, 14, 1],
+                [0, 15, 1],
+                [0, 0, 1]
             ]
         },
         {
@@ -2876,6 +3017,22 @@
             "cells": [
                 [0, 0, 1],
                 [150, 0, 1]
+            ]
+        },
+        {
+            "pos": [-32, -319],
+            "size": [1, 9],
+            "cell_size": [32, 32],
+            "cells": [
+                [0, 8, 1],
+                [0, 7, 1],
+                [0, 6, 1],
+                [0, 5, 1],
+                [0, 4, 1],
+                [0, 3, 1],
+                [0, 2, 1],
+                [0, 1, 1],
+                [0, 0, 1]
             ]
         },
         {
@@ -3229,27 +3386,55 @@
         {
             "def": "Player Spawn",
             "id": 1,
-            "pos": [265, 351]
+            "pos": [265, 351],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0]
+            ]
         },
         {
             "def": "Platform",
             "id": 11,
             "pos": [768, 320],
-            "values": [[5, 0]],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0]
+            ],
             "flags": 32
         },
         {
             "def": "Platform",
             "id": 11,
             "pos": [928, 320],
-            "values": [[5, 0]],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0]
+            ],
             "flags": 32
         },
         {
             "def": "Platform",
             "id": 11,
             "pos": [1088, 320],
-            "values": [[5, 0]],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0]
+            ],
             "flags": 32
         },
         {
@@ -3257,73 +3442,142 @@
             "id": 11,
             "pos": [5088, 288],
             "vel": [-131072, 0],
-            "values": [[5, 0]]
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0]
+            ]
         },
         {
             "def": "Platform",
             "id": 11,
             "pos": [5568, 288],
             "vel": [-196608, 0],
-            "values": [[5, 0]]
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0]
+            ]
         },
         {
             "def": "Platform",
             "id": 11,
             "pos": [6048, 256],
-            "values": [[5, 0]],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0]
+            ],
             "flags": 32
         },
         {
             "def": "Platform",
             "id": 11,
             "pos": [6336, 256],
-            "values": [[5, 0]],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0]
+            ],
             "flags": 32
         },
         {
             "def": "Platform",
             "id": 11,
             "pos": [6592, 256],
-            "values": [[5, 0]],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0]
+            ],
             "flags": 32
         },
         {
             "def": "Platform",
             "id": 11,
             "pos": [8480, 256],
-            "values": [[5, 0]],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0]
+            ],
             "flags": 32
         },
         {
             "def": "Platform",
             "id": 11,
             "pos": [8704, 256],
-            "values": [[5, 0]],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0]
+            ],
             "flags": 32
         },
         {
             "def": "Platform Turn",
             "id": 12,
             "pos": [5024, 288],
-            "vel": [131072, 0]
+            "vel": [131072, 0],
+            "values": [
+                [2, 0],
+                [3, 0],
+                [4, 0]
+            ]
         },
         {
             "def": "Platform Turn",
             "id": 12,
             "pos": [5376, 288],
-            "vel": [-131072, 0]
+            "vel": [-131072, 0],
+            "values": [
+                [2, 0],
+                [3, 0],
+                [4, 0]
+            ]
         },
         {
             "def": "Platform Turn",
             "id": 12,
             "pos": [5408, 288],
-            "vel": [196608, 0]
+            "vel": [196608, 0],
+            "values": [
+                [2, 0],
+                [3, 0],
+                [4, 0]
+            ]
         },
         {
             "def": "Platform Turn",
             "id": 12,
             "pos": [5856, 288],
-            "vel": [-196608, 0]
+            "vel": [-196608, 0],
+            "values": [
+                [2, 0],
+                [3, 0],
+                [4, 0]
+            ]
         },
         {
             "def": "Piranha Plant",
@@ -3428,7 +3682,9 @@
                 [6, 98304],
                 [7, 100],
                 [8, 767295488],
-                [9, 798949376]
+                [9, 798949376],
+                [10, 0],
+                [11, 8738]
             ]
         },
         {
