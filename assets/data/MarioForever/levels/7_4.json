@@ -1,6 +1,6 @@
 {
     "label": "@7-4",
-    "tracks": [{ "track": "yi/castle" }, { "track": "kaosession" }],
+    "tracks": [{ "track": "smw/ghost_house" }, { "track": "kaosession" }],
     "size": [13520, 1440],
     "bounds": [0, 0, 13520, 480],
     "time": 480,
