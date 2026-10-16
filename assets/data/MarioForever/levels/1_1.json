@@ -6021,6 +6021,7 @@
         {
             "def": "Warp",
             "id": 6,
+            "once": true,
             "singleplayer": true,
             "pos": [47, 415],
             "values": [
@@ -6406,6 +6407,7 @@
         {
             "def": "Warp",
             "id": 6,
+            "once": true,
             "multiplayer": true,
             "pos": [47, 415],
             "values": [
