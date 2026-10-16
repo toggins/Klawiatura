@@ -641,14 +641,16 @@ static void draw_ui() {
                                                               : fmt("ui/map/point/%u", t % 6)));
         }
 
-        for (size_t i = 0, n = TinyDLength(map_state->bosses); i < n; i++) {
-            const MapBoss* boss = &map_state->bosses[i];
-            if (boss->level < worldcontext()->level)
-                continue;
+        if (CLIENT.extra_effects) {
+            for (size_t i = 0, n = TinyDLength(map_state->bosses); i < n; i++) {
+                const MapBoss* boss = &map_state->bosses[i];
+                if (boss->level < worldcontext()->level)
+                    continue;
 
-            batch_pos(B_F3(boss->pos[0],
-                boss->pos[1] - SDL_fabsf(SDL_sinf(screenticks() * 2.4f * (SDL_PI_F / 180.f)) * 10.f), 8.f));
-            batch_sprite("ui/map/bowser");
+                batch_pos(B_F3(boss->pos[0],
+                    boss->pos[1] - SDL_fabsf(SDL_sinf(screenticks() * 2.4f * (SDL_PI_F / 180.f)) * 10.f), 8.f));
+                batch_sprite("ui/map/bowser");
+            }
         }
 
         const MapPlayer* player = &map_state->player;
