@@ -2250,8 +2250,10 @@ void win_player(GamePlayer* player) {
         }
     }
 
-    player->bounds.start = get_player_view(player);
-    player->bounds.end = Vadd(player->bounds.start, F_SCREEN);
+    if (!(game_state->flags & (GF_HARDCORE | GF_LOST_MAP | GF_STARMAN_RUNNING))) {
+        player->bounds.start = get_player_view(player);
+        player->bounds.end = Vadd(player->bounds.start, F_SCREEN);
+    }
     set_sequence(GS_WIN, player, 0);
 
     set_view_player(player);
