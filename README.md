@@ -11,10 +11,10 @@
 
 Check out [the releases](https://github.com/toggins/Klawiatura/releases/latest) or [**play in your browser**][web] to get started.
 
-|||
-|:-:|:-:|
-|<img src=".github/assets/screenshot1.png">|<img src=".github/assets/screenshot2.png">|
-|<img src=".github/assets/screenshot3.png">|<img src=".github/assets/screenshot4.png">|
+|                                            |                                            |
+| :----------------------------------------: | :----------------------------------------: |
+| <img src=".github/assets/screenshot1.png"> | <img src=".github/assets/screenshot2.png"> |
+| <img src=".github/assets/screenshot3.png"> | <img src=".github/assets/screenshot4.png"> |
 
 ## Features
 
@@ -32,6 +32,7 @@ Check out [the releases](https://github.com/toggins/Klawiatura/releases/latest) 
 - Original map screens (1.16.1 - 3.0)
 - Checkpoints in main worlds (4.4+)
 - Hammer Bro fights (5.08+)
+- Koopa Troopa Liberation, Starman Running and World of Stupidity (4.4 - 6.0+)
 
 ## Enhancements
 
