@@ -11,17 +11,24 @@
    =========== */
 
 static void load_bullet_bill() {
-    load_sprite("enemies/bullet", AKL_NEVER);
+    load_sprite((gamestate()->flags & GF_STUPIDITY) ? "enemies/stupid_bullet" : "enemies/bullet", AKL_NEVER);
     load_sound("stomp", AKL_NEVER);
     load_sound("kick", AKL_NEVER);
     load_actor(ACT_POINTS);
 }
 
 static void create_bullet_bill(GameActor* actor) {
-    actor->box.start.x = Int2Fx(-16);
-    actor->box.start.y = Int2Fx(-13);
-    actor->box.end.x = Int2Fx(16);
-    actor->box.end.y = Int2Fx(15);
+    if (gamestate()->flags & GF_STUPIDITY) {
+        actor->box.start.x = Int2Fx(-33);
+        actor->box.start.y = Int2Fx(-14);
+        actor->box.end.x = Int2Fx(33);
+        actor->box.end.y = Int2Fx(16);
+    } else {
+        actor->box.start.x = Int2Fx(-16);
+        actor->box.start.y = Int2Fx(-13);
+        actor->box.end.x = Int2Fx(16);
+        actor->box.end.y = Int2Fx(15);
+    }
 
     actor->depth = Fx1;
 }
@@ -43,7 +50,7 @@ static void tick_bullet_bill(GameActor* actor) {
 
 static void draw_bullet_bill(const GameActor* actor) {
     batch_reset();
-    draw_actor(actor, "enemies/bullet", FALSE);
+    draw_actor(actor, (gamestate()->flags & GF_STUPIDITY) ? "enemies/stupid_bullet" : "enemies/bullet", FALSE);
 }
 
 static void collide_bullet_bill(GameActor* actor, GameActor* from) {

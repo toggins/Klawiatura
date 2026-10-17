@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/stupid_cloud",
+    "size": [64, 82],
+    "offset": [32, 9],
+    "uvs": [1, 63, 65, 145]
+}

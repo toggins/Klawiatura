@@ -130,6 +130,8 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
             case ACT_1UP_MUSHROOM:
             case ACT_POISON_MUSHROOM: {
                 item->vel.x = Int2Fx(2);
+                if (gamestate()->flags & GF_STUPIDITY)
+                    FLAG_ON(item, FLG_POWERUP_STUPID);
             }
             case ACT_FIRE_FLOWER:
             case ACT_BEETROOT:

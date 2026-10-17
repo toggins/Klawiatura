@@ -343,8 +343,22 @@ static void tick_poison_mushroom(GameActor* actor) {
         VAL(actor, POWERUP_FRAME) += 9;
     }
 
+    VAL_TICK(actor, POWERUP_OVERLAP);
+
     if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
         FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    if (ANY_FLAG(actor, FLG_POWERUP_STUPID)) {
+        if (actor->sprout <= 0) {
+            const Fixed dir = Fmul(
+                Ffloor(Fdiv(Vtheta(actor->pos, Vadd(nearest_player_pos(actor->pos), (FVec2){Fx1, Int2Fx(-17)})), 12868)
+                       + FxHalf),
+                12868);
+            move_actor(actor, Vadd(actor->pos, (FVec2){Fmul(163840, Fcos(dir)), Fmul(163840, -Fsin(dir))}));
+        }
+
         return;
     }
 

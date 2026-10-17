@@ -1,0 +1,5 @@
+{
+    "texture": "items/block",
+    "size": [32, 32],
+    "uvs": [69, 1, 101, 33]
+}

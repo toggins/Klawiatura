@@ -20,6 +20,7 @@ enum {
 #define FLG_PIRANHA_SHOULD_FIRE CUSTOM_FLAG(4)
 #define FLG_PIRANHA_RED CUSTOM_FLAG(5)
 #define FLG_PIRANHA_GRAY CUSTOM_FLAG(6)
+#define FLG_PIRANHA_TROLL CUSTOM_FLAG(7)
 
 static void tick_generic_plant(GameActor* actor) {
     // EVENTS FROM "Level 6 - 1"
@@ -251,6 +252,9 @@ static void load_head_special(const GameActor* actor) {
         load_sound("fire", AKL_NEVER);
         load_actor(ACT_FIREBALL_PROJECTILE);
     }
+
+    if (ANY_FLAG(actor, FLG_PIRANHA_TROLL))
+        load_sound("raspberry", AKL_NEVER);
 }
 
 static void create_head(GameActor* actor) {
@@ -269,7 +273,7 @@ static void tick_head(GameActor* actor) {
     if (game_state->time == 0 && ANY_FLAG(actor, FLG_Y_FLIP))
         actor->box = Ryflip(actor->box);
 
-    if (!ANY_FLAG(actor, FLG_PIRANHA_FIRE))
+    if (!ANY_FLAG(actor, FLG_PIRANHA_FIRE) || ANY_FLAG(actor, FLG_PIRANHA_TROLL))
         return;
 
     if (in_any_view(actor->pos, Int2Fx(-128), VEF_ALL))
@@ -296,17 +300,24 @@ static void tick_head(GameActor* actor) {
 }
 
 static void draw_head(const GameActor* actor) {
-    batch_reset();
-    draw_actor(actor,
-        fmt(ANY_FLAG(actor, FLG_PIRANHA_FIRE) ? "enemies/piranha/head/fire/%i" : "enemies/piranha/head/%i",
-            (VAL(actor, PIRANHA_FRAME) / 50) % 4),
-        FALSE);
+    if (!ANY_FLAG(actor, FLG_PIRANHA_TROLL)) {
+        batch_reset();
+        draw_actor(actor,
+            fmt(ANY_FLAG(actor, FLG_PIRANHA_FIRE) ? "enemies/piranha/head/fire/%i" : "enemies/piranha/head/%i",
+                (VAL(actor, PIRANHA_FRAME) / 50) % 4),
+            FALSE);
+    }
 }
 
 static void collide_head(GameActor* actor, GameActor* from) {
-    (void)actor;
+    if (ANY_FLAG(actor, FLG_PIRANHA_TROLL)) {
+        kill_player(from);
+        FLAG_OFF(actor, FLG_PIRANHA_TROLL);
 
-    hit_player(from);
+        play_state_sound("raspberry", PLAY_POS, A_ACTOR(actor));
+    } else {
+        hit_player(from);
+    }
 }
 
 const ActorTable TAB_PIRANHA_HEAD = {

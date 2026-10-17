@@ -1,6 +1,7 @@
 #include "K_audio.h"
 #include "K_video.h"
 
+#include "actors/K_hazards.h"
 #include "actors/K_player.h"
 #include "actors/K_powerups.h"
 #include "actors/K_warp.h"
@@ -19,6 +20,8 @@ static void load_special(const GameActor* actor) {
         load_sound("vo/clone/a_dead", AKL_NEVER);
     if (ANY_FLAG(actor, FLG_WARP_DEVASTATOR))
         load_sound("vo/thwomp", AKL_NEVER);
+    if (ANY_FLAG(actor, FLG_WARP_TROLL))
+        load_actor(ACT_STUPID_CLOUD);
 }
 
 static void create(GameActor* actor) {
@@ -124,6 +127,18 @@ static void collide(GameActor* actor, GameActor* from) {
 
     VAL(from, PLAYER_WARP) = actor->id;
     VAL(from, PLAYER_WARP_STATE) = 0;
+
+    if (ANY_FLAG(actor, FLG_WARP_TROLL)) {
+        GameActor* cloud
+            = create_actor(ACT_STUPID_CLOUD, (FVec2){VAL(actor, WARP_X) - Int2Fx(42), VAL(actor, WARP_Y) - Int2Fx(96)});
+        if (cloud != NULL) {
+            FLAG_ON(cloud, FLG_STUPID_TROLL);
+            if (gamecontext()->num_players > 1)
+                FLAG_ON(cloud, FLG_STUPID_BAIL);
+        }
+
+        FLAG_OFF(actor, FLG_WARP_TROLL);
+    }
 
     if (ANY_FLAG(actor, FLG_WARP_CALAMITY)) {
         GameActor* item = NULL;

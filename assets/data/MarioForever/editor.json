@@ -941,6 +941,11 @@
             "sprite": "scenery/hill",
             "depth": 61
         },
+        "Hill 2": {
+            "type": "background",
+            "sprite": "scenery/hill2",
+            "depth": 65
+        },
         "Starland Hill": {
             "type": "background",
             "sprite": "scenery/hill/starland",
@@ -950,6 +955,11 @@
             "type": "background",
             "sprite": "scenery/hills",
             "depth": 62
+        },
+        "Hills 2": {
+            "type": "background",
+            "sprite": "scenery/hills2",
+            "depth": 63
         },
         "Forest": {
             "type": "background",
@@ -1113,6 +1123,11 @@
                 [255, 255, 255, 129],
                 [255, 255, 255, 129]
             ]
+        },
+        "Giant Cloud 2": {
+            "type": "background",
+            "sprite": "scenery/cloud/giant2",
+            "depth": 64
         },
         "Cloud Face": {
             "type": "actor",
@@ -1727,6 +1742,10 @@
                 {
                     "name": "Goal",
                     "index": 10
+                },
+                {
+                    "name": "Troll",
+                    "index": 11
                 }
             ]
         },
@@ -1813,6 +1832,10 @@
                 {
                     "name": "Respawn 5-2 Platform at Checkpoint",
                     "index": 5
+                },
+                {
+                    "name": "Fake",
+                    "index": 6
                 }
             ]
         },
@@ -2352,6 +2375,10 @@
                 {
                     "name": "Fire",
                     "index": 8
+                },
+                {
+                    "name": "Troll",
+                    "index": 12
                 }
             ]
         },
@@ -2899,6 +2926,26 @@
             "type": "actor",
             "id": 133,
             "sprite": "enemies/coral/0"
+        },
+        "Stupid Cloud": {
+            "type": "actor",
+            "id": 139,
+            "sprite": "enemies/stupid_cloud/0",
+            "flags": [
+                {
+                    "name": "Stealth",
+                    "index": 5
+                },
+                {
+                    "name": "Troll",
+                    "index": 6
+                }
+            ]
+        },
+        "Fake Block": {
+            "type": "actor",
+            "id": 141,
+            "sprite": "editor/fake_block"
         }
     },
 
@@ -3161,7 +3208,8 @@
                         "Clouds Static",
                         "Giant Cloud",
                         "Giant Cloud Back",
-                        "Cloud Face"
+                        "Cloud Face",
+                        "Giant Cloud 2"
                     ]
                 },
                 {
@@ -3188,7 +3236,7 @@
                 },
                 {
                     "name": "Hills",
-                    "items": ["Hill", "Hills", "Starland Hill"]
+                    "items": ["Hill", "Hill 2", "Hills", "Hills 2", "Starland Hill"]
                 },
                 {
                     "name": "Forests",
@@ -3359,7 +3407,7 @@
                 },
                 {
                     "name": "Hazards",
-                    "items": ["Fake Brick", "Electric Coral"]
+                    "items": ["Fake Brick", "Electric Coral", "Stupid Cloud", "Fake Block"]
                 },
                 {
                     "name": "Artillery",

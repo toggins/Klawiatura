@@ -1261,6 +1261,9 @@ const ActorTable TAB_PLAYER_EFFECT = {
 
 static void load_dead() {
     const GameFlags flags = gamestate()->flags;
+    if (flags & GF_STUPIDITY)
+        load_sound("vo/baby/jump", AKL_NEVER);
+
     if (flags & (GF_LOST_MAP | GF_STARMAN_RUNNING))
         load_track("smw/lose2", AKL_NEVER);
     else if (flags & GF_HARDCORE)

@@ -1115,6 +1115,9 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         }
 
         case 201: {
+            if (game_state->flags & GF_STUPIDITY_END)
+                break;
+
             if (game_context.num_players <= 1) {
                 GamePlayer* player = get_player(sequence->activator);
                 if (player != NULL)
@@ -1128,7 +1131,25 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         }
 
         case 211: {
-            play_state_track(sequence->activator, "smb/game_over", 0, 0);
+            if (!(game_state->flags & GF_STUPIDITY_END))
+                play_state_track(sequence->activator, "smb/game_over", 0, 0);
+
+            break;
+        }
+
+        case 301: {
+            if (game_state->flags & GF_STUPIDITY_END)
+                play_state_sound("vo/baby/jump", 0, NULL);
+
+            break;
+        }
+
+        case 351: {
+            if (game_state->flags & GF_STUPIDITY_END) {
+                set_sequence(GS_WIN, get_player(sequence->activator), 0);
+                game_state->flags |= GF_END;
+            }
+
             break;
         }
 
@@ -1700,7 +1721,7 @@ static void draw_hud() {
     }
 
     const GameSequence* sequence = get_sequence();
-    if (sequence->type == GS_LOSE && sequence->time >= 211) {
+    if (sequence->type == GS_LOSE && sequence->time >= 211 && !(game_state->flags & GF_STUPIDITY_END)) {
         batch_pos(B_F3_HALF_SCREEN);
         batch_align(B_ALIGN_CENTER);
         batch_string("hud", 16.f, LFMT("hud.game_over"));

@@ -380,6 +380,253 @@ const ActorTable TAB_ELECTRIC_CORAL = {
 };
 
 /* ============
+   STUPID CLOUD
+   ============ */
+
+static void load_stupid_cloud() {
+    load_sprite_num("enemies/stupid_cloud/%u", 3, AKL_NEVER);
+    load_sound("raspberry", AKL_NEVER);
+    load_actor(ACT_STUPID_CLOUD_TONGUE);
+}
+
+static void create_stupid_cloud(GameActor* actor) {
+    actor->box.start.x = Int2Fx(8);
+    actor->box.start.y = Int2Fx(32);
+    actor->box.end.x = Int2Fx(71);
+    actor->box.end.y = Int2Fx(70);
+
+    actor->depth = 98304;
+}
+
+static void tick_stupid_cloud(GameActor* actor) {
+    VAL(actor, HAZARD_FRAME) += 2;
+    VAL_TICK(actor, HAZARD_STATE);
+
+    if (ALL_FLAG(actor, FLG_STUPID_BAIL | FLG_STUPID_REAPPEAR)) {
+        if (++VAL(actor, HAZARD_STATE2) > 150)
+            FLAG_ON(actor, FLG_DESTROY);
+
+        return;
+    }
+
+    if (ANY_FLAG(actor, FLG_STUPID_TROLL))
+        return;
+
+    const FRect proximity = Radd(
+        ANY_FLAG(actor, FLG_STUPID_STEALTH) ? (FRect){
+            {Int2Fx(-50), Int2Fx(-100)},
+            {Int2Fx(50),  Int2Fx(200) }
+    } : (FRect){
+            {Int2Fx(-100), Int2Fx(-100)},
+            {Int2Fx(100),  Int2Fx(100) }
+    },
+        actor->pos);
+    for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+        const GamePlayer* player = get_player(i);
+        if (player == NULL)
+            continue;
+
+        const GameActor* pawn = get_actor(player->actor);
+        if (pawn != NULL && pawn->type == ACT_PLAYER && pawn->pos.x > proximity.start.x
+            && pawn->pos.y > proximity.start.y && pawn->pos.x < proximity.end.x && pawn->pos.y < proximity.end.y)
+        {
+            if (VAL(actor, HAZARD_STATE) <= 0) {
+                FLAG_ON(actor, FLG_STUPID_REAPPEAR);
+                create_actor(ACT_STUPID_CLOUD_TONGUE, Vadd(actor->pos, (FVec2){Int2Fx(35), Int2Fx(61)}));
+
+                play_state_sound("raspberry", PLAY_POS, A_ACTOR(actor));
+            }
+
+            VAL(actor, HAZARD_STATE) = 2;
+        }
+    }
+}
+
+static void draw_stupid_cloud(const GameActor* actor) {
+    if (!ANY_FLAG(actor, FLG_STUPID_STEALTH | FLG_STUPID_TROLL) || ANY_FLAG(actor, FLG_STUPID_REAPPEAR)) {
+        batch_reset();
+        batch_color(B_U4_ALPHA((1.f - (((float)SDL_max(VAL(actor, HAZARD_STATE2), 100) - 100.f) / 50.f)) * 255.f));
+        draw_actor(actor, fmt("enemies/stupid_cloud/%i", (VAL(actor, HAZARD_FRAME) / 25) % 3), FALSE);
+    }
+}
+
+static void collide_stupid_cloud(GameActor* actor, GameActor* from) {
+    if (from->type != ACT_PLAYER || !ANY_FLAG(actor, FLG_STUPID_TROLL))
+        return;
+
+    FLAG_ON(actor, FLG_STUPID_REAPPEAR);
+    create_actor(ACT_STUPID_CLOUD_TONGUE, Vadd(actor->pos, (FVec2){Int2Fx(35), Int2Fx(61)}));
+
+    if (get_sequence()->type == GS_WIN) {
+        kill_player(from);
+        gamestate()->flags |= GF_STUPIDITY_END;
+    } else {
+        kill_player(from);
+    }
+
+    play_state_sound("raspberry", PLAY_POS, A_ACTOR(actor));
+}
+
+const ActorTable TAB_STUPID_CLOUD = {
+    .load = load_stupid_cloud,
+    .create = create_stupid_cloud,
+    .tick = tick_stupid_cloud,
+    .draw = draw_stupid_cloud,
+    .collide = collide_stupid_cloud,
+};
+
+/* ===================
+   STUPID CLOUD TONGUE
+   =================== */
+
+static void load_stupid_cloud_tongue() {
+    load_sprite("enemies/stupid_cloud/tongue", AKL_NEVER);
+}
+
+static void create_stupid_cloud_tongue(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-32);
+    actor->box.start.y = Int2Fx(-9);
+    actor->box.end.x = Int2Fx(32);
+    actor->box.end.y = Int2Fx(73);
+
+    actor->depth = 98303;
+}
+
+static void tick_stupid_cloud_tongue(GameActor* actor) {
+    if (VAL(actor, HAZARD_STATE) <= 1000)
+        VAL(actor, HAZARD_STATE) += 20;
+
+    if (VAL(actor, HAZARD_STATE) > 1000) {
+        VAL(actor, HAZARD_FRAME) += 9930;
+        if (VAL(actor, HAZARD_FRAME) >= Fx1)
+            FLAG_ON(actor, FLG_DESTROY);
+    }
+}
+
+static void draw_stupid_cloud_tongue(const GameActor* actor) {
+    batch_reset();
+    batch_color(B_U4_ALPHA((1.f - Fx2Float(VAL(actor, HAZARD_FRAME))) * 255.f));
+    batch_angle(
+        SDL_sinf(((float)VAL(actor, HAZARD_STATE) / 360.f) * 2.f * SDL_PI_F) * ((-20.f / 360.f) * 2.f * SDL_PI_F));
+    draw_actor(actor, "enemies/stupid_cloud/tongue", FALSE);
+}
+
+static void collide_stupid_cloud_tongue(GameActor* actor, GameActor* from) {
+    if (VAL(actor, HAZARD_FRAME) <= Fx0)
+        kill_player(from);
+}
+
+const ActorTable TAB_STUPID_CLOUD_TONGUE = {
+    .load = load_stupid_cloud_tongue,
+    .create = create_stupid_cloud_tongue,
+    .tick = tick_stupid_cloud_tongue,
+    .draw = draw_stupid_cloud_tongue,
+    .collide = collide_stupid_cloud_tongue,
+};
+
+/* ==========
+   FAKE BLOCK
+   ========== */
+
+static SolidFlags fake_block_is_solid(const GameActor* actor) {
+    return TOUCHING(actor, TOUCH_BOTTOM) ? SOL_SOLID : 0;
+}
+
+static void load_fake_block() {
+    load_sprite_num("enemies/fake_block/%u", 3, AKL_NEVER);
+    load_sprite("enemies/fake_block/empty", AKL_NEVER);
+    load_sound("bump", AKL_NEVER);
+    load_actor(ACT_EXPLODE);
+}
+
+static void create_fake_block(GameActor* actor) {
+    actor->box.end.x = actor->box.end.y = Int2Fx(32);
+
+    actor->depth = 1310719;
+}
+
+static void tick_fake_block(GameActor* actor) {
+    if (TOUCHING(actor, TOUCH_BOTTOM)) {
+        if (VAL(actor, HAZARD_FRAME) < 9)
+            ++VAL(actor, HAZARD_FRAME);
+
+        return;
+    }
+
+    VAL(actor, HAZARD_FRAME) += 9;
+
+    if (actor->pos.y > (levelinfo()->size.y + Int2Fx(32))) {
+        FLAG_ON(actor, FLG_DESTROY);
+        return;
+    }
+
+    if (any_in_range((FVec2){actor->pos.x, Int2Fx(20)}))
+        FLAG_ON(actor, FLG_HAZARD_ACTIVE);
+
+    if (ANY_FLAG(actor, FLG_HAZARD_ACTIVE)) {
+        actor->vel.y += Fx1;
+        displace_actor(actor, Fx0, FALSE);
+        TOUCH_OFF(actor, TOUCH_DISPLACEABLE);
+
+        if (TOUCHING(actor, TOUCH_BOTTOM)) {
+            VAL(actor, HAZARD_FRAME) = 0;
+            FLAG_ON(actor, FLG_HAZARD_ACTIVE);
+
+            create_actor(ACT_EXPLODE, Vadd(actor->pos, (FVec2){Int2Fx(16), Int2Fx(35)}));
+
+            play_state_sound("bump", PLAY_POS, A_ACTOR(actor));
+        }
+    }
+}
+
+static void draw_fake_block(const GameActor* actor) {
+    batch_reset();
+
+    if (TOUCHING(actor, TOUCH_BOTTOM)) {
+        Sint8 bump = 0;
+        switch (VAL(actor, HAZARD_FRAME)) {
+        default:
+            break;
+        case 1:
+        case 8:
+            bump = 1;
+            break;
+        case 2:
+        case 7:
+            bump = 2;
+            break;
+        case 3:
+        case 6:
+            bump = 3;
+            break;
+        case 4:
+        case 5:
+            bump = 4;
+            break;
+        }
+
+        batch_offset(B_F3_XY(0.f, bump));
+        draw_actor(actor, "enemies/fake_block/empty", FALSE);
+    } else {
+        draw_actor(actor, fmt("enemies/fake_block/%i", (VAL(actor, HAZARD_FRAME) / 100) % 3), FALSE);
+    }
+}
+
+static void collide_fake_block(GameActor* actor, GameActor* from) {
+    if (from->type == ACT_PLAYER && !TOUCHING(actor, TOUCH_BOTTOM))
+        kill_player(from);
+}
+
+const ActorTable TAB_FAKE_BLOCK = {
+    .is_solid = fake_block_is_solid,
+    .load = load_fake_block,
+    .create = create_fake_block,
+    .tick = tick_fake_block,
+    .draw = draw_fake_block,
+    .collide = collide_fake_block,
+};
+
+/* ============
    WAVING LEVEL
    ============ */
 

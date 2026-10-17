@@ -34,8 +34,8 @@ static void tick(GameActor* actor) {
         }
     }
 
-    actor->vel.y = Fx1;
-    displace_actor(actor, Fx0, FALSE);
+    if (!touching_solid(Radd(actor->box, actor->pos), SOL_SOLID | SOL_TOP))
+        move_actor(actor, Vadd(actor->pos, (FVec2){Fx0, Fx1}));
 }
 
 static void draw(const GameActor* actor) {

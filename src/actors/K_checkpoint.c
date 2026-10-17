@@ -95,8 +95,11 @@ static void tick(GameActor* actor) {
 
 static void post_tick(GameActor* actor) {
     GameState* game_state = gamestate();
-    if (!(game_state->flags & GF_STARMAN_RUNNING) || get_actor(game_state->checkpoint) != NULL)
+    if (!(game_state->flags & GF_STARMAN_RUNNING) || get_actor(game_state->checkpoint) != NULL
+        || ANY_FLAG(actor, FLG_CHECKPOINT_FAKE))
+    {
         return;
+    }
 
     for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
         const GamePlayer* player = get_player(i);
@@ -180,7 +183,7 @@ static void draw(const GameActor* actor) {
 }
 
 static void collide(GameActor* actor, GameActor* from) {
-    if (from->type != ACT_PLAYER)
+    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_CHECKPOINT_FAKE))
         return;
 
     GameState* game_state = gamestate();
