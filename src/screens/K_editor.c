@@ -421,11 +421,18 @@ static void open_level(const char* filename) {
         marker.sprout = (int)yyjson_get_uint(yyjson_obj_get(jmarker, "sprout"));
 
         jmval = yyjson_obj_get(jmarker, "values");
-        for (size_t j = 0, n2 = yyjson_arr_size(jmval); j < n2; j++) {
+        const size_t n2 = yyjson_arr_size(jmval);
+        for (size_t j = 0; j < n2; j++) {
             yyjson_val* jmval2 = yyjson_arr_get(jmval, j);
             const size_t index = yyjson_get_uint(yyjson_arr_get(jmval2, 0));
             if (index < MAX_VALUES)
                 marker.values[index] = yyjson_get_int(yyjson_arr_get(jmval2, 1));
+        }
+        const size_t n3 = TinyDLength(def->values);
+        if (n2 < n3) {
+            WARN("Actor %zu (%s) has less values than defined, filling defaults", i, def_name);
+            for (size_t j = n2; j < n3; j++)
+                marker.values[j] = def->values[j].default_value;
         }
 
         marker.flags = yyjson_get_uint(yyjson_obj_get(jmarker, "flags"));
