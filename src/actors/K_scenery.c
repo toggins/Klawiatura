@@ -254,8 +254,8 @@ static void draw_lavafall(const GameActor* actor) {
     const float az = Fx2Float(actor->depth);
     const char* sprite = fmt("scenery/lavafall/%i", gamestate()->time % 10);
 
-    for (Sint32 i = Fx2Int(actor->pos.y + actor->box.start.y) - 32, n = Fx2Int(actor->box.end.y - actor->box.start.y);
-        i < n; i += 32)
+    for (Sint32 i = Fx2Int(actor->pos.y + actor->box.start.y) - 32, n = Fx2Int(actor->pos.y + actor->box.end.y); i < n;
+        i += 32)
     {
         batch_pos(B_F3(ax, i + ay, az));
         batch_sprite(sprite);
