@@ -2407,13 +2407,13 @@
                 {
                     "name": "Angle",
                     "index": 1,
-                    "type": "fixed"
+                    "type": "angle"
                 },
                 {
                     "name": "Speed",
                     "index": 2,
                     "default": 1144,
-                    "type": "fixed"
+                    "type": "angle"
                 }
             ],
             "flags": [
@@ -2805,7 +2805,7 @@
                 {
                     "name": "Angle",
                     "index": 4,
-                    "type": "fixed",
+                    "type": "angle",
                     "default": 205887
                 }
             ]

@@ -29,6 +29,14 @@ enum {
     DEFT_ACTOR,
 };
 
+typedef Uint8 DefValueType;
+enum {
+    DVT_INTEGER,
+    DVT_FIXED,
+    DVT_ANGLE,
+    DVT_ACTOR,
+};
+
 typedef struct {
     Bool available;
     const char* ptr;
@@ -36,6 +44,7 @@ typedef struct {
 
 typedef struct {
     Bool hidden;
+    DefValueType type;
     int default_value;
     size_t index;
     const char* name;
@@ -68,7 +77,10 @@ typedef struct {
     int pos[3], sprout;
     float scale[2], colors[4][4], vel[2];
 
-    int values[MAX_VALUES];
+    union {
+        int integer;
+        float fixed;
+    } values[MAX_VALUES];
     unsigned int flags;
 
     TinyHash def_key;
@@ -421,18 +433,45 @@ static void open_level(const char* filename) {
         marker.sprout = (int)yyjson_get_uint(yyjson_obj_get(jmarker, "sprout"));
 
         jmval = yyjson_obj_get(jmarker, "values");
-        const size_t n2 = yyjson_arr_size(jmval);
+        const size_t n2 = yyjson_arr_size(jmval), n3 = TinyDLength(def->values);
         for (size_t j = 0; j < n2; j++) {
             yyjson_val* jmval2 = yyjson_arr_get(jmval, j);
             const size_t index = yyjson_get_uint(yyjson_arr_get(jmval2, 0));
-            if (index < MAX_VALUES)
-                marker.values[index] = yyjson_get_int(yyjson_arr_get(jmval2, 1));
+            if (index < MAX_VALUES) {
+                const ActorValue val = yyjson_get_int(yyjson_arr_get(jmval2, 1));
+                if (index < n3) {
+                    switch (def->values[index].type) {
+                    default:
+                        marker.values[index].integer = val;
+                        break;
+                    case DVT_FIXED:
+                        marker.values[index].fixed = Fx2Float(val);
+                        break;
+                    case DVT_ANGLE:
+                        marker.values[index].fixed = Fx2Float(FxDeg(val));
+                        break;
+                    }
+                } else {
+                    marker.values[index].integer = val;
+                }
+            }
         }
-        const size_t n3 = TinyDLength(def->values);
         if (n2 < n3) {
             WARN("Actor %zu (%s) has less values than defined, filling defaults", i, def_name);
-            for (size_t j = n2; j < n3; j++)
-                marker.values[j] = def->values[j].default_value;
+            for (size_t j = n2; j < n3; j++) {
+                const EditorDefValue* dvalue = &def->values[j];
+                switch (dvalue->type) {
+                default:
+                    marker.values[j].integer = dvalue->default_value;
+                    break;
+                case DVT_FIXED:
+                    marker.values[j].fixed = Fx2Float(dvalue->default_value);
+                    break;
+                case DVT_ANGLE:
+                    marker.values[j].fixed = Fx2Float(FxDeg(dvalue->default_value));
+                    break;
+                }
+            }
         }
 
         marker.flags = yyjson_get_uint(yyjson_obj_get(jmarker, "flags"));
@@ -739,7 +778,19 @@ static void save_level(const char* filename) {
                     yyjson_mut_val* jvalue = yyjson_mut_arr_add_arr(json, jvalues);
                     const EditorDefValue* dvalue = &def->values[j];
                     yyjson_mut_arr_add_uint(json, jvalue, dvalue->index);
-                    yyjson_mut_arr_add_sint(json, jvalue, marker->values[dvalue->index]);
+                    switch (dvalue->type) {
+                    default:
+                        yyjson_mut_arr_add_sint(json, jvalue, marker->values[dvalue->index].integer);
+                        break;
+                    case DVT_FIXED:
+                        yyjson_mut_arr_add_sint(
+                            json, jvalue, (Fixed)SDL_roundf(marker->values[dvalue->index].fixed * (float)Fx1));
+                        break;
+                    case DVT_ANGLE:
+                        yyjson_mut_arr_add_sint(json, jvalue,
+                            (Fixed)SDL_roundf((marker->values[dvalue->index].fixed * (SDL_PI_F / 180.f)) * (float)Fx1));
+                        break;
+                    }
                 }
             }
 
@@ -1042,6 +1093,16 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
                 const char* vname = yyjson_get_str(yyjson_obj_get(jvalue, "name"));
                 if (vname != NULL)
                     value.name = SDL_strdup(vname);
+
+                const char* vtype = yyjson_get_str(yyjson_obj_get(jvalue, "type"));
+                if (vtype != NULL) {
+                    if (SDL_strcmp(vtype, "fixed") == 0)
+                        value.type = DVT_FIXED;
+                    else if (SDL_strcmp(vtype, "angle") == 0)
+                        value.type = DVT_ANGLE;
+                    else if (SDL_strcmp(vtype, "actor") == 0)
+                        value.type = DVT_ACTOR;
+                }
 
                 value.index = yyjson_get_uint(yyjson_obj_get(jvalue, "index")) % MAX_VALUES;
                 value.default_value = yyjson_get_int(yyjson_obj_get(jvalue, "default"));
@@ -1524,7 +1585,17 @@ static void draw_ui() {
 
                             for (size_t i = 0, n = TinyDLength(cdef->values); i < n; i++) {
                                 const EditorDefValue* dvalue = &cdef->values[i];
-                                marker.values[dvalue->index] = dvalue->default_value;
+                                switch (dvalue->type) {
+                                default:
+                                    marker.values[dvalue->index].integer = dvalue->default_value;
+                                    break;
+                                case DVT_FIXED:
+                                    marker.values[dvalue->index].fixed = Fx2Float(dvalue->default_value);
+                                    break;
+                                case DVT_ANGLE:
+                                    marker.values[dvalue->index].fixed = Fx2Float(FxDeg(dvalue->default_value));
+                                    break;
+                                }
                             }
 
                             for (size_t i = 0, n = TinyDLength(cdef->flags); i < n; i++) {
@@ -1692,8 +1763,15 @@ static void draw_ui() {
 
                     for (size_t i = 0, n = TinyDLength(def->values); i < n; i++) {
                         const EditorDefValue* dvalue = &def->values[i];
-                        if (!dvalue->hidden)
-                            ImGui_InputInt(fmt("%s##v%zu", dvalue->name, i), &marker->values[dvalue->index]);
+                        if (!dvalue->hidden) {
+                            if (dvalue->type == DVT_FIXED || dvalue->type == DVT_ANGLE) {
+                                ImGui_InputFloat(
+                                    fmt("%s##v%zu", dvalue->name, i), &marker->values[dvalue->index].fixed);
+                            } else {
+                                ImGui_InputInt(
+                                    fmt("%s##v%zu", dvalue->name, i), &marker->values[dvalue->index].integer);
+                            }
+                        }
                     }
 
                     for (size_t i = 0, n = TinyDLength(def->flags); i < n; i++) {
