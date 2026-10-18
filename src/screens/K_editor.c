@@ -199,10 +199,23 @@ static void move_cursor(const Sint32 pos[2], Bool snap, Bool highlight) {
                     x2 += marker->scale[0];
                     y2 += marker->scale[1];
                 } else {
-                    x1 -= sprite->offset[0];
-                    y1 -= sprite->offset[1];
-                    x2 = x1 + (sprite->size[0] * marker->scale[0]);
-                    y2 = y1 + (sprite->size[1] * marker->scale[1]);
+                    const float w = sprite->size[0] * marker->scale[0], h = sprite->size[1] * marker->scale[1],
+                                xoffs = sprite->offset[0] * marker->scale[0],
+                                yoffs = sprite->offset[1] * marker->scale[1];
+                    if (marker->flip[0] || (marker->flags & FLG_X_FLIP)) {
+                        x1 -= w - xoffs;
+                        x2 += xoffs;
+                    } else {
+                        x1 -= xoffs;
+                        x2 = x1 + w;
+                    }
+                    if (marker->flip[1] || (marker->flags & FLG_Y_FLIP)) {
+                        y1 -= h - yoffs;
+                        y2 += yoffs;
+                    } else {
+                        y1 -= yoffs;
+                        y2 = y1 + h;
+                    }
                 }
 
                 const float cx = (float)pos[0], cy = (float)pos[1];
@@ -1241,9 +1254,16 @@ static void draw_highlight(const EditorMarker* marker) {
     if (def != NULL && !(marker->tile[0] || marker->tile[1])) {
         const Sprite* sprite = get_sprite(def->sprite);
         if (sprite != NULL) {
-            bx -= sprite->offset[0] * bw;
-            by -= sprite->offset[1] * bh;
+            if (marker->flip[0] || (marker->flags & FLG_X_FLIP))
+                bx += (sprite->offset[0] - sprite->size[0]) * bw;
+            else
+                bx -= sprite->offset[0] * bw;
             bw *= sprite->size[0];
+
+            if (marker->flip[1] || (marker->flags & FLG_Y_FLIP))
+                by += (sprite->offset[1] - sprite->size[1]) * bh;
+            else
+                by -= sprite->offset[1] * bh;
             bh *= sprite->size[1];
         }
     }
