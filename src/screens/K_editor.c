@@ -1266,7 +1266,7 @@ static void draw() {
     const EditorCursor* ecursor = &editor->cursor;
     if (ecamera->show_grid && ecursor->grid_size >= 2) {
         const float gsize = ecursor->grid_size;
-        if ((gsize * ecamera->zoom) >= 2.f) {
+        if ((gsize / ecamera->zoom) >= 2.f) {
             const float cw = (float)width * ecamera->zoom, ch = (float)height * ecamera->zoom;
             const float cx1 = ecamera->pos[0], cy1 = ecamera->pos[1], cx2 = cx1 + cw, cy2 = cy1 + ch;
 
@@ -1398,6 +1398,20 @@ static void draw_ui() {
 
         if (ImGui_IsKeyPressed(ImGuiKey_G))
             ecamera->show_grid = !ecamera->show_grid;
+
+        if (ImGui_IsKeyPressed(ImGuiKey_H)) {
+            switch (ecursor->grid_size) {
+            default:
+                ecursor->grid_size = 32;
+                break;
+            case 8:
+                ecursor->grid_size = 16;
+                break;
+            case 32:
+                ecursor->grid_size = 8;
+                break;
+            }
+        }
 
         if (ImGui_IsKeyPressed(ImGuiKey_R)) {
             ecamera->pos[0] = ecamera->pos[1] = ecamera->hold[0] = ecamera->hold[1] = 0.f;
