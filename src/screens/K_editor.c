@@ -699,14 +699,24 @@ static void save_level(const char* filename) {
             if (def->type != DEFT_TILE)
                 break;
 
+            float tile_x = (float)marker->pos[0], tile_y = (float)marker->pos[1];
             float tile_width = marker->scale[0], tile_height = marker->scale[1];
-            float tile_xoffset = (float)marker->pos[0], tile_yoffset = (float)marker->pos[1];
+            float tile_xoffset = tile_x, tile_yoffset = tile_y;
             if (def->box[0] == def->box[2] || def->box[1] == def->box[3]) {
                 if (sprite != NULL) {
+                    if (marker->flip[0])
+                        tile_x += (sprite->offset[0] - sprite->size[0]) * tile_width;
+                    else
+                        tile_x -= sprite->offset[0] * tile_width;
+                    if (marker->flip[1])
+                        tile_y += (sprite->offset[1] - sprite->size[1]) * tile_height;
+                    else
+                        tile_y -= sprite->offset[1] * tile_height;
+
+                    tile_xoffset = tile_x;
+                    tile_yoffset = tile_y;
                     tile_width *= sprite->size[0];
                     tile_height *= sprite->size[1];
-                    tile_xoffset -= sprite->offset[0];
-                    tile_yoffset -= sprite->offset[1];
                 }
             } else {
                 tile_width *= (float)(def->box[2] - def->box[0]);
@@ -737,14 +747,14 @@ static void save_level(const char* filename) {
                 cmap->cell_size[1] = (unsigned int)tile_height;
             }
 
-            cmap->min_pos[0] = SDL_min(marker->pos[0], cmap->min_pos[0]);
-            cmap->min_pos[1] = SDL_min(marker->pos[1], cmap->min_pos[1]);
-            cmap->max_pos[0] = SDL_max(marker->pos[0], cmap->max_pos[0]);
-            cmap->max_pos[1] = SDL_max(marker->pos[1], cmap->max_pos[1]);
+            cmap->min_pos[0] = SDL_min(tile_x, cmap->min_pos[0]);
+            cmap->min_pos[1] = SDL_min(tile_y, cmap->min_pos[1]);
+            cmap->max_pos[0] = SDL_max(tile_x, cmap->max_pos[0]);
+            cmap->max_pos[1] = SDL_max(tile_y, cmap->max_pos[1]);
 
             EditorCollisionCell ccell = {0};
-            ccell.pos[0] = marker->pos[0];
-            ccell.pos[1] = marker->pos[1];
+            ccell.pos[0] = (int)tile_x;
+            ccell.pos[1] = (int)tile_y;
             ccell.flags = def->solid;
 
             if (cmap->cells == NULL)
