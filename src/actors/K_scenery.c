@@ -153,6 +153,7 @@ const ActorTable TAB_CLOUDS = {
 
 static void load_lamp_light() {
     load_sprite_num("scenery/lamp/light/%u", 6, AKL_NEVER);
+    load_sprite("scenery/lamp/light/extra", AKL_NEVER);
 }
 
 static void create_lamp_light(GameActor* actor) {
@@ -172,7 +173,10 @@ static void tick_lamp_light(GameActor* actor) {
 static void draw_lamp_light(const GameActor* actor) {
     batch_reset();
     batch_color(B_U4_ALPHA((1.f - ((float)VAL(actor, SCENERY_ALPHA) / 128.f)) * 255.f));
-    draw_actor(actor, fmt("scenery/lamp/light/%i", ((gamestate()->time * 2) / 5) % 6), FALSE);
+    draw_actor(actor,
+        CLIENT.extra_effects ? "scenery/lamp/light/extra"
+                             : fmt("scenery/lamp/light/%i", ((gamestate()->time * 2) / 5) % 6),
+        FALSE);
 }
 
 const ActorTable TAB_LAMP_LIGHT = {
@@ -377,6 +381,7 @@ const ActorTable TAB_CLOUD_FACE = {
 
 static void load_starland_light() {
     load_sprite_num("scenery/tree/starland/light/%u", 3, AKL_NEVER);
+    load_sprite_num("scenery/tree/starland/light/extra/%u", 3, AKL_NEVER);
 }
 
 static void create_starland_light(GameActor* actor) {
@@ -386,7 +391,10 @@ static void create_starland_light(GameActor* actor) {
 static void draw_starland_light(const GameActor* actor) {
     batch_reset();
     batch_color(B_U4_ALPHA(135));
-    draw_actor(actor, fmt("scenery/tree/starland/light/%i", (gamestate()->time / 2) % 3), FALSE);
+    draw_actor(actor,
+        fmt(CLIENT.extra_effects ? "scenery/tree/starland/light/extra/%i" : "scenery/tree/starland/light/%i",
+            (gamestate()->time / 2) % 3),
+        FALSE);
 }
 
 const ActorTable TAB_STARLAND_LIGHT = {
