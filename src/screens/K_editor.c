@@ -439,20 +439,25 @@ static void open_level(const char* filename) {
             const size_t index = yyjson_get_uint(yyjson_arr_get(jmval2, 0));
             if (index < MAX_VALUES) {
                 const ActorValue val = yyjson_get_int(yyjson_arr_get(jmval2, 1));
-                if (index < n3) {
-                    switch (def->values[index].type) {
-                    default:
-                        marker.values[index].integer = val;
-                        break;
-                    case DVT_FIXED:
-                        marker.values[index].fixed = Fx2Float(val);
-                        break;
-                    case DVT_ANGLE:
-                        marker.values[index].fixed = Fx2Float(FxDeg(val));
+
+                DefValueType type = DVT_INTEGER;
+                for (size_t k = 0; k < n3; k++) {
+                    if (def->values[k].index == index) {
+                        type = def->values[k].type;
                         break;
                     }
-                } else {
+                }
+
+                switch (type) {
+                default:
                     marker.values[index].integer = val;
+                    break;
+                case DVT_FIXED:
+                    marker.values[index].fixed = Fx2Float(val);
+                    break;
+                case DVT_ANGLE:
+                    marker.values[index].fixed = Fx2Float(FxDeg(val));
+                    break;
                 }
             }
         }
