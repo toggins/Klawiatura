@@ -7,6 +7,7 @@
 #include "actors/K_powerups.h"
 #include "actors/K_projectiles.h"
 #include "actors/K_pswitch.h"
+#include "actors/K_thwomp.h"
 
 static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
     if (actor == NULL || ANY_FLAG(actor, FLG_BLOCK_EMPTY))
@@ -419,6 +420,14 @@ static void on_other_sides(GameActor* actor, GameActor* from) {
         break;
     }
 
+    case ACT_THWOMP: {
+        bump_block(actor, from, TRUE);
+        if (ANY_FLAG(actor, FLG_DESTROY))
+            FLAG_ON(from, FLG_THWOMP_HIT_BRICK);
+
+        break;
+    }
+
     case ACT_BEETROOT_PROJECTILE:
     case ACT_SILVER_HAMMER_PROJECTILE: {
         const GamePlayer* player = get_player(from->player);
@@ -439,8 +448,17 @@ static void on_other_sides(GameActor* actor, GameActor* from) {
 }
 
 static void on_top(GameActor* actor, GameActor* from) {
-    if (from->type != ACT_KOOPA_SHELL && from->type != ACT_CODER_CLONE_RUN && from->type != ACT_BUZZY_SHELL)
+    switch (from->type) {
+    default: {
         on_other_sides(actor, from);
+        break;
+    }
+
+    case ACT_KOOPA_SHELL:
+    case ACT_CODER_CLONE_RUN:
+    case ACT_BUZZY_SHELL:
+        break;
+    }
 }
 
 static void on_bottom(GameActor* actor, GameActor* from) {
