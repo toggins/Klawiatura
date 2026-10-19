@@ -294,7 +294,7 @@
                 {
                     "name": "Speed",
                     "index": 1,
-                    "type": "fixed",
+                    "type": "angle",
                     "default": 1144
                 }
             ]

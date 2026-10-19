@@ -47,13 +47,13 @@ typedef struct {
     DefValueType type;
     int default_value;
     size_t index;
-    const char* name;
+    const char *name, *tooltip;
 } EditorDefValue;
 
 typedef struct {
     Bool hidden, default_value;
     size_t index;
-    const char* name;
+    const char *name, *tooltip;
 } EditorDefFlag;
 
 typedef struct {
@@ -919,12 +919,16 @@ static void nuke_def(void* ptr) {
     SDL_free((void*)def->name);
     SDL_free((void*)def->sprite);
 
-    for (size_t i = 0, n = TinyDLength(def->values); i < n; i++)
+    for (size_t i = 0, n = TinyDLength(def->values); i < n; i++) {
         SDL_free((void*)def->values[i].name);
+        SDL_free((void*)def->values[i].tooltip);
+    }
     FreeTinyD(def->values);
 
-    for (size_t i = 0, n = TinyDLength(def->flags); i < n; i++)
+    for (size_t i = 0, n = TinyDLength(def->flags); i < n; i++) {
         SDL_free((void*)def->flags[i].name);
+        SDL_free((void*)def->flags[i].tooltip);
+    }
     FreeTinyD(def->flags);
 }
 
@@ -1118,17 +1122,21 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
 
                 EditorDefValue value = {0};
 
-                const char* vname = yyjson_get_str(yyjson_obj_get(jvalue, "name"));
-                if (vname != NULL)
-                    value.name = SDL_strdup(vname);
+                const char* vstr = yyjson_get_str(yyjson_obj_get(jvalue, "name"));
+                if (vstr != NULL)
+                    value.name = SDL_strdup(vstr);
 
-                const char* vtype = yyjson_get_str(yyjson_obj_get(jvalue, "type"));
-                if (vtype != NULL) {
-                    if (SDL_strcmp(vtype, "fixed") == 0)
+                vstr = yyjson_get_str(yyjson_obj_get(jvalue, "tooltip"));
+                if (vstr != NULL)
+                    value.tooltip = SDL_strdup(vstr);
+
+                vstr = yyjson_get_str(yyjson_obj_get(jvalue, "type"));
+                if (vstr != NULL) {
+                    if (SDL_strcmp(vstr, "fixed") == 0)
                         value.type = DVT_FIXED;
-                    else if (SDL_strcmp(vtype, "angle") == 0)
+                    else if (SDL_strcmp(vstr, "angle") == 0)
                         value.type = DVT_ANGLE;
-                    else if (SDL_strcmp(vtype, "actor") == 0)
+                    else if (SDL_strcmp(vstr, "actor") == 0)
                         value.type = DVT_ACTOR;
                 }
 
@@ -1149,9 +1157,13 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
 
                 EditorDefFlag flag = {0};
 
-                const char* fname = yyjson_get_str(yyjson_obj_get(jflag, "name"));
-                if (fname != NULL)
-                    flag.name = SDL_strdup(fname);
+                const char* fstr = yyjson_get_str(yyjson_obj_get(jflag, "name"));
+                if (fstr != NULL)
+                    flag.name = SDL_strdup(fstr);
+
+                fstr = yyjson_get_str(yyjson_obj_get(jflag, "tooltip"));
+                if (fstr != NULL)
+                    flag.tooltip = SDL_strdup(fstr);
 
                 flag.index = yyjson_get_uint(yyjson_obj_get(jflag, "index")) % (8 * sizeof(ActorFlags));
                 flag.default_value = yyjson_get_bool(yyjson_obj_get(jflag, "default"));
@@ -1806,6 +1818,8 @@ static void draw_ui() {
                                 ImGui_InputInt(
                                     fmt("%s##v%zu", dvalue->name, i), &marker->values[dvalue->index].integer);
                             }
+                            if (dvalue->tooltip != NULL && ImGui_IsItemHovered(0))
+                                ImGui_SetItemTooltip("%s\n%s", dvalue->name, dvalue->tooltip);
                         }
                     }
 
@@ -1814,6 +1828,8 @@ static void draw_ui() {
                         if (!dflag->hidden) {
                             ImGui_CheckboxFlagsUintPtr(
                                 fmt("%s##f%zu", dflag->name, i), &marker->flags, 1U << dflag->index);
+                            if (dflag->tooltip != NULL && ImGui_IsItemHovered(0))
+                                ImGui_SetItemTooltip("%s\n%s", dflag->name, dflag->tooltip);
                         }
                     }
                 } else {
