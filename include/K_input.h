@@ -4,7 +4,7 @@
 
 #include "K_misc.h"
 
-#define MAX_INPUT_DELAY 10
+#define MAX_INPUT_DELAY 12
 
 #define NULL_KEYBIND ((Keybind)(-1))
 
