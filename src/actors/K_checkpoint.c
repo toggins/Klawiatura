@@ -106,7 +106,7 @@ static void post_tick(GameActor* actor) {
         if (player == NULL)
             continue;
 
-        const GameActor* pawn = get_actor(player->actor);
+        GameActor* pawn = get_actor(player->actor);
         if (pawn == NULL || pawn->type != ACT_PLAYER || (pawn->pos.x + pawn->box.end.x) <= (actor->pos.x + Int2Fx(37))
             || (pawn->pos.x + pawn->box.start.x) >= (actor->pos.x + Int2Fx(69)))
         {
@@ -137,8 +137,15 @@ static void post_tick(GameActor* actor) {
             if (oplayer->lives < 20)
                 oplayer->lives = 20;
 
-            if (j == i)
+            if (j == i) {
+                VAL(pawn, PLAYER_STARMAN) = 700;
+                if (VAL(pawn, PLAYER_FLASH) > 0) {
+                    VAL(pawn, PLAYER_FLASH) = 0;
+                    FLAG_ON(pawn, FLG_VISIBLE);
+                }
+
                 continue;
+            }
 
             GameActor* opawn = get_actor(oplayer->actor);
             if (opawn == NULL || opawn->type != ACT_PLAYER || !in_player_view(oplayer, pawn->pos, Int2Fx(-64), VEF_ALL))
