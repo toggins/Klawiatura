@@ -2701,7 +2701,8 @@
             "flags": [
                 {
                     "name": "Top",
-                    "index": 5
+                    "index": 5,
+                    "tooltip": "Bros can jump under this layer"
                 }
             ]
         },
