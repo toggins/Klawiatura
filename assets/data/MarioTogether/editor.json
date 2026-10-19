@@ -168,6 +168,12 @@
             "sprite": "tiles/block/old",
             "depth": 20
         },
+        "Tank Spike Up": {
+            "type": "tile",
+            "sprite": "tiles/tank/spike/up",
+            "depth": 20,
+            "solid": "hurt"
+        },
         "Flamethrower Angled": {
             "type": "tile",
             "sprite": "tiles/flamethrower/angled",
@@ -401,6 +407,10 @@
                 {
                     "name": "Spikes",
                     "items": ["Brown Spike", "Blue Spike", "Gray Spike"]
+                },
+                {
+                    "name": "Tank",
+                    "items": ["Tank Spike Up"]
                 },
                 {
                     "name": "Flamethrower",
