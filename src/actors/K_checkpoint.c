@@ -123,9 +123,9 @@ static void post_tick(GameActor* actor) {
         GameActor* block = NULL;
         FOR_EACH_ACTOR (block) {
             if (block->type == ACT_BLOCK) {
-                VAL(actor, BLOCK_REFILL) = 400;
-                VAL(actor, BLOCK_PENALTY) = 0;
-                FLAG_ON(actor, FLG_BLOCK_EMPTY);
+                VAL(block, BLOCK_REFILL) = 400;
+                VAL(block, BLOCK_PENALTY) = 0;
+                FLAG_ON(block, FLG_BLOCK_EMPTY);
             }
         }
 
