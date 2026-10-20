@@ -629,12 +629,12 @@ static void tick_silver_hammer(GameActor* actor) {
     } else {
         actor->vel.y = Int2Fx(-5);
         create_actor(ACT_EXPLODE, actor->pos);
+
+        play_state_sound("kick", PLAY_POS, A_ACTOR(actor));
     }
 
     VAL_TICK(actor, PROJECTILE_HITS);
     FLAG_OFF(actor, FLG_PROJECTILE_HIT | FLG_PROJECTILE_HIT_BLOCK);
-
-    play_state_sound("kick", PLAY_POS, A_ACTOR(actor));
 }
 
 static void draw_silver_hammer(const GameActor* actor) {
