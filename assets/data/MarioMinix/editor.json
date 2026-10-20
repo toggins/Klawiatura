@@ -1,0 +1,30 @@
+{
+    "defs": {
+        "Hill Minix": {
+            "type": "background",
+            "sprite": "scenery/hill/minix",
+            "depth": 61
+        },
+        "Tree Minix": {
+            "type": "background",
+            "sprite": "scenery/tree/minix",
+            "depth": 32
+        }
+    },
+
+    "items": [
+        {
+            "name": "Scenery",
+            "items": [
+                {
+                    "name": "Trees",
+                    "items": ["Tree Minix"]
+                },
+                {
+                    "name": "Hills",
+                    "items": ["Hill Minix"]
+                }
+            ]
+        }
+    ]
+}

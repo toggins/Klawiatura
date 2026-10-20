@@ -130,6 +130,57 @@
             "sprite": "tiles/forest/8",
             "depth": 20
         },
+        "Marble Top Left": {
+            "type": "tile",
+            "sprite": "tiles/marble/0",
+            "depth": 20
+        },
+        "Marble Top": {
+            "type": "tile",
+            "sprite": "tiles/marble/1",
+            "depth": 20
+        },
+        "Marble Top Right": {
+            "type": "tile",
+            "sprite": "tiles/marble/2",
+            "depth": 20
+        },
+        "Marble Left": {
+            "type": "tile",
+            "sprite": "tiles/marble/3",
+            "depth": 20
+        },
+        "Marble Middle": {
+            "type": "tile",
+            "sprite": "tiles/marble/4",
+            "depth": 20
+        },
+        "Marble Right": {
+            "type": "tile",
+            "sprite": "tiles/marble/5",
+            "depth": 20
+        },
+        "Marble Bottom Left": {
+            "type": "tile",
+            "sprite": "tiles/marble/6",
+            "depth": 20
+        },
+        "Marble Bottom": {
+            "type": "tile",
+            "sprite": "tiles/marble/7",
+            "depth": 20
+        },
+        "Marble Bottom Right": {
+            "type": "tile",
+            "sprite": "tiles/marble/8",
+            "depth": 20
+        },
+        "Marble Spike": {
+            "type": "tile",
+            "sprite": "tiles/marble/spike",
+            "depth": 20,
+            "solid": "hurt"
+        },
         "Sweden Top": {
             "type": "tile",
             "sprite": "tiles/sweden/0",
@@ -143,6 +194,11 @@
         "Red Brick Block": {
             "type": "tile",
             "sprite": "tiles/block/brick",
+            "depth": 20
+        },
+        "Fancy Gray Block": {
+            "type": "tile",
+            "sprite": "tiles/block/fancy/gray",
             "depth": 20
         },
         "Brown Spike": {
@@ -397,12 +453,27 @@
                     ]
                 },
                 {
+                    "name": "Marble",
+                    "items": [
+                        "Marble Top Left",
+                        "Marble Top",
+                        "Marble Top Right",
+                        "Marble Left",
+                        "Marble Middle",
+                        "Marble Right",
+                        "Marble Bottom Left",
+                        "Marble Bottom",
+                        "Marble Bottom Right",
+                        "Marble Spike"
+                    ]
+                },
+                {
                     "name": "Sweden",
                     "items": ["Sweden Top", "Sweden Middle"]
                 },
                 {
                     "name": "Blocks",
-                    "items": ["Stage Block", "Gray Block", "Old Block", "Red Brick Block"]
+                    "items": ["Stage Block", "Gray Block", "Old Block", "Red Brick Block", "Fancy Gray Block"]
                 },
                 {
                     "name": "Spikes",

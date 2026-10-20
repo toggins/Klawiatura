@@ -1,0 +1,19 @@
+{
+    "map": {
+        "size": [720, 480],
+        "track": "village_of_panel_de_pon",
+        "backdrops": [
+            {
+                "sprite": "maps/1",
+                "pos": [0, 0, 50]
+            }
+        ],
+        "paths": [
+            { "nodes": [[58, 200]] },
+            { "offset": 4103, "nodes": [[58, 200]] },
+            { "offset": 4103, "nodes": [[58, 200]] },
+            { "offset": 4103, "nodes": [[58, 200]] }
+        ]
+    },
+    "levels": ["marble_valley_1", "marble_valley_2", "marble_valley_3", "marble_valley_4"]
+}
