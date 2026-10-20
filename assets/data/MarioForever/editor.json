@@ -2161,7 +2161,7 @@
                     "name": "Type",
                     "index": 0,
                     "default": 1,
-                    "tooltip": "0 = Item Block\n1 = Brick Block (default)"
+                    "tooltip": "0 = Item Block\n1 = Brick Block (default)\n2 = Stone Block"
                 },
                 {
                     "name": "Item",
@@ -2192,7 +2192,7 @@
                 {
                     "name": "Type",
                     "index": 0,
-                    "tooltip": "0 = Item Block (default)\n1 = Brick Block"
+                    "tooltip": "0 = Item Block (default)\n1 = Brick Block\n2 = Stone Block"
                 },
                 {
                     "name": "Item",
@@ -2318,6 +2318,10 @@
                     "name": "Flip X",
                     "index": 2,
                     "default": true
+                },
+                {
+                    "name": "Stone",
+                    "index": 7
                 }
             ]
         },

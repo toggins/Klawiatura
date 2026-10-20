@@ -601,3 +601,79 @@ const ActorTable TAB_CENTIPEDE_WHEEL = {
     .load = load_centipede_wheel,
     .draw = draw_centipede_wheel,
 };
+
+/* =====
+   SWING
+   ===== */
+
+static void load_swing() {
+    load_sprite("markers/swing/platform", AKL_NEVER);
+    load_sprite("markers/swing/ball", AKL_NEVER);
+}
+
+static void create_swing(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-47);
+    actor->box.start.y = Int2Fx(-21);
+    actor->box.end.x = Int2Fx(48);
+    actor->box.end.y = Fx1;
+
+    actor->depth = Int2Fx(19);
+
+    VAL(actor, SWING_LENGTH) = Int2Fx(128);
+    VAL(actor, SWING_SPEED) = 2288;
+    VAL(actor, SWING_RANGE) = Fx2Pi;
+    VAL(actor, SWING_X) = actor->pos.x;
+    VAL(actor, SWING_Y) = actor->pos.y;
+}
+
+static void pre_tick_swing(GameActor* actor) {
+    const Fixed swing = FxPi2 + Fmul(VAL(actor, SWING_RANGE), Fcos(VAL(actor, SWING_ANGLE)));
+    move_actor(actor, (FVec2){VAL(actor, SWING_X) + Fmul(VAL(actor, SWING_LENGTH), Fcos(swing)),
+                          VAL(actor, SWING_Y) + Fmul(VAL(actor, SWING_LENGTH), Fsin(swing))});
+    VAL(actor, SWING_ANGLE) = Fmod(VAL(actor, SWING_ANGLE) + VAL(actor, SWING_SPEED), Fx2Pi);
+
+    if (gamestate()->time == 0)
+        skip_interp(actor);
+}
+
+static void draw_swing(const GameActor* actor) {
+    batch_reset();
+
+    Bool antijitter = FALSE;
+    if (VAL(actor, SWING_SPEED) > Fx0 && get_actor(gamestate()->autoscroll) == NULL) {
+        const GamePlayer* player = get_player(viewplayer());
+        if (player != NULL
+            && (((actor->last_pos.x - actor->pos.x) != Fx0
+                    && (player->bounds.end.x - player->bounds.start.x) > F_SCREEN_WIDTH)
+                || ((actor->last_pos.y - actor->pos.y) != Fx0
+                    && (player->bounds.end.y - player->bounds.start.y) > F_SCREEN_HEIGHT)))
+        {
+            const GameActor* pawn = get_actor(player->actor);
+            if (pawn != NULL && pawn->platform == actor->id)
+                antijitter = TRUE;
+        }
+    }
+
+    const FVec2 base = (FVec2){VAL(actor, SWING_X), VAL(actor, SWING_Y)}, pos = get_interp(actor);
+    for (Fixed i = Int2Fx(31); i < VAL(actor, SWING_LENGTH); i += Int2Fx(31)) {
+        const FVec2 bpos = Vlerp(base, pos, Fdiv(i, VAL(actor, SWING_LENGTH)));
+        batch_offset(B_F3_XY(Fx2Int(pos.x - bpos.x), Fx2Int(pos.y - bpos.y)));
+        draw_actor(actor, "markers/swing/ball", antijitter);
+    }
+
+    batch_offset(B_F3_0);
+    draw_actor(actor, "markers/swing/platform", antijitter);
+}
+
+static void on_top_swing(GameActor* actor, GameActor* from) {
+    from->platform = actor->id;
+}
+
+const ActorTable TAB_SWING = {
+    .is_solid = always_top,
+    .load = load_swing,
+    .create = create_swing,
+    .pre_tick = pre_tick_swing,
+    .draw = draw_swing,
+    .on_top = on_top_swing,
+};

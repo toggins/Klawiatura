@@ -245,6 +245,14 @@ enum {
     ACT_SHELL_PROJECTILE,
     ACT_KOOPA_SIGN,
 
+    // Mario Together
+    ACT_SWING,
+    ACT_EERIE,
+    ACT_BIG_BOO,
+    ACT_PTOOIE,
+    ACT_STONE_SHARD,
+    ACT_PTOOIE_BALL,
+
     ACT_SIZE,
 };
 

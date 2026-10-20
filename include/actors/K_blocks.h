@@ -6,6 +6,7 @@ typedef Uint8 BlockTypes;
 enum {
     BLOCK_ITEM,
     BLOCK_BRICK,
+    BLOCK_STONE,
 };
 
 enum {

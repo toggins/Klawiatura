@@ -404,3 +404,34 @@ const ActorTable TAB_HEAT_BUBBLE = {
     .tick = tick_heat_bubble,
     .draw = draw_heat_bubble,
 };
+
+/* ===========
+   STONE SHARD
+   =========== */
+
+static void load_stone_shard() {
+    load_sprite("effects/stone_shard", AKL_NEVER);
+}
+
+static void tick_stone_shard(GameActor* actor) {
+    ++VAL(actor, EFFECT_FRAME);
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    actor->vel.y += 26214;
+
+    if (below_nearest_bounds(actor->pos, Int2Fx(32)))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_stone_shard(const GameActor* actor) {
+    batch_reset();
+    batch_angle(((float)VAL(actor, EFFECT_FRAME) / 16.f) * 2.f * SDL_PI_F);
+    draw_actor(actor, "effects/stone_shard", FALSE);
+}
+
+const ActorTable TAB_STONE_SHARD = {
+    .load = load_stone_shard,
+    .create = create_brick_shard,
+    .tick = tick_stone_shard,
+    .draw = draw_stone_shard,
+};

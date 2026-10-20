@@ -1,0 +1,6 @@
+{
+    "texture": "markers/swing",
+    "size": [31, 32],
+    "offset": [15, 15],
+    "uvs": [1, 25, 32, 57]
+}

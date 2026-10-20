@@ -21,7 +21,9 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
         {
             return FALSE;
         }
-    } else if (VAL(actor, BLOCK_TYPE) == BLOCK_BRICK && VAL(actor, BLOCK_ITEM) == ACT_NULL) {
+    } else if ((VAL(actor, BLOCK_TYPE) == BLOCK_BRICK || VAL(actor, BLOCK_TYPE) == BLOCK_STONE)
+               && VAL(actor, BLOCK_ITEM) == ACT_NULL)
+    {
         if (strong) {
             if (from != NULL) {
                 GamePlayer* player = get_player(from->player);
@@ -29,28 +31,29 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
                     player->score += 50;
             }
 
-            GameActor* shard = create_actor(ACT_BRICK_SHARD, Vadd(actor->pos, (FVec2){Int2Fx(22), Int2Fx(10)}));
+            const ActorType stype = (VAL(actor, BLOCK_TYPE) == BLOCK_STONE) ? ACT_STONE_SHARD : ACT_BRICK_SHARD;
+            GameActor* shard = create_actor(stype, Vadd(actor->pos, (FVec2){Int2Fx(22), Int2Fx(10)}));
             if (shard != NULL) {
                 shard->vel.x = Int2Fx(2);
                 shard->vel.y = Int2Fx(-8);
                 if (ANY_FLAG(actor, FLG_BLOCK_GRAY))
                     FLAG_ON(shard, FLG_EFFECT_ALT);
             }
-            shard = create_actor(ACT_BRICK_SHARD, Vadd(actor->pos, (FVec2){Int2Fx(21), Int2Fx(21)}));
+            shard = create_actor(stype, Vadd(actor->pos, (FVec2){Int2Fx(21), Int2Fx(21)}));
             if (shard != NULL) {
                 shard->vel.x = Int2Fx(4);
                 shard->vel.y = Int2Fx(-7);
                 if (ANY_FLAG(actor, FLG_BLOCK_GRAY))
                     FLAG_ON(shard, FLG_EFFECT_ALT);
             }
-            shard = create_actor(ACT_BRICK_SHARD, Vadd(actor->pos, (FVec2){Int2Fx(10), Int2Fx(22)}));
+            shard = create_actor(stype, Vadd(actor->pos, (FVec2){Int2Fx(10), Int2Fx(22)}));
             if (shard != NULL) {
                 shard->vel.x = Int2Fx(-4);
                 shard->vel.y = Int2Fx(-7);
                 if (ANY_FLAG(actor, FLG_BLOCK_GRAY))
                     FLAG_ON(shard, FLG_EFFECT_ALT);
             }
-            shard = create_actor(ACT_BRICK_SHARD, Vadd(actor->pos, (FVec2){Int2Fx(8), Int2Fx(9)}));
+            shard = create_actor(stype, Vadd(actor->pos, (FVec2){Int2Fx(8), Int2Fx(9)}));
             if (shard != NULL) {
                 shard->vel.x = Int2Fx(-2);
                 shard->vel.y = Int2Fx(-8);
@@ -61,12 +64,12 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
             play_state_sound("break", PLAY_POS, A_ACTOR(actor));
 
             FLAG_ON(actor, FLG_DESTROY);
-        } else {
+        } else if (VAL(actor, BLOCK_TYPE) != BLOCK_STONE) {
             VAL(actor, BLOCK_BUMP) = 1;
             play_state_sound("bump", PLAY_POS, A_ACTOR(actor));
         }
 
-        if (from != NULL && get_player(from->player) != NULL) {
+        if (from != NULL && get_player(from->player) != NULL && VAL(actor, BLOCK_TYPE) != BLOCK_STONE) {
             GameActor* bump = create_actor(ACT_BLOCK_BUMP, actor->pos);
             if (bump != NULL)
                 bump->player = from->player;
@@ -183,14 +186,31 @@ static void load() {
 }
 
 static void load_special(const GameActor* actor) {
-    if (VAL(actor, BLOCK_TYPE) == BLOCK_BRICK) {
+    switch (VAL(actor, BLOCK_TYPE)) {
+    default: {
+        load_sprite_num("items/block/%u", 3, AKL_NEVER);
+        load_sprite("items/block/empty", AKL_NEVER);
+
+        break;
+    }
+
+    case BLOCK_BRICK: {
         if (ANY_FLAG(actor, FLG_BLOCK_GRAY))
             load_sprite("items/block/brick_gray", AKL_NEVER);
         if (VAL(actor, BLOCK_ITEM) != ACT_NULL || ANY_FLAG(actor, FLG_BLOCK_REPEAT))
             load_sprite("items/block/empty", AKL_NEVER);
-    } else {
-        load_sprite_num("items/block/%u", 3, AKL_NEVER);
-        load_sprite("items/block/empty", AKL_NEVER);
+
+        break;
+    }
+
+    case BLOCK_STONE: {
+        load_sprite("items/block/stone", AKL_NEVER);
+        if (VAL(actor, BLOCK_ITEM) != ACT_NULL)
+            load_sprite("items/block/empty", AKL_NEVER);
+        load_actor(ACT_STONE_SHARD);
+
+        break;
+    }
     }
 
     if (VAL(actor, BLOCK_ITEM) != ACT_NULL) {
@@ -387,6 +407,9 @@ static void draw(const GameActor* actor) {
         case BLOCK_BRICK:
             sprite = ANY_FLAG(actor, FLG_BLOCK_GRAY) ? "items/block/brick_gray" : "items/block/brick";
             break;
+        case BLOCK_STONE:
+            sprite = "items/block/stone";
+            break;
         }
     }
 
@@ -421,9 +444,11 @@ static void on_other_sides(GameActor* actor, GameActor* from) {
     }
 
     case ACT_THWOMP: {
-        bump_block(actor, from, TRUE);
-        if (ANY_FLAG(actor, FLG_DESTROY))
-            FLAG_ON(from, FLG_THWOMP_HIT_BRICK);
+        if (VAL(actor, BLOCK_ITEM) == ACT_NULL) {
+            bump_block(actor, from, TRUE);
+            if (ANY_FLAG(actor, FLG_DESTROY))
+                FLAG_ON(from, FLG_THWOMP_HIT_BRICK);
+        }
 
         break;
     }
@@ -431,7 +456,9 @@ static void on_other_sides(GameActor* actor, GameActor* from) {
     case ACT_BEETROOT_PROJECTILE:
     case ACT_SILVER_HAMMER_PROJECTILE: {
         const GamePlayer* player = get_player(from->player);
-        if ((player != NULL || (VAL(actor, BLOCK_TYPE) == BLOCK_BRICK && VAL(actor, BLOCK_ITEM) == ACT_NULL))
+        if ((player != NULL
+                || ((VAL(actor, BLOCK_TYPE) == BLOCK_BRICK || VAL(actor, BLOCK_TYPE) == BLOCK_STONE)
+                    && VAL(actor, BLOCK_ITEM) == ACT_NULL))
             && bump_block(actor, from, TRUE))
         {
             FLAG_ON(from, FLG_PROJECTILE_HIT_BLOCK);
@@ -441,7 +468,9 @@ static void on_other_sides(GameActor* actor, GameActor* from) {
     }
 
     case ACT_BULLET_PROJECTILE: {
-        bump_block(actor, from, TRUE);
+        if (VAL(actor, BLOCK_TYPE) != BLOCK_STONE)
+            bump_block(actor, from, TRUE);
+
         break;
     }
     }
@@ -468,16 +497,24 @@ static void on_bottom(GameActor* actor, GameActor* from) {
 
     case ACT_PLAYER: {
         FLAG_OFF(actor, FLG_BLOCK_HIDDEN);
-        const GamePlayer* player = get_player(from->player);
-        bump_block(actor, from, player != NULL && player->powerup != POW_NONE);
+        if (VAL(actor, BLOCK_TYPE) != BLOCK_STONE) {
+            const GamePlayer* player = get_player(from->player);
+            bump_block(actor, from, player != NULL && player->powerup != POW_NONE);
+        }
 
         break;
     }
 
     case ACT_BEETROOT_PROJECTILE:
-    case ACT_SILVER_HAMMER_PROJECTILE:
-    case ACT_BULLET_PROJECTILE: {
+    case ACT_SILVER_HAMMER_PROJECTILE: {
         if (!ANY_FLAG(actor, FLG_BLOCK_HIDDEN))
+            on_other_sides(actor, from);
+
+        break;
+    }
+
+    case ACT_BULLET_PROJECTILE: {
+        if (!ANY_FLAG(actor, FLG_BLOCK_HIDDEN) && VAL(actor, BLOCK_TYPE) != BLOCK_STONE)
             on_other_sides(actor, from);
 
         break;

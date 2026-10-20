@@ -2,12 +2,8 @@
 #include "K_string.h"
 #include "K_video.h"
 
-#include "actors/K_enemies.h"
+#include "actors/K_goomba.h"
 #include "actors/K_koopa.h"
-
-enum {
-    VAL_PARTY_TYPE,
-};
 
 static void load() {
     load_sprite_num("enemies/goomba/%u", 2, AKL_NEVER);
@@ -16,6 +12,17 @@ static void load() {
     load_sound("stomp", AKL_NEVER);
     load_sound("kick", AKL_NEVER);
     load_actor(ACT_POINTS);
+}
+
+static void load_special(const GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_GOOMBA_STONE)) {
+        load_sprite_num("enemies/goomba/stone/%u", 2, AKL_NEVER);
+        load_sprite_num("enemies/goomba/stone/hurt/%u", 2, AKL_NEVER);
+        load_sprite("enemies/goomba/stone/dead", AKL_NEVER);
+        load_sprite("enemies/goomba/stone/hurt/dead", AKL_NEVER);
+        load_sound("bump", AKL_NEVER);
+        load_sound("break", AKL_NEVER);
+    }
 }
 
 static void create(GameActor* actor) {
@@ -52,11 +59,14 @@ static void tick(GameActor* actor) {
 
 static void draw(const GameActor* actor) {
     batch_reset();
-    draw_actor(actor,
-        ANY_FLAG(actor, FLG_ENEMY_FLAT)
-            ? "enemies/goomba/flat"
-            : fmt("enemies/goomba/%i", ((VAL(actor, ENEMY_FRAME) / 100) % 2) != ANY_FLAG(actor, FLG_X_FLIP)),
-        FALSE);
+    const FVec2 pos = get_interp(actor);
+    batch_pos(B_F3(Fx2Int(pos.x), Fx2Int(pos.y) + actor->sprout, Fx2Float(actor->depth)));
+    batch_sprite(
+        ANY_FLAG(actor, FLG_GOOMBA_STONE)
+            ? (fmt(ANY_FLAG(actor, FLG_GOOMBA_STONE_HURT) ? "enemies/goomba/stone/hurt/%i" : "enemies/goomba/stone/%i",
+                  (VAL(actor, ENEMY_FRAME) / 100) % 2))
+            : (ANY_FLAG(actor, FLG_ENEMY_FLAT) ? "enemies/goomba/flat"
+                                               : fmt("enemies/goomba/%i", (VAL(actor, ENEMY_FRAME) / 100) % 2)));
 }
 
 static void draw_dead(const GameActor* actor) {
@@ -73,8 +83,20 @@ static void collide(GameActor* actor, GameActor* from) {
         break;
 
     case ACT_PLAYER: {
-        if (!check_stomp(actor, from, Int2Fx(-16), 100, TRUE))
+        if (!check_stomp(actor, from, Int2Fx(-16),
+                (ANY_FLAG(actor, FLG_GOOMBA_STONE) && !ANY_FLAG(actor, FLG_GOOMBA_STONE_HURT)) ? 0 : 100, TRUE))
+        {
             break;
+        }
+
+        if (ANY_FLAG(actor, FLG_GOOMBA_STONE)) {
+            if (ANY_FLAG(actor, FLG_GOOMBA_STONE_HURT))
+                kill_enemy(actor, from, FALSE);
+            else
+                FLAG_ON(actor, FLG_GOOMBA_STONE_HURT);
+
+            break;
+        }
 
         ++actor->depth;
         actor->vel.x = actor->vel.y = Fx0;
@@ -124,12 +146,17 @@ static void collide(GameActor* actor, GameActor* from) {
     }
 
     case ACT_FIREBALL_PROJECTILE: {
-        hit_fireball(actor, from, 100);
+        if (ANY_FLAG(actor, FLG_GOOMBA_STONE))
+            block_fireball(from);
+        else
+            hit_fireball(actor, from, 100);
+
         break;
     }
 
     case ACT_BEETROOT_PROJECTILE: {
         hit_beetroot(actor, from, 100);
+
         break;
     }
 
@@ -139,7 +166,11 @@ static void collide(GameActor* actor, GameActor* from) {
     }
 
     case ACT_BULLET_PROJECTILE: {
-        hit_bullet(actor, from, 100);
+        if (ANY_FLAG(actor, FLG_GOOMBA_STONE) && !ANY_FLAG(actor, FLG_GOOMBA_STONE_HURT))
+            block_bullet(from);
+        else
+            hit_bullet(actor, from, 100);
+
         break;
     }
     }
@@ -147,6 +178,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
 const ActorTable TAB_GOOMBA = {
     .load = load,
+    .load_special = load_special,
     .create = create,
     .tick = tick,
     .draw = draw,

@@ -1,5 +1,12 @@
 {
     "defs": {
+        "Lake Background": {
+            "type": "background",
+            "sprite": "backgrounds/lake",
+            "depth": 190,
+            "max_scale": [32767, 247],
+            "tile": [true, false]
+        },
         "Swamp Top Left": {
             "type": "tile",
             "sprite": "tiles/swamp/0",
@@ -361,6 +368,66 @@
                 }
             ]
         },
+        "Swing": {
+            "type": "actor",
+            "id": 163,
+            "sprite": "markers/swing/ball",
+            "values": [
+                {
+                    "name": "Length",
+                    "index": 0,
+                    "type": "fixed",
+                    "default": 8388608
+                },
+                {
+                    "name": "Angle",
+                    "index": 1,
+                    "type": "angle"
+                },
+                {
+                    "name": "Speed",
+                    "index": 2,
+                    "type": "angle",
+                    "default": 2288
+                },
+                {
+                    "name": "Range",
+                    "index": 3,
+                    "type": "angle",
+                    "default": 102944
+                }
+            ]
+        },
+        "Stone Block": {
+            "type": "actor",
+            "id": 24,
+            "sprite": "items/block/stone",
+            "values": [
+                {
+                    "index": 0,
+                    "default": 2,
+                    "hidden": true
+                },
+                {
+                    "name": "Item",
+                    "index": 1,
+                    "type": "actor",
+                    "tooltip": "0 = None (default)\n21 = Coin\n27 = Super Mushroom\n28 = Fire Flower\n29 = Starman\n30 = 1UP Mushroom\n31 = Poison Mushroom\n32 = Green Lui\n33 = Beetroot\n154 = Hammer Suit"
+                }
+            ]
+        },
+        "Hammer Suit": {
+            "type": "actor",
+            "id": 154,
+            "sprite": "items/hammer_suit",
+            "flags": [
+                {
+                    "name": "Calamity",
+                    "index": 5,
+                    "tooltip": "Activated by \"Green Mushroom Calamity\" warp"
+                }
+            ]
+        },
         "Shotgun": {
             "type": "actor",
             "id": 155,
@@ -410,6 +477,10 @@
     },
 
     "items": [
+        {
+            "name": "Backgrounds",
+            "items": ["Lake Background"]
+        },
         {
             "name": "Tiles",
             "items": [
@@ -528,11 +599,25 @@
         },
         {
             "name": "Markers",
-            "items": ["P-Switch", "Waving Level"]
+            "items": [
+                {
+                    "name": "Platforms",
+                    "items": ["Swing"]
+                },
+                "P-Switch",
+                "Waving Level"
+            ]
         },
         {
             "name": "Items",
-            "items": ["Shotgun"]
+            "items": [
+                {
+                    "name": "Blocks",
+                    "items": ["Stone Block"]
+                },
+                "Hammer Suit",
+                "Shotgun"
+            ]
         },
         {
             "name": "Enemies",

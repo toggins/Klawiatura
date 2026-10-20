@@ -2,6 +2,7 @@
 
 #include "actors/K_artillery.h"
 #include "actors/K_enemies.h"
+#include "actors/K_goomba.h"
 #include "actors/K_koopa.h"
 #include "actors/K_lakitu.h"
 #include "actors/K_player.h"
@@ -103,6 +104,38 @@ GameActor* kill_enemy(GameActor* actor, GameActor* from, Bool kick) {
     switch (actor->type) {
     default:
         break;
+
+    case ACT_GOOMBA: {
+        if (!ANY_FLAG(actor, FLG_GOOMBA_STONE))
+            break;
+
+        GameActor* shard = create_actor(ACT_STONE_SHARD, Vadd(actor->pos, (FVec2){Int2Fx(8), Int2Fx(-16)}));
+        if (shard != NULL) {
+            shard->vel.x = Int2Fx(2);
+            shard->vel.y = Int2Fx(-8);
+        }
+        shard = create_actor(ACT_STONE_SHARD, Vadd(actor->pos, (FVec2){Int2Fx(8), Int2Fx(-8)}));
+        if (shard != NULL) {
+            shard->vel.x = Int2Fx(4);
+            shard->vel.y = Int2Fx(-7);
+        }
+        shard = create_actor(ACT_STONE_SHARD, Vadd(actor->pos, (FVec2){Int2Fx(-8), Int2Fx(-8)}));
+        if (shard != NULL) {
+            shard->vel.x = Int2Fx(-4);
+            shard->vel.y = Int2Fx(-7);
+        }
+        shard = create_actor(ACT_STONE_SHARD, Vadd(actor->pos, (FVec2){Int2Fx(-8), Int2Fx(-16)}));
+        if (shard != NULL) {
+            shard->vel.x = Int2Fx(-2);
+            shard->vel.y = Int2Fx(-8);
+        }
+
+        FLAG_ON(actor, FLG_DESTROY);
+
+        play_state_sound("break", PLAY_POS, A_ACTOR(actor));
+
+        return NULL;
+    }
 
     case ACT_PIRANHA_PLANT:
     case ACT_ROTODISC:
@@ -253,6 +286,17 @@ Bool check_stomp(GameActor* actor, GameActor* from, Fixed offset, Sint32 points,
         switch (actor->type) {
         default: {
             play_state_sound("stomp", PLAY_POS, A_ACTOR(actor));
+            break;
+        }
+
+        case ACT_GOOMBA: {
+            if (ANY_FLAG(actor, FLG_GOOMBA_STONE)) {
+                if (!ANY_FLAG(actor, FLG_GOOMBA_STONE_HURT))
+                    play_state_sound("bump", PLAY_POS, A_ACTOR(actor));
+            } else {
+                play_state_sound("stomp", PLAY_POS, A_ACTOR(actor));
+            }
+
             break;
         }
 
