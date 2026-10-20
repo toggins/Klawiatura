@@ -343,12 +343,72 @@
         {
             "def": "Fancy Gray Block",
             "sprite": "tiles/block/fancy/gray",
-            "pos": [288, 160, 20]
+            "pos": [320, 160, 20]
+        },
+        {
+            "def": "Pipe Green Top",
+            "sprite": "tiles/pipe/green/v0",
+            "pos": [448, 352, 20]
+        },
+        {
+            "def": "Pipe Green Top",
+            "sprite": "tiles/pipe/green/v0",
+            "pos": [160, 352, 20]
         },
         {
             "def": "Fancy Gray Block",
             "sprite": "tiles/block/fancy/gray",
-            "pos": [832, 160, 20]
+            "pos": [832, 256, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [512, 352, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [544, 352, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [544, 320, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [544, 288, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [544, 256, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [576, 256, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [576, 224, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [576, 192, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [576, 160, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [608, 160, 20]
         }
     ],
     "collisions": [
@@ -422,9 +482,31 @@
                 [0, 2, 1],
                 [0, 1, 1],
                 [0, 0, 1],
-                [10, 15, 1],
-                [27, 15, 1]
+                [11, 15, 1],
+                [27, 18, 1],
+                [17, 21, 1],
+                [18, 21, 1],
+                [18, 20, 1],
+                [18, 19, 1],
+                [18, 18, 1],
+                [19, 18, 1],
+                [19, 17, 1],
+                [19, 16, 1],
+                [19, 15, 1],
+                [20, 15, 1]
             ]
+        },
+        {
+            "pos": [448, 352],
+            "size": [1, 1],
+            "cell_size": [64, 64],
+            "cells": [[0, 0, 1]]
+        },
+        {
+            "pos": [160, 352],
+            "size": [1, 1],
+            "cell_size": [64, 64],
+            "cells": [[0, 0, 1]]
         }
     ],
     "actors": [
@@ -443,7 +525,7 @@
         {
             "def": "Swing",
             "id": 163,
-            "pos": [303, 175],
+            "pos": [335, 175],
             "values": [
                 [0, 8388608],
                 [1, 0],
@@ -454,12 +536,12 @@
         {
             "def": "Swing",
             "id": 163,
-            "pos": [847, 175],
+            "pos": [847, 271],
             "values": [
-                [0, 16777216],
+                [0, 8388608],
                 [1, 205887],
-                [2, 2288],
-                [3, 102944]
+                [2, 1144],
+                [3, 205887]
             ]
         },
         {
@@ -482,402 +564,6 @@
                 [1, 205887],
                 [2, 1144],
                 [3, 51472]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [0, 288],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [32, 288],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [64, 288],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [96, 288],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [128, 288],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [128, 256],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [96, 256],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [64, 256],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [32, 256],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [0, 256],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [448, 320],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [480, 320],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [480, 352],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [480, 384],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [448, 384],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [448, 352],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Fire Flower",
-            "id": 28,
-            "pos": [32, 415]
-        },
-        {
-            "def": "Beetroot",
-            "id": 33,
-            "pos": [397, 415]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [0, 32],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [0, 64],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [32, 64],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [64, 64],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [96, 64],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [128, 64],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [128, 32],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [128, 0],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [96, 0],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [64, 0],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [32, 0],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [32, 32],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [64, 32],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [96, 32],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [640, 448],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [672, 448],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [704, 448],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [736, 448],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [768, 448],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [800, 448],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [832, 448],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [864, 448],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [896, 448],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [928, 448],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [960, 448],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [992, 448],
-            "values": [
-                [0, 2],
-                [1, 0]
             ]
         },
         {
@@ -1160,15 +846,6 @@
             ]
         },
         {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [32, 128],
-            "values": [
-                [0, 2],
-                [1, 30]
-            ]
-        },
-        {
             "def": "Bro",
             "id": 64,
             "pos": [1184, 384],
@@ -1196,28 +873,19 @@
             ]
         },
         {
-            "def": "Goomba",
-            "id": 37,
-            "pos": [462, 319],
-            "flags": 132
+            "def": "Ptooie",
+            "id": 166,
+            "pos": [480, 352]
         },
         {
-            "def": "Goomba",
-            "id": 37,
-            "pos": [495, 319],
-            "flags": 4
+            "def": "Ptooie",
+            "id": 166,
+            "pos": [192, 352]
         },
         {
-            "def": "Goomba",
-            "id": 37,
-            "pos": [431, 415],
-            "flags": 132
-        },
-        {
-            "def": "Goomba",
-            "id": 37,
-            "pos": [15, 255],
-            "flags": 4
+            "def": "Fire Flower",
+            "id": 28,
+            "pos": [336, 159]
         }
     ]
 }

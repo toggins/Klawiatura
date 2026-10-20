@@ -473,6 +473,11 @@
                     "index": 3
                 }
             ]
+        },
+        "Ptooie": {
+            "type": "actor",
+            "id": 166,
+            "sprite": "enemies/piranha/ptooie/1"
         }
     },
 
@@ -622,6 +627,10 @@
         {
             "name": "Enemies",
             "items": [
+                {
+                    "name": "Piranha Plants",
+                    "items": ["Ptooie"]
+                },
                 {
                     "name": "Artillery",
                     "items": ["Cannon"]

@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/piranha",
+    "size": [31, 47],
+    "offset": [15, 46],
+    "uvs": [1, 1, 32, 48]
+}

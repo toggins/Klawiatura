@@ -11,6 +11,11 @@ enum {
     VAL_PIRANHA_WAIT,
     VAL_PIRANHA_FIRE,
     VAL_PIRANHA_FRAME,
+
+    VAL_PTOOIE_BALL = 0,
+    VAL_PTOOIE_BLOW,
+    VAL_PTOOIE_STATE,
+    VAL_PTOOIE_FRAME,
 };
 
 #define FLG_PIRANHA_BLOCKED CUSTOM_FLAG(0)
@@ -21,6 +26,8 @@ enum {
 #define FLG_PIRANHA_RED CUSTOM_FLAG(5)
 #define FLG_PIRANHA_GRAY CUSTOM_FLAG(6)
 #define FLG_PIRANHA_TROLL CUSTOM_FLAG(7)
+
+#define FLG_PTOOIE_DEAD CUSTOM_FLAG(0)
 
 static void tick_generic_plant(GameActor* actor) {
     // EVENTS FROM "Level 6 - 1"
@@ -400,4 +407,117 @@ const ActorTable TAB_JAWS_CLONE_HEAD = {
     .tick = tick_head,
     .draw = draw_jaws_clone_head,
     .collide = collide_head,
+};
+
+/* ======
+   PTOOIE
+   ====== */
+
+static void load_ptooie() {
+    load_sprite_num("enemies/piranha/ptooie/%u", 2, AKL_NEVER);
+    load_actor(ACT_PTOOIE_BALL);
+}
+
+static void create_ptooie(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-15);
+    actor->box.start.y = Int2Fx(-46);
+    actor->box.end.x = Int2Fx(16);
+    actor->box.end.y = Fx1;
+
+    actor->depth = Int2Fx(21);
+
+    VAL(actor, PTOOIE_BALL) = NULL_ACTOR;
+}
+
+static void cleanup_ptooie(GameActor* actor) {
+    GameActor* ball = get_actor(VAL(actor, PTOOIE_BALL));
+    if (ball != NULL)
+        FLAG_ON(ball, FLG_PTOOIE_DEAD);
+}
+
+static void tick_ptooie(GameActor* actor) {
+    if (gamestate()->time == 0) {
+        GameActor* ball = create_actor(ACT_PTOOIE_BALL, Vadd(actor->pos, (FVec2){Fx0, Int2Fx(-100)}));
+        if (ball != NULL)
+            VAL(actor, PTOOIE_BALL) = ball->id;
+    }
+
+    GameActor* ball = get_actor(VAL(actor, PTOOIE_BALL));
+    if (ball == NULL) {
+        VAL(actor, PTOOIE_BALL) = NULL_ACTOR;
+        return;
+    }
+
+    if (VAL(actor, PTOOIE_BLOW) <= 0 && ball->pos.y > (actor->pos.y - Int2Fx(100)) && ball->vel.y > Fx0) {
+        VAL(actor, PTOOIE_BLOW) = (VAL(actor, PTOOIE_STATE) == 2) ? 35 : 20;
+        VAL(actor, PTOOIE_STATE) = (VAL(actor, PTOOIE_STATE) + 1) % 3;
+    }
+
+    if (VAL(actor, PTOOIE_BLOW) > 0) {
+        if (ball->vel.y > Fx0)
+            ball->vel.y -= Fx1;
+        ball->vel.y -= 26214;
+
+        --VAL(actor, PTOOIE_BLOW);
+    }
+}
+
+static void draw_ptooie(const GameActor* actor) {
+    batch_reset();
+    draw_actor(actor, (VAL(actor, PTOOIE_BLOW) > 0) ? "enemies/piranha/ptooie/1" : "enemies/piranha/ptooie/0", FALSE);
+}
+
+const ActorTable TAB_PTOOIE = {
+    .load = load_ptooie,
+    .create = create_ptooie,
+    .cleanup = cleanup_ptooie,
+    .tick = tick_ptooie,
+    .draw = draw_ptooie,
+    .collide = collide,
+};
+
+/* ===========
+   PTOOIE BALL
+   =========== */
+
+static void load_ptooie_ball() {
+    load_sprite("enemies/ptooie", AKL_NEVER);
+}
+
+static void create_ptooie_ball(GameActor* actor) {
+    actor->box.start.x = actor->box.start.y = Int2Fx(-14);
+    actor->box.end.x = Int2Fx(14);
+    actor->box.end.y = Int2Fx(15);
+
+    actor->depth = 131073;
+}
+
+static void tick_ptooie_ball(GameActor* actor) {
+    ++VAL(actor, PTOOIE_FRAME);
+
+    move_actor(actor, Vadd(actor->pos, actor->vel));
+    actor->vel.y += 13107;
+
+    if (ANY_FLAG(actor, FLG_PTOOIE_DEAD) && below_nearest_view(actor->pos, Int2Fx(32)))
+        FLAG_ON(actor, FLG_DESTROY);
+}
+
+static void draw_ptooie_ball(const GameActor* actor) {
+    batch_reset();
+    batch_angle(((float)VAL(actor, PTOOIE_FRAME) / 32.f) * 2.f * SDL_PI_F);
+    draw_actor(actor, "enemies/ptooie", FALSE);
+}
+
+static void collide_ptooie_ball(GameActor* actor, GameActor* from) {
+    (void)actor;
+
+    hit_player(from);
+}
+
+const ActorTable TAB_PTOOIE_BALL = {
+    .load = load_ptooie_ball,
+    .create = create_ptooie_ball,
+    .tick = tick_ptooie_ball,
+    .draw = draw_ptooie_ball,
+    .collide = collide_ptooie_ball,
 };
