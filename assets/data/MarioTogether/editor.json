@@ -188,6 +188,36 @@
             "depth": 20,
             "solid": "hurt"
         },
+        "Pipe Worn Top": {
+            "type": "tile",
+            "sprite": "tiles/pipe/worn/v0",
+            "depth": 20
+        },
+        "Pipe Worn Middle": {
+            "type": "tile",
+            "sprite": "tiles/pipe/worn/v1",
+            "depth": 20
+        },
+        "Pipe Worn Bottom": {
+            "type": "tile",
+            "sprite": "tiles/pipe/worn/v2",
+            "depth": 20
+        },
+        "Pipe Marble Top": {
+            "type": "tile",
+            "sprite": "tiles/pipe/marble/v0",
+            "depth": 20
+        },
+        "Pipe Marble Middle": {
+            "type": "tile",
+            "sprite": "tiles/pipe/marble/v1",
+            "depth": 20
+        },
+        "Pipe Marble Bottom": {
+            "type": "tile",
+            "sprite": "tiles/pipe/marble/v2",
+            "depth": 20
+        },
         "Sweden Top": {
             "type": "tile",
             "sprite": "tiles/sweden/0",
@@ -553,6 +583,19 @@
                 {
                     "name": "Sweden",
                     "items": ["Sweden Top", "Sweden Middle"]
+                },
+                {
+                    "name": "Pipes",
+                    "items": [
+                        {
+                            "name": "Worn",
+                            "items": ["Pipe Worn Top", "Pipe Worn Middle", "Pipe Worn Bottom"]
+                        },
+                        {
+                            "name": "Marble",
+                            "items": ["Pipe Marble Top", "Pipe Marble Middle", "Pipe Marble Bottom"]
+                        }
+                    ]
                 },
                 {
                     "name": "Blocks",
