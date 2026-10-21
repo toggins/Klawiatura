@@ -611,6 +611,13 @@ static void load_swing() {
     load_sprite("markers/swing/ball", AKL_NEVER);
 }
 
+static void load_swing_special(const GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_SWING_BROWN)) {
+        load_sprite("markers/swing/brown/platform", AKL_NEVER);
+        load_sprite("markers/swing/brown/ball", AKL_NEVER);
+    }
+}
+
 static void create_swing(GameActor* actor) {
     actor->box.start.x = Int2Fx(-47);
     actor->box.start.y = Int2Fx(-21);
@@ -627,12 +634,47 @@ static void create_swing(GameActor* actor) {
 }
 
 static void pre_tick_swing(GameActor* actor) {
-    const Fixed swing = FxPi2 + Fmul(VAL(actor, SWING_RANGE), Fcos(VAL(actor, SWING_ANGLE)));
-    move_actor(actor, (FVec2){VAL(actor, SWING_X) + Fmul(VAL(actor, SWING_LENGTH), Fcos(swing)),
-                          VAL(actor, SWING_Y) + Fmul(VAL(actor, SWING_LENGTH), Fsin(swing))});
-    VAL(actor, SWING_ANGLE) = Fmod(VAL(actor, SWING_ANGLE) + VAL(actor, SWING_SPEED), Fx2Pi);
+    const GameState* game_state = gamestate();
+    if (game_state->time == 0 && ANY_FLAG(actor, FLG_SWING_BROWN)) {
+        actor->box.start.x = Int2Fx(-63);
+        actor->box.end.x = Int2Fx(64);
+    }
 
-    if (gamestate()->time == 0)
+    if (ANY_FLAG(actor, FLG_SWING_BROWN)) {
+        if (ANY_FLAG(actor, FLG_SWING_BROWN_ACTIVE)) {
+            if (VAL(actor, SWING_SPEED) > Fx0)
+                VAL(actor, SWING_BROWN_SPEED) = Fmin(VAL(actor, SWING_BROWN_SPEED) + 76, VAL(actor, SWING_SPEED));
+            else if (VAL(actor, SWING_SPEED) < Fx0)
+                VAL(actor, SWING_BROWN_SPEED) = Fmax(VAL(actor, SWING_BROWN_SPEED) - 76, VAL(actor, SWING_SPEED));
+
+            FLAG_OFF(actor, FLG_SWING_BROWN_ACTIVE);
+        } else {
+            if (VAL(actor, SWING_BROWN_SPEED) > Fx0)
+                VAL(actor, SWING_BROWN_SPEED) = Fmax(VAL(actor, SWING_BROWN_SPEED) - 76, Fx0);
+            else if (VAL(actor, SWING_BROWN_SPEED) < Fx0)
+                VAL(actor, SWING_BROWN_SPEED) = Fmin(VAL(actor, SWING_BROWN_SPEED) + 76, Fx0);
+        }
+
+        const Fixed cone
+            = (VAL(actor, SWING_ANGLE) < Fx0) ? (VAL(actor, SWING_ANGLE) + Fx2Pi) : VAL(actor, SWING_ANGLE);
+        Fixed swing = VAL(actor, SWING_BROWN_SPEED);
+        if (cone > FxPi && cone <= 308831)
+            swing = Fmul(swing, Fmax(Fx1 - Fsqr(Fdiv(cone - FxPi, FxPi2)), 21299));
+        else if (cone > 308831 && cone < Fx2Pi)
+            swing = Fmul(swing, 21299 + Fmul(44237, Fsqr(Fdiv(cone - 308831, FxPi2))));
+
+        move_actor(actor, (FVec2){VAL(actor, SWING_X) + Fmul(VAL(actor, SWING_LENGTH), Fcos(VAL(actor, SWING_ANGLE))),
+                              VAL(actor, SWING_Y) + Fmul(VAL(actor, SWING_LENGTH), Fsin(VAL(actor, SWING_ANGLE)))});
+        VAL(actor, SWING_ANGLE) = Fmod(VAL(actor, SWING_ANGLE) + swing, Fx2Pi);
+
+    } else {
+        const Fixed swing = FxPi2 + Fmul(VAL(actor, SWING_RANGE), Fcos(VAL(actor, SWING_ANGLE)));
+        move_actor(actor, (FVec2){VAL(actor, SWING_X) + Fmul(VAL(actor, SWING_LENGTH), Fcos(swing)),
+                              VAL(actor, SWING_Y) + Fmul(VAL(actor, SWING_LENGTH), Fsin(swing))});
+        VAL(actor, SWING_ANGLE) = Fmod(VAL(actor, SWING_ANGLE) + VAL(actor, SWING_SPEED), Fx2Pi);
+    }
+
+    if (game_state->time == 0)
         skip_interp(actor);
 }
 
@@ -654,24 +696,34 @@ static void draw_swing(const GameActor* actor) {
         }
     }
 
+    const char *psprite = "markers/swing/platform", *bsprite = "markers/swing/ball";
+    if (ANY_FLAG(actor, FLG_SWING_BROWN)) {
+        psprite = "markers/swing/brown/platform";
+        bsprite = "markers/swing/brown/ball";
+    }
+
     const FVec2 base = (FVec2){VAL(actor, SWING_X), VAL(actor, SWING_Y)}, pos = get_interp(actor);
     for (Fixed i = Int2Fx(31); i < VAL(actor, SWING_LENGTH); i += Int2Fx(31)) {
         const FVec2 bpos = Vlerp(base, pos, Fdiv(i, VAL(actor, SWING_LENGTH)));
         batch_offset(B_F3_XY(Fx2Int(pos.x - bpos.x), Fx2Int(pos.y - bpos.y)));
-        draw_actor(actor, "markers/swing/ball", antijitter);
+        draw_actor(actor, bsprite, antijitter);
     }
 
     batch_offset(B_F3_0);
-    draw_actor(actor, "markers/swing/platform", antijitter);
+    draw_actor(actor, psprite, antijitter);
 }
 
 static void on_top_swing(GameActor* actor, GameActor* from) {
     from->platform = actor->id;
+
+    if (from->type == ACT_PLAYER && ANY_FLAG(actor, FLG_SWING_BROWN))
+        FLAG_ON(actor, FLG_SWING_BROWN_ACTIVE);
 }
 
 const ActorTable TAB_SWING = {
     .is_solid = always_top,
     .load = load_swing,
+    .load_special = load_swing_special,
     .create = create_swing,
     .pre_tick = pre_tick_swing,
     .draw = draw_swing,

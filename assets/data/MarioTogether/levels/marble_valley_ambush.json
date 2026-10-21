@@ -346,44 +346,9 @@
             "pos": [320, 160, 20]
         },
         {
-            "def": "Pipe Green Top",
-            "sprite": "tiles/pipe/green/v0",
-            "pos": [448, 352, 20]
-        },
-        {
-            "def": "Pipe Green Top",
-            "sprite": "tiles/pipe/green/v0",
-            "pos": [160, 352, 20]
-        },
-        {
             "def": "Fancy Gray Block",
             "sprite": "tiles/block/fancy/gray",
             "pos": [832, 256, 20]
-        },
-        {
-            "def": "Fancy Gray Block",
-            "sprite": "tiles/block/fancy/gray",
-            "pos": [512, 352, 20]
-        },
-        {
-            "def": "Fancy Gray Block",
-            "sprite": "tiles/block/fancy/gray",
-            "pos": [544, 352, 20]
-        },
-        {
-            "def": "Fancy Gray Block",
-            "sprite": "tiles/block/fancy/gray",
-            "pos": [544, 320, 20]
-        },
-        {
-            "def": "Fancy Gray Block",
-            "sprite": "tiles/block/fancy/gray",
-            "pos": [544, 288, 20]
-        },
-        {
-            "def": "Fancy Gray Block",
-            "sprite": "tiles/block/fancy/gray",
-            "pos": [544, 256, 20]
         },
         {
             "def": "Fancy Gray Block",
@@ -409,6 +374,66 @@
             "def": "Fancy Gray Block",
             "sprite": "tiles/block/fancy/gray",
             "pos": [608, 160, 20]
+        },
+        {
+            "def": "Pipe Green Top",
+            "sprite": "tiles/pipe/green/v0",
+            "pos": [512, 352, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [576, 288, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [576, 320, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [576, 352, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [608, 192, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [608, 224, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [608, 256, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [608, 288, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [608, 320, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [608, 352, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [608, 384, 20]
+        },
+        {
+            "def": "Fancy Gray Block",
+            "sprite": "tiles/block/fancy/gray",
+            "pos": [576, 384, 20]
         }
     ],
     "collisions": [
@@ -484,26 +509,26 @@
                 [0, 0, 1],
                 [11, 15, 1],
                 [27, 18, 1],
-                [17, 21, 1],
-                [18, 21, 1],
-                [18, 20, 1],
-                [18, 19, 1],
-                [18, 18, 1],
                 [19, 18, 1],
                 [19, 17, 1],
                 [19, 16, 1],
                 [19, 15, 1],
-                [20, 15, 1]
+                [20, 15, 1],
+                [19, 19, 1],
+                [19, 20, 1],
+                [19, 21, 1],
+                [20, 16, 1],
+                [20, 17, 1],
+                [20, 18, 1],
+                [20, 19, 1],
+                [20, 20, 1],
+                [20, 21, 1],
+                [20, 22, 1],
+                [19, 22, 1]
             ]
         },
         {
-            "pos": [448, 352],
-            "size": [1, 1],
-            "cell_size": [64, 64],
-            "cells": [[0, 0, 1]]
-        },
-        {
-            "pos": [160, 352],
+            "pos": [512, 352],
             "size": [1, 1],
             "cell_size": [64, 64],
             "cells": [[0, 0, 1]]
@@ -528,10 +553,11 @@
             "pos": [335, 175],
             "values": [
                 [0, 8388608],
-                [1, 0],
-                [2, 2288],
+                [1, 102944],
+                [2, -3431],
                 [3, 102944]
-            ]
+            ],
+            "flags": 32
         },
         {
             "def": "Swing",
@@ -539,10 +565,11 @@
             "pos": [847, 271],
             "values": [
                 [0, 8388608],
-                [1, 205887],
-                [2, 1144],
+                [1, -102944],
+                [2, 3431],
                 [3, 205887]
-            ]
+            ],
+            "flags": 32
         },
         {
             "def": "Swing",
@@ -873,19 +900,14 @@
             ]
         },
         {
-            "def": "Ptooie",
-            "id": 166,
-            "pos": [480, 352]
-        },
-        {
-            "def": "Ptooie",
-            "id": 166,
-            "pos": [192, 352]
-        },
-        {
             "def": "Fire Flower",
             "id": 28,
             "pos": [336, 159]
+        },
+        {
+            "def": "Ptooie",
+            "id": 166,
+            "pos": [544, 352]
         }
     ]
 }
