@@ -18,6 +18,7 @@ enum {
     PLAT_BLOCK,
     PLAT_BIG,
     PLAT_CLOUD_BIG,
+    PLAT_MARBLE,
 };
 
 enum {

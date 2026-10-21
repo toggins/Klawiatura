@@ -117,6 +117,14 @@ static void init_platform(GameActor* actor) {
 
         break;
     }
+
+    case PLAT_MARBLE: {
+        actor->box.start.x = actor->box.start.y = Fx0;
+        actor->box.end.x = Int2Fx(192);
+        actor->box.end.y = Int2Fx(256);
+
+        break;
+    }
     }
 
     if (ANY_FLAG(actor, FLG_PLATFORM_RUN)) {
@@ -145,6 +153,7 @@ static SolidFlags is_solid(const GameActor* actor) {
     case PLAT_BRICK_BIG:
     case PLAT_BRICK_TALL:
     case PLAT_BRICK_SMALL:
+    case PLAT_MARBLE:
         return SOL_SOLID;
     }
 
@@ -194,6 +203,9 @@ static void load_special(const GameActor* actor) {
         break;
     case PLAT_CLOUD_BIG:
         load_sprite_num("markers/platform/cloud/big/%u", 4, AKL_NEVER);
+        break;
+    case PLAT_MARBLE:
+        load_sprite("markers/platform/marble", AKL_NEVER);
         break;
     }
 }
@@ -317,6 +329,9 @@ static void draw(const GameActor* actor) {
         break;
     case PLAT_CLOUD_BIG:
         sprite = fmt("markers/platform/cloud/big/%i", ((gamestate()->time * 2) / 25) % 4);
+        break;
+    case PLAT_MARBLE:
+        sprite = "markers/platform/marble";
         break;
     }
 

@@ -1885,7 +1885,7 @@
                 {
                     "name": "Type",
                     "index": 0,
-                    "tooltip": "0 = Normal (default)\n1 = Small\n2 = Cloud\n3 = Purple\n4 = Brick\n5 = Grass\n6 = Grass, Small\n7 = Brick, Big\n8 = Brick, Tall\n9 = Brick, Small\n10 = Brick, Buttons\n11 = Brown Block\n12 = Big\n13 = Cloud, Big"
+                    "tooltip": "0 = Normal (default)\n1 = Small\n2 = Cloud\n3 = Purple\n4 = Brick\n5 = Grass\n6 = Grass, Small\n7 = Brick, Big\n8 = Brick, Tall\n9 = Brick, Small\n10 = Brick, Buttons\n11 = Brown Block\n12 = Big\n13 = Cloud, Big\n14 = Marble"
                 },
                 {
                     "name": "5-2 X Speed",
