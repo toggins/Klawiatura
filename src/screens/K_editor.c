@@ -480,13 +480,13 @@ static void open_level(const char* filename) {
                 const EditorDefValue* dvalue = &def->values[j];
                 switch (dvalue->type) {
                 default:
-                    marker.values[j].integer = dvalue->default_value;
+                    marker.values[dvalue->index].integer = dvalue->default_value;
                     break;
                 case DVT_FIXED:
-                    marker.values[j].fixed = Fx2Float(dvalue->default_value);
+                    marker.values[dvalue->index].fixed = Fx2Float(dvalue->default_value);
                     break;
                 case DVT_ANGLE:
-                    marker.values[j].fixed = Fx2Float(FxDeg(dvalue->default_value));
+                    marker.values[dvalue->index].fixed = Fx2Float(FxDeg(dvalue->default_value));
                     break;
                 }
             }
