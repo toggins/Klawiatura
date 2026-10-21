@@ -21,6 +21,7 @@
     "world.lost_map_b": "Lost Map B (WIP)",
     "world.remix": "Remix (WIP)",
     "world.marble_valley": "Marble Valley (WIP)",
+    "world.world_of_revamps": "World of Revamps",
 
     "level.test": "Test",
     "level.1_1": "World 1-1",
@@ -109,6 +110,10 @@
     "level.marble_valley_ambush": "Marble Valley-Ambush",
     "level.marble_valley_3": "Marble Valley-3",
     "level.marble_valley_4": "Marble Valley-4",
+    "level.world_of_revamps_1": "World of Revamps: Hardcore World 1-4",
+    "level.world_of_revamps_2": "World of Revamps: Goomba Party",
+    "level.world_of_revamps_3": "World of Revamps: Hardcore World 2-4",
+    "level.world_of_revamps_4": "World of Revamps: Funny Tanks?",
 
     "map.world.1": "ui/map/world/en/1",
     "map.world.2": "ui/map/world/en/2",
@@ -121,6 +126,8 @@
     "map.world.lost_map": "ui/map/world/en/lost_map",
     "map.world.lost_map_b": "ui/map/world/en/lost_map_b",
     "map.world.remix": "ui/map/world/en/remix",
+    "map.world.marble_valley": "ui/map/world/en/marble_valley",
+    "map.world.world_of_revamps": "ui/map/world/en/world_of_revamps",
     "map.completed": "ui/map/world/en/completed/{0}",
     "map.press": "Press {0}",
     "map.waiting_for_leader": "Waiting for leader",
