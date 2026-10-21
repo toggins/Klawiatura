@@ -1954,6 +1954,16 @@
                     "name": "Add Every n Ticks",
                     "index": 4,
                     "tooltip": "0 = Set instantly"
+                },
+                {
+                    "name": "Disable Flags",
+                    "index": 0,
+                    "tooltip": "32 = Fall\n64 = Wrap\n128 = 5-2 Platform\n256 = Is Falling\n512 = 5-2 Platform is Active"
+                },
+                {
+                    "name": "Enable Flags",
+                    "index": 1,
+                    "tooltip": "32 = Fall\n64 = Wrap\n128 = 5-2 Platform\n256 = Is Falling\n512 = 5-2 Platform is Active"
                 }
             ]
         },
