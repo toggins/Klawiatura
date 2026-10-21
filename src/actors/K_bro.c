@@ -211,8 +211,12 @@ static void tick(GameActor* actor) {
         && (VAL(actor, BRO_JUMP) == 0 || (VAL(actor, BRO_JUMP) == 1 && actor->vel.y > Fx0)
             || (VAL(actor, BRO_JUMP) == 2 && actor->pos.y > VAL(actor, BRO_TO))))
     {
-        const Fixed ox = actor->pos.x;
+        const Fixed ox = actor->pos.x, oh = actor->box.start.y;
+
+        actor->box.start.y = Fx0;
         displace_actor(actor, Fx0, FALSE);
+        actor->box.start.y = oh;
+
         TOUCH_OFF(actor, TOUCH_DISPLACEABLE);
         move_actor(actor, (FVec2){ox, actor->pos.y});
 
