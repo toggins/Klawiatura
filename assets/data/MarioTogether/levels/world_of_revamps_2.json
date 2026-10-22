@@ -4714,6 +4714,7 @@
         {
             "def": "Goal Bar",
             "id": 9,
+            "singleplayer": true,
             "pos": [7243, 143],
             "flags": 32
         },
@@ -5752,6 +5753,12 @@
             "def": "Piranha Plant",
             "id": 41,
             "pos": [5888, 384]
+        },
+        {
+            "def": "Goal Bar",
+            "id": 9,
+            "multiplayer": true,
+            "pos": [7243, 143]
         }
     ]
 }
