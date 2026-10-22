@@ -4649,16 +4649,6 @@
             "pos": [7264, 448, 20]
         },
         {
-            "def": "Marble Top",
-            "sprite": "tiles/marble/1",
-            "pos": [7456, 448, 20]
-        },
-        {
-            "def": "Marble Top Right",
-            "sprite": "tiles/marble/2",
-            "pos": [7488, 448, 20]
-        },
-        {
             "def": "Marble Top Left",
             "sprite": "tiles/marble/0",
             "pos": [7232, 448, 20]
@@ -4716,26 +4706,6 @@
         {
             "def": "Marble Top",
             "sprite": "tiles/marble/1",
-            "pos": [7840, 416, 20]
-        },
-        {
-            "def": "Marble Top",
-            "sprite": "tiles/marble/1",
-            "pos": [7872, 416, 20]
-        },
-        {
-            "def": "Marble Top",
-            "sprite": "tiles/marble/1",
-            "pos": [7904, 416, 20]
-        },
-        {
-            "def": "Marble Top",
-            "sprite": "tiles/marble/1",
-            "pos": [7968, 416, 20]
-        },
-        {
-            "def": "Marble Top",
-            "sprite": "tiles/marble/1",
             "pos": [8000, 416, 20]
         },
         {
@@ -4752,11 +4722,6 @@
             "def": "Marble Top",
             "sprite": "tiles/marble/1",
             "pos": [7776, 416, 20]
-        },
-        {
-            "def": "Marble Top",
-            "sprite": "tiles/marble/1",
-            "pos": [7936, 416, 20]
         },
         {
             "def": "Marble Top",
@@ -4847,31 +4812,6 @@
             "def": "Marble Middle",
             "sprite": "tiles/marble/4",
             "pos": [7808, 448, 20]
-        },
-        {
-            "def": "Marble Middle",
-            "sprite": "tiles/marble/4",
-            "pos": [7840, 448, 20]
-        },
-        {
-            "def": "Marble Middle",
-            "sprite": "tiles/marble/4",
-            "pos": [7872, 448, 20]
-        },
-        {
-            "def": "Marble Middle",
-            "sprite": "tiles/marble/4",
-            "pos": [7904, 448, 20]
-        },
-        {
-            "def": "Marble Middle",
-            "sprite": "tiles/marble/4",
-            "pos": [7936, 448, 20]
-        },
-        {
-            "def": "Marble Middle",
-            "sprite": "tiles/marble/4",
-            "pos": [7968, 448, 20]
         },
         {
             "def": "Marble Middle",
@@ -5847,6 +5787,31 @@
             "def": "Marble Middle",
             "sprite": "tiles/marble/4",
             "pos": [9024, 448, 20]
+        },
+        {
+            "def": "Marble Top Right",
+            "sprite": "tiles/marble/2",
+            "pos": [7840, 416, 20]
+        },
+        {
+            "def": "Marble Right",
+            "sprite": "tiles/marble/5",
+            "pos": [7840, 448, 20]
+        },
+        {
+            "def": "Marble Top Left",
+            "sprite": "tiles/marble/0",
+            "pos": [7968, 416, 20]
+        },
+        {
+            "def": "Marble Left",
+            "sprite": "tiles/marble/3",
+            "pos": [7968, 448, 20]
+        },
+        {
+            "def": "Marble Top Right",
+            "sprite": "tiles/marble/2",
+            "pos": [7456, 448, 20]
         }
     ],
     "collisions": [
@@ -6729,8 +6694,6 @@
                 [232, 24, 1],
                 [233, 24, 1],
                 [228, 24, 1],
-                [234, 24, 1],
-                [235, 24, 1],
                 [227, 24, 1],
                 [228, 23, 128],
                 [229, 23, 128],
@@ -6739,15 +6702,10 @@
                 [242, 23, 1],
                 [243, 23, 1],
                 [245, 23, 1],
-                [246, 23, 1],
-                [247, 23, 1],
-                [248, 23, 1],
-                [250, 23, 1],
                 [251, 23, 1],
                 [252, 23, 1],
                 [253, 23, 1],
                 [244, 23, 1],
-                [249, 23, 1],
                 [254, 23, 1],
                 [255, 23, 1],
                 [256, 23, 1],
@@ -6766,11 +6724,6 @@
                 [243, 24, 1],
                 [244, 24, 1],
                 [245, 24, 1],
-                [246, 24, 1],
-                [247, 24, 1],
-                [248, 24, 1],
-                [249, 24, 1],
-                [250, 24, 1],
                 [251, 24, 1],
                 [252, 24, 1],
                 [253, 24, 1],
@@ -6948,7 +6901,12 @@
                 [280, 24, 1],
                 [281, 24, 1],
                 [282, 24, 1],
-                [283, 24, 1]
+                [283, 24, 1],
+                [246, 23, 1],
+                [246, 24, 1],
+                [250, 23, 1],
+                [250, 24, 1],
+                [234, 24, 1]
             ]
         },
         {
@@ -7371,34 +7329,7 @@
         {
             "def": "Stone Block",
             "id": 24,
-            "pos": [6368, 288],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
             "pos": [6400, 288],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [6432, 288],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [6368, 320],
             "values": [
                 [0, 2],
                 [1, 0]
@@ -7434,15 +7365,6 @@
         {
             "def": "Stone Block",
             "id": 24,
-            "pos": [6464, 288],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
             "pos": [6400, 224],
             "values": [
                 [0, 2],
@@ -7453,15 +7375,6 @@
             "def": "Stone Block",
             "id": 24,
             "pos": [6368, 256],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [6432, 224],
             "values": [
                 [0, 2],
                 [1, 0]
@@ -7501,12 +7414,6 @@
             "def": "Spiny",
             "id": 74,
             "pos": [5936, 413],
-            "flags": 4
-        },
-        {
-            "def": "Spiny",
-            "id": 74,
-            "pos": [6352, 413],
             "flags": 4
         },
         {
@@ -7587,18 +7494,6 @@
                 [1, 21]
             ],
             "flags": 64
-        },
-        {
-            "def": "Spiny",
-            "id": 74,
-            "pos": [6448, 285],
-            "flags": 4
-        },
-        {
-            "def": "Spiny",
-            "id": 74,
-            "pos": [6416, 381],
-            "flags": 4
         },
         {
             "def": "Stone Block",
@@ -7841,61 +7736,7 @@
         {
             "def": "Stone Block",
             "id": 24,
-            "pos": [6464, 256],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
             "pos": [6432, 352],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [6336, 352],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [6304, 352],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [6272, 384],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [6336, 320],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [6272, 352],
             "values": [
                 [0, 2],
                 [1, 0]
@@ -8035,15 +7876,6 @@
         {
             "def": "Stone Block",
             "id": 24,
-            "pos": [7872, 384],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
             "pos": [7904, 384],
             "values": [
                 [0, 2],
@@ -8072,69 +7904,6 @@
             "def": "Stone Block",
             "id": 24,
             "pos": [7904, 288],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [7936, 288],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [7936, 320],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [7936, 352],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [7936, 384],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [7872, 352],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [7872, 320],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [7872, 288],
             "values": [
                 [0, 2],
                 [1, 0]
@@ -8174,33 +7943,6 @@
             "def": "Stone Block",
             "id": 24,
             "pos": [6432, 192],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [6400, 192],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [6336, 288],
-            "values": [
-                [0, 2],
-                [1, 0]
-            ]
-        },
-        {
-            "def": "Stone Block",
-            "id": 24,
-            "pos": [6400, 320],
             "values": [
                 [0, 2],
                 [1, 0]
@@ -8769,19 +8511,7 @@
         {
             "def": "Spiny",
             "id": 74,
-            "pos": [9904, 445],
-            "flags": 4
-        },
-        {
-            "def": "Spiny",
-            "id": 74,
             "pos": [9968, 445],
-            "flags": 4
-        },
-        {
-            "def": "Spiny",
-            "id": 74,
-            "pos": [9584, 445],
             "flags": 4
         },
         {
@@ -8899,12 +8629,6 @@
             "flags": 4
         },
         {
-            "def": "Spiny",
-            "id": 74,
-            "pos": [8432, 93],
-            "flags": 4
-        },
-        {
             "def": "Cloud",
             "id": 18,
             "pos": [8896, 64]
@@ -8970,6 +8694,21 @@
                 [0, 2],
                 [1, 0]
             ]
+        },
+        {
+            "def": "Stone Block",
+            "id": 24,
+            "pos": [6400, 352],
+            "values": [
+                [0, 2],
+                [1, 0]
+            ]
+        },
+        {
+            "def": "Spiny",
+            "id": 74,
+            "pos": [6128, 413],
+            "flags": 4
         }
     ]
 }
