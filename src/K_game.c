@@ -2927,7 +2927,9 @@ SolidFlags displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                         const Fixed step = dbox.start.y - actor->box.end.y;
                         const FRect sbox = Radd(actor->box, (FVec2){npos.x + (right ? 1 : -1), step});
 
-                        if (!touching_solid(sbox, SOL_SOLID)) {
+                        if (!touching_solid(sbox,
+                                SOL_SOLID | ((actor->vel.x > Fx0) ? SOL_LEFT : ((actor->vel.x < Fx0) ? SOL_RIGHT : 0))))
+                        {
                             ACTOR_CALL(displacer, on_top, actor);
                             if (!ACTOR_IS_SOLID(displacer, SOL_GHOST)) {
                                 npos.y = step;
@@ -3003,7 +3005,9 @@ SolidFlags displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                         const Fixed step = cbox.start.y - actor->box.end.y;
                         const FRect sbox = Radd(actor->box, (FVec2){npos.x + (right ? 1 : -1), step});
 
-                        if (!touching_solid(sbox, SOL_SOLID)) {
+                        if (!touching_solid(sbox,
+                                SOL_SOLID | ((actor->vel.x > Fx0) ? SOL_LEFT : ((actor->vel.x < Fx0) ? SOL_RIGHT : 0))))
+                        {
                             npos.y = step;
                             actor->vel.y = Fx0;
                             TOUCH_ON(actor, TOUCH_BOTTOM);
@@ -3068,35 +3072,35 @@ SolidFlags displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                         continue;
 
                     const FRect dbox = Radd(displacer->box, displacer->pos);
-                    if (!Rcollide(abox, dbox))
+
+                    FRect test = dbox;
+                    if ((solid & (SOL_SLOPE | SOL_BOTTOM)) == (SOL_SLOPE | SOL_BOTTOM)) {
+                        test.start.x += Fmin(actor->vel.x, Fx0);
+                        test.end.x += Fmax(actor->vel.x, Fx0);
+                        test.start.y -= Fabs(actor->vel.x);
+                    }
+
+                    if (!Rcollide(abox, test))
                         continue;
 
-                    if (solid & SOL_SLOPE) {
-                        if (actor->vel.y < Fx0) {
-                            if (!(solid & SOL_BOTTOM) || npos.y < dbox.end.y)
-                                continue;
+                    if ((solid & SOL_SLOPE) && (npos.y + actor->box.end.y - climb) < dbox.end.y) {
+                        const Fixed width = dbox.end.x - dbox.start.x;
+                        if (width == Fx0)
+                            continue;
 
-                            ACTOR_CALL(displacer, on_bottom, actor);
+                        const Bool side = (solid & SOL_LEFT) == SOL_LEFT;
+                        const Fixed sa = side ? dbox.start.y : dbox.end.y, sb = side ? dbox.end.y : dbox.start.y,
+                                    ax = npos.x + (side ? actor->box.start.x : actor->box.end.x);
+
+                        const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - dbox.start.x, width), Fx0, Fx1)),
+                                    tweak = ((solid & SOL_SLOPE_LEFT) == SOL_SLOPE_LEFT && actor->vel.x < Fx0)
+                                                ? Fmax(Fabs(Fdouble(actor->vel.x)) - Fmax(actor->vel.y, Fx0), Fx0)
+                                                : Fabs(actor->vel.x);
+                        if ((npos.y + actor->box.end.y + tweak) > slope) {
+                            ACTOR_CALL(displacer, on_top, actor);
                             if (!ACTOR_IS_SOLID(displacer, SOL_GHOST)) {
-                                npos.y = Fmax(npos.y, dbox.end.y - actor->box.start.y);
-                                stop |= actor->vel.y <= Fx0;
-                            }
-                        } else {
-                            const Fixed width = Fabs(dbox.end.x - dbox.start.x);
-                            if (width == Fx0)
-                                continue;
-
-                            const Bool side = (solid & SOL_LEFT) == SOL_LEFT;
-                            const Fixed sa = side ? dbox.start.y : dbox.end.y, sb = side ? dbox.end.y : dbox.start.y,
-                                        ax = npos.x + (side ? actor->box.start.x : actor->box.end.x);
-
-                            const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - dbox.start.x, width), Fx0, Fx1));
-                            if ((npos.y + actor->box.end.y + Fabs(actor->vel.x)) >= slope) {
-                                ACTOR_CALL(displacer, on_top, actor);
-                                if (!ACTOR_IS_SOLID(displacer, SOL_GHOST)) {
-                                    npos.y = slope - actor->box.end.y;
-                                    stop = TRUE;
-                                }
+                                npos.y = slope - actor->box.end.y;
+                                stop |= actor->vel.y >= Fx0;
                             }
                         }
 
@@ -3152,30 +3156,33 @@ SolidFlags displace_actor(GameActor* actor, Fixed climb, Bool unstuck) {
                     const FVec2 cpos
                         = Vadd(cmap->bounds.start, (FVec2){cx * cmap->cell_size.x, cy * cmap->cell_size.y});
                     const FRect cbox = (FRect){cpos, Vadd(cpos, cmap->cell_size)};
-                    if (!Rcollide(abox, cbox))
+
+                    FRect test = cbox;
+                    if ((solid & (SOL_SLOPE | SOL_BOTTOM)) == (SOL_SLOPE | SOL_BOTTOM)) {
+                        test.start.x += Fmin(actor->vel.x, Fx0);
+                        test.end.x += Fmax(actor->vel.x, Fx0);
+                        test.start.y -= Fabs(actor->vel.x);
+                    }
+
+                    if (!Rcollide(abox, test))
                         continue;
 
-                    if (solid & SOL_SLOPE) {
-                        if (actor->vel.y < Fx0) {
-                            if (!(solid & SOL_BOTTOM) || npos.y < cbox.end.y)
-                                continue;
+                    if ((solid & SOL_SLOPE) && (npos.y + actor->box.end.y - climb) < cbox.end.y) {
+                        const Fixed width = cbox.end.x - cbox.start.x;
+                        if (width == Fx0)
+                            continue;
 
-                            npos.y = Fmax(npos.y, cbox.end.y - actor->box.start.y);
-                            stop |= actor->vel.y <= Fx0;
-                        } else {
-                            const Fixed width = Fabs(cbox.end.x - cbox.start.x);
-                            if (width == Fx0)
-                                continue;
+                        const Bool side = (solid & SOL_LEFT) == SOL_LEFT;
+                        const Fixed sa = side ? cbox.start.y : cbox.end.y, sb = side ? cbox.end.y : cbox.start.y,
+                                    ax = npos.x + (side ? actor->box.start.x : actor->box.end.x);
 
-                            const Bool side = (solid & SOL_LEFT) == SOL_LEFT;
-                            const Fixed sa = side ? cbox.start.y : cbox.end.y, sb = side ? cbox.end.y : cbox.start.y,
-                                        ax = npos.x + (side ? actor->box.start.x : actor->box.end.x);
-
-                            const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - cbox.start.x, width), Fx0, Fx1));
-                            if ((npos.y + actor->box.end.y + Fabs(actor->vel.x)) >= slope) {
-                                npos.y = slope - actor->box.end.y;
-                                stop = TRUE;
-                            }
+                        const Fixed slope = Flerp(sa, sb, Fclamp(Fdiv(ax - cbox.start.x, width), Fx0, Fx1)),
+                                    tweak = ((solid & SOL_SLOPE_LEFT) == SOL_SLOPE_LEFT && actor->vel.x < Fx0)
+                                                ? Fmax(Fabs(Fdouble(actor->vel.x)) - Fmax(actor->vel.y, Fx0), Fx0)
+                                                : Fabs(actor->vel.x);
+                        if ((npos.y + actor->box.end.y + tweak) > slope) {
+                            npos.y = slope - actor->box.end.y;
+                            stop |= actor->vel.y >= Fx0;
                         }
 
                         continue;
