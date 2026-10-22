@@ -9,7 +9,7 @@
    PLATFORM
    ======== */
 
-static void init_platform(GameActor* actor) {
+void init_platform(GameActor* actor) {
     switch (VAL(actor, PLATFORM_TYPE)) {
     default: {
         actor->box.start.x = actor->box.start.y = Fx0;
@@ -213,6 +213,7 @@ static void load_special(const GameActor* actor) {
 static void create(GameActor* actor) {
     VAL(actor, PLATFORM_MIN_SPEED) = Int2Fx(-3);
     VAL(actor, PLATFORM_MAX_SPEED) = Int2Fx(3);
+    VAL(actor, PLATFORM_FADE) = Fx1;
 
     actor->depth = Int2Fx(19);
 }
@@ -281,10 +282,27 @@ static void pre_tick(GameActor* actor) {
     }
 
 #undef DO_RESPAWN
+
+    const GamePlayer* player = get_player(actor->player);
+    if (player == NULL)
+        return;
+
+    const GameActor* pawn = get_actor(player->actor);
+    if (pawn != NULL && pawn->type == ACT_PLAYER
+        && Rcollide(Radd(actor->box, actor->pos), Radd(pawn->box, Vadd(pawn->pos, (FVec2){Fx0, Fx1}))))
+    {
+        if (VAL(actor, PLATFORM_FADE) < Fx1)
+            VAL(actor, PLATFORM_FADE) = Fmin(VAL(actor, PLATFORM_FADE) + 6554, Fx1);
+    } else {
+        VAL(actor, PLATFORM_FADE) -= 6554;
+        if (VAL(actor, PLATFORM_FADE) <= Fx0)
+            FLAG_ON(actor, FLG_DESTROY);
+    }
 }
 
 static void draw(const GameActor* actor) {
     batch_reset();
+    batch_color(B_U4_ALPHA(Fx2Float(VAL(actor, PLATFORM_FADE)) * 255.f));
 
     const char* sprite = NULL;
     switch (VAL(actor, PLATFORM_TYPE)) {

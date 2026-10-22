@@ -13,6 +13,11 @@ static void cleanup_autoscroll(GameActor* actor) {
         game_state->autoscroll = NULL_ACTOR;
 }
 
+static void load_autoscroll() {
+    if (gamecontext()->num_players > 1)
+        load_sprite_num("markers/platform/cloud/%u", 4, AKL_NEVER);
+}
+
 static void load_autoscroll_special(const GameActor* actor) {
     if (ANY_FLAG(actor, FLG_SCROLL_TANKS))
         load_sprite("markers/tanks_ground", AKL_NEVER);
@@ -103,6 +108,7 @@ static void draw_autoscroll(const GameActor* actor) {
 
 const ActorTable TAB_AUTOSCROLL = {
     .create = create_autoscroll,
+    .load = load_autoscroll,
     .load_special = load_autoscroll_special,
     .pre_tick = pre_tick_autoscroll,
     .draw = draw_autoscroll,

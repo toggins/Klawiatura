@@ -5,6 +5,7 @@
 
 #include "actors/K_enemies.h"
 #include "actors/K_hazards.h"
+#include "actors/K_platform.h"
 #include "actors/K_player.h"
 #include "actors/K_points.h"
 #include "actors/K_powerups.h"
@@ -1322,9 +1323,48 @@ static void tick_dead(GameActor* actor) {
 
                 break;
             }
+
+            hazard = get_actor(game_state->autoscroll);
+            if (hazard != NULL && !ANY_FLAG(hazard, FLG_SCROLL_BOWSER)
+                && touching_solid(
+                    (FRect){
+                        {hazard->pos.x + F_HALF_SCREEN_WIDTH - Int2Fx(64), hazard->pos.y + Int2Fx(64) },
+                        {hazard->pos.x + F_HALF_SCREEN_WIDTH + Int2Fx(64), hazard->pos.y + Int2Fx(160)}
+            },
+                    SOL_SOLID | SOL_HAZARD))
+            {
+                VAL(actor, PLAYER_DEAD) -= 10;
+                FLAG_OFF(actor, FLG_VISIBLE);
+
+                break;
+            }
         }
 
         respawn_player(player);
+
+        const GameActor* autoscroll = get_actor(game_state->autoscroll);
+        if (autoscroll == NULL || ANY_FLAG(autoscroll, FLG_SCROLL_BOWSER))
+            break;
+
+        GameActor* pawn = get_actor(player->actor);
+        if (pawn == NULL || pawn->type != ACT_PLAYER)
+            break;
+
+        GameActor* platform
+            = create_actor(ACT_PLATFORM, Vadd(autoscroll->pos, (FVec2){F_HALF_SCREEN_WIDTH - Int2Fx(63), Int2Fx(128)}));
+        if (platform == NULL)
+            break;
+
+        platform->player = player->id;
+        VAL(platform, PLATFORM_TYPE) = PLAT_CLOUD;
+        VAL(platform, PLATFORM_MASK) = FxUpper;
+        VAL(platform, PLATFORM_FADE) = Fx0;
+        init_platform(platform);
+
+        move_actor(pawn, Vadd(autoscroll->pos, (FVec2){F_HALF_SCREEN_WIDTH, Int2Fx(128) - pawn->box.end.y}));
+        pawn->platform = platform->id;
+
+        skip_interp(pawn);
 
         break;
     }
