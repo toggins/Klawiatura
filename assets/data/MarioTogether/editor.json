@@ -238,6 +238,18 @@
             "sprite": "tiles/block/fancy/gray",
             "depth": 20
         },
+        "Fancy Gray Slope Left": {
+            "type": "tile",
+            "sprite": "tiles/block/fancy/slope/gray/left",
+            "depth": 20,
+            "solid": "slope_left"
+        },
+        "Fancy Gray Slope Right": {
+            "type": "tile",
+            "sprite": "tiles/block/fancy/slope/gray/right",
+            "depth": 20,
+            "solid": "slope_right"
+        },
         "Brown Spike": {
             "type": "tile",
             "sprite": "tiles/spike/brown",
@@ -291,6 +303,11 @@
             "type": "background",
             "sprite": "scenery/tree/trunk/1",
             "depth": 40
+        },
+        "Forest Worker": {
+            "type": "background",
+            "sprite": "scenery/forest_worker",
+            "depth": 60
         },
         "Forest Top 2": {
             "type": "background",
@@ -599,7 +616,21 @@
                 },
                 {
                     "name": "Blocks",
-                    "items": ["Stage Block", "Gray Block", "Old Block", "Red Brick Block", "Fancy Gray Block"]
+                    "items": [
+                        {
+                            "name": "Fancy",
+                            "items": [
+                                {
+                                    "name": "Gray",
+                                    "items": ["Fancy Gray Block", "Fancy Gray Slope Left", "Fancy Gray Slope Right"]
+                                }
+                            ]
+                        },
+                        "Stage Block",
+                        "Gray Block",
+                        "Old Block",
+                        "Red Brick Block"
+                    ]
                 },
                 {
                     "name": "Spikes",
@@ -624,7 +655,7 @@
                 },
                 {
                     "name": "Forests",
-                    "items": ["Forest Top 2"]
+                    "items": ["Forest Worker", "Forest Top 2"]
                 },
                 {
                     "name": "Castle",
