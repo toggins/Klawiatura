@@ -415,15 +415,8 @@ static void update_animation(GameActor* actor) {
 // @NOLINTEND(misc-no-recursion)
 
 static void pre_tick(GameActor* actor) {
-    if (VAL(actor, PLAYER_FLASH) > 0) {
-        TOGGLE_FLAG(actor, FLG_VISIBLE);
-
-        if (!ANY_FLAG(actor, FLG_PLAYER_RESPAWNING)) {
-            --VAL(actor, PLAYER_FLASH);
-            if (VAL(actor, PLAYER_FLASH) <= 0 || VAL(actor, PLAYER_STARMAN) > 0)
-                FLAG_ON(actor, FLG_VISIBLE);
-        }
-    }
+    if (VAL(actor, PLAYER_FLASH) > 0 && !ANY_FLAG(actor, FLG_PLAYER_RESPAWNING))
+        --VAL(actor, PLAYER_FLASH);
 
     update_animation(actor);
 
@@ -1094,7 +1087,7 @@ static void draw(const GameActor* actor) {
 
     batch_reset();
     batch_color(B_U4_ALPHA((player->id == localplayer()) ? 255 : 192));
-    if (VAL(actor, PLAYER_STARMAN) <= 0 || (gamestate()->time % 2) > 0) {
+    if ((VAL(actor, PLAYER_FLASH) <= 0 && VAL(actor, PLAYER_STARMAN) <= 0) || (gamestate()->time % 2) > 0) {
         draw_actor(actor,
             get_character_sprite(
                 gamecontext()->players[player->id].character, player->powerup, get_player_frame(actor)),
@@ -1113,14 +1106,13 @@ static void draw(const GameActor* actor) {
     if (gamecontext()->num_players > 1) {
         const GameSequence* sequence = get_sequence();
         if (sequence->type == GS_BOWSER_END && sequence->activator == player->id) {
-            batch_blend(BM_ADD);
+            batch_flip(B_B2_FALSE);
             for (Uint8 i = 0; i < 8; i++) {
                 const float dir = ((float)(gamestate()->time) * 0.02f) + ((float)i * (SDL_PI_F * 0.25f));
                 batch_offset(B_F3_XY((Sint32)(SDL_cosf(dir) * -45.f),
                     (Sint32)(Fx2Float(Fhalf(actor->box.end.y - actor->box.start.y)) + (SDL_sinf(dir) * 45.f))));
                 batch_sprite("effects/spark");
             }
-            batch_blend(BM_NORMAL);
         }
     }
 

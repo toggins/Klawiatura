@@ -139,10 +139,7 @@ static void post_tick(GameActor* actor) {
 
             if (j == i) {
                 VAL(pawn, PLAYER_STARMAN) = 700;
-                if (VAL(pawn, PLAYER_FLASH) > 0) {
-                    VAL(pawn, PLAYER_FLASH) = 0;
-                    FLAG_ON(pawn, FLG_VISIBLE);
-                }
+                VAL(pawn, PLAYER_FLASH) = 0;
 
                 continue;
             }
@@ -154,10 +151,7 @@ static void post_tick(GameActor* actor) {
             if (opawn != NULL) {
                 move_actor(opawn, pawn->pos);
                 VAL(opawn, PLAYER_STARMAN) = 700;
-                if (VAL(opawn, PLAYER_FLASH) > 0) {
-                    VAL(opawn, PLAYER_FLASH) = 0;
-                    FLAG_ON(opawn, FLG_VISIBLE);
-                }
+                VAL(opawn, PLAYER_FLASH) = 0;
 
                 skip_interp(opawn);
             }
