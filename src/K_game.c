@@ -1618,9 +1618,21 @@ static void draw_hud() {
     }
 
     batch_pos(B_F3_XY(32.f, 16.f));
-    const char* cname = get_character_name(game_context.players[player->id].character);
-    batch_string("hud", 16.f, fmt("%s × %i", cname, SDL_max(player->lives, 0)));
-    batch_pos(B_F3_XY(32.f + string_width("hud", 16.f, fmt("%s × 0", cname)), 34.f));
+
+    const char* cname = fmt("%s × ", get_character_name(game_context.players[player->id].character));
+    batch_string("hud", 16.f, cname);
+    batch_pos(B_F3_XY(32.f + string_width("hud", 16.f, cname), 16.f));
+    const Uint8 flash = ((game_state->flags & GF_STARMAN_RUNNING) && game_context.num_players > 1 && player->lives >= 0)
+                            ? (Uint8)(128.f
+                                      + (SDL_cos((float)game_state->time
+                                                 * ((get_actor(game_state->checkpoint) == NULL) ? 0.125f : 0.325f))
+                                          * 128.f))
+                            : 255;
+    batch_color(B_U4_RGB(255, flash, flash));
+    batch_string("hud", 16.f, fmt("%i", SDL_max(player->lives, 0)));
+    batch_color(B_U4_WHITE);
+
+    batch_pos(B_F3_XY(32.f + string_width("hud", 16.f, fmt("%s0", cname)), 34.f));
     batch_align(B_ALIGN_TOP_RIGHT);
     batch_string("hud", 16.f, fmt("%u", player->score));
 
