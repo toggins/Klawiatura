@@ -19,22 +19,18 @@ Check out [the releases](https://github.com/toggins/Klawiatura/releases/latest) 
 ## Features
 
 - **Online multiplayer with up to 8 players**
-- Native support for Windows, Linux, and [HTML5 in the browser][web]
+- Basic mod system with custom levels and worlds
+- Native support for Windows, Linux, and [web browsers][web]
 - Keyboard and gamepad support
-<!--
-- Customizable framerate
-- Basic mod system with custom worlds and levels
--->
-<!-- do we really need to mention ts^^?? -->
 
-## Restorations
+### Restorations
 
 - Original map screens (1.16.1 - 3.0)
 - Checkpoints in main worlds (4.4+)
 - Hammer Bro fights (5.08+)
 - Koopa Troopa Liberation, Starman Running and World of Stupidity (4.4 - 6.0+)
 
-## Enhancements
+### Enhancements
 
 - Stereo sound panning
 - Minor graphics and audio fixes
@@ -43,7 +39,7 @@ Check out [the releases](https://github.com/toggins/Klawiatura/releases/latest) 
 ## Multiplayer
 
 > [!NOTE]
-> If you can't see other players in your lobby, check [NutBlast's troubleshooting section](https://nutblast.schwung.us/?tab=readme-ov-file#troubleshooting).
+> If you have trouble connecting to lobbies, check [NutBlast's troubleshooting section](https://nutblast.schwung.us/?tab=readme-ov-file#troubleshooting).
 
 Multiplayer is the main kicker of this project. You can host and find lobbies through NutBlast master-servers. Lobbies can hold up to 8 players. If you aren't satisfied with the public master-server instance, you can host your own [NutBlaster][blast] and set your server address to it in the settings.
 
