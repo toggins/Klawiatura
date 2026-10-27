@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/eerie",
+    "size": [31, 32],
+    "offset": [15, 31],
+    "uvs": [1, 33, 32, 1]
+}
