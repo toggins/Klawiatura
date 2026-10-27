@@ -2240,7 +2240,8 @@ void win_player(GamePlayer* player) {
             break;
         }
 
-        case ACT_FIREBALL_PROJECTILE: {
+        case ACT_FIREBALL_PROJECTILE:
+        case ACT_BULLET_PROJECTILE: {
             if (get_player(actor->player) != NULL) {
                 give_points(actor, player, 100);
                 FLAG_ON(actor, FLG_DESTROY);
@@ -2252,6 +2253,15 @@ void win_player(GamePlayer* player) {
         case ACT_BEETROOT_PROJECTILE: {
             if (get_player(actor->player) != NULL && !ANY_FLAG(actor, FLG_PROJECTILE_SINK)) {
                 give_points(actor, player, 200);
+                FLAG_ON(actor, FLG_DESTROY);
+            }
+
+            break;
+        }
+
+        case ACT_HAMMER_PROJECTILE: {
+            if (get_player(actor->player) != NULL) {
+                give_points(actor, player, 500);
                 FLAG_ON(actor, FLG_DESTROY);
             }
 
