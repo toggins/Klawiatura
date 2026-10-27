@@ -880,7 +880,7 @@ void send_packet(PacketChannel channel, NetID pid, const Uint8* data, size_t siz
 }
 
 void send_reliable_packet(PacketChannel channel, NetID pid, const Uint8* data, size_t size) {
-    NutBlast_Send((NutBlast_SendOptions){.channel = channel, .to = pid, .data = data, .size = size, .reliable = true});
+    NutBlast_Send((NutBlast_SendOptions){.channel = channel, .to = pid, .data = data, .size = size, .reliable = TRUE});
 }
 
 void spread_packet(PacketChannel channel, const Uint8* data, size_t size) {
