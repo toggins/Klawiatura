@@ -151,17 +151,13 @@ void grow_player(GameActor* actor, GameActor* from, PlayerPowerup powerup) {
     VAL(actor, PLAYER_ANIMATION) = PF_GROW;
     VAL(actor, PLAYER_FRAME) = Fx0;
 
-    if (last_powerup != POW_NONE || TOUCHING(actor, TOUCH_BOTTOM) || ANY_FLAG(actor, FLG_PLAYER_DUCK))
-        return;
-
-    actor->box.start.y = Int2Fx(-51);
-    if (!touching_solid(Radd(actor->box, actor->pos), SOL_SOLID))
-        return;
-
-    const FVec2 ovel = actor->vel;
-    actor->vel = (FVec2){Fx0, -1};
-    displace_actor(actor, Int2Fx(10), FALSE);
-    actor->vel = ovel;
+    if (last_powerup == POW_NONE && !ANY_FLAG(actor, FLG_PLAYER_DUCK)) {
+        actor->box.start.y = Int2Fx(-51);
+        if (!TOUCHING(actor, TOUCH_BOTTOM) && touching_solid(Radd(actor->box, actor->pos), SOL_SOLID)) {
+            actor->box.start.y = Int2Fx(-25);
+            FLAG_ON(actor, FLG_PLAYER_DUCK_STUCK);
+        }
+    }
 }
 
 void player_starman(GameActor* actor, GameActor* from) {
