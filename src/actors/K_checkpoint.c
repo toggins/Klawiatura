@@ -11,22 +11,24 @@
    ========== */
 
 static void load() {
-    load_sprite_num("markers/checkpoint/%u", 3, AKL_NEVER);
-    load_sound("sprout", AKL_NEVER);
-    load_actor(ACT_CHECKPOINT_EFFECT);
-
     const GameContext* game_context = gamecontext();
+    if ((gamestate()->flags & GF_STARMAN_RUNNING) && game_context->num_players > 1) {
+        load_sprite_num("markers/checkpoint/sudden_death/%u", 3, AKL_NEVER);
+        load_localized_sprite("hud.starman.sudden_death", AKL_NEVER);
+        load_sound("sudden_death", AKL_NEVER);
+    } else {
+        load_sprite_num("markers/checkpoint/%u", 3, AKL_NEVER);
+        load_actor(ACT_CHECKPOINT_EFFECT);
+    }
+
+    load_sound("sprout", AKL_NEVER);
+
     for (PlayerID i = 0; i < game_context->num_players; i++) {
         const PlayerCharacter character = game_context->players[i].character;
         load_sound(get_character_voice(character, PV_READY), AKL_NEVER);
         load_sound(get_character_voice(character, PV_CHECKPOINT1), AKL_NEVER);
         load_sound(get_character_voice(character, PV_CHECKPOINT2), AKL_NEVER);
         load_sound(get_character_voice(character, PV_CHECKPOINT3), AKL_NEVER);
-    }
-
-    if (gamestate()->flags & GF_STARMAN_RUNNING) {
-        load_localized_sprite("hud.starman.sudden_death", AKL_NEVER);
-        load_sound("sudden_death", AKL_NEVER);
     }
 }
 
@@ -80,13 +82,14 @@ static void tick(GameActor* actor) {
 
         case 51: {
             const GamePlayer* player = get_player(actor->player);
-            if (player == NULL)
-                break;
+            if (player != NULL) {
+                const Sint32 r = rng(4);
 
-            const Sint32 r = rng(4);
-            play_state_sound(get_character_voice(gamecontext()->players[player->id].character,
-                                 (r > 0) ? (PV_CHECKPOINT1 + (r - 1)) : PV_READY),
-                0, NULL);
+                play_state_sound(get_character_voice(gamecontext()->players[player->id].character,
+                                     (r > 0) ? (PV_CHECKPOINT1 + (r - 1)) : PV_READY),
+                    0, NULL);
+            }
+
             break;
         }
         }
@@ -166,21 +169,27 @@ static void post_tick(GameActor* actor) {
 
 static void draw(const GameActor* actor) {
     batch_reset();
-    batch_color(B_U4_ALPHA((gamestate()->checkpoint <= actor->id) ? 255 : 128));
+    const GameState* game_state = gamestate();
+    batch_color(B_U4_ALPHA((game_state->checkpoint <= actor->id) ? 255 : 128));
 
-    const char* sprite = "markers/checkpoint/0";
+    Sint32 frame = 0;
     switch (VAL(actor, CHECKPOINT_ANIMATION)) {
     default:
         break;
     case 1:
-        sprite = fmt("markers/checkpoint/%i", (VAL(actor, CHECKPOINT_FRAME) / 100) % 2);
+        frame = (VAL(actor, CHECKPOINT_FRAME) / 100) % 2;
         break;
     case 2:
-        sprite = fmt("markers/checkpoint/%i", 1 + (VAL(actor, CHECKPOINT_FRAME) / 100));
+        frame = 1 + (VAL(actor, CHECKPOINT_FRAME) / 100);
         break;
     }
 
-    draw_actor(actor, sprite, FALSE);
+    draw_actor(actor,
+        fmt(((game_state->flags & GF_STARMAN_RUNNING) && gamecontext()->num_players > 1)
+                ? "markers/checkpoint/sudden_death/%i"
+                : "markers/checkpoint/%i",
+            frame),
+        FALSE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {
@@ -283,7 +292,7 @@ static void tick_effect(GameActor* actor) {
 }
 
 static void draw_effect(const GameActor* actor) {
-    if (gamestate()->flags & GF_STARMAN_RUNNING)
+    if ((gamestate()->flags & GF_STARMAN_RUNNING) && gamecontext()->num_players > 1)
         return;
 
     batch_reset();
@@ -293,7 +302,7 @@ static void draw_effect(const GameActor* actor) {
 }
 
 static void draw_effect_hud(const GameActor* actor) {
-    if (!(gamestate()->flags & GF_STARMAN_RUNNING))
+    if (!(gamestate()->flags & GF_STARMAN_RUNNING) || gamecontext()->num_players <= 1)
         return;
 
     batch_reset();
