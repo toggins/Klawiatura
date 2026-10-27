@@ -498,7 +498,8 @@ static void tick_dead(GameActor* actor) {
 
         if (VAL(actor, DEAD_RESPAWN) > 300) {
             const GamePlayer* nearest = NULL;
-            for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+            const PlayerID num_players = gamecontext()->num_players;
+            for (PlayerID i = 0; i < num_players; i++) {
                 const GamePlayer* player = get_player(i);
                 if (player != NULL && (nearest == NULL || nearest->pos.x < player->pos.x))
                     nearest = player;
@@ -506,7 +507,7 @@ static void tick_dead(GameActor* actor) {
 
             if (nearest != NULL) {
                 FVec2 lpos = get_player_view(nearest);
-                if (gamestate()->flags & GF_STARMAN_RUNNING) {
+                if ((gamestate()->flags & GF_STARMAN_RUNNING) && num_players <= 1) {
                     lpos.x += Int2Fx(800) + Int2Fx(rng(800));
                     lpos.y += Int2Fx(200) + Int2Fx(rng(300));
                 } else {
