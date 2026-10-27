@@ -321,6 +321,16 @@
             "sprite": "scenery/castle/bottom2",
             "depth": 35
         },
+        "Castle Gray Top": {
+            "type": "background",
+            "sprite": "scenery/castle/gray/top",
+            "depth": 35
+        },
+        "Castle Gray Bottom": {
+            "type": "background",
+            "sprite": "scenery/castle/gray/bottom",
+            "depth": 35
+        },
         "Left Sign": {
             "type": "background",
             "sprite": "scenery/sign/left",
@@ -499,6 +509,23 @@
                 }
             ]
         },
+        "Boo": {
+            "type": "actor",
+            "id": 146,
+            "sprite": "enemies/boo/0"
+        },
+        "Eerie": {
+            "type": "actor",
+            "id": 164,
+            "sprite": "enemies/eerie/0",
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2,
+                    "default": true
+                }
+            ]
+        },
         "Cannon": {
             "type": "actor",
             "id": 152,
@@ -659,7 +686,13 @@
                 },
                 {
                     "name": "Castle",
-                    "items": ["Castle Bottom Alt"]
+                    "items": [
+                        {
+                            "name": "Gray",
+                            "items": ["Castle Gray Top", "Castle Gray Bottom"]
+                        },
+                        "Castle Bottom Alt"
+                    ]
                 },
                 {
                     "name": "Signs",
@@ -715,6 +748,10 @@
                 {
                     "name": "Artillery",
                     "items": ["Cannon"]
+                },
+                {
+                    "name": "Ghosts",
+                    "items": ["Boo", "Eerie", "Big Boo"]
                 },
                 "Buzzy"
             ]

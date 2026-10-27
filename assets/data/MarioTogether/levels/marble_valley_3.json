@@ -2318,11 +2318,6 @@
         {
             "def": "Fancy Gray Block",
             "sprite": "tiles/block/fancy/gray",
-            "pos": [1376, 288, 20]
-        },
-        {
-            "def": "Fancy Gray Block",
-            "sprite": "tiles/block/fancy/gray",
             "pos": [1408, 288, 20]
         },
         {
@@ -4516,16 +4511,6 @@
             "pos": [11072, 448, 20]
         },
         {
-            "def": "Castle Top",
-            "sprite": "scenery/castle/top",
-            "pos": [11040, 64, 35]
-        },
-        {
-            "def": "Castle Bottom",
-            "sprite": "scenery/castle/bottom",
-            "pos": [10976, 224, 35]
-        },
-        {
             "def": "Fancy Gray Block",
             "sprite": "tiles/block/fancy/gray",
             "pos": [9824, 352, 20]
@@ -5733,6 +5718,41 @@
             "def": "Fancy Gray Block",
             "sprite": "tiles/block/fancy/gray",
             "pos": [5024, 288, 20]
+        },
+        {
+            "def": "Clouds Static",
+            "sprite": "scenery/clouds2",
+            "pos": [0, 0, 50],
+            "size": [11200, 28],
+            "tile": [true, false]
+        },
+        {
+            "def": "Clouds Static",
+            "sprite": "scenery/clouds2",
+            "pos": [-32, 16, 51],
+            "size": [11232, 28],
+            "tile": [true, false],
+            "colors": [
+                [255, 255, 255, 103],
+                [255, 255, 255, 103],
+                [255, 255, 255, 103],
+                [255, 255, 255, 103]
+            ]
+        },
+        {
+            "def": "Castle Gray Top",
+            "sprite": "scenery/castle/gray/top",
+            "pos": [11040, 64, 35]
+        },
+        {
+            "def": "Castle Gray Bottom",
+            "sprite": "scenery/castle/gray/bottom",
+            "pos": [10976, 224, 35]
+        },
+        {
+            "def": "Fancy Gray Slope Left",
+            "sprite": "tiles/block/fancy/slope/gray/left",
+            "pos": [1376, 288, 20]
         }
     ],
     "collisions": [
@@ -6201,7 +6221,6 @@
                 [28, 24, 1],
                 [28, 23, 1],
                 [28, 22, 1],
-                [44, 23, 1],
                 [45, 23, 1],
                 [46, 23, 1],
                 [47, 23, 1],
@@ -6734,7 +6753,8 @@
                 [161, 23, 1],
                 [160, 23, 1],
                 [159, 23, 1],
-                [158, 23, 1]
+                [158, 23, 1],
+                [44, 23, 52]
             ]
         },
         {
@@ -7923,19 +7943,19 @@
         {
             "def": "Goomba",
             "id": 37,
-            "pos": [1728, 287],
+            "pos": [1744, 287],
             "flags": 132
         },
         {
             "def": "Goomba",
             "id": 37,
-            "pos": [1568, 287],
+            "pos": [1584, 287],
             "flags": 132
         },
         {
             "def": "Goomba",
             "id": 37,
-            "pos": [784, 319],
+            "pos": [816, 319],
             "flags": 132
         },
         {
@@ -7977,7 +7997,8 @@
         {
             "def": "Koopa",
             "id": 39,
-            "pos": [1437, 287]
+            "pos": [1485, 287],
+            "flags": 4
         },
         {
             "def": "Piranha Plant",
@@ -8357,12 +8378,12 @@
         {
             "def": "Coin",
             "id": 20,
-            "pos": [1216, 32]
+            "pos": [1216, 32, 8]
         },
         {
             "def": "Coin",
             "id": 20,
-            "pos": [1248, 32]
+            "pos": [1248, 32, 8]
         },
         {
             "def": "Coin",
@@ -8393,18 +8414,6 @@
             "def": "Coin",
             "id": 20,
             "pos": [7200, 224]
-        },
-        {
-            "def": "Clouds",
-            "id": 19,
-            "pos": [0, -16, 50],
-            "vel": [-65536, 0]
-        },
-        {
-            "def": "Clouds",
-            "id": 19,
-            "pos": [0, 944, 50],
-            "vel": [-65536, 0]
         },
         {
             "def": "Platform",
