@@ -506,9 +506,14 @@ static void tick_dead(GameActor* actor) {
 
             if (nearest != NULL) {
                 FVec2 lpos = get_player_view(nearest);
-                lpos.x += F_SCREEN_WIDTH + Int2Fx(200);
-                lpos.y += Int2Fx(72) + Int2Fx(rng(16));
-                lpos.y -= Int2Fx(rng(16));
+                if (gamestate()->flags & GF_STARMAN_RUNNING) {
+                    lpos.x += Int2Fx(800) + Int2Fx(rng(800));
+                    lpos.y += Int2Fx(200) + Int2Fx(rng(300));
+                } else {
+                    lpos.x += F_SCREEN_WIDTH + Int2Fx(200);
+                    lpos.y += Int2Fx(72) + Int2Fx(rng(16));
+                    lpos.y -= Int2Fx(rng(16));
+                }
 
                 GameActor* lakitu = create_actor(ACT_LAKITU, lpos);
                 if (lakitu != NULL) {
