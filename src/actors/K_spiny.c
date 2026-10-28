@@ -89,7 +89,6 @@ static void collide(GameActor* actor, GameActor* from) {
 
     case ACT_GOOMBA:
     case ACT_KOOPA:
-    case ACT_SPINY:
     case ACT_CLONE:
     case ACT_CODER_CLONE:
     case ACT_CLONE_3A:
@@ -97,6 +96,17 @@ static void collide(GameActor* actor, GameActor* from) {
     case ACT_SHY_GUY: {
         turn_enemy(actor);
         turn_enemy(from);
+
+        break;
+    }
+
+    case ACT_SPINY: {
+        if (!(gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP | GF_STARMAN_RUNNING)) || ANY_FLAG(from, FLG_SPINY_GRAY))
+        {
+            turn_enemy(actor);
+            turn_enemy(from);
+        }
+
         break;
     }
 
