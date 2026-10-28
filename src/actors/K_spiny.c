@@ -101,7 +101,8 @@ static void collide(GameActor* actor, GameActor* from) {
     }
 
     case ACT_SPINY: {
-        if (!(gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP | GF_STARMAN_RUNNING)) || ANY_FLAG(from, FLG_SPINY_GRAY))
+        if (!(gamestate()->flags & (GF_HARDCORE | GF_LOST_MAP | GF_STARMAN_RUNNING)) || ANY_FLAG(from, FLG_SPINY_GRAY)
+            || game_in_starman_coop())
         {
             turn_enemy(actor);
             turn_enemy(from);
