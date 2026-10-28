@@ -11,8 +11,7 @@
    ========== */
 
 static void load() {
-    const GameContext* game_context = gamecontext();
-    if ((gamestate()->flags & GF_STARMAN_RUNNING) && game_context->num_players > 1) {
+    if (game_in_starman_coop()) {
         load_sprite_num("markers/checkpoint/sudden_death/%u", 3, AKL_NEVER);
         load_localized_sprite("hud.starman.sudden_death", AKL_NEVER);
         load_sound("sudden_death", AKL_NEVER);
@@ -23,6 +22,7 @@ static void load() {
 
     load_sound("sprout", AKL_NEVER);
 
+    const GameContext* game_context = gamecontext();
     for (PlayerID i = 0; i < game_context->num_players; i++) {
         const PlayerCharacter character = game_context->players[i].character;
         load_sound(get_character_voice(character, PV_READY), AKL_NEVER);
@@ -97,12 +97,12 @@ static void tick(GameActor* actor) {
 }
 
 static void post_tick(GameActor* actor) {
-    GameState* game_state = gamestate();
-    if (!(game_state->flags & GF_STARMAN_RUNNING) || get_actor(game_state->checkpoint) != NULL
-        || ANY_FLAG(actor, FLG_CHECKPOINT_FAKE))
-    {
+    if (!game_in_starman_coop())
         return;
-    }
+
+    GameState* game_state = gamestate();
+    if (get_actor(game_state->checkpoint) != NULL || ANY_FLAG(actor, FLG_CHECKPOINT_FAKE))
+        return;
 
     for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
         const GamePlayer* player = get_player(i);
@@ -185,19 +185,15 @@ static void draw(const GameActor* actor) {
     }
 
     draw_actor(actor,
-        fmt(((game_state->flags & GF_STARMAN_RUNNING) && gamecontext()->num_players > 1)
-                ? "markers/checkpoint/sudden_death/%i"
-                : "markers/checkpoint/%i",
-            frame),
-        FALSE);
+        fmt(game_in_starman_coop() ? "markers/checkpoint/sudden_death/%i" : "markers/checkpoint/%i", frame), FALSE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {
-    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_CHECKPOINT_FAKE))
+    if (from->type != ACT_PLAYER || ANY_FLAG(actor, FLG_CHECKPOINT_FAKE) || game_in_starman_coop())
         return;
 
     GameState* game_state = gamestate();
-    if ((game_state->flags & GF_STARMAN_RUNNING) || game_state->checkpoint >= actor->id)
+    if (game_state->checkpoint >= actor->id)
         return;
 
     actor->player = from->player;
@@ -243,7 +239,7 @@ static void create_effect(GameActor* actor) {
 }
 
 static void tick_effect(GameActor* actor) {
-    if (gamestate()->flags & GF_STARMAN_RUNNING) {
+    if (game_in_starman_coop()) {
         VAL(actor, CHECKPOINT_EFFECT_ALPHA) -= 328;
         if (VAL(actor, CHECKPOINT_EFFECT_ALPHA) <= Fx0)
             FLAG_ON(actor, FLG_DESTROY);
@@ -292,7 +288,7 @@ static void tick_effect(GameActor* actor) {
 }
 
 static void draw_effect(const GameActor* actor) {
-    if ((gamestate()->flags & GF_STARMAN_RUNNING) && gamecontext()->num_players > 1)
+    if (game_in_starman_coop())
         return;
 
     batch_reset();
@@ -302,7 +298,7 @@ static void draw_effect(const GameActor* actor) {
 }
 
 static void draw_effect_hud(const GameActor* actor) {
-    if (!(gamestate()->flags & GF_STARMAN_RUNNING) || gamecontext()->num_players <= 1)
+    if (!game_in_starman_coop())
         return;
 
     batch_reset();

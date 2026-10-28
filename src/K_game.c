@@ -1064,11 +1064,11 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         }
 
         if (game_state->clock <= 0) {
-            const Bool mp_starman = (game_state->flags & GF_STARMAN_RUNNING) && game_context.num_players > 1;
+            const Bool starman_coop = game_in_starman_coop();
             for (PlayerID i = 0; i < game_context.num_players; i++) {
                 GamePlayer* player = get_player(i);
                 if (player != NULL) {
-                    if (mp_starman)
+                    if (starman_coop)
                         player->lives = -1;
 
                     kill_player(get_actor(player->actor));
@@ -1219,7 +1219,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
                 ++sequence->state;
         }
 
-        if (sequence->state >= (((game_state->flags & GF_STARMAN_RUNNING) && game_context.num_players > 1) ? 180 : 50)
+        if (sequence->state >= (game_in_starman_coop() ? 180 : 50)
             && (!(game_state->flags & (GF_LOST_MAP | GF_STARMAN_RUNNING)) || sequence->time >= 140))
         {
             game_state->flags |= GF_END;
@@ -1622,7 +1622,7 @@ static void draw_hud() {
     const char* cname = fmt("%s × ", get_character_name(game_context.players[player->id].character));
     batch_string("hud", 16.f, cname);
     batch_pos(B_F3_XY(32.f + string_width("hud", 16.f, cname), 16.f));
-    const Uint8 flash = ((game_state->flags & GF_STARMAN_RUNNING) && game_context.num_players > 1 && player->lives >= 0)
+    const Uint8 flash = (game_in_starman_coop() && player->lives >= 0)
                             ? (Uint8)(128.f
                                       + (SDL_cos((float)game_state->time
                                                  * ((get_actor(game_state->checkpoint) == NULL) ? 0.125f : 0.325f))
@@ -1892,6 +1892,10 @@ GameState* gamestate() {
 
 const char* get_game_secret(Uint8 sid) {
     return (sid < 0 || sid > MAX_GAME_SECRETS) ? NULL : level_info->strings[GSTR_SECRET_START + sid];
+}
+
+Bool game_in_starman_coop() {
+    return (game_state->flags & GF_STARMAN_RUNNING) && game_context.num_players > 1;
 }
 
 GameSequence* get_sequence() {
@@ -2284,7 +2288,7 @@ void win_player(GamePlayer* player) {
         }
     }
 
-    if ((game_state->flags & GF_STARMAN_RUNNING) && game_context.num_players > 1) {
+    if (game_in_starman_coop()) {
         GameActor* text = create_actor(ACT_SECRET_TEXT, (FVec2){Fx0, Int2Fx(-73)});
         if (text != NULL) {
             VAL(text, TEXT_ANIMATION) = TXTA_SMOOTH;

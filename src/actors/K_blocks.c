@@ -155,13 +155,12 @@ static Bool bump_block(GameActor* actor, GameActor* from, Bool strong) {
     if (!ANY_FLAG(actor, FLG_BLOCK_REPEAT) || VAL(actor, BLOCK_TIME) > 301) {
         FLAG_ON(actor, FLG_BLOCK_EMPTY);
 
-        const GameState* game_state = gamestate();
-        if ((game_state->flags & GF_STARMAN_RUNNING) && gamecontext()->num_players > 1) {
+        if (game_in_starman_coop()) {
             const Fixed refill = Fmax(Fmul(500, Fsqr(Fdiv(actor->pos.x, levelinfo()->size.x))), 10);
             VAL(actor, BLOCK_REFILL) = refill + VAL(actor, BLOCK_PENALTY);
             VAL(actor, BLOCK_PENALTY) += refill;
 
-            if (get_actor(game_state->checkpoint) != NULL && VAL(actor, BLOCK_REFILL) >= 600)
+            if (get_actor(gamestate()->checkpoint) != NULL && VAL(actor, BLOCK_REFILL) >= 600)
                 VAL(actor, BLOCK_REFILL) = 0;
         }
     }

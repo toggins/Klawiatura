@@ -564,6 +564,8 @@ const char* get_game_secret(Uint8);
 PlayerID localplayer(), viewplayer();
 void set_view_player(const GamePlayer*);
 
+Bool game_in_starman_coop();
+
 GameSequence* get_sequence();
 void set_sequence(GameSequenceType, const GamePlayer*, Sint16);
 Bool in_blocking_sequence(), can_affect_track();
