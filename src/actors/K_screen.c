@@ -48,8 +48,8 @@ static void pre_tick_autoscroll(GameActor* actor) {
     }
 
     const GamePlayer* player = NULL;
-    const PlayerID n = gamecontext()->num_players;
-    for (PlayerID i = 0; i < n; i++) {
+    const PlayerID num_players = gamecontext()->num_players;
+    for (PlayerID i = 0; i < num_players; i++) {
         player = get_player(i);
         if (player == NULL)
             continue;
@@ -83,7 +83,7 @@ static void pre_tick_autoscroll(GameActor* actor) {
         FLAG_ON(actor, FLG_DESTROY);
     }
 
-    for (PlayerID i = 0; i < n; i++) {
+    for (PlayerID i = 0; i < num_players; i++) {
         GamePlayer* oplayer = get_player(i);
         if (oplayer == NULL)
             continue;

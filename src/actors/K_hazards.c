@@ -230,13 +230,13 @@ static void cleanup_spike_ceiling(GameActor* actor) {
 }
 
 static void tick_spike_ceiling(GameActor* actor) {
-    const PlayerID n = gamecontext()->num_players;
+    const PlayerID num_players = gamecontext()->num_players;
 
     if (!ANY_FLAG(actor, FLG_HAZARD_ACTIVE)) {
         // 4
         Bool past_start = FALSE, at_end = FALSE;
 
-        for (PlayerID i = 0; i < n; i++) {
+        for (PlayerID i = 0; i < num_players; i++) {
             const GamePlayer* player = get_player(i);
             if (player != NULL && player->pos.x > Int2Fx(1000)) {
                 past_start = TRUE;
@@ -245,7 +245,7 @@ static void tick_spike_ceiling(GameActor* actor) {
         }
 
         const LevelInfo* level_info = levelinfo();
-        for (PlayerID i = 0; i < n; i++) {
+        for (PlayerID i = 0; i < num_players; i++) {
             const GamePlayer* player = get_player(i);
             if (player != NULL && player->pos.x >= (level_info->size.x - Int2Fx(1800))) {
                 at_end = TRUE;
@@ -304,7 +304,7 @@ static void tick_spike_ceiling(GameActor* actor) {
         }
     }
 
-    for (PlayerID i = 0; i < n; i++) {
+    for (PlayerID i = 0; i < num_players; i++) {
         const GamePlayer* player = get_player(i);
         if (player == NULL)
             continue;

@@ -70,10 +70,10 @@ static void tick_spawner_underwater(GameActor* actor) {
     if (ANY_FLAG(actor, FLG_CHEEP_CAN_SPAWN)
         && (VAL(actor, CHEEP_SPAWN) <= 1 || (game_state->time % VAL(actor, CHEEP_SPAWN)) == 0) && allow_spawn)
     {
-        const PlayerID n = gamecontext()->num_players;
-        if (get_num_actors(ACT_CHEEP) < ((ActorID)n * 10)) {
+        const PlayerID num_players = gamecontext()->num_players;
+        if (get_num_actors(ACT_CHEEP) < ((ActorID)num_players * 10)) {
             Fixed edge = (actor->vel.x > Fx0) ? FxUpper : FxLower;
-            for (PlayerID i = 0, n = gamecontext()->num_players; i < n; i++) {
+            for (PlayerID i = 0; i < num_players; i++) {
                 const GamePlayer* player = get_player(i);
                 if (player == NULL)
                     continue;
@@ -150,12 +150,12 @@ static void tick_spawner_jump(GameActor* actor) {
     if (VAL(actor, CHEEP_SPAWN) > 1 && (gamestate()->time % VAL(actor, CHEEP_SPAWN)) > 0)
         return;
 
-    const PlayerID n = gamecontext()->num_players;
-    if (get_num_actors(ACT_CHEEP) >= ((ActorID)n * (ANY_FLAG(actor, FLG_CHEEP_7_3) ? 20 : 10)))
+    const PlayerID num_players = gamecontext()->num_players;
+    if (get_num_actors(ACT_CHEEP) >= ((ActorID)num_players * (ANY_FLAG(actor, FLG_CHEEP_7_3) ? 20 : 10)))
         return;
 
     const GamePlayer* target = NULL;
-    for (PlayerID i = 0; i < n; i++) {
+    for (PlayerID i = 0; i < num_players; i++) {
         const GamePlayer* player = get_player(i);
         if (player == NULL)
             continue;

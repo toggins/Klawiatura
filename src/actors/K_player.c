@@ -81,12 +81,12 @@ void kill_player(GameActor* actor) {
     dead->player = actor->player;
     align_interp(dead, actor);
 
-    const PlayerID n = gamecontext()->num_players;
+    const PlayerID num_players = gamecontext()->num_players;
     const GameState* game_state = gamestate();
 
     GamePlayer* player = get_player(actor->player);
     if (player != NULL) {
-        if (n > 1) {
+        if (num_players > 1) {
             player->lives -= (game_state->flags & GF_STARMAN_RUNNING)
                                  ? ((get_actor(game_state->checkpoint) == NULL) ? 4 : 20)
                                  : 1;
@@ -104,7 +104,7 @@ void kill_player(GameActor* actor) {
     const GameActor* hazard = get_actor(game_state->hazard);
     if (hazard != NULL && hazard->type == ACT_RISING_LAVA && hazard->vel.y < Fx0) {
         force_lose = TRUE;
-        for (PlayerID i = 0; i < n; i++) {
+        for (PlayerID i = 0; i < num_players; i++) {
             const GamePlayer* oplayer = get_player(i);
             if (oplayer == NULL)
                 continue;
@@ -117,7 +117,7 @@ void kill_player(GameActor* actor) {
         }
     }
 
-    if (in_blocking_sequence() || n <= 1 || all_players_dead() || game_state->clock == 0 || force_lose)
+    if (in_blocking_sequence() || num_players <= 1 || all_players_dead() || game_state->clock == 0 || force_lose)
         set_sequence(GS_LOSE, player, 0);
     else
         play_state_sound((player == NULL || player->lives >= 0) ? "lose" : "dead", PLAY_POS, A_ACTOR(dead));

@@ -93,8 +93,8 @@ static void tick_trigger(GameActor* actor) {
     if (!in_any_view(Rcenter(Radd(actor->box, actor->pos)), Int2Fx(-32), VEF_ALL))
         return;
 
-    const PlayerID n = gamecontext()->num_players;
-    for (PlayerID i = 0; i < n; i++) {
+    const PlayerID num_players = gamecontext()->num_players;
+    for (PlayerID i = 0; i < num_players; i++) {
         const GamePlayer* player = get_player(i);
         if (player == NULL)
             continue;
@@ -124,7 +124,7 @@ static void tick_trigger(GameActor* actor) {
 
         VAL(actor, WATER_OVERLAP) = 2;
 
-        if (n <= 1)
+        if (num_players <= 1)
             FLAG_ON(actor, FLG_DESTROY);
 
         break;
