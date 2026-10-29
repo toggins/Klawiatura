@@ -18,6 +18,8 @@ enum {
     VAL_BOO_FRAME,
 
     VAL_EERIE_FRAME = 0,
+    VAL_EERIE_SPAWN_X,
+    VAL_EERIE_SPAWN_Y,
 
     VAL_GHOUL_HEALTH = 0,
     VAL_GHOUL_SPEED,
@@ -182,11 +184,32 @@ static void load_eerie() {
     load_actor(ACT_POINTS);
 }
 
+static void create_eerie(GameActor* actor) {
+    actor->box.start.x = Int2Fx(-15);
+    actor->box.start.y = Int2Fx(-31);
+    actor->box.end.x = Int2Fx(16);
+    actor->box.end.y = Fx1;
+
+    actor->depth = Int2Fx(2);
+
+    VAL(actor, EERIE_SPAWN_X) = actor->pos.x;
+    VAL(actor, EERIE_SPAWN_Y) = actor->pos.y;
+}
+
 static void tick_eerie(GameActor* actor) {
     VAL(actor, EERIE_FRAME) += 3;
 
     if (in_any_view(actor->pos, Int2Fx(-32), VEF_ALL))
         move_actor(actor, Vadd(actor->pos, (FVec2){ANY_FLAG(actor, FLG_X_FLIP) ? Int2Fx(-3) : Int2Fx(3), Fx0}));
+
+    if (gamecontext()->num_players > 1 && !in_any_view(actor->pos, Int2Fx(-64), VEF_ALL)) {
+        const FVec2 spawn = (FVec2){VAL(actor, EERIE_SPAWN_X), VAL(actor, EERIE_SPAWN_Y)};
+        if (!in_any_view(spawn, Int2Fx(-64), VEF_ALL)) {
+            move_actor(actor, spawn);
+
+            skip_interp(actor);
+        }
+    }
 }
 
 static void draw_eerie(const GameActor* actor) {
@@ -201,7 +224,7 @@ static void draw_dead_eerie(const GameActor* actor) {
 
 const ActorTable TAB_EERIE = {
     .load = load_eerie,
-    .create = create_boo,
+    .create = create_eerie,
     .tick = tick_eerie,
     .draw = draw_eerie,
     .draw_dead = draw_dead_eerie,
