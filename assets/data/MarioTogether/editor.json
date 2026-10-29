@@ -188,6 +188,36 @@
             "depth": 20,
             "solid": "hurt"
         },
+        "Marble Tree Top Left": {
+            "type": "tile",
+            "sprite": "tiles/tree/marble/0",
+            "depth": 20
+        },
+        "Marble Tree Top": {
+            "type": "tile",
+            "sprite": "tiles/tree/marble/1",
+            "depth": 20
+        },
+        "Marble Tree Top Right": {
+            "type": "tile",
+            "sprite": "tiles/tree/marble/2",
+            "depth": 20
+        },
+        "Marble Tree Left": {
+            "type": "background",
+            "sprite": "tiles/tree/marble/3",
+            "depth": 34
+        },
+        "Marble Tree Middle": {
+            "type": "background",
+            "sprite": "tiles/tree/marble/4",
+            "depth": 34
+        },
+        "Marble Tree Right": {
+            "type": "background",
+            "sprite": "tiles/tree/marble/5",
+            "depth": 34
+        },
         "Pipe Worn Top": {
             "type": "tile",
             "sprite": "tiles/pipe/worn/v0",
@@ -685,6 +715,22 @@
                         "Marble Bottom",
                         "Marble Bottom Right",
                         "Marble Spike"
+                    ]
+                },
+                {
+                    "name": "Tree",
+                    "items": [
+                        {
+                            "name": "Marble",
+                            "items": [
+                                "Marble Tree Top Left",
+                                "Marble Tree Top",
+                                "Marble Tree Top Right",
+                                "Marble Tree Left",
+                                "Marble Tree Middle",
+                                "Marble Tree Right"
+                            ]
+                        }
                     ]
                 },
                 {
