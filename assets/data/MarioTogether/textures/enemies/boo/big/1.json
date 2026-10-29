@@ -1,0 +1,6 @@
+{
+    "texture": "enemies/boo/big",
+    "size": [133, 128],
+    "offset": [63, 63],
+    "uvs": [130, 1, 263, 129]
+}

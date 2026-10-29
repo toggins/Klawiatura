@@ -526,6 +526,69 @@
                 }
             ]
         },
+        "Big Boo": {
+            "type": "actor",
+            "id": 165,
+            "sprite": "enemies/boo/big/0",
+            "values": [
+                {
+                    "name": "Health",
+                    "index": 0,
+                    "default": 4
+                },
+                {
+                    "name": "Speed",
+                    "index": 1,
+                    "default": 131072,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Attack Chance",
+                    "index": 2,
+                    "default": 1
+                },
+                {
+                    "name": "Attack Speed",
+                    "index": 3,
+                    "default": 65536,
+                    "type": "fixed"
+                },
+                {
+                    "name": "Boos",
+                    "index": 4,
+                    "default": 4,
+                    "tooltip": "Max amount of Boos to spawn"
+                },
+                {
+                    "name": "Boo Spawn Time",
+                    "index": 5,
+                    "default": 333,
+                    "tooltip": "Spawn a Boo every n ticks"
+                },
+                {
+                    "name": "Hurt Duration",
+                    "index": 6,
+                    "default": 100
+                },
+                {
+                    "name": "Start X",
+                    "type": "fixed",
+                    "index": 7
+                },
+                {
+                    "name": "End X",
+                    "type": "fixed",
+                    "index": 8
+                }
+            ],
+            "flags": [
+                {
+                    "name": "Flip X",
+                    "index": 2,
+                    "default": true
+                }
+            ]
+        },
         "Cannon": {
             "type": "actor",
             "id": 152,

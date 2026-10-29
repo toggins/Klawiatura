@@ -47,7 +47,7 @@ static PlayerFrame get_player_frame(const GameActor* actor) {
 Bool hit_player(GameActor* actor) {
     if (actor == NULL || actor->type != ACT_PLAYER || VAL(actor, PLAYER_FLASH) > 0 || VAL(actor, PLAYER_STARMAN) > 0
         || get_actor(VAL(actor, PLAYER_WARP)) != NULL || ANY_FLAG(actor, FLG_PLAYER_WARP_OUT) || in_blocking_sequence()
-        || get_sequence()->type == GS_BOWSER_END)
+        || get_sequence()->type == GS_BOSS_END)
     {
         return FALSE;
     }
@@ -1101,7 +1101,7 @@ static void draw(const GameActor* actor) {
 
     if (gamecontext()->num_players > 1) {
         const GameSequence* sequence = get_sequence();
-        if (sequence->type == GS_BOWSER_END && sequence->activator == player->id) {
+        if (sequence->type == GS_BOSS_END && sequence->activator == player->id) {
             batch_flip(B_B2_FALSE);
             for (Uint8 i = 0; i < 8; i++) {
                 const float dir = ((float)(gamestate()->time) * 0.02f) + ((float)i * (SDL_PI_F * 0.25f));

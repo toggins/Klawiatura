@@ -1236,7 +1236,7 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
         break;
     }
 
-    case GS_BOWSER_END: {
+    case GS_BOSS_END: {
         if (sequence->time == 0) {
             if (!(game_state->flags & GF_LOST_MAP_END))
                 fade_state_track(ALL_TRACKS, 0.f, 100.f);
@@ -1244,7 +1244,9 @@ static void tick_game_state(GameInput inputs[MAX_PLAYERS]) {
             ++sequence->time;
         }
 
-        if ((sequence->time == 1 && get_num_actors(ACT_BOWSER_DEAD) <= 0) || sequence->time > 1) {
+        if ((sequence->time == 1 && get_num_actors(ACT_BOWSER_DEAD) <= 0 && get_num_actors(ACT_BIG_BOO_DEAD) <= 0)
+            || sequence->time > 1)
+        {
             if (++sequence->time > 11)
                 win_player(get_player(sequence->activator));
         }
@@ -1589,30 +1591,37 @@ static void draw_hud() {
         return;
 
     VideoState* video_state = videostate();
-    video_state->bowser.health = 0;
+    video_state->boss.health = 0;
 
     const GameActor* actor = NULL;
     FOR_EACH_ACTOR (actor) { ACTOR_CALL(actor, draw_hud); }
 
     batch_reset();
 
-    if (video_state->bowser.active) {
-        if (video_state->bowser.y < 60.f) {
-            video_state->bowser.y += deltaticks() * 4.f;
-            if (video_state->bowser.y >= 60.f)
-                video_state->bowser.y = 60.f;
+    if (video_state->boss.active) {
+        if (video_state->boss.y < 60.f) {
+            video_state->boss.y += deltaticks() * 4.f;
+            if (video_state->boss.y >= 60.f)
+                video_state->boss.y = 60.f;
         }
 
-        batch_pos(B_F3_XY(SCREEN_WIDTH - 75.f, video_state->bowser.y));
-        batch_sprite("ui/bowser");
+        batch_pos(B_F3_XY(SCREEN_WIDTH - 75.f, video_state->boss.y));
+        switch (video_state->boss.type) {
+        default:
+            batch_sprite("ui/boss/bowser");
+            break;
+        case VBT_BIG_BOO:
+            batch_sprite("ui/boss/big_boo");
+            break;
+        }
 
         float bx = 0.f;
-        for (Uint8 i = 0; i < video_state->bowser.health; i++) {
+        for (Uint8 i = 0; i < video_state->boss.health; i++) {
             if (i == 10)
                 bx = 0.f;
 
-            batch_pos(B_F3_XY(SCREEN_WIDTH - 75.f + bx, video_state->bowser.y));
-            batch_sprite((i >= 10) ? "ui/bowser/bar2" : "ui/bowser/bar");
+            batch_pos(B_F3_XY(SCREEN_WIDTH - 75.f + bx, video_state->boss.y));
+            batch_sprite((i >= 10) ? "ui/boss/bar2" : "ui/boss/bar");
             bx -= 9.f;
         }
     }
@@ -1932,7 +1941,7 @@ Bool can_affect_track() {
 
     case GS_LOSE:
     case GS_WIN:
-    case GS_BOWSER_END:
+    case GS_BOSS_END:
     case GS_RESCUE: {
         return FALSE;
     }

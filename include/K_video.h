@@ -197,11 +197,18 @@ typedef struct {
     void* internal;
 } TileMap;
 
+typedef Uint8 VideoBossType;
+enum {
+    VBT_BOWSER,
+    VBT_BIG_BOO,
+};
+
 typedef struct {
     Bool active;
+    VideoBossType type;
     Uint8 health;
     float y;
-} VideoBowser;
+} VideoBoss;
 
 typedef struct {
     FVec2 pos, from;
@@ -212,7 +219,7 @@ typedef struct {
     Uint8 hurry;
     float hazard_fade;
 
-    VideoBowser bowser;
+    VideoBoss boss;
     VideoCamera camera;
     TileMap* tilemap;
 } VideoState;

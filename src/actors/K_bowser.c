@@ -41,9 +41,9 @@ static void load() {
     load_sprite_num("enemies/bowser/jump/%u", 3, AKL_NEVER);
     load_sprite_num("enemies/bowser/fire/%u", 6, AKL_NEVER);
     load_sprite_num("enemies/bowser/fire/end/%u", 2, AKL_NEVER);
-    load_sprite("ui/bowser", AKL_NEVER);
-    load_sprite("ui/bowser/bar", AKL_NEVER);
-    load_sprite("ui/bowser/bar2", AKL_NEVER);
+    load_sprite("ui/boss/bowser", AKL_NEVER);
+    load_sprite("ui/boss/bar", AKL_NEVER);
+    load_sprite("ui/boss/bar2", AKL_NEVER);
     load_sound("bowser/fire", AKL_NEVER);
     load_sound("bowser/hurt", AKL_NEVER);
     load_sound("bowser/dead", AKL_NEVER);
@@ -273,7 +273,9 @@ static void tick(GameActor* actor) {
         FLAG_ON(actor, FLG_BOWSER_ACTIVE);
 
         // !!! CLIENT-SIDE !!!
-        videostate()->bowser.active = TRUE;
+        VideoBoss* vboss = &videostate()->boss;
+        vboss->active = TRUE;
+        vboss->type = VBT_BOWSER;
         // !!! CLIENT-SIDE !!!
     }
 
@@ -518,8 +520,8 @@ static void tick(GameActor* actor) {
 
     // 848
     if (VAL(actor, BOWSER_HEALTH) <= 0) {
-        if (get_num_actors(ACT_BOWSER) <= 1) {
-            set_sequence(GS_BOWSER_END, get_player(actor->player), 0);
+        if (get_num_actors(ACT_BOWSER) <= 1 && get_num_actors(ACT_BIG_BOO) <= 0) {
+            set_sequence(GS_BOSS_END, get_player(actor->player), 0);
 
             if (ANY_FLAG(actor, FLG_BOWSER_SECRET)) {
                 GameActor* text = create_actor(
@@ -607,7 +609,7 @@ static void draw(const GameActor* actor) {
 }
 
 static void draw_hud(const GameActor* actor) {
-    videostate()->bowser.health += VAL(actor, BOWSER_HEALTH);
+    videostate()->boss.health += VAL(actor, BOWSER_HEALTH);
 }
 
 static void collide(GameActor* actor, GameActor* from) {
@@ -726,6 +728,8 @@ static void create_dead(GameActor* actor) {
     actor->box.start.y = Int2Fx(-71);
     actor->box.end.x = Int2Fx(31);
     actor->box.end.y = Fx1;
+
+    actor->depth = 2;
 }
 
 static void tick_dead(GameActor* actor) {
@@ -763,7 +767,7 @@ static void tick_dead(GameActor* actor) {
             ++VAL(actor, BOWSER_DEAD_LAVA);
             if (VAL(actor, BOWSER_DEAD_LAVA) == 50) {
                 GameSequence* sequence = get_sequence();
-                if (sequence->type == GS_BOWSER_END && get_num_actors(ACT_PEACH_CAGE) > 0)
+                if (sequence->type == GS_BOSS_END && get_num_actors(ACT_PEACH_CAGE) > 0)
                     set_sequence(GS_RESCUE, get_player(sequence->activator), 0);
             }
         } else {
@@ -771,12 +775,10 @@ static void tick_dead(GameActor* actor) {
         }
     }
 
-    if (below_nearest_bounds(actor->pos, Int2Fx(100))) {
+    if (below_nearest_bounds(actor->pos, Int2Fx(100)))
         FLAG_ON(actor, FLG_DESTROY);
-        return;
-    }
-
-    collide_actor(actor);
+    else
+        collide_actor(actor);
 }
 
 static void draw_dead(const GameActor* actor) {

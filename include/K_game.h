@@ -68,7 +68,7 @@ enum {
     GS_LOSE,
     GS_WIN,
     GS_WARP,
-    GS_BOWSER_END,
+    GS_BOSS_END,
     GS_AMBUSH,
     GS_RESCUE,
 };
@@ -252,6 +252,7 @@ enum {
     ACT_PTOOIE,
     ACT_STONE_SHARD,
     ACT_PTOOIE_BALL,
+    ACT_BIG_BOO_DEAD,
 
     ACT_SIZE,
 };
