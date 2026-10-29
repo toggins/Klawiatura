@@ -10,10 +10,24 @@
         ],
         "paths": [
             { "nodes": [[58, 200]] },
-            { "offset": 4103, "nodes": [[58, 200]] },
-            { "offset": 4103, "nodes": [[58, 200]] },
-            { "offset": 4103, "nodes": [[58, 200]] }
+            {
+                "offset": 4103,
+                "nodes": [[58, 200]]
+            },
+            {
+                "ambush": true,
+                "offset": 4103,
+                "nodes": [[58, 200]]
+            },
+            {
+                "offset": 4103,
+                "nodes": [[58, 200]]
+            },
+            {
+                "offset": 4103,
+                "nodes": [[58, 200]]
+            }
         ]
     },
-    "levels": ["marble_valley_1", "marble_valley_2", "marble_valley_3", "marble_valley_4"]
+    "levels": ["marble_valley_1", "marble_valley_2", "marble_valley_ambush", "marble_valley_3", "marble_valley_4"]
 }
