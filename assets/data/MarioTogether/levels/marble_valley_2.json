@@ -1,5 +1,4 @@
 {
-    "label": "hud.world.marble_valley_2",
     "tracks": [{ "track": "snowballs" }],
     "size": [12200, 1184],
     "bounds": [0, 0, 12000, 1184],
@@ -7633,31 +7632,31 @@
             "def": "Spiny",
             "id": 74,
             "pos": [944, 1120],
-            "flags": 132
+            "flags": 4
         },
         {
             "def": "Spiny",
             "id": 74,
             "pos": [880, 1120],
-            "flags": 132
+            "flags": 4
         },
         {
             "def": "Spiny",
             "id": 74,
             "pos": [816, 1120],
-            "flags": 132
+            "flags": 4
         },
         {
             "def": "Spiny",
             "id": 74,
             "pos": [656, 1120],
-            "flags": 132
+            "flags": 4
         },
         {
             "def": "Spiny",
             "id": 74,
             "pos": [720, 1120],
-            "flags": 132
+            "flags": 4
         },
         {
             "def": "Swing",
@@ -8231,13 +8230,13 @@
             "def": "Spiny",
             "id": 74,
             "pos": [4528, 1120],
-            "flags": 132
+            "flags": 4
         },
         {
             "def": "Spiny",
             "id": 74,
             "pos": [4720, 1120],
-            "flags": 132
+            "flags": 4
         },
         {
             "def": "Item Block",
@@ -9318,7 +9317,7 @@
             "def": "Spiny",
             "id": 74,
             "pos": [6768, 1120],
-            "flags": 132
+            "flags": 4
         },
         {
             "def": "Spiny",
@@ -9348,7 +9347,7 @@
             "def": "Spiny",
             "id": 74,
             "pos": [9712, 640],
-            "flags": 132
+            "flags": 4
         },
         {
             "def": "Paratroopa",

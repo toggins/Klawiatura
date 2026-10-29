@@ -1,5 +1,4 @@
 {
-    "label": "hud.world.marble_valley_1",
     "tracks": [{ "track": "goon", "offset": 13714 }],
     "size": [12000, 480],
     "bounds": [0, 0, 12000, 480],
