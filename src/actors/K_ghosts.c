@@ -243,6 +243,9 @@ static void load_big_boo() {
     load_sound("bowser/hurt", AKL_NEVER);
     load_sound("bowser/dead", AKL_NEVER);
     load_actor(ACT_BIG_BOO_DEAD);
+
+    if (gamecontext()->num_players > 1)
+        load_sprite("effects/spark", AKL_NEVER);
 }
 
 static void create_big_boo(GameActor* actor) {
