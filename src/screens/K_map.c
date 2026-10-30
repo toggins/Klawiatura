@@ -11,6 +11,7 @@
 typedef Uint8 MapBossType;
 enum {
     MBT_BOWSER,
+    MBT_BIG_BOO,
 };
 
 typedef struct {
@@ -193,8 +194,12 @@ static void start(const void* secret, size_t secret_size) {
 
                 const char* btype = yyjson_get_str(yyjson_arr_get(jboss, 0));
                 if (btype != NULL) {
-                    // TODO: Parse different boss types
-                    load_sprite("ui/map/bowser", AKL_NEVER);
+                    if (SDL_strcmp(btype, "big_boo") == 0) {
+                        boss.type = MBT_BIG_BOO;
+                        load_sprite("ui/map/boss/big_boo", AKL_NEVER);
+                    } else {
+                        load_sprite("ui/map/boss/bowser", AKL_NEVER);
+                    }
                 }
 
                 if (map_state->bosses == NULL)
@@ -649,7 +654,14 @@ static void draw_ui() {
 
                 batch_pos(B_F3(boss->pos[0],
                     boss->pos[1] - SDL_fabsf(SDL_sinf(screenticks() * 2.4f * (SDL_PI_F / 180.f)) * 10.f), 8.f));
-                batch_sprite("ui/map/bowser");
+                switch (boss->type) {
+                default:
+                    batch_sprite("ui/map/boss/bowser");
+                    break;
+                case MBT_BIG_BOO:
+                    batch_sprite("ui/map/boss/big_boo");
+                    break;
+                }
             }
         }
 
