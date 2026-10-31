@@ -1,6 +1,6 @@
 {
     "tracks": [{ "track": "smw/ghost_house" }, { "track": "smw/boss" }],
-    "size": [13520, 1440],
+    "size": [13520, 480],
     "bounds": [0, 0, 13520, 480],
     "time": 480,
     "backdrops": [
