@@ -1205,24 +1205,6 @@
             "pos": [8066, 141, 50]
         },
         {
-            "def": "Pillar Small Middle",
-            "sprite": "scenery/pillar/small/1",
-            "pos": [7810, -203, 50],
-            "size": [52, 440]
-        },
-        {
-            "def": "Pillar Small Middle",
-            "sprite": "scenery/pillar/small/1",
-            "pos": [7939, -235, 50],
-            "size": [52, 440]
-        },
-        {
-            "def": "Pillar Small Middle",
-            "sprite": "scenery/pillar/small/1",
-            "pos": [8066, -167, 50],
-            "size": [52, 308]
-        },
-        {
             "def": "Brick",
             "sprite": "tiles/brick/0",
             "pos": [576, 0, 20]
@@ -5611,6 +5593,81 @@
             "def": "Brick Small",
             "sprite": "tiles/brick/small",
             "pos": [2016, -608, 20]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [8066, 97, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [8066, 53, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [8066, 9, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [8066, -35, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [7939, 161, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [7939, 117, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [7939, 73, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [7939, 29, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [7939, -15, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [7810, 193, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [7810, 149, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [7810, 105, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [7810, 61, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [7810, 17, 50]
+        },
+        {
+            "def": "Pillar Small Middle",
+            "sprite": "scenery/pillar/small/1",
+            "pos": [7810, -27, 50]
         }
     ],
     "collisions": [
@@ -7709,7 +7766,7 @@
             "pos": [4863, 463],
             "values": [
                 [0, 786432],
-                [1, 250]
+                [1, 150]
             ]
         },
         {
@@ -7718,7 +7775,7 @@
             "pos": [5023, 463],
             "values": [
                 [0, 786432],
-                [1, 250]
+                [1, 150]
             ]
         },
         {
@@ -7727,7 +7784,7 @@
             "pos": [5743, 463],
             "values": [
                 [0, 786432],
-                [1, 250]
+                [1, 150]
             ]
         },
         {
@@ -7819,19 +7876,6 @@
             "id": 37,
             "pos": [3216, 415],
             "flags": 4
-        },
-        {
-            "def": "Platform",
-            "id": 11,
-            "pos": [7104, -352],
-            "values": [
-                [0, 0],
-                [1, 0],
-                [2, 0],
-                [3, 0],
-                [4, -196608],
-                [5, 196608]
-            ]
         }
     ]
 }
