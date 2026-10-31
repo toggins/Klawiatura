@@ -390,7 +390,7 @@ static void collide_big_boo(GameActor* actor, GameActor* from) {
         if (VAL(from, PLAYER_STARMAN) > 0 || (gamecontext()->num_players > 1 && VAL(actor, GHOUL_ATTACK) < 300))
             break;
 
-        if (from->pos.y < (actor->pos.y - Int2Fx(45))) {
+        if (from->pos.y < (actor->pos.y - Int2Fx(32))) {
             if (VAL(actor, GHOUL_HURT) > 0 || (from->vel.y < Fx0 && !ANY_FLAG(from, FLG_PLAYER_STOMP)))
                 break;
 
