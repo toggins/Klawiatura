@@ -5361,6 +5361,7 @@
         {
             "def": "Goomba",
             "id": 37,
+            "singleplayer": true,
             "pos": [3472, 287],
             "flags": 4
         },
@@ -5421,11 +5422,13 @@
         {
             "def": "Coin",
             "id": 20,
+            "singleplayer": true,
             "pos": [3456, 192]
         },
         {
             "def": "Coin",
             "id": 20,
+            "singleplayer": true,
             "pos": [3456, 224]
         },
         {
@@ -5759,6 +5762,21 @@
             "id": 9,
             "multiplayer": true,
             "pos": [7243, 143]
+        },
+        {
+            "def": "Checkpoint",
+            "id": 7,
+            "multiplayer": true,
+            "pos": [3419, 169],
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 0],
+                [5, 0],
+                [6, 0]
+            ]
         }
     ]
 }
