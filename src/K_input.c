@@ -194,6 +194,8 @@ void input_buttondown(SDL_GamepadButtonEvent event) {
             stop_scanning();
         } else if (scanning.device == event.which) {
             BINDS[scanning.kb].button = event.button;
+            BINDS[scanning.kb].axis = SDL_GAMEPAD_AXIS_INVALID;
+
             stop_scanning();
         }
 
@@ -223,8 +225,10 @@ void input_buttonup(SDL_GamepadButtonEvent event) {
 void input_axis(SDL_GamepadAxisEvent event) {
     if (scanning_what() != NULL_KEYBIND) {
         if (scanning.device == event.which && (event.value < -8192 || event.value > 8192)) {
-            BINDS[scanning.kb].button = event.axis;
+            BINDS[scanning.kb].button = SDL_GAMEPAD_BUTTON_INVALID;
+            BINDS[scanning.kb].axis = event.axis;
             BINDS[scanning.kb].negative = event.value < 0;
+
             stop_scanning();
         }
 
