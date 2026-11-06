@@ -298,6 +298,13 @@ const char* kb_name(Keybind kb) {
 }
 
 const char* kb_label(Keybind kb) {
+    if (input_state.device > 0) {
+        return (BINDS[kb].axis != SDL_GAMEPAD_AXIS_INVALID)
+                   ? SDL_GetGamepadStringForAxis(BINDS[kb].axis)
+                   : ((BINDS[kb].button != SDL_GAMEPAD_BUTTON_INVALID) ? SDL_GetGamepadStringForButton(BINDS[kb].button)
+                                                                       : LFMT("value.not_bound"));
+    }
+
     const SDL_Scancode key = BINDS[kb].key;
     return (key == SDL_SCANCODE_UNKNOWN) ? LFMT("value.not_bound") : SDL_GetScancodeName(key);
 }
