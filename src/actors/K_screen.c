@@ -69,13 +69,13 @@ static void pre_tick_autoscroll(GameActor* actor) {
 
     GameActor* autoscroll = get_actor(game_state->autoscroll);
     if (autoscroll == NULL) {
-        game_state->autoscroll = actor->id;
-        autoscroll = actor;
-
         if (ANY_FLAG(actor, FLG_SCROLL_BOWSER)) {
-            move_actor(actor, Vsub(player->pos, F_HALF_SCREEN));
+            move_actor(actor, get_player_view(player));
             skip_interp(actor);
         }
+
+        game_state->autoscroll = actor->id;
+        autoscroll = actor;
     } else {
         autoscroll->vel = actor->vel;
         VAL(autoscroll, SCROLL_TRACK) = VAL(actor, SCROLL_TRACK);
