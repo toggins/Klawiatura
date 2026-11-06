@@ -43,7 +43,7 @@ set(SDL_INSTALL ON CACHE INTERNAL "")
 
 FetchContent_Declare(SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG release-3.4.18
+    GIT_TAG release-3.4.20
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(SDL3)
@@ -93,7 +93,7 @@ endif()
 
 FetchContent_Declare(SDL3_mixer
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
-    GIT_TAG d9478014cddcf00f035c950637917d2280a67ab2
+    GIT_TAG 14a374621ce7deeb29b9fc7d158efb9402bbc951
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(SDL3_mixer)
@@ -103,7 +103,7 @@ list(APPEND LIBS SDL3_mixer::SDL3_mixer-static)
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG ff333823a85ae896e73f4c53670932cf0f728adb
+    GIT_TAG 07af1d50187e94c861c9f9f5d8a55b148f11306b
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
@@ -124,7 +124,7 @@ set(CGLM_STATIC ON CACHE INTERNAL "")
 
 FetchContent_Declare(cglm
     GIT_REPOSITORY https://github.com/recp/cglm.git
-    GIT_TAG v0.9.6
+    GIT_TAG v0.9.7
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(cglm)
@@ -183,7 +183,7 @@ set(NO_ASIO_BUILD ON CACHE INTERNAL "")
 
 FetchContent_Declare(GekkoNet
     GIT_REPOSITORY https://github.com/HeatXD/GekkoNet.git
-    GIT_TAG v20261024222910-9da2363
+    GIT_TAG v20261102171219-45dac7e
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(GekkoNet)
