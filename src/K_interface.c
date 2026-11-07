@@ -158,6 +158,14 @@ dont_change:
                 }
             }
 
+            if (kb_pressed(KB_SHOW_HUD)) {
+                CLIENT.show_hud = !CLIENT.show_hud;
+                if (CLIENT.show_hud)
+                    chat_message(LFMT("chat.show_hud_on"), B_U4_GREEN);
+                else
+                    chat_message(LFMT("chat.show_hud_off"), B_U4_RED);
+            }
+
             // Booter
             if (!boot_state && boot_reason != NULL) {
                 UI* message = create_ui(UI_MESSAGE, NULL);

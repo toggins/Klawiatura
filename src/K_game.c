@@ -1834,7 +1834,8 @@ static void draw_game_state() {
     set_view_matrix(oview);
     apply_matrices();
 
-    draw_hud();
+    if (CLIENT.show_hud)
+        draw_hud();
 
     batch_filter(TRUE);
 }

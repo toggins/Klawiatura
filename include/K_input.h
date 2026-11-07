@@ -25,6 +25,7 @@ enum {
     // Utility
     KB_CHAT = KB_INTERFACE,
     KB_RECORD_REPLAY,
+    KB_SHOW_HUD,
 
     // Internal
     KB_PAUSE,

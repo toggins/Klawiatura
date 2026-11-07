@@ -28,6 +28,7 @@ Binding BINDS[KB_SIZE] = {
 
     [KB_CHAT] = {"bind.chat", KEY(T), NO_GAMEPAD},
     [KB_RECORD_REPLAY] = {"bind.record_replay", KEY(F9), NO_GAMEPAD},
+    [KB_SHOW_HUD] = {"bind.show_hud", KEY(F1), NO_GAMEPAD},
 
     [KB_PAUSE] = {"bind.pause", KEY(ESCAPE), BUTTON(START), NO_AXIS},
     [KB_UI_UP] = {"bind.ui_up", KEY(UP), BUTTON(DPAD_UP), AXIS(LEFTY), NEGATIVE},
