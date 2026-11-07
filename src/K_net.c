@@ -759,7 +759,7 @@ static void net_send(GekkoNetAddress* gn_addr, const char* data, int size) {
 static GekkoNetResult** net_receive(int* pcount) {
     static GekkoNetResult* packets[MAX_GAME_PACKETS] = {0};
 
-    SDL_memset((void*)packets, 0, sizeof(packets));
+    SDL_zeroa(packets);
     *pcount = 0;
 
     NutBlast_Message msg = {0};
