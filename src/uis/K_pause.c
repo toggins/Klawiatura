@@ -62,7 +62,7 @@ static void create(UI* ui) {
 
 static void tick(UI* ui) {
     tick_options(NULL, OPTIONS, &option, 0);
-    if (kb_pressed(KB_PAUSE)) {
+    if (kb_pressed(KB_UI_BACK)) {
         play_generic_sound("ui/select", 0);
         ui->flags |= UIF_DESTROY;
     }

@@ -600,7 +600,7 @@ static Bool draw_lobby_menu() {
     batch_pos(B_F3_XY(125.f, SCREEN_HEIGHT - 6.f));
     batch_color(B_U4_WHITE);
     batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-    const char* ind = fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("menu.disconnect"));
+    const char* ind = fmt("[%s] %s", kb_label(KB_UI_BACK), LFMT("menu.disconnect"));
     batch_string_wrap("footer", 16.f, ind, 218.f);
 
     batch_pos(B_F3_XY(125.f, SCREEN_HEIGHT - 9.f - string_height_wrap("footer", 16.f, ind, 218.f)));

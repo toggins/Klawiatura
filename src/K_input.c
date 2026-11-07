@@ -35,6 +35,7 @@ Binding BINDS[KB_SIZE] = {
     [KB_UI_DOWN] = {"bind.ui_down", KEY(DOWN), BUTTON(DPAD_DOWN), AXIS(LEFTY)},
     [KB_UI_RIGHT] = {"bind.ui_right", KEY(RIGHT), BUTTON(DPAD_RIGHT), AXIS(LEFTX)},
     [KB_UI_ENTER] = {"bind.ui_enter", KEY(RETURN), BUTTON(SOUTH), NO_AXIS},
+    [KB_UI_BACK] = {"bind.ui_back", KEY(ESCAPE), BUTTON(EAST), NO_AXIS},
 };
 #undef KEY
 #undef BUTTON

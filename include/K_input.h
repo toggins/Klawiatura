@@ -33,6 +33,7 @@ enum {
     KB_UI_DOWN,
     KB_UI_RIGHT,
     KB_UI_ENTER,
+    KB_UI_BACK,
 
     KB_SIZE,
 };

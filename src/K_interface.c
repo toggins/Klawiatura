@@ -507,8 +507,8 @@ void tick_options(Catalog* catalog, Option* options, size_t* curopt, size_t widt
     }
 }
 
-Bool tick_catalog(Catalog* catalog, UI* in) {
-    if (top_ui != in)
+Bool tick_catalog(Catalog* catalog, UI* ui) {
+    if (top_ui != ui)
         return TRUE;
 
     Menu* menus = catalog->menus;
@@ -522,10 +522,10 @@ Bool tick_catalog(Catalog* catalog, UI* in) {
     Option* options = catalog->options[catalog->current];
     tick_options(catalog, options, &menus[catalog->current].option, menus[catalog->current].width);
 
-    if (kb_pressed(KB_PAUSE)) {
+    if (kb_pressed(KB_UI_BACK)) {
         if (set_menu(catalog, menus[catalog->current].from)) {
             play_generic_sound("ui/select", 0);
-        } else if (in != NULL) {
+        } else if (ui != NULL) {
             play_generic_sound("ui/select", 0);
             return FALSE;
         }
@@ -596,10 +596,10 @@ void draw_catalog(const Catalog* catalog) {
         const char *cycles = "", *selects = "", *backs = "";
 
         if (scanning_what() != NULL_KEYBIND) {
-            backs = fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("menu.cancel"));
+            backs = fmt("[%s] %s", kb_label(KB_UI_BACK), LFMT("menu.cancel"));
         } else if (typing_what() != NULL && !typing_in_chat()) {
             selects = fmt("[%s] %s", kb_label(KB_UI_ENTER), LFMT("menu.submit"));
-            backs = fmt("[%s] %s", kb_label(KB_PAUSE), LFMT("menu.cancel"));
+            backs = fmt("[%s] %s", kb_label(KB_UI_BACK), LFMT("menu.cancel"));
         } else {
             if (option->cycle != NULL)
                 cycles = fmt("[%s/%s] %s", kb_label(KB_UI_LEFT), kb_label(KB_UI_RIGHT), LFMT("menu.cycle"));
@@ -611,7 +611,7 @@ void draw_catalog(const Catalog* catalog) {
                                                                                : "menu.select"));
             }
 
-            backs = fmt("[%s] %s", kb_label(KB_PAUSE), LFMT((menu->from > 0) ? "menu.back" : "menu.close"));
+            backs = fmt("[%s] %s", kb_label(KB_UI_BACK), LFMT((menu->from > 0) ? "menu.back" : "menu.close"));
         }
 
         batch_string_wrap("footer", 16.f,

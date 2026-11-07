@@ -27,7 +27,7 @@ static void tick(UI* ui) {
         return;
     }
 
-    if ((userdata->wait == NULL || userdata->cancel != NULL) && kb_pressed(KB_PAUSE)) {
+    if ((userdata->wait == NULL || userdata->cancel != NULL) && kb_pressed(KB_UI_BACK)) {
         if (userdata->cancel != NULL)
             userdata->cancel();
 
@@ -68,7 +68,7 @@ static void draw(const UI* ui) {
         batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 16.f));
         batch_color(B_U4_WHITE);
         batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-        batch_string("footer", 16.f, fmt("[%s] %s", kb_label(KB_PAUSE), LFMT(userdata->verb)));
+        batch_string("footer", 16.f, fmt("[%s] %s", kb_label(KB_UI_BACK), LFMT(userdata->verb)));
     }
 }
 

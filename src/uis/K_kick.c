@@ -48,7 +48,7 @@ static void tick(UI* ui) {
     UIKickData* userdata = ui->userdata;
     tick_options(NULL, userdata->options, &userdata->option, 0);
 
-    if (kb_pressed(KB_PAUSE)) {
+    if (kb_pressed(KB_UI_BACK)) {
         play_generic_sound("ui/select", 0);
         ui->flags |= UIF_DESTROY;
     }
@@ -78,7 +78,7 @@ static void draw(const UI* ui) {
     batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
     batch_string("footer", 16.f,
         fmt("[%s] %s   [%s] %s", kb_label(KB_UI_ENTER), LFMT(userdata->promote ? "menu.promote" : "menu.kick"),
-            kb_label(KB_PAUSE), LFMT("menu.back")));
+            kb_label(KB_UI_BACK), LFMT("menu.back")));
 }
 
 static void cleanup(UI* ui) {
