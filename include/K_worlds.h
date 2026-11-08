@@ -10,7 +10,7 @@ typedef struct {
     Uint8 num_levels;
     Sint32 lives;
 
-    const char* name;
+    const char *name, *description;
     Uint32 hash;
 } World;
 
@@ -37,6 +37,9 @@ void rediscover_worlds();
 const World *get_world(const char*), *get_world_key(TinyHash);
 const char *next_world_from(const char*), *last_world_from(const char*);
 yyjson_doc* load_world_json(const char*, const char**);
+
+void world_iterate_start();
+const World* world_iterate_next();
 
 Sint32 get_world_lives(const World*);
 

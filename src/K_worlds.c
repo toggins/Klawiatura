@@ -7,11 +7,14 @@
 static TinyMap worlds = {0};
 static TinyHash* world_array = NULL;
 
+static TinyMapIterator iterator = {0};
+
 static WorldContext world_context = {0};
 
 static void nuke_world(void* ptr) {
     World* world = ptr;
     SDL_free((void*)world->name);
+    SDL_free((void*)world->description);
 }
 
 static void iterate_world_file(const char* filename, const void* buffer, size_t size, void* userdata) {
@@ -35,6 +38,12 @@ static void iterate_world_file(const char* filename, const void* buffer, size_t 
     world.name = SDL_strdup(name);
     EXPECT(world.name, "Failed to allocate world \"%s\" name", name);
 
+    yyjson_val* jval = yyjson_obj_get(root, "description");
+    if (yyjson_is_str(jval)) {
+        world.description = SDL_strdup(yyjson_get_str(jval));
+        EXPECT(world.description, "Failed to allocate world \"%s\" description", name);
+    }
+
     for (size_t i = 0; i < size; i++)
         world.hash += ((Uint8*)buffer)[i];
 
@@ -43,9 +52,9 @@ static void iterate_world_file(const char* filename, const void* buffer, size_t 
     world.num_levels = SDL_min(num_levels, SDL_MAX_UINT8);
 
     world.lives = DEFAULT_LIVES;
-    yyjson_val* lives = yyjson_obj_get(root, "lives");
-    if (yyjson_is_int(lives))
-        world.lives = (Sint32)yyjson_get_sint(lives);
+    jval = yyjson_obj_get(root, "lives");
+    if (yyjson_is_int(jval))
+        world.lives = (Sint32)yyjson_get_sint(jval);
 
     yyjson_doc_free(json);
 
@@ -119,6 +128,14 @@ const char* last_world_from(const char* name) {
     if (world == NULL && n > 0)
         world = get_world_key(world_array[0]);
     return (world == NULL) ? NULL : world->name;
+}
+
+void world_iterate_start() {
+    iterator = TinyMapIter(&worlds);
+}
+
+const World* world_iterate_next() {
+    return TinyMapNext(&iterator) ? iterator.data : NULL;
 }
 
 yyjson_doc* load_world_json(const char* name, const char** err) {

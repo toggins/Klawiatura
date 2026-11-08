@@ -1,4 +1,5 @@
 {
+    "description": "world.human_laboratory.description",
     "levels": [
         "human_laboratory_1",
         "human_laboratory_2",

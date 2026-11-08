@@ -1,4 +1,5 @@
 {
+    "description": "world.remix.description",
     "map": {
         "size": [720, 480],
         "track": "madness",

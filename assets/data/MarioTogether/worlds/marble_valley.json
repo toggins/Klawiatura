@@ -1,4 +1,5 @@
 {
+    "description": "world.marble_valley.description",
     "map": {
         "size": [1850, 480],
         "track": "village_of_panel_de_pon",

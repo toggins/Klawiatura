@@ -1,4 +1,5 @@
 {
+    "description": "world.lost_map_b.description",
     "map": {
         "size": [1000, 480],
         "track": "mkds_rainbow_road",

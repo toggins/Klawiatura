@@ -1,1 +1,4 @@
-{ "levels": ["starman_running"] }
+{
+    "description": "world.starman_running.description",
+    "levels": ["starman_running"]
+}

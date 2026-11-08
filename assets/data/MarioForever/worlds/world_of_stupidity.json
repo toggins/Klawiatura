@@ -1,4 +1,5 @@
 {
+    "description": "world.world_of_stupidity.description",
     "lives": 20,
     "levels": ["world_of_stupidity_1"]
 }

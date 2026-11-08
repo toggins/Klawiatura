@@ -1,1 +1,4 @@
-{ "levels": ["funny_tanks"] }
+{
+    "description": "world.funny_tanks.description",
+    "levels": ["funny_tanks"]
+}

@@ -1,4 +1,5 @@
 {
+    "description": "world.world_of_revamps.description",
     "map": {
         "size": [1280, 480],
         "track": "world_of_dentro",

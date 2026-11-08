@@ -1,4 +1,5 @@
 {
+    "description": "world.lost_map.description",
     "map": {
         "size": [1000, 480],
         "track": "mk64_frappe_snowland",

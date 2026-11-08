@@ -19,6 +19,7 @@ enum {
 
     MEN_MAIN,
     MEN_SINGLEPLAYER,
+    MEN_SINGLEPLAYER_CHARACTER,
     MEN_MULTIPLAYER,
     MEN_REPLAYS,
     MEN_HOST_LOBBY,
@@ -42,17 +43,19 @@ static const char* credits[8][2] = {
 
 static const char* replay_error = NULL;
 
-static void enter_replays_menu(MenuType), leave_replays_menu(MenuType), enter_lobby_list_menu(MenuType),
-    tick_lobby_list_menu(), enter_lobby_menu(MenuType), leave_lobby_menu(MenuType), tick_lobby_menu();
-static Bool draw_main_menu(), draw_replays_menu(), draw_lobby_list_menu(), draw_lobby_menu(), kick_player_disabled(),
-    start_disabled(), character_disabled();
+static void enter_singleplayer_menu(MenuType), tick_singleplayer_character_menu(), enter_replays_menu(MenuType),
+    leave_replays_menu(MenuType), enter_lobby_list_menu(MenuType), tick_lobby_list_menu(), enter_lobby_menu(MenuType),
+    leave_lobby_menu(MenuType), tick_lobby_menu();
+static Bool draw_main_menu(), draw_singleplayer_menu(), draw_replays_menu(), draw_lobby_list_menu(), draw_lobby_menu(),
+    kick_player_disabled(), start_disabled(), character_disabled();
 
 static const char *fmt_join_code(size_t), *fmt_max_peers(size_t), *fmt_visibility(size_t), *fmt_lobby(),
-    *fmt_character(size_t), *fmt_powerup(size_t), *fmt_world(size_t), *fmt_test_level(size_t);
+    *fmt_test_level(size_t);
 static void multiplayer_option(), options_option(), exit_option(), max_peers_cycle(Sint8), visibility_cycle(Sint8),
     host_option(), submit_join_code(Bool), character_cycle(Sint8), powerup_cycle(Sint8), enter_as_cycle(Sint8),
-    kick_player_option(), promote_player_option(), world_cycle(Sint8), start_option(), show_copy_join_code_cycle(Sint8),
-    show_copy_join_code_option(), go_to_editor_option(), test_level_cycle(Sint8), test_level_option();
+    kick_player_option(), promote_player_option(), world_cycle(Sint8), world_option(), start_option(),
+    show_copy_join_code_cycle(Sint8), show_copy_join_code_option(), go_to_editor_option(), test_level_cycle(Sint8),
+    test_level_option();
 
 static Catalog CATALOG = {
 	.current = MEN_MAIN,
@@ -70,7 +73,13 @@ static Catalog CATALOG = {
         },
 
 		[MEN_SINGLEPLAYER] = {
-			.name = "option.singleplayer",
+            .enter = enter_singleplayer_menu,
+            .draw = draw_singleplayer_menu,
+		},
+
+        [MEN_SINGLEPLAYER_CHARACTER] = {
+            .tick = tick_singleplayer_character_menu,
+            .draw = draw_singleplayer_menu,
 		},
 
 		[MEN_MULTIPLAYER] = {
@@ -124,12 +133,12 @@ static Catalog CATALOG = {
 		},
 
         [MEN_SINGLEPLAYER] = {
-            {.fmt = fmt_world, .cycle = world_cycle},
-            {},
-            {.fmt = fmt_character, .cycle = character_cycle},
-            {.fmt = fmt_powerup, .cycle = powerup_cycle},
-            {},
-            {.name = "option.start", .disabled = start_disabled, .callback = start_option},
+            {.name = "option.world", .cycle = world_cycle, .callback = world_option},
+        },
+
+        [MEN_SINGLEPLAYER_CHARACTER] = {
+            {.name = "option.character", .cycle = character_cycle, .callback = start_option},
+            {.name = "option.powerup", .cycle = powerup_cycle, .callback = start_option},
         },
 
 		[MEN_MULTIPLAYER] = {
@@ -254,6 +263,211 @@ static Bool draw_main_menu() {
     }
 
     return FALSE;
+}
+
+static float world_description_scroll = 0.f;
+static Uint32 character_frame = 0, powerup_frame = 0;
+
+static void enter_singleplayer_menu(MenuType from) {
+    (void)from;
+
+    world_description_scroll = 0.f;
+    character_frame = powerup_frame = 0;
+}
+
+static Bool draw_singleplayer_menu() {
+    batch_reset();
+
+    const World* world = get_world(CLIENT.world);
+    if (world != NULL) {
+        batch_color((CATALOG.current == MEN_SINGLEPLAYER) ? B_U4_WHITE : B_U4_GRAY);
+        batch_sprite(fmt("ui/menu/world/%s", world->name));
+
+        const char* lname = LFMT(fmt("world.%s", world->name));
+        const float lh = string_height_wrap("header", 32.f, lname, HALF_SCREEN_WIDTH - 64.f) * 0.5f;
+        if (CATALOG.current == MEN_SINGLEPLAYER) {
+            batch_pos(B_F3_XY(0.f, HALF_SCREEN_HEIGHT - 16.f - lh));
+            batch_colors(B_U4X4({255, 255, 255, 50}, {255, 255, 255, 50}, {255, 255, 255, 100}, {255, 255, 255, 100}));
+            batch_rectangle(NULL, B_F2(HALF_SCREEN_WIDTH, lh + 16.f));
+            batch_pos(B_F3_XY(0.f, HALF_SCREEN_HEIGHT));
+            batch_colors(B_U4X4({255, 255, 255, 100}, {255, 255, 255, 100}, {255, 255, 255, 50}, {255, 255, 255, 50}));
+            batch_rectangle(NULL, B_F2(HALF_SCREEN_WIDTH, lh + 16.f));
+        }
+
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH * 0.5f, HALF_SCREEN_HEIGHT - 8.f));
+        batch_color(B_U4_WHITE);
+        batch_align(B_ALIGN_CENTER);
+        batch_string_wrap("header", 32.f, lname, HALF_SCREEN_WIDTH - 64.f);
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH * 0.5f, HALF_SCREEN_HEIGHT - 8.f + lh));
+        batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+        batch_string("footer", 16.f,
+            LFMT((world->num_levels == 1) ? "menu.singleplayer.n_level" : "menu.singleplayer.n_levels", 'u',
+                world->num_levels));
+
+        if (CATALOG.current == MEN_SINGLEPLAYER) {
+            batch_pos(B_F3_XY(0.f, HALF_SCREEN_HEIGHT));
+            batch_flip(B_B2(TRUE, FALSE));
+            batch_sprite("ui/menu/singleplayer/arrow");
+            batch_pos(B_F3_HALF_SCREEN);
+            batch_flip(B_B2(FALSE, FALSE));
+            batch_sprite("ui/menu/singleplayer/arrow");
+
+            if (world->description != NULL) {
+                batch_pos(B_F3_XY(0.f, SCREEN_HEIGHT - 128.f));
+                batch_colors(B_U4X4({0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 200}, {0, 0, 0, 200}));
+                batch_rectangle(NULL, B_F2(HALF_SCREEN_WIDTH, 128.f));
+
+                const char* lstr = LFMT(world->description);
+                world_description_scroll = SDL_fmodf(world_description_scroll + (deltaticks() * 1.5f),
+                    HALF_SCREEN_WIDTH + string_width("footer", 16.f, lstr));
+
+                batch_pos(B_F3_XY(HALF_SCREEN_WIDTH - world_description_scroll, SCREEN_HEIGHT - 64.f));
+                batch_color(B_U4_WHITE);
+                batch_align(B_ALIGN_BOTTOM_LEFT);
+                batch_string("footer", 16.f, lstr);
+            }
+        }
+    }
+
+    batch_pos(B_F3_0);
+    batch_sprite("ui/backgrounds/singleplayer");
+
+    const float sx = HALF_SCREEN_WIDTH + (HALF_SCREEN_WIDTH * 0.5f);
+
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH + 5.f, HALF_SCREEN_HEIGHT - 124.f));
+    batch_colors(
+        (CATALOG.current == MEN_SINGLEPLAYER_CHARACTER && CATALOG.menus[MEN_SINGLEPLAYER_CHARACTER].option == 0)
+            ? B_U4X4({255, 255, 255, 64}, {255, 255, 255, 64}, {255, 255, 255, 128}, {255, 255, 255, 128})
+            : B_U4X4({0, 0, 0, 64}, {0, 0, 0, 64}, {0, 0, 0, 32}, {0, 0, 0, 32}));
+    batch_rectangle(NULL, B_F2(HALF_SCREEN_WIDTH - 5.f, 80.f));
+    batch_color(B_U4_WHITE);
+    batch_pos(B_F3_XY(sx, HALF_SCREEN_HEIGHT - 136.f));
+    batch_sprite(LFMT("menu.lobby.label.character"));
+    batch_pos(B_F3_XY(sx, HALF_SCREEN_HEIGHT - 54.f));
+    batch_sprite(get_character_sprite(CLIENT.character, CLIENT.powerup,
+        (CATALOG.current == MEN_SINGLEPLAYER_CHARACTER) ? (PF_WALK1 + (((character_frame * 3) / 25) % 3)) : PF_IDLE));
+    batch_pos(B_F3_XY(sx - 32.f, HALF_SCREEN_HEIGHT - 88.f));
+    batch_flip(B_B2(TRUE, FALSE));
+    batch_sprite("ui/menu/lobby/arrow");
+    batch_pos(B_F3_XY(sx + 32.f, HALF_SCREEN_HEIGHT - 88.f));
+    batch_flip(B_B2(FALSE, FALSE));
+    batch_sprite("ui/menu/lobby/arrow");
+    batch_pos(B_F3_XY(sx, HALF_SCREEN_HEIGHT - 48.f));
+    batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+    batch_string("footer", 16.f, get_character_name(CLIENT.character));
+
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH + 5.f, HALF_SCREEN_HEIGHT + 12.f));
+    batch_colors(
+        (CATALOG.current == MEN_SINGLEPLAYER_CHARACTER && CATALOG.menus[MEN_SINGLEPLAYER_CHARACTER].option == 1)
+            ? B_U4X4({255, 255, 255, 64}, {255, 255, 255, 64}, {255, 255, 255, 128}, {255, 255, 255, 128})
+            : B_U4X4({0, 0, 0, 64}, {0, 0, 0, 64}, {0, 0, 0, 32}, {0, 0, 0, 32}));
+    batch_rectangle(NULL, B_F2(HALF_SCREEN_WIDTH - 5.f, 48.f));
+    batch_color(B_U4_WHITE);
+    batch_pos(B_F3_XY(sx, HALF_SCREEN_HEIGHT));
+    batch_sprite(LFMT("menu.lobby.label.powerup"));
+    batch_pos(B_F3_XY(sx, HALF_SCREEN_HEIGHT + 52.f));
+    switch (CLIENT.powerup) {
+    default: {
+        batch_color(B_U4(0, 0, 0, 128));
+        batch_sprite("items/mushroom/super");
+        batch_color(B_U4_WHITE);
+
+        break;
+    }
+
+    case POW_SUPER_MUSHROOM:
+        batch_sprite("items/mushroom/super");
+        break;
+    case POW_FIRE_FLOWER:
+        batch_sprite(fmt("items/fire_flower/%u", ((powerup_frame * 27) / 100) % 4));
+        break;
+    case POW_BEETROOT:
+        batch_sprite(fmt("items/beetroot/%u", ((powerup_frame * 2) / 25) % 4));
+        break;
+    case POW_GREEN_LUI:
+        batch_sprite(fmt("items/green_lui/%u", powerup_frame % 12));
+        break;
+    case POW_HAMMER_SUIT:
+        batch_sprite("items/hammer_suit");
+        break;
+    }
+    batch_pos(B_F3_XY(sx - 32.f, HALF_SCREEN_HEIGHT + 28.f));
+    batch_flip(B_B2(TRUE, FALSE));
+    batch_sprite("ui/menu/lobby/arrow");
+    batch_pos(B_F3_XY(sx + 32.f, HALF_SCREEN_HEIGHT + 28.f));
+    batch_flip(B_B2(FALSE, FALSE));
+    batch_sprite("ui/menu/lobby/arrow");
+    batch_pos(B_F3_XY(sx, HALF_SCREEN_HEIGHT + 56.f));
+    batch_string("footer", 16.f, get_powerup_name(CLIENT.powerup));
+    batch_pos(B_F3_XY(sx, HALF_SCREEN_HEIGHT + 72.f));
+    batch_color(B_U4_ALPHA(192));
+    const Sint32 lives = ((world == NULL) ? DEFAULT_LIVES : world->lives) - get_powerup_cost(CLIENT.powerup);
+    batch_string(
+        "footer", 16.f, LFMT((lives == 1) ? "menu.singleplayer.n_life" : "menu.singleplayer.n_lives", 'i', lives));
+
+    if (CATALOG.current == MEN_SINGLEPLAYER) {
+        batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 0.f));
+        batch_color(B_U4(0, 0, 0, 128));
+        batch_rectangle(NULL, B_F2(HALF_SCREEN_WIDTH, SCREEN_HEIGHT));
+    } else {
+        batch_color(B_U4_ALPHA(128.f + (SDL_cos(screenticks() * 0.111f) * 128.f)));
+
+        const float sy = HALF_SCREEN_HEIGHT + (HALF_SCREEN_HEIGHT * 0.5f);
+        const char *ltop = LFMT("menu.singleplayer.press_to_start.top"), *lmid = kb_label(KB_UI_ENTER),
+                   *lbottom = LFMT("menu.singleplayer.press_to_start.bottom");
+
+        for (Uint8 i = 0; i < 2; i++) {
+            batch_pos(B_F3_XY(sx, sy - 4.f));
+            batch_string("footer", 16.f, ltop);
+            batch_pos(B_F3_XY(sx, sy + 28.f));
+            batch_align(B_ALIGN_CENTER);
+            batch_string("header", 32.f, lmid);
+            batch_pos(B_F3_XY(sx, sy + 44.f));
+            batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+            batch_string("footer", 16.f, lbottom);
+        }
+    }
+
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, -155.f));
+    batch_colors(B_U4X4({255, 255, 255, 255}, {255, 255, 255, 64}, {255, 255, 255, 0}, {255, 255, 255, 0}));
+    batch_circle(NULL, 240.f);
+    batch_color(B_U4_WHITE);
+
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 16.f));
+    batch_colors(B_U4X4_YELLOW);
+    batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+    batch_string("header", 32.f, LFMT("option.singleplayer"));
+    batch_color(B_U4_WHITE);
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, 48.f));
+    batch_string("footer", 16.f,
+        LFMT((CATALOG.current == MEN_SINGLEPLAYER_CHARACTER) ? "menu.singleplayer.select_character"
+                                                             : "menu.singleplayer.select_world"));
+
+    batch_pos(B_F3_XY(-240.f, 0.f));
+    batch_colors(B_U4X4({115, 156, 115, 255}, {115, 156, 115, 255}, {189, 231, 189, 255}, {189, 231, 189, 255}));
+    batch_rectangle(NULL, B_F2(240.f, SCREEN_HEIGHT));
+    batch_pos(B_F3_XY(SCREEN_WIDTH, 0.f));
+    batch_rectangle(NULL, B_F2(240.f, SCREEN_HEIGHT));
+    batch_pos(B_F3_XY(-5.f, 0.f));
+    batch_colors(B_U4X4({0, 0, 0, 0}, {0, 0, 0, 128}, {0, 0, 0, 0}, {0, 0, 0, 128}));
+    batch_rectangle(NULL, B_F2(5.f, SCREEN_HEIGHT));
+    batch_pos(B_F3_XY(SCREEN_WIDTH, 0.f));
+    batch_colors(B_U4X4({0, 0, 0, 128}, {0, 0, 0, 0}, {0, 0, 0, 128}, {0, 0, 0, 0}));
+    batch_rectangle(NULL, B_F2(5.f, SCREEN_HEIGHT));
+
+    batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, SCREEN_HEIGHT - 16.f));
+    batch_color(B_U4_ALPHA(192));
+    batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+    batch_string("footer", 16.f,
+        fmt("[%s] %s   [%s/%s] %s   [%s] %s", kb_label(KB_UI_ENTER), LFMT("menu.select"), kb_label(KB_UI_LEFT),
+            kb_label(KB_UI_RIGHT), LFMT("menu.cycle"), kb_label(KB_UI_BACK), LFMT("menu.back")));
+
+    return FALSE;
+}
+
+static void tick_singleplayer_character_menu() {
+    ++character_frame;
+    ++powerup_frame;
 }
 
 static LobbyListState lobby_list_last_state = LLS_READY;
@@ -689,12 +903,6 @@ static Bool draw_lobby_menu() {
 // OPTIONS
 // =======
 
-static const char* fmt_world(size_t idx) {
-    (void)idx;
-
-    return fmt("%s: %s", LFMT("option.world"), fmt_lobby_world(idx));
-}
-
 static void world_cycle(Sint8 cycle) {
     if (is_connected()) {
         const char* world = get_lobby_string("world");
@@ -709,12 +917,13 @@ static void world_cycle(Sint8 cycle) {
     else
         SDL_strlcpy(CLIENT.world, wstr, sizeof(CLIENT.world));
     update_lobby_data();
+
+    world_description_scroll = 0.f;
 }
 
-static const char* fmt_character(size_t idx) {
-    (void)idx;
-
-    return fmt("%s: %s", LFMT("option.character"), get_character_name(CLIENT.character));
+static void world_option() {
+    set_menu(&CATALOG, MEN_SINGLEPLAYER_CHARACTER);
+    play_generic_sound("ui/ready", PLAY_POS);
 }
 
 static Bool character_disabled() {
@@ -735,12 +944,6 @@ static void character_cycle(Sint8 cycle) {
     }
 
     update_peer_data();
-}
-
-static const char* fmt_powerup(size_t idx) {
-    (void)idx;
-
-    return fmt("%s: %s", LFMT("option.powerup"), fmt_lobby_powerup(idx));
 }
 
 static void powerup_cycle(Sint8 cycle) {
@@ -1010,6 +1213,7 @@ static void go_to_editor_option() {
 static void start(const void* secret, size_t secret_size) {
     load_sprite("ui/backgrounds/main", AKL_NEVER);
     load_sprite("ui/backgrounds/options", AKL_NEVER);
+    load_sprite("ui/backgrounds/singleplayer", AKL_NEVER);
     load_sprite("ui/backgrounds/lobby", AKL_NEVER);
     load_sprite("logos/mario_together", AKL_NEVER);
     load_sprite("ui/menu/buttons/singleplayer", AKL_NEVER);
@@ -1020,6 +1224,7 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite("ui/menu/buttons/exit", AKL_NEVER);
     load_sprite("ui/menu/icons/game", AKL_NEVER);
     load_sprite("ui/menu/icons/editor", AKL_NEVER);
+    load_sprite("ui/menu/singleplayer/arrow", AKL_NEVER);
     load_localized_sprite("menu.lobby.label.world", AKL_NEVER);
     load_localized_sprite("menu.lobby.label.enter_as", AKL_NEVER);
     load_localized_sprite("menu.lobby.label.character", AKL_NEVER);
@@ -1037,10 +1242,31 @@ static void start(const void* secret, size_t secret_size) {
     load_sprite("ui/menu/lobby/slot/you", AKL_NEVER);
     load_sprite("ui/menu/lobby/relay", AKL_NEVER);
     load_font("menu", AKL_NEVER);
+    load_sound("ui/ready", AKL_NEVER);
     load_sound("ui/enter", AKL_ONCE);
     load_sound("ui/connect", AKL_NEVER);
     load_sound("ui/disconnect", AKL_NEVER);
     load_track("title", AKL_NEVER);
+
+    const World* world = NULL;
+    world_iterate_start();
+    while ((world = world_iterate_next()))
+        load_sprite(fmt("ui/menu/world/%s", world->name), AKL_NEVER);
+
+    for (PlayerCharacter i = 0; i < (PlayerCharacter)CHR_SIZE; i++) {
+        for (PlayerPowerup j = 0; j < (PlayerPowerup)POW_SIZE; j++) {
+            load_sprite(get_character_sprite(i, j, PF_IDLE), AKL_NEVER);
+            load_sprite(get_character_sprite(i, j, PF_WALK1), AKL_NEVER);
+            load_sprite(get_character_sprite(i, j, PF_WALK2), AKL_NEVER);
+            load_sprite(get_character_sprite(i, j, PF_WALK3), AKL_NEVER);
+        }
+    }
+
+    load_sprite("items/mushroom/super", AKL_NEVER);
+    load_sprite_num("items/fire_flower/%u", 4, AKL_NEVER);
+    load_sprite_num("items/beetroot/%u", 4, AKL_NEVER);
+    load_sprite_num("items/green_lui/%u", 12, AKL_NEVER);
+    load_sprite("items/hammer_suit", AKL_NEVER);
 
     // Handle invite JSON
     Bool got_invite = FALSE;
@@ -1076,8 +1302,11 @@ no_secret:
     (void)0;
 
     const MenuType last_menu = CATALOG.current;
-    if ((got_invite || !is_connected()) && CATALOG.current == MEN_LOBBY)
+    if (((got_invite || !is_connected()) && CATALOG.current == MEN_LOBBY)
+        || CATALOG.current == MEN_SINGLEPLAYER_CHARACTER)
+    {
         previous_menu(&CATALOG);
+    }
 
     if (last_menu == CATALOG.current && CATALOG.current > MEN_NULL && CATALOG.current < MEN_SIZE) {
         Menu* menu = &CATALOG.menus[CATALOG.current];

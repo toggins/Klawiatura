@@ -1,1 +1,4 @@
-{ "levels": ["hardcore_1_1", "hardcore_1_2", "hardcore_1_3", "hardcore_1_4"] }
+{
+    "description": "world.hardcore_1.description",
+    "levels": ["hardcore_1_1", "hardcore_1_2", "hardcore_1_3", "hardcore_1_4"]
+}
