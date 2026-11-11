@@ -606,7 +606,7 @@ static void iterate_replay_file(const char* filename, const void* buffer, size_t
     }
 
     const Sint64 tell = SDL_TellIO(io);
-    replay.version = SDL_strndup(buffer + tell, size - tell);
+    replay.version = SDL_strndup((const char*)buffer + tell, size - tell);
     EXPECT(replay.version, "Failed to allocate replay \"%s\" version", filename);
     SDL_SeekIO(io, (Sint64)SDL_strlen(replay.version) + 1, SDL_IO_SEEK_CUR);
 
