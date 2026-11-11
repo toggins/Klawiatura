@@ -2,6 +2,8 @@
 
 #include "K_game.h"
 
+#define REPLAY_HEADER "krpl0"
+
 typedef Uint8 ReplayState;
 enum {
     RPS_NONE,

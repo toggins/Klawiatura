@@ -8,8 +8,6 @@
 #include "K_string.h"
 #include "K_video.h"
 
-#define REPLAY_HEADER "krpl0"
-
 static ReplayState replay_state = RPS_NONE;
 
 static SDL_IOStream* replay_io = NULL;

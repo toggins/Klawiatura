@@ -30,6 +30,23 @@ enum {
     MEN_SIZE,
 };
 
+typedef Uint8 ReplayInfoStatus;
+enum {
+    RIS_OK,
+    RIS_BAD_HEADER,
+    RIS_BAD_VERSION,
+    RIS_BAD_CHECKSUM,
+};
+
+typedef struct {
+    ReplayInfoStatus status;
+    PlayerID num_players;
+    Uint32 checksum;
+    TinyHash level;
+
+    const char *filename, *name, *version;
+} ReplayInfo;
+
 static const char* credits[8][2] = {
     {"menu.credits.mario_forever",  "menu.credits.mario_forever.text" },
     {"menu.credits.graphics",       "menu.credits.graphics.text"      },
@@ -41,11 +58,13 @@ static const char* credits[8][2] = {
     {"menu.credits.end",            "menu.credits.end.text"           },
 };
 
-static const char* replay_error = NULL;
+static ReplayInfo* replays = NULL;
+static size_t replay_option = 0;
+static float replay_page = 0.f;
 
 static void enter_singleplayer_menu(MenuType), tick_singleplayer_character_menu(), enter_replays_menu(MenuType),
-    leave_replays_menu(MenuType), enter_lobby_list_menu(MenuType), tick_lobby_list_menu(), enter_lobby_menu(MenuType),
-    leave_lobby_menu(MenuType), tick_lobby_menu();
+    leave_replays_menu(MenuType), tick_replays_menu(), enter_lobby_list_menu(MenuType), tick_lobby_list_menu(),
+    enter_lobby_menu(MenuType), leave_lobby_menu(MenuType), tick_lobby_menu();
 static Bool draw_main_menu(), draw_singleplayer_menu(), draw_replays_menu(), draw_lobby_list_menu(), draw_lobby_menu(),
     kick_player_disabled(), start_disabled(), character_disabled();
 
@@ -90,6 +109,7 @@ static Catalog CATALOG = {
             .name = "option.replays",
             .enter = enter_replays_menu,
             .leave = leave_replays_menu,
+            .tick = tick_replays_menu,
             .draw = draw_replays_menu,
         },
 
@@ -168,6 +188,12 @@ static Catalog CATALOG = {
 #else
             {.name = "option.show_copy_join_code", .cycle = show_copy_join_code_cycle, .callback = show_copy_join_code_option},
 #endif
+        },
+
+        // GROSS HACK: Add a disabled option in Replays to prevent Select from making noise
+        //             (Replays uses a separate system from Catalogs)
+        [MEN_REPLAYS] = {
+            {.disabled = always_disabled},
         },
 
         [MEN_EDITOR] = {
@@ -550,52 +576,215 @@ static Bool draw_lobby_list_menu() {
     return TRUE;
 }
 
-static void replay_option();
 static void iterate_replay_file(const char* filename, const void* buffer, size_t size, void* userdata) {
-    (void)buffer;
-    (void)size;
+    (void)userdata;
 
-    size_t* idx = userdata;
-    if (*idx >= MAX_OPTIONS)
-        return;
+    ReplayInfo replay = {0};
 
-    Option* option = &CATALOG.options[MEN_REPLAYS][*idx];
-    option->name = SDL_strdup(filename_no_ext(file_basename(filename)));
-    option->callback = replay_option;
+    char* afname = SDL_strdup(filename);
+    EXPECT(afname, "Failed to allocate replay \"%s\" file name", filename);
 
-    ++*idx;
+    char* backslash = SDL_strchr(afname, '\\');
+    while (backslash != NULL) {
+        *backslash = '/';
+        backslash = SDL_strchr(backslash, '\\');
+    }
+
+    replay.filename = afname;
+
+    replay.name = SDL_strdup(filename_no_ext(file_basename(filename)));
+    EXPECT(replay.name, "Failed to allocate replay \"%s\" name", filename);
+
+    SDL_IOStream* io = SDL_IOFromConstMem(buffer, size);
+    EXPECT(io, "Failed to stream replay \"%s\"", filename);
+
+    char header[sizeof(REPLAY_HEADER)] = "";
+    SDL_ReadIO(io, header, sizeof(header));
+    if (SDL_strcmp(header, REPLAY_HEADER) != 0) {
+        replay.status = RIS_BAD_HEADER;
+        goto bad_replay;
+    }
+
+    const Sint64 tell = SDL_TellIO(io);
+    replay.version = SDL_strndup(buffer + tell, size - tell);
+    EXPECT(replay.version, "Failed to allocate replay \"%s\" version", filename);
+    SDL_SeekIO(io, (Sint64)SDL_strlen(replay.version) + 1, SDL_IO_SEEK_CUR);
+
+    if (SDL_strcmp(replay.version, GAME_VERSION) != 0) {
+        replay.status = RIS_BAD_VERSION;
+        goto bad_replay;
+    }
+
+    SDL_ReadU32LE(io, &replay.checksum);
+    if (replay.checksum != get_game_hash()) {
+        replay.status = RIS_BAD_CHECKSUM;
+        goto bad_replay;
+    }
+
+    SDL_SeekIO(io, sizeof(Sint8), SDL_IO_SEEK_CUR);
+    SDL_ReadU64LE(io, &replay.level);
+    SDL_SeekIO(io, (sizeof(Uint64) * 2) + sizeof(Uint16) + sizeof(Sint16), SDL_IO_SEEK_CUR);
+    SDL_ReadS8(io, &replay.num_players);
+
+bad_replay:
+    replays = TinyDPush((replays == NULL) ? MakeTinyDPro(1, sizeof(ReplayInfo)) : replays, &replay);
 }
 
 static void enter_replays_menu(MenuType from) {
     (void)from;
 
     leave_replays_menu(MEN_NULL);
-    iterate_user_files("replays/*.rpl", FALSE, iterate_replay_file, &(size_t){0});
+    iterate_user_files("replays/*.rpl", TRUE, iterate_replay_file, NULL);
+    if (replay_option > TinyDLength(replays)) {
+        replay_option = 0;
+        replay_page = 0.f;
+    }
 }
 
 static void leave_replays_menu(MenuType to) {
     (void)to;
 
-    for (size_t i = 0; i < MAX_OPTIONS; i++) {
-        Option* option = &CATALOG.options[MEN_REPLAYS][i];
-        SDL_free((void*)option->name);
-        SDL_zerop(option);
+    for (size_t i = 0, n = TinyDLength(replays); i < n; i++) {
+        SDL_free((void*)replays[i].filename);
+        SDL_free((void*)replays[i].name);
+        SDL_free((void*)replays[i].version);
+    }
+
+    FreeTinyD(replays);
+    replays = NULL;
+}
+
+static void tick_replays_menu() {
+    const size_t num_replays = TinyDLength(replays);
+    if (num_replays <= 0)
+        return;
+
+    const Sint8 change = (Sint8)((Sint8)kb_pressed(KB_UI_DOWN) - (Sint8)kb_pressed(KB_UI_UP)),
+                crepeat = (Sint8)((Sint8)kb_repeated(KB_UI_DOWN) - (Sint8)kb_repeated(KB_UI_UP)),
+                ctotal = (Sint8)((Sint8)change + (Sint8)crepeat);
+    if (ctotal != 0) {
+        const size_t last_option = replay_option;
+
+        if (ctotal < 0) {
+            if (replay_option <= 0)
+                replay_option = num_replays - 1;
+            else
+                --replay_option;
+        } else if (ctotal > 0) {
+            if (replay_option >= (num_replays - 1))
+                replay_option = 0;
+            else
+                ++replay_option;
+        }
+
+        const float y = (float)replay_option * 18.f, page_y = y - replay_page;
+        if (last_option < replay_option && page_y > SCREEN_HEIGHT - 50.f)
+            replay_page = y - (SCREEN_HEIGHT - 50.f);
+        else if (last_option > replay_option && page_y < 0.f)
+            replay_page = y;
+
+        play_generic_sound((crepeat == 0) ? "ui/switch" : "ui/repeat", 0);
+    }
+
+    if (kb_pressed(KB_UI_ENTER) && replay_option < num_replays && replays[replay_option].status == RIS_OK) {
+        load_replay(replays[replay_option].filename);
+        play_generic_sound("ui/select", 0);
     }
 }
 
 static Bool draw_replays_menu() {
-    if (CATALOG.options[MEN_REPLAYS][0].name != NULL)
-        return TRUE;
-
     batch_reset();
-    batch_pos(B_F3_HALF_SCREEN);
-    batch_colors(B_U4X4_WHITE);
-    batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
-    batch_string("header", 32.f, LFMT("option.no_replays"));
-    batch_align(B_ALIGN(FA_CENTER, FA_TOP));
-    batch_string("header", 32.f, LFMT("option.how_to_record", 's', kb_label(KB_RECORD_REPLAY)));
+    batch_colors(B_U4X4({115, 156, 115, 255}, {115, 156, 115, 255}, {189, 231, 189, 255}, {189, 231, 189, 255}));
+    batch_rectangle(NULL, B_F2(240.f, SCREEN_HEIGHT));
+    batch_pos(B_F3_XY(-5.f, 0.f));
+    batch_colors(B_U4X4({0, 0, 0, 0}, {0, 0, 0, 128}, {0, 0, 0, 0}, {0, 0, 0, 128}));
+    batch_rectangle(NULL, B_F2(5.f, SCREEN_HEIGHT));
+    batch_pos(B_F3_XY(240.f, 0.f));
+    batch_colors(B_U4X4({0, 0, 0, 128}, {0, 0, 0, 0}, {0, 0, 0, 128}, {0, 0, 0, 0}));
+    batch_rectangle(NULL, B_F2(5.f, SCREEN_HEIGHT));
 
-    return TRUE;
+    const size_t num_replays = TinyDLength(replays);
+    for (size_t i = 0; i < num_replays; i++) {
+        const ReplayInfo* replay = &replays[i];
+
+        batch_pos(B_F3_XY(256.f, 17.f - replay_page + (i * 18.f)));
+        batch_color((replay->status == RIS_OK) ? B_U4_WHITE : B_U4_RED);
+        batch_string("footer", 16.f, replay->name);
+    }
+
+    batch_pos(B_F3_XY(120.f, 16.f));
+    batch_colors(B_U4X4_YELLOW);
+    batch_align(B_ALIGN(FA_CENTER, FA_TOP));
+    batch_string("header", 32.f, LFMT("option.replays"));
+
+    batch_color(B_U4_WHITE);
+    if (num_replays <= 0) {
+        batch_pos(B_F3_XY(440.f, HALF_SCREEN_HEIGHT));
+        batch_align(B_ALIGN_CENTER);
+        batch_string_wrap("footer", 16.f, LFMT("menu.replays.no_replays", 's', kb_label(KB_RECORD_REPLAY)), 400.f);
+    } else if (replay_option < num_replays) {
+        batch_blend(BM_ADD);
+        batch_pos(B_F3_XY(240.f, 16.f - replay_page + (replay_option * 18.f)));
+        batch_color(B_U4_VALUE(32));
+        batch_rectangle(NULL, B_F2(1000.f, 18.f));
+        batch_color(B_U4_WHITE);
+        batch_blend(BM_NORMAL);
+
+        const ReplayInfo* replay = &replays[replay_option];
+
+        float y = 56.f;
+        batch_pos(B_F3_XY(16.f, y));
+        batch_align(B_ALIGN_TOP_LEFT);
+        batch_string_wrap("footer", 16.f, replay->name, 208.f);
+
+        y += string_height_wrap("footer", 16.f, replay->name, 208.f);
+        batch_pos(B_F3_XY(16.f, y));
+        batch_color(B_U4_ALPHA(192));
+        batch_string_wrap("footer", 12.f, replay->filename, 208.f);
+
+        y += string_height_wrap("footer", 12.f, replay->filename, 208.f) + 8.f;
+        batch_pos(B_F3_XY(16.f, y));
+        batch_color(B_U4_WHITE);
+
+        switch (replay->status) {
+        default: {
+            const Level* level = get_level_key(replay->level);
+            batch_string_wrap("footer", 16.f,
+                fmt("%s\n%s", (level == NULL) ? "(null)" : LFMT(fmt("level.%s", level->name)),
+                    (replay->num_players <= 1) ? LFMT("menu.replays.singleplayer")
+                                               : LFMT("menu.replays.n_players", 'i', replay->num_players)),
+                208.f);
+
+            break;
+        }
+
+        case RIS_BAD_HEADER:
+            batch_string_wrap("footer", 16.f, LFMT("menu.replays.bad_header"), 208.f);
+            break;
+        case RIS_BAD_VERSION:
+            batch_string_wrap("footer", 16.f,
+                fmt("%s\n\n%s: %s\n%s: %s", LFMT("menu.replays.bad_version"), LFMT("menu.replays.replay_version"),
+                    replay->version, LFMT("menu.replays.your_version"), GAME_VERSION),
+                208.f);
+            break;
+        case RIS_BAD_CHECKSUM:
+            batch_string_wrap("footer", 16.f,
+                fmt("%s\n\n%s: %u\n%s: %u", LFMT("menu.replays.bad_checksum"), LFMT("menu.replays.replay_checksum"),
+                    replay->checksum, LFMT("menu.replays.your_checksum"), get_game_hash()),
+                208.f);
+            break;
+        }
+    }
+
+    batch_pos(B_F3_XY(120.f, SCREEN_HEIGHT - 16.f));
+    batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
+    batch_string_wrap("footer", 16.f,
+        (num_replays > 0 && replay_option < num_replays && replays[replay_option].status == RIS_OK)
+            ? fmt("[%s] %s\n[%s] %s", kb_label(KB_UI_ENTER), LFMT("menu.play"), kb_label(KB_UI_BACK), LFMT("menu.back"))
+            : fmt("[%s] %s", kb_label(KB_UI_BACK), LFMT("menu.back")),
+        208.f);
+
+    return FALSE;
 }
 
 static const char* fmt_lobby() {
@@ -1155,21 +1344,6 @@ static void show_copy_join_code_option() {
 #endif
 }
 
-static const char* fmt_replay_error() {
-    return fmt("%s\n%s", LFMT("message.replay_load_error"), LFMT(replay_error));
-}
-
-static void replay_option() {
-    replay_error
-        = load_replay(fmt("replays/%s.rpl", CATALOG.options[MEN_REPLAYS][CATALOG.menus[MEN_REPLAYS].option].name));
-    if (replay_error == NULL)
-        return;
-
-    UI* message = create_ui(UI_MESSAGE, NULL);
-    if (message != NULL)
-        ((UIMessageData*)message->userdata)->fmt = fmt_replay_error;
-}
-
 static void options_option() {
     create_ui(UI_OPTIONS, NULL);
 }
@@ -1319,7 +1493,7 @@ no_secret:
 }
 
 static void end() {
-    leave_replays_menu(MEN_NULL); // GROSS HACK: Make sure to free allocated strings when leaving this screen.
+    leave_replays_menu(MEN_NULL); // GROSS HACK: Make sure to free replay list when leaving this screen.
 }
 
 static void tick() {
