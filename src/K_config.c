@@ -266,6 +266,8 @@ void save_config() {
 
     size_t size = 0;
     char* buffer = write_json(json, &size, NULL);
+    yyjson_mut_doc_free(json);
+
     if (buffer == NULL) {
         WARN("Failed to save config");
         return;

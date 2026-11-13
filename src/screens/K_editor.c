@@ -874,14 +874,14 @@ static void save_level(const char* filename) {
     const char* error = NULL;
     size_t size = 0;
     char* buffer = write_json(json, &size, &error);
+    yyjson_mut_doc_free(json);
+
     if (buffer == NULL) {
         editor->error = error;
     } else {
         SDL_SaveFile(filename, buffer, size);
         SDL_free(buffer);
     }
-
-    yyjson_mut_doc_free(json);
 }
 
 static void save_level_async(void* userdata, const char* const* files, int filter) {
