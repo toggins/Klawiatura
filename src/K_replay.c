@@ -92,7 +92,7 @@ void start_replay() {
     end_replay();
 
     replay_io = SDL_IOFromDynamicMem();
-    ASSUME(replay_io, "Failed to allocate replay buffer");
+    ASSUME(replay_io, "Failed to allocate replay buffer: %s", SDL_GetError());
 
     SDL_WriteIO(replay_io, REPLAY_HEADER, sizeof(REPLAY_HEADER));
     SDL_WriteIO(replay_io, GAME_VERSION, sizeof(GAME_VERSION));
