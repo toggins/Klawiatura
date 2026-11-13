@@ -371,7 +371,7 @@ static Bool draw_singleplayer_menu() {
     batch_sprite(LFMT("menu.lobby.label.character"));
     batch_pos(B_F3_XY(sx, HALF_SCREEN_HEIGHT - 54.f));
     batch_sprite(get_character_sprite(CLIENT.character, CLIENT.powerup,
-        (CATALOG.current == MEN_SINGLEPLAYER_CHARACTER) ? (PF_WALK1 + (((character_frame * 3) / 25) % 3)) : PF_IDLE));
+        (CATALOG.current == MEN_SINGLEPLAYER_CHARACTER) ? (PF_WALK1 + ((character_frame / 25) % 3)) : PF_IDLE));
     batch_pos(B_F3_XY(sx - 32.f, HALF_SCREEN_HEIGHT - 88.f));
     batch_flip(B_B2(TRUE, FALSE));
     batch_sprite("ui/menu/lobby/arrow");
@@ -492,7 +492,7 @@ static Bool draw_singleplayer_menu() {
 }
 
 static void tick_singleplayer_character_menu() {
-    ++character_frame;
+    character_frame += 3;
     ++powerup_frame;
 }
 
@@ -1159,14 +1159,23 @@ static void start_option() {
     if (is_client())
         return;
 
-    const TinyHash key = StHashStr(CLIENT.world);
-    if (get_world_key(key) == NULL)
+    const World* world = get_world(CLIENT.world);
+    if (world == NULL)
         return;
+
+    const WorldSaveInfo save = world_has_save(world);
+    if (save.valid) {
+        UI* ui = create_ui(UI_SAVE, NULL);
+        if (ui != NULL) {
+            *(WorldSaveInfo*)ui->userdata = save;
+            return;
+        }
+    }
 
     if (is_connected())
         peers_to_players();
 
-    WorldContext ctx = init_world_context(key);
+    WorldContext ctx = init_world_context(world);
     jump_to_world(&ctx, TRUE);
 }
 
@@ -1369,7 +1378,7 @@ static void test_level_cycle(Sint8 cycle) {
 }
 
 static void test_level_option() {
-    WorldContext wctx = init_world_context(0);
+    WorldContext wctx = init_world_context(NULL);
     start_world(&wctx);
 
     GameContext gctx = init_game_context(worldcontext(), StHashStr(CLIENT.level));

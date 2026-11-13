@@ -57,10 +57,11 @@ enum {
     UI_NULL,
 
     UI_MESSAGE,
-    UI_QUESTION,
     UI_PAUSE,
     UI_OPTIONS,
     UI_KICK,
+    UI_SAVE,
+    UI_CONTINUE,
 
     UI_SIZE,
 };

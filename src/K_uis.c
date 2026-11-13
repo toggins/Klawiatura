@@ -11,6 +11,7 @@ void POPULATE_UIS_TABLE() {
     DUI(OPTIONS);
     DUI(KICK);
     DUI(PAUSE);
+    DUI(SAVE);
 
     static const UITable TAB_NULL = {NULL};
     UIS[UI_NULL] = &TAB_NULL;

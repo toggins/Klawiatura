@@ -5,13 +5,17 @@ struct WorldContext;
 #include "K_file.h" // IWYU pragma: export
 #include "K_game.h"
 
+#define SAVE_HEADER "ksav0"
+
 typedef struct {
     Bool has_map;
     Uint8 num_levels;
     Sint32 lives;
 
-    const char *name, *description;
     Uint32 hash;
+
+    const char *name, *description;
+    TinyHash* levels;
 } World;
 
 typedef struct {
@@ -31,6 +35,14 @@ typedef struct WorldContext {
     WorldPlayerContext players[MAX_PLAYERS];
 } WorldContext;
 
+typedef struct {
+    Bool valid;
+    PlayerCharacter character;
+    PlayerPowerup powerup;
+    Sint32 lives;
+    TinyHash world, level;
+} WorldSaveInfo;
+
 void worlds_init(), worlds_teardown();
 
 void rediscover_worlds();
@@ -43,6 +55,9 @@ const World* world_iterate_next();
 
 Sint32 get_world_lives(const World*);
 
-WorldContext empty_world_context(), init_world_context(TinyHash);
+WorldContext empty_world_context(), init_world_context(const World*);
 void jump_to_world(const WorldContext*, Bool), start_world(const WorldContext*);
 const WorldContext* worldcontext();
+
+WorldSaveInfo world_has_save(const World*);
+void load_world_save(const World*), save_world_save();

@@ -1,5 +1,6 @@
 #include "K_cmd.h"
 #include "K_interface.h"
+#include "K_levels.h"
 #include "K_net.h"
 #include "K_string.h"
 #include "K_worlds.h"
@@ -13,8 +14,10 @@ static WorldContext world_context = {0};
 
 static void nuke_world(void* ptr) {
     World* world = ptr;
+
     SDL_free((void*)world->name);
     SDL_free((void*)world->description);
+    SDL_free((void*)world->levels);
 }
 
 static void iterate_world_file(const char* filename, const void* buffer, size_t size, void* userdata) {
@@ -48,8 +51,17 @@ static void iterate_world_file(const char* filename, const void* buffer, size_t 
         world.hash += ((Uint8*)buffer)[i];
 
     world.has_map = yyjson_is_obj(yyjson_obj_get(root, "map"));
-    const size_t num_levels = yyjson_arr_size(yyjson_obj_get(root, "levels"));
+
+    jval = yyjson_obj_get(root, "levels");
+    const size_t num_levels = yyjson_arr_size(jval);
     world.num_levels = SDL_min(num_levels, SDL_MAX_UINT8);
+
+    if (world.num_levels > 0) {
+        world.levels = SDL_calloc(world.num_levels, sizeof(TinyHash));
+        EXPECT(world.levels, "Failed to allocate world \"%s\" levels", name);
+        for (Uint8 i = 0; i < world.num_levels; i++)
+            world.levels[i] = StHashStr(yyjson_get_str(yyjson_arr_get(jval, i)));
+    }
 
     world.lives = DEFAULT_LIVES;
     jval = yyjson_obj_get(root, "lives");
@@ -188,11 +200,11 @@ WorldContext empty_world_context() {
     return ctx;
 }
 
-WorldContext init_world_context(TinyHash world) {
+WorldContext init_world_context(const World* world) {
     WorldContext ctx = empty_world_context();
-    ctx.world = world;
+    ctx.world = (world == NULL) ? 0 : StHashStr(world->name);
 
-    const Sint32 lives = get_world_lives(get_world_key(world));
+    const Sint32 lives = get_world_lives(world);
     if (is_connected()) {
         ctx.num_players = (PlayerID)get_game_player_count();
         for (PlayerID i = 0; i < ctx.num_players; i++) {
@@ -244,6 +256,8 @@ void jump_to_world(const WorldContext* wctx, Bool as_host) {
         StHashStr(yyjson_get_str(yyjson_arr_get(yyjson_obj_get(yyjson_doc_get_root(json), "levels"), wctx->level))));
     yyjson_doc_free(json);
     jump_to_game(&gctx, as_host);
+
+    save_world_save();
 }
 
 void start_world(const WorldContext* ctx) {
@@ -258,4 +272,112 @@ void start_world(const WorldContext* ctx) {
 
 const WorldContext* worldcontext() {
     return &world_context;
+}
+
+WorldSaveInfo world_has_save(const World* world) {
+    WorldSaveInfo save = {0};
+
+    if (world == NULL)
+        return save;
+
+    SDL_IOStream* io = stream_user_file(fmt("saves/%s.sav", world->name));
+    if (io == NULL)
+        return save;
+
+    char header[sizeof(SAVE_HEADER)] = "";
+    SDL_ReadIO(io, header, sizeof(header));
+    if (SDL_strcmp(header, SAVE_HEADER) != 0) {
+        SDL_CloseIO(io);
+        return save;
+    }
+
+    save.valid = TRUE;
+    save.world = StHashStr(world->name);
+
+    Uint8 lidx = 0;
+    SDL_ReadU8(io, &lidx);
+    save.level = world->levels[SDL_min(lidx, world->num_levels - 1)];
+
+    GameFlags dummy_flags = 0;
+    SDL_ReadU16LE(io, &dummy_flags);
+
+    SDL_ReadU8(io, &save.character);
+    SDL_ReadU8(io, &save.powerup);
+    SDL_ReadS32LE(io, &save.lives);
+
+    SDL_CloseIO(io);
+    return save;
+}
+
+void load_world_save(const World* world) {
+    if (world == NULL || is_client())
+        return;
+
+    if (is_connected())
+        peers_to_players();
+
+    WorldContext ctx = init_world_context(world);
+
+    SDL_IOStream* io = stream_user_file(fmt("saves/%s.sav", world->name));
+    if (io == NULL) {
+        WTF("Failed to load world \"%s\" save, resetting", world->name);
+        goto new_save;
+    }
+
+    char header[sizeof(SAVE_HEADER)] = "";
+    SDL_ReadIO(io, header, sizeof(header));
+    if (SDL_strcmp(header, SAVE_HEADER) != 0) {
+        SDL_CloseIO(io);
+        WTF("World \"%s\" save has bad header, resetting", world->name);
+
+        goto new_save;
+    }
+
+    SDL_ReadU8(io, &ctx.level);
+    SDL_ReadU16LE(io, &ctx.flags);
+
+    PlayerID i = 0;
+    while (SDL_TellIO(io) < SDL_GetIOSize(io)) {
+        SDL_ReadU8(io, &ctx.players[i].character);
+        SDL_ReadU8(io, &ctx.players[i].powerup);
+        SDL_ReadS32LE(io, &ctx.players[i].lives);
+        SDL_ReadU8(io, &ctx.players[i].coins);
+        SDL_ReadU32LE(io, &ctx.players[i].score);
+        ++i;
+    }
+
+    SDL_CloseIO(io);
+
+new_save:
+    jump_to_world(&ctx, TRUE);
+}
+
+void save_world_save() {
+    const World* world = get_world_key(world_context.world);
+    if (world == NULL || world_context.level <= 0 || world_context.level >= world->num_levels)
+        return;
+
+    SDL_IOStream* io = SDL_IOFromDynamicMem();
+    ASSUME(io, "Failed to save game: %s", SDL_GetError());
+
+    SDL_WriteIO(io, SAVE_HEADER, sizeof(SAVE_HEADER));
+
+    SDL_WriteU8(io, world_context.level);
+    SDL_WriteU16LE(io, world_context.flags);
+
+    for (PlayerID i = 0; i < world_context.num_players; i++) {
+        const WorldPlayerContext* player = &world_context.players[i];
+        SDL_WriteU8(io, player->character);
+        SDL_WriteU8(io, player->powerup);
+        SDL_WriteS32LE(io, player->lives);
+        SDL_WriteU8(io, player->coins);
+        SDL_WriteU32LE(io, player->score);
+    }
+
+    if (save_user_folder("saves") && save_user_stream(fmt("saves/%s.sav", world->name), io, SDL_TellIO(io)))
+        INFO("Game saved");
+    else
+        WTF("Failed to save game");
+
+    SDL_CloseIO(io);
 }

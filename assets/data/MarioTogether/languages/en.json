@@ -268,6 +268,8 @@
     "option.server": "Server Address",
     "option.return_to_title": "Return to Title",
     "option.return_to_lobby": "Return to Lobby",
+    "option.yes": "Yes",
+    "option.no": "No",
 
     "value.off": "Off",
     "value.on": "On",
@@ -314,6 +316,7 @@
     "message.replay_invalid": "Invalid replay file format.",
     "message.replay_version_mismatch": "Replay was recorded under a different version.",
     "message.replay_hash_mismatch": "Replay was recorded with different mods.",
+    "message.continue_from_save": "Continue from save?",
 
     "logo.disclaimer": "logos/disclaimer/en",
 

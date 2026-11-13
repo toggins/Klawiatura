@@ -302,6 +302,10 @@ void* load_user_file(const char* filename, size_t* size) {
     return load_file(user_path, filename, size);
 }
 
+SDL_IOStream* stream_user_file(const char* filename) {
+    return stream_file(user_path, filename, FALSE, NULL);
+}
+
 yyjson_doc* load_user_json(const char* filename) {
     return load_json(user_path, filename);
 }

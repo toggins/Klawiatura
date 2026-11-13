@@ -27,6 +27,7 @@ void iterate_data_files(const char*, Bool, void (*)(const char*, const void*, si
 
 void open_user_folder();
 void* load_user_file(const char*, size_t*);
+SDL_IOStream* stream_user_file(const char*);
 yyjson_doc* load_user_json(const char*);
 void iterate_user_files(const char*, Bool, void (*)(const char*, const void*, size_t, void*), void*);
 Bool save_user_file(const char*, void*, size_t), save_user_stream(const char*, SDL_IOStream*, size_t),

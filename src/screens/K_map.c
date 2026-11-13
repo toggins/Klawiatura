@@ -320,6 +320,9 @@ static void start(const void* secret, size_t secret_size) {
     }
 
     play_generic_track(map_state->track, PLAY_LOOPING, offset);
+
+    if (is_leader())
+        save_world_save();
 }
 
 static void end() {
