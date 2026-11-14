@@ -13,8 +13,10 @@ static void yes_option() {
 }
 
 static void no_option() {
-    if (is_client())
+    if (is_client() || !is_connected()) {
+        topui()->flags |= UIF_DESTROY;
         return;
+    }
 
     const World* world = get_world(CLIENT.world);
     if (world == NULL)

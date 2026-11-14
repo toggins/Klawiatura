@@ -1110,7 +1110,21 @@ static void world_cycle(Sint8 cycle) {
     world_description_scroll = 0.f;
 }
 
+static Bool check_world_save() {
+    const WorldSaveInfo save = world_has_save(get_world(CLIENT.world));
+    if (save.valid) {
+        UI* ui = create_ui(UI_SAVE, NULL);
+        if (ui != NULL) {
+            *(WorldSaveInfo*)ui->userdata = save;
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
 static void world_option() {
+    check_world_save();
     set_menu(&CATALOG, MEN_SINGLEPLAYER_CHARACTER);
     play_generic_sound("ui/ready", PLAY_POS);
 }
@@ -1163,17 +1177,12 @@ static void start_option() {
     if (world == NULL)
         return;
 
-    const WorldSaveInfo save = world_has_save(world);
-    if (save.valid) {
-        UI* ui = create_ui(UI_SAVE, NULL);
-        if (ui != NULL) {
-            *(WorldSaveInfo*)ui->userdata = save;
+    if (is_connected()) {
+        if (check_world_save())
             return;
-        }
+        else
+            peers_to_players();
     }
-
-    if (is_connected())
-        peers_to_players();
 
     WorldContext ctx = init_world_context(world);
     jump_to_world(&ctx, TRUE);
