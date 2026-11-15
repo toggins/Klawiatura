@@ -36,7 +36,7 @@
         <div id="canvas-layers">
             <div id="loading">
                 <div><img src="/assets/loading.gif"></div>
-                <div>Loading...</div>
+                <div id="statusLine">Loading...</div>
             </div>
             <canvas id="canvas" width="640" height="480" oncontextmenu="event.preventDefault()"></canvas>
         </div>
@@ -55,10 +55,15 @@
                 },
                 onAbort: function (what) {
                     error.style.display = "block";
-
-                    var canvas = document.getElementById("canvas");
                     canvas.style.opacity = 0.5;
                     canvas.style.backgroundImage = "none";
+                },
+                setStatus: function (text) {
+                    if (text)
+                        statusLine.textContent = text;
+                },
+                onRuntimeInitialized: function () {
+                    canvas.focus();
                 }
             };
         </script>
