@@ -25,7 +25,7 @@ static size_t lobby_list_count = 0;
 
 static NetID player_peers[MAX_PLAYERS] = {0}, spectator_peers[MAX_PEERS] = {0};
 
-static void on_ready() {
+static void on_ready(void) {
     if (connect_state == CONN_CONNECTING)
         INFO("Connect state ended successfully");
     connect_state = CONN_CONNECTED;
