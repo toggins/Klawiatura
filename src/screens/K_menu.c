@@ -1390,7 +1390,7 @@ static void test_level_option() {
     WorldContext wctx = init_world_context(NULL);
     start_world(&wctx);
 
-    GameContext gctx = init_game_context(worldcontext(), StHashStr(CLIENT.level));
+    GameContext gctx = init_game_context(worldcontext(), S_HashStr(CLIENT.level));
     jump_to_game(&gctx, TRUE);
 }
 

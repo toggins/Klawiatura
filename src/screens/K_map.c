@@ -213,7 +213,7 @@ static void start(const void* secret, size_t secret_size) {
             }
         }
 
-        map_state->level = StHashStr(yyjson_get_str(yyjson_arr_get(yyjson_obj_get(root, "levels"), wctx->level)));
+        map_state->level = S_HashStr(yyjson_get_str(yyjson_arr_get(yyjson_obj_get(root, "levels"), wctx->level)));
     } else {
         map_state->size[0] = SCREEN_WIDTH;
         map_state->size[1] = SCREEN_HEIGHT;

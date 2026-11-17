@@ -221,7 +221,7 @@ void load_sound(const char* name, AssetKeepLevel keep) {
     sound.base.keep = keep;
     sound.length = MIX_AudioFramesToMS(sound.internal, MIX_GetAudioDuration(sound.internal));
 
-    TinyDictPut(&sounds, name, &sound, sizeof(sound))->cleanup = nuke_sound;
+    TinyDictPut(&sounds, name, &sound, sizeof(sound))->data.cleanup = nuke_sound;
 }
 
 static void nuke_track(void* ptr) {
@@ -275,7 +275,7 @@ void load_track(const char* name, AssetKeepLevel keep) {
     }
 
 trk_no_json:
-    TinyDictPut(&tracks, name, &track, sizeof(track))->cleanup = nuke_track;
+    TinyDictPut(&tracks, name, &track, sizeof(track))->data.cleanup = nuke_track;
 }
 
 // ==============
@@ -283,7 +283,7 @@ trk_no_json:
 // ==============
 
 void play_generic_sound(const char* name, PlayFlags flags) {
-    const TinyHash key = StHashStr(name);
+    const TinyHash key = S_HashStr(name);
     const Sound* sound = get_sound_key(key);
     WHATEVER(sound, "Unknown sound \"%s\"", name);
 
@@ -297,7 +297,7 @@ void play_generic_sound(const char* name, PlayFlags flags) {
 }
 
 void play_generic_track(const char* name, PlayFlags flags, Uint32 offset) {
-    const TinyHash key = StHashStr(name);
+    const TinyHash key = S_HashStr(name);
     const Track* track = get_track_key(key);
     WHATEVER(track, "Unknown track \"%s\"", name);
 
@@ -554,7 +554,7 @@ void pause_audio_state(Bool pause) {
 }
 
 void play_state_sound(const char* name, PlayFlags flags, const void* at) {
-    const TinyHash key = StHashStr(name);
+    const TinyHash key = S_HashStr(name);
 
     const Sound* sound = get_sound_key(key);
     WHATEVER(sound, "Unknown sound \"%s\"", name);
@@ -599,7 +599,7 @@ void play_state_track(PlayerID pid, const char* name, PlayFlags flags, Uint32 of
     if (pid < 0)
         return;
 
-    const TinyHash key = StHashStr(name);
+    const TinyHash key = S_HashStr(name);
 
     const Track* track = get_track_key(key);
     WHATEVER(track, "Unknown track \"%s\"", name);

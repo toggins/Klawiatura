@@ -554,7 +554,7 @@ void load_texture(const char* name, AssetKeepLevel keep) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
     SDL_DestroySurface(surface);
 
-    TinyDictPut(&textures, name, &texture, sizeof(texture))->cleanup = nuke_texture;
+    TinyDictPut(&textures, name, &texture, sizeof(texture))->data.cleanup = nuke_texture;
 }
 
 static void nuke_sprite(void* ptr) {
@@ -586,7 +586,7 @@ void load_sprite(const char* name, AssetKeepLevel keep) {
         tname = name;
     }
 
-    const TinyHash tkey = StHashStr(tname);
+    const TinyHash tkey = S_HashStr(tname);
     Texture* texture = (Texture*)TinyMapGet(&textures, tkey);
     if (texture == NULL) {
         load_texture(tname, keep);
@@ -634,7 +634,7 @@ void load_sprite(const char* name, AssetKeepLevel keep) {
 
     yyjson_doc_free(json);
 
-    TinyDictPut(&sprites, name, &sprite, sizeof(sprite))->cleanup = nuke_sprite;
+    TinyDictPut(&sprites, name, &sprite, sizeof(sprite))->data.cleanup = nuke_sprite;
 }
 
 static void nuke_font(void* ptr) {
@@ -675,7 +675,7 @@ void load_font(const char* name, AssetKeepLevel keep) {
         if (tname == NULL || !yyjson_is_obj(value))
             continue;
 
-        const TinyHash tkey = StHashStr(tname);
+        const TinyHash tkey = S_HashStr(tname);
         Texture* texture = (Texture*)TinyMapGet(&textures, tkey);
         if (texture == NULL) {
             load_texture(tname, keep);
@@ -732,7 +732,7 @@ void load_font(const char* name, AssetKeepLevel keep) {
 
     yyjson_doc_free(json);
 
-    TinyDictPut(&fonts, name, &font, sizeof(font))->cleanup = nuke_font;
+    TinyDictPut(&fonts, name, &font, sizeof(font))->data.cleanup = nuke_font;
 }
 
 // =====
@@ -2015,7 +2015,7 @@ static void tilemap_layer_sprite(TileMapLayer* tilemap_layer, const Sprite* spri
 
     tile_batch_sprite(tile_batch, sprite, pos, size, flip, tile, colors);
     TinyMapPut(&((TileMapLayerInternal*)tilemap_layer->internal)->batches, key, tile_batch, sizeof(*tile_batch))
-        ->cleanup = nuke_tile_batch;
+        ->data.cleanup = nuke_tile_batch;
 }
 
 void tilemap_sprite(TileMap* tilemap, const char* name, const float pos[3], const float size[2], const Bool flip[2],
@@ -2023,7 +2023,7 @@ void tilemap_sprite(TileMap* tilemap, const char* name, const float pos[3], cons
     if (tilemap == NULL)
         return;
 
-    const TinyHash key = StHashStr(name);
+    const TinyHash key = S_HashStr(name);
     const Sprite* sprite = get_sprite_key(key);
     if (sprite == NULL && name != NULL) {
         WARN("Unknown sprite \"%s\"", name);
@@ -2047,7 +2047,7 @@ void tilemap_sprite(TileMap* tilemap, const char* name, const float pos[3], cons
     EXPECT(tilemap_layer->internal, "Failed to allocate tilemap layer internals");
 
     tilemap_layer_sprite(tilemap_layer, sprite, pos, size, flip, tile, colors);
-    TinyMapPut(&tmdata->layers, depth_hash, tilemap_layer, sizeof(*tilemap_layer))->cleanup = nuke_tilemap_layer;
+    TinyMapPut(&tmdata->layers, depth_hash, tilemap_layer, sizeof(*tilemap_layer))->data.cleanup = nuke_tilemap_layer;
 }
 
 void read_tilemap(TileMap* tilemap, yyjson_val* jarray) {

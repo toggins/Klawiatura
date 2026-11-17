@@ -60,7 +60,7 @@ static void iterate_world_file(const char* filename, const void* buffer, size_t 
         world.levels = SDL_calloc(world.num_levels, sizeof(TinyHash));
         EXPECT(world.levels, "Failed to allocate world \"%s\" levels", name);
         for (Uint8 i = 0; i < world.num_levels; i++)
-            world.levels[i] = StHashStr(yyjson_get_str(yyjson_arr_get(jval, i)));
+            world.levels[i] = S_HashStr(yyjson_get_str(yyjson_arr_get(jval, i)));
     }
 
     world.lives = DEFAULT_LIVES;
@@ -70,13 +70,13 @@ static void iterate_world_file(const char* filename, const void* buffer, size_t 
 
     yyjson_doc_free(json);
 
-    const TinyHash key = StHashStr(name);
+    const TinyHash key = S_HashStr(name);
     if (TinyMapGet(&worlds, key) == NULL) {
         if (world_array == NULL)
             world_array = MakeTinyDPro(1, sizeof(*world_array));
         world_array = TinyDPush(world_array, &key);
     }
-    TinyMapPut(&worlds, key, &world, sizeof(world))->cleanup = nuke_world;
+    TinyMapPut(&worlds, key, &world, sizeof(world))->data.cleanup = nuke_world;
 }
 
 void worlds_init() {
@@ -101,7 +101,7 @@ void rediscover_worlds() {
 }
 
 const World* get_world(const char* name) {
-    return get_world_key(StHashStr(name));
+    return get_world_key(S_HashStr(name));
 }
 
 const World* get_world_key(TinyHash key) {
@@ -109,7 +109,7 @@ const World* get_world_key(TinyHash key) {
 }
 
 const char* next_world_from(const char* name) {
-    const TinyHash key = StHashStr(name);
+    const TinyHash key = S_HashStr(name);
 
     const World* world = NULL;
     const size_t n = TinyDLength(world_array);
@@ -126,7 +126,7 @@ const char* next_world_from(const char* name) {
 }
 
 const char* last_world_from(const char* name) {
-    const TinyHash key = StHashStr(name);
+    const TinyHash key = S_HashStr(name);
 
     const World* world = NULL;
     const size_t n = TinyDLength(world_array);
@@ -202,7 +202,7 @@ WorldContext empty_world_context() {
 
 WorldContext init_world_context(const World* world) {
     WorldContext ctx = empty_world_context();
-    ctx.world = (world == NULL) ? 0 : StHashStr(world->name);
+    ctx.world = (world == NULL) ? 0 : S_HashStr(world->name);
 
     const Sint32 lives = get_world_lives(world);
     if (is_connected()) {
@@ -253,7 +253,7 @@ void jump_to_world(const WorldContext* wctx, Bool as_host) {
     ASSUME(json, "Failed to load world \"%s\": %s", world->name, error);
 
     GameContext gctx = init_game_context(wctx,
-        StHashStr(yyjson_get_str(yyjson_arr_get(yyjson_obj_get(yyjson_doc_get_root(json), "levels"), wctx->level))));
+        S_HashStr(yyjson_get_str(yyjson_arr_get(yyjson_obj_get(yyjson_doc_get_root(json), "levels"), wctx->level))));
     yyjson_doc_free(json);
     jump_to_game(&gctx, as_host);
 
@@ -292,7 +292,7 @@ WorldSaveInfo world_has_save(const World* world) {
     }
 
     save.valid = TRUE;
-    save.world = StHashStr(world->name);
+    save.world = S_HashStr(world->name);
 
     Uint8 lidx = 0;
     SDL_ReadU8(io, &lidx);

@@ -16,7 +16,7 @@ void clear_asset_map(TinyMap* target, void (*nuke)(void*)) {
     TINY_MAP_FOREACH (target, iter) {
         TinyBucket* bucket = iter.bucket;
 
-        AssetBase* asset = bucket->data;
+        AssetBase* asset = bucket->data.ptr;
         switch (asset->keep) {
         default:
             continue;
@@ -26,8 +26,8 @@ void clear_asset_map(TinyMap* target, void (*nuke)(void*)) {
             break;
         }
 
-        TinyMapPut(&new, bucket->hash, asset, (int)bucket->data_size)->cleanup = nuke;
-        bucket->cleanup = NULL;
+        TinyMapPut(&new, bucket->hash, asset, (int)bucket->data.size)->data.cleanup = nuke;
+        bucket->data.cleanup = NULL;
     }
 
     FreeTinyMap(target);

@@ -37,13 +37,13 @@ static void iterate_level_file(const char* filename, const void* buffer, size_t 
 
     yyjson_doc_free(json);
 
-    const TinyHash key = StHashStr(name);
+    const TinyHash key = S_HashStr(name);
     if (TinyMapGet(&levels, key) == NULL) {
         if (level_array == NULL)
             level_array = MakeTinyDPro(1, sizeof(*level_array));
         level_array = TinyDPush(level_array, &key);
     }
-    TinyMapPut(&levels, key, &level, sizeof(level))->cleanup = nuke_level;
+    TinyMapPut(&levels, key, &level, sizeof(level))->data.cleanup = nuke_level;
 }
 
 void levels_init() {
@@ -68,7 +68,7 @@ void rediscover_levels() {
 }
 
 const Level* get_level(const char* name) {
-    return get_level_key(StHashStr(name));
+    return get_level_key(S_HashStr(name));
 }
 
 const Level* get_level_key(TinyHash key) {
@@ -76,7 +76,7 @@ const Level* get_level_key(TinyHash key) {
 }
 
 const char* next_level_from(const char* name) {
-    const TinyHash key = StHashStr(name);
+    const TinyHash key = S_HashStr(name);
 
     const Level* level = NULL;
     const size_t n = TinyDLength(level_array);
@@ -93,7 +93,7 @@ const char* next_level_from(const char* name) {
 }
 
 const char* last_level_from(const char* name) {
-    const TinyHash key = StHashStr(name);
+    const TinyHash key = S_HashStr(name);
 
     const Level* level = NULL;
     const size_t n = TinyDLength(level_array);

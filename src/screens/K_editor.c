@@ -359,7 +359,7 @@ static void open_level(const char* filename) {
             continue;
 
         const char* def_name = yyjson_get_str(yyjson_obj_get(jmarker, "def"));
-        const TinyHash def_key = StHashStr(def_name);
+        const TinyHash def_key = S_HashStr(def_name);
         const EditorDef* def = (EditorDef*)TinyMapGet(&editor->defs, def_key);
         if (def == NULL || (def->type != DEFT_BACKGROUND && def->type != DEFT_TILE)) {
             WARN("Backdrop marker %zu has invalid def \"%s\" and will be removed", i, def_name);
@@ -414,7 +414,7 @@ static void open_level(const char* filename) {
             continue;
 
         const char* def_name = yyjson_get_str(yyjson_obj_get(jmarker, "def"));
-        const TinyHash def_key = StHashStr(def_name);
+        const TinyHash def_key = S_HashStr(def_name);
         const EditorDef* def = (EditorDef*)TinyMapGet(&editor->defs, def_key);
         if (def == NULL || def->type != DEFT_ACTOR) {
             WARN("Actor marker %zu has invalid def \"%s\" and will be removed", i, def_name);
@@ -734,12 +734,12 @@ static void save_level(const char* filename) {
             while (tile_yoffset < 0.f)
                 tile_yoffset += tile_height;
 
-            const TinyHash key = StHashStr(
+            const TinyHash key = S_HashStr(
                 fmt("%ix%i %i,%i", (int)tile_width, (int)tile_height, (int)tile_xoffset, (int)tile_yoffset));
             EditorCollisionMap* cmap = (EditorCollisionMap*)TinyMapGet(&collisions, key);
             if (cmap == NULL) {
                 TinyBucket* bucket = TinyMapPut(&collisions, key, &(EditorCollisionMap){0}, sizeof(EditorCollisionMap));
-                cmap = bucket->data;
+                cmap = bucket->data.ptr;
 
                 cmap->min_pos[0] = cmap->min_pos[1] = SDL_MAX_SINT16;
                 cmap->max_pos[0] = cmap->max_pos[1] = SDL_MIN_SINT16;
@@ -979,7 +979,7 @@ static void create_folder(EditorFolder* parent, yyjson_val* jval) {
             const char* def = yyjson_get_str(jval2);
             if (folder.defs == NULL)
                 folder.defs = MakeTinyDPro(1, sizeof(*folder.defs));
-            folder.defs = TinyDPush(folder.defs, &(TinyHash){StHashStr(def)});
+            folder.defs = TinyDPush(folder.defs, &(TinyHash){S_HashStr(def)});
         }
     }
 
@@ -1033,12 +1033,12 @@ static void iterate_editor_file(const char* filename, const void* buffer, size_t
             continue;
         }
 
-        const TinyHash key = StHashStr(name);
+        const TinyHash key = S_HashStr(name);
         EditorDef* def = (EditorDef*)TinyMapGet(&editor->defs, key);
         if (def == NULL) {
             TinyBucket* bucket = TinyMapPut(&editor->defs, key, &(EditorDef){0}, sizeof(EditorDef));
-            bucket->cleanup = nuke_def;
-            def = bucket->data;
+            bucket->data.cleanup = nuke_def;
+            def = bucket->data.ptr;
 
             def->max_scale[0] = def->max_scale[1] = 1000000.f;
             for (size_t i = 0; i < SDL_arraysize(def->colors); i++)

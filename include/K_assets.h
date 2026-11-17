@@ -46,7 +46,7 @@ typedef struct {
     }                                                                                                                  \
                                                                                                                        \
     const T* get_##A(const char* name) {                                                                               \
-        return get_##A##_key(StHashStr(name));                                                                         \
+        return get_##A##_key(S_HashStr(name));                                                                         \
     }                                                                                                                  \
                                                                                                                        \
     const T* get_##A##_key(TinyHash key) {                                                                             \

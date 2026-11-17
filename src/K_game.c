@@ -622,7 +622,7 @@ static void load_level(TinyHash key) {
 
     jval = yyjson_obj_get(root, "warps");
     for (Uint64 i = 0, n = yyjson_arr_size(jval); i < n && i < MAX_GAME_WARPS; i++)
-        level_info->warps[i] = StHashStr(yyjson_get_str(yyjson_arr_get(jval, i)));
+        level_info->warps[i] = S_HashStr(yyjson_get_str(yyjson_arr_get(jval, i)));
 
     jval = yyjson_obj_get(root, "secrets");
     for (Uint64 i = 0, n = yyjson_arr_size(jval); i < n && i < MAX_GAME_SECRETS; i++) {

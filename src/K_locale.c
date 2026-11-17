@@ -22,7 +22,7 @@ static void iterate_language_file(const char* filename, const void* buffer, size
     yyjson_val* root = yyjson_doc_get_root(json);
     if (yyjson_is_obj(root)) {
         const char* name = filename_no_ext(file_basename(filename));
-        const TinyHash hash = StHashStr(name);
+        const TinyHash hash = S_HashStr(name);
 
         Language* language = (Language*)TinyMapGet(&languages, hash);
         if (language == NULL) {
@@ -31,8 +31,8 @@ static void iterate_language_file(const char* filename, const void* buffer, size
             EXPECT(lang.name, "Failed to allocate name for language \"%s\"", name);
 
             TinyBucket* bucket = TinyMapPut(&languages, hash, &lang, sizeof(lang));
-            bucket->cleanup = nuke_language;
-            language = bucket->data;
+            bucket->data.cleanup = nuke_language;
+            language = bucket->data.ptr;
         }
 
         size_t i = 0, n = 0;
@@ -76,11 +76,11 @@ const char* handle_lfmt(const Language* language, const char* key, ...) {
     const char* template = NULL;
     if (language == NULL) {
         if (current_language != NULL)
-            template = TinyMapGet(&current_language->strings, StHashStr(key));
+            template = TinyMapGet(&current_language->strings, S_HashStr(key));
         if (template == NULL && default_language != NULL)
-            template = TinyMapGet(&default_language->strings, StHashStr(key));
+            template = TinyMapGet(&default_language->strings, S_HashStr(key));
     } else {
-        template = TinyMapGet(&language->strings, StHashStr(key));
+        template = TinyMapGet(&language->strings, S_HashStr(key));
     }
 
     if (template == NULL)

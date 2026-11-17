@@ -93,7 +93,7 @@ endif()
 
 FetchContent_Declare(SDL3_mixer
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
-    GIT_TAG 14a374621ce7deeb29b9fc7d158efb9402bbc951
+    GIT_TAG fbb3c652b4be8090063d8c81a1b259ce9145a812
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(SDL3_mixer)
@@ -103,7 +103,7 @@ list(APPEND LIBS SDL3_mixer::SDL3_mixer-static)
 # SDL_GameControllerDB
 FetchContent_Declare(SDL_GameControllerDB
     GIT_REPOSITORY https://github.com/mdqinc/SDL_GameControllerDB.git
-    GIT_TAG 07af1d50187e94c861c9f9f5d8a55b148f11306b
+    GIT_TAG 22de0d7ef9fe1e6f852a50a9403a7a48f9be30ad
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(SDL_GameControllerDB)
@@ -161,7 +161,7 @@ set(S_TRUCTURES_BUILD_TESTS OFF CACHE INTERNAL "")
 
 FetchContent_Declare(S_tructures
     GIT_REPOSITORY https://github.com/Schwungus/S_tructures.git
-    GIT_TAG 60d6adcf4e6a0fbf5cb66fee9a0f3776dc693d72
+    GIT_TAG 7ca455a0e34544fde99dcac33ea69060c4ef32c8
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(S_tructures)
@@ -171,7 +171,7 @@ list(APPEND LIBS S_tructures)
 # NutBlast
 FetchContent_Declare(NutBlast
 	GIT_REPOSITORY https://github.com/Schwungus/NutBlast.git
-	GIT_TAG 55872dd076982132be4ab15182fdf6ce0816fb37
+	GIT_TAG 09a292c827eec292cbab858e23058d673e35e301
 	EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(NutBlast)
