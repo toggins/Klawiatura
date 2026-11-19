@@ -9,11 +9,19 @@ enum {
 };
 
 #define FLG_SPRING_BOUNCE CUSTOM_FLAG(0)
+#define FLG_SPRING_GREEN CUSTOM_FLAG(1)
 
 static void load() {
     load_sprite("markers/spring", AKL_NEVER);
     load_sprite_num("markers/spring/%u", 5, AKL_NEVER);
     load_sound("spring", AKL_NEVER);
+}
+
+static void load_special(const GameActor* actor) {
+    if (ANY_FLAG(actor, FLG_SPRING_GREEN)) {
+        load_sprite("markers/spring/green", AKL_NEVER);
+        load_sprite_num("markers/spring/green/%u", 5, AKL_NEVER);
+    }
 }
 
 static void create(GameActor* actor) {
@@ -40,10 +48,9 @@ static void tick(GameActor* actor) {
 
 static void draw(const GameActor* actor) {
     batch_reset();
+    const char* base = ANY_FLAG(actor, FLG_SPRING_GREEN) ? "markers/spring/green" : "markers/spring";
     draw_actor(actor,
-        ANY_FLAG(actor, FLG_SPRING_BOUNCE) ? fmt("markers/spring/%u", (VAL(actor, SPRING_FRAME) / 100) % 5)
-                                           : "markers/spring",
-        FALSE);
+        ANY_FLAG(actor, FLG_SPRING_BOUNCE) ? fmt("%s/%i", base, (VAL(actor, SPRING_FRAME) / 100) % 5) : base, FALSE);
 }
 
 static void collide(GameActor* actor, GameActor* from) {
@@ -53,8 +60,9 @@ static void collide(GameActor* actor, GameActor* from) {
         return;
     }
 
-    from->vel.y
-        = Fmul((VAL(from, PLAYER_SPRING) > 0) ? Int2Fx(-19) : Int2Fx(-10), get_player_jump(get_player(from->player)));
+    from->vel.y = Fmul(
+        (VAL(from, PLAYER_SPRING) > 0) ? (ANY_FLAG(actor, FLG_SPRING_GREEN) ? Int2Fx(-40) : Int2Fx(-19)) : Int2Fx(-10),
+        get_player_jump(get_player(from->player)));
     VAL(actor, SPRING_FRAME) = 0;
     FLAG_ON(actor, FLG_SPRING_BOUNCE);
 
@@ -63,6 +71,7 @@ static void collide(GameActor* actor, GameActor* from) {
 
 const ActorTable TAB_SPRING = {
     .load = load,
+    .load_special = load_special,
     .create = create,
     .tick = tick,
     .draw = draw,

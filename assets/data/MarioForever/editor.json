@@ -2071,7 +2071,14 @@
         "Spring": {
             "type": "actor",
             "id": 63,
-            "sprite": "markers/spring"
+            "sprite": "markers/spring",
+            "flags": [
+                {
+                    "name": "Green",
+                    "index": 6,
+                    "tooltip": "Extreme bounce height"
+                }
+            ]
         },
         "Loop": {
             "type": "actor",
