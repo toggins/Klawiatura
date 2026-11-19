@@ -312,11 +312,6 @@
     "message.player_desynced": "Out of sync with {0}.",
     "message.replay_ended": "Replay ended here.",
     "message.replay_desynced": "Replay went out of sync.",
-    "message.replay_load_error": "An error occurred while loading the replay file.",
-    "message.replay_missing": "Replay file not found.",
-    "message.replay_invalid": "Invalid replay file format.",
-    "message.replay_version_mismatch": "Replay was recorded under a different version.",
-    "message.replay_hash_mismatch": "Replay was recorded with different mods.",
     "message.continue_from_save": "Continue from save?",
 
     "logo.disclaimer": "logos/disclaimer/en",

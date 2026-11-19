@@ -11,9 +11,7 @@ enum {
     RPS_PLAYING,
 };
 
-const char* load_replay(const char*);
-
-void start_replay(), end_replay();
+void load_replay(const char*), start_replay(), end_replay();
 
 const GameInput* read_replay();
 void write_replay(Sint64, const GameInput*, Uint32);
