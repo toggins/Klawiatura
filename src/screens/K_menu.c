@@ -249,7 +249,7 @@ static Bool draw_main_menu() {
         if (i < (SDL_arraysize(credits) - 1))
             wrap += 32.f;
     }
-    const float scroll = SDL_fmodf(screenticks(), wrap);
+    const float scroll = SDL_fmodf(screenticks() * 1.5f, wrap);
 
 #ifdef SDL_PLATFORM_EMSCRIPTEN
     draw_main_button(0, "ui/menu/buttons/singleplayer", "ui/menu/icons/game", "option.singleplayer",

@@ -1,5 +1,6 @@
 {
     "language.en": "English",
+    "language.pl": "Polish",
 
     "world.test": "Test",
     "world.1": "World 1",
@@ -305,7 +306,6 @@
     "message.error": "Error",
     "message.connection_failed": "Failed to establish a connection.",
     "message.disconnected": "Lost connection to server.",
-    "message.game_stopped": "Game session terminated.",
     "message.player_disconnected": "Lost connection to {0}.",
     "message.player_bailed": "{0} left the game session.",
     "message.player_left": "{0} left.",
@@ -334,7 +334,7 @@
     "menu.credits.beta_testing": "Beta Testing",
     "menu.credits.beta_testing.text": "CST1229 - LooPeR231 - Master 48 - miyameon - MrWiktor15 - Nerton17 - OhThatGuy/OTG - ReflexGURU - romaniandumbass - Rubin - SerafimGWS - Skylighter - Usered",
     "menu.credits.special_thanks": "Special Thanks",
-    "menu.credits.special_thanks.text": "Fusion Fangaming - HeatXD - Mario Worker - Mikul3242 - Night Fury - Xykijun",
+    "menu.credits.special_thanks.text": "Fusion Fangaming - HeatXD - Xykijun",
     "menu.credits.end": "Shoutout to these amazing games:",
     "menu.credits.end.text": "Mario Forever: Community Edition - Mario Forever Tournament: 20th Anniversary Edition",
     "menu.singleplayer.select_world": "Select a World",
