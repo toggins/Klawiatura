@@ -834,9 +834,15 @@ static void draw_ui() {
         batch_align(B_ALIGN(FA_CENTER, FA_BOTTOM));
         if (is_leader() || map_state->path == NULL) {
             batch_colors(B_U4X4_GREEN);
-            batch_string("header", 32.f, LFMT("map.press", 's', kb_label(KB_JUMP)));
+            const char* lstr = LFMT("map.press", 's', kb_label(KB_JUMP));
+            batch_string("header", 32.f, lstr);
+            batch_blend(BM_ADD);
+            batch_colors(B_U4X4({128, 128, 128, 255}, {91, 124, 91, 255}, {78, 103, 78, 255}, {17, 45, 17, 255}));
+            batch_string("header", 32.f, lstr);
+            batch_blend(BM_NORMAL);
         } else {
-            batch_colors(B_U4X4_WHITE);
+            batch_colors(
+                B_U4X4({255, 255, 255, 200}, {232, 232, 232, 200}, {232, 232, 232, 200}, {160, 160, 160, 200}));
             batch_string("header", 32.f, LFMT("map.waiting_for_leader"));
         }
     }
