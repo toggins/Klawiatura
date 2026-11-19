@@ -141,6 +141,7 @@
     "map.world.marble_valley": "ui/map/world/en/marble_valley",
     "map.world.world_of_revamps": "ui/map/world/en/world_of_revamps",
     "map.completed": "ui/map/world/en/completed/{0}",
+    "map.completed.frames": "16",
     "map.press": "Press {0}",
     "map.waiting_for_leader": "Waiting for leader",
     "map.player": "Player {0}",

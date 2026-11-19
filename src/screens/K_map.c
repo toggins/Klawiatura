@@ -241,7 +241,7 @@ static void start(const void* secret, size_t secret_size) {
 
     if (map_state->path == NULL) {
         if (world->has_map)
-            load_localized_sprite_num("map.completed", 16, AKL_NEVER);
+            load_localized_sprite_num("map.completed", SDL_atoi(LFMT("map.completed.frames")), AKL_NEVER);
 
         if (wctx->num_players > 1) {
             load_sound("kick", AKL_NEVER);
@@ -713,7 +713,8 @@ static void draw_ui() {
             const Sprite* tspr = get_sprite(map_state->title);
             const float tb = (tspr == NULL) ? 0.f : (tspr->size[1] - tspr->offset[1]);
             batch_pos(B_F3_XY(HALF_SCREEN_WIDTH, (int)map_state->label.interp.y + tb));
-            batch_sprite(LFMT("map.completed", 'i', (int)(screenticks() * 0.5f) % 16));
+            const int frames = SDL_atoi(LFMT("map.completed.frames"));
+            batch_sprite(LFMT("map.completed", 'i', (frames > 1) ? ((int)(screenticks() * 0.5f) % frames) : 0));
         }
 
         batch_pos(B_F3_SCREEN);
