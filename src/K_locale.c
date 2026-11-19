@@ -5,6 +5,7 @@
 #define MAX_LFMT_ARGS 8
 
 static TinyMap languages = {0};
+static TinyHash* language_array = NULL;
 static Language *default_language = NULL, *current_language = NULL;
 
 static TinyMapIterator iterator = {0};
@@ -33,16 +34,18 @@ static void iterate_language_file(const char* filename, const void* buffer, size
             TinyBucket* bucket = TinyMapPut(&languages, hash, &lang, sizeof(lang));
             bucket->data.cleanup = nuke_language;
             language = bucket->data.ptr;
+
+            if (language_array == NULL)
+                language_array = MakeTinyDPro(1, sizeof(*language_array));
+            language_array = TinyDPush(language_array, &hash);
         }
 
         size_t i = 0, n = 0;
         yyjson_val *key = NULL, *val = NULL;
         yyjson_obj_foreach(root, i, n, key, val) {
             const char *sk = yyjson_get_str(key), *sv = yyjson_get_str(val);
-            if (sk == NULL || sv == NULL)
-                continue;
-
-            TinyDictPut(&language->strings, sk, sv, SDL_strlen(sv) + 1);
+            if (sk != NULL && sv != NULL)
+                TinyDictPut(&language->strings, sk, sv, SDL_strlen(sv) + 1);
         }
 
         Bool* found_default = userdata;
@@ -62,6 +65,7 @@ void locale_init() {
 
 void locale_teardown() {
     FreeTinyMap(&languages);
+    FreeTinyD(language_array);
 }
 
 void apply_language(const char* name) {
@@ -191,4 +195,38 @@ void language_iterate_start() {
 
 const Language* language_iterate_next() {
     return TinyMapNext(&iterator) ? iterator.data : NULL;
+}
+
+const char* next_language_from(const char* name) {
+    const TinyHash key = S_HashStr(name);
+
+    const Language* language = NULL;
+    const size_t n = TinyDLength(language_array);
+    for (size_t i = 0; i < n; i++) {
+        if (key == language_array[i]) {
+            language = TinyMapGet(&languages, language_array[(i + 1) % n]);
+            break;
+        }
+    }
+
+    if (language == NULL && n > 0)
+        language = TinyMapGet(&languages, language_array[0]);
+    return (language == NULL) ? NULL : language->name;
+}
+
+const char* last_language_from(const char* name) {
+    const TinyHash key = S_HashStr(name);
+
+    const Language* language = NULL;
+    const size_t n = TinyDLength(language_array);
+    for (size_t i = 0; i < n; i++) {
+        if (key == language_array[i]) {
+            language = TinyMapGet(&languages, language_array[(i > 0) ? (i - 1) : (n - 1)]);
+            break;
+        }
+    }
+
+    if (language == NULL && n > 0)
+        language = TinyMapGet(&languages, language_array[0]);
+    return (language == NULL) ? NULL : language->name;
 }

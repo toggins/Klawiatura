@@ -16,3 +16,4 @@ const char* handle_lfmt(const Language*, const char*, ...);
 
 void language_iterate_start();
 const Language* language_iterate_next();
+const char *next_language_from(const char*), *last_language_from(const char*);

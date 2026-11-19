@@ -16,7 +16,6 @@ enum {
     MEN_NULL,
 
     MEN_MAIN,
-    MEN_LANGUAGE,
     MEN_CONTROLS,
     MEN_GAMEPLAY,
     MEN_VIDEO,
@@ -28,17 +27,17 @@ enum {
 
 static Bool tickrate_disabled();
 static const char *fmt_language(size_t), *fmt_name(size_t), *fmt_server(size_t), *fmt_show_user_messages(size_t),
-    *fmt_language_option(size_t), *fmt_resolution(size_t), *fmt_fullscreen(size_t), *fmt_vsync(size_t),
-    *fmt_master_volume(size_t), *fmt_sound_volume(size_t), *fmt_music_volume(size_t), *fmt_audio_in_background(size_t),
-    *fmt_input_delay(size_t), *fmt_device(size_t), *fmt_up(size_t), *fmt_left(size_t), *fmt_down(size_t),
-    *fmt_right(size_t), *fmt_jump(size_t), *fmt_run(size_t), *fmt_fire(size_t), *fmt_chat(size_t),
-    *fmt_record_replay(size_t), *fmt_framerate(size_t), *fmt_texture_filter(size_t), *fmt_extra_effects(size_t),
-    *fmt_reduce_colors(size_t), *fmt_xscroll(size_t), *fmt_tickrate(size_t), *fmt_always_run(size_t);
-static void enter_language_menu(MenuType), submit_name(Bool), submit_server(Bool), show_user_messages_cycle(Sint8),
-    language_option(), resolution_cycle(Sint8), fullscreen_cycle(Sint8), master_volume_cycle(Sint8),
-    sound_volume_cycle(Sint8), music_volume_cycle(Sint8), audio_in_background_cycle(Sint8), vsync_cycle(Sint8),
-    input_delay_cycle(Sint8), up_option(), left_option(), down_option(), right_option(), jump_option(), run_option(),
-    fire_option(), chat_option(), record_replay_option(), framerate_cycle(Sint8), texture_filter_cycle(Sint8),
+    *fmt_resolution(size_t), *fmt_fullscreen(size_t), *fmt_vsync(size_t), *fmt_master_volume(size_t),
+    *fmt_sound_volume(size_t), *fmt_music_volume(size_t), *fmt_audio_in_background(size_t), *fmt_input_delay(size_t),
+    *fmt_device(size_t), *fmt_up(size_t), *fmt_left(size_t), *fmt_down(size_t), *fmt_right(size_t), *fmt_jump(size_t),
+    *fmt_run(size_t), *fmt_fire(size_t), *fmt_chat(size_t), *fmt_record_replay(size_t), *fmt_framerate(size_t),
+    *fmt_texture_filter(size_t), *fmt_extra_effects(size_t), *fmt_reduce_colors(size_t), *fmt_xscroll(size_t),
+    *fmt_tickrate(size_t), *fmt_always_run(size_t);
+static void submit_name(Bool), language_cycle(Sint8), submit_server(Bool), show_user_messages_cycle(Sint8),
+    resolution_cycle(Sint8), fullscreen_cycle(Sint8), master_volume_cycle(Sint8), sound_volume_cycle(Sint8),
+    music_volume_cycle(Sint8), audio_in_background_cycle(Sint8), vsync_cycle(Sint8), input_delay_cycle(Sint8),
+    up_option(), left_option(), down_option(), right_option(), jump_option(), run_option(), fire_option(),
+    chat_option(), record_replay_option(), framerate_cycle(Sint8), texture_filter_cycle(Sint8),
     extra_effects_cycle(Sint8), reduce_colors_cycle(Sint8), xscroll_cycle(Sint8), tickrate_cycle(Sint8),
     always_run_cycle(Sint8);
 
@@ -47,7 +46,6 @@ static Catalog CATALOG = {
 
 	.menus = {
 		[MEN_MAIN] = {.name = "option.options"},
-		[MEN_LANGUAGE] = {.name = "option.language", .enter = enter_language_menu},
 		[MEN_CONTROLS] = {.name = "option.controls"},
         [MEN_GAMEPLAY] = {.name = "option.gameplay"},
 		[MEN_VIDEO] = {.name = "option.video"},
@@ -58,7 +56,7 @@ static Catalog CATALOG = {
 	.options = {
 		[MEN_MAIN] = {
             {.fmt = fmt_name, OPTION_PROMPT(CLIENT.name), .submit = submit_name},
-			{.fmt = fmt_language, .menu = MEN_LANGUAGE},
+			{.fmt = fmt_language, .cycle = language_cycle},
 			{},
 			{.name = "option.controls", .menu = MEN_CONTROLS},
             {.name = "option.gameplay", .menu = MEN_GAMEPLAY},
@@ -121,31 +119,6 @@ static Catalog CATALOG = {
 	}
 };
 
-// =====
-// MENUS
-// =====
-
-static void enter_language_menu(MenuType from) {
-    (void)from;
-
-    SDL_zeroa(CATALOG.options[MEN_LANGUAGE]);
-
-    size_t i = 0;
-    const Language* language = NULL;
-    language_iterate_start();
-    while (i < MAX_OPTIONS) {
-        language = language_iterate_next();
-        if (language == NULL)
-            break;
-
-        Option* option = &CATALOG.options[MEN_LANGUAGE][i];
-        option->name = language->name;
-        option->fmt = fmt_language_option;
-        option->callback = language_option;
-        i++;
-    }
-}
-
 // =======
 // OPTIONS
 // =======
@@ -168,6 +141,13 @@ static const char* fmt_language(size_t idx) {
     (void)idx;
 
     return fmt("%s: %s (%s)", LFMT("option.language"), LFMT(fmt("language.%s", CLIENT.language)), CLIENT.language);
+}
+
+static void language_cycle(Sint8 cycle) {
+    const char* lstr = (cycle > 0) ? next_language_from(CLIENT.language)
+                                   : ((cycle < 0) ? last_language_from(CLIENT.language) : NULL);
+    SDL_strlcpy(CLIENT.language, (lstr == NULL) ? DEFAULT_LANGUAGE : lstr, sizeof(CLIENT.language));
+    apply_language(CLIENT.language);
 }
 
 static const char* fmt_xscroll(size_t idx) {
@@ -250,17 +230,6 @@ static void show_user_messages_cycle(Sint8 cycle) {
     (void)cycle;
 
     CLIENT.show_user_messages = !CLIENT.show_user_messages;
-}
-
-static const char* fmt_language_option(size_t idx) {
-    const char* lname = CATALOG.options[MEN_LANGUAGE][idx].name;
-    return fmt("%s (%s)", LFMT(fmt("language.%s", lname)), lname);
-}
-
-static void language_option() {
-    const char* lname = CATALOG.options[MEN_LANGUAGE][CATALOG.menus[MEN_LANGUAGE].option].name;
-    SDL_strlcpy(CLIENT.language, lname, sizeof(CLIENT.language));
-    apply_language(CLIENT.language);
 }
 
 static const char* fmt_device(size_t idx) {
