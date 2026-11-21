@@ -98,6 +98,15 @@ static void draw_cloud(const GameActor* actor) {
     case 2:
         batch_color(B_U4(123, 99, 99, 255));
         break;
+    case 3:
+        batch_color(B_U4_ALPHA(120));
+        break;
+    case 4:
+        batch_color(B_U4(181, 173, 173, 120));
+        break;
+    case 5:
+        batch_color(B_U4(123, 99, 99, 120));
+        break;
     }
 
     draw_actor(actor, fmt("scenery/cloud/%i", ((gamestate()->time * 2) / 25) % 3), FALSE);
