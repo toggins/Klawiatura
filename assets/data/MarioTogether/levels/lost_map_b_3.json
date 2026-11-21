@@ -590,10 +590,10 @@
             "pos": [0, 0, 200],
             "size": [15009, 489],
             "colors": [
-                [63, 63, 63, 255],
-                [63, 63, 63, 255],
-                [242, 180, 175, 255],
-                [242, 180, 175, 255]
+                [60, 37, 37, 255],
+                [60, 37, 37, 255],
+                [255, 192, 160, 255],
+                [255, 192, 160, 255]
             ]
         },
         {
@@ -3061,6 +3061,137 @@
             "def": "Gray Block",
             "sprite": "tiles/block/gray",
             "pos": [1344, 96, 20]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [4800, 416, 21]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [4544, 416, 21]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [4192, 416, 21]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [6624, 416, 21]
+        },
+        {
+            "def": "Pipe Gray Middle",
+            "sprite": "tiles/pipe/gray/v1",
+            "pos": [7968, 416, 21]
+        },
+        {
+            "def": "Rocks",
+            "sprite": "scenery/rocks",
+            "pos": [2208, 352, 61]
+        },
+        {
+            "def": "Rocks",
+            "sprite": "scenery/rocks",
+            "pos": [4736, 352, 61]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [832, 200, 71],
+            "flip": [false, true],
+            "colors": [
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [2332, 200, 71],
+            "flip": [false, true],
+            "colors": [
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [3832, 200, 71],
+            "flip": [false, true],
+            "colors": [
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [5332, 200, 71],
+            "flip": [false, true],
+            "colors": [
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [6832, 200, 71],
+            "flip": [false, true],
+            "colors": [
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [8332, 200, 71],
+            "flip": [false, true],
+            "colors": [
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [9832, 200, 71],
+            "flip": [false, true],
+            "colors": [
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129]
+            ]
+        },
+        {
+            "def": "Giant Cloud Back",
+            "sprite": "scenery/cloud/giant",
+            "pos": [11332, 200, 71],
+            "flip": [false, true],
+            "colors": [
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129],
+                [127, 83, 83, 129]
+            ]
         }
     ],
     "collisions": [
@@ -3602,20 +3733,23 @@
             ]
         },
         {
-            "pos": [7200, 352],
-            "size": [5, 7],
+            "pos": [4192, 352],
+            "size": [60, 7],
             "cell_size": [64, 32],
             "cells": [
-                [4, 0, 1],
-                [4, 1, 1],
-                [4, 2, 1],
-                [4, 3, 1],
-                [4, 4, 1],
+                [51, 0, 1],
+                [51, 1, 1],
+                [51, 2, 1],
+                [51, 3, 1],
+                [51, 4, 1],
+                [47, 2, 1],
+                [47, 3, 1],
+                [47, 4, 1],
+                [47, 5, 1],
+                [47, 6, 1],
                 [0, 2, 1],
-                [0, 3, 1],
-                [0, 4, 1],
-                [0, 5, 1],
-                [0, 6, 1]
+                [38, 2, 1],
+                [59, 2, 1]
             ]
         },
         {
@@ -3659,7 +3793,9 @@
                 [96, 5, 1],
                 [96, 6, 1],
                 [96, 7, 1],
-                [96, 8, 1]
+                [96, 8, 1],
+                [50, 4, 1],
+                [46, 4, 1]
             ]
         },
         {
@@ -3734,31 +3870,31 @@
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [192, 96],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [448, 128],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [846, 106],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [1101, 52],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [1715, 92],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Lava",
@@ -3775,7 +3911,13 @@
             "def": "Player Spawn",
             "id": 1,
             "pos": [111, 415],
-            "values": [[4, 1]]
+            "values": [
+                [0, 0],
+                [1, 0],
+                [2, 0],
+                [3, 0],
+                [4, 1]
+            ]
         },
         {
             "def": "Lava",
@@ -3838,13 +3980,13 @@
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [2278, 95],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [2530, 132],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Roto-Disc",
@@ -3978,37 +4120,37 @@
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [4079, 105],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [4399, 158],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [4979, 118],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [5637, 108],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [5815, 173],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [6110, 141],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Coin",
@@ -4275,31 +4417,31 @@
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [7112, 88],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [7529, 139],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [8009, 157],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [8690, 106],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [9221, 142],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Piranha Plant",
@@ -4423,37 +4565,31 @@
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [9475, 108],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [10318, 180],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [10918, 71],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [9943, 108],
-            "values": [[0, 2]]
-        },
-        {
-            "def": "Cloud Tanks",
-            "id": 18,
-            "pos": [10873, 233],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [11357, 117],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Item Block",
@@ -4702,7 +4838,7 @@
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [11616, 128],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Bro",
@@ -4798,19 +4934,19 @@
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [6677, 91],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [5296, 148],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Cloud Tanks",
             "id": 18,
             "pos": [6217, 99],
-            "values": [[0, 2]]
+            "values": [[0, 5]]
         },
         {
             "def": "Lava",
@@ -4832,6 +4968,60 @@
                 [0, 786432],
                 [1, 250]
             ]
+        },
+        {
+            "def": "Cloud Tanks",
+            "id": 18,
+            "pos": [2912, 64],
+            "values": [[0, 5]]
+        },
+        {
+            "def": "Cloud Tanks",
+            "id": 18,
+            "pos": [3296, 160],
+            "values": [[0, 5]]
+        },
+        {
+            "def": "Cloud Tanks",
+            "id": 18,
+            "pos": [4736, 64],
+            "values": [[0, 5]]
+        },
+        {
+            "def": "Cloud Tanks",
+            "id": 18,
+            "pos": [7744, 96],
+            "values": [[0, 5]]
+        },
+        {
+            "def": "Cloud Tanks",
+            "id": 18,
+            "pos": [10176, 64],
+            "values": [[0, 5]]
+        },
+        {
+            "def": "Cloud Tanks",
+            "id": 18,
+            "pos": [8960, 160],
+            "values": [[0, 5]]
+        },
+        {
+            "def": "Cloud Tanks",
+            "id": 18,
+            "pos": [9056, 96],
+            "values": [[0, 5]]
+        },
+        {
+            "def": "Cloud Tanks",
+            "id": 18,
+            "pos": [704, 64],
+            "values": [[0, 5]]
+        },
+        {
+            "def": "Cloud Tanks",
+            "id": 18,
+            "pos": [7296, 160],
+            "values": [[0, 5]]
         }
     ]
 }
